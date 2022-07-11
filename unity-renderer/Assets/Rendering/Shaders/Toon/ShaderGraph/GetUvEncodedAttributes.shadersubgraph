@@ -1,9 +1,15 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "eff0abc6332848f396746ad0228969a8",
     "m_Properties": [],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "1b4d68cf8f954d7690da4ae355318b9d"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "971d35ae32ad46f4b8c6445e0f85195e"
@@ -253,10 +259,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "971d35ae32ad46f4b8c6445e0f85195e"
@@ -390,6 +397,14 @@
         "m_SerializableColors": []
     },
     "m_OutputChannel": 3
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "1b4d68cf8f954d7690da4ae355318b9d",
+    "m_Name": "",
+    "m_ChildObjectList": []
 }
 
 {
@@ -594,7 +609,9 @@
     ],
     "m_PropertyIds": [
         -1204814214
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -698,10 +715,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -702.0,
-            "y": -580.0423583984375,
-            "width": 208.0,
-            "height": 312.8000183105469
+            "x": -627.0,
+            "y": -580.0000610351563,
+            "width": 144.99996948242188,
+            "height": 129.00003051757813
         }
     },
     "m_Slots": [
@@ -1081,7 +1098,7 @@
     ],
     "synonyms": [],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
@@ -1490,6 +1507,8 @@
     ],
     "m_PropertyIds": [
         -1204814214
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 

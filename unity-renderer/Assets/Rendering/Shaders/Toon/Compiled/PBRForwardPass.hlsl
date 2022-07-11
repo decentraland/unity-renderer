@@ -1,3 +1,4 @@
+#include "DCLSimpleLighting.hlsl"
 #include "GPUSkinning.hlsl"
 
 void InitializeInputData(Varyings input, SurfaceDescription surfaceDescription, out InputData inputData)
@@ -129,7 +130,7 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
     ApplyDecalToSurfaceData(unpacked.positionCS, surface, inputData);
 #endif
 
-    half4 color = UniversalFragmentPBR(inputData, surface);
+    half4 color = DCL_SimpleFragmentPBR(inputData, surface);
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
     return color;

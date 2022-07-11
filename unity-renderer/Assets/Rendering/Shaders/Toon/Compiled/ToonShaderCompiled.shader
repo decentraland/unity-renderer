@@ -386,9 +386,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -910,42 +907,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -957,18 +920,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -997,7 +955,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -1182,7 +1139,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -1294,10 +1250,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -1694,9 +1646,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -2218,42 +2167,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -2265,18 +2180,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -2305,7 +2215,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -2490,7 +2399,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -2602,10 +2510,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -2943,9 +2847,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -3421,42 +3322,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -3468,18 +3335,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -3508,7 +3370,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -3687,7 +3548,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -3789,10 +3649,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -4129,9 +3985,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -4607,42 +4460,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -4654,18 +4473,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -4694,7 +4508,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -4873,7 +4686,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -4975,10 +4787,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -5322,9 +5130,6 @@ Shader "DCL/Toon Shader"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 ObjectSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
@@ -5807,42 +5612,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -5854,18 +5625,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -5894,7 +5660,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -6074,7 +5839,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -6181,10 +5945,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -6523,9 +6283,6 @@ Shader "DCL/Toon Shader"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 ObjectSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
@@ -7008,42 +6765,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -7055,18 +6778,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -7095,7 +6813,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -7276,7 +6993,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -7380,10 +7096,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -7717,9 +7429,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -8195,42 +7904,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -8242,18 +7917,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -8282,7 +7952,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -8461,7 +8130,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -8563,10 +8231,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -8900,9 +8564,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -9378,42 +9039,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -9425,18 +9052,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -9465,7 +9087,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -9644,7 +9265,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -9746,10 +9366,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -10084,9 +9700,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -10562,42 +10175,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -10609,18 +10188,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -10649,7 +10223,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -10829,7 +10402,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -10932,10 +10504,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -11340,9 +10908,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -11864,42 +11429,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -11911,18 +11442,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -11951,7 +11477,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -12136,7 +11661,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -12248,10 +11772,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -12587,9 +12107,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -13065,42 +12582,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -13112,18 +12595,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -13152,7 +12630,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -13331,7 +12808,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -13433,10 +12909,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -13772,9 +13244,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -14250,42 +13719,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -14297,18 +13732,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -14337,7 +13767,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -14516,7 +13945,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -14618,10 +14046,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -14964,9 +14388,6 @@ Shader "DCL/Toon Shader"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 ObjectSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
@@ -15449,42 +14870,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -15496,18 +14883,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -15536,7 +14918,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -15716,7 +15097,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -15823,10 +15203,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -16165,9 +15541,6 @@ Shader "DCL/Toon Shader"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 ObjectSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
@@ -16650,42 +16023,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -16697,18 +16036,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -16737,7 +16071,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -16918,7 +16251,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -17022,10 +16354,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -17360,9 +16688,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -17838,42 +17163,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -17885,18 +17176,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -17925,7 +17211,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -18104,7 +17389,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -18206,10 +17490,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -18544,9 +17824,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -19022,42 +18299,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -19069,18 +18312,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -19109,7 +18347,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -19288,7 +18525,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -19390,10 +18626,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -19729,9 +18961,6 @@ Shader "DCL/Toon Shader"
              float3 ObjectSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-             float3 ViewSpacePosition;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
              float3 WorldSpacePosition;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
@@ -20207,42 +19436,8 @@ Shader "DCL/Toon Shader"
             Out = lerp(Base, Out, Opacity);
         }
         
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-        
-        void Unity_OneMinus_float(float In, out float Out)
-        {
-            Out = 1 - In;
-        }
-        
-        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
-        {
-            Out = lerp(A, B, T);
-        }
-        
-        struct Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float
-        {
-        float3 ViewSpacePosition;
-        };
-        
-        void SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(float4 Color_42779DA4, Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float IN, out float4 Color_1)
-        {
-        float4 _Property_92d920f66f871787b8efd9892e387049_Out_0 = Color_42779DA4;
-        float4 _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0;
-        float _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1;
-        Unity_Fog_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, IN.ViewSpacePosition);
-        float _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1;
-        Unity_OneMinus_float(_Fog_035ea79e58ad488fb87dad9f035bd378_Density_1, _OneMinus_5194723b380f67819cad19ed50e5789e_Out_1);
-        float4 _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        Unity_Lerp_float4(_Property_92d920f66f871787b8efd9892e387049_Out_0, _Fog_035ea79e58ad488fb87dad9f035bd378_Color_0, (_OneMinus_5194723b380f67819cad19ed50e5789e_Out_1.xxxx), _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3);
-        Color_1 = _Lerp_6976717f29b1d98daad50c3c8174d62c_Out_3;
-        }
-        
         struct Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float
         {
-        float3 ViewSpacePosition;
         };
         
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float(float4 Color_D4F585C6, float4 Color_546468F9, float4 Color_D7818A04, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float IN, out float4 FinalColor_1)
@@ -20254,18 +19449,13 @@ Shader "DCL/Toon Shader"
         Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
         float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-        Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9_float _Fog_18fab81a74b9d7858633e8fc73111a15;
-        _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
-        float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-        SG_Fog_db57d56e4661e4144b06df0b3edef8a9_float(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
-        FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
+        FinalColor_1 = _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
         }
         
         struct Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float
         {
         float3 WorldSpaceNormal;
         float3 WorldSpaceViewDirection;
-        float3 ViewSpacePosition;
         };
         
         void SG_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float(UnityTexture2D Texture2D_baf478d613fa46aba3b1e798cd2df509, float3 Vector3_92ae65efa60a451ab207a2eb41862cee, float4 Color_c4a4285bc4774f3c95fcfa8250b8134b, float4 Color_391524bed1df4af3a911ef893d3ab5de, float4 Color_11b3207b8e1044588465aba5ab556849, float4 Color_76a917fc3a0a4f89b4a0d4a179f46c23, float4 Color_fa80e099c59e4666882a46ed6201e823, float4 Color_237820822f3d4995a3e086472c4fcbad, float4 Color_55255cee1c54440099edb535c6ba3e59, float4 Color_3bcefb890a354d60ad77b96ee0bbbf93, float4 Color_6195d901ffa14b0faa245521fc896a38, float4 Color_378146519e0f4118bea32c4094581a0e, float Vector1_5dfdad6d1826436b9f3487961eaf3a3c, Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float IN, out float Alpha_1, out float4 Albedo_3, out float Alpha_Threshold_4, out float4 Emission_2)
@@ -20294,7 +19484,6 @@ Shader "DCL/Toon Shader"
         float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
         Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0, _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
         Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
-        _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
         float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
         SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb_float((float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)), _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c, _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
         float _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0 = Vector1_5dfdad6d1826436b9f3487961eaf3a3c;
@@ -20474,7 +19663,6 @@ Shader "DCL/Toon Shader"
             Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d_float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceNormal = IN.WorldSpaceNormal;
             _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
-            _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d.ViewSpacePosition = IN.ViewSpacePosition;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
             float4 _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3;
             float _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
@@ -20577,10 +19765,6 @@ Shader "DCL/Toon Shader"
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
         output.ObjectSpacePosition = TransformWorldToObject(input.positionWS);
-        #endif
-        
-        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-        output.ViewSpacePosition = TransformWorldToView(input.positionWS);
         #endif
         
         #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
