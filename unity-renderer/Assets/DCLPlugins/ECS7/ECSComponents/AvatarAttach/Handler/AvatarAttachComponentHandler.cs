@@ -4,7 +4,6 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -118,10 +117,11 @@ namespace DCL.ECSComponents
             }
         }
 
-        internal virtual bool IsInsideScene(Vector3 position)
+        internal virtual bool IsInsideScene(UnityEngine.Vector3 position)
         {
             bool result = isInsideScene;
-            Vector2Int coords = Utils.WorldToGridPosition(position);
+
+            Vector2Int coords = Helpers.Utils.WorldToGridPosition(position);
             
             if (currentCoords == null || currentCoords != coords)
                 result = scene.IsInsideSceneBoundaries(coords, position.y);

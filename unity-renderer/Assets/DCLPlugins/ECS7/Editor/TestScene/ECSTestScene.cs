@@ -55,7 +55,7 @@ public class ECSTestScene : MonoBehaviour
         model.Color.R = 0.5f;
         model.Color.G = 0.5f;
         model.Color.B = 1f;
-        componentWriter.PutComponent(sceneId,0,ComponentID.N_F_T_SHAPE,
+        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
             model );
     }
 

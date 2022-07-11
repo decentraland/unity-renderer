@@ -26,7 +26,7 @@ namespace DCL.ECSComponents.Test
             scene = Substitute.For<IParcelScene>();
 
             entityGo = new GameObject("AvatarAttachHandlerShould");
-            entityGo.transform.position = Vector3.zero;
+            entityGo.transform.position = UnityEngine.Vector3.zero;
             entityGo.transform.rotation = Quaternion.identity;
 
             entity = Substitute.For<IDCLEntity>();
@@ -78,7 +78,7 @@ namespace DCL.ECSComponents.Test
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId });
             var newModel = new PBAvatarAttach() { AvatarId = userId };
-            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
+            handler.IsInsideScene(Arg.Any<UnityEngine.Vector3>()).Returns(true);
 
             handler.OnComponentCreated(scene, entity);
 
@@ -105,13 +105,13 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             const string userId = "Temptation";
-            Vector3 targetPosition = new Vector3(70, -135, 0);
+            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(70, -135, 0);
             Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
 
             IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
-            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
+            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, UnityEngine.Vector3.one));
 
-            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
+            handler.IsInsideScene(Arg.Any<UnityEngine.Vector3>()).Returns(true);
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
             handler.OnComponentCreated(scene, entity);
             
@@ -126,11 +126,11 @@ namespace DCL.ECSComponents.Test
         public void SendEntityToMORDORwhenOutOfScene()
         {
             const string userId = "Temptation";
-            Vector3 targetPosition = new Vector3(70, -135, 0);
+            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(70, -135, 0);
             Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
 
             IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
-            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
+            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, UnityEngine.Vector3.one));
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
 
