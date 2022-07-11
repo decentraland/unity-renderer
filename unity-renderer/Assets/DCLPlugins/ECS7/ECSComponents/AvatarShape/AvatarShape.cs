@@ -311,12 +311,12 @@ namespace DCL.ECSComponents
 
         private void Update()
         {
-            if (player != null)
-            {
-                player.worldPosition = entity.gameObject.transform.position;
-                player.forwardDirection = entity.gameObject.transform.forward;
-                avatarReporterController.ReportAvatarPosition(player.worldPosition);
-            }
+            if (player == null)
+                return;
+
+            player.worldPosition = entity.gameObject.transform.position;
+            player.forwardDirection = entity.gameObject.transform.forward;
+            avatarReporterController.ReportAvatarPosition(player.worldPosition);
         }
 
         public void DisablePassport()

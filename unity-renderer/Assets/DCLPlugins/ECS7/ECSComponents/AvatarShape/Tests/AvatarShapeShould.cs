@@ -47,6 +47,7 @@ namespace DCL.ECSComponents.Tests
         protected void TearDown()
         {
             GameObject.Destroy(gameObject);
+            GameObject.Destroy(avatarShape.gameObject);
         }
         
         [Test]
