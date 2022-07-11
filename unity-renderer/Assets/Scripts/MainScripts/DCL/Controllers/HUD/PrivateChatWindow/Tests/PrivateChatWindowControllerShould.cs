@@ -154,7 +154,7 @@ public class PrivateChatWindowControllerShould
         WhenControllerInitializes(FRIEND_ID);
 
         var eventCalled = false;
-        controller.OnPressBack += () => eventCalled = true;
+        controller.OnBack += () => eventCalled = true;
 
         controller.SetVisibility(true);
         view.OnPressBack += Raise.Event<Action>();

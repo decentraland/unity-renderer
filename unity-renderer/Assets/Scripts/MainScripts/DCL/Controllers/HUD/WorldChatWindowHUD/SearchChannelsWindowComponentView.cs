@@ -14,9 +14,13 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadingContainer;
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal SearchBarComponentView searchBar;
+        [SerializeField] internal Button backButton;
+        [SerializeField] internal Button closeButton;
 
         private bool isLayoutDirty;
-        
+
+        public event Action OnBack;
+        public event Action OnClose;
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreChannels;
 
@@ -27,6 +31,8 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
+            backButton.onClick.AddListener(() => OnBack?.Invoke());
+            closeButton.onClick.AddListener(() => OnClose?.Invoke());
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
         }
 

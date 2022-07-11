@@ -6,6 +6,8 @@ namespace DCL.Chat.HUD
 {
     public interface ISearchChannelsWindowView
     {
+        event Action OnBack;
+        event Action OnClose;
         event Action<string> OnSearchUpdated;
         event Action OnRequestMoreChannels;
         RectTransform Transform { get; }

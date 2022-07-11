@@ -719,8 +719,12 @@ public class TaskbarHUDController : IHUD
 
         searchChannelsHud = controller;
 
-        // TODO: close event
-        // controller.OnClosed += OpenPublicChatOnPreviewMode;
+        controller.OnClosed += () =>
+        {
+            controller.SetVisibility(false);
+            OpenPublicChatOnPreviewMode();
+        };
+        controller.OnBack += GoBackFromChat;
     }
 
     public void OpenChannelSearch()

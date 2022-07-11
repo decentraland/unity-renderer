@@ -39,7 +39,7 @@ public class PrivateChatWindowController : IHUD
 
     internal string ConversationUserId { get; set; } = string.Empty;
 
-    public event Action OnPressBack;
+    public event Action OnBack;
     public event Action OnClosed;
     public event Action<bool> OnPreviewModeChanged;
 
@@ -280,7 +280,7 @@ public class PrivateChatWindowController : IHUD
         OnClosed?.Invoke();
     }
 
-    private void HandlePressBack() => OnPressBack?.Invoke();
+    private void HandlePressBack() => OnBack?.Invoke();
 
     private void Unfriend(string friendId)
     {

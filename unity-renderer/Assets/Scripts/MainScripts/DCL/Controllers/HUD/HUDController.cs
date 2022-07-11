@@ -258,8 +258,8 @@ public class HUDController : IHUDController
                     {
                         PrivateChatWindow.Initialize();
                         PrivateChatWindow.SetVisibility(false);
-                        PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
-                        PrivateChatWindow.OnPressBack += PrivateChatWindowHud_OnPressBack;
+                        PrivateChatWindow.OnBack -= PrivateChatWindowHud_OnPressBack;
+                        PrivateChatWindow.OnBack += PrivateChatWindowHud_OnPressBack;
 
                         taskbarHud?.AddPrivateChatWindow(PrivateChatWindow);
                     }
@@ -479,7 +479,7 @@ public class HUDController : IHUDController
         }
 
         if (PrivateChatWindow != null)
-            PrivateChatWindow.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+            PrivateChatWindow.OnBack -= PrivateChatWindowHud_OnPressBack;
 
         if (PublicChatWindowHud != null)
         {

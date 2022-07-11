@@ -14,6 +14,9 @@ namespace DCL.Chat.HUD
 
         public ISearchChannelsWindowView View => view;
 
+        public event Action OnClosed;
+        public event Action OnBack;
+
         public SearchChannelsWindowController(IChatController chatController)
         {
             this.chatController = chatController;
@@ -22,18 +25,12 @@ namespace DCL.Chat.HUD
         public void Initialize(ISearchChannelsWindowView view = null)
         {
             view ??= SearchChannelsWindowComponentView.Create();
-            view.OnSearchUpdated += SearchChannels;
-            view.OnRequestMoreChannels += LoadMoreChannels;
-            chatController.OnChannelUpdated += ShowChannel;
-
             this.view = view;
         }
 
         public void Dispose()
         {
-            chatController.OnChannelUpdated -= ShowChannel;
-            view.OnSearchUpdated -= SearchChannels;
-            view.OnRequestMoreChannels -= LoadMoreChannels;
+            ClearListeners();
             view.Dispose();
         }
 
@@ -47,10 +44,19 @@ namespace DCL.Chat.HUD
                 view.ClearSearchInput();
                 view.ClearAllEntries();
                 view.ShowLoading();
+                
+                ClearListeners();
+                view.OnSearchUpdated += SearchChannels;
+                view.OnRequestMoreChannels += LoadMoreChannels;
+                view.OnBack += HandleViewBacked;
+                view.OnClose += HandleViewClosed;
+                chatController.OnChannelUpdated += ShowChannel;
+                
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
             }
             else
             {
+                ClearListeners();
                 view.Hide();
             }
         }
@@ -83,5 +89,17 @@ namespace DCL.Chat.HUD
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
+
+        private void HandleViewClosed() => OnClosed?.Invoke();
+
+        private void HandleViewBacked() => OnBack?.Invoke();
+        
+        private void ClearListeners()
+        {
+            chatController.OnChannelUpdated -= ShowChannel;
+            view.OnSearchUpdated -= SearchChannels;
+            view.OnRequestMoreChannels -= LoadMoreChannels;
+            chatController.OnChannelUpdated -= ShowChannel;
+        }
     }
 }
