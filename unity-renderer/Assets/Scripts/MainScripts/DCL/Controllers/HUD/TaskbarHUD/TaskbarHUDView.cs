@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,12 +35,16 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
 
+    private HUDCameraCanvasHelper hudCameraCanvasHelper;
+
     internal static TaskbarHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TaskbarHUDView>();
         view.Initialize();
         return view;
     }
+
+    private void Awake() { hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     private void Initialize()
     {
@@ -77,6 +82,8 @@ public class TaskbarHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
+        hudCameraCanvasHelper?.Dispose();
+
         if (chatButton != null)
         {
             chatButton.OnToggleOn -= ToggleOn;

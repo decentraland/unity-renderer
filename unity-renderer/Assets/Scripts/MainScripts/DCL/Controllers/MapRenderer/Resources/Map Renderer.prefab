@@ -101,7 +101,7 @@ MonoBehaviour:
     type: 3}
   selectParcelHighlighImagePrefab: {fileID: 396097962848855216, guid: de10b7ec0d61e314f97d8c8b4b8875c4,
     type: 3}
-  cursorMapCoords: {x: 0, y: 0, z: 0}
+  cursorMapCoords: {x: 0, y: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
   highlightedParcelText: {fileID: 205258686199008947}
@@ -155,9 +155,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1009, y: -1007.2003}
+  m_AnchoredPosition: {x: 100, y: 100}
   m_SizeDelta: {x: 18, y: 18}
-  m_Pivot: {x: 0, y: 0.1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2502300851352410329
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -281,7 +281,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3620416516788639812}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -289,12 +289,12 @@ RectTransform:
   - {fileID: 3332934504654532118}
   - {fileID: 1340394175305253205}
   - {fileID: 5671061822795681277}
-  m_Father: {fileID: 2249193035634569280}
+  m_Father: {fileID: 8867674413542430443}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -60, y: -60}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &4797370901930942174
@@ -624,7 +624,6 @@ RectTransform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 8867674413542430443}
-  - {fileID: 90597117798403300}
   m_Father: {fileID: 6584822353056061070}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -833,7 +832,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewport: {fileID: 0}
   container: {fileID: 7164109601661372131}
-  chunksParent: {fileID: 8867674413542430455}
+  chunksParent: {fileID: 8867674413542430443}
   overlayLayerGameobject: {fileID: 3620416516788639812}
   mapChunkPrefab: {fileID: 7275614131455466647, guid: 1b2b2c80782c4a641bd3e9a0e6a94806,
     type: 3}
@@ -865,6 +864,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1025416073224921776}
+  - {fileID: 90597117798403300}
   m_Father: {fileID: 2249193035634569280}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -884,11 +884,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MapRendererAudioHandler
-      objectReference: {fileID: 0}
-    - target: {fileID: 2005274151773561966, guid: c9d078f34ad7cc146861524afff2f443,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3343481069366915239, guid: c9d078f34ad7cc146861524afff2f443,
         type: 3}
@@ -995,11 +990,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5059953668887379773, guid: c9d078f34ad7cc146861524afff2f443,
-        type: 3}
-      propertyPath: mapRenderer
-      value: 
-      objectReference: {fileID: 7929854281947399184}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9d078f34ad7cc146861524afff2f443, type: 3}
 --- !u!224 &8585665900420765760 stripped
