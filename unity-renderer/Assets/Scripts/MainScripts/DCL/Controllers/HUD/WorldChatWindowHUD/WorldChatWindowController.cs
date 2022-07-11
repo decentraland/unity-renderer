@@ -24,7 +24,7 @@ public class WorldChatWindowController : IHUD
     private int hiddenDMs;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    private bool isRequestingChannels;
+    private DateTime channelsRequestTimestamp;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
@@ -131,11 +131,11 @@ public class WorldChatWindowController : IHUD
 
     private void DisplayMoreJoinedChannels()
     {
-        if (isRequestingChannels) return;
+        if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
         
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
-        isRequestingChannels = true;
+        channelsRequestTimestamp = DateTime.UtcNow;
     }
 
     private void HandleFriendsControllerInitialization()
@@ -373,6 +373,13 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChannelUpdated(Channel channel)
     {
+        if (!channel.Joined)
+        {
+            view.RemovePublicChat(channel.ChannelId);
+            publicChannels.Remove(channel.ChannelId);
+            return;
+        }
+        
         var channelId = channel.ChannelId;
         var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount);
         
@@ -382,8 +389,6 @@ public class WorldChatWindowController : IHUD
             publicChannels[channelId] = model;
         
         view.SetPublicChat(model);
-        
-        isRequestingChannels = false;
     }
 
     private void HandleChannelJoined(Channel channel) => OpenPublicChat(channel.ChannelId);
