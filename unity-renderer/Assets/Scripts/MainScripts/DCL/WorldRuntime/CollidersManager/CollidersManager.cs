@@ -168,5 +168,41 @@ namespace DCL
                 }
             }
         }
+        
+        public void CreatePrimitivesColliders(GameObject meshGameObject, MeshFilter[] meshFilters, bool hasCollision, bool isPointerBlocker, IDCLEntity entity = null)
+        {
+            if (meshGameObject == null || (!hasCollision && !isPointerBlocker))
+                return;
+
+            if (entity != null)
+                entity.meshesInfo.colliders.Clear(); 
+            
+            int colliderLayer = PhysicsLayers.collisionsLayer;
+            
+            // Note: If it is pointer blocker, we set this layer, however, take into account that events can change this layer
+            if (isPointerBlocker && hasCollision)
+                colliderLayer = PhysicsLayers.onPointerEventWithCollisionsLayer;
+            else if (isPointerBlocker || !hasCollision)
+                colliderLayer = PhysicsLayers.onPointerEventLayer;
+
+            Collider collider;
+
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
+
+                if (collider is MeshCollider meshCollider)
+                    meshCollider.sharedMesh = meshFilters[i].sharedMesh;
+
+                if (entity != null)
+                    AddOrUpdateEntityCollider(entity, collider);
+
+                collider.gameObject.layer = colliderLayer;
+                collider.enabled = true;
+
+                if (entity != null)
+                    entity.meshesInfo.colliders.Add(collider);
+            }
+        }
     }
 }

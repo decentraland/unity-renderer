@@ -431,6 +431,10 @@ namespace DCL
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
+            // Note: This is for hot reload, since we can do a hot reload and the scene may be unloaded
+            if (!worldState.loadedScenes.ContainsKey(worldState.currentSceneId))
+                return;
+            
             // Raycast for pointer event components
             RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane,
                 pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);

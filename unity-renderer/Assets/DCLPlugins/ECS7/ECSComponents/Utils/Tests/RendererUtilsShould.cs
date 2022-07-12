@@ -38,9 +38,10 @@ public class RendererUtilsShould
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer.enabled = true;
         Renderer[] renderers = new Renderer[] { meshRenderer };
+        MeshFilter[] meshFilters = new MeshFilter[] { meshFilter };
         
         // Act
-        ECSComponentsUtils.UpdateRenderer(entity, gameObject, renderers, false, false, false);
+        ECSComponentsUtils.ConfigureRenderer(entity, meshFilters, gameObject, renderers, false, false, false);
 
         // Assert
         Assert.IsFalse(meshRenderer.enabled);

@@ -122,7 +122,7 @@ namespace DCLPlugins.ECSComponents
 
         bool IPointerInputEvent.ShouldShowHoverFeedback()  => showFeedback;
         
-        private void ConfigureColliders(long entityId, GameObject shapeGameObject) => pointerEventHandler.SetColliders(eventEntity);
+        private void ConfigureColliders(long entityId, GameObject shapeGameObject) => pointerEventHandler.AssignColliders(eventEntity);
         
         private bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
@@ -133,8 +133,8 @@ namespace DCLPlugins.ECSComponents
         
         private void Initializate(IDCLEntity entity)
         {
-            if(dataStore.shapesReady.ContainsKey(entity.entityId))
-                pointerEventHandler.SetColliders(entity);
+            if (dataStore.shapesReady.ContainsKey(entity.entityId))
+                ConfigureColliders(entity.entityId, entity.meshRootGameObject);
 
             dataStore.shapesReady.OnAdded += ConfigureColliders;
         }

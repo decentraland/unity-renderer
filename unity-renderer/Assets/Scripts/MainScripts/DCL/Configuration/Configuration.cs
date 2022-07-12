@@ -216,11 +216,17 @@ namespace DCL.Configuration
 
     public static class PhysicsLayers
     {
-        public static int defaultLayer = LayerMask.NameToLayer("Default");
-        public static int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
-        public static int characterLayer = LayerMask.NameToLayer("CharacterController");
-        public static int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
-        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
+        // Layers related to the components that can have physics. All models that have a withCollisions or isPointerBlocker will use them 
+        public static readonly int defaultLayer = LayerMask.NameToLayer("Default");
+        public static readonly int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
+        public static readonly int onPointerEventWithCollisionsLayer = LayerMask.NameToLayer("OnPointerEventWithCollisions");
+        // Note: when the old ecs get removed from the 
+        public static readonly int collisionsLayer = LayerMask.NameToLayer("Collisions");
+        
+        // Layers related to the Avatar
+        public static readonly int characterLayer = LayerMask.NameToLayer("CharacterController");
+        public static readonly int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
+        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer | 1 <<onPointerEventWithCollisionsLayer;
 
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
                                                                        & ~(1 << characterLayer)
@@ -228,6 +234,6 @@ namespace DCL.Configuration
 
         public static int friendsHUDPlayerMenu = LayerMask.NameToLayer("FriendsHUDPlayerMenu");
         public static int playerInfoCardMenu = LayerMask.NameToLayer("PlayerInfoCardMenu");
-        public static int avatarTriggerMask = LayerMask.GetMask("AvatarTriggerDetection");
+        public static readonly int avatarTriggerMask = LayerMask.GetMask("AvatarTriggerDetection");
     }
 }

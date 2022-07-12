@@ -34,8 +34,8 @@ TagManager:
   - ViewportCullingIgnored
   - FX
   - Skybox
-  - 
-  - 
+  - OnPointerEventWithCollisions
+  - Collisions
   - 
   - 
   - 

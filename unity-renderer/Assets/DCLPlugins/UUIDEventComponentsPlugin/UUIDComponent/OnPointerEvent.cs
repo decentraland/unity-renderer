@@ -21,11 +21,17 @@ namespace DCL.Components
         {
             eventColliders = new OnPointerEventColliders();
         }
+        
+        public void AssignColliders(IDCLEntity entity)
+        {
+            this.entity = entity;
+            eventColliders.Initialize(entity);
+        }
 
         public void SetColliders(IDCLEntity entity)
         {
             this.entity = entity;
-            eventColliders.Initialize(entity);
+            eventColliders.InitializeAndCreateColliders(entity);
         }
 
         public void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText)

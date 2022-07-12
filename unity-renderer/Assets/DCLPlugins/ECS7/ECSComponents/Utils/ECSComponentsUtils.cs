@@ -31,7 +31,7 @@ public static class ECSComponentsUtils
 
     public static void UpdateMeshInfoColliders(bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
-        int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.collisionsLayer;
         
         foreach (Collider collider in meshesInfo.colliders)
         {
@@ -65,19 +65,19 @@ public static class ECSComponentsUtils
         entity.meshesInfo = meshesInfo;
         
         // We update the rendering
-        UpdateRenderer(entity, gameObject, renderers, visible, withCollisions, isPointerBlocker);
+        ConfigureRenderer(entity, meshFilters, gameObject, renderers, visible, withCollisions, isPointerBlocker);
         
         return meshesInfo;
     }
     
-    public static void UpdateRenderer(IDCLEntity entity, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
+    public static void ConfigureRenderer(IDCLEntity entity, MeshFilter[] meshFilters, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
         // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
-        CollidersManager.i.ConfigureColliders(entity.meshRootGameObject,withCollisions, false, entity,CalculateCollidersLayer(withCollisions,isPointerBlocker));
+        CollidersManager.i.CreatePrimitivesColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity);
     }
-    
+
     public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
     {
         if (meshGameObject == null)
@@ -144,6 +144,8 @@ public static class ECSComponentsUtils
         {
             GameObject.Destroy(collider);
         }
+
+        meshesInfo.meshRootGameObject.layer = PhysicsLayers.defaultLayer;
         
         meshesInfo.CleanReferences();
     }
