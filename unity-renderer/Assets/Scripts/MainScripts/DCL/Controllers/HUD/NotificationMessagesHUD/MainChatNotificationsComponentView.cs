@@ -11,6 +11,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
 {
     [SerializeField] RectTransform chatEntriesContainer;
     [SerializeField] GameObject chatNotification;
+    [SerializeField] ScrollRect scrollRectangle;
 
     public ChatNotificationController controller;
 
@@ -21,6 +22,8 @@ public class MainChatNotificationsComponentView : BaseComponentView
     internal Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
     private Pool entryPool;
     public event Action<string> OnClickedNotification;
+    private bool isOverMessage = false;
+    private bool isOverPanel = false;
 
     public static MainChatNotificationsComponentView Create()
     {
@@ -56,26 +59,40 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            chatNotificationComponentView.SetIsPrivate(true);
-            chatNotificationComponentView.SetMessage(message.body);
-            chatNotificationComponentView.SetNotificationHeader(username);
-            chatNotificationComponentView.SetNotificationTargetId(message.sender);
-            if (profilePicture != null)
-                chatNotificationComponentView.SetImage(profilePicture);
+            PopulatePrivateNotification(chatNotificationComponentView, message, username, profilePicture);
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
-            chatNotificationComponentView.SetIsPrivate(false);
-            chatNotificationComponentView.SetMessage($"{username}: {message.body}");
-            chatNotificationComponentView.SetNotificationTargetId("#nearby");
-            chatNotificationComponentView.SetNotificationHeader("#nearby");
+            PopulatePublicNotification(chatNotificationComponentView, message, username);
         }
 
         chatNotificationComponentView.transform.SetParent(chatEntriesContainer, false);
         chatNotificationComponentView.RefreshControl();
         chatNotificationComponentView.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
         chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
+
+        if(!isOverMessage)
+            scrollRectangle.normalizedPosition = new Vector2(0, 0);
+
         return chatNotificationComponentView;
+    }
+
+    private void PopulatePrivateNotification(ChatNotificationMessageComponentView chatNotificationComponentView, ChatMessage message, string username = null, string profilePicture = null)
+    {
+        chatNotificationComponentView.SetIsPrivate(true);
+        chatNotificationComponentView.SetMessage(message.body);
+        chatNotificationComponentView.SetNotificationHeader(username);
+        chatNotificationComponentView.SetNotificationTargetId(message.sender);
+        if (profilePicture != null)
+            chatNotificationComponentView.SetImage(profilePicture);
+    }
+
+    private void PopulatePublicNotification(ChatNotificationMessageComponentView chatNotificationComponentView, ChatMessage message, string username = null)
+    {
+        chatNotificationComponentView.SetIsPrivate(false);
+        chatNotificationComponentView.SetMessage($"{username}: {message.body}");
+        chatNotificationComponentView.SetNotificationTargetId("#nearby");
+        chatNotificationComponentView.SetNotificationHeader("#nearby");
     }
 
     private void ClickedOnNotification(string targetId)

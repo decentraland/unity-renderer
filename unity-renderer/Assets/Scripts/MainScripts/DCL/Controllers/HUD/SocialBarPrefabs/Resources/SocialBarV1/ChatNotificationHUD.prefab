@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.6}
-  m_SizeDelta: {x: 3, y: -85.6983}
+  m_SizeDelta: {x: 3, y: 7.9}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &7808591501641491551
 MonoBehaviour:
@@ -170,6 +170,7 @@ MonoBehaviour:
   chatEntriesContainer: {fileID: 8953925092199699313}
   chatNotification: {fileID: 3972828621546220855, guid: ab663de9e24be4991b05482f91bfd53c,
     type: 3}
+  scrollRectangle: {fileID: 7808591501641491551}
 --- !u!1 &492256692246249359
 GameObject:
   m_ObjectHideFlags: 0
