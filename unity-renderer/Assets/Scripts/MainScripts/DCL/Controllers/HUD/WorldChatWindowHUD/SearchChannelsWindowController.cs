@@ -7,7 +7,7 @@ namespace DCL.Chat.HUD
 {
     public class SearchChannelsWindowController : IHUD
     {
-        private const int LOAD_TIMEOUT = 3;
+        private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
 
         private readonly IChatController chatController;
@@ -42,13 +42,6 @@ namespace DCL.Chat.HUD
         {
             if (visible)
             {
-                view.Show();
-                if (IsLoading()) return;
-                loadStartedTimestamp = DateTime.Now;
-                view.ClearSearchInput();
-                view.ClearAllEntries();
-                view.ShowLoading();
-
                 ClearListeners();
                 view.OnSearchUpdated += SearchChannels;
                 view.OnRequestMoreChannels += LoadMoreChannels;
@@ -56,6 +49,15 @@ namespace DCL.Chat.HUD
                 view.OnClose += HandleViewClosed;
                 view.OnJoinChannel += HandleJoinChannel;
                 chatController.OnChannelUpdated += ShowChannel;
+                
+                view.Show();
+                
+                if (IsLoading()) return;
+                
+                loadStartedTimestamp = DateTime.Now;
+                view.ClearSearchInput();
+                view.ClearAllEntries();
+                view.ShowLoading();
                 
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
                 
