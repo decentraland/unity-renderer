@@ -138,6 +138,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     public event Action<AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
+    
+    [SerializeField] internal UIHelper_ClickBlocker blocker;
 
     private void Awake()
     {
@@ -171,6 +173,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
+
+        blocker.OnClicked += BlockerClicked;
         
         ConfigureSectionSelector();
     }
@@ -505,6 +509,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         else if (!visible && isOpen)
         {
             collectionsDropdown.Close();
+            NotificationsController.i?.DismissAllNotifications("LinkedWearablesMissing");
             OnSetVisibility?.Invoke(visible);
         }
 
@@ -561,6 +566,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
+        
+        blocker.OnClicked -= BlockerClicked;
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -695,6 +702,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             destroyOnFinish = true,
             groupID = "LinkedWearablesMissing"
         });
-        //noItemCollectionWarning.Show();
     }
+
+    private void BlockerClicked()
+    {
+        NotificationsController.i?.DismissAllNotifications("LinkedWearablesMissing");
+    }
+        
 }
