@@ -6,6 +6,12 @@ namespace DCL.CRDT
     public class CRDTProtocol
     {
         internal readonly Dictionary<long, CRDTMessage> state = new Dictionary<long, CRDTMessage>();
+        private readonly IEnumerator<CRDTMessage> stateValues;
+
+        public CRDTProtocol()
+        {
+            stateValues = state.Values.GetEnumerator();
+        }
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
@@ -38,10 +44,19 @@ namespace DCL.CRDT
             return UpdateState(message.key, message.data, message.timestamp);
         }
 
-        public CRDTMessage GetSate(long key)
+        public CRDTMessage GetState(long key)
         {
             state.TryGetValue(key, out CRDTMessage storedMessage);
             return storedMessage;
+        }
+
+        public IEnumerator<CRDTMessage> GetState()
+        {
+            while (stateValues.MoveNext())
+            {
+                yield return stateValues.Current;
+            }
+            stateValues.Reset();
         }
 
         public CRDTMessage Create(int entityId, int componentId, byte[] data)

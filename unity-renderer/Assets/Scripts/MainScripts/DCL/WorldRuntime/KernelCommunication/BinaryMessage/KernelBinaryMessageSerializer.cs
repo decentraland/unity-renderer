@@ -17,6 +17,15 @@ namespace KernelCommunication
             CRDTSerializer.Serialize(binaryWriter, message);
         }
 
+        public static void Serialize(BinaryWriter binaryWriter, CRDTProtocol crdt)
+        {
+            var crdtStateIterator = crdt.GetState();
+            while (crdtStateIterator.MoveNext())
+            {
+                Serialize(binaryWriter, crdtStateIterator.Current);
+            }
+        }
+
         private static int GetCRDTMessageType(CRDTMessage message)
         {
             if (message.data == null)

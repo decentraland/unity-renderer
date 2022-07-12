@@ -12,7 +12,7 @@ namespace DCL.ECS7
         public ECS7Plugin()
         {
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.platform.updateEventHandler,
-                Environment.i.world.state, DataStore.i.rpcContext.context);
+                Environment.i.world.state, Environment.i.world.sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(DataStore.i.ecs7.componentsFactory, componentWriter);

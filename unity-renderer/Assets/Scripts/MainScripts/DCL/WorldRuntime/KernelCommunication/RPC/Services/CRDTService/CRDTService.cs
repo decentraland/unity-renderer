@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -8,6 +10,7 @@ using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
 using UnityEngine;
+using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
@@ -63,15 +66,37 @@ namespace RPC.Services
             return defaultResponse;
         }
 
+        [Obsolete("To be removed soon")]
         private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
         {
+            using var sceneIdIterator = context.crdtContext.scenesOutgoingCrdts.Keys.GetEnumerator();
+            using var memoryStream = new MemoryStream(5242880);
+            using var binaryWriter = new BinaryWriter(memoryStream);
+
             while (true)
             {
-                if (context.crdtContext.notifications.Count > 0)
+                if (sceneIdIterator.MoveNext())
                 {
-                    var (sceneId, payload) = context.crdtContext.notifications.Dequeue();
-                    reusableCrdtMessage.SceneId = sceneId;
-                    reusableCrdtMessage.Payload = ByteString.CopyFrom(payload);
+                    try
+                    {
+                        memoryStream.SetLength(0);
+
+                        string sceneId = sceneIdIterator.Current;
+                        CRDTProtocol sceneCrdtState = context.crdtContext.scenesOutgoingCrdts[sceneId];
+                        
+                        ((IEnumerator)sceneIdIterator).Reset();
+                        context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+
+                        KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
+                        reusableCrdtMessage.SceneId = sceneId;
+                        reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.GetBuffer());
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                        continue;
+                    }
+
                     yield return reusableCrdtMessage;
                 }
                 else

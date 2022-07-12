@@ -27,7 +27,7 @@ namespace DCL.CRDT
 
         public void Execute(CRDTMessage crdtMessage)
         {
-            CRDTMessage storedMessage = crdtProtocol.GetSate(crdtMessage.key);
+            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key);
             CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
 
             // messages are the same so state didn't change
