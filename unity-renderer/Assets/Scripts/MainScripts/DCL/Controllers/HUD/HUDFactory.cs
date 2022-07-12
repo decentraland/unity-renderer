@@ -36,9 +36,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i,
-                        UserProfileController.i),
+                    FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
@@ -57,31 +55,25 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController(DataStore.i,
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i));
+                    ChatController.i);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
-                    // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i));
+                    FriendsController.i,
+                    ChatController.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i),
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    ChatController.i,
+                    FriendsController.i,
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
@@ -91,8 +83,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
                 hudElement = new PublicChatChannelController(
-                    // TODO (lazy loading): Pass ChatController.i after kernel integration
-                    new LazyLoadingChatControllerMock(ChatController.i),
+                    ChatController.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
