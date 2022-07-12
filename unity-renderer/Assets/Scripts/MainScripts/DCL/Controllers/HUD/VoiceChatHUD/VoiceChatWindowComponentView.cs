@@ -52,12 +52,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
         muteAllToggle.OnSelectedChanged += OnMuteAllToggleChanged;
-    }
-
-    public override void Start()
-    {
-        base.Start();
-
+        
         ConfigureAllowUsersFilter();
     }
 
