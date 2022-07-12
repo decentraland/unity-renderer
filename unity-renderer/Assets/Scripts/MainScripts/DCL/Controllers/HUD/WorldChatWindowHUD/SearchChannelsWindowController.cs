@@ -13,7 +13,8 @@ namespace DCL.Chat.HUD
         private readonly IChatController chatController;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
-        private CancellationTokenSource getChannelTimeoutCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource loadingMoreCancellationToken = new CancellationTokenSource();
 
         public ISearchChannelsWindowView View => view;
 
@@ -58,9 +59,9 @@ namespace DCL.Chat.HUD
                 
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
                 
-                getChannelTimeoutCancellationToken.Cancel();
-                getChannelTimeoutCancellationToken = new CancellationTokenSource();
-                WaitTimeoutThenHideLoading(getChannelTimeoutCancellationToken.Token).Forget();
+                loadingCancellationToken.Cancel();
+                loadingCancellationToken = new CancellationTokenSource();
+                WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
             }
             else
             {
@@ -80,15 +81,16 @@ namespace DCL.Chat.HUD
             else
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0, searchText);
             
-            getChannelTimeoutCancellationToken.Cancel();
-            getChannelTimeoutCancellationToken = new CancellationTokenSource();
-            WaitTimeoutThenHideLoading(getChannelTimeoutCancellationToken.Token).Forget();
+            loadingCancellationToken.Cancel();
+            loadingCancellationToken = new CancellationTokenSource();
+            WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
 
         private void ShowChannel(Channel channel)
         {
             if (!view.IsActive) return;
             view.HideLoading();
+            view.HideLoadingMore();
             view.Set(channel);
         }
 
@@ -96,8 +98,11 @@ namespace DCL.Chat.HUD
         {
             if (IsLoading()) return;
             loadStartedTimestamp = DateTime.Now;
-            view.ShowLoading();
+            view.ShowLoadingMore();
             chatController.GetChannels(LOAD_PAGE_SIZE, view.EntryCount);
+            loadingMoreCancellationToken.Cancel();
+            loadingMoreCancellationToken = new CancellationTokenSource();
+            WaitTimeoutThenHideLoadingMore(loadingMoreCancellationToken.Token).Forget();
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
@@ -119,6 +124,12 @@ namespace DCL.Chat.HUD
         {
             await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
             view.HideLoading();
+        }
+        
+        private async UniTask WaitTimeoutThenHideLoadingMore(CancellationToken cancellationToken)
+        {
+            await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
+            view.HideLoadingMore();
         }
         
         private void HandleJoinChannel(string channelId)

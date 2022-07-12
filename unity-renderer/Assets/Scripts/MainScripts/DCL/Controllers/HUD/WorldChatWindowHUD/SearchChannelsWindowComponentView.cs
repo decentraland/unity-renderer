@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DCL.Chat.Channels;
 using DCL.Helpers;
 using TMPro;
@@ -16,9 +17,12 @@ namespace DCL.Chat.HUD
         [SerializeField] internal SearchBarComponentView searchBar;
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button closeButton;
+        [SerializeField] internal GameObject loadMoreContainer;
 
         private bool isLayoutDirty;
         private bool isSortDirty;
+        private Vector2 lastScrollPosition;
+        private Coroutine requireMoreEntriesRoutine;
 
         public event Action OnBack;
         public event Action OnClose;
@@ -37,6 +41,7 @@ namespace DCL.Chat.HUD
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
             channelList.SortingMethod = (a, b) => b.Model.memberCount.CompareTo(a.Model.memberCount);
+            scroll.onValueChanged.AddListener(LoadMoreEntries);
         }
 
         public override void Update()
@@ -96,6 +101,10 @@ namespace DCL.Chat.HUD
             channelList.gameObject.SetActive(true);
         }
 
+        public void ShowLoadingMore() => loadMoreContainer.SetActive(true);
+
+        public void HideLoadingMore() => loadMoreContainer.SetActive(false);
+
         public override void RefreshControl()
         {
             throw new NotImplementedException();
@@ -116,5 +125,24 @@ namespace DCL.Chat.HUD
         }
         
         private void HandleJoinRequest(PublicChatEntry entry) => OnJoinChannel?.Invoke(entry.Model.channelId);
+        
+        private void LoadMoreEntries(Vector2 scrollPosition)
+        {
+            if (scrollPosition.y < 0.005f && lastScrollPosition.y >= 0.005f)
+            {
+                if (requireMoreEntriesRoutine != null)
+                    StopCoroutine(requireMoreEntriesRoutine);
+
+                requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+            }
+
+            lastScrollPosition = scrollPosition;
+        }
+        
+        private IEnumerator WaitThenRequireMoreEntries()
+        {
+            yield return new WaitForSeconds(1f);
+            OnRequestMoreChannels?.Invoke();
+        }
     }
 }
