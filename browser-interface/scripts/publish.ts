@@ -32,7 +32,7 @@ async function main() {
 
   const { version, name } = await getPackageJson(DIST_ROOT)
 
-  if (process.env.CIRCLE_BRANCH == "master") {
+  if (process.env.CIRCLE_BRANCH == "dev") {
     await publish(["latest"], "public", DIST_ROOT)
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version)
@@ -59,7 +59,7 @@ async function triggerPipeline(packageName: string, packageVersion: string) {
 
   const body = new FormData()
   body.append("token", GITLAB_STATIC_PIPELINE_TOKEN)
-  body.append("ref", "master")
+  body.append("ref", "dev")
   body.append("variables[PACKAGE_NAME]", packageName)
   body.append("variables[PACKAGE_VERSION]", packageVersion)
   body.append("variables[REPO]", "unity-renderer")
