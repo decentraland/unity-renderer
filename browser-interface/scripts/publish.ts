@@ -32,7 +32,7 @@ async function main() {
 
   const { version, name } = await getPackageJson(DIST_ROOT)
 
-  if (process.env.CIRCLE_BRANCH == "master") {
+  if (process.env.CIRCLE_BRANCH == "dev") {
     await publish(["latest"], "public", DIST_ROOT)
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version)
