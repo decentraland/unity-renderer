@@ -5,8 +5,10 @@ using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.Interface;
+using DCL.ECSRuntime;
 using KernelCommunication;
+using RPC;
+using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 public class ComponentCrdtWriteSystem : IDisposable
@@ -19,11 +21,13 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly MemoryStream memoryStream;
     private readonly BinaryWriter binaryWriter;
     private readonly IWorldState worldState;
+    private readonly RPCContext rpcContext;
 
-    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState)
+    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState, RPCContext rpcContext)
     {
         this.updateEventHandler = updateEventHandler;
         this.worldState = worldState;
+        this.rpcContext = rpcContext;
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, ProcessMessages);
         memoryStream = new MemoryStream();
         binaryWriter = new BinaryWriter(memoryStream);
@@ -36,26 +40,37 @@ public class ComponentCrdtWriteSystem : IDisposable
         memoryStream.Dispose();
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data)
+    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, ECSComponentWriteType writeType)
     {
-        CRDTMessage message = new CRDTMessage()
+        if (!worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
         {
-            key = CRDTUtils.KeyFromIds((int)entityId, componentId),
-            timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            data = data
-        };
-
-        // dispatch to scene's crdt executor
-        DispatchToCRDTExecutor(sceneId, message);
-
-        // enqueue messages to send to kernel
-        if (!queuedMessages.TryGetValue(sceneId, out Queue<CRDTMessage> sceneMessages))
-        {
-            sceneMessages = new Queue<CRDTMessage>();
-            queuedMessages.Add(sceneId, sceneMessages);
+            return;
         }
 
-        sceneMessages.Enqueue(message);
+        CRDTMessage message = scene.crdtExecutor.crdtProtocol.Create((int)entityId, componentId, data);
+
+        // If SEND_TO_LOCAL we should execute the message,
+        // otherwise we just store it in the crdt protocol state
+        if (writeType.HasFlag(ECSComponentWriteType.SEND_TO_LOCAL))
+        {
+            scene.crdtExecutor.Execute(message);
+        }
+        else
+        {
+            scene.crdtExecutor.crdtProtocol.ProcessMessage(message);
+        }
+
+        // enqueue messages to send to kernel
+        if (writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
+        {
+            if (!queuedMessages.TryGetValue(sceneId, out Queue<CRDTMessage> sceneMessages))
+            {
+                sceneMessages = new Queue<CRDTMessage>();
+                queuedMessages.Add(sceneId, sceneMessages);
+            }
+
+            sceneMessages.Enqueue(message);
+        }
     }
 
     internal void ProcessMessages()
@@ -112,12 +127,19 @@ public class ComponentCrdtWriteSystem : IDisposable
 
         while (messages.Count > 0)
         {
-            KernelBinaryMessageSerializer.Serialize(binaryWriter, messages.Dequeue());
-
-            if (memoryStream.Length >= BINARY_MSG_MAX_SIZE && messages.Count > 0)
+            try
             {
-                DispatchBinaryMessage(sceneId, memoryStream);
-                return false;
+                KernelBinaryMessageSerializer.Serialize(binaryWriter, messages.Dequeue());
+
+                if (memoryStream.Length >= BINARY_MSG_MAX_SIZE && messages.Count > 0)
+                {
+                    DispatchBinaryMessage(sceneId, memoryStream);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
         }
 
@@ -127,15 +149,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 
     private void DispatchBinaryMessage(string sceneId, MemoryStream stream)
     {
-        WebInterface.SendBinaryMessage(sceneId, stream.ToArray());
+        rpcContext.crdtContext.notifications.Enqueue((sceneId, stream.ToArray()));
         stream.SetLength(0);
-    }
-
-    private void DispatchToCRDTExecutor(string sceneId, CRDTMessage message)
-    {
-        if (worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
-        {
-            scene.crdtExecutor.Execute(message);
-        }
     }
 }
