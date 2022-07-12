@@ -33,9 +33,15 @@ async function main() {
   const { version, name } = await getPackageJson(DIST_ROOT)
 
   if (process.env.CIRCLE_BRANCH == "dev") {
-    await publish(["latest"], "public", DIST_ROOT)
+    const tag = "next"
+    await publish([tag], "public", DIST_ROOT)
     // inform cdn-pipeline about new version
-    await triggerPipeline(name, version)
+    await triggerPipeline(name, version, tag)
+  } else if (process.env.CIRCLE_BRANCH == "main") {
+    const tag = "latest"
+    await publish([tag], "public", DIST_ROOT)
+    // inform cdn-pipeline about new version
+    await triggerPipeline(name, version, tag)
   }
 }
 
@@ -53,7 +59,7 @@ async function getPackageJson(workingDirectory: string) {
   return JSON.parse(readFileSync(workingDirectory + "/package.json", "utf8"))
 }
 
-async function triggerPipeline(packageName: string, packageVersion: string) {
+async function triggerPipeline(packageName: string, packageVersion: string, npmTag: string) {
   const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN!
   const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL!
 
@@ -62,6 +68,7 @@ async function triggerPipeline(packageName: string, packageVersion: string) {
   body.append("ref", "master")
   body.append("variables[PACKAGE_NAME]", packageName)
   body.append("variables[PACKAGE_VERSION]", packageVersion)
+  body.append("variables[PACKAGE_TAG]", npmTag)
   body.append("variables[REPO]", "unity-renderer")
   body.append("variables[REPO_OWNER]", "decentraland")
   body.append("variables[COMMIT]", process.env.CIRCLE_SHA1 as string)
