@@ -4,7 +4,6 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
-using DCL.Interface;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,7 +31,13 @@ namespace Tests
             scene.crdtExecutor.Returns(crdtExecutor);
             worldState.loadedScenes.Returns(new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } });
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(updateHandler, worldState);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(updateHandler, worldState, DataStore.i.rpcContext.context);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            DataStore.Clear();
         }
 
         [Test]
@@ -75,22 +80,14 @@ namespace Tests
             // write component
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
 
-            var subscriber = Substitute.For<IDummyEventSubscriber<string, byte[]>>();
-            WebInterface.OnBinaryMessageFromEngine += subscriber.React;
-
-            // get the expected binary message and compare with the one that is being sent to WebInterface
-            byte[] expectedBinaryMessage = SerializeCRDTMessage(message);
-            subscriber.WhenForAnyArgs(x => x.React(Arg.Any<string>(), Arg.Any<byte[]>()))
-                      .Do(info =>
-                      {
-                          byte[] bytes = (byte[])info.Args()[1];
-                          Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
-                      });
-
             // process message so it is serialized and sent to WebInterface
             crdtWriteSystem.ProcessMessages();
 
-            WebInterface.OnBinaryMessageFromEngine -= subscriber.React;
+            // get the expected binary message and compare with the one that is being sent to WebInterface
+            byte[] expectedBinaryMessage = SerializeCRDTMessage(message);
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
+            Assert.AreEqual(SCENE_ID, sceneId);
+            Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
         }
 
         [Test]
@@ -107,7 +104,7 @@ namespace Tests
             CRDTMessage message0 = new CRDTMessage()
             {
                 key = CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID_0),
-                timestamp =0,
+                timestamp = 0,
                 data = componentData0
             };
             CRDTMessage message1 = new CRDTMessage()
@@ -125,20 +122,14 @@ namespace Tests
             // get expected messages
             var expectedSerialized = SerializeCRDTMessage(new List<CRDTMessage>() { message0, message1 });
 
-            // subscriber
-            var subscriber = Substitute.For<IDummyEventSubscriber<string, byte[]>>();
-            subscriber.WhenForAnyArgs(x => x.React(Arg.Any<string>(), Arg.Any<byte[]>()))
-                      .Do(info =>
-                      {
-                          byte[] bytes = (byte[])info.Args()[1];
-                          Assert.IsTrue(AreEqual(expectedSerialized, bytes));
-                      });
-
-            // process messages (it should take 2 iterations)
-            WebInterface.OnBinaryMessageFromEngine += subscriber.React;
+            // process messages
             crdtWriteSystem.ProcessMessages();
+
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
+            Assert.AreEqual(SCENE_ID, sceneId);
+            Assert.IsTrue(AreEqual(expectedSerialized, bytes));
+
             Assert.AreEqual(0, crdtWriteSystem.queuedMessages.Count);
-            WebInterface.OnBinaryMessageFromEngine -= subscriber.React;
         }
 
         [Test]
@@ -178,32 +169,21 @@ namespace Tests
             var expectedSerialized0 = SerializeCRDTMessage(message0);
             var expectedSerialized1 = SerializeCRDTMessage(message1);
 
-            // subscribers
-            var subscriber0 = Substitute.For<IDummyEventSubscriber<string, byte[]>>();
-            subscriber0.WhenForAnyArgs(x => x.React(Arg.Any<string>(), Arg.Any<byte[]>()))
-                       .Do(info =>
-                       {
-                           byte[] bytes = (byte[])info.Args()[1];
-                           Assert.IsTrue(AreEqual(expectedSerialized0, bytes));
-                       });
-            var subscriber1 = Substitute.For<IDummyEventSubscriber<string, byte[]>>();
-            subscriber1.WhenForAnyArgs(x => x.React(Arg.Any<string>(), Arg.Any<byte[]>()))
-                       .Do(info =>
-                       {
-                           byte[] bytes = (byte[])info.Args()[1];
-                           Assert.IsTrue(AreEqual(expectedSerialized1, bytes));
-                       });
-
             // process messages (it should take 2 iterations)
-            WebInterface.OnBinaryMessageFromEngine += subscriber0.React;
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(1, crdtWriteSystem.queuedMessages[SCENE_ID].Count);
-            WebInterface.OnBinaryMessageFromEngine -= subscriber0.React;
 
-            WebInterface.OnBinaryMessageFromEngine += subscriber1.React;
+            var (sceneId0, bytes0) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
+            Assert.AreEqual(SCENE_ID, sceneId0);
+            Assert.IsTrue(AreEqual(expectedSerialized0, bytes0));
+
+            // 2nd iteration
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(0, crdtWriteSystem.queuedMessages.Count);
-            WebInterface.OnBinaryMessageFromEngine -= subscriber1.React;
+
+            var (sceneId1, bytes1) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
+            Assert.AreEqual(SCENE_ID, sceneId1);
+            Assert.IsTrue(AreEqual(expectedSerialized1, bytes1));
         }
 
         [Test]
@@ -230,23 +210,15 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
             Assert.AreEqual(1, crdtWriteSystem.queuedMessages.Count);
 
-            var subscriber = Substitute.For<IDummyEventSubscriber<string, byte[]>>();
-            WebInterface.OnBinaryMessageFromEngine += subscriber.React;
-
-            // get the expected binary message and compare with the one that is being sent to WebInterface
             byte[] expectedBinaryMessage = SerializeCRDTMessage(message);
-            subscriber.WhenForAnyArgs(x => x.React(Arg.Any<string>(), Arg.Any<byte[]>()))
-                      .Do(info =>
-                      {
-                          byte[] bytes = (byte[])info.Args()[1];
-                          Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
-                      });
 
             // process message so it is serialized and sent to WebInterface
             crdtWriteSystem.ProcessMessages();
             Assert.AreEqual(0, crdtWriteSystem.queuedMessages.Count);
 
-            WebInterface.OnBinaryMessageFromEngine -= subscriber.React;
+            var (sceneId, bytes) = DataStore.i.rpcContext.context.crdtContext.notifications.Dequeue();
+            Assert.AreEqual(SCENE_ID, sceneId);
+            Assert.IsTrue(AreEqual(expectedBinaryMessage, bytes));
         }
 
         static byte[] SerializeCRDTMessage(CRDTMessage message)
