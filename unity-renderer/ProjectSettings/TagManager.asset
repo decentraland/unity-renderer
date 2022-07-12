@@ -34,8 +34,8 @@ TagManager:
   - ViewportCullingIgnored
   - FX
   - Skybox
-  - 
-  - 
+  - EntityBoundsCheckCollider
+  - ParcelBoundsCheckCollider
   - 
   - 
   - 
