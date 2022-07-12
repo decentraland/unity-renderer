@@ -96,10 +96,10 @@ namespace DCL.Controllers
                 GameObject boundsCheckColliderGO = new GameObject(sceneData.id);
                 boundsCheckColliderGO.layer = PhysicsLayers.parcelBoundsCheckColliderLayer;
                 boundsCheckColliderGO.transform.SetParent(boundsCheckCollidersContainerGO.transform);
-                // TODO: Height limits?
-                boundsCheckColliderGO.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE, ParcelSettings.PARCEL_SIZE, ParcelSettings.PARCEL_SIZE);
+                // TODO: Height limits? For now we set a very high height for the colliders
+                boundsCheckColliderGO.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE, 30f, ParcelSettings.PARCEL_SIZE);
                 Vector2Int baseParcelDeltaPosition = sceneData.parcels[i] - sceneData.basePosition;
-                boundsCheckColliderGO.transform.localPosition = new Vector3(baseParcelDeltaPosition.x * ParcelSettings.PARCEL_SIZE, 0f, baseParcelDeltaPosition.y * ParcelSettings.PARCEL_SIZE) + Vector3.one * ParcelSettings.PARCEL_SIZE / 2;
+                boundsCheckColliderGO.transform.localPosition = new Vector3(baseParcelDeltaPosition.x * ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2, boundsCheckColliderGO.transform.localScale.y / 2, baseParcelDeltaPosition.y * ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2);
                 boundsCheckColliderGO.AddComponent<BoxCollider>().isTrigger = true;
                 boundsCheckColliderGO.AddComponent<Rigidbody>().isKinematic = true;
             }
