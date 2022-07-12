@@ -21,9 +21,9 @@ public static class ECSComponentsUtils
     
     public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
-        foreach (Renderer renderer in meshesInfo.renderers)
+        for (var i = 0; i < meshesInfo.renderers.Length; i++)
         {
-            renderer.enabled = isVisible;
+            UpdateRendererVisibility(meshesInfo.renderers[i], isVisible);
         }
 
         UpdateMeshInfoColliders(withCollisions, isPointerBlocker, meshesInfo);
@@ -78,24 +78,14 @@ public static class ECSComponentsUtils
         CollidersManager.i.CreatePrimitivesColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity);
     }
 
-    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
+    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool isVisible, Renderer[] meshRenderers = null)
     {
         if (meshGameObject == null)
             return;
-
-        Collider onPointerEventCollider;
-
+        
         for (var i = 0; i < meshRenderers.Length; i++)
         {
-            meshRenderers[i].enabled = shouldBeVisible;
-
-            if (meshRenderers[i].transform.childCount > 0)
-            {
-                onPointerEventCollider = meshRenderers[i].transform.GetChild(0).GetComponent<Collider>();
-
-                if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
-                    onPointerEventCollider.enabled = shouldBeVisible;
-            }
+            UpdateRendererVisibility(meshRenderers[i], isVisible);
         }
     }
     
@@ -146,29 +136,16 @@ public static class ECSComponentsUtils
         }
 
         meshesInfo.meshRootGameObject.layer = PhysicsLayers.defaultLayer;
-        
         meshesInfo.CleanReferences();
     }
     
-    public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)
+    private static void UpdateRendererVisibility(Renderer renderer, bool isVisible)
     {
-        // We can't enable this layer changer logic until we redeploy all the builder and street scenes with the corrected 'withCollision' default in true...
-        /* if (!model.withCollisions && model.isPointerBlocker)
-            return PhysicsLayers.onPointerEventLayer;
-        else */
-        if (withCollisions && !isPointerBlocker)
-            return PhysicsLayers.characterOnlyLayer;
-
-        return PhysicsLayers.defaultLayer;
-    }
-    
-    private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
-    {
-        if (isPointerBlocker)
-            return PhysicsLayers.onPointerEventLayer;
-        else if (withCollisions)
-            return PhysicsLayers.characterOnlyLayer;
-
-        return PhysicsLayers.defaultLayer;
+        renderer.enabled = isVisible;
+        if (renderer.gameObject.layer == PhysicsLayers.onPointerEventLayer)
+        {
+            var collider = renderer.gameObject.GetComponent<Collider>();
+            collider.enabled = isVisible;
+        }
     }
 }
