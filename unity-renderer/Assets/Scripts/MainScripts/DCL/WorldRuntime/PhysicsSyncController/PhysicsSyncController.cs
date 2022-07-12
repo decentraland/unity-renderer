@@ -10,8 +10,8 @@ namespace DCL
 
         public PhysicsSyncController()
         {
-            Physics.autoSimulation = false;
-            Physics.autoSyncTransforms = false;
+            Physics.autoSimulation = true;
+            Physics.autoSyncTransforms = true;
 
             PoolManager.i.OnGet -= MarkDirty;
             PoolManager.i.OnGet += MarkDirty;
@@ -24,7 +24,7 @@ namespace DCL
 
         public void Sync()
         {
-            if (!isDirty)
+            if ((Physics.autoSimulation && Physics.autoSyncTransforms) || !isDirty)
                 return;
 
             isDirty = false;
