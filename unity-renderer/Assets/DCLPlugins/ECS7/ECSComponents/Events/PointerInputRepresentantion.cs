@@ -16,6 +16,7 @@ namespace DCLPlugins.ECSComponents
 {
     public class PointerInputRepresentantion : IPointerInputEvent
     {
+        private static int lamportTimestamp = 0;
         private IDCLEntity eventEntity;
         private IParcelScene scene;
         private readonly OnPointerEventHandler pointerEventHandler;
@@ -93,37 +94,38 @@ namespace DCLPlugins.ECSComponents
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = eventEntity.entityId;
-
-                object payload = null;
-                int componentId = ComponentID.ON_POINTER_UP_RESULT;
+                int componentId;
                 
                 // We have to differentiate between OnPointerDown and OnPointerUp
                 switch (type)
                 {
                     case PointerInputEventType.DOWN:
                         componentId = ComponentID.ON_POINTER_DOWN_RESULT;
-                        payload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
+                        
+                        PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
+                        downPayload.Timestamp = GetLamportTimestamp();
+                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
+                            downPayload);
                         break;
                     case PointerInputEventType.UP:
                         componentId = ComponentID.ON_POINTER_UP_RESULT;
-                        payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
+                        
+                        PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
+                        payload.Timestamp = GetLamportTimestamp();
+                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
+                            payload);
                         break;
                 }
-                
-                // We set the result
-                componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
-                    payload);
             }
         }
         
-        PointerInputEventType IPointerInputEvent.GetEventType() {  return type; }
+        PointerInputEventType IPointerInputEvent.GetEventType() => type; 
         
-        WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton()
-        {
-            return (WebInterface.ACTION_BUTTON) button;
-        }
+        WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton() => (WebInterface.ACTION_BUTTON) button;
 
         bool IPointerInputEvent.ShouldShowHoverFeedback()  => showFeedback;
+        
+        private void ConfigureColliders(long entityId, GameObject shapeGameObject) => pointerEventHandler.SetColliders(eventEntity);
         
         private bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
@@ -132,17 +134,19 @@ namespace DCLPlugins.ECSComponents
                    (button == (int)WebInterface.ACTION_BUTTON.ANY || buttonId == (WebInterface.ACTION_BUTTON)button);
         }
         
-        private void ConfigureColliders(long entityId, GameObject shapeGameObject)
-        {
-            pointerEventHandler.SetColliders(eventEntity);
-        }
-        
         private void Initializate(IDCLEntity entity)
         {
             if(dataStore.shapesReady.ContainsKey(entity.entityId))
                 pointerEventHandler.SetColliders(entity);
 
             dataStore.shapesReady.OnAdded += ConfigureColliders;
+        }
+
+        private int GetLamportTimestamp()
+        {
+            int result = lamportTimestamp;
+            lamportTimestamp++;
+            return result;
         }
     }
 }

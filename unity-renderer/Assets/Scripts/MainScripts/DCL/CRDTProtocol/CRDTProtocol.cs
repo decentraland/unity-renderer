@@ -44,6 +44,21 @@ namespace DCL.CRDT
             return storedMessage;
         }
 
+        public CRDTMessage Create(int entityId, int componentId, byte[] data)
+        {
+            var result = new CRDTMessage()
+            {
+                key = CRDTUtils.KeyFromIds(entityId, componentId),
+                data = data,
+                timestamp = 0
+            };
+            if (state.TryGetValue(result.key, out CRDTMessage storedMessage))
+            {
+                result.timestamp = storedMessage.timestamp + 1;
+            }
+            return result;
+        }
+
         private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
         {
             long stateTimeStamp = 0;
