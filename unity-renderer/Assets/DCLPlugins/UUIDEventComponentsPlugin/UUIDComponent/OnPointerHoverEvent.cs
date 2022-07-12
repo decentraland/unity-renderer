@@ -44,7 +44,7 @@ namespace DCL.Components
 
         void SetEventColliders(IDCLEntity entity)
         {
-            pointerEventColliders.InitializeAndCreateColliders(entity);
+            pointerEventColliders.DeprecatedInitialize(entity);
         }
 
         public bool IsVisible()

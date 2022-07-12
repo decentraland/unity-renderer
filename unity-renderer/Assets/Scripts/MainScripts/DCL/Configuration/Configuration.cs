@@ -220,7 +220,8 @@ namespace DCL.Configuration
         public static readonly int defaultLayer = LayerMask.NameToLayer("Default");
         public static readonly int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
         public static readonly int onPointerEventWithCollisionsLayer = LayerMask.NameToLayer("OnPointerEventWithCollisions");
-        // Note: when the old ecs get removed from the 
+        
+        // Note: when the old ecs get removed from the project, we should remove this layer and start using "Default"
         public static readonly int collisionsLayer = LayerMask.NameToLayer("Collisions");
         
         // Layers related to the Avatar

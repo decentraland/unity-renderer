@@ -169,39 +169,35 @@ namespace DCL
             }
         }
         
-        public void CreatePrimitivesColliders(GameObject meshGameObject, MeshFilter[] meshFilters, bool hasCollision, bool isPointerBlocker, IDCLEntity entity = null)
+        public void CreatePrimitivesColliders(GameObject meshGameObject, MeshFilter[] meshFilters, bool hasCollision, bool isPointerBlocker, IDCLEntity entity)
         {
             if (meshGameObject == null || (!hasCollision && !isPointerBlocker))
                 return;
-
-            if (entity != null)
-                entity.meshesInfo.colliders.Clear(); 
             
+            entity.meshesInfo.colliders.Clear(); 
+            
+            // This is de default layer, however, take into account that OnPointerEvents can change this layer
             int colliderLayer = PhysicsLayers.collisionsLayer;
             
-            // Note: If it is pointer blocker, we set this layer, however, take into account that events can change this layer
+            // Note: If it is pointer blocker, we set this layer,
             if (isPointerBlocker && hasCollision)
                 colliderLayer = PhysicsLayers.onPointerEventWithCollisionsLayer;
             else if (isPointerBlocker || !hasCollision)
                 colliderLayer = PhysicsLayers.onPointerEventLayer;
 
-            Collider collider;
+            MeshCollider collider;
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
                 collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
-
-                if (collider is MeshCollider meshCollider)
-                    meshCollider.sharedMesh = meshFilters[i].sharedMesh;
-
-                if (entity != null)
-                    AddOrUpdateEntityCollider(entity, collider);
+                collider.sharedMesh = meshFilters[i].sharedMesh;
+                
+                AddOrUpdateEntityCollider(entity, collider);
 
                 collider.gameObject.layer = colliderLayer;
                 collider.enabled = true;
-
-                if (entity != null)
-                    entity.meshesInfo.colliders.Add(collider);
+                
+                entity.meshesInfo.colliders.Add(collider);
             }
         }
     }

@@ -64,7 +64,7 @@ public static class ECSComponentsUtils
         // We should remove this relation in the future, the entity shouldn't know about the mesh
         entity.meshesInfo = meshesInfo;
         
-        // We update the rendering
+        // We configure the rendering
         ConfigureRenderer(entity, meshFilters, gameObject, renderers, visible, withCollisions, isPointerBlocker);
         
         return meshesInfo;

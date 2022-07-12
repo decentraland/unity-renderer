@@ -44,7 +44,8 @@ namespace DCL.Components
             }
         }
 
-        public void InitializeAndCreateColliders(IDCLEntity entity)
+        // This function should be deleted when delete de old ECS
+        public void DeprecatedInitialize(IDCLEntity entity)
         {
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
 
@@ -115,11 +116,11 @@ namespace DCL.Components
             return meshCollider;
         }
         
-        private MeshCollider SimpleCreateCollider(Renderer renderer, GameObject go)
+        private MeshCollider CreateCollider(Renderer renderer, GameObject gameObject)
         {
-            go.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
+            gameObject.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
 
-            var meshCollider = go.AddComponent<MeshCollider>();
+            var meshCollider = gameObject.AddComponent<MeshCollider>();
             meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
             meshCollider.enabled = renderer.enabled;
 
@@ -196,7 +197,7 @@ namespace DCL.Components
             {
                 if (renderers[i] == null)
                     continue;
-                colliders[i] = SimpleCreateCollider(renderers[i], renderers[i].gameObject);
+                colliders[i] = CreateCollider(renderers[i], renderers[i].gameObject);
                 AddColliderName(colliders[i]);
             }
         }
