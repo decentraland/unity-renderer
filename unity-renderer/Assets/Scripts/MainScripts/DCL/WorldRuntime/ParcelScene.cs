@@ -83,10 +83,25 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             parcels.Clear();
+            
+            GameObject boundsCheckCollidersContainerGO = new GameObject("BoundsCheckCollidersContainer");
+            boundsCheckCollidersContainerGO.transform.SetParent(gameObject.transform);
+            boundsCheckCollidersContainerGO.transform.localPosition = Vector3.zero;
 
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
                 parcels.Add(sceneData.parcels[i]);
+                
+                // Create parcel bounds trigger collider
+                GameObject boundsCheckColliderGO = new GameObject(sceneData.id);
+                boundsCheckColliderGO.layer = PhysicsLayers.parcelBoundsCheckColliderLayer;
+                boundsCheckColliderGO.transform.SetParent(boundsCheckCollidersContainerGO.transform);
+                // TODO: Height limits?
+                boundsCheckColliderGO.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE, ParcelSettings.PARCEL_SIZE, ParcelSettings.PARCEL_SIZE);
+                Vector2Int baseParcelDeltaPosition = sceneData.parcels[i] - sceneData.basePosition;
+                boundsCheckColliderGO.transform.localPosition = new Vector3(baseParcelDeltaPosition.x * ParcelSettings.PARCEL_SIZE, 0f, baseParcelDeltaPosition.y * ParcelSettings.PARCEL_SIZE) + Vector3.one * ParcelSettings.PARCEL_SIZE / 2;
+                boundsCheckColliderGO.AddComponent<BoxCollider>().isTrigger = true;
+                boundsCheckColliderGO.AddComponent<Rigidbody>().isKinematic = true;
             }
 
             gameObject.transform.position =

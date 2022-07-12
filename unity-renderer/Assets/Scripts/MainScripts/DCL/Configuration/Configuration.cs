@@ -229,7 +229,7 @@ namespace DCL.Configuration
         public static int friendsHUDPlayerMenu = LayerMask.NameToLayer("FriendsHUDPlayerMenu");
         public static int playerInfoCardMenu = LayerMask.NameToLayer("PlayerInfoCardMenu");
         public static int avatarTriggerMask = LayerMask.GetMask("AvatarTriggerDetection");
-        public static int entityBoundsCheckColliderLayer = LayerMask.GetMask("EntityBoundsCheckCollider");
-        public static int parcelBoundsCheckColliderLayer = LayerMask.GetMask("ParcelBoundsCheckCollider");
+        public static int entityBoundsCheckColliderLayer = LayerMask.NameToLayer("EntityBoundsCheckCollider");
+        public static int parcelBoundsCheckColliderLayer = LayerMask.NameToLayer("ParcelBoundsCheckCollider");
     }
 }
