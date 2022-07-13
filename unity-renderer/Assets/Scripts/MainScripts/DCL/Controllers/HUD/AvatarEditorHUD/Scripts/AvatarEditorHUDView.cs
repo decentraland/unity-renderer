@@ -128,6 +128,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal TMP_Text sectionTitle;
     [SerializeField] internal GameObject avatarSection;
     [SerializeField] internal GameObject emotesSection;
+    
+    [Header("Click BLocker")]
+    [SerializeField] internal UIHelper_ClickBlocker blocker;
+    
+    [Header("Notifications")]
+    [SerializeField] internal Notification noItemInCollectionWarning;
 
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
@@ -138,8 +144,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     public event Action<AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
-    
-    [SerializeField] internal UIHelper_ClickBlocker blocker;
 
     private void Awake()
     {
@@ -508,8 +512,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         }
         else if (!visible && isOpen)
         {
-            collectionsDropdown.Close();
-            NotificationsController.i?.DismissAllNotifications("LinkedWearablesMissing");
+            collectionsDropdown.Close();        
+            noItemInCollectionWarning.Dismiss(true);
             OnSetVisibility?.Invoke(visible);
         }
 
@@ -694,7 +698,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     }
     public void ShowNoItemOfWearableCollectionWarning()
     {
-        NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+        noItemInCollectionWarning.Dismiss(true);
+        noItemInCollectionWarning.Show(new DCL.NotificationModel.Model
         {
             message = "You don't own any item from this collection.",
             type = DCL.NotificationModel.Type.DONT_OWN_LINKED_WEARABLE_COLLECTION,
@@ -706,7 +711,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
     private void BlockerClicked()
     {
-        NotificationsController.i?.DismissAllNotifications("LinkedWearablesMissing");
+        noItemInCollectionWarning.Dismiss(false);
     }
         
 }
