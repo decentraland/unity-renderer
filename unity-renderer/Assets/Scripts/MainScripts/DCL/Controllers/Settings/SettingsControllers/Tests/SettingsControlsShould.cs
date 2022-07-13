@@ -249,21 +249,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeFPSLimitCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<FPSLimitControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "fpsCap stored value mismatch");
-        }
-
-        [Test]
         public void ChangeMouseSensivityCorrectly()
         {
             // Arrange

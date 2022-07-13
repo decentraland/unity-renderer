@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -16,6 +17,10 @@ namespace DCL.ECSComponents
             result.Normal = UnityVectorToPBVector(hit.normal);
             result.Origin = UnityVectorToPBVector(ray.origin);
             result.Point = UnityVectorToPBVector(hit.point);
+            
+            // This null check will disappear when we introduce optionals to the proto
+            if(meshName == null)
+                meshName = String.Empty;
             result.MeshName = meshName;
             return result;
         }
@@ -29,6 +34,10 @@ namespace DCL.ECSComponents
             result.Normal = UnityVectorToPBVector(hit.normal);
             result.Origin = UnityVectorToPBVector(ray.origin);
             result.Point = UnityVectorToPBVector(hit.point);
+            
+            // This null check will disappear when we introduce optionals to the proto
+            if(meshName == null)
+                meshName = String.Empty;
             result.MeshName = meshName;
             return result;
         }

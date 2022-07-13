@@ -3,6 +3,7 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using RPC;
 using UnityEngine;
 
 namespace DCL
@@ -82,6 +83,7 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
+            RPCServerBuilder.BuildDefaultServer();
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
