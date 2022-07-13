@@ -36,7 +36,9 @@ namespace DCL.Chat.HUD
         {
             ClearListeners();
             view.Dispose();
+            loadingCancellationToken.Cancel();
             loadingCancellationToken.Dispose();
+            loadingMoreCancellationToken.Cancel();
             loadingMoreCancellationToken.Dispose();
         }
 
@@ -126,12 +128,14 @@ namespace DCL.Chat.HUD
         private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)
         {
             await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
             view.HideLoading();
         }
         
         private async UniTask WaitTimeoutThenHideLoadingMore(CancellationToken cancellationToken)
         {
             await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
             view.HideLoadingMore();
         }
         
