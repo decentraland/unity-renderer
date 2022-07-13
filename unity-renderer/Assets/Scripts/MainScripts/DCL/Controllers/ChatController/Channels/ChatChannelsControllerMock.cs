@@ -20,37 +20,43 @@ namespace DCL.Chat.Channels
             add => controller.OnAddMessage += value;
             remove => controller.OnAddMessage -= value;
         }
+
         public event Action OnInitialized
         {
             add => controller.OnInitialized += value;
             remove => controller.OnInitialized -= value;
         }
-        
+
         public event Action<Channel> OnChannelUpdated
         {
             add => controller.OnChannelUpdated += value;
             remove => controller.OnChannelUpdated -= value;
         }
+
         public event Action<Channel> OnChannelJoined
         {
             add => controller.OnChannelJoined += value;
             remove => controller.OnChannelJoined -= value;
         }
+
         public event Action<string, string> OnJoinChannelError
         {
             add => controller.OnJoinChannelError += value;
             remove => controller.OnJoinChannelError -= value;
         }
+
         public event Action<string> OnChannelLeft
         {
             add => controller.OnChannelLeft += value;
             remove => controller.OnChannelLeft -= value;
         }
+
         public event Action<string, string> OnChannelLeaveError
         {
             add => controller.OnChannelLeaveError += value;
             remove => controller.OnChannelLeaveError -= value;
         }
+
         public event Action<string, string> OnMuteChannelError
         {
             add => controller.OnMuteChannelError += value;
@@ -79,6 +85,31 @@ namespace DCL.Chat.Channels
             controller.Send(message);
 
             SimulateDelayedResponseFor_JoinChatMessage(message.body).Forget();
+            SimulateDelayedResponseFor_LeaveChatMessage(message.body).Forget();
+        }
+
+        private async UniTask SimulateDelayedResponseFor_LeaveChatMessage(string body)
+        {
+            await UniTask.Delay(Random.Range(500, 1000));
+
+            if (body.ToLower().StartsWith("/leave "))
+            {
+                var channelId = body.Split(' ')[1].Replace("#", "");
+
+                if (body.Contains("error"))
+                    controller.JoinChannelError(JsonUtility.ToJson(new LeaveChannelErrorPayload
+                        {message = "Leave channel error", channelId = channelId}));
+                else
+                    controller.UpdateChannelInfo(JsonUtility.ToJson(new ChannelInfoPayload
+                    {
+                        description = "",
+                        joined = false,
+                        muted = false,
+                        channelId = channelId,
+                        memberCount = 0,
+                        unseenMessages = 0
+                    }));
+            }
         }
 
         private async UniTask SimulateDelayedResponseFor_JoinChatMessage(string chatMessage)
@@ -128,7 +159,8 @@ namespace DCL.Chat.Channels
         public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
             controller.GetPrivateMessages(userId, limit, fromTimestamp);
 
-        public void JoinOrCreateChannel(string channelId) => SimulateDelayedResponseFor_JoinOrCreateChannel(channelId).Forget();
+        public void JoinOrCreateChannel(string channelId) =>
+            SimulateDelayedResponseFor_JoinOrCreateChannel(channelId).Forget();
 
         private async UniTask SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
         {
@@ -142,7 +174,7 @@ namespace DCL.Chat.Channels
         private async UniTask LeaveFakeChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));
-            
+
             var msg = new ChannelInfoPayload
             {
                 joined = false,
@@ -160,16 +192,19 @@ namespace DCL.Chat.Channels
         private async UniTask GetFakeMessages(string channelId, int limit, long fromTimestamp)
         {
             await UniTask.Delay(Random.Range(40, 1000));
-            
+
             var characters = new[]
-                {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+            {
+                'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                '9'
+            };
 
             for (var i = 0; i < Random.Range(0, limit); i++)
             {
                 var userId = "fake-user";
                 for (var x = 0; x < 4; x++)
                     userId += characters[Random.Range(0, characters.Length)];
-            
+
                 var profile = new UserProfileModel
                 {
                     userId = userId,
@@ -183,7 +218,7 @@ namespace DCL.Chat.Channels
                     recipient = channelId,
                     timestamp = (ulong) (fromTimestamp + i)
                 };
-            
+
                 controller.AddMessageToChatWindow(JsonUtility.ToJson(msg));
             }
         }
@@ -193,12 +228,15 @@ namespace DCL.Chat.Channels
         private async UniTask GetJoinedFakeChannels(int limit, int skip)
         {
             await UniTask.Delay(Random.Range(40, 1000));
-            
+
             var characters = new[]
-                {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+            {
+                'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                '9'
+            };
 
             var max = Mathf.Min(TotalJoinedChannelCount, skip + limit);
-            
+
             for (var i = skip; i < max; i++)
             {
                 var channelId = "";
@@ -218,10 +256,13 @@ namespace DCL.Chat.Channels
         private async UniTask GetFakeChannels(int limit, int skip, string name)
         {
             await UniTask.Delay(Random.Range(40, 1000));
-            
+
             var characters = new[]
-                {'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-            
+            {
+                'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                '9'
+            };
+
             for (var i = skip; i < skip + limit; i++)
             {
                 var channelId = name;
@@ -254,7 +295,7 @@ namespace DCL.Chat.Channels
         private async UniTask MuteFakeChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));
-            
+
             var msg = new ChannelInfoPayload
             {
                 joined = true,
