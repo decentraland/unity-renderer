@@ -701,11 +701,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         noItemInCollectionWarning.Dismiss(true);
         noItemInCollectionWarning.Show(new DCL.NotificationModel.Model
         {
-            message = "You don't own any item from this collection.",
-            type = DCL.NotificationModel.Type.DONT_OWN_LINKED_WEARABLE_COLLECTION,
             timer = 5f,
-            destroyOnFinish = true,
-            groupID = "LinkedWearablesMissing"
         });
     }
 
