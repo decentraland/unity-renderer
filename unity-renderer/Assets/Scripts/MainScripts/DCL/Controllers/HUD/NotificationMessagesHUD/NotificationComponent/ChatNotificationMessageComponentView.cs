@@ -37,6 +37,18 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         RefreshControl();
     }
 
+    public override void Show(bool instant = false)
+    {
+        showHideAnimator.animSpeedFactor = 0.7f;
+        base.Show(instant);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        showHideAnimator.animSpeedFactor = 0.05f;
+        base.Hide(instant);
+    }
+
     public override void RefreshControl()
     {
         if (model == null)

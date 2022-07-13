@@ -18,10 +18,13 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
 
-    internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
-    internal Queue<ChatNotificationMessageComponentView> creationQueue2 = new Queue<ChatNotificationMessageComponentView>();
-    private Pool entryPool;
     public event Action<string> OnClickedNotification;
+    public bool areOtherPanelsOpen = false;
+
+    internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
+    internal Queue<ChatNotificationMessageComponentView> notificationQueue = new Queue<ChatNotificationMessageComponentView>();
+
+    private Pool entryPool;
     private bool isOverMessage = false;
     private bool isOverPanel = false;
 
@@ -33,6 +36,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
     public void Initialize(ChatNotificationController chatController)
     {
         controller = chatController;
+        onFocused += FocusedOnPanel;
     }
 
     public void Show()
@@ -42,7 +46,24 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
     public void Hide()
     {
+        SetScrollToEnd();
         gameObject.SetActive(false);
+    }
+
+    public void ShowNotifications()
+    {
+        for (int i = 0; i < notificationQueue.Count; i++)
+        {
+            notificationQueue.ToArray()[i].Show();
+        }
+    }
+
+    public void HideNotifications()
+    {
+        for (int i = 0; i < notificationQueue.Count; i++)
+        {
+            notificationQueue.ToArray()[i].Hide();
+        }
     }
 
     public ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
@@ -53,9 +74,11 @@ public class MainChatNotificationsComponentView : BaseComponentView
         
         ChatNotificationMessageComponentView chatNotificationComponentView = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
         poolableQueue.Enqueue(newNotification);
-        creationQueue2.Enqueue(chatNotificationComponentView);
+        notificationQueue.Enqueue(chatNotificationComponentView);
 
         chatNotificationComponentView.OnClickedNotification -= ClickedOnNotification;
+        chatNotificationComponentView.onFocused -= FocusedOnNotification;
+        chatNotificationComponentView.showHideAnimator.OnWillFinishHide -= _ => SetScrollToEnd();
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
@@ -70,11 +93,20 @@ public class MainChatNotificationsComponentView : BaseComponentView
         chatNotificationComponentView.RefreshControl();
         chatNotificationComponentView.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
         chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
+        chatNotificationComponentView.onFocused += FocusedOnNotification;
+        chatNotificationComponentView.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
 
-        if(!isOverMessage)
-            scrollRectangle.normalizedPosition = new Vector2(0, 0);
+        if (!isOverMessage)
+            SetScrollToEnd();
+
+        controller.ResetFadeout(!isOverMessage && !isOverPanel);
 
         return chatNotificationComponentView;
+    }
+
+    private void SetScrollToEnd()
+    {
+        scrollRectangle.normalizedPosition = new Vector2(0, 0);
     }
 
     private void PopulatePrivateNotification(ChatNotificationMessageComponentView chatNotificationComponentView, ChatMessage message, string username = null, string profilePicture = null)
@@ -100,12 +132,24 @@ public class MainChatNotificationsComponentView : BaseComponentView
         OnClickedNotification?.Invoke(targetId);
     }
 
+    private void FocusedOnNotification(bool isInFocus)
+    {
+        isOverMessage = isInFocus;
+        controller.ResetFadeout(!isOverMessage && !isOverPanel);
+    }
+
+    private void FocusedOnPanel(bool isInFocus)
+    {
+        isOverPanel = isInFocus;
+        controller.ResetFadeout(!isOverMessage && !isOverPanel);
+    }
+
     private void CheckNotificationCountAndRelease()
     {
         if (poolableQueue.Count >= MAX_NOTIFICATION_ENTRIES)
         {
             entryPool.Release(poolableQueue.Dequeue());
-            creationQueue2.Dequeue();
+            notificationQueue.Dequeue();
         }
     }
 

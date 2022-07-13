@@ -37,7 +37,7 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
     [Test]
     public void CreateWithoutEntries()
     {
-        Assert.IsTrue(view.creationQueue2.Count == 0);
+        Assert.IsTrue(view.notificationQueue.Count == 0);
         Assert.IsTrue(view.poolableQueue.Count == 0);
     }
 
@@ -47,9 +47,9 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
         ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "0x00000ba", "This is a test message");
         view.AddNewChatNotification(newMessage, "UsernameTest");
 
-        Assert.IsTrue(view.creationQueue2.Count == 1);
+        Assert.IsTrue(view.notificationQueue.Count == 1);
         Assert.IsTrue(view.poolableQueue.Count == 1);
-        ChatNotificationMessageComponentView addedNotification = view.creationQueue2.Dequeue();
+        ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
 
         Assert.AreEqual(newMessage.body, addedNotification.model.message);
         Assert.AreEqual(newMessage.body, addedNotification.notificationMessage.text);
@@ -64,9 +64,9 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
         ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", "This is a test message");
         view.AddNewChatNotification(newMessage, "UsernameTest");
 
-        Assert.IsTrue(view.creationQueue2.Count == 1);
+        Assert.IsTrue(view.notificationQueue.Count == 1);
         Assert.IsTrue(view.poolableQueue.Count == 1);
-        ChatNotificationMessageComponentView addedNotification = view.creationQueue2.Dequeue();
+        ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
 
         Assert.AreEqual($"UsernameTest: {newMessage.body}", addedNotification.model.message);
         Assert.AreEqual($"UsernameTest: {newMessage.body}", addedNotification.notificationMessage.text);
