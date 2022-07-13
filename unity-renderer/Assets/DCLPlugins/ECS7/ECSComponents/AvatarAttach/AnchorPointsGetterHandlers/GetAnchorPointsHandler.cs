@@ -2,7 +2,7 @@ using System;
 
 namespace DCL.Components
 {
-    internal class GetAnchorPointsHandler : IDisposable
+    public class GetAnchorPointsHandler : IDisposable
     {
         public event Action OnAvatarRemoved;
 

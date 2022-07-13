@@ -40,7 +40,7 @@ typedef void (*callback_vsss)(const char *a, const char *b, const char *c);
 typedef void (*callback_vv3)(struct Vector3);
 typedef void (*callback_vx)(int32_t,int32_t,struct Vector3,struct Vector3);
 typedef void (*callback_query)(struct QueryPayload);
-typedef void (*callback_viis)(int32_t a, int32_t b, const char *c);
+typedef void (*callback_vii)(int32_t a, int32_t b);
 
 typedef int32_t (*callback_I)();
 typedef float (*callback_F)();

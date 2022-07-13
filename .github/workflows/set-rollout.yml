@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: hmarr/debug-action@v2
       - name: set-rollout-zone
+        if: ${{ github.event.deployment.payload.packageTag == 'next' }}
         uses: decentraland/set-rollout-action@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -28,6 +29,7 @@ jobs:
           percentage: 100
 
       - name: set-rollout-today
+        if: ${{ github.event.deployment.payload.packageTag == 'next' }}
         uses: decentraland/set-rollout-action@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,6 +47,7 @@ jobs:
           percentage: 100
 
       - name: set-rollout-org
+        if: ${{ github.event.deployment.payload.packageTag == 'latest' }}
         uses: decentraland/set-rollout-action@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,4 +62,4 @@ jobs:
           # Rollout information
           deploymentDomain: "play.decentraland.org"
           deploymentName: "@dcl/unity-renderer"
-          percentage: 0
+          percentage: 100

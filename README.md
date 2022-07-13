@@ -7,6 +7,7 @@ This repository contains the Unity part of [decentraland explorer](https://play.
 1. [Contribution Guidelines](.github/CONTRIBUTING.md)
 2. [Coding Guidelines](docs/style-guidelines.md)
 3. [Code Review Standards](docs/code-review-standards.md)
+4. [Architecture](https://github.com/decentraland/architecture)
 
 # Running the Explorer
 
@@ -119,13 +120,19 @@ If you get the "missing xcrun" error when trying to run the `make watch` command
 
 If the local WebGL build always fails with the error `System.ComponentModel.Win32Exception (2): No such file or directory...` it's because you are missing Python needed version (MacOS 12.3 onwards removes the previously-integrated python installation). So to solve this issue just install this [Python version](https://www.python.org/downloads/release/python-3105/).
 
+## Frameworks and Tools
+
+- [UI Components Library](docs/ui-components-library.md)
+- [Performance Meter Tool](docs/performance-meter-tool.md)
+- [Bots Tool](docs/bots-tool.md)
+
 ## Technical how-to guides and explainers
 
 - [How to use Unity visual tests](docs/how-to-use-unity-visual-tests.md)
 - [How to profile a local Unity build remotely](docs/how-to-profile-a-local-unity-build-remotely.md)
 - [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
-For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
-- [How to create new components for ECS7] (docs/ecs7-component-creation.md)
+  - For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
+- [How to create new components for ECS7](docs/ecs7-component-creation.md)
 
 ## Setup CircleCI
 
