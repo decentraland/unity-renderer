@@ -57,6 +57,13 @@ namespace DCL.Chat.HUD
             isSortDirty = false;
         }
 
+        public override void Dispose()
+        {
+            if (!gameObject) return;
+            if (!this) return;
+            base.Dispose();
+        }
+
         public static SearchChannelsWindowComponentView Create()
         {
             return Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD"));
