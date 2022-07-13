@@ -16,6 +16,7 @@ namespace DCLPlugins.ECSComponents
 {
     public class PointerInputRepresentantion : IPointerInputEvent
     {
+        private static int lamportTimestamp = 0;
         private IDCLEntity eventEntity;
         private IParcelScene scene;
         private readonly OnPointerEventHandler pointerEventHandler;
@@ -102,6 +103,7 @@ namespace DCLPlugins.ECSComponents
                         componentId = ComponentID.ON_POINTER_DOWN_RESULT;
                         
                         PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
+                        downPayload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
                             downPayload);
                         break;
@@ -109,6 +111,7 @@ namespace DCLPlugins.ECSComponents
                         componentId = ComponentID.ON_POINTER_UP_RESULT;
                         
                         PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
+                        payload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
                             payload);
                         break;
@@ -137,6 +140,13 @@ namespace DCLPlugins.ECSComponents
                 ConfigureColliders(entity.entityId, entity.meshRootGameObject);
 
             dataStore.shapesReady.OnAdded += ConfigureColliders;
+        }
+
+        private int GetLamportTimestamp()
+        {
+            int result = lamportTimestamp;
+            lamportTimestamp++;
+            return result;
         }
     }
 }
