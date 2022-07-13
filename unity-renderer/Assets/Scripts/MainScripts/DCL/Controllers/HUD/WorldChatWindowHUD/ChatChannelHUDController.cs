@@ -13,7 +13,7 @@ namespace DCL.Chat.HUD
     {
         private const int INITIAL_PAGE_SIZE = 30;
         private const int SHOW_MORE_PAGE_SIZE = 10;
-        private const float REQUEST_PRIVATE_MESSAGES_TIME_OUT = 5;
+        private const float REQUEST_MESSAGES_TIME_OUT = 2;
 
         public IChatChannelWindowView View { get; private set; }
 
@@ -24,11 +24,10 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly List<string> directMessagesAlreadyRequested = new List<string>();
-        private readonly Dictionary<string, long> lastTimestampsRequested = new Dictionary<string, long>();
         private ChatHUDController chatHudController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
-        private bool isRequestingOldMessages;
         private float lastRequestTime;
 
         internal string ChannelId { get; set; } = string.Empty;
@@ -88,6 +87,7 @@ namespace DCL.Chat.HUD
             if (string.IsNullOrEmpty(channelId) || channelId == ChannelId) return;
 
             ChannelId = channelId;
+            lastRequestTime = 0;
 
             var channel = chatController.GetAllocatedChannel(channelId);
             View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
@@ -158,6 +158,9 @@ namespace DCL.Chat.HUD
                 View.OnRequireMoreMessages -= RequestOldConversations;
                 View.Dispose();
             }
+            
+            hideLoadingCancellationToken.Dispose();
+            deactivatePreviewCancellationToken.Dispose();
         }
 
         private async UniTaskVoid ReloadAllChats()
@@ -217,7 +220,6 @@ namespace DCL.Chat.HUD
                 MarkUserChatMessagesAsRead();
             }
 
-            isRequestingOldMessages = false;
             View?.SetLoadingMessagesActive(false);
             View?.SetOldMessagesLoadingActive(false);
         }
@@ -305,41 +307,43 @@ namespace DCL.Chat.HUD
             View?.SetLoadingMessagesActive(true);
             chatController.GetChannelMessages(channelId, limit, fromTimestamp);
             directMessagesAlreadyRequested.Add(channelId);
-            WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
+            hideLoadingCancellationToken.Cancel();
+            hideLoadingCancellationToken = new CancellationTokenSource();
+            WaitForRequestTimeOutThenHideLoadingFeedback(hideLoadingCancellationToken.Token).Forget();
         }
 
         private void RequestOldConversations()
         {
-            if (isRequestingOldMessages) return;
-
-            isRequestingOldMessages = true;
-            View?.SetOldMessagesLoadingActive(true);
-
-            if (!lastTimestampsRequested.ContainsKey(ChannelId))
-                lastTimestampsRequested.Add(ChannelId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            if (IsLoadingMessages()) return;
 
             var allocatedMessages = chatController.GetAllocatedEntriesByChannel(ChannelId);
 
             if (allocatedMessages.Count <= 0) return;
             var minTimestamp = (long) allocatedMessages.Min(x => x.timestamp);
-
-            if (minTimestamp >= lastTimestampsRequested[ChannelId]) return;
+            
+            View?.SetOldMessagesLoadingActive(true);
+            lastRequestTime = Time.realtimeSinceStartup;
             
             chatController.GetChannelMessages(
                 ChannelId,
                 SHOW_MORE_PAGE_SIZE,
                 minTimestamp);
 
-            lastTimestampsRequested[ChannelId] = minTimestamp;
-            WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
+            hideLoadingCancellationToken.Cancel();
+            hideLoadingCancellationToken = new CancellationTokenSource();
+            WaitForRequestTimeOutThenHideLoadingFeedback(hideLoadingCancellationToken.Token).Forget();
         }
 
-        private async UniTaskVoid WaitForRequestTimeOutThenHideLoadingFeedback()
+        private bool IsLoadingMessages() =>
+            Time.realtimeSinceStartup - lastRequestTime < REQUEST_MESSAGES_TIME_OUT;
+
+        private async UniTaskVoid WaitForRequestTimeOutThenHideLoadingFeedback(CancellationToken cancellationToken)
         {
             lastRequestTime = Time.realtimeSinceStartup;
 
             await UniTask.WaitUntil(() =>
-                Time.realtimeSinceStartup - lastRequestTime > REQUEST_PRIVATE_MESSAGES_TIME_OUT);
+                Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT, cancellationToken: cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
 
             View?.SetLoadingMessagesActive(false);
             View?.SetOldMessagesLoadingActive(false);
