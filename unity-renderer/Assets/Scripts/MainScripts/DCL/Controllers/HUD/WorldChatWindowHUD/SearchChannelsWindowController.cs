@@ -36,6 +36,8 @@ namespace DCL.Chat.HUD
         {
             ClearListeners();
             view.Dispose();
+            loadingCancellationToken.Dispose();
+            loadingMoreCancellationToken.Dispose();
         }
 
         public void SetVisibility(bool visible)
