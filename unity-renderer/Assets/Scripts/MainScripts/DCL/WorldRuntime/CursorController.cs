@@ -15,7 +15,6 @@ public class CursorController : MonoBehaviour
     public CanvasGroup canvasGroup;
 
     private Coroutine alphaRoutine;
-
     private bool isHidden;
 
     void Awake()
