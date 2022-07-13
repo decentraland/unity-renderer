@@ -116,7 +116,7 @@ public class WebSocketCommunication : IKernelCommunication
 
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        string url = StartServer(startPort, endPort, withSSL);
+        string url = StartServer(startPort, endPort, withSSL, DataStore.i.debugConfig.logWs);
 
         Debug.Log("WebSocket Server URL: " + url);
 

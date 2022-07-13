@@ -50,5 +50,6 @@ namespace DCL
         /// do Debug.Break() and log when processing each message
         /// </summary>
         public bool msgStepByStep = false;
+        public bool logWs;
     }
 }

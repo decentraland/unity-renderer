@@ -85,6 +85,7 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
+
             RPCServerBuilder.BuildDefaultServer();
         }
 
