@@ -38,7 +38,9 @@ namespace DCL
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
+        
         protected bool isDisposed;
+        public float resizingFactor => texturePromise?.asset.resizingFactor ?? 1;
 
         public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
@@ -121,8 +123,12 @@ namespace DCL
                     {
                         texture.wrapMode = unityWrap;
                         texture.filterMode = unitySamplingMode;
-                        texture.Compress(false);
+                        
+                        if (DataStore.i.textureConfig.runCompression.Get())
+                            texture.Compress(false);
+                        
                         texture.Apply(unitySamplingMode != FilterMode.Point, true);
+                        texture = TextureHelpers.ClampSize(texture, DataStore.i.textureConfig.generalMaxSize.Get());
                     }
                 }
                 else

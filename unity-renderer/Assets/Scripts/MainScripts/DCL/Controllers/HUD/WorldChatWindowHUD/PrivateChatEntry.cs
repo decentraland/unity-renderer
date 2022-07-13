@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
 {
-    [SerializeField] private Button openChatButton;
-    [SerializeField] private PrivateChatEntryModel model;
-    [SerializeField] private TMP_Text userNameLabel;
-    [SerializeField] private TMP_Text lastMessageLabel;
-    [SerializeField] private ImageComponentView picture;
-    [SerializeField] private UnreadNotificationBadge unreadNotifications;
-    [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject blockedContainer;
-    [SerializeField] private GameObject onlineStatusContainer;
-    [SerializeField] private GameObject offlineStatusContainer;
-    [SerializeField] private RectTransform userContextMenuPositionReference;
+    [SerializeField] internal Button openChatButton;
+    [SerializeField] internal PrivateChatEntryModel model;
+    [SerializeField] internal TMP_Text userNameLabel;
+    [SerializeField] internal TMP_Text lastMessageLabel;
+    [SerializeField] internal ImageComponentView picture;
+    [SerializeField] internal UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal Button optionsButton;
+    [SerializeField] internal GameObject blockedContainer;
+    [SerializeField] internal GameObject onlineStatusContainer;
+    [SerializeField] internal GameObject offlineStatusContainer;
+    [SerializeField] internal RectTransform userContextMenuPositionReference;
 
     private UserContextMenu userContextMenu;
     private IChatController chatController;
@@ -24,6 +24,11 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
     public PrivateChatEntryModel Model => model;
 
     public event Action<PrivateChatEntry> OnOpenChat;
+    
+    public static PrivateChatEntry Create()
+    {
+        return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
+    }
 
     public override void Awake()
     {
@@ -57,10 +62,14 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
     {
         userNameLabel.text = model.userName;
         lastMessageLabel.text = model.lastMessage;
-        picture.Configure(new ImageComponentModel {uri = model.pictureUrl});
         SetBlockStatus(model.isBlocked);
         SetPresence(model.isOnline);
         unreadNotifications.Initialize(chatController, model.userId, lastReadMessagesService);
+        
+        if (model.imageFetchingEnabled)
+            EnableAvatarSnapshotFetching();
+        else
+            DisableAvatarSnapshotFetching();
     }
     
     private void HandleUserBlocked(string userId, bool blocked)
@@ -88,6 +97,26 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
         menuTransform.pivot = userContextMenuPositionReference.pivot;
         menuTransform.position = userContextMenuPositionReference.position;
     }
+    
+    public bool IsVisible(RectTransform container)
+    {
+        if (!gameObject.activeSelf) return false;
+        return ((RectTransform) transform).CountCornersVisibleFrom(container) > 0;
+    }
+
+    public void EnableAvatarSnapshotFetching()
+    {
+        if (model.imageFetchingEnabled) return;
+        picture.Configure(new ImageComponentModel {uri = model.pictureUrl});
+        model.imageFetchingEnabled = true;
+    }
+
+    public void DisableAvatarSnapshotFetching()
+    {
+        if (!model.imageFetchingEnabled) return;
+        picture.SetImage((string) null);
+        model.imageFetchingEnabled = false;
+    }
 
     [Serializable]
     public class PrivateChatEntryModel : BaseComponentModel
@@ -99,6 +128,7 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
         public string pictureUrl;
         public bool isBlocked;
         public bool isOnline;
+        public bool imageFetchingEnabled;
 
         public PrivateChatEntryModel(string userId, string userName, string lastMessage, string pictureUrl, bool isBlocked, bool isOnline,
             ulong lastMessageTimestamp)

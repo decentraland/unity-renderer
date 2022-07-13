@@ -29,4 +29,31 @@ public class FriendEntryModel
         avatarSnapshotObserver = model.avatarSnapshotObserver;
         blocked = model.blocked;
     }
+
+    public virtual void CopyFrom(FriendsController.UserStatus status)
+    {
+        userId = status.userId;
+        this.status = status.presence;
+        coords = status.position;
+
+        if (status.realm != null)
+        {
+            realm = $"{status.realm.serverName.ToUpperFirst()} {status.realm.layer.ToUpperFirst()}";
+            realmServerName = status.realm.serverName;
+            realmLayerName = status.realm.layer;
+        }
+        else
+        {
+            realm = string.Empty;
+            realmServerName = string.Empty;
+            realmLayerName = string.Empty;
+        }
+    }
+
+    public virtual void CopyFrom(UserProfile userProfile)
+    {
+        userId = userProfile.userId;
+        userName = userProfile.userName;
+        avatarSnapshotObserver = userProfile.snapshotObserver;
+    }
 }

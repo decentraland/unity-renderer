@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using DCL.Interface;
 using DCL.Models;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine.SceneManagement;
 
 namespace DCL
@@ -111,11 +112,10 @@ namespace DCL
                 {
                     LinkedListNode<QueuedSceneMessage> node = null;
                     message.isUnreliable = true;
-                    message.unreliableMessageKey = message.tag;
 
-                    if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
+                    if (unreliableMessages.ContainsKey(message.tag))
                     {
-                        node = unreliableMessages[message.unreliableMessageKey];
+                        node = unreliableMessages[message.tag];
 
                         if (node.List != null)
                         {
@@ -128,7 +128,7 @@ namespace DCL
                     if (enqueued)
                     {
                         node = AddReliableMessage(message);
-                        unreliableMessages[message.unreliableMessageKey] = node;
+                        unreliableMessages[message.tag] = node;
                     }
                 }
 
@@ -184,6 +184,8 @@ namespace DCL
 
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
+                PerformanceAnalytics.MessagesProcessedTracker.Track();
+                
                 RemoveFirstReliableMessage();
 
                 if (m.isUnreliable)
@@ -308,7 +310,7 @@ namespace DCL
         {
             lock (unreliableMessages)
             {
-                unreliableMessages.Remove(message.unreliableMessageKey);
+                unreliableMessages.Remove(message.tag);
             }
         }
 

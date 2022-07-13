@@ -14,17 +14,20 @@ using SocialFeaturesAnalytics;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
-public class PlayerAvatarController : MonoBehaviour
+public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
+    private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+    private const string INSIDE_CAMERA = "INSIDE_CAMERA";
 
-    private AvatarSystem.Avatar avatar;
+    private IAvatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
     public GameObject avatarContainer;
+    public GameObject armatureContainer;
+    public Transform loadingAvatarContainer;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
-    public AvatarVisibility avatarVisibility;
     [SerializeField] private GameObject loadingParticlesPrefab;
     public float cameraDistanceToDeactivate = 1.0f;
 
@@ -45,16 +48,10 @@ public class PlayerAvatarController : MonoBehaviour
             DCL.Environment.i.platform.serviceProviders.analytics,
             new UserProfileWebInterfaceBridge());
 
-        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-        avatar = new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            animator,
-            new Visibility(),
-            new NoLODs(),
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+            avatar = GetAvatarWithHologram();
+        else
+            avatar = GetStandardAvatar();
 
         if ( UserProfileController.i != null )
         {
@@ -71,6 +68,38 @@ public class PlayerAvatarController : MonoBehaviour
 #endif
 
         mainCamera = Camera.main;
+    }
+
+    private AvatarSystem.Avatar GetStandardAvatar()
+    {
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        return new AvatarSystem.Avatar(
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            noLod,
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+    }
+
+    private AvatarWithHologram GetAvatarWithHologram()
+    {
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
+        return new AvatarSystem.AvatarWithHologram(
+            baseAvatar,
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            noLod,
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
     }
 
     private void OnBaseWereablesFail()
@@ -105,8 +134,10 @@ public class PlayerAvatarController : MonoBehaviour
                 return;
         }
 
-        bool shouldBeVisible = Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate;
-        avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
+        if (Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate)
+            avatar.RemoveVisibilityConstrain(INSIDE_CAMERA);
+        else
+            avatar.AddVisibilityConstrain(INSIDE_CAMERA);
     }
 
     public void SetAvatarVisibility(bool isVisible)
@@ -213,6 +244,9 @@ public class PlayerAvatarController : MonoBehaviour
         CommonScriptableObjects.rendererState.RemoveLock(this);
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
+
+    public void ApplyHideModifier() { avatar.AddVisibilityConstrain(IN_HIDE_AREA); }
+    public void RemoveHideModifier() { avatar.RemoveVisibilityConstrain(IN_HIDE_AREA); }
 
     private void OnDisable()
     {

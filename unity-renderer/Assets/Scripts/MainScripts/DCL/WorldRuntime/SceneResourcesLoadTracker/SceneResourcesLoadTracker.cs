@@ -1,4 +1,5 @@
 using System;
+using DCL.ECSRuntime;
 using UnityEngine;
 
 namespace DCL.WorldRuntime
@@ -11,15 +12,25 @@ namespace DCL.WorldRuntime
         public event Action OnResourcesLoaded;
         public event Action OnResourcesStatusUpdate;
 
-        private IResourcesLoadTracker tracker;
+        internal IResourcesLoadTracker tracker;
 
+        public void Track(string sceneId)
+        {
+            if (tracker is ResourcesLoadTrackerECS)
+                return;
+
+            tracker = new ResourcesLoadTrackerECS(DataStore.i.ecs7,sceneId);
+            tracker.OnResourcesLoaded += TrackerResourcesLoaded;
+            tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
+        }
+        
         public void Track(IECSComponentsManagerLegacy componentsManagerLegacy, IWorldState worldState)
         {
-            if (tracker != null)
+            if (tracker is ResourcesLoadTrackerLegacyECS)
                 return;
 
             tracker = new ResourcesLoadTrackerLegacyECS(componentsManagerLegacy, worldState);
-            tracker.OnResourcesLoaded += OnTrackerResourcesLoaded;
+            tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }
 
@@ -64,12 +75,12 @@ namespace DCL.WorldRuntime
             {
                 return;
             }
-            tracker.OnResourcesLoaded -= OnTrackerResourcesLoaded;
+            tracker.OnResourcesLoaded -= TrackerResourcesLoaded;
             tracker.OnStatusUpdate -= OnTrackerResourcesStatusUpdate;
             tracker.Dispose();
         }
 
-        private void OnTrackerResourcesLoaded()
+        private void TrackerResourcesLoaded()
         {
             OnResourcesLoaded?.Invoke();
         }

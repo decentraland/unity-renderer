@@ -26,6 +26,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
     [SerializeField] private Model model;
+    [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
+    [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
     
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
@@ -35,7 +37,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
-    private Coroutine updateLayoutRoutine;
+    private bool isLayoutDirty;
+    private bool isSortingDirty;
+
+    protected bool IsFadeoutModeEnabled => this.model.enableFadeoutMode;
 
     public event Action<string> OnMessageUpdated;
 
@@ -85,6 +90,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
     }
 
+    public event Action OnPreviousChatInHistory;
+    public event Action OnNextChatInHistory;
+
     public event Action<ChatMessage> OnSendMessage;
 
     public int EntryCount => entries.Count;
@@ -105,12 +113,35 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
         ChatEntryFactory ??= defaultChatEntryFactory;
+        this.model.enableFadeoutMode = true;
     }
     
     public override void OnEnable()
     {
         base.OnEnable();
-        Utils.ForceUpdateLayout(transform as RectTransform);
+        UpdateLayout();
+        nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
+        previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        nextChatInHistoryInput.OnTriggered -= HandleNextChatInHistoryInput;
+        previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        
+        if (isLayoutDirty)
+            chatEntriesContainer.ForceUpdateLayout(delayed: false);
+        isLayoutDirty = false;
+        
+        if (isSortingDirty)
+            SortEntriesImmediate();
+        isSortingDirty = false;
     }
 
     public void ResetInputField(bool loseFocus = false)
@@ -127,7 +158,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             FocusInputField();
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
-        if (model.isPreviewMode)
+        if (model.isInPreviewMode)
             ActivatePreview();
         else
             DeactivatePreview();
@@ -153,7 +184,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public void ActivatePreview()
     {
-        model.isPreviewMode = true;
+        model.isInPreviewMode = true;
         
         for (var i = 0; i < entries.Count; i++)
         {
@@ -161,15 +192,22 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             entry.ActivatePreview();
         }
     }
-
     public void DeactivatePreview()
     {
-        model.isPreviewMode = false;
+        model.isInPreviewMode = false;
         
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
             entry.DeactivatePreview();
+        }
+    }
+    public void FadeOutMessages()
+    {
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            entry.FadeOut();
         }
     }
 
@@ -202,18 +240,13 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         var chatEntry = ChatEntryFactory.Create(model);
         chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        if (this.model.enableFadeoutMode && IsEntryVisible(chatEntry))
+        if(this.model.enableFadeoutMode)
             chatEntry.SetFadeout(true);
         else
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(model);
         
-        if (this.model.isPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
-        else
-            chatEntry.DeactivatePreviewInstantly();
-
         if (model.messageType == ChatMessage.Type.PUBLIC
             || model.messageType == ChatMessage.Type.PRIVATE)
             chatEntry.OnPressRightButton += OnOpenContextMenu;
@@ -224,13 +257,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
 
         entries.Add(chatEntry);
+        
+        if (this.model.isInPreviewMode)
+            chatEntry.ActivatePreviewInstantly();
 
         SortEntries();
-
-        if (updateLayoutRoutine != null)
-            StopCoroutine(updateLayoutRoutine);
-        if (gameObject.activeInHierarchy)
-            updateLayoutRoutine = StartCoroutine(UpdateLayoutOnNextFrame());
+        UpdateLayout();
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
@@ -325,7 +357,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         messageHoverGotoText.text = string.Empty;
     }
 
-    private void SortEntries()
+    private void SortEntries() => isSortingDirty = true;
+
+    private void SortEntriesImmediate()
     {
         entries = entries.OrderBy(x => x.Model.timestamp).ToList();
 
@@ -333,23 +367,20 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         for (int i = 0; i < count; i++)
         {
             if (entries[i].transform.GetSiblingIndex() != i)
-            {
                 entries[i].transform.SetSiblingIndex(i);
-            }
         }
     }
+    
+    private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
+    
+    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
 
-    private IEnumerator UpdateLayoutOnNextFrame()
-    {
-        yield return null;
-        Utils.ForceUpdateLayout(chatEntriesContainer, delayed: false);
-        updateLayoutRoutine = null;
-    }
+    private void UpdateLayout() => isLayoutDirty = true;
 
     [Serializable]
     private struct Model
     {
-        public bool isPreviewMode;
+        public bool isInPreviewMode;
         public bool isInputFieldFocused;
         public string inputFieldText;
         public bool enableFadeoutMode;

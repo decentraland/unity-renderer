@@ -32,13 +32,19 @@ export type RendererOptions = {
   /** Legacy messaging system */
   onMessageLegacy: (type: string, payload: string) => void
   /** scene binary messaging system */
-  onBinaryMessage: (sceneId: string, data: Uint8Array) => void
+  onBinaryMessage?: (data: Uint8Array) => void
   /** used to append a ?v={} to the URL. Useful to debug cache issues */
   versionQueryParam?: string
   /** baseUrl where all the assets are deployed */
   baseUrl: string
 
   enableBrotli?: boolean
+
+  /** Extra config passed on to unity module */
+  extraConfig?: any
+
+  /** Prevents the renderer on initialization from failing if it detects a mobile browser */
+  dontCheckMobile?: boolean
 }
 
 export type DecentralandRendererInstance = {
@@ -76,7 +82,8 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
 
   const rendererVersion = options.versionQueryParam
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
-  const resolveWithBaseUrl = (file: string) => new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
+  const resolveWithBaseUrl = (file: string) =>
+    new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
 
   const enableBrotli =
     typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https:"
@@ -91,6 +98,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     companyName: "Decentraland",
     productName: "Decentraland World Client",
     productVersion: "0.1",
+    ...(options.extraConfig || {}),
   }
 
   const engineStartedFuture = future<{}>()
@@ -109,9 +117,10 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     },
 
     // This function is called from the unity renderer to send messages back to the scenes
-    BinaryMessageFromEngine(sceneId: string, data: Uint8Array) {
-      onBinaryMessage(sceneId, data)
-    }
+    BinaryMessageFromEngine(data: Uint8Array) {
+      if (!!onBinaryMessage)
+        onBinaryMessage(data)
+    },
   }
 
   const originalUnity = await createUnityInstance(canvas, config, onProgress, onSuccess, onError)

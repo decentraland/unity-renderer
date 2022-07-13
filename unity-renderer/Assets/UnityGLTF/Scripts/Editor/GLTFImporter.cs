@@ -115,29 +115,37 @@ namespace UnityGLTF
         private GameObject CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new GLTFFileLoader(Path.GetDirectoryName(projectFilePath));
-            using (var stream = File.OpenRead(projectFilePath))
-            {
-                GLTFRoot gLTFRoot;
-                GLTFParser.ParseJson(stream, out gLTFRoot);
+            using var stream = File.OpenRead(projectFilePath);
 
-                var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
-                loader.addImagesToPersistentCaching = false;
-                loader.addMaterialsToPersistentCaching = false;
-                loader.initialVisibility = true;
-                loader.useMaterialTransition = false;
-                loader.maximumLod = _maximumLod;
-                loader.forceGPUOnlyMesh = false;
-                loader.forceGPUOnlyTex = false;
-                loader.forceSyncCoroutines = true;
+            GLTFRoot gLTFRoot;
+            GLTFParser.ParseJson(stream, out gLTFRoot);
 
-                Task task = loader.LoadScene(CancellationToken.None);
-                bool result = task.Wait(TimeSpan.FromSeconds(10));
+            var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
+            loader.addImagesToPersistentCaching = false;
+            loader.addMaterialsToPersistentCaching = false;
+            loader.initialVisibility = true;
+            loader.useMaterialTransition = false;
+            loader.maxTextureSize = 512;
+            loader.maximumLod = _maximumLod;
+            loader.forceGPUOnlyMesh = false;
+            loader.forceGPUOnlyTex = false;
+            loader.forceSyncCoroutines = true;
+            loader.ignoreMaterials = !_importMaterials;
 
-                if (!result)
-                    throw new TimeoutException($"Importing {projectFilePath}");
+            Task task = loader.LoadScene(CancellationToken.None);
+            bool result = task.Wait(TimeSpan.FromSeconds(30));
                 
-                return loader.lastLoadedScene;
+            switch (result)
+            {
+                case false when task.Exception == null:
+                    throw new TimeoutException($"Importing {projectFilePath}");
+                case false when task.Exception != null:
+                    throw task.Exception;
             }
+
+            stream.Dispose();
+            return loader.lastLoadedScene;
+
         }
 
         private void ImportAsset(AssetImportContext ctx, GameObject gltfScene)
@@ -553,11 +561,13 @@ namespace UnityGLTF
                         }
                     }
 
-                    var rootObject = gltfScene.GetComponentInChildren<InstantiatedGLTFObject>();
 
-                    if (rootObject != null)
-                        DestroyImmediate(rootObject);
                 }
+                
+                var rootObject = gltfScene.GetComponentInChildren<InstantiatedGLTFObject>();
+
+                if (rootObject != null)
+                    DestroyImmediate(rootObject);
             }
             catch (Exception e)
             {

@@ -25,6 +25,8 @@ namespace UIComponents.CollapsableSortedList
 
         public Comparison<V> SortingMethod { get; set; } = (model, model1) => 0;
 
+        public override bool isVisible => gameObject.activeInHierarchy;
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -86,7 +88,7 @@ namespace UIComponents.CollapsableSortedList
             model.isVisible = false;
         }
 
-        public virtual V Get(K key) => entries[key];
+        public virtual V Get(K key) => entries.TryGetValue(key, out var value) ? value : null;
 
         public virtual void Add(K key, V value)
         {
@@ -122,7 +124,7 @@ namespace UIComponents.CollapsableSortedList
             UpdateLayout();
         }
 
-        public void Filter(Func<V, bool> comparision)
+        public virtual void Filter(Func<V, bool> comparision)
         {
             filteredCount = 0;
 

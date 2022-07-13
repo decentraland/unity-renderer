@@ -1,10 +1,10 @@
 using DCL;
 using UnityEngine;
 
-public class DisablePassportModifier : AvatarModifier
+public class DisablePassportModifier : IAvatarModifier
 {
 
-    public override void ApplyModifier(GameObject avatar)
+    public void ApplyModifier(GameObject avatar)
     {
         AvatarShape avatarShape = avatar.GetComponent<AvatarShape>();
         if (avatarShape != null)
@@ -13,7 +13,7 @@ public class DisablePassportModifier : AvatarModifier
         }
     }
 
-    public override void RemoveModifier(GameObject avatar)
+    public void RemoveModifier(GameObject avatar)
     {
         AvatarShape avatarShape = avatar.GetComponent<AvatarShape>();
         if (avatarShape != null)

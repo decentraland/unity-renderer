@@ -67,7 +67,9 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
         if (scene != null)
         {
-            messageLabel.text = $"This scene {scene.sceneData.basePosition.ToString()} wants you to sign a message. Press ALLOW and then check your mobile wallet to confirm the transaction.";
+            messageLabel.text = $"This scene {scene.sceneData.basePosition.ToString()} is requesting the signature of a message. " +
+                                $"If you are interested, please click the Allow button to receive it in your Wallet Connect application. " +
+                                $"This action does not imply message approval.";
         }
     }
 

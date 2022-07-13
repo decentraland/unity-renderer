@@ -1,0 +1,19 @@
+{
+    "name": "NotificationMessagesHUD",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:81f3218b29e049144b175dad2ebbac1b",
+        "GUID:bb3eef89092f71f44aa2449a9cf7879c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -30,28 +30,29 @@ namespace DCL.Emotes
         [TearDown]
         public void TearDown() { Object.Destroy(container); }
 
-        [Test]
-        public void ThrowIfNullContainer() { TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(null, new WearableItem(), "female")); }
+        [UnityTest]
+        public IEnumerator ThrowIfNullContainer() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(null, new WearableItem(), "female")));
 
-        [Test]
-        public void ThrowIfNullEmote() { TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, null, "female")); }
+        [UnityTest]
+        public IEnumerator ThrowIfNullEmote() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, null, "female")));
 
-        [Test]
-        public void ThrowIfNullBodyShape() { TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), null)); }
+        [UnityTest]
+        public IEnumerator ThrowIfNullBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, new WearableItem(), null)));
 
-        [Test]
-        public void ThrowIfEmptyBodyShape() { TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "")); }
+        [UnityTest]
+        public IEnumerator ThrowIfEmptyBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<NullReferenceException>(loader.LoadEmote(container, new WearableItem(), "")));
 
-        [Test]
-        public void ThrowIfNoRepresentationForBodyShape() { TestUtils.ThrowsAsync<Exception>(loader.LoadEmote(container, new WearableItem { id = "emote0" }, "female"), $"No representation for female of emote: emote0"); }
+        [UnityTest]
+        public IEnumerator ThrowIfNoRepresentationForBodyShape() => UniTask.ToCoroutine(async () => await TestUtils.ThrowsAsync<Exception>(loader.LoadEmote(container, new WearableItem { id = "emote0" }, "female"), $"No representation for female of emote: emote0"));
 
-        [Test]
-        public void ThrowIfCancelledTokenProvided()
+        [UnityTest]
+        public IEnumerator ThrowIfCancelledTokenProvided() => UniTask.ToCoroutine(async () =>
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
-            TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "female", cts.Token));
-        }
+
+            await TestUtils.ThrowsAsync<OperationCanceledException>(loader.LoadEmote(container, new WearableItem(), "female", cts.Token));
+        });
 
         [UnityTest]
         public IEnumerator ProvideTheRetrieverAnimation() => UniTask.ToCoroutine(async () =>
@@ -88,6 +89,5 @@ namespace DCL.Emotes
 
             Assert.AreEqual(clip, loader.animation);
         });
-
     }
 }

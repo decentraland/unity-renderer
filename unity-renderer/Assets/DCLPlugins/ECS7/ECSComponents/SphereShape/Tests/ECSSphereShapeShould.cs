@@ -25,7 +25,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            sphereShapeComponentHandler = new ECSSphereShapeComponentHandler();
+            sphereShapeComponentHandler = new ECSSphereShapeComponentHandler(DataStore.i.ecs7);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -47,7 +47,7 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
 
             // Act
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -60,7 +60,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -74,12 +74,12 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.meshesInfo = null;
 
             // Act
-            sphereShapeComponentHandler.DisposeMesh(scene);
+            sphereShapeComponentHandler.DisposeMesh(entity, scene);
 
             // Assert
             Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
@@ -90,7 +90,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullPromiseCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.primitiveMeshPromisePrimitive = null;
 
@@ -106,7 +106,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullMeshInfoCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.meshesInfo = null;
 
@@ -123,7 +123,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullRendereableCorrectly()
         {
             // Arrange
-            ECSSphereShape model = new ECSSphereShape();
+            PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             sphereShapeComponentHandler.rendereable = null;
 

@@ -109,20 +109,20 @@ namespace DCL.Interface
 
         public enum ACTION_BUTTON
         {
-            POINTER,
-            PRIMARY,
-            SECONDARY,
-            ANY,
-            FORWARD,
-            BACKWARD,
-            RIGHT,
-            LEFT,
-            JUMP,
-            WALK,
-            ACTION_3,
-            ACTION_4,
-            ACTION_5,
-            ACTION_6
+            POINTER = 0,
+            PRIMARY = 1,
+            SECONDARY = 2,
+            ANY = 3,
+            FORWARD = 4,
+            BACKWARD = 5,
+            RIGHT = 6,
+            LEFT = 7,
+            JUMP = 8,
+            WALK = 9, 
+            ACTION_3 = 10,
+            ACTION_4 = 11,
+            ACTION_5 = 12,
+            ACTION_6 = 13
         }
 
         [System.Serializable]
@@ -430,6 +430,28 @@ namespace DCL.Interface
             public int hiccupsInThousandFrames;
             public float hiccupsTime;
             public float totalTime;
+            public int gltfInProgress;
+            public int gltfFailed;
+            public int gltfCancelled;
+            public int gltfLoaded;
+            public int abInProgress;
+            public int abFailed;
+            public int abCancelled;
+            public int abLoaded;
+            public int gltfTexturesLoaded;
+            public int abTexturesLoaded;
+            public int promiseTexturesLoaded;
+            public int enqueuedMessages;
+            public int processedMessages;
+            public int playerCount;
+            public int loadRadius;
+            public Dictionary<string, long> sceneScores;
+            public object drawCalls; //int *
+            public object memoryReserved; //long, in total bytes *
+            public object memoryUsage; //long, in total bytes *
+            public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
+
+            //* is NULL if SendProfilerMetrics is false
         }
 
         [System.Serializable]
@@ -658,8 +680,6 @@ namespace DCL.Interface
             public float time;
         }
 
-        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -668,7 +688,6 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
-    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
     [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(string sceneId, byte[] bytes, int size);
         
     public static System.Action<string, string> OnMessageFromEngine;
@@ -691,6 +710,7 @@ namespace DCL.Interface
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
         public static bool CheckURLParam(string targetParam) { return false; }
+        public static string GetURLParam(string targetParam) { return String.Empty; }
 
         public static void MessageFromEngine(string type, string message)
         {
@@ -734,16 +754,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-
-        public static void SendBinaryMessage(string sceneId, byte[] bytes)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            BinaryMessageFromEngine(sceneId, bytes, bytes.Length);
-#else
-            OnBinaryMessageFromEngine?.Invoke(sceneId, bytes);
-#endif
-        }        
-
+        
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages
@@ -753,13 +764,17 @@ namespace DCL.Interface
         public static void SendMessage<T>(string type, T message)
         {
             string messageJson = JsonUtility.ToJson(message);
-
+            SendJson(type, messageJson);
+        }
+        
+        public static void SendJson(string type, string json)
+        {
             if (VERBOSE)
             {
-                Debug.Log($"Sending message: " + messageJson);
+                Debug.Log($"Sending message: " + json);
             }
 
-            MessageFromEngine(type, messageJson);
+            MessageFromEngine(type, json);
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
@@ -1208,16 +1223,9 @@ namespace DCL.Interface
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
-        public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap, int hiccupsInThousandFrames, float hiccupsTime, float totalTime)
+        public static void SendPerformanceReport(string performanceReportPayload)
         {
-            SendMessage("PerformanceReport", new PerformanceReportPayload()
-            {
-                samples = encodedFrameTimesInMS,
-                fpsIsCapped = usingFPSCap,
-                hiccupsInThousandFrames = hiccupsInThousandFrames,
-                hiccupsTime = hiccupsTime,
-                totalTime = totalTime
-            });
+            SendJson("PerformanceReport", performanceReportPayload);
         }
 
         public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }

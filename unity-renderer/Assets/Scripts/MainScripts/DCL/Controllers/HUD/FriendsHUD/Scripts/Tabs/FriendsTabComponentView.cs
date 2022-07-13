@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,10 +30,10 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private RectTransform viewport;
 
     [Header("Load More Entries")] [SerializeField]
-    private Button loadMoreEntriesButton;
+    internal Button loadMoreEntriesButton;
 
-    [SerializeField] private GameObject loadMoreEntriesContainer;
-    [SerializeField] private TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -43,9 +44,13 @@ public class FriendsTabComponentView : BaseComponentView
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
     private Dictionary<string, FriendEntryModel> filteredEntries;
+    private IChatController chatController;
+    private ILastReadMessagesService lastReadMessagesService;
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
 
     public Dictionary<string, FriendEntry> Entries => entries;
-    public int Count => entries.Count + creationQueue.Count;
+    public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
 
     public bool DidDeferredCreationCompleted => creationQueue.Count == 0;
 
@@ -61,9 +66,20 @@ public class FriendsTabComponentView : BaseComponentView
         }
     }
 
-    public event Action<FriendEntry> OnWhisper;
+    public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnRequireMoreFriends;
+    
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics)
+    {
+        this.chatController = chatController;
+        this.lastReadMessagesService = lastReadMessagesService;
+        this.friendsController = friendsController;
+        this.socialAnalytics = socialAnalytics;
+    }
 
     public override void OnEnable()
     {
@@ -159,6 +175,9 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Remove(string userId)
     {
+        if (creationQueue.ContainsKey(userId))
+            creationQueue.Remove(userId);
+        
         if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))
@@ -229,7 +248,6 @@ public class FriendsTabComponentView : BaseComponentView
             }
         }
 
-        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -365,7 +383,6 @@ public class FriendsTabComponentView : BaseComponentView
     private void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
-        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
     }
 
@@ -411,6 +428,7 @@ public class FriendsTabComponentView : BaseComponentView
         var newFriendEntry = entryPool.Get();
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntry>();
+        entry.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
         entries.Add(userId, entry);
 
         entry.OnMenuToggle -= OnEntryMenuToggle;
@@ -419,10 +437,7 @@ public class FriendsTabComponentView : BaseComponentView
         entry.OnWhisperClick += OnEntryWhisperClick;
     }
 
-    private void OnEntryWhisperClick(FriendEntry friendEntry)
-    {
-        OnWhisper?.Invoke(friendEntry);
-    }
+    private void OnEntryWhisperClick(FriendEntry friendEntry) => OnWhisper?.Invoke(friendEntry.Model);
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
@@ -491,17 +506,9 @@ public class FriendsTabComponentView : BaseComponentView
         
         if (searchResultsFriendList.IsSortingDirty)
             searchResultsFriendList.Sort();
-
-        SetMoreEntriesContainerAtBottomOfScroll();
     }
 
     private void RequestMoreFriendEntries() => OnRequireMoreFriends?.Invoke();
-
-    private void SetMoreEntriesContainerAtBottomOfScroll()
-    {
-        if (loadMoreEntriesContainer.activeSelf)
-            loadMoreEntriesContainer.transform.SetAsLastSibling();
-    }
 
     [Serializable]
     private struct FriendListComponents

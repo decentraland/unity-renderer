@@ -24,7 +24,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            planeShapeComponentHandler = new ECSPlaneShapeComponentHandler();
+            planeShapeComponentHandler = new ECSPlaneShapeComponentHandler(DataStore.i.ecs7);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -46,7 +46,7 @@ namespace DCL.ECSComponents.Test
         public void UpdateComponentCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
 
             // Act
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -59,7 +59,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeComponentCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act
@@ -73,12 +73,12 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.meshesInfo = null;
 
             // Act
-            planeShapeComponentHandler.DisposeMesh(scene);
+            planeShapeComponentHandler.DisposeMesh(entity, scene);
 
             // Assert
             Assert.IsNull(planeShapeComponentHandler.meshesInfo);
@@ -89,7 +89,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullPromiseCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.primitiveMeshPromisePrimitive = null;
 
@@ -105,7 +105,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullMeshInfoCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.meshesInfo = null;
 
@@ -122,7 +122,7 @@ namespace DCL.ECSComponents.Test
         public void DisposeMeshWithNullRendereableCorrectly()
         {
             // Arrange
-            ECSPlaneShape model = new ECSPlaneShape();
+            PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
             planeShapeComponentHandler.rendereable = null;
 

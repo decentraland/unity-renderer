@@ -1,34 +1,35 @@
+using System.Collections;
+using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using NUnit.Framework;
-using System.Collections;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
-public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
+public class DefaultChatEntryShould
 {
     private DefaultChatEntry entry;
     private Canvas canvas;
     
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
         var canvasgo = new GameObject("canvas");
         canvas = canvasgo.AddComponent<Canvas>();
         ((RectTransform) canvas.transform).sizeDelta = new Vector2(500, 500);
-        yield break;
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         Object.Destroy(entry.gameObject);
         Object.Destroy(canvas.gameObject);
-        yield break;
     }
-    
-    [Test]
-    public void PopulateSystemChat()
+
+    [UnityTest]
+    public IEnumerator PopulateSystemChat() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("ChatEntrySystem");
-        
+
         var message = new ChatEntryModel
         {
             messageType = ChatMessage.Type.SYSTEM,
@@ -37,14 +38,14 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             bodyText = "test message",
             subType = ChatEntryModel.SubType.RECEIVED
         };
-        
-        entry.Populate(message);
-        
-        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
-    }
 
-    [Test]
-    public void PopulateReceivedPublicChat()
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
+        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+    });
+
+    [UnityTest]
+    public IEnumerator PopulateReceivedPublicChat() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PublicChatEntryReceived");
         
@@ -57,13 +58,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
-        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
-    }
+    });
     
-    [Test]
-    public void PopulateSentPublicChat()
+    [UnityTest]
+    public IEnumerator PopulateSentPublicChat() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PublicChatEntrySent");
         
@@ -76,13 +77,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
-        
-        Assert.AreEqual("test message", entry.body.text);
-    }
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
 
-    [Test]
-    public void PopulateReceivedWhisperInPublicChannel()
+        Assert.AreEqual("<b>You:</b> test message", entry.body.text);
+    });
+
+    [UnityTest]
+    public IEnumerator PopulateReceivedWhisperInPublicChannel() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PublicChatEntryReceivedWhisper");
         
@@ -95,13 +96,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
-        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
         Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
-    }
+    });
     
-    [Test]
-    public void PopulateSentWhisperInPublicChannel()
+    [UnityTest]
+    public IEnumerator PopulateSentWhisperInPublicChannel() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PublicChatEntrySentWhisper");
         
@@ -114,13 +115,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
-        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
-    }
+    });
     
-    [Test]
-    public void PopulateSentWhisperInPrivateChannel()
+    [UnityTest]
+    public IEnumerator PopulateSentWhisperInPrivateChannel() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PrivateChatEntrySent");
         
@@ -133,13 +134,13 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.SENT
         };
         
-        entry.Populate(message);
-        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
         Assert.AreEqual("test message", entry.body.text);
-    }
+    });
     
-    [Test]
-    public void PopulateReceivedWhisperInPrivateChannel()
+    [UnityTest]
+    public IEnumerator PopulateReceivedWhisperInPrivateChannel() => UniTask.ToCoroutine(async () =>
     {
         GivenEntryChat("PrivateChatEntryReceived");
         
@@ -152,11 +153,91 @@ public class DefaultChatEntryShould : IntegrationTestSuite_Legacy
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        entry.Populate(message);
-        
-        Assert.AreEqual("test message", entry.body.text);
-    }
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
 
+        Assert.AreEqual("test message", entry.body.text);
+    });
+
+    [UnityTest]
+    [TestCase("im at 100,100", "100,100", "im at ", ExpectedResult = null)]
+    [TestCase("nah we should go to 0,-122", "0,-122", "nah we should go to ", ExpectedResult = null)]
+    public IEnumerator AddParcelCoordinates(string body, string coordinates, string bodyWithoutCoordinates) => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PublicChatEntryReceivedWhisper");
+        
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = body,
+            subType = ChatEntryModel.SubType.SENT
+        };
+        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
+        Assert.AreEqual($"<b>To receiver-test:</b> {bodyWithoutCoordinates}</noparse><link={coordinates}><color=#4886E3><u>{coordinates}</u></color></link><noparse>", entry.body.text);
+    });
+
+    [UnityTest]
+    public IEnumerator AddManyParcelCoordinates() => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PublicChatEntryReceivedWhisper");
+        
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = "perhaps 73,94 then -5,42 and after -36,72",
+            subType = ChatEntryModel.SubType.SENT
+        };
+        
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
+        Assert.AreEqual("<b>To receiver-test:</b> perhaps </noparse><link=73,94><color=#4886E3><u>73,94</u></color></link><noparse> then </noparse><link=-5,42><color=#4886E3><u>-5,42</u></color></link><noparse> and after </noparse><link=-36,72><color=#4886E3><u>-36,72</u></color></link><noparse>", entry.body.text);
+    });
+
+    [UnityTest]
+    public IEnumerator DoNotShowUserName() => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PrivateChatEntryReceived");
+        entry.showUserName = false;
+
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = "test message",
+            subType = ChatEntryModel.SubType.RECEIVED
+        };
+
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
+        Assert.AreEqual("test message", entry.body.text);
+    });
+
+    [UnityTest]
+    public IEnumerator ShowUserName() => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PrivateChatEntryReceived");
+        entry.showUserName = true;
+
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = "test message",
+            subType = ChatEntryModel.SubType.SENT
+        };
+
+        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+
+        Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
+    });
+    
     private void GivenEntryChat(string prefabName)
     {
         entry = Object.Instantiate(Resources.Load<DefaultChatEntry>($"SocialBarV1/{prefabName}"),

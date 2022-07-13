@@ -17,20 +17,23 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
+        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private GameObject onloadParticlePrefab;
+        [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal GameObject playerNameContainer;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -44,7 +47,7 @@ namespace DCL
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        private IAvatar avatar;
+        internal IAvatar avatar;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
@@ -56,10 +59,24 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+
+            if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                avatar = GetAvatarWithHologram();
+            else
+                avatar = GetStandardAvatar();
+
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
+        }
+
+        private Avatar GetStandardAvatar()
+        {
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            avatar = new Avatar(
+            return new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
@@ -68,11 +85,24 @@ namespace DCL
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        }
 
-            if (avatarReporterController == null)
-            {
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            }
+        private AvatarWithHologram GetAvatarWithHologram()
+        {
+            Visibility visibility = new Visibility();
+            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
+            return new AvatarWithHologram(
+                    baseAvatar,
+                    new AvatarCurator(new WearableItemResolver()),
+                    new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+                    animator,
+                    visibility,
+                    avatarLOD,
+                    new SimpleGPUSkinning(),
+                    new GPUSkinningThrottler(),
+                    new EmoteAnimationEquipper(animator, DataStore.i.emotes));
         }
 
         private void Start()
@@ -126,7 +156,7 @@ namespace DCL
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
-            
+
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
             entity.OnTransformChange -= OnEntityTransformChanged;
@@ -150,7 +180,11 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
+                if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                {
+                    playerName.SetName(model.name);
+                    playerName.Show(true);
+                }
                 avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
@@ -162,9 +196,6 @@ namespace DCL
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
@@ -177,7 +208,7 @@ namespace DCL
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
             UpdatePlayerStatus(model);
-            
+
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
                 {
@@ -186,7 +217,7 @@ namespace DCL
                     hoverText = "view profile"
                 },
                 entity, player
-            );            
+            );
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -300,7 +331,7 @@ namespace DCL
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
-        
+
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
             if (isGlobalSceneAvatar)
@@ -323,6 +354,21 @@ namespace DCL
             initializedPosition = false;
             model = new AvatarModel();
             player = null;
+        }
+
+        public void ApplyHideModifier()
+        {
+            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            onPointerDown.gameObject.SetActive(false);
+            playerNameContainer.SetActive(false);
+
+        }
+
+        public void RemoveHideModifier()
+        {
+            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+            onPointerDown.gameObject.SetActive(true);
+            playerNameContainer.SetActive(true);
         }
 
         public override void Cleanup()

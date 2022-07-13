@@ -38,9 +38,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     
     [Header("Load More Entries")]
-    [SerializeField] private Button loadMoreEntriesButton;
-    [SerializeField] private GameObject loadMoreEntriesContainer;
-    [SerializeField] private TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal Button loadMoreEntriesButton;
+    [SerializeField] internal GameObject loadMoreEntriesContainer;
+    [SerializeField] internal TMP_Text loadMoreEntriesLabel;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -53,12 +53,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
-    public CollapsableSortedFriendEntryList ReceivedRequestsList => receivedRequestsList;
-    public int Count => Entries.Count + creationQueue.Count;
+    public int Count => Entries.Count + creationQueue.Keys.Count(s => !Entries.ContainsKey(s));
 
-    public event Action<FriendRequestEntry> OnCancelConfirmation;
-    public event Action<FriendRequestEntry> OnRejectConfirmation;
-    public event Action<FriendRequestEntry> OnFriendRequestApproved;
+    public event Action<FriendRequestEntryModel> OnCancelConfirmation;
+    public event Action<FriendRequestEntryModel> OnRejectConfirmation;
+    public event Action<FriendRequestEntryModel> OnFriendRequestApproved;
     public event Action<string> OnFriendRequestSent;
     public event Action OnRequireMoreEntries;
 
@@ -137,6 +136,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public void Remove(string userId)
     {
+        if (creationQueue.ContainsKey(userId))
+            creationQueue.Remove(userId);
+        
         if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))
@@ -181,6 +183,20 @@ public class FriendRequestsTabComponentView : BaseComponentView
             UpdateLayout();
         }
 
+        Populate(userId, model);
+        UpdateEmptyOrFilledState();
+        UpdateCounterLabel();
+    }
+    
+    public void Populate(string userId, FriendRequestEntryModel model)
+    {
+        if (!entries.ContainsKey(userId))
+        {
+            if (creationQueue.ContainsKey(userId))
+                creationQueue[userId] = model;
+            return;
+        }
+        
         var entry = entries[userId];
         entry.Populate(model);
 
@@ -188,10 +204,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
             receivedRequestsList.Add(userId, entry);
         else
             sentRequestsList.Add(userId, entry);
-
-        UpdateEmptyOrFilledState();
-        UpdateCounterLabel();
-        SetMoreEntriesContainerAtBottomOfScroll();
     }
 
     public void ShowUserNotFoundNotification()
@@ -277,14 +289,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void ShowMoreFriendsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(true);
-        SetMoreEntriesContainerAtBottomOfScroll();
         UpdateLayout();
-    }
-    
-    private void SetMoreEntriesContainerAtBottomOfScroll()
-    {
-        if (loadMoreEntriesContainer.activeSelf)
-            loadMoreEntriesContainer.transform.SetAsLastSibling();
     }
     
     private void UpdateEmptyOrFilledState()
@@ -310,7 +315,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
         ShowFriendAcceptedNotification(requestEntry);
         Remove(requestEntry.Model.userId);
-        OnFriendRequestApproved?.Invoke(requestEntry);
+        OnFriendRequestApproved?.Invoke((FriendRequestEntryModel) requestEntry.Model);
     }
 
     private void ShowFriendAcceptedNotification(FriendRequestEntry requestEntry)
@@ -324,13 +329,13 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnEntryRejectButtonPressed(FriendRequestEntry requestEntry)
     {
         Remove(requestEntry.Model.userId);
-        OnRejectConfirmation?.Invoke(requestEntry);
+        OnRejectConfirmation?.Invoke((FriendRequestEntryModel) requestEntry.Model);
     }
 
     private void OnEntryCancelButtonPressed(FriendRequestEntry requestEntry)
     {
         Remove(requestEntry.Model.userId);
-        OnCancelConfirmation?.Invoke(requestEntry);
+        OnCancelConfirmation?.Invoke((FriendRequestEntryModel) requestEntry.Model);
     }
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)

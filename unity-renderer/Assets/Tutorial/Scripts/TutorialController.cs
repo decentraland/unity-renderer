@@ -243,6 +243,10 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
+            yield return new WaitUntil(IsPlayerInScene);
+
+            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
+
             switch (tutorialType)
             {
                 case TutorialType.Initial:
@@ -436,8 +440,6 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
-            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
-
             if (configuration.debugRunTutorial)
                 currentStepIndex = configuration.debugStartingStepIndex >= 0 ? configuration.debugStartingStepIndex : 0;
             else
@@ -590,6 +592,16 @@ namespace DCL.Tutorial
                 fromDeepLink = false.ToString(),
                 enableNewTutorialCamera = false.ToString()
             }));
+        }
+
+        internal bool IsPlayerInScene()
+        {
+            IWorldState worldState = Environment.i.world.state;
+
+            if (worldState == null || worldState.currentSceneId == null)
+                return false;
+
+            return true;
         }
 
         internal static bool IsPlayerInsideGenesisPlaza()

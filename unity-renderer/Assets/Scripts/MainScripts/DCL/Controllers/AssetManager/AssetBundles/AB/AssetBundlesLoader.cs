@@ -17,15 +17,13 @@ namespace DCL
         private struct AssetBundleInfo
         {
             public Asset_AB asset;
-            public AssetBundle assetBundle;
             public Transform containerTransform;
             public Action onSuccess;
             public Action<Exception> onFail;
 
-            public AssetBundleInfo(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
+            public AssetBundleInfo(Asset_AB asset, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
             {
                 this.asset = asset;
-                this.assetBundle = assetBundle;
                 this.containerTransform = containerTransform;
                 this.onSuccess = onSuccess;
                 this.onFail = onFail;
@@ -77,11 +75,11 @@ namespace DCL
             lowPriorityLoadQueue.Clear();
         }
 
-        public void MarkAssetBundleForLoad(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
+        public void MarkAssetBundleForLoad(Asset_AB asset, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
         {
             CheckForReprioritizeAwaitingAssets();
 
-            AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, assetBundle, containerTransform, onSuccess, onFail);
+            AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, containerTransform, onSuccess, onFail);
 
             float distanceFromPlayer = GetDistanceFromPlayer(containerTransform);
             if (distanceFromPlayer <= MAX_SQR_DISTANCE_FOR_QUICK_LOADING)
@@ -128,13 +126,13 @@ namespace DCL
 
         private IEnumerator LoadAssetBundle(AssetBundleInfo assetBundleInfo)
         {
-            if (assetBundleInfo.assetBundle == null)
+            if (!assetBundleInfo.asset.IsValid())
             {
                 assetBundleInfo.onFail?.Invoke(new Exception("Asset bundle is null"));
                 yield break;
             }
 
-            AssetBundleRequest abRequest = assetBundleInfo.assetBundle.LoadAllAssetsAsync();
+            AssetBundleRequest abRequest = assetBundleInfo.asset.LoadAllAssetsAsync();
 
             while (!abRequest.isDone)
             {
@@ -147,7 +145,7 @@ namespace DCL
             {
                 string ext = "any";
 
-                if (loadedAsset is Texture textureAsset)
+                if (loadedAsset is Texture)
                 {
                     ext = "png";
                 }
@@ -163,20 +161,8 @@ namespace DCL
                 {
                     ext = "glb";
                 }
-
-                if (assetBundleInfo.asset?.assetsByExtension == null)
-                {
-                    Debug.LogWarning($"Found an unexpected Null Reference: {assetBundleInfo.asset} or {assetBundleInfo.asset?.assetsByExtension}");
-                }
-                else
-                {
-                    if (!assetBundleInfo.asset.assetsByExtension.ContainsKey(ext))
-                    {
-                        assetBundleInfo.asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
-                    }
-
-                    assetBundleInfo.asset.assetsByExtension[ext].Add(loadedAsset);
-                }
+                
+                assetBundleInfo.asset.AddAssetByExtension(ext, loadedAsset);
             }
 
             loadedAssetsByName.Clear();

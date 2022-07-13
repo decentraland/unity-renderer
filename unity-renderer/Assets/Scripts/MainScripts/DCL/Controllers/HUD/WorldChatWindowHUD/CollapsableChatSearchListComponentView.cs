@@ -1,3 +1,4 @@
+using System;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
@@ -16,6 +17,19 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     {
         directChatList.Filter(search);
         publicChannelList.Filter(search);
+    }
+
+    public void Filter(Func<PrivateChatEntry, bool> privateComparision,
+        Func<PublicChannelEntry, bool> publicComparision)
+    {
+        directChatList.Filter(privateComparision);
+        publicChannelList.Filter(publicComparision);
+    }
+
+    public override void Filter(Func<BaseComponentView, bool> comparision)
+    {
+        directChatList.Filter(comparision);
+        publicChannelList.Filter(comparision);
     }
 
     public override int Count()
@@ -51,6 +65,8 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     {
         return (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
     }
+
+    public void Set(PrivateChatEntry.PrivateChatEntryModel model) => directChatList.Set(model.userId, model);
 
     public void Export(CollapsablePublicChannelListComponentView publicChannelList,
         CollapsableDirectChatListComponentView privateChatList)
