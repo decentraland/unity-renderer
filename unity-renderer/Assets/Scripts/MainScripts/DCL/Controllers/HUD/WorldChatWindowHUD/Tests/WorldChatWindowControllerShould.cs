@@ -257,7 +257,7 @@ public class WorldChatWindowControllerShould
     public void ClearChannelFilterWhenSearchIsEmpty()
     {
         controller.Initialize(view);
-        view.OnSearchChannelRequested += Raise.Event<Action<string>>("");
+        view.OnSearchChatRequested += Raise.Event<Action<string>>("");
         
         view.Received(1).ClearFilter();
     }
@@ -279,7 +279,7 @@ public class WorldChatWindowControllerShould
         
         controller.Initialize(view);
         
-        view.OnSearchChannelRequested += Raise.Event<Action<string>>("near");
+        view.OnSearchChatRequested += Raise.Event<Action<string>>("near");
         
         view.Received(1).Filter(Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr") && d.Count == 1),
             Arg.Is<Dictionary<string, PublicChatModel>>(d => d.ContainsKey("nearby") && d.Count == 1));

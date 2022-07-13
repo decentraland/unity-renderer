@@ -43,6 +43,7 @@ public class ReceivedFriendRequestsNotificationBadge : MonoBehaviour
 
     public void Initialize(IFriendsController friendsController)
     {
+        if (friendsController == null) return;
         this.friendsController = friendsController;
         friendsController.OnTotalFriendRequestUpdated += UpdateReceivedRequests;
         UpdateReceivedRequests();

@@ -70,6 +70,10 @@ public class ChatController_Mock : IChatController
     {
     }
 
+    public void GetChannels(int limit, int skip)
+    {
+    }
+
     public void MuteChannel(string channelId)
     {
     }

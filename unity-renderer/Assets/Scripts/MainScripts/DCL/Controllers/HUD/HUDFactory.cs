@@ -91,7 +91,7 @@ public class HUDFactory : IHUDFactory
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
-            case HUDElementID.PUBLIC_CHAT_CHANNEL:
+            case HUDElementID.PUBLIC_CHAT:
                 hudElement = new PublicChatWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
@@ -110,6 +110,11 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                break;
+            case HUDElementID.CHANNELS_SEARCH:
+                hudElement = new SearchChannelsWindowController(
+                    // TODO (channels): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

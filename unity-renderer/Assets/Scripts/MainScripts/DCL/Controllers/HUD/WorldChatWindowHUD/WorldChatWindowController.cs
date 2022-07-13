@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DCL.Chat.Channels;
-using DCL.Interface;
 using DCL.Friends.WebApi;
+using DCL.Interface;
 
 public class WorldChatWindowController : IHUD
 {
@@ -24,7 +24,7 @@ public class WorldChatWindowController : IHUD
     private int hiddenDMs;
     private long olderDMTimestampRequested = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private string currentSearch = "";
-    private bool isRequestingChannels;
+    private DateTime channelsRequestTimestamp;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
@@ -37,6 +37,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenPublicChat;
     public event Action<string> OnOpenChannel;
     public event Action OnOpen;
+    public event Action OnOpenChannelSearch;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -55,8 +56,9 @@ public class WorldChatWindowController : IHUD
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChat += OpenPublicChat;
-        view.OnSearchChannelRequested += SearchChannels;
+        view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
+        view.OnOpenChannelSearch += OpenChannelSearch;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -65,7 +67,7 @@ public class WorldChatWindowController : IHUD
         // TODO: this data should come from the chat service when channels are implemented
         publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, "nearby",
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
-            0);
+            0, true, 0);
         view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
         
         foreach (var value in chatController.GetAllocatedEntries())
@@ -90,8 +92,9 @@ public class WorldChatWindowController : IHUD
         view.OnClose -= HandleViewCloseRequest;
         view.OnOpenPrivateChat -= OpenPrivateChat;
         view.OnOpenPublicChat -= OpenPublicChat;
-        view.OnSearchChannelRequested -= SearchChannels;
+        view.OnSearchChatRequested -= SearchChats;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
+        view.OnOpenChannelSearch -= OpenChannelSearch;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
@@ -128,11 +131,11 @@ public class WorldChatWindowController : IHUD
 
     private void DisplayMoreJoinedChannels()
     {
-        if (isRequestingChannels) return;
+        if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
         
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
-        isRequestingChannels = true;
+        channelsRequestTimestamp = DateTime.UtcNow;
     }
 
     private void HandleFriendsControllerInitialization()
@@ -283,7 +286,7 @@ public class WorldChatWindowController : IHUD
             view.HidePrivateChatsLoading();
     }
     
-    private void SearchChannels(string search)
+    private void SearchChats(string search)
     {
         currentSearch = search;
 
@@ -370,8 +373,15 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChannelUpdated(Channel channel)
     {
+        if (!channel.Joined)
+        {
+            view.RemovePublicChat(channel.ChannelId);
+            publicChannels.Remove(channel.ChannelId);
+            return;
+        }
+        
         var channelId = channel.ChannelId;
-        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp);
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount);
         
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);
@@ -379,8 +389,6 @@ public class WorldChatWindowController : IHUD
             publicChannels[channelId] = model;
         
         view.SetPublicChat(model);
-        
-        isRequestingChannels = false;
     }
 
     private void HandleChannelJoined(Channel channel) => OpenPublicChat(channel.ChannelId);
@@ -396,4 +404,6 @@ public class WorldChatWindowController : IHUD
     }
     
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
+
+    private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
 }

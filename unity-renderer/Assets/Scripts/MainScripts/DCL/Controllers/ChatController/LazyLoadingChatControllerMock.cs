@@ -83,6 +83,9 @@ public class LazyLoadingChatControllerMock : IChatController
     public void GetChannels(int limit, int skip, string name) =>
         controller.GetChannels(limit, skip, name);
 
+    public void GetChannels(int limit, int skip) =>
+        controller.GetChannels(limit, skip);
+
     public void MuteChannel(string channelId) => controller.MuteChannel(channelId);
 
     public Channel GetAllocatedChannel(string channelId) => controller.GetAllocatedChannel(channelId);

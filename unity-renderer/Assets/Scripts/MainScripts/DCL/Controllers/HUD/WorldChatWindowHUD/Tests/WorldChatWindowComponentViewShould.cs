@@ -198,7 +198,7 @@ public class WorldChatWindowComponentViewShould
     {
         const string channelId = "general";
 
-        var model = new PublicChatModel(channelId, "nearby", "any description", 0);
+        var model = new PublicChatModel(channelId, "nearby", "any description", 0, true, 0);
         view.SetPublicChat(model);
 
         yield return null;
@@ -265,7 +265,7 @@ public class WorldChatWindowComponentViewShould
     public void TriggerSearchChannel()
     {
         var search = "";
-        view.OnSearchChannelRequested += s => search = s;
+        view.OnSearchChatRequested += s => search = s;
 
         view.searchBar.SubmitSearch("hello");
 
@@ -338,7 +338,7 @@ public class WorldChatWindowComponentViewShould
         }, new Dictionary<string, PublicChatModel>
         {
             {
-                "general", new PublicChatModel("general", "general", "", 0)
+                "general", new PublicChatModel("general", "general", "", 0, true, 0)
             }
         });
 
@@ -450,7 +450,7 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPublicChannel(string channelId, string name)
     {
-        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", 0));
+        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", 0, true, 0));
     }
 
     private UserProfile GivenProfile(string userId)
