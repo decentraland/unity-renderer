@@ -43,6 +43,9 @@ namespace DCL.Chat.HUD
             if (visible)
             {
                 ClearListeners();
+                
+                view.ClearSearchInput();
+                
                 view.OnSearchUpdated += SearchChannels;
                 view.OnRequestMoreChannels += LoadMoreChannels;
                 view.OnBack += HandleViewBacked;
@@ -51,14 +54,10 @@ namespace DCL.Chat.HUD
                 chatController.OnChannelUpdated += ShowChannel;
                 
                 view.Show();
-                
-                if (IsLoading()) return;
-                
-                loadStartedTimestamp = DateTime.Now;
-                view.ClearSearchInput();
                 view.ClearAllEntries();
                 view.ShowLoading();
                 
+                loadStartedTimestamp = DateTime.Now;
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
                 
                 loadingCancellationToken.Cancel();
