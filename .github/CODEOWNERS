@@ -7,4 +7,4 @@
 *                                             @decentraland/unity-team
 
 # Specific subteams
-unity-renderer/Assets/DCLPlugins/ECS7/**/*    @decentraland/sdk
+unity-renderer/Assets/DCLPlugins/ECS7/**/*    @decentraland/sdk-team
