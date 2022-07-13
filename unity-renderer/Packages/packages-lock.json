@@ -14,6 +14,13 @@
       "dependencies": {},
       "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
     },
+    "com.decentraland.rpc-csharp": {
+      "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "31340a3706dda78916910dc2b925756fd3ee0ece"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -176,14 +183,14 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework.performance": {
-        "version": "2.8.1-preview",
-        "depth": 0,
-        "source": "registry",
-        "dependencies": {
-            "com.unity.test-framework": "1.1.0",
-            "com.unity.modules.jsonserialize": "1.0.0"
-        },
-        "url": "https://packages.unity.com"
+      "version": "2.8.1-preview",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.testtools.codecoverage": {
       "version": "1.1.0",

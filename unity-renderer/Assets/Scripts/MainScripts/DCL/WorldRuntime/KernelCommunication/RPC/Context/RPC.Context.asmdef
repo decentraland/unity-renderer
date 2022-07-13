@@ -1,0 +1,16 @@
+{
+    "name": "RPC.Context",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
