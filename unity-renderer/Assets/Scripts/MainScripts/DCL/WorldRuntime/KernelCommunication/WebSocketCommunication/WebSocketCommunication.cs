@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using DCL;
 using UnityEngine;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
@@ -27,7 +28,7 @@ public class WebSocketCommunication : IKernelCommunication
 
     public bool isServerReady => ws.IsListening;
 
-    private string StartServer(int port, int maxPort, bool withSSL)
+    private string StartServer(int port, int maxPort, bool withSSL, bool verbose = false)
     {
         if (port > maxPort)
         {
@@ -65,6 +66,12 @@ public class WebSocketCommunication : IKernelCommunication
                 OnWebSocketServiceAdded?.Invoke(service);
                 return service;
             });
+
+            if (verbose)
+            {
+                ws.Log.Level = LogLevel.Debug;
+                ws.Log.Output += OnWebSocketLog;
+            }
             ws.Start();
         }
         catch (InvalidOperationException e)
@@ -83,6 +90,24 @@ public class WebSocketCommunication : IKernelCommunication
 
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
+    }
+    private void OnWebSocketLog(LogData logData, string message)
+    {
+        switch (logData.Level)
+        {
+            case LogLevel.Debug:
+                Debug.Log($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Warn:
+                Debug.LogWarning($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Error:
+                Debug.LogError($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Fatal:
+                Debug.LogError($"[WebSocket] {logData.Message}");
+                break;
+        }
     }
 
     public WebSocketCommunication(bool withSSL = false, int startPort = 5000, int endPort = 5100)
