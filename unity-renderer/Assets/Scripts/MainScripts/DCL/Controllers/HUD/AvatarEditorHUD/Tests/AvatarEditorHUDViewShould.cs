@@ -274,6 +274,17 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
         }
+        
+        [Test]
+        public void ShowWarningWhenNoLinkedWearableAvailable()
+        {
+            AvatarEditorHUDView view = Substitute.For<AvatarEditorHUDView>();
+            view.noItemInCollectionWarning = GameObject.Instantiate(controller.myView.noItemInCollectionWarning);
+            
+            controller.ToggleThirdPartyCollection(true, "MOCK_COLLECTION_ID", "MOCK_COLLECTION_NAME");
+            
+            view.Received().ShowNoItemOfWearableCollectionWarning();
+        }
 
         private WearableItem CreateDummyNFT(string rarity)
         {
