@@ -80,12 +80,17 @@ Shader "DCL/Universal Render Pipeline/Lit"
         [HideInInspector] _FresnelMatCap("ToonShader MatCap Map 3", 2D) = "bump" {}
         //NOTE(Brian): Hack end
         
-        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0
-        _FadeThickness ("Fade Thickness", Float) = 5
-        _FadeDirection ("Fade Direction", Float) = 0
-        
-        _FresnelColor("Fresnel Color", Color) = (0,1,0.75,0)
-        _FresnelPower("Fresnel Power", Float) = 3.0
+        [PerRendererData] _CullYPlane("Cull Y Plane", Float) = 0
+        _FadeThickness("Fade Thickness", Float) = 5
+        _FadeDirection("Fade Direction", Float) = 0
+
+        _OutlineColor("Outline Color", Color) = (0,0,0,1)
+        _OutlineThickness("Outline Thickness", Float) = 0
+        _OutlineDepthValues("Depth Values", Vector) = (1, 10, 1)
+        _OutlineNormalValues("Normal Values", Vector) = (1, 100, 1)
+        _OutlineFarNormalValues("Far Normal Values", Vector) = (1, 1, 1)
+        _OutlineAcuteDepth("Acute Depth Threshold", Float) = 1
+        _OutlineAcuteDotStart("Acute Dot Start", Float) = 1
 
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}

@@ -39,8 +39,13 @@ int _NormalMapUVs;
 int _MetallicMapUVs;
 int _EmissiveMapUVs;
 
-half4 _FresnelColor;
-half _FresnelPower;
+half4 _OutlineColor;
+half _OutlineThickness;
+half3 _OutlineDepthValues;
+half3 _OutlineNormalValues;
+half3 _OutlineFarNormalValues;
+half _OutlineAcuteDepth;
+half _OutlineAcuteDotStart;
 CBUFFER_END
 
 // NOTE: Do not ifdef the properties for dots instancing, but ifdef the actual usage.

@@ -3,6 +3,7 @@
 
 #include "Lighting.hlsl"
 #include "FadeDithering.hlsl"
+#include "Assets/Rendering/Shaders/Outline/OutlinesIncludeV2.hlsl"
 
 #if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
 #define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
@@ -45,6 +46,7 @@ struct Varyings
 	//NOTE(Brian): needed for FadeDithering
 	float4 positionSS               : TEXCOORD8;
 
+    float4 screenPos                : TEXCOORD9;
 
     float4 positionCS               : SV_POSITION;
     UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -90,6 +92,58 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 //                  Vertex and Fragment functions                            //
 ///////////////////////////////////////////////////////////////////////////////
 
+float SobelFineTuning(float Sobel, float Threshold, float Tightening, float Strength)
+{
+    float outValue = 0;
+    outValue = smoothstep(0, Threshold, Sobel);
+    outValue = pow(outValue, Tightening);
+    outValue = mul(outValue, Strength);
+    return outValue;
+}
+
+float SobelOutlines(
+    float2 UV, float Thickness, 
+    float DepthStrength, float DepthTightening, float DepthThreshold, 
+    float AcuteDepthThreshold, float AcuteStartDot, 
+    float NormalStrength, float NormalTightening, float NormalThreshold, 
+    float FarNormalThreshold, float FarNormalStart, float FarNormalEnd)
+{
+    float depth;
+    float3 depthNormal;
+    CalculateDepthNormal_float(UV, depth, depthNormal);
+
+    float3 viewDirectionFromScreen;
+    ViewDirectionFromScreenUV_float(UV, viewDirectionFromScreen);
+
+    float tempA = dot(depthNormal, viewDirectionFromScreen);
+    tempA = 1 - tempA;
+
+    tempA = smoothstep(AcuteStartDot, 1, tempA);
+    tempA = lerp(DepthThreshold, AcuteDepthThreshold, tempA);
+
+    float depthRaw;
+    GetSceneDepthRaw(UV, depthRaw);
+    tempA = mul(depthRaw, tempA);///
+
+    float depthSobelA;
+    DepthSobel_float(UV, Thickness, depthSobelA);
+
+    float resultA = SobelFineTuning(depthSobelA, tempA, DepthTightening, DepthStrength);//////////////////////////////////////////////// Result A
+
+    float depthEye;
+    GetSceneDepthEye(UV, depthEye);
+
+    float tempB = smoothstep(FarNormalStart, FarNormalEnd, depthEye);
+    tempB = lerp(NormalThreshold, FarNormalThreshold, tempB);///
+
+    float normalSobel;
+    NormalsSobel_float(UV, Thickness, normalSobel);
+
+    float resultB = SobelFineTuning(normalSobel, tempB, NormalTightening, NormalStrength);//////////////////////////////////////////////// Result B
+
+    return max(resultA, resultB);
+}
+
 // Used in Standard (Physically Based) shader
 Varyings LitPassVertex(Attributes input)
 {
@@ -119,31 +173,32 @@ Varyings LitPassVertex(Attributes input)
     // already normalized from normal transform to WS.
     output.normalWS = normalInput.normalWS;
     output.viewDirWS = viewDirWS;
-#if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR) || defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
-    real sign = input.tangentOS.w * GetOddNegativeScale();
-    half4 tangentWS = half4(normalInput.tangentWS.xyz, sign);
-#endif
-#if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
-    output.tangentWS = tangentWS;
-#endif
+    #if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR) || defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+        real sign = input.tangentOS.w * GetOddNegativeScale();
+        half4 tangentWS = half4(normalInput.tangentWS.xyz, sign);
+    #endif
+    #if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
+        output.tangentWS = tangentWS;
+    #endif
 
     OUTPUT_LIGHTMAP_UV(input.lightmapUV, unity_LightmapST, output.lightmapUV);
     OUTPUT_SH(output.normalWS.xyz, output.vertexSH);
 
     output.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
 
-#if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
-    output.positionWS = vertexInput.positionWS;
-#endif
+    #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
+        output.positionWS = vertexInput.positionWS;
+    #endif
 
-#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    output.shadowCoord = GetShadowCoord(vertexInput);
-#endif
+    #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+        output.shadowCoord = GetShadowCoord(vertexInput);
+    #endif
 
     output.positionCS = vertexInput.positionCS;
 
 	//NOTE(Brian): needed for FadeDithering
 	output.positionSS = ComputeScreenPos(vertexInput.positionCS);
+    output.screenPos = ComputeScreenPos(vertexInput.positionCS);
 
     return output;
 }
@@ -154,14 +209,14 @@ half4 LitPassFragment(Varyings input) : SV_Target
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-#if defined(_PARALLAXMAP)
-#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
-    half3 viewDirTS = input.viewDirTS;
-#else
-    half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, input.viewDirWS);
-#endif
-    ApplyPerPixelDisplacement(viewDirTS, input.uvAlbedoNormal.xy);
-#endif
+    #if defined(_PARALLAXMAP)
+    #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+        half3 viewDirTS = input.viewDirTS;
+    #else
+        half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, input.viewDirWS);
+    #endif
+        ApplyPerPixelDisplacement(viewDirTS, input.uvAlbedoNormal.xy);
+    #endif
 
     SurfaceData surfaceData;
     InitializeStandardLitSurfaceDataWithUV2(input.uvAlbedoNormal.xy, input.uvAlbedoNormal.zw, input.uvAlbedoNormal.xy, input.uvAlbedoNormal.zw, surfaceData);
@@ -170,11 +225,21 @@ half4 LitPassFragment(Varyings input) : SV_Target
     InitializeInputData(input, surfaceData.normalTS, inputData);
 
     half4 color = UniversalFragmentPBR(inputData, surfaceData);
-    half fresnel = pow((1.0 - saturate(dot(normalize(input.normalWS.xyz), normalize(input.viewDirWS.xyz)))), _FresnelPower);
+
+    float outlines = 0;// SobelOutlines();
+    float2 screenPosition = input.screenPos.xy / input.screenPos.w;
+
+    outlines = SobelOutlines(
+            screenPosition, _OutlineThickness / 100,
+            _OutlineDepthValues.x, _OutlineDepthValues.y, _OutlineDepthValues.z, 
+            _OutlineAcuteDepth, _OutlineAcuteDotStart, 
+            _OutlineNormalValues.x, _OutlineNormalValues.y, _OutlineNormalValues.z,
+            _OutlineFarNormalValues.x, _OutlineFarNormalValues.y, _OutlineFarNormalValues.z) * _OutlineColor.w;
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);    
     color.a = OutputAlpha(color.a, _Surface);    
-	color = fadeDithering(color, input.positionWS, input.positionSS) + (fresnel * _FresnelColor)* _FresnelColor.w;
+	color = fadeDithering(color, input.positionWS, input.positionSS);
+    color = lerp(color, _OutlineColor, outlines);
 
     return color;
 }
