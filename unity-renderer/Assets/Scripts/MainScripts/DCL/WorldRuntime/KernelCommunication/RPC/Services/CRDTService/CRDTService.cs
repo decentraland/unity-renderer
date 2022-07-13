@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -7,6 +6,7 @@ using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
+using Proto;
 using rpc_csharp;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
@@ -16,16 +16,20 @@ namespace RPC.Services
     public static class CRDTServiceImpl
     {
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
+        private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
+
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
         private static readonly CRDTStream crdtStream = new CRDTStream();
+        private static readonly MemoryStream memoryStream = new MemoryStream();
+        private static readonly BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             CRDTService<RPCContext>.RegisterService(
                 port,
                 sendCrdt: OnCRDTReceived,
-                crdtNotificationStream: CRDTNotificationStream
+                pullCrdt: SendCRDT
             );
         }
 
@@ -65,42 +69,31 @@ namespace RPC.Services
             return defaultResponse;
         }
 
-        [Obsolete("To be removed soon")]
-        private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
+        private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
-            using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
+            string sceneId = request.SceneId;
 
-            while (true)
+            try
             {
-                if (context.crdtContext.scenesOutgoingIds.Count > 0)
+                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
                 {
-                    try
-                    {
-                        memoryStream.SetLength(0);
-
-                        string sceneId = context.crdtContext.scenesOutgoingIds[0];
-                        CRDTProtocol sceneCrdtState = context.crdtContext.scenesOutgoingCrdts[sceneId];
-
-                        context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
-                        context.crdtContext.scenesOutgoingIds.RemoveAt(0);
-
-                        KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
-                        reusableCrdtMessage.SceneId = sceneId;
-                        reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.GetBuffer());
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e);
-                        continue;
-                    }
-
-                    yield return reusableCrdtMessage;
+                    return emptyResponse;
                 }
-                else
-                {
-                    yield return null;
-                }
+
+                memoryStream.SetLength(0);
+
+                context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+
+                KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
+                reusableCrdtMessage.SceneId = sceneId;
+                reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
+
+                return UniTask.FromResult(reusableCrdtMessage);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return emptyResponse;
             }
         }
     }

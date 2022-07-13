@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-using ECSSystems.CameraSystem;
 
 public delegate void ECS7System();
 
 public class ECSSystemsController : IDisposable
 {
-    private readonly List<ECS7System> updateSystems;
-    private readonly List<ECS7System> lateUpdateSystems;
+    private readonly IList<ECS7System> updateSystems;
+    private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
 
@@ -20,12 +19,9 @@ public class ECSSystemsController : IDisposable
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
-        updateSystems = new List<ECS7System>()
-        {
-            ECSCameraSystem.Update
-        };
+        updateSystems = new ECS7System[] { };
 
-        lateUpdateSystems = new List<ECS7System>() { };
+        lateUpdateSystems = new ECS7System[] { };
     }
 
     public void Dispose()
