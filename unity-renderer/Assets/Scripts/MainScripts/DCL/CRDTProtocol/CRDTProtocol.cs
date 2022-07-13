@@ -6,16 +6,11 @@ namespace DCL.CRDT
     public class CRDTProtocol
     {
         internal readonly List<CRDTMessage> state = new List<CRDTMessage>();
-        internal readonly Dictionary<long, int> stateIndexer = new Dictionary<long, int>();
+        private readonly Dictionary<long, int> stateIndexer = new Dictionary<long, int>();
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
-            CRDTMessage storedMessage = null;
-
-            if (stateIndexer.TryGetValue(message.key, out int index))
-            {
-                storedMessage = state[index];
-            }
+            TryGetState(message.key, out CRDTMessage storedMessage);
 
             // The received message is > than our current value, update our state.
             if (storedMessage == null || storedMessage.timestamp < message.timestamp)
@@ -82,6 +77,12 @@ namespace DCL.CRDT
                 result.timestamp = storedMessage.timestamp + 1;
             }
             return result;
+        }
+
+        public void Clear()
+        {
+            state.Clear();
+            stateIndexer.Clear();
         }
 
         private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
