@@ -11,7 +11,7 @@ namespace ECSSystems.CameraSystem
 {
     public static class ECSCameraSystem
     {
-        private static ECSTransform reusableTransform = new ECSTransform()
+        private static readonly ECSTransform reusableTransform = new ECSTransform()
         {
             position = UnityEngine.Vector3.zero,
             scale = UnityEngine.Vector3.one,
@@ -19,10 +19,13 @@ namespace ECSSystems.CameraSystem
             rotation = Quaternion.identity
         };
 
-        private static DataStore_Camera dataStoreCamera = DataStore.i.camera;
+        private static readonly DataStore_Camera dataStoreCamera = DataStore.i.camera;
 
         public static void Update()
         {
+            if (!CommonScriptableObjects.rendererState.Get())
+                return;
+
             Transform cameraT = dataStoreCamera.transform.Get();
 
             UnityEngine.Vector3 cameraPosition = cameraT.position;
@@ -38,6 +41,11 @@ namespace ECSSystems.CameraSystem
                 scene = loadedScenes[i];
 
                 SetTransform(scene, ref cameraPosition, ref cameraRotation, ref worldOffset);
+
+                if (scene.sceneData.id.Contains("b64-L1VzZXJzL3BhdG8vRG9jdW1lbnRzL0dpdEh1Yi9lY3M3LXRlbXBsYXRl"))
+                {
+                    Debug.Log($"CameraPosition {cameraPosition}");
+                }
                 componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM, reusableTransform);
             }
         }
