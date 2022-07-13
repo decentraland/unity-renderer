@@ -17,8 +17,6 @@ public class ComponentCrdtWriteSystem : IDisposable
         public ECSComponentWriteType writeType;
     }
 
-    private readonly IUpdateEventHandler updateEventHandler;
-
     private readonly RPCContext rpcContext;
     private readonly ISceneController sceneController;
     private readonly IWorldState worldState;
@@ -27,21 +25,18 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(24);
     private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(24);
 
-    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState, ISceneController sceneController, RPCContext rpcContext)
+    public ComponentCrdtWriteSystem(IWorldState worldState, ISceneController sceneController, RPCContext rpcContext)
     {
-        this.updateEventHandler = updateEventHandler;
         this.sceneController = sceneController;
         this.rpcContext = rpcContext;
         this.worldState = worldState;
 
         sceneController.OnSceneRemoved += OnSceneRemoved;
-        updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
     }
 
     public void Dispose()
     {
         sceneController.OnSceneRemoved -= OnSceneRemoved;
-        updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
     }
 
     public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, ECSComponentWriteType writeType)

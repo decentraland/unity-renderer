@@ -19,7 +19,6 @@ namespace Tests
         {
             IParcelScene scene = Substitute.For<IParcelScene>();
             IWorldState worldState = Substitute.For<IWorldState>();
-            IUpdateEventHandler updateHandler = Substitute.For<IUpdateEventHandler>();
 
             crdtExecutor = Substitute.For<ICRDTExecutor>();
             crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
@@ -27,7 +26,7 @@ namespace Tests
             scene.crdtExecutor.Returns(crdtExecutor);
             worldState.loadedScenes.Returns(new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } });
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(updateHandler, worldState,
+            crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
                 Substitute.For<ISceneController>(), DataStore.i.rpcContext.context);
         }
 
