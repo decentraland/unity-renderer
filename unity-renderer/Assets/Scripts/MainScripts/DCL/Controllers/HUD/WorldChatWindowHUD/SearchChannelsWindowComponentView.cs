@@ -59,8 +59,8 @@ namespace DCL.Chat.HUD
 
         public override void Dispose()
         {
-            if (!gameObject) return;
             if (!this) return;
+            if (!gameObject) return;
             base.Dispose();
         }
 
