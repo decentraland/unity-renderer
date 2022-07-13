@@ -683,8 +683,6 @@ namespace DCL.Interface
             public float time;
         }
 
-        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -759,16 +757,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-
-        public static void SendBinaryMessage(string sceneId, byte[] bytes)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            BinaryMessageFromEngine(sceneId, bytes, bytes.Length);
-#else
-            OnBinaryMessageFromEngine?.Invoke(sceneId, bytes);
-#endif
-        }        
-
+        
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages

@@ -1,0 +1,16 @@
+{
+    "name": "RPC.Transports.WebGLTransport",
+    "rootNamespace": "",
+    "references": [
+        "GUID:32414f40c5c02494097836a15ff47eac"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
