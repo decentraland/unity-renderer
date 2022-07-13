@@ -16,6 +16,12 @@ namespace DCL.Chat.HUD
             view = SearchChannelsWindowComponentView.Create();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            view.Dispose();
+        }
+
         [Test]
         public void Show()
         {
