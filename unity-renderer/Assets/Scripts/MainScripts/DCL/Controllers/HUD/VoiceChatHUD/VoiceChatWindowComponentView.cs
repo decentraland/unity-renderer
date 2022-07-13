@@ -52,13 +52,15 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         goToCrowdButton.onClick.AddListener(() => OnGoToCrowd?.Invoke());
         allowUsersDropdown.OnOptionSelectionChanged += AllowUsersOptionChanged;
         muteAllToggle.OnSelectedChanged += OnMuteAllToggleChanged;
+        
+        ConfigureAllowUsersFilter();
     }
 
     public override void Start()
     {
         base.Start();
-
-        ConfigureAllowUsersFilter();
+        
+        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -263,8 +265,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 changeTextColorOnSelect = true
             }
         });
-
-        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
     }
 
     internal void AllowUsersOptionChanged(bool isOn, string optionId, string optionName)
