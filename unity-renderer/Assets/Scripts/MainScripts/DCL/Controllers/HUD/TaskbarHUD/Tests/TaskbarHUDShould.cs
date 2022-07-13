@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Chat.HUD;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -122,6 +123,10 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             socialAnalytics, chatController);
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
+
+        var channelSearchController = new SearchChannelsWindowController(chatController);
+        channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
+        controller.AddChannelSearch(channelSearchController);
 
         Assert.IsFalse(view.chatButton.toggledOn);
 
