@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
@@ -97,76 +96,76 @@ namespace Tests
             messageQueueHandler.Received(1).EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>());
         }
 
-        [Test]
-        public async void SendCRDTNotificationToClient()
-        {
-            TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
-
-            UniTaskCompletionSource<CRDTManyMessages> clientReceiveCRDT = null;
-            bool isLastElementOfStream = false;
-
-            // this task simulate renderer generating CRDT notifications to send to client
-            UniTask.RunOnThreadPool(async () =>
-            {
-                await UniTask.Yield();
-                var crdt = new CRDTMessage()
-                {
-                    key = 2,
-                    timestamp = 3945,
-                    data = new byte[] { 2, 4, 6, 8 }
-                };
-                var sceneId = "temptation";
-                var crdtBytes = CreateCRDTMessage(crdt);
-
-                clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
-                context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
-                var clientReceive = await clientReceiveCRDT.Task;
-
-                Assert.AreEqual(clientReceive.SceneId, sceneId);
-                Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
-
-                await UniTask.Yield();
-                crdt = new CRDTMessage()
-                {
-                    key = 1,
-                    timestamp = 344,
-                    data = new byte[] { 122, 32, 1 }
-                };
-                sceneId = "temptation2";
-                crdtBytes = CreateCRDTMessage(crdt);
-
-                isLastElementOfStream = true;
-
-                clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
-                context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
-                clientReceive = await clientReceiveCRDT.Task;
-
-                Assert.AreEqual(clientReceive.SceneId, sceneId);
-                Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
-            }, true, testCancellationSource.Token);
-
-            bool testDone = false;
-
-            try
-            {
-                // client receives CRDT notifications
-                await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
-                {
-                    var receivedCrdt = await element;
-                    clientReceiveCRDT.TrySetResult(receivedCrdt);
-                    if (isLastElementOfStream)
-                    {
-                        testDone = true;
-                        break;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-            Assert.IsTrue(testDone);
-        }
+        // [Test]
+        // public async void SendCRDTNotificationToClient()
+        // {
+        //     TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+        //
+        //     UniTaskCompletionSource<CRDTManyMessages> clientReceiveCRDT = null;
+        //     bool isLastElementOfStream = false;
+        //
+        //     // this task simulate renderer generating CRDT notifications to send to client
+        //     UniTask.RunOnThreadPool(async () =>
+        //     {
+        //         await UniTask.Yield();
+        //         var crdt = new CRDTMessage()
+        //         {
+        //             key = 2,
+        //             timestamp = 3945,
+        //             data = new byte[] { 2, 4, 6, 8 }
+        //         };
+        //         var sceneId = "temptation";
+        //         var crdtBytes = CreateCRDTMessage(crdt);
+        //
+        //         clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
+        //         context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
+        //         var clientReceive = await clientReceiveCRDT.Task;
+        //
+        //         Assert.AreEqual(clientReceive.SceneId, sceneId);
+        //         Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
+        //
+        //         await UniTask.Yield();
+        //         crdt = new CRDTMessage()
+        //         {
+        //             key = 1,
+        //             timestamp = 344,
+        //             data = new byte[] { 122, 32, 1 }
+        //         };
+        //         sceneId = "temptation2";
+        //         crdtBytes = CreateCRDTMessage(crdt);
+        //
+        //         isLastElementOfStream = true;
+        //
+        //         clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
+        //         context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
+        //         clientReceive = await clientReceiveCRDT.Task;
+        //
+        //         Assert.AreEqual(clientReceive.SceneId, sceneId);
+        //         Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
+        //     }, true, testCancellationSource.Token);
+        //
+        //     bool testDone = false;
+        //
+        //     try
+        //     {
+        //         // client receives CRDT notifications
+        //         await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
+        //         {
+        //             var receivedCrdt = await element;
+        //             clientReceiveCRDT.TrySetResult(receivedCrdt);
+        //             if (isLastElementOfStream)
+        //             {
+        //                 testDone = true;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         Debug.LogError(e);
+        //     }
+        //     Assert.IsTrue(testDone);
+        // }
 
         static byte[] CreateCRDTMessage(CRDTMessage message)
         {

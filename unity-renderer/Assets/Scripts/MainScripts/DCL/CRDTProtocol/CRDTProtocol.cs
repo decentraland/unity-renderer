@@ -5,11 +5,17 @@ namespace DCL.CRDT
 {
     public class CRDTProtocol
     {
-        internal readonly Dictionary<long, CRDTMessage> state = new Dictionary<long, CRDTMessage>();
+        internal readonly List<CRDTMessage> state = new List<CRDTMessage>();
+        internal readonly Dictionary<long, int> stateIndexer = new Dictionary<long, int>();
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
-            state.TryGetValue(message.key, out CRDTMessage storedMessage);
+            CRDTMessage storedMessage = null;
+
+            if (stateIndexer.TryGetValue(message.key, out int index))
+            {
+                storedMessage = state[index];
+            }
 
             // The received message is > than our current value, update our state.
             if (storedMessage == null || storedMessage.timestamp < message.timestamp)
@@ -38,10 +44,29 @@ namespace DCL.CRDT
             return UpdateState(message.key, message.data, message.timestamp);
         }
 
-        public CRDTMessage GetSate(long key)
+        public CRDTMessage GetState(long key)
         {
-            state.TryGetValue(key, out CRDTMessage storedMessage);
-            return storedMessage;
+            if (stateIndexer.TryGetValue(key, out int index))
+            {
+                return state[index];
+            }
+            return null;
+        }
+
+        public bool TryGetState(long key, out CRDTMessage crdtMessage)
+        {
+            if (stateIndexer.TryGetValue(key, out int index))
+            {
+                crdtMessage = state[index];
+                return true;
+            }
+            crdtMessage = null;
+            return false;
+        }
+
+        public IReadOnlyList<CRDTMessage> GetState()
+        {
+            return state;
         }
 
         public CRDTMessage Create(int entityId, int componentId, byte[] data)
@@ -52,7 +77,7 @@ namespace DCL.CRDT
                 data = data,
                 timestamp = 0
             };
-            if (state.TryGetValue(result.key, out CRDTMessage storedMessage))
+            if (TryGetState(result.key, out CRDTMessage storedMessage))
             {
                 result.timestamp = storedMessage.timestamp + 1;
             }
@@ -62,9 +87,11 @@ namespace DCL.CRDT
         private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
         {
             long stateTimeStamp = 0;
-            if (state.TryGetValue(key, out CRDTMessage storedMessage))
+            bool containState = stateIndexer.TryGetValue(key, out int keyIndex);
+
+            if (containState)
             {
-                stateTimeStamp = storedMessage.timestamp;
+                stateTimeStamp = state[keyIndex].timestamp;
             }
 
             long timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
@@ -75,7 +102,15 @@ namespace DCL.CRDT
                 data = data
             };
 
-            state[key] = newMessageState;
+            if (containState)
+            {
+                state[keyIndex] = newMessageState;
+            }
+            else
+            {
+                state.Add(newMessageState);
+                stateIndexer.Add(key, state.Count - 1);
+            }
 
             return newMessageState;
         }
