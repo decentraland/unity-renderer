@@ -74,6 +74,7 @@ namespace DCL.Chat.HUD
 
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
+            chatController.OnChannelLeft += HandleChannelLeft;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
@@ -142,7 +143,10 @@ namespace DCL.Chat.HUD
             }
 
             if (chatController != null)
+            {
                 chatController.OnAddMessage -= HandleMessageReceived;
+                chatController.OnChannelLeft -= HandleChannelLeft;
+            }
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= ActivatePreviewMode;
@@ -200,6 +204,12 @@ namespace DCL.Chat.HUD
                 skipChatInputTrigger = true;
                 chatHudController.ResetInputField(true);
                 ActivatePreviewMode();
+                return;
+            }
+
+            if (message.body.ToLower().Equals("/leave"))
+            {
+                LeaveChannel();
                 return;
             }
 
@@ -349,9 +359,11 @@ namespace DCL.Chat.HUD
             View?.SetOldMessagesLoadingActive(false);
         }
         
-        private void LeaveChannel()
+        private void LeaveChannel() => chatController.LeaveChannel(channelId);
+        
+        private void HandleChannelLeft(string channelId)
         {
-            chatController.LeaveChannel(channelId);
+            if (channelId != this.channelId) return;
             OnPressBack?.Invoke();
         }
     }

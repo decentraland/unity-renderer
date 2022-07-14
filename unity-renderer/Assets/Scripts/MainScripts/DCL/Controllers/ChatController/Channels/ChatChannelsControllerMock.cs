@@ -85,31 +85,6 @@ namespace DCL.Chat.Channels
             controller.Send(message);
 
             SimulateDelayedResponseFor_JoinChatMessage(message.body).Forget();
-            SimulateDelayedResponseFor_LeaveChatMessage(message.body).Forget();
-        }
-
-        private async UniTask SimulateDelayedResponseFor_LeaveChatMessage(string body)
-        {
-            await UniTask.Delay(Random.Range(500, 1000));
-
-            if (body.ToLower().StartsWith("/leave "))
-            {
-                var channelId = body.Split(' ')[1].Replace("#", "");
-
-                if (body.Contains("error"))
-                    controller.JoinChannelError(JsonUtility.ToJson(new LeaveChannelErrorPayload
-                        {message = "Leave channel error", channelId = channelId}));
-                else
-                    controller.UpdateChannelInfo(JsonUtility.ToJson(new ChannelInfoPayload
-                    {
-                        description = "",
-                        joined = false,
-                        muted = false,
-                        channelId = channelId,
-                        memberCount = 0,
-                        unseenMessages = 0
-                    }));
-            }
         }
 
         private async UniTask SimulateDelayedResponseFor_JoinChatMessage(string chatMessage)
