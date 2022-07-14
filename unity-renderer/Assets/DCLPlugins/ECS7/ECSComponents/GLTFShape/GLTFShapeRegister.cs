@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.ECSRuntime;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -11,7 +12,7 @@ namespace DCL.ECSComponents
 
         public GLTFShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, GLTFShapeSerializer.Deserialize, () => new GLTFShapeComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, GLTFShapeSerializer.Deserialize, () => new GLTFShapeComponentHandler(DataStore.i.ecs7, CollidersManager.i));
             componentWriter.AddOrReplaceComponentSerializer<PBGLTFShape>(componentId, GLTFShapeSerializer.Serialize);
 
             this.factory = factory;

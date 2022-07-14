@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
+using DCL.CuloDeMono.Utils;
 using DCL.ECSComponents;
+using DCL.ECSComponents.Utils;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -14,25 +15,23 @@ public static class ECSComponentsUtils
         MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
 
         for (var i = 0; i < materialTransitionControllers.Length; i++)
-        {
             GameObject.Destroy(materialTransitionControllers[i]);
-        }
     }
     
-    public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    public static void UpdateMeshInfo(long entityId, bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         for (var i = 0; i < meshesInfo.renderers.Length; i++)
         {
             UpdateRendererVisibility(meshesInfo.renderers[i], isVisible);
         }
 
-        UpdateMeshInfoColliders(withCollisions, isPointerBlocker, meshesInfo);
+        UpdateMeshInfoColliders(entityId, withCollisions, isPointerBlocker, meshesInfo);
     }
 
-    public static void UpdateMeshInfoColliders(bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    public static void UpdateMeshInfoColliders(long entityId, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
-        int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.collisionsLayer;
-        
+        int colliderLayer = LayerUtils.CalculateLayerMask(entityId, withCollisions, isPointerBlocker);
+
         foreach (Collider collider in meshesInfo.colliders)
         {
             collider.enabled = withCollisions;
@@ -75,7 +74,7 @@ public static class ECSComponentsUtils
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
         // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
-        CollidersManager.i.CreatePrimitivesColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity);
+        CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity);
     }
 
     public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool isVisible, Renderer[] meshRenderers = null)
@@ -130,13 +129,18 @@ public static class ECSComponentsUtils
         }
         
         // Dispose collider
-        foreach (Collider collider in meshesInfo.colliders)
-        {
-            GameObject.Destroy(collider);
-        }
+        DisposeColliders(meshesInfo.colliders);
 
         meshesInfo.meshRootGameObject.layer = PhysicsLayers.defaultLayer;
         meshesInfo.CleanReferences();
+    }
+
+    public static void DisposeColliders(List<Collider> collidersList)
+    {
+        foreach (Collider collider in collidersList)
+        {
+            GameObject.Destroy(collider);
+        } 
     }
     
     private static void UpdateRendererVisibility(Renderer renderer, bool isVisible)

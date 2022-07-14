@@ -13,5 +13,6 @@ namespace DCL
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
+        public readonly BaseCollection<long> onPointerEventEntities = new BaseCollection<long>();
     }
 }

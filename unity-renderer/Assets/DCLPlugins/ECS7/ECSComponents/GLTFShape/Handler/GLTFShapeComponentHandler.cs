@@ -14,25 +14,25 @@ namespace DCL.ECSComponents
         internal MeshesInfo meshesInfo;
         internal Rendereable rendereable;
         internal PBGLTFShape model;
-        internal readonly LoadWrapper_GLTF loadWrapper;
+        internal LoadWrapper_GLTF loadWrapper;
         internal IDCLEntity entity;
 
         private readonly ShapeRepresentation shapeRepresentation;
         private readonly DataStore_ECS7 dataStore;
+        private readonly CollidersManager collidersManager;
 
-        public GLTFShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        public GLTFShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, CollidersManager collidersManager)
         {
+            this.collidersManager = collidersManager;
             shapeRepresentation = new ShapeRepresentation();
             dataStore = dataStoreEcs7;
-            loadWrapper = new LoadWrapper_GLTF();
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            loadWrapper?.Unload();
-            DisposeMesh(scene);
+            Dispose(scene);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
@@ -47,10 +47,6 @@ namespace DCL.ECSComponents
             
             this.model = model;
         }
-                
-        public bool IsVisible() {  return model.Visible; }
-        
-        public bool HasCollisions() {  return model.WithCollisions; }
 
         private bool ShouldLoadShape(PBGLTFShape model)
         {
@@ -66,31 +62,30 @@ namespace DCL.ECSComponents
                 entity.EnsureMeshGameObject("GLTF mesh");
 
                 if (loadWrapper != null)
-                {
-                    loadWrapper.Unload();
-                    DisposeMesh(scene);
-                }
+                    Dispose(scene);
                 
                 // We prepare the load wrapper to load the GLTF
-                loadWrapper.customContentProvider = provider;
-                
-                entity.meshesInfo.currentShape = shapeRepresentation;
+                loadWrapper = new LoadWrapper_GLTF
+                {
+                    customContentProvider = provider,
+                    entity = entity,
+                    useVisualFeedback = ParcelSettings.VISUAL_LOADING_ENABLED,
+                    initialVisibility = true
+                };
 
-                loadWrapper.entity = entity;
-                loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadWrapper.initialVisibility = true;
+                entity.meshesInfo.currentShape = shapeRepresentation;
+                
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
-                    // We remove the transition from the GLTF
+                    // We remove the transition from the GLTF if it is not visible
                     if (!model.Visible)
-                    {
-                        MaterialTransitionController[] materialTransitionControllers = entity.meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>();
-
-                        for (var i = 0; i < materialTransitionControllers.Length; i++)
-                            GameObject.Destroy(materialTransitionControllers[i]);
-                    }
+                        ECSComponentsUtils.RemoveMaterialTransition(entity.meshRootGameObject);
+                    
                     entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
                     meshesInfo = entity.meshesInfo;
+                    
+                    // We create the colliders for the GLTF
+                    collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity);
                     
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
@@ -118,22 +113,37 @@ namespace DCL.ECSComponents
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
             
+            // If the model didn't had collider because the first model came with WithCollisions = false and IsPointerBlocker = false
+            if(meshesInfo.colliders.Count == 0 || meshesInfo.meshFilters.Length > 0)
+                collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity);
+
             // Set collisions and pointer blocker
-            ECSComponentsUtils.UpdateMeshInfoColliders(model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+            ECSComponentsUtils.UpdateMeshInfoColliders(entity.entityId, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
         }
 
-        internal void DisposeMesh(IParcelScene scene)
+        internal void Dispose(IParcelScene scene)
         {
+            // We dispose the colliders
+            ECSComponentsUtils.DisposeColliders(meshesInfo.colliders);
+            
+            // Clean the references to the entity mesh info
+            if (meshesInfo != null)
+                meshesInfo.CleanReferences();
+            
+            // We notify that the shape is not ready anymore, so others component can be notify
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
-            if (rendereable != null)
-                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
+            
+            // If we are loading and we dispose, we notify that we don't have a pending resource
             if (model != null)
                 dataStore.RemovePendingResource(scene.sceneData.id, model);
 
             meshesInfo = null;
             rendereable = null;
             model = null;
+            
+            // We unload the loader wrapper so it can handle the GLTF asset management
+            loadWrapper.Unload();
         }
     }
 }

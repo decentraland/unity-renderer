@@ -32,7 +32,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(entity.entityId, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
             }
             else
             {

@@ -169,7 +169,7 @@ namespace DCL
             }
         }
         
-        public void CreatePrimitivesColliders(GameObject meshGameObject, MeshFilter[] meshFilters, bool hasCollision, bool isPointerBlocker, IDCLEntity entity)
+        public void CreateColliders(GameObject meshGameObject, MeshFilter[] meshFilters, bool hasCollision, bool isPointerBlocker, IDCLEntity entity)
         {
             if (meshGameObject == null || (!hasCollision && !isPointerBlocker))
                 return;
@@ -177,13 +177,7 @@ namespace DCL
             entity.meshesInfo.colliders.Clear(); 
             
             // This is de default layer, however, take into account that OnPointerEvents can change this layer
-            int colliderLayer = PhysicsLayers.collisionsLayer;
-            
-            // Note: If it is pointer blocker, we set this layer,
-            if (isPointerBlocker && hasCollision)
-                colliderLayer = PhysicsLayers.onPointerEventWithCollisionsLayer;
-            else if (isPointerBlocker || !hasCollision)
-                colliderLayer = PhysicsLayers.onPointerEventLayer;
+            int colliderLayer = LayerUtils.CalculateLayerMask(entity.entityId, hasCollision, isPointerBlocker);
 
             MeshCollider collider;
 

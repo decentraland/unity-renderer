@@ -36,14 +36,14 @@ namespace DCLPlugins.ECSComponents
             this.type = type;
             this.componentWriter = componentWriter;
             pointerEventHandler = new OnPointerEventHandler();
+            eventEntity = entity;
             
             Initializate(entity);
         }
 
-        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, int button, float distance, string hoverText)
+        public void SetData(IParcelScene scene, bool showFeedback, int button, float distance, string hoverText)
         {
             this.scene = scene;
-            eventEntity = entity;
 
             this.showFeedback = showFeedback;
             this.button = button;

@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new GLTFShapeComponentHandler(new DataStore_ECS7());
+            componentHandler = new GLTFShapeComponentHandler(new DataStore_ECS7(), CollidersManager.i);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -87,7 +87,7 @@ namespace DCL.ECSComponents.Test
             componentHandler.meshesInfo = null;
 
             // Act
-            componentHandler.DisposeMesh(scene);
+            componentHandler.Dispose(scene);
 
             // Assert
             Assert.IsNull(componentHandler.meshesInfo);

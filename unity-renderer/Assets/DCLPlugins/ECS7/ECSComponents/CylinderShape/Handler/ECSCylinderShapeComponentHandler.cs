@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.ECSComponents;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -32,7 +33,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(entity.entityId, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
             }
             else
             {

@@ -28,10 +28,12 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
             
             representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.DOWN, componentWriter);
             isAdded = false;
+            dataStore.onPointerEventEntities.Add(entity.entityId);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            dataStore.onPointerEventEntities.Remove(entity.entityId);
             dataStore.RemovePointerEvent(entity.entityId, representantion);
             representantion?.Dispose();
             isAdded = false;
@@ -39,7 +41,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerDown model)
         {
-            representantion.SetData(scene, entity, model.ShowFeedback, model.Button, model.Distance, model.HoverText);
+            representantion.SetData(scene, model.ShowFeedback, model.Button, model.Distance, model.HoverText);
             if (!isAdded)
             {
                 isAdded = true;

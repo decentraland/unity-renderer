@@ -171,7 +171,7 @@ namespace DCL.Components
                 Collider collider = colliders[i];
 
                 if (collider != null)
-                    UnityEngine.Object.Destroy(collider.gameObject);
+                    UnityEngine.Object.Destroy(collider);
             }
 
             colliders = null;
@@ -180,9 +180,9 @@ namespace DCL.Components
         private void AddColliderName(Collider collider)
         {
             if (collider is MeshCollider meshCollider)
-                colliderNames.Add(collider, meshCollider.sharedMesh.name);
+                colliderNames[collider] = meshCollider.sharedMesh.name;
             else
-                colliderNames.Add(collider, collider.gameObject.name);
+                colliderNames[collider] = collider.gameObject.name;
         }
         
         private void GenerateColliders(IDCLEntity entity)
