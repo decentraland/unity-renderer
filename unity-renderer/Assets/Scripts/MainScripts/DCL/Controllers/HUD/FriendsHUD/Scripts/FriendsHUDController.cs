@@ -21,8 +21,6 @@ public class FriendsHUDController : IHUD
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
-    private DateTimeOffset oldestReceivedRequest;
-    private DateTimeOffset oldestSentRequest;
 
     public IFriendsHUDComponentView View { get; private set; }
 
@@ -232,7 +230,6 @@ public class FriendsHUDController : IHUD
         
         View.Set(userId, newStatus.friendshipStatus, model);
         
-        UpdatePaginationState(userId, newStatus);
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
@@ -257,52 +254,9 @@ public class FriendsHUDController : IHUD
 
         View.Set(userId, friendshipAction, model);
         
-        UpdatePaginationState(userId, friendshipAction);
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
-    }
-
-    private void UpdatePaginationState(string userId, UserStatus status)
-    {
-        switch (status.friendshipStatus)
-        {
-            case FriendshipStatus.REQUESTED_TO:
-            {
-                var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
-                if (timestamp < oldestSentRequest)
-                    oldestSentRequest = timestamp;
-                break;
-            }
-            case FriendshipStatus.REQUESTED_FROM:
-            {
-                var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
-                if (timestamp < oldestReceivedRequest)
-                    oldestReceivedRequest = timestamp;
-                break;
-            }
-        }
-    }
-
-    private void UpdatePaginationState(string userId, FriendshipAction friendshipAction)
-    {
-        switch (friendshipAction)
-        {
-            case FriendshipAction.REQUESTED_TO:
-            {
-                var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
-                if (timestamp < oldestSentRequest)
-                    oldestSentRequest = timestamp;
-                break;
-            }
-            case FriendshipAction.REQUESTED_FROM:
-            {
-                var timestamp = friendsController.GetUserStatus(userId).friendshipStartedTime;
-                if (timestamp < oldestReceivedRequest)
-                    oldestReceivedRequest = timestamp;
-                break;
-            }
-        }
     }
 
     private void HandleFriendProfileUpdated(UserProfile profile)
@@ -442,16 +396,16 @@ public class FriendsHUDController : IHUD
     {
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendsToLoadHint();
-        friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
+        friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
     }
     
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendRequestsToLoadHint();
-        friendsController.GetFriendRequestsAsync(
-            LOAD_FRIENDS_ON_DEMAND_COUNT, oldestSentRequest.ToUnixTimeMilliseconds(),
-            LOAD_FRIENDS_ON_DEMAND_COUNT, oldestReceivedRequest.ToUnixTimeMilliseconds());
+        friendsController.GetFriendRequests(
+            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestSentCount,
+            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestReceivedCount);
     }
     
     private void DisplayFriendRequestsIfAnyIsLoaded()
@@ -486,7 +440,7 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
+        friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
 
         Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
         {

@@ -4,7 +4,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using DCL.Friends.WebApi;
 using UnityEngine;
-using static FriendsController;
 using Random = UnityEngine.Random;
 
 public class LazyLoadingFriendsControllerMock : IFriendsController
@@ -120,21 +119,21 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         UpdateFriendshipCount(Random.Range(0, 100), Random.Range(0, 100), Random.Range(0, 100)).Forget();
     }
 
-    public void GetFriendsAsync(int limit, int skip)
+    public void GetFriends(int limit, int skip)
     {
         GetFakeFriendsAsync(limit, skip, "ff").Forget();
     }
 
-    public void GetFriendsAsync(string usernameOrId, int limit)
+    public void GetFriends(string usernameOrId, int limit)
     {
         GetFakeFriendsAsync(limit, 0, usernameOrId).Forget();
     }
 
-    public void GetFriendRequestsAsync(
+    public void GetFriendRequests(
         int sentLimit,
-        long sentFromTimestamp,
+        int sentSkip,
         int receivedLimit,
-        long receivedFromTimestamp)
+        int receivedSkip)
     {
         GetFakeRequestsAsync(sentLimit).Forget();
     }

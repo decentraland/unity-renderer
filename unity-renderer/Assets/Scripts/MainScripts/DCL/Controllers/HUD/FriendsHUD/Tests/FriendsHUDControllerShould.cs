@@ -342,7 +342,7 @@ public class FriendsHUDControllerShould
         
         controller.SetVisibility(true);
         
-        friendsController.Received(1).GetFriendsAsync(30, friendCount);
+        friendsController.Received(1).GetFriends(30, friendCount);
     }
     
     [Test]
@@ -352,29 +352,33 @@ public class FriendsHUDControllerShould
 
         view.OnFriendListDisplayed += Raise.Event<Action>();
         
-        friendsController.Received(1).GetFriendsAsync(30, 0);
+        friendsController.Received(1).GetFriends(30, 0);
     }
     
     [Test]
     public void GetFriendRequestsWhenBecomesVisible()
     {
+        view.FriendRequestReceivedCount.Returns(0);
+        view.FriendRequestSentCount.Returns(0);
         view.IsRequestListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
         
         controller.SetVisibility(true);
         
-        friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
+        friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
     }
     
     [Test]
     public void GetFriendRequestsWhenSwitchesTabs()
     {
+        view.FriendRequestReceivedCount.Returns(6);
+        view.FriendRequestSentCount.Returns(11);
         friendsController.IsInitialized.Returns(true);
         view.FriendRequestCount.Returns(0);
 
         view.OnRequestListDisplayed += Raise.Event<Action>();
         
-        friendsController.Received(1).GetFriendRequestsAsync(30, Arg.Any<long>(), 30, Arg.Any<long>());
+        friendsController.Received(1).GetFriendRequests(30, 11, 30, 6);
     }
 
     [Test]
@@ -439,7 +443,7 @@ public class FriendsHUDControllerShould
         friendsController.IsInitialized.Returns(true);
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
-        friendsController.GetFriendsAsync(30, 0);
+        friendsController.GetFriends(30, 0);
     }
     
     [TestCase(3)]
@@ -451,7 +455,7 @@ public class FriendsHUDControllerShould
         
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
-        friendsController.Received(1).GetFriendsAsync(30, friendCount);
+        friendsController.Received(1).GetFriends(30, friendCount);
     }
     
     [Test]
@@ -460,7 +464,7 @@ public class FriendsHUDControllerShould
         friendsController.IsInitialized.Returns(true);
         view.OnRequireMoreFriendRequests += Raise.Event<Action>();
         
-        friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
+        friendsController.GetFriendRequests(30, 0, 30, 0);
     }
 
     [Test]
@@ -486,7 +490,7 @@ public class FriendsHUDControllerShould
         
         view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
         
-        friendsController.Received(1).GetFriendsAsync(searchText, 100);
+        friendsController.Received(1).GetFriends(searchText, 100);
         view.Received(1).FilterFriends(Arg.Is<Dictionary<string, FriendEntryModel>>(d => d.Count == expectedCount));
     }
 

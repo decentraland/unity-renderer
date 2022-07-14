@@ -78,19 +78,19 @@ public class FriendsController : MonoBehaviour, IFriendsController
         });
     }
 
-    public void GetFriendsAsync(int limit, int skip) =>
+    public void GetFriends(int limit, int skip) =>
         WebInterface.GetFriends(limit, skip);
 
-    public void GetFriendsAsync(string usernameOrId, int limit)
+    public void GetFriends(string usernameOrId, int limit)
     {
         WebInterface.GetFriends(usernameOrId, limit);
     }
 
-    public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit,
-        long receivedFromTimestamp)
+    public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit,
+        int receivedSkip)
     {
-        WebInterface.GetFriendRequests(sentLimit, sentFromTimestamp, receivedLimit,
-            receivedFromTimestamp);
+        WebInterface.GetFriendRequests(sentLimit, sentSkip, receivedLimit,
+            receivedSkip);
     }
 
     public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
