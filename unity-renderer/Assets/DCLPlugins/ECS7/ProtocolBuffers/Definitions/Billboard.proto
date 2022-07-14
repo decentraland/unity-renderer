@@ -8,3 +8,4 @@ message PBBillboard {
   bool y = 2;
   bool z = 3;
 }
+
