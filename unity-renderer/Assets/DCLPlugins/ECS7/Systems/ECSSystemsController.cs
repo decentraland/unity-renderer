@@ -7,15 +7,22 @@ public delegate void ECS7System();
 
 public class ECSSystemsController : IDisposable
 {
-    private readonly IList<ECS7System> runningSystems;
+    private readonly IList<ECS7System> updateSystems;
+    private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
+    private readonly ECS7System componentWriteSystem;
 
-    public ECSSystemsController(IUpdateEventHandler updateEventHandler)
+    public ECSSystemsController(IUpdateEventHandler updateEventHandler, ECS7System componentWriteSystem)
     {
         this.updateEventHandler = updateEventHandler;
-        updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        this.componentWriteSystem = componentWriteSystem;
 
-        runningSystems = new List<ECS7System>(1)
+        updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+
+        updateSystems = new ECS7System[] { };
+
+        lateUpdateSystems = new ECS7System[]
         {
             ECSCameraSystem.Update
         };
@@ -24,14 +31,25 @@ public class ECSSystemsController : IDisposable
     public void Dispose()
     {
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
     }
 
     private void Update()
     {
-        int count = runningSystems.Count;
+        int count = updateSystems.Count;
         for (int i = 0; i < count; i++)
         {
-            runningSystems[i].Invoke();
+            updateSystems[i].Invoke();
         }
+    }
+
+    private void LateUpdate()
+    {
+        int count = lateUpdateSystems.Count;
+        for (int i = 0; i < count; i++)
+        {
+            lateUpdateSystems[i].Invoke();
+        }
+        componentWriteSystem.Invoke();
     }
 }

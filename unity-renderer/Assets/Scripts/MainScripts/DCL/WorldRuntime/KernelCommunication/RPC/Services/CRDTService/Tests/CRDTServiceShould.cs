@@ -2,13 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
+using Proto;
 using RPC;
 using rpc_csharp;
 using rpc_csharp_test;
@@ -98,74 +98,58 @@ namespace Tests
         }
 
         [Test]
-        public async void SendCRDTNotificationToClient()
+        public async void SendCRDTtoScene()
         {
-            TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+            string scene1 = "temptation1";
+            string scene2 = "temptation2";
 
-            UniTaskCompletionSource<CRDTManyMessages> clientReceiveCRDT = null;
-            bool isLastElementOfStream = false;
+            CRDTProtocol sceneState1 = new CRDTProtocol();
+            CRDTProtocol sceneState2 = new CRDTProtocol();
 
-            // this task simulate renderer generating CRDT notifications to send to client
-            UniTask.RunOnThreadPool(async () =>
-            {
-                await UniTask.Yield();
-                var crdt = new CRDTMessage()
-                {
-                    key = 2,
-                    timestamp = 3945,
-                    data = new byte[] { 2, 4, 6, 8 }
-                };
-                var sceneId = "temptation";
-                var crdtBytes = CreateCRDTMessage(crdt);
+            CRDTMessage messageToScene1 = sceneState1.Create(1, 34, new byte[] { 1, 0, 2, 45, 67 });
+            CRDTMessage messageToScene2 = sceneState2.Create(45, 9, new byte[] { 42, 42, 42, 41 });
 
-                clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
-                context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
-                var clientReceive = await clientReceiveCRDT.Task;
+            sceneState1.ProcessMessage(messageToScene1);
+            sceneState2.ProcessMessage(messageToScene2);
 
-                Assert.AreEqual(clientReceive.SceneId, sceneId);
-                Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
+            context.crdtContext.scenesOutgoingCrdts.Add(scene1, sceneState1);
+            context.crdtContext.scenesOutgoingCrdts.Add(scene2, sceneState2);
 
-                await UniTask.Yield();
-                crdt = new CRDTMessage()
-                {
-                    key = 1,
-                    timestamp = 344,
-                    data = new byte[] { 122, 32, 1 }
-                };
-                sceneId = "temptation2";
-                crdtBytes = CreateCRDTMessage(crdt);
-
-                isLastElementOfStream = true;
-
-                clientReceiveCRDT = new UniTaskCompletionSource<CRDTManyMessages>();
-                context.crdtContext.notifications.Enqueue((sceneId, crdtBytes));
-                clientReceive = await clientReceiveCRDT.Task;
-
-                Assert.AreEqual(clientReceive.SceneId, sceneId);
-                Assert.IsTrue(AreEqual(crdtBytes, clientReceive.Payload.ToByteArray()));
-            }, true, testCancellationSource.Token);
-
-            bool testDone = false;
-
+            // Simulate client requesting scene's crdt
             try
             {
-                // client receives CRDT notifications
-                await foreach (var element in testClient.CallStream<CRDTManyMessages>("CrdtNotificationStream", new CRDTStreamRequest()))
-                {
-                    var receivedCrdt = await element;
-                    clientReceiveCRDT.TrySetResult(receivedCrdt);
-                    if (isLastElementOfStream)
-                    {
-                        testDone = true;
-                        break;
-                    }
-                }
+                TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+
+                // request for `scene1`
+                CRDTManyMessages response1 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
+                    new PullCRDTRequest() { SceneId = scene1 });
+
+                var deserializer = KernelBinaryMessageDeserializer.Deserialize(response1.Payload.ToByteArray());
+                deserializer.MoveNext();
+                CRDTMessage message = (CRDTMessage)deserializer.Current;
+
+                Assert.AreEqual(messageToScene1.key, message.key);
+                Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
+                Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
+                Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene1));
+
+                // request for `scene2`
+                CRDTManyMessages response2 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
+                    new PullCRDTRequest() { SceneId = scene2 });
+
+                deserializer = KernelBinaryMessageDeserializer.Deserialize(response2.Payload.ToByteArray());
+                deserializer.MoveNext();
+                message = (CRDTMessage)deserializer.Current;
+
+                Assert.AreEqual(messageToScene2.key, message.key);
+                Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
+                Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
+                Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene2));
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
             }
-            Assert.IsTrue(testDone);
         }
 
         static byte[] CreateCRDTMessage(CRDTMessage message)
