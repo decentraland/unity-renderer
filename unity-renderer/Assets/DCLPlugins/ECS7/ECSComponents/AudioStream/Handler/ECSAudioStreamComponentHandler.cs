@@ -34,6 +34,9 @@ namespace DCL.ECSComponents
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
             settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
             DataStore.i.sceneBoundariesChecker.Add(entity,this);
+
+            isRendererActive = CommonScriptableObjects.rendererState.Get();
+            isInsideScene = scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
