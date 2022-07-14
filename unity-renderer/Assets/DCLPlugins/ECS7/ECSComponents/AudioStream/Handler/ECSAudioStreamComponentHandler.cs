@@ -18,6 +18,7 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal AudioSource audioSource;
         internal PBAudioStream model;
+        internal IParcelScene scene;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
@@ -26,6 +27,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene; 
             audioSource = entity.gameObject.AddComponent<AudioSource>();
             
             CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
@@ -120,7 +122,7 @@ namespace DCL.ECSComponents
 
         private void OnSceneChanged(string sceneId, string prevSceneId)
         {
-            isInsideScene = sceneId == CommonScriptableObjects.sceneID.Get();
+            isInsideScene = sceneId == scene.sceneData.id;
             ConditionsToPlayChanged();
         }
 
