@@ -113,7 +113,7 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model);
+            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
             
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
@@ -126,8 +126,6 @@ namespace DCL.ECSComponents
         {
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
-            if (meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
             if (model != null)

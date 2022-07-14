@@ -56,9 +56,7 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
-        BaseAvatarDummy baseAvatar = new BaseAvatarDummy(avatarRevealContainer, avatarContainer);
         avatar = new AvatarSystem.Avatar(
-            baseAvatar,
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,

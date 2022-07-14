@@ -1,6 +1,6 @@
 namespace DCL.Components
 {
-    internal interface ICameraModeArea
+    public interface ICameraModeArea
     {
         CameraMode.ModeId cameraMode { get; }
     }

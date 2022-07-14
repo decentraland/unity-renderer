@@ -16,14 +16,14 @@ namespace Tests
         private const int COMPONENT_ID = 26;
 
         private ECSComponentWriter componentWriter;
-        private IDummyEventSubscriber<string, long, int, byte[]> writeComponentSubscriber;
+        private IDummyEventSubscriber<string, long, int, byte[], ECSComponentWriteType> writeComponentSubscriber;
         private IParcelScene scene;
         private IDCLEntity entity;
 
         [SetUp]
         public void SetUp()
         {
-            writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<string, long, int, byte[]>>();
+            writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<string, long, int, byte[], ECSComponentWriteType>>();
             componentWriter = new ECSComponentWriter(writeComponentSubscriber.React);
             scene = Substitute.For<IParcelScene>();
             entity = Substitute.For<IDCLEntity>();
@@ -48,15 +48,15 @@ namespace Tests
                 someVector = Vector3.up
             };
 
-            componentWriter.PutComponent(scene, entity, COMPONENT_ID, model);
-            writeComponentSubscriber.Received(1).React(SCENE_ID, ENTITY_ID, COMPONENT_ID, Arg.Any<byte[]>());
+            componentWriter.PutComponent(scene, entity, COMPONENT_ID, model, ECSComponentWriteType.DEFAULT);
+            writeComponentSubscriber.Received(1).React(SCENE_ID, ENTITY_ID, COMPONENT_ID, Arg.Any<byte[]>(), Arg.Any<ECSComponentWriteType>());
         }
 
         [Test]
         public void RemoveComponent()
         {
-            componentWriter.RemoveComponent(scene, entity, COMPONENT_ID);
-            writeComponentSubscriber.Received(1).React(SCENE_ID, ENTITY_ID, COMPONENT_ID, null);
+            componentWriter.RemoveComponent(scene, entity, COMPONENT_ID, ECSComponentWriteType.DEFAULT);
+            writeComponentSubscriber.Received(1).React(SCENE_ID, ENTITY_ID, COMPONENT_ID, null, Arg.Any<ECSComponentWriteType>());
         }
     }
 }

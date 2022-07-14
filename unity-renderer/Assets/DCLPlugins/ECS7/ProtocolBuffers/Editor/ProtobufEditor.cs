@@ -48,8 +48,12 @@ namespace DCL.Protobuf
 
         private const string PROTO_VERSION = "3.12.3";
 
-        private const string NPM_PACKAGE = "decentraland-ecs";
-        private const string NPM_PACKAGE_PROTO_DEF = "/package/dist/ecs7/proto-definitions";
+        // Use this parameter when you want a fixed version of the @dcl/protocol, otherwise leave it empty
+        //private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2611997102.commit-8e362ff.tgz";
+        private const string FIXED_NPM_PACKAGE_LINK = "";
+
+        private const string NPM_PACKAGE = "@dcl/protocol";
+        private const string NPM_PACKAGE_PROTO_DEF = "/package/ecs/components/";
 
         private struct ProtoComponent
         {
@@ -77,9 +81,9 @@ namespace DCL.Protobuf
             if (!IsProtoVersionValid())
                 DownloadProtobuffExecutable();
 
-            DownloadProtoDefinitions(version);
-            GenerateComponentCode(version);
-            CompilationPipeline.RequestScriptCompilation();
+             DownloadProtoDefinitions(version);
+             GenerateComponentCode(version);
+             CompilationPipeline.RequestScriptCompilation();
         }
         
         [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
@@ -112,15 +116,22 @@ namespace DCL.Protobuf
             libraryInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(libraryContent["dist"].ToString());
 
             string tgzUrl = libraryInfo["tarball"].ToString();
+
+            // If we have a fixed version, use it
+            if (FIXED_NPM_PACKAGE_LINK.Length > 0) {
+                tgzUrl = FIXED_NPM_PACKAGE_LINK;
+            }
+
             VerboseLog(NPM_PACKAGE + "@" + version + "url: " + tgzUrl);
 
             // Download package
-            string packageName = NPM_PACKAGE + "-" + version + ".tgz";
+            string packageWithoutSlash = NPM_PACKAGE.Replace("/", "-"); // Replace / because in the file system is interpreted as a folder
+            string packageName = packageWithoutSlash + "-" + version + ".tgz";
             client = new WebClient();
             client.DownloadFile(tgzUrl, packageName);
             VerboseLog("File downloaded " + packageName);
 
-            string destPackage = NPM_PACKAGE + "-" + version;
+            string destPackage = packageWithoutSlash + "-" + version;
             if (Directory.Exists(destPackage))
                 Directory.Delete(destPackage, true);
 
@@ -409,7 +420,13 @@ namespace DCL.Protobuf
         {
             string path = Application.dataPath + PATH_TO_GENERATED + EXECUTABLE_VERSION_FILENAME;
             string version = GetVersion(path);
-            return version == PROTO_VERSION;
+            string protoPath = GetPathToProto();
+            
+            // If we are in windows, we add the extension of the file
+#if UNITY_EDITOR_WIN
+            protoPath += ".exe";
+#endif
+            return version == PROTO_VERSION && File.Exists(protoPath);
         }
         
         private static string GetVersion(string path)
@@ -551,7 +568,7 @@ namespace DCL.Protobuf
         private static bool AddExecutablePermisson(string path)
         {
             // This is the console to convert the proto
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"${path}\"" };
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "chmod", Arguments = $"+x \"{path}\"" };
             
             Process proc = new Process() { StartInfo = startInfo };
             proc.StartInfo.UseShellExecute = false;
