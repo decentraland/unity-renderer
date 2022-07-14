@@ -98,6 +98,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     set {
       sceneId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
+  }
 
   /// <summary>Field number for the "payload" field.</summary>
   public const int PayloadFieldNumber = 2;
@@ -109,6 +110,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     set {
       payload_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -122,6 +124,13 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     if (ReferenceEquals(other, null)) {
       return false;
     }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (SceneId != other.SceneId) return false;
+    if (Payload != other.Payload) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -158,6 +167,8 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -174,6 +185,8 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
+  }
+  #endif
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -182,32 +195,14 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     if (SceneId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(SceneId);
     }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(CRDTManyMessages other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (SceneId != other.SceneId) return false;
-      if (Payload != other.Payload) return false;
-      return Equals(_unknownFields, other._unknownFields);
+    if (Payload.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeBytesSize(Payload);
     }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (SceneId.Length != 0) hash ^= SceneId.GetHashCode();
-      if (Payload.Length != 0) hash ^= Payload.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
     }
+    return size;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -215,44 +210,14 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     if (other == null) {
       return;
     }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (SceneId.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(SceneId);
-      }
-      if (Payload.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteBytes(Payload);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
+    if (other.SceneId.Length != 0) {
+      SceneId = other.SceneId;
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (SceneId.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(SceneId);
-      }
-      if (Payload.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteBytes(Payload);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
+    if (other.Payload.Length != 0) {
+      Payload = other.Payload;
     }
-    #endif
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -275,14 +240,9 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
           break;
         }
       }
-      if (Payload.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Payload);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -298,32 +258,14 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
           SceneId = input.ReadString();
           break;
         }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            SceneId = input.ReadString();
-            break;
-          }
-          case 18: {
-            Payload = input.ReadBytes();
-            break;
-          }
+        case 18: {
+          Payload = input.ReadBytes();
+          break;
         }
       }
     }
-    #endif
+  }
+  #endif
 
 }
 
@@ -382,6 +324,11 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (ReferenceEquals(other, null)) {
       return false;
     }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    return Equals(_unknownFields, other._unknownFields);
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -390,6 +337,8 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
+    return hash;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -406,6 +355,8 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -414,6 +365,8 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
+  }
+  #endif
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -422,6 +375,8 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
+    return size;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -429,6 +384,8 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
     if (other == null) {
       return;
     }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -443,11 +400,9 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
       }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      return Equals(_unknownFields, other._unknownFields);
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -460,7 +415,6 @@ public sealed partial class CRDTResponse : pb::IMessage<CRDTResponse>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
       }
-      return hash;
     }
   }
   #endif
@@ -550,6 +504,8 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
+    return hash;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -570,6 +526,8 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -582,6 +540,8 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
+  }
+  #endif
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -593,6 +553,8 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
+    return size;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -642,8 +604,6 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
           break;
         }
       }
-      if (SceneId != other.SceneId) return false;
-      return Equals(_unknownFields, other._unknownFields);
     }
   }
   #endif
@@ -740,6 +700,8 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -748,6 +710,8 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
+  }
+  #endif
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -756,6 +720,8 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
+    return size;
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -763,7 +729,8 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
     if (other == null) {
       return;
     }
-    #endif
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -778,8 +745,9 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
       }
-      return size;
     }
+  #endif
+  }
 
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -793,12 +761,12 @@ public sealed partial class CRDTStreamRequest : pb::IMessage<CRDTStreamRequest>
           break;
       }
     }
-    #endif
-
   }
-
-  #endregion
+  #endif
 
 }
+
+#endregion
+
 
 #endregion Designer generated code

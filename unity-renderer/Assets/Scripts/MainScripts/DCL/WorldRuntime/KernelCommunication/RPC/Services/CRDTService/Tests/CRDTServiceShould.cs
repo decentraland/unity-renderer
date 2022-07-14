@@ -8,7 +8,6 @@ using Google.Protobuf;
 using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
-using Proto;
 using RPC;
 using rpc_csharp;
 using rpc_csharp_test;

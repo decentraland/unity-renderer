@@ -7,7 +7,6 @@ using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
-using Proto;
 using rpc_csharp;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
