@@ -1303,6 +1303,7 @@ GameObject:
   - component: {fileID: 3038961468454440957}
   - component: {fileID: 1920591115849218038}
   - component: {fileID: 6678198409597641197}
+  - component: {fileID: 3151600264837629838}
   m_Layer: 19
   m_Name: OptionsMenu
   m_TagString: Untagged
@@ -1408,6 +1409,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &3151600264837629838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4718379463481471059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b504f18e1924ad6a914c7e1b1476c15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4922725684960662959
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,7 +1454,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -412.0867}
+  m_AnchoredPosition: {x: 205, y: -814.1734}
   m_SizeDelta: {x: 380, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4961114643441497326
