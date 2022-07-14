@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -6,7 +7,6 @@ using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
-using Proto;
 using rpc_csharp;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
@@ -29,7 +29,8 @@ namespace RPC.Services
             CRDTService<RPCContext>.RegisterService(
                 port,
                 sendCrdt: OnCRDTReceived,
-                pullCrdt: SendCRDT
+                pullCrdt: SendCRDT,
+                crdtNotificationStream: CrdtNotificationStream
             );
         }
 
@@ -97,6 +98,12 @@ namespace RPC.Services
                 Debug.LogError(e);
                 return emptyResponse;
             }
+        }
+
+        [Obsolete("deprecated")]
+        private static IEnumerator<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
+        {
+            yield break;
         }
     }
 }
