@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-using ECSSystems.CameraSystem;
 
 public delegate void ECS7System();
 
