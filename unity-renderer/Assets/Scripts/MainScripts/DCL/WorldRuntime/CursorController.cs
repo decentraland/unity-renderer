@@ -15,7 +15,7 @@ public class CursorController : MonoBehaviour
     public CanvasGroup canvasGroup;
 
     private Coroutine alphaRoutine;
-    private bool isHidden;
+    private bool isAllUIHidden;
 
     void Awake()
     {
@@ -49,7 +49,7 @@ public class CursorController : MonoBehaviour
 
     private void AllUIVisible_OnChange(bool current, bool previous)
     {
-        isHidden = current;
+        isAllUIHidden = current;
 
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
         ChangeCursorVisible(data.cursorVisible.Get(), false);
@@ -57,7 +57,7 @@ public class CursorController : MonoBehaviour
 
     private void ChangeCursorVisible(bool current, bool previous)
     {
-        if (current && !isHidden)
+        if (current && !isAllUIHidden)
             Show();
         else
             Hide();
