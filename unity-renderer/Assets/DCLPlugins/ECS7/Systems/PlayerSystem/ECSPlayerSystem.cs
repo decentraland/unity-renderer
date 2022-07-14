@@ -6,21 +6,22 @@ using DCL.Models;
 using ECSSystems.Helpers;
 using UnityEngine;
 
-namespace ECSSystems.CameraSystem
+namespace ECSSystems.PlayerSystem
 {
-    public static class ECSCameraSystem
+    public static class ECSPlayerSystem
     {
-        private static readonly DataStore_Camera dataStoreCamera = DataStore.i.camera;
+
+        private static readonly BaseVariable<Transform> avatarTransform = DataStore.i.world.avatarTransform;
 
         public static void Update()
         {
             if (!CommonScriptableObjects.rendererState.Get())
                 return;
 
-            Transform cameraT = dataStoreCamera.transform.Get();
+            Transform avatarT = avatarTransform.Get();
 
-            UnityEngine.Vector3 cameraPosition = cameraT.position;
-            Quaternion cameraRotation = cameraT.rotation;
+            UnityEngine.Vector3 avatarPosition = avatarT.position;
+            Quaternion avatarRotation = avatarT.rotation;
             UnityEngine.Vector3 worldOffset = CommonScriptableObjects.worldOffset;
 
             var loadedScenes = ReferencesContainer.loadedScenes;
@@ -31,8 +32,8 @@ namespace ECSSystems.CameraSystem
             {
                 scene = loadedScenes[i];
 
-                var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref worldOffset);
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
+                var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
+                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
                     transform, ECSComponentWriteType.SEND_TO_SCENE);
             }
         }

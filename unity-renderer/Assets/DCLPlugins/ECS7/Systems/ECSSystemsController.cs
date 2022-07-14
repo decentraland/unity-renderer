@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DCL;
 using ECSSystems.CameraSystem;
+using ECSSystems.PlayerSystem;
 
 public delegate void ECS7System();
 
@@ -24,7 +25,8 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSCameraSystem.Update
+            ECSCameraSystem.Update,
+            ECSPlayerSystem.Update
         };
     }
 
