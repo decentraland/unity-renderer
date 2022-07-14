@@ -25,6 +25,8 @@ public interface IFriendsHUDComponentView
     bool ListByOnlineStatus { set; }
     int FriendCount { get; }
     int FriendRequestCount { get; }
+    int FriendRequestSentCount { get; }
+    int FriendRequestReceivedCount { get; }
     bool IsFriendListActive { get; }
     bool IsRequestListActive { get; }
 

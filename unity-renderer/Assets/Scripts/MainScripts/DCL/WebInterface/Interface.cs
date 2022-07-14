@@ -739,9 +739,9 @@ namespace DCL.Interface
         private class GetFriendRequestsPayload
         {
             public int sentLimit;
-            public long sentFrom;
+            public int sentSkip;
             public int receivedLimit;
-            public long receivedFrom;
+            public int receivedSkip;
         }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
@@ -1663,13 +1663,13 @@ namespace DCL.Interface
             });
         }
 
-        public static void GetFriendRequests(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+        public static void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             SendMessage("GetFriendRequests", new GetFriendRequestsPayload
             {
-                receivedFrom = receivedFromTimestamp,
+                receivedSkip = receivedSkip,
                 receivedLimit = receivedLimit,
-                sentFrom = sentFromTimestamp,
+                sentSkip = sentSkip,
                 sentLimit = sentLimit
             });
         }

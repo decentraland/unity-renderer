@@ -27,6 +27,8 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public bool ListByOnlineStatus { get; set; }
     public int FriendCount { get; }
     public int FriendRequestCount { get; }
+    public int FriendRequestSentCount { get; }
+    public int FriendRequestReceivedCount { get; }
     public bool IsFriendListActive { get; }
     public bool IsRequestListActive { get; }
 

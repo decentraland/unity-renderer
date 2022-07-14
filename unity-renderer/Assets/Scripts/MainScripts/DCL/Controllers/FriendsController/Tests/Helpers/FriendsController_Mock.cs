@@ -45,27 +45,24 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
-    public void GetFriendsAsync(int limit, int skip)
+    public void GetFriends(int limit, int skip)
     {
     }
 
-    public void GetFriendsAsync(string usernameOrId, int limit)
+    public void GetFriends(string usernameOrId, int limit)
     {
     }
 
-    public void GetFriendRequestsAsync(int sentLimit, long sentFromTimestamp, int receivedLimit, long receivedFromTimestamp)
+    public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
     {
-        throw new NotImplementedException();
     }
 
     public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
     {
-        throw new NotImplementedException();
     }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
-        throw new NotImplementedException();
     }
 
     public UserStatus GetUserStatus(string userId)
@@ -117,8 +114,6 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public void RaiseUpdateUserStatus(string id, UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
-
-    public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
 
     public void AddFriend(UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
 }
