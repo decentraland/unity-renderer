@@ -183,7 +183,7 @@ namespace DCL.Chat.Channels
                 memberCount = Random.Range(0, 16),
                 unseenMessages = Random.Range(0, 16)
             };
-            controller.JoinChannelConfirmation(JsonUtility.ToJson(msg));
+            controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
         }
 
         public void GetChannelMessages(string channelId, int limit, long fromTimestamp) =>

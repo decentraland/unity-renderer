@@ -28,7 +28,6 @@ public class WorldChatWindowController : IHUD
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
-    internal bool isRequestingFriendsWithDMs;
     internal bool isRequestingDMs;
 
     public IWorldChatWindowView View => view;
