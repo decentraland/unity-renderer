@@ -7,39 +7,36 @@ namespace DCL.AvatarModifierAreaFeedback
 {
     public class AvatarModifierAreaFeedbackController : IHUD
     {
-        internal AvatarModifierAreaFeedbackView view;
-        private BaseVariable<int> InAvatarModifierAreaForSelfCounter => DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter;
-        private BaseCollection<string> InAvatarModifierAreaWarningDescription => DataStore.i.HUDs.inAvatarModifierAreaWarningDescription;
-        
-        public AvatarModifierAreaFeedbackController()
-        {
-            view = AvatarModifierAreaFeedbackView.Create();
+        internal IAvatarModifierAreaFeedbackView view;
 
-            InAvatarModifierAreaForSelfCounter.OnChange += OnAvatarModifierValueChanged;
-            InAvatarModifierAreaWarningDescription.OnAdded += OnAvatarModifierWarningAdded;
-            InAvatarModifierAreaWarningDescription.OnSet += OnAvatarModifierWarningReset;
-        }
-    
-        private void OnAvatarModifierValueChanged(int current, int previous)
+        private BaseStack<List<string>> avatarModifierStack;
+        public AvatarModifierAreaFeedbackController(BaseStack<List<string>> stack, IAvatarModifierAreaFeedbackView view)
         {
-            view.SetVisibility(current >= 1);
+            this.view = view;
+
+            this.avatarModifierStack = stack;
+            
+            avatarModifierStack.OnAdded += OnAvatarModifierValueChanged;
+            avatarModifierStack.OnRemoved += OnAvatarModifierWarningReset;
         }
-    
-        private void OnAvatarModifierWarningAdded(string newWarning)
+
+        private void OnAvatarModifierValueChanged(List<string> avatarModifiersActivated)
         {
-            view.AddNewWarningMessage(newWarning);
+            view.SetWarningMessage(avatarModifiersActivated);
+            view.SetVisibility(true);
         }
-    
-        private void OnAvatarModifierWarningReset(IEnumerable<string> resetList)
+        
+        private void OnAvatarModifierWarningReset(List<string> obj)
         {
             view.ResetWarningMessage();
+            view.SetVisibility(false);
         }
 
         public void Dispose()
         {
-            InAvatarModifierAreaForSelfCounter.OnChange -= OnAvatarModifierValueChanged;
-            InAvatarModifierAreaWarningDescription.OnAdded -= OnAvatarModifierWarningAdded;
-            InAvatarModifierAreaWarningDescription.OnSet -= OnAvatarModifierWarningReset;
+            avatarModifierStack.OnAdded -= OnAvatarModifierValueChanged;
+            avatarModifierStack.OnRemoved -= OnAvatarModifierWarningReset;
+            view.Dispose();
         }
         public void SetVisibility(bool visible)
         {

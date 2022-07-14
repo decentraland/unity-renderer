@@ -33,7 +33,7 @@ public class AvatarModifierArea : BaseComponent
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
-
+    private List<string> currentModifiers;
     public override string componentName => "avatarModifierArea";
 
     public AvatarModifierArea()
@@ -106,7 +106,7 @@ public class AvatarModifierArea : BaseComponent
             OnAvatarEnter?.Invoke(avatarThatEntered);
             if (avatarThatEntered.tag.Equals("Player"))
             {
-                DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Get() + 1);
+                DataStore.i.HUDs.inAvatarModifierStackWarnings.Add(currentModifiers);
             }
         }
 
@@ -116,7 +116,7 @@ public class AvatarModifierArea : BaseComponent
             OnAvatarExit?.Invoke(avatarThatExited);
             if (avatarThatExited && avatarThatExited.tag.Equals("Player"))
             {
-                DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Get() - 1);
+                DataStore.i.HUDs.inAvatarModifierStackWarnings.Remove(null);
             }
         }
 
@@ -166,9 +166,6 @@ public class AvatarModifierArea : BaseComponent
                 OnAvatarExit?.Invoke(avatar);
             }
         }
-        
-        DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(0);
-        DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Set(new List<string>());
     }
 
     private void ApplyCurrentModel()
@@ -177,6 +174,7 @@ public class AvatarModifierArea : BaseComponent
         DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
 
         cachedModel = (Model)this.model;
+        currentModifiers = new List<string>();
         if (cachedModel.modifiers != null)
         {
             // Add all listeners
@@ -187,12 +185,8 @@ public class AvatarModifierArea : BaseComponent
 
                 OnAvatarEnter += modifier.ApplyModifier;
                 OnAvatarExit += modifier.RemoveModifier;
-
-                string messageToAdd = modifier.GetWarningDescription();
-                if (!DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Contains(messageToAdd))
-                {
-                    DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Add(messageToAdd);
-                }
+                
+                currentModifiers.Add(modifier.GetWarningDescription());
             }
 
             // Set excluded colliders

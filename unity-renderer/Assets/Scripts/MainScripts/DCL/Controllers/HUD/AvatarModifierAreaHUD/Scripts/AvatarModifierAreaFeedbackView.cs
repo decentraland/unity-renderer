@@ -5,10 +5,19 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL.AvatarModifierAreaFeedback
 {
-    public class AvatarModifierAreaFeedbackView : BaseComponentView
+    public interface IAvatarModifierAreaFeedbackView : IDisposable
+    {
+        void SetVisibility(bool visible);
+        void SetWarningMessage(List<string> warningMessages);
+        void ResetWarningMessage();
+
+    }
+    
+    public class AvatarModifierAreaFeedbackView : MonoBehaviour, IAvatarModifierAreaFeedbackView, IPointerEnterHandler, IPointerExitHandler
     {
 
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
@@ -22,24 +31,23 @@ namespace DCL.AvatarModifierAreaFeedback
         private float animationDuration;
         private Coroutine warningMessageAnimationCoroutine;
         private Coroutine iconAnimationCoroutine;
+        private bool isVisible;
         private AvatarModifierAreaFeedbackState currentState;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
 
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
 
-        public override void Awake()
+        public void Awake()
         {
-            base.Awake();
             warningMessageGroup = warningMessageRectTransform.GetComponent<CanvasGroup>();
             animationDuration = 0.5f;
             currentState = AvatarModifierAreaFeedbackState.NEVER_SHOWN;
         }
         
-        public override void Show(bool instant = false)
+        private void Show()
         {
             if (isVisible) return;
-            
-            base.Show(instant);
+            isVisible = true;
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
                 ShowWarningMessage();
@@ -51,9 +59,9 @@ namespace DCL.AvatarModifierAreaFeedback
             }
         }
         
-        public override void Hide(bool instant = false)
+        private void Hide()
         {
-            base.Hide(instant);
+            isVisible = false;
             
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
@@ -81,21 +89,17 @@ namespace DCL.AvatarModifierAreaFeedback
                 Hide();
             }
         }
-        
-        public override void OnFocus()
+
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            base.OnFocus();
-            
             if (!isVisible) return;
 
             ShowWarningMessage();
             HideIcon();
         }
-
-        public override void OnLoseFocus()
+        
+        public void OnPointerExit(PointerEventData eventData)
         {
-            base.OnLoseFocus();
-
             if (!isVisible) return;
             
             HideWarningMessage();
@@ -152,19 +156,20 @@ namespace DCL.AvatarModifierAreaFeedback
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
         }
 
-        public void AddNewWarningMessage(string newWarning)
+        public void SetWarningMessage(List<string> newAvatarModifiers)
         {
-            if (!string.IsNullOrEmpty(descriptionText.text)) descriptionText.text += "\n";
-                
-            descriptionText.text += newWarning;
-        }
+            string newTextToSet = "";
+            foreach (string newAvatarModifierWarning in newAvatarModifiers)
+            {
+                newTextToSet += newAvatarModifierWarning + "\n";
+            }
 
+            descriptionText.text = newTextToSet;
+        }
         public void ResetWarningMessage()
         {
             descriptionText.text = "";
         }
-
-        public override void RefreshControl() { }
 
         IEnumerator WarningMessageAnimationCoroutine(Vector3 destinationScale, float destinationAlpha)
         {
@@ -201,6 +206,10 @@ namespace DCL.AvatarModifierAreaFeedback
             warningIconCanvasGroup.alpha = destinationAlpha;
         }
 
+        public void Dispose()
+        {
+            deactivatePreviewCancellationToken?.Dispose();
+        }
 
     }
 }

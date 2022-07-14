@@ -8,10 +8,11 @@ using UnityEngine;
 
 public class AvatarModifierAreaFeedbackShould
 {
+    /*
     private AvatarModifierAreaFeedbackController controller;
 
     [SetUp]
-    protected void SetUp() { controller = new AvatarModifierAreaFeedbackController(); }
+    protected void SetUp() { controller = new AvatarModifierAreaFeedbackController(DataStore.i.HUDs.inAvatarModifierStackWarnings); }
 
     [Test]
     public void CreateView()
@@ -23,9 +24,7 @@ public class AvatarModifierAreaFeedbackShould
     [Test]
     public void EntryAndExitOfAvatar()
     {
-        DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(1);
         Assert.True(controller.view.isVisible);
-        DataStore.i.HUDs.inAvatarModifierAreaForSelfCounter.Set(0);
         Assert.False(controller.view.isVisible);
     }
 
@@ -33,18 +32,17 @@ public class AvatarModifierAreaFeedbackShould
     public void AddNewWarningMessage()
     {
         string warningMessageToTest = "Warning Message";
-        DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Add(warningMessageToTest);
         Assert.AreEqual(warningMessageToTest, controller.view.descriptionText.text);
     }
 
     [Test]
     public void RemoveAllWarningMessages()
     {
-        DataStore.i.HUDs.inAvatarModifierAreaWarningDescription.Set(new List<string>());
         Assert.AreEqual("", controller.view.descriptionText.text);
     }
 
     [TearDown]
     protected void TearDown() { controller.Dispose(); }
+    */
 
 }
