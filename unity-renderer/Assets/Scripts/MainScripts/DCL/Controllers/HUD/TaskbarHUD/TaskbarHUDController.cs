@@ -304,6 +304,9 @@ public class TaskbarHUDController : IHUD
 
     private void OpenPublicChannelOnPreviewMode()
     {
+        if (isNotificationPanelInitialized.Get() != null)
+            return;
+
         chatToggleTargetWindow = publicChatChannel;
         publicChatChannel.SetVisibility(true, false);
         publicChatChannel.ActivatePreviewModeInstantly();

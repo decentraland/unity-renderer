@@ -37,6 +37,7 @@ public class PublicChatChannelController : IHUD
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+    internal BaseVariable<Transform> isNotificationPanelInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
 
     public PublicChatChannelController(IChatController chatController,
         ILastReadMessagesService lastReadMessagesService,
@@ -64,7 +65,7 @@ public class PublicChatChannelController : IHUD
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
 
-        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+        if (isNotificationPanelInitialized.Get() == null)
         {
             view.OnFocused += HandleViewFocused;
             View.OnClickOverWindow += HandleViewClicked;
@@ -340,7 +341,7 @@ public class PublicChatChannelController : IHUD
     
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        if (DataStore.i.HUDs.isNotificationPanelInitialized == null)
+        if (isNotificationPanelInitialized.Get() == null)
             await UniTask.Delay(30000, cancellationToken: cancellationToken);
 
         await UniTask.SwitchToMainThread(cancellationToken);
