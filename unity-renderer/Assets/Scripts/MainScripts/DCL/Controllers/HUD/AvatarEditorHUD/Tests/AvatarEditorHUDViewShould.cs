@@ -278,12 +278,8 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void ShowWarningWhenNoLinkedWearableAvailable()
         {
-            AvatarEditorHUDView view = Substitute.For<AvatarEditorHUDView>();
-            view.noItemInCollectionWarning = GameObject.Instantiate(controller.myView.noItemInCollectionWarning);
-            
             controller.ToggleThirdPartyCollection(true, "MOCK_COLLECTION_ID", "MOCK_COLLECTION_NAME");
-            
-            view.Received().ShowNoItemOfWearableCollectionWarning();
+            Assert.True(controller.view.noItemInCollectionWarning.isActiveAndEnabled);
         }
 
         private WearableItem CreateDummyNFT(string rarity)
