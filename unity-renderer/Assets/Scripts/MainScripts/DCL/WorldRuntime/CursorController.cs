@@ -15,6 +15,7 @@ public class CursorController : MonoBehaviour
     public CanvasGroup canvasGroup;
 
     private Coroutine alphaRoutine;
+    private bool isAllUIHidden;
 
     void Awake()
     {
@@ -22,6 +23,7 @@ public class CursorController : MonoBehaviour
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
         data.cursorVisible.OnChange += ChangeCursorVisible;
         data.cursorType.OnChange += OnChangeType;
+        CommonScriptableObjects.allUIHidden.OnChange += AllUIVisible_OnChange;
     }
 
     private void OnDestroy()
@@ -29,6 +31,7 @@ public class CursorController : MonoBehaviour
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
         data.cursorVisible.OnChange -= ChangeCursorVisible;
         data.cursorType.OnChange -= OnChangeType;
+        CommonScriptableObjects.allUIHidden.OnChange -= AllUIVisible_OnChange;
     }
 
     private void OnChangeType(DataStore_Cursor.CursorType current, DataStore_Cursor.CursorType previous)
@@ -44,9 +47,17 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    private void AllUIVisible_OnChange(bool current, bool previous)
+    {
+        isAllUIHidden = current;
+
+        DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
+        ChangeCursorVisible(data.cursorVisible.Get(), false);
+    }
+
     private void ChangeCursorVisible(bool current, bool previous)
     {
-        if (current)
+        if (current && !isAllUIHidden)
             Show();
         else
             Hide();
