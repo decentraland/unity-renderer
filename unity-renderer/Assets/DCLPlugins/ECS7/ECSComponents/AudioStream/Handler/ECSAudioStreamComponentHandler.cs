@@ -29,19 +29,21 @@ namespace DCL.ECSComponents
             this.scene = scene; 
             audioSource = entity.gameObject.AddComponent<AudioSource>();
             
-            CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
+            // If it is a smart wearable, we don't look up to see if the scene has change since the scene is global
+            if(!scene.isPersistent)
+                CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
             settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
 
             isRendererActive = CommonScriptableObjects.rendererState.Get();
-            isInsideScene = scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            isInsideScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Dispose(entity);
+            Dispose();
         }
                 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioStream model)
@@ -61,9 +63,10 @@ namespace DCL.ECSComponents
             SendUpdateAudioStreamEvent(model.Playing);
         }
 
-        private void Dispose(IDCLEntity entity)
+        private void Dispose()
         {
-            CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
+            if(!scene.isPersistent)
+                CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
