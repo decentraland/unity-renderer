@@ -153,23 +153,7 @@ namespace DCL.ECSComponents.Test
             // Assert
             Assert.IsFalse(audioSourceComponentHandler.isPlaying);
         }
-        
-        [Test]
-        public void StopAudioIfItsOutsideScene()
-        {
-            // Arrange
-            PBAudioStream model = CreateAudioStreamModel();
-            model.Playing = true;
-            audioSourceComponentHandler.isInsideScene = false;
-            audioSourceComponentHandler.isRendererActive = true;
-            
-            // Act
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            // Assert
-            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
-        }
-        
         [Test]
         public void StopAudioIfItsOutsideBoundaries()
         {
