@@ -40,7 +40,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
-        textGameObject.transform.SetParent(entity.gameObject.transform);
+        textGameObject.transform.SetParent(entity.gameObject.transform,false);
         dataStore.AddShapeReady(entity.entityId,textGameObject);
         textComponent.text = string.Empty;
         
