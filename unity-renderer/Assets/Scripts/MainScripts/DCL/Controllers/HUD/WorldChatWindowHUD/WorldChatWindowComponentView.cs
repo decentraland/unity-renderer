@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Chat.HUD;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal ScrollRect scroll;
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal Button openChannelSearchButton;
+    [SerializeField] internal ChannelContextualMenu channelContextualMenu;
     [SerializeField] private WorldChatWindowModel model;
 
     [Header("Load More Entries")] [SerializeField]
@@ -46,6 +48,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private int currentAvatarSnapshotIndex;
     private bool isLoadingPrivateChannels;
     private bool isSearchMode;
+    private string optionsChannelId;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -53,6 +56,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public event Action<string> OnSearchChatRequested;
     public event Action OnRequireMorePrivateChats;
     public event Action OnOpenChannelSearch;
+    public event Action<string> OnLeaveChannel;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -89,6 +93,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             if (scrollPos.y < 0.005f)
                 OnRequireMorePrivateChats?.Invoke();
         });
+        channelContextualMenu.OnLeave += () => OnLeaveChannel?.Invoke(optionsChannelId);
         UpdateHeaders();
     }
 
@@ -289,19 +294,34 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private void Set(PublicChatModel model)
     {
         var channelId = model.channelId;
-        var entry = new PublicChatEntry.PublicChatEntryModel(channelId, model.name, model.lastMessageTimestamp, model.joined, model.memberCount);
+        var entryModel = new PublicChatEntry.PublicChatEntryModel(channelId, model.name, model.lastMessageTimestamp, model.joined, model.memberCount);
+        PublicChatEntry entry;
 
         if (isSearchMode)
         {
             publicChannelList.Remove(channelId);
-            searchResultsList.Set(entry);
+            searchResultsList.Set(entryModel);
+            entry = (PublicChatEntry) searchResultsList.Get(channelId);
         }
         else
-            publicChannelList.Set(channelId, entry);
+        {
+            publicChannelList.Set(channelId, entryModel);
+            entry = publicChannelList.Get(channelId);
+        }
+
+        entry.OnOpenOptions -= OpenChannelOptions;
+        entry.OnOpenOptions += OpenChannelOptions;
 
         UpdateHeaders();
         UpdateLayout();
         SortLists();
+    }
+
+    private void OpenChannelOptions(PublicChatEntry entry)
+    {
+        optionsChannelId = entry.Model.channelId;
+        entry.Dock(channelContextualMenu);
+        channelContextualMenu.Show();
     }
 
     private void SortLists() => isSortingDirty = true;

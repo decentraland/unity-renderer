@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Chat.HUD;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,12 +14,14 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     [SerializeField] internal GameObject joinedContainer;
     [SerializeField] internal GameObject notJoinedContainer;
     [SerializeField] internal TMP_Text memberCountLabel;
+    [SerializeField] internal Button optionsButton;
     
     private IChatController chatController;
 
     public PublicChatEntryModel Model => model;
 
     public event Action<PublicChatEntry> OnOpenChat;
+    public event Action<PublicChatEntry> OnOpenOptions;
 
     public static PublicChatEntry Create()
     {
@@ -29,6 +32,7 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     {
         base.Awake();
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
+        optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
     }
 
     public void Initialize(IChatController chatController)
@@ -53,6 +57,11 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
             notJoinedContainer.SetActive(!model.isJoined);
         if (memberCountLabel)
             memberCountLabel.SetText($"{model.memberCount} members");
+    }
+
+    public void Dock(ChannelContextualMenu contextualMenu)
+    {
+        contextualMenu.transform.position = optionsButton.transform.position;
     }
 
     [Serializable]

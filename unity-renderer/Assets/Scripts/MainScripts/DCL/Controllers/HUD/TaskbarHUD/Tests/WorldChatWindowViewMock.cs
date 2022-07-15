@@ -7,10 +7,10 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChat;
-    public event Action<string> OnUnfriend;
     public event Action<string> OnSearchChatRequested;
     public event Action OnRequireMorePrivateChats;
     public event Action OnOpenChannelSearch;
+    public event Action<string> OnLeaveChannel;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
