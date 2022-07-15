@@ -48,25 +48,15 @@ namespace Tests.AvatarModifierAreaFeedback
             hudView.SetWarningMessage(mockWarningMessages);
             hudView.SetVisibility(true);
             hudView.OnPointerEnter(null);
-            Assert.NotNull(hudView.iconAnimationCoroutine);
-            Assert.NotNull(hudView.warningMessageAnimationCoroutine);
+            Assert.True(hudView.isVisible);
         }
         
         [Test]
         public void CheckPointerExit()
         {
-            hudView.SetWarningMessage(mockWarningMessages);
-            hudView.SetVisibility(true);
-            hudView.OnPointerEnter(null);
-            Assert.NotNull(hudView.warningMessageAnimationCoroutine);
-        }
-        
-        [Test]
-        public void CheckRunningCoroutines()
-        {
-            hudView.SetWarningMessage(mockWarningMessages);
-            hudView.SetVisibility(true);
-            Assert.NotNull(hudView.warningMessageAnimationCoroutine);
+            hudView.OnPointerExit(null);
+            hudView.SetVisibility(false);
+            Assert.False(hudView.isVisible);
         }
         
         [Test]
@@ -82,7 +72,6 @@ namespace Tests.AvatarModifierAreaFeedback
         protected void TearDown()
         {
             hudView.Dispose();
-            GameObject.Destroy(hudView.gameObject);
         }
 
     }

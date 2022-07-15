@@ -29,11 +29,13 @@ namespace DCL.AvatarModifierAreaFeedback
         [SerializeField] internal TMP_Text descriptionText;
         internal CanvasGroup warningMessageGroup;
         internal float animationDuration;
-        internal Coroutine warningMessageAnimationCoroutine;
-        internal Coroutine iconAnimationCoroutine;
         internal bool isVisible;
         internal AvatarModifierAreaFeedbackState currentState;
         internal CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+        internal CancellationTokenSource deactivateIconAnimationToken = new CancellationTokenSource();
+        internal CancellationTokenSource deactivateWarningMesageAnimationToken = new CancellationTokenSource();
+
+
 
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
 
@@ -51,7 +53,7 @@ namespace DCL.AvatarModifierAreaFeedback
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
                 ShowWarningMessage();
-                HideFirstTimeWarningMessage(deactivatePreviewCancellationToken.Token).Forget();
+                HideFirstTimeWarningMessageUniTask(deactivatePreviewCancellationToken.Token).Forget();
             }
             else
             {
@@ -106,53 +108,34 @@ namespace DCL.AvatarModifierAreaFeedback
             ShowIcon();
         }
         
-        private async UniTaskVoid HideFirstTimeWarningMessage(CancellationToken cancellationToken)
-        {
-            await UniTask.Delay(5000, cancellationToken: cancellationToken);
-            await UniTask.SwitchToMainThread(cancellationToken);
-            if (cancellationToken.IsCancellationRequested) return;
-            HideWarningMessage();
-            ShowIcon();
-        }
-
         private void HideWarningMessage()
         {
-            if (warningMessageAnimationCoroutine != null)
-            {
-                StopCoroutine(warningMessageAnimationCoroutine);
-            }
-            warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.zero, 0));
+            deactivateWarningMesageAnimationToken.Cancel();
+            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
+            WarningMessageAnimationUniTask(Vector3.zero, 0, deactivateWarningMesageAnimationToken.Token).Forget();
         }
         
         private void ShowWarningMessage()
         {
-            if (warningMessageAnimationCoroutine != null)
-            {
-                StopCoroutine(warningMessageAnimationCoroutine);
-            }
-            warningMessageAnimationCoroutine = StartCoroutine(WarningMessageAnimationCoroutine(Vector3.one, 1));
+            deactivateWarningMesageAnimationToken.Cancel();
+            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
+            WarningMessageAnimationUniTask(Vector3.one, 1, deactivateWarningMesageAnimationToken.Token).Forget();
             currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
         }
         
         private void HideIcon()
         {
-            if (iconAnimationCoroutine != null)
-            {
-                StopCoroutine(iconAnimationCoroutine);
-            }
-            iconAnimationCoroutine = StartCoroutine(IconAnimationCoroutine(0));
+            deactivateIconAnimationToken.Cancel();
+            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
+            IconAnimationUniTask(0, deactivateWarningMesageAnimationToken.Token).Forget();
         }
         
         private void ShowIcon()
         {
-            if (iconAnimationCoroutine != null)
-            {
-                StopCoroutine(iconAnimationCoroutine);
-            }
-            
             warningIconCanvasGroup.blocksRaycasts = true;
-            
-            iconAnimationCoroutine = StartCoroutine(IconAnimationCoroutine(1));
+            deactivateIconAnimationToken.Cancel();
+            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
+            IconAnimationUniTask(1, deactivateWarningMesageAnimationToken.Token).Forget();;
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
         }
 
@@ -170,8 +153,17 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             descriptionText.text = "";
         }
+        
+        async UniTaskVoid HideFirstTimeWarningMessageUniTask(CancellationToken cancellationToken)
+        {
+            await UniTask.Delay(5000, cancellationToken: cancellationToken);
+            await UniTask.SwitchToMainThread(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
+            HideWarningMessage();
+            ShowIcon();
+        }
 
-        IEnumerator WarningMessageAnimationCoroutine(Vector3 destinationScale, float destinationAlpha)
+        async UniTaskVoid WarningMessageAnimationUniTask(Vector3 destinationScale, float destinationAlpha, CancellationToken cancellationToken)
         {
             var t = 0f;
             Vector3 startScale = warningMessageRectTransform.localScale;
@@ -183,14 +175,16 @@ namespace DCL.AvatarModifierAreaFeedback
 
                 warningMessageRectTransform.localScale = Vector3.Lerp(startScale, destinationScale, t / animationDuration);
                 warningMessageGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
-                yield return null;
+                await UniTask.Yield();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
             }
 
             warningMessageRectTransform.localScale = destinationScale;
             warningMessageGroup.alpha = destinationAlpha;
         }
 
-        IEnumerator IconAnimationCoroutine(float destinationAlpha)
+        async UniTaskVoid IconAnimationUniTask(float destinationAlpha, CancellationToken cancellationToken)
         {
             var t = 0f;
             float startAlphaMessage = warningIconCanvasGroup.alpha;
@@ -200,7 +194,9 @@ namespace DCL.AvatarModifierAreaFeedback
                 t += Time.deltaTime;
 
                 warningIconCanvasGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
-                yield return null;
+                await UniTask.Yield();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
             }
 
             warningIconCanvasGroup.alpha = destinationAlpha;
@@ -209,6 +205,8 @@ namespace DCL.AvatarModifierAreaFeedback
         public void Dispose()
         {
             deactivatePreviewCancellationToken?.Dispose();
+            deactivateIconAnimationToken?.Dispose();
+            deactivateWarningMesageAnimationToken?.Dispose();
         }
 
     }
