@@ -22,18 +22,18 @@ namespace DCL.AvatarModifierAreaFeedback
 
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
 
-        private enum AvatarModifierAreaFeedbackState { NEVER_SHOWN, ICON_VISIBLE, WARNING_MESSAGE_VISIBLE }
+        internal enum AvatarModifierAreaFeedbackState { NEVER_SHOWN, ICON_VISIBLE, WARNING_MESSAGE_VISIBLE }
 
         [SerializeField] private RectTransform warningMessageRectTransform;
         [SerializeField] private CanvasGroup warningIconCanvasGroup;
         [SerializeField] internal TMP_Text descriptionText;
-        private CanvasGroup warningMessageGroup;
-        private float animationDuration;
-        private Coroutine warningMessageAnimationCoroutine;
-        private Coroutine iconAnimationCoroutine;
-        private bool isVisible;
-        private AvatarModifierAreaFeedbackState currentState;
-        private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
+        internal CanvasGroup warningMessageGroup;
+        internal float animationDuration;
+        internal Coroutine warningMessageAnimationCoroutine;
+        internal Coroutine iconAnimationCoroutine;
+        internal bool isVisible;
+        internal AvatarModifierAreaFeedbackState currentState;
+        internal CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
 
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
 
