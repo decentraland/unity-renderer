@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 66.31, y: 0}
+  m_AnchoredPosition: {x: 56.559998, y: 0}
   m_SizeDelta: {x: 0, y: 14.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8283498787789294027
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: playername
+  m_text: '#asdasd'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,
@@ -454,11 +454,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ca7b41e62b34acb94e03ef57780a16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   button: {fileID: 8916603609239170272}
   notificationMessage: {fileID: 5362621604388217969}
   notificationHeader: {fileID: 8843727763408434147}
   notificationTimestamp: {fileID: 9112808225028901382}
   image: {fileID: 179125349042078575}
+  imageBackground: {fileID: 7925643972424681854}
   isPrivate: 1
   backgroundTransform: {fileID: 4826730172210535619}
   model:
@@ -466,7 +468,7 @@ MonoBehaviour:
     maxContentCharacters: 40
     message: Test shorter
     time: 12:33
-    messageHeader: playername
+    messageHeader: '#asdasd'
     isPrivate: 1
     imageUri: 
     notificationTargetId: 
@@ -566,7 +568,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 54.31, y: 0}
+  m_AnchoredPosition: {x: 44.559998, y: 0}
   m_SizeDelta: {x: 0, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5902264211663148987

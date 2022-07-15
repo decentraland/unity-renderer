@@ -12,6 +12,8 @@ public class MainChatNotificationsComponentView : BaseComponentView
     [SerializeField] RectTransform chatEntriesContainer;
     [SerializeField] GameObject chatNotification;
     [SerializeField] ScrollRect scrollRectangle;
+    [SerializeField] Button notificationButton;
+    [SerializeField] public TMP_Text notificationMessage;
 
     public ChatNotificationController controller;
 
@@ -27,6 +29,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private Pool entryPool;
     private bool isOverMessage = false;
     private bool isOverPanel = false;
+    private int notificationCount = 1;
 
     public static MainChatNotificationsComponentView Create()
     {
@@ -37,6 +40,11 @@ public class MainChatNotificationsComponentView : BaseComponentView
     {
         controller = chatController;
         onFocused += FocusedOnPanel;
+
+        notificationButton?.onClick.RemoveAllListeners();
+        notificationButton?.onClick.AddListener(() => SetScrollToEnd());
+
+        scrollRectangle.onValueChanged.AddListener(CheckScrollValue);
     }
 
     public void Show()
@@ -48,6 +56,14 @@ public class MainChatNotificationsComponentView : BaseComponentView
     {
         SetScrollToEnd();
         gameObject.SetActive(false);
+    }
+
+    private void CheckScrollValue(Vector2 newValue)
+    { 
+        if(scrollRectangle.normalizedPosition == new Vector2(0, 0))
+        {
+            ResetNotificationButton();
+        }
     }
 
     public void ShowNotifications()
@@ -68,7 +84,6 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
     public ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
-        CheckNotificationCountAndRelease();
         entryPool = GetNotificationEntryPool();
         var newNotification = entryPool.Get();
         
@@ -96,12 +111,35 @@ public class MainChatNotificationsComponentView : BaseComponentView
         chatNotificationComponentView.onFocused += FocusedOnNotification;
         chatNotificationComponentView.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
 
-        if (!isOverMessage)
+        if (isOverMessage)
+        {
+            notificationButton.gameObject.SetActive(true);
+            IncreaseNotificationCount();
+        }
+        else
+        {
+            ResetNotificationButton();
             SetScrollToEnd();
+        }
 
         controller.ResetFadeout(!isOverMessage && !isOverPanel);
-
+        CheckNotificationCountAndRelease();
         return chatNotificationComponentView;
+    }
+
+    private void ResetNotificationButton()
+    {
+        notificationButton.gameObject.SetActive(false);
+        notificationCount = 0;
+        notificationMessage.text = notificationCount.ToString();
+    }
+
+    private void IncreaseNotificationCount()
+    {
+        //if (!notificationButton.gameObject.isActiveInHierarchy) return;
+
+        notificationCount++;
+        notificationMessage.text = notificationCount.ToString();
     }
 
     private void SetScrollToEnd()

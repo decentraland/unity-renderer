@@ -14,6 +14,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal TMP_Text notificationHeader;
     [SerializeField] internal TMP_Text notificationTimestamp;
     [SerializeField] internal ImageComponentView image;
+    [SerializeField] internal GameObject imageBackground;
     [SerializeField] internal bool isPrivate;
     [SerializeField] internal RectTransform backgroundTransform;
 
@@ -97,7 +98,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         model.isPrivate = isPrivate;
         this.isPrivate = isPrivate;
-        image.gameObject.SetActive(isPrivate);
+        imageBackground.SetActive(isPrivate);
 
         ForceUIRefresh();
     }

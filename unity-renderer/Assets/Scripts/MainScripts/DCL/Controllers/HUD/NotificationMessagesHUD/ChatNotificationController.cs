@@ -104,5 +104,6 @@ public class ChatNotificationController : IHUD
     {
         chatController.OnAddMessage -= HandleMessageAdded;
         mainChatNotificationView.OnClickedNotification -= OpenNotificationChat;
+        visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
     }
 }

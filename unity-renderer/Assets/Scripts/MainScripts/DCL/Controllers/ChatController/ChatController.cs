@@ -36,6 +36,14 @@ public class ChatController : MonoBehaviour, IChatController
         OnAddMessage?.Invoke(message);
     }
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            FakePublicMessage();
+        }
+    }
+
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
