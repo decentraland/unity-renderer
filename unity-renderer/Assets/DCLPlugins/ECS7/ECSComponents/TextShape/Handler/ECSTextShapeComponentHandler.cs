@@ -26,6 +26,9 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private readonly DataStore_ECS7 dataStore;
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
 
+    private bool isFontLoaded = false;
+    private string lastFontUsed;
+
     public ECSTextShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, AssetPromiseKeeper_Font fontPromiseKeeper)
     {
         dataStore = dataStoreEcs7;
@@ -35,8 +38,6 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
         textGameObject = new GameObject(COMPONENT_NAME);
-        // We rotate the text game object so when the text face the player, it is written normally instead of inverse ( like a mirror) 
-        textGameObject.transform.Rotate(UnityEngine.Vector3.up,-180);
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
@@ -64,24 +65,34 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {
-        this.currentModel = model;
+        currentModel = model;
 
         PrepareRectTransform(model);
-        dataStore.AddPendingResource(scene.sceneData.id, model);
-        promise = new AssetPromise_Font(model.Font);
-        promise.OnSuccessEvent += assetFont =>
+        
+        // If we use the same font than the last time, we just update the model, if not, we download it and apply the changes after the download
+        if (lastFontUsed != null && lastFontUsed == model.Font)
         {
-            textComponent.font = assetFont.font;
-            ApplyModelChanges(model);
-            entity.OnShapeUpdated?.Invoke(entity);
-            RemoveModelFromPending(scene);
-        };
-        promise.OnFailEvent += ( mesh,  exception) =>
+            ApplyModelChanges(entity, model);
+        }
+        else
         {
-            RemoveModelFromPending(scene);
-        };
+            lastFontUsed = model.Font;
+            dataStore.AddPendingResource(scene.sceneData.id, model);
+            promise = new AssetPromise_Font(model.Font);
+            promise.OnSuccessEvent += assetFont =>
+            {
+                textComponent.font = assetFont.font;
+                ApplyModelChanges(entity, model);
 
-        fontPromiseKeeper.Keep(promise);
+                RemoveModelFromPending(scene);
+            };
+            promise.OnFailEvent += ( mesh,  exception) =>
+            {
+                RemoveModelFromPending(scene);
+            };
+
+            fontPromiseKeeper.Keep(promise);
+        }
     }
 
     private void RemoveModelFromPending(IParcelScene scene)
@@ -114,7 +125,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
     }
     
-    internal void ApplyModelChanges(PBTextShape model)
+    internal void ApplyModelChanges(IDCLEntity entity, PBTextShape model)
     {
         textComponent.text = model.Text;
 
@@ -191,6 +202,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
 
         textGameObject.SetActive(model.Visible);
+        entity.OnShapeUpdated?.Invoke(entity);
     }
 
     internal TextAlignmentOptions GetAlignment(string vTextAlign, string hTextAlign)
