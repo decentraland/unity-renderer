@@ -282,7 +282,7 @@ namespace DCL.Controllers
             PoolableObject po = PoolManager.i.Get(PoolManagerFactory.EMPTY_GO_POOL_NAME);
 
             newEntity.meshesInfo.innerGameObject = po.gameObject;
-            newEntity.gameObject = po.gameObject;
+            newEntity.SetGameObject(po.gameObject);
 
 #if UNITY_EDITOR
             newEntity.gameObject.name = "ENTITY_" + id;

@@ -12,6 +12,7 @@ namespace DCL.Models
         MeshesInfo meshesInfo { get; set; }
         GameObject meshRootGameObject { get; }
         Renderer[] renderers { get; }
+        void SetGameObject(GameObject gameObject);
         void SetParent(IDCLEntity entity);
         void AddChild(IDCLEntity entity);
         void RemoveChild(IDCLEntity entity);
