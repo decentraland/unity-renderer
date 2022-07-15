@@ -67,7 +67,6 @@ namespace DCL.ECSComponents.Test
             // Arrange
             
             // We prepare the componentHandler
-            audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
 
@@ -129,7 +128,6 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBAudioStream model = CreateAudioStreamModel();
             model.Playing = true;
-            audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
             
@@ -146,7 +144,6 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBAudioStream model = CreateAudioStreamModel();
             model.Playing = true;
-            audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = false;
             
@@ -163,7 +160,6 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBAudioStream model = CreateAudioStreamModel();
             model.Playing = true;
-            audioSourceComponentHandler.isInsideBoundaries = true;
             audioSourceComponentHandler.isInsideScene = false;
             audioSourceComponentHandler.isRendererActive = true;
             
@@ -180,7 +176,6 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBAudioStream model = CreateAudioStreamModel();
             model.Playing = true;
-            audioSourceComponentHandler.isInsideBoundaries = false;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
             

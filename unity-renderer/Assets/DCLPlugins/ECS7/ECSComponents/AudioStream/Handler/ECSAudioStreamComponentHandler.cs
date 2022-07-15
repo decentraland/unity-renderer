@@ -10,7 +10,7 @@ using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioStreamComponentHandler : IECSComponentHandler<PBAudioStream>, IOutOfSceneBoundariesHandler
+    public class ECSAudioStreamComponentHandler : IECSComponentHandler<PBAudioStream>
     {
         private float settingsVolume = 0;
 
@@ -23,7 +23,6 @@ namespace DCL.ECSComponents
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
         internal bool isRendererActive = false;
-        internal bool isInsideBoundaries = true;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
@@ -35,7 +34,6 @@ namespace DCL.ECSComponents
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
             settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
-            DataStore.i.sceneBoundariesChecker.Add(entity,this);
 
             isRendererActive = CommonScriptableObjects.rendererState.Get();
             isInsideScene = scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
@@ -62,12 +60,6 @@ namespace DCL.ECSComponents
             // If everything went ok, we update the state
             SendUpdateAudioStreamEvent(model.Playing);
         }
-        
-        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
-        {
-            this.isInsideBoundaries = isInsideBoundaries;
-            ConditionsToPlayChanged();
-        }
 
         private void Dispose(IDCLEntity entity)
         {
@@ -75,7 +67,6 @@ namespace DCL.ECSComponents
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
             
             StopStreaming();
             
@@ -117,7 +108,7 @@ namespace DCL.ECSComponents
 
         private bool CanAudioStreamBePlayed()
         {
-            return isInsideScene && isRendererActive && isInsideBoundaries;
+            return isInsideScene && isRendererActive;
         }
 
         private void OnSceneChanged(string sceneId, string prevSceneId)
