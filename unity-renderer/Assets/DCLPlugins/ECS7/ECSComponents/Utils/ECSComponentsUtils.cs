@@ -30,8 +30,8 @@ public static class ECSComponentsUtils
 
     public static void UpdateMeshInfoColliders(long entityId, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
-        int colliderLayer = LayerUtils.CalculateLayerMask(entityId, withCollisions, isPointerBlocker);
-
+        int colliderLayer =  isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        
         foreach (Collider collider in meshesInfo.colliders)
         {
             collider.enabled = withCollisions;
