@@ -68,7 +68,7 @@ Material:
     - _GridColor: {r: 0, g: 0, b: 0, a: 0}
     - _HighlightColor: {r: 0, g: 0.5686169, b: 1, a: 1}
     - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
-    - _OverlayColor: {r: 0, g: 0.71557903, b: 1, a: 0.48235294}
+    - _OverlayColor: {r: 0, g: 0.8026962, b: 1, a: 0.48235294}
     - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
   m_BuildTextureStacks: []
