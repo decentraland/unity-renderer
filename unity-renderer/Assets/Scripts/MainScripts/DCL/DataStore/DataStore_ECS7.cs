@@ -11,8 +11,11 @@ namespace DCL
         public BaseDictionary<IParcelScene, ECSComponentsManager> componentsManagers = new BaseDictionary<IParcelScene, ECSComponentsManager>();
         public readonly BaseDictionary<string, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<string, BaseRefCountedCollection<object>>();
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
-        public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
-        public readonly BaseCollection<long> onPointerEventEntities = new BaseCollection<long>();
+        
+        // Those are related to the OnPointerEvents
+        public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
+        public readonly BaseRefCounter<long> entitiesOnPointerEvent = new BaseRefCounter<long>();
+        public readonly BaseDictionary<long, GameObject> entityOnPointerEventColliderGameObject = new BaseDictionary<long, GameObject>();
     }
 }

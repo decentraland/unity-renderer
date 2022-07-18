@@ -5,6 +5,7 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using DCLPlugins.ECSComponents;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using UnityEngine;
 
 namespace DCL.ECSComponents.OnPointerUp
 {
@@ -28,11 +29,19 @@ namespace DCL.ECSComponents.OnPointerUp
                 representantion.Dispose();
             
             representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter);
+            dataStore.entitiesOnPointerEvent.AddRefCount(entity.entityId);
             isAdded = false;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            dataStore.entitiesOnPointerEvent.RemoveRefCount(entity.entityId);
+            if (!dataStore.entitiesOnPointerEvent.ContainsKey(entity.entityId))
+            {
+                GameObject.Destroy(dataStore.entityOnPointerEventColliderGameObject[entity.entityId]);
+                dataStore.entityOnPointerEventColliderGameObject.Remove(entity.entityId);
+            }
+
             representantion?.Dispose();
             dataStore.RemovePointerEvent(entity.entityId,representantion);
             isAdded = false;

@@ -27,21 +27,8 @@ namespace DCL.Components
         public void Initialize(IDCLEntity entity)
         {
             ownerEntity = entity;
-            List<Collider> colliderList = entity?.meshesInfo?.colliders;
-
-            // If there is no collider because the entity doesn't have collisions, we create them and assign the OnPointerEvent layer
-            if (colliderList == null || colliderList.Count == 0)
-            {
-                GenerateColliders(entity);
-            }
-            else
-            {
-                // Colliders already exists, so we just assign the name 
-                for (int i = 0; i < colliderList.Count; i++)
-                {
-                    AddColliderName(colliderList[i]);
-                }
-            }
+            
+            GenerateColliders(entity);
         }
 
         // This function should be deleted when delete de old ECS
@@ -187,6 +174,12 @@ namespace DCL.Components
         
         private void GenerateColliders(IDCLEntity entity)
         {
+            GameObject onPointerEventGameObjectCollider = new GameObject(COLLIDER_NAME);
+
+            onPointerEventGameObjectCollider.name = COLLIDER_NAME;
+            onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
+            onPointerEventGameObjectCollider.transform.SetParent(entity.gameObject.transform, false);
+
             var renderers = entity?.meshesInfo?.renderers;
             if(renderers == null || renderers.Length == 0)
                 return;
@@ -197,9 +190,10 @@ namespace DCL.Components
             {
                 if (renderers[i] == null)
                     continue;
-                colliders[i] = CreateCollider(renderers[i], renderers[i].gameObject);
+                colliders[i] = CreateCollider(renderers[i], onPointerEventGameObjectCollider);
                 AddColliderName(colliders[i]);
             }
+            DataStore.i.ecs7.entityOnPointerEventColliderGameObject.Add(entity.entityId,onPointerEventGameObjectCollider);
         }
     }
 }

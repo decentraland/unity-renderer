@@ -177,7 +177,7 @@ namespace DCL
             entity.meshesInfo.colliders.Clear(); 
             
             // This is de default layer, however, take into account that OnPointerEvents can change this layer
-            int colliderLayer = LayerUtils.CalculateLayerMask(entity.entityId, hasCollision, isPointerBlocker);
+            int colliderLayer = CalculateCollidersLayer(hasCollision,isPointerBlocker);//LayerUtils.CalculateLayerMask(entity.entityId, hasCollision, isPointerBlocker);
 
             MeshCollider collider;
 
@@ -193,6 +193,16 @@ namespace DCL
                 
                 entity.meshesInfo.colliders.Add(collider);
             }
+        }
+        
+        private int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
+        {
+            if (!withCollisions && isPointerBlocker)
+                return PhysicsLayers.onPointerEventLayer;
+            if (withCollisions && !isPointerBlocker)
+                return PhysicsLayers.onPointerEventBlockerWithouthCollisionsLayer;
+
+            return PhysicsLayers.defaultLayer;
         }
     }
 }

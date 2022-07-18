@@ -22,7 +22,7 @@ namespace DCL.Components
             eventColliders = new OnPointerEventColliders();
         }
         
-        public void AssignColliders(IDCLEntity entity)
+        public void CreateColliders(IDCLEntity entity)
         {
             this.entity = entity;
             eventColliders.Initialize(entity);

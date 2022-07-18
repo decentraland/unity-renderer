@@ -30,14 +30,14 @@ namespace DCLPlugins.ECSComponents
         private string hoverText;
         private float distance;
 
-        public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter)
+        public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerInputEventType type, IECSComponentWriter componentWriter)
         {
             this.dataStore = dataStore;
             this.type = type;
             this.componentWriter = componentWriter;
             pointerEventHandler = new OnPointerEventHandler();
             eventEntity = entity;
-            
+
             Initializate(entity);
         }
 
@@ -53,21 +53,18 @@ namespace DCLPlugins.ECSComponents
 
         public void Dispose()
         {
-            dataStore.shapesReady.OnAdded -= ConfigureColliders;
+            dataStore.shapesReady.OnAdded -= CreateColliders;
             pointerEventHandler.Dispose();
         }
 
         public Transform GetTransform() { return eventEntity.gameObject.transform; }
-        
+
         IDCLEntity IPointerEvent.entity => eventEntity;
-        
-        void IPointerEvent.SetHoverState(bool hoverState)
-        {
-            pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button.ToString(), hoverText);
-        }
-        
+
+        void IPointerEvent.SetHoverState(bool hoverState) { pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button.ToString(), hoverText); }
+
         public bool /*IPointerEvent*/ IsAtHoverDistance(float distance) => distance <= this.distance;
-        
+
         public bool /*IPointerEvent*/ IsVisible()
         {
             if (eventEntity == null)
@@ -84,7 +81,7 @@ namespace DCLPlugins.ECSComponents
 
             return isVisible;
         }
-        
+
         void IPointerInputEvent.Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
             if (!IsVisible())
@@ -95,13 +92,13 @@ namespace DCLPlugins.ECSComponents
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = eventEntity.entityId;
                 int componentId;
-                
+
                 // We have to differentiate between OnPointerDown and OnPointerUp
                 switch (type)
                 {
                     case PointerInputEventType.DOWN:
                         componentId = ComponentID.ON_POINTER_DOWN_RESULT;
-                        
+
                         PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
                         downPayload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
@@ -109,7 +106,7 @@ namespace DCLPlugins.ECSComponents
                         break;
                     case PointerInputEventType.UP:
                         componentId = ComponentID.ON_POINTER_UP_RESULT;
-                        
+
                         PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
                         payload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
@@ -118,15 +115,22 @@ namespace DCLPlugins.ECSComponents
                 }
             }
         }
-        
-        PointerInputEventType IPointerInputEvent.GetEventType() => type; 
-        
+
+        PointerInputEventType IPointerInputEvent.GetEventType() => type;
+
         WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton() => (WebInterface.ACTION_BUTTON) button;
 
         bool IPointerInputEvent.ShouldShowHoverFeedback()  => showFeedback;
-        
-        private void ConfigureColliders(long entityId, GameObject shapeGameObject) => pointerEventHandler.AssignColliders(eventEntity);
-        
+
+        private void CreateColliders(long entityId, GameObject shapeGameObject)
+        {
+            if(entityId != eventEntity.entityId)
+                return;
+            
+            pointerEventHandler.CreateColliders(eventEntity);
+        }
+
+
         private bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
             return IsVisible() &&
@@ -136,10 +140,15 @@ namespace DCLPlugins.ECSComponents
         
         private void Initializate(IDCLEntity entity)
         {
+            // If we already have created the collider in another OnPointerEvent, we can skip since we have 1 collider for all OnPointerEvent
+            if (dataStore.entitiesOnPointerEvent.ContainsKey(entity.entityId))
+                return;
+            
+            // If the shape is already ready, we create the colliders now, if not, we wait to the shape to be ready and then we create them
             if (dataStore.shapesReady.ContainsKey(entity.entityId))
-                ConfigureColliders(entity.entityId, entity.meshRootGameObject);
-
-            dataStore.shapesReady.OnAdded += ConfigureColliders;
+                CreateColliders(entity.entityId, entity.meshRootGameObject);
+            
+            dataStore.shapesReady.OnAdded += CreateColliders;
         }
 
         private int GetLamportTimestamp()

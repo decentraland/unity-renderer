@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
-using DCL.CuloDeMono.Utils;
 using DCL.ECSComponents;
-using DCL.ECSComponents.Utils;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
 public static class ECSComponentsUtils
 {
+    public const string ON_POINTER_EVENT_COLLIDER_NAME = "OnPointerEventCollider";
+    
     public static void RemoveMaterialTransition(GameObject go)
     {
         MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
@@ -30,7 +30,7 @@ public static class ECSComponentsUtils
 
     public static void UpdateMeshInfoColliders(long entityId, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
-        int colliderLayer =  isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
+        int colliderLayer =  CalculateCollidersLayer(withCollisions,isPointerBlocker);
         
         foreach (Collider collider in meshesInfo.colliders)
         {
@@ -68,7 +68,7 @@ public static class ECSComponentsUtils
         
         return meshesInfo;
     }
-    
+
     public static void ConfigureRenderer(IDCLEntity entity, MeshFilter[] meshFilters, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
@@ -142,14 +142,25 @@ public static class ECSComponentsUtils
             GameObject.Destroy(collider);
         } 
     }
-    
+
     private static void UpdateRendererVisibility(Renderer renderer, bool isVisible)
     {
         renderer.enabled = isVisible;
-        if (renderer.gameObject.layer == PhysicsLayers.onPointerEventLayer)
+        
+        if (renderer.transform.childCount > 0)
         {
-            var collider = renderer.gameObject.GetComponent<Collider>();
-            collider.enabled = isVisible;
+            var onPointerEventCollider = renderer.transform.GetChild(0).GetComponent<Collider>();
+
+            if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
+                onPointerEventCollider.enabled = isVisible;
         }
+    }
+    
+    private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
+    {
+        if (!withCollisions && isPointerBlocker)
+            return PhysicsLayers.onPointerEventLayer;
+
+        return PhysicsLayers.defaultLayer;
     }
 }
