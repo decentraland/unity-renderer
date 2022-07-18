@@ -59,7 +59,7 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnFocused += HandleViewFocused;
             view.OnRequireMoreMessages += RequestOldConversations;
-            view.LeaveChannel += LeaveChannel;
+            view.OnLeaveChannel += LeaveChannel;
 
             closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
             closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
@@ -159,7 +159,7 @@ namespace DCL.Chat.HUD
                 View.OnClose -= Hide;
                 View.OnFocused -= HandleViewFocused;
                 View.OnRequireMoreMessages -= RequestOldConversations;
-                View.LeaveChannel += LeaveChannel;
+                View.OnLeaveChannel += LeaveChannel;
                 View.Dispose();
             }
             

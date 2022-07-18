@@ -32,7 +32,7 @@ namespace DCL.Chat.HUD
         public event Action<bool> OnFocused;
         public event Action OnBack;
         public event Action OnRequireMoreMessages;
-        public event Action LeaveChannel;
+        public event Action OnLeaveChannel;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
@@ -50,7 +50,7 @@ namespace DCL.Chat.HUD
             originalSize = ((RectTransform) transform).sizeDelta;
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
-            contextualMenu.OnLeave += () => LeaveChannel?.Invoke();
+            contextualMenu.OnLeave += () => OnLeaveChannel?.Invoke();
             optionsButton.onClick.AddListener(ShowOptionsMenu);
             scroll.onValueChanged.AddListener(scrollPos =>
             {

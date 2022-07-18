@@ -6,19 +6,19 @@ namespace DCL.Chat.HUD
 {
     public class ChannelContextualMenu : MonoBehaviour
     {
-        private enum Options
+        internal enum Options
         {
             Leave = 1 << 0
         }
 
-        [SerializeField] private Options options; 
-        [SerializeField] private Button leaveButton;
+        [SerializeField] internal Options options; 
+        [SerializeField] internal Button leaveButton;
 
         private RectTransform rectTransform;
 
         public event Action OnLeave;
 
-        private void Start()
+        private void Awake()
         {
             rectTransform = (RectTransform) transform; 
             leaveButton.onClick.AddListener(() =>
