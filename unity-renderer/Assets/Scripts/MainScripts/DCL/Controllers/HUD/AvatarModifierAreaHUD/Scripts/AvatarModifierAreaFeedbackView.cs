@@ -66,7 +66,6 @@ namespace DCL.AvatarModifierAreaFeedback
             isVisible = false;
             
             deactivatePreviewCancellationToken.Cancel();
-            deactivatePreviewCancellationToken = new CancellationTokenSource();
             
             warningIconCanvasGroup.blocksRaycasts = false;
             
@@ -126,7 +125,7 @@ namespace DCL.AvatarModifierAreaFeedback
         private void HideIcon()
         {
             deactivateIconAnimationToken.Cancel();
-            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
+            deactivateIconAnimationToken  = new CancellationTokenSource();
             IconAnimationUniTask(0, deactivateWarningMesageAnimationToken.Token).Forget();
         }
         
@@ -134,8 +133,8 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             warningIconCanvasGroup.blocksRaycasts = true;
             deactivateIconAnimationToken.Cancel();
-            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
-            IconAnimationUniTask(1, deactivateWarningMesageAnimationToken.Token).Forget();;
+            deactivateIconAnimationToken  = new CancellationTokenSource();
+            IconAnimationUniTask(1, deactivateIconAnimationToken.Token).Forget();;
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
         }
 
@@ -175,6 +174,7 @@ namespace DCL.AvatarModifierAreaFeedback
 
                 warningMessageRectTransform.localScale = Vector3.Lerp(startScale, destinationScale, t / animationDuration);
                 warningMessageGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
+                
                 await UniTask.Yield();
                 if (cancellationToken.IsCancellationRequested)
                     return;
@@ -194,19 +194,23 @@ namespace DCL.AvatarModifierAreaFeedback
                 t += Time.deltaTime;
 
                 warningIconCanvasGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
+                
                 await UniTask.Yield();
                 if (cancellationToken.IsCancellationRequested)
                     return;
             }
-
+            
             warningIconCanvasGroup.alpha = destinationAlpha;
         }
 
         public void Dispose()
         {
+            deactivatePreviewCancellationToken?.Cancel();
+            deactivateWarningMesageAnimationToken?.Cancel();
+            deactivateIconAnimationToken?.Cancel();
             deactivatePreviewCancellationToken?.Dispose();
-            deactivateIconAnimationToken?.Dispose();
             deactivateWarningMesageAnimationToken?.Dispose();
+            deactivateIconAnimationToken?.Dispose();
         }
 
     }

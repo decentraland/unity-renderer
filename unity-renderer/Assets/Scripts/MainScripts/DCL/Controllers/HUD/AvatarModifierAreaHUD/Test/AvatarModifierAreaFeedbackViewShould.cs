@@ -1,12 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using DCL;
 using DCL.AvatarModifierAreaFeedback;
-using NSubstitute;
 using NUnit.Framework;
-using Tests;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests.AvatarModifierAreaFeedback
 {
@@ -65,13 +62,12 @@ namespace Tests.AvatarModifierAreaFeedback
             hudView.SetWarningMessage(mockWarningMessages);
             Assert.AreEqual(hudView.descriptionText.text, mockWarningMessages[0] + "\n");
         }
-        
-        
 
         [TearDown]
         protected void TearDown()
         {
             hudView.Dispose();
+            GameObject.Destroy(hudView);
         }
 
     }
