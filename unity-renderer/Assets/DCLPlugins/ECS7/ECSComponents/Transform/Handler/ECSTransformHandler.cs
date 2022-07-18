@@ -24,8 +24,6 @@ namespace DCL.ECSComponents
             transform.localRotation = model.rotation;
             transform.localScale = model.scale;
 
-            Debug.Log($"position {transform.localPosition}");
-
             long currentParent = entity.parent?.entityId ?? 0;
             if (currentParent != model.parentId)
             {
