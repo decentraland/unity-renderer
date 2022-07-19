@@ -6,7 +6,6 @@ using DCL.Chat.Channels;
 public interface IChatController
 {
     event Action<ChatMessage> OnAddMessage;
-    event Action OnInitialized;
     event Action<Channel> OnChannelUpdated;
     event Action<Channel> OnChannelJoined;
     event Action<string, string> OnJoinChannelError;
@@ -15,6 +14,8 @@ public interface IChatController
     event Action<string, string> OnMuteChannelError;
     event Action<int> OnTotalUnseenMessagesUpdated;
     event Action<string, int> OnUserUnseenMessagesUpdated;
+    event Action<int> OnTotalUnseenChannelsMessagesUpdated;
+    event Action<string, int> OnChannelUnseenMessagesUpdated;
 
     int TotalJoinedChannelCount { get; }
     int TotalUnseenMessages { get; }
@@ -23,6 +24,7 @@ public interface IChatController
     List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId);
     void Send(ChatMessage message);
     void MarkMessagesAsSeen(string userId);
+    void MarkChannelMessagesAsSeen(string channelId);
     void GetPrivateMessages(string userId, int limit, long fromTimestamp);
     void JoinOrCreateChannel(string channelId);
     void LeaveChannel(string channelId);

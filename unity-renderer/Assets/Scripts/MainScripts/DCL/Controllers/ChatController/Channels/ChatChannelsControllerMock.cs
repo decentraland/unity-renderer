@@ -14,17 +14,13 @@ namespace DCL.Chat.Channels
 
         public event Action<int> OnTotalUnseenMessagesUpdated;
         public event Action<string, int> OnUserUnseenMessagesUpdated;
+        public event Action<int> OnTotalUnseenChannelsMessagesUpdated;
+        public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
         public event Action<ChatMessage> OnAddMessage
         {
             add => controller.OnAddMessage += value;
             remove => controller.OnAddMessage -= value;
-        }
-
-        public event Action OnInitialized
-        {
-            add => controller.OnInitialized += value;
-            remove => controller.OnInitialized -= value;
         }
 
         public event Action<Channel> OnChannelUpdated
@@ -130,6 +126,8 @@ namespace DCL.Chat.Channels
         }
 
         public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
+
+        public void MarkChannelMessagesAsSeen(string channelId) => controller.MarkChannelMessagesAsSeen(channelId);
 
         public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
             controller.GetPrivateMessages(userId, limit, fromTimestamp);
