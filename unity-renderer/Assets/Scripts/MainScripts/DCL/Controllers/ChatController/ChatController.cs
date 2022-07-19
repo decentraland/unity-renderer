@@ -116,10 +116,7 @@ public class ChatController : MonoBehaviour, IChatController
         throw new NotImplementedException();
     }
 
-    public void LeaveChannel(string channelId)
-    {
-        throw new NotImplementedException();
-    }
+    public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
 
     public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
     {

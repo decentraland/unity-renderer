@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
-using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -29,8 +28,7 @@ namespace DCL.Chat.HUD
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
         private float lastRequestTime;
-
-        internal string ChannelId { get; set; } = string.Empty;
+        private string channelId;
 
         public event Action OnPressBack;
         public event Action OnClosed;
@@ -61,6 +59,7 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnFocused += HandleViewFocused;
             view.OnRequireMoreMessages += RequestOldConversations;
+            view.OnLeaveChannel += LeaveChannel;
 
             closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
             closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
@@ -75,6 +74,7 @@ namespace DCL.Chat.HUD
 
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
+            chatController.OnChannelLeft += HandleChannelLeft;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
@@ -84,9 +84,9 @@ namespace DCL.Chat.HUD
 
         public void Setup(string channelId)
         {
-            if (string.IsNullOrEmpty(channelId) || channelId == ChannelId) return;
+            if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
 
-            ChannelId = channelId;
+            this.channelId = channelId;
             lastRequestTime = 0;
 
             var channel = chatController.GetAllocatedChannel(channelId);
@@ -104,15 +104,15 @@ namespace DCL.Chat.HUD
                 View?.SetLoadingMessagesActive(false);
                 View?.SetOldMessagesLoadingActive(false);
 
-                if (!string.IsNullOrEmpty(ChannelId))
+                if (!string.IsNullOrEmpty(channelId))
                 {
-                    var channel = chatController.GetAllocatedChannel(ChannelId);
-                    View.Setup(new PublicChatModel(ChannelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+                    var channel = chatController.GetAllocatedChannel(channelId);
+                    View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
-                    if (!directMessagesAlreadyRequested.Contains(ChannelId))
+                    if (!directMessagesAlreadyRequested.Contains(channelId))
                     {
                         RequestMessages(
-                            ChannelId,
+                            channelId,
                             INITIAL_PAGE_SIZE,
                             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
                     }
@@ -143,7 +143,10 @@ namespace DCL.Chat.HUD
             }
 
             if (chatController != null)
+            {
                 chatController.OnAddMessage -= HandleMessageReceived;
+                chatController.OnChannelLeft -= HandleChannelLeft;
+            }
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= ActivatePreviewMode;
@@ -156,6 +159,7 @@ namespace DCL.Chat.HUD
                 View.OnClose -= Hide;
                 View.OnFocused -= HandleViewFocused;
                 View.OnRequireMoreMessages -= RequestOldConversations;
+                View.OnLeaveChannel += LeaveChannel;
                 View.Dispose();
             }
             
@@ -183,7 +187,7 @@ namespace DCL.Chat.HUD
         private void HandleSendChatMessage(ChatMessage message)
         {
             message.messageType = ChatMessage.Type.PRIVATE;
-            message.recipient = ChannelId;
+            message.recipient = channelId;
 
             var isValidMessage = !string.IsNullOrEmpty(message.body)
                                  && !string.IsNullOrWhiteSpace(message.body)
@@ -200,6 +204,12 @@ namespace DCL.Chat.HUD
                 skipChatInputTrigger = true;
                 chatHudController.ResetInputField(true);
                 ActivatePreviewMode();
+                return;
+            }
+
+            if (message.body.ToLower().Equals("/leave"))
+            {
+                LeaveChannel();
                 return;
             }
 
@@ -232,9 +242,9 @@ namespace DCL.Chat.HUD
 
         private void HandlePressBack() => OnPressBack?.Invoke();
 
-        private bool IsMessageFomCurrentChannel(ChatMessage message) => message.sender == ChannelId || message.recipient == ChannelId;
+        private bool IsMessageFomCurrentChannel(ChatMessage message) => message.sender == channelId || message.recipient == channelId;
 
-        private void MarkUserChatMessagesAsRead() => chatController.MarkMessagesAsSeen(ChannelId);
+        private void MarkUserChatMessagesAsRead() => chatController.MarkMessagesAsSeen(channelId);
 
         private void HandleInputFieldSelected()
         {
@@ -316,7 +326,7 @@ namespace DCL.Chat.HUD
         {
             if (IsLoadingMessages()) return;
 
-            var allocatedMessages = chatController.GetAllocatedEntriesByChannel(ChannelId);
+            var allocatedMessages = chatController.GetAllocatedEntriesByChannel(channelId);
 
             if (allocatedMessages.Count <= 0) return;
             var minTimestamp = (long) allocatedMessages.Min(x => x.timestamp);
@@ -325,7 +335,7 @@ namespace DCL.Chat.HUD
             lastRequestTime = Time.realtimeSinceStartup;
             
             chatController.GetChannelMessages(
-                ChannelId,
+                channelId,
                 SHOW_MORE_PAGE_SIZE,
                 minTimestamp);
 
@@ -347,6 +357,14 @@ namespace DCL.Chat.HUD
 
             View?.SetLoadingMessagesActive(false);
             View?.SetOldMessagesLoadingActive(false);
+        }
+        
+        private void LeaveChannel() => chatController.LeaveChannel(channelId);
+        
+        private void HandleChannelLeft(string channelId)
+        {
+            if (channelId != this.channelId) return;
+            OnPressBack?.Invoke();
         }
     }
 }

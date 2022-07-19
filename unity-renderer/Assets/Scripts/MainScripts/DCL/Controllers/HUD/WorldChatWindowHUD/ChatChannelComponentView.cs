@@ -12,6 +12,7 @@ namespace DCL.Chat.HUD
     {
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Button backButton;
+        [SerializeField] internal Button optionsButton;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text descriptionLabel;
         [SerializeField] internal ChatHUDView chatView;
@@ -21,6 +22,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject messagesLoading;
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal GameObject oldMessagesLoadingContainer;
+        [SerializeField] internal ChannelContextualMenu contextualMenu;
 
         private Coroutine alphaRoutine;
         private Vector2 originalSize;
@@ -30,6 +32,7 @@ namespace DCL.Chat.HUD
         public event Action<bool> OnFocused;
         public event Action OnBack;
         public event Action OnRequireMoreMessages;
+        public event Action OnLeaveChannel;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
@@ -47,6 +50,8 @@ namespace DCL.Chat.HUD
             originalSize = ((RectTransform) transform).sizeDelta;
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
+            contextualMenu.OnLeave += () => OnLeaveChannel?.Invoke();
+            optionsButton.onClick.AddListener(ShowOptionsMenu);
             scroll.onValueChanged.AddListener(scrollPos =>
             {
                 if (isPreviewActivated) return;
@@ -152,5 +157,7 @@ namespace DCL.Chat.HUD
             foreach (var group in previewCanvasGroup)
                 group.alpha = target;
         }
+        
+        private void ShowOptionsMenu() => contextualMenu.Show();
     }
 }

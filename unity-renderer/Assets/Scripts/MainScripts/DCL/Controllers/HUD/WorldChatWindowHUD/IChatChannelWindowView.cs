@@ -9,6 +9,7 @@ namespace DCL.Chat.HUD
         event Action<bool> OnFocused;
         event Action OnBack;
         event Action OnRequireMoreMessages;
+        event Action OnLeaveChannel;
 
         bool IsActive { get; }
         IChatHUDComponentView ChatHUD { get; }

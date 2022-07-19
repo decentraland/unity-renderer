@@ -28,7 +28,6 @@ public class WorldChatWindowController : IHUD
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
-    internal bool isRequestingFriendsWithDMs;
     internal bool isRequestingDMs;
 
     public IWorldChatWindowView View => view;
@@ -59,6 +58,7 @@ public class WorldChatWindowController : IHUD
         view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         view.OnOpenChannelSearch += OpenChannelSearch;
+        view.OnLeaveChannel += LeaveChannel;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -86,6 +86,8 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
+
+    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
 
     public void Dispose()
     {

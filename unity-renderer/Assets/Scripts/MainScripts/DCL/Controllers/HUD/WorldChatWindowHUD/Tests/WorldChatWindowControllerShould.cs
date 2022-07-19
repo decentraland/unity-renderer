@@ -388,6 +388,18 @@ public class WorldChatWindowControllerShould
         chatController.Received(1).GetUnseenMessagesByUser();
     }
 
+    [Test]
+    public void LeaveChannel()
+    {
+        const string channelId = "channelId";
+        
+        controller.Initialize(view);
+
+        view.OnLeaveChannel += Raise.Event<Action<string>>(channelId);
+        
+        chatController.Received(1).LeaveChannel(channelId);
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();

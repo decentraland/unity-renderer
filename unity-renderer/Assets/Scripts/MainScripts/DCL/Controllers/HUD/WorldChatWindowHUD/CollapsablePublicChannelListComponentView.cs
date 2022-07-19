@@ -67,11 +67,11 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         var entry = newFriendEntry.gameObject.GetComponent<PublicChatEntry>();
         Add(channelId, entry);
         entry.Initialize(chatController);
-        entry.OnOpenChat -= OnEntryOpenChat;
-        entry.OnOpenChat += OnEntryOpenChat;
+        entry.OnOpenChat -= HandleEntryOpenChat;
+        entry.OnOpenChat += HandleEntryOpenChat;
     }
 
-    private void OnEntryOpenChat(PublicChatEntry entry) { OnOpenChat?.Invoke(entry); }
+    private void HandleEntryOpenChat(PublicChatEntry entry) => OnOpenChat?.Invoke(entry);
 
     private Pool GetEntryPool()
     {

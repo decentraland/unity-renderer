@@ -435,6 +435,23 @@ public class WorldChatWindowComponentViewShould
         Assert.IsTrue(view.searchLoading.activeSelf);
     }
 
+    [UnityTest]
+    public IEnumerator LeaveChannel()
+    {
+        var expectedChannelId = "channelId";
+        var leaveChannelId = "";
+        view.OnLeaveChannel += s => leaveChannelId = s;
+        GivenPublicChannel(expectedChannelId, "hehe");
+
+        yield return null;
+
+        var entry = view.publicChannelList.Get(expectedChannelId);
+        entry.optionsButton.onClick.Invoke();
+        view.channelContextualMenu.leaveButton.onClick.Invoke();
+
+        Assert.AreEqual(expectedChannelId, leaveChannelId);
+    }
+
     private void GivenPrivateChat(string userId)
     {
         var profile = GivenProfile(userId);

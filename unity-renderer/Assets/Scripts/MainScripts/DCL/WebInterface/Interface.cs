@@ -746,6 +746,12 @@ namespace DCL.Interface
             public int receivedLimit;
             public int receivedSkip;
         }
+        
+        [Serializable]
+        private class LeaveChannelPayload
+        {
+            public string channelId;
+        }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
@@ -1674,6 +1680,14 @@ namespace DCL.Interface
                 receivedLimit = receivedLimit,
                 sentSkip = sentSkip,
                 sentLimit = sentLimit
+            });
+        }
+
+        public static void LeaveChannel(string channelId)
+        {
+            SendMessage("LeaveChannel", new LeaveChannelPayload
+            {
+                channelId = channelId
             });
         }
     }
