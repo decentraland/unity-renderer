@@ -82,9 +82,21 @@ namespace DCL.Chat.Channels
 
         public void Send(ChatMessage message)
         {
-            controller.Send(message);
+            if (IsChannelMessage(message))
+            {
+                // simulate a response since the real controller does not support channel messages yet
+                controller.AddMessageToChatWindow(JsonUtility.ToJson(message));
+            }
+            else
+                controller.Send(message);
 
             SimulateDelayedResponseFor_JoinChatMessage(message.body).Forget();
+        }
+
+        private bool IsChannelMessage(ChatMessage message)
+        {
+            return !string.IsNullOrEmpty(message.recipient)
+                   && GetAllocatedChannel(message.recipient) != null;
         }
 
         private async UniTask SimulateDelayedResponseFor_JoinChatMessage(string chatMessage)
