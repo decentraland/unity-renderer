@@ -18,10 +18,12 @@ namespace DCL.Models
         public const long SCENE_ROOT_ENTITY = 0;
         public const long PLAYER_ENTITY = 1;
         public const long CAMERA_ENTITY = 2;
-        public const long AVATAR_ENTITY_REFERENCE = 50;
-        public const long AVATAR_POSITION_REFERENCE = 51;
-        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 52;
-        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 53;
+        
+        // To be deprecated soon
+        public const long AVATAR_ENTITY_REFERENCE = 509;
+        public const long AVATAR_POSITION_REFERENCE = 510;
+        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 511;
+        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 512;
     }
 
     public static class ComponentNameLiterals

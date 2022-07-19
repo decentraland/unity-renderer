@@ -674,7 +674,6 @@ namespace DCL
                 }
 
                 worldState.loadedScenes.Add(sceneToLoad.id, newScene);
-                worldState.loadedScenesList.Add(newScene);
                 worldState.scenesSortedByDistance.Add(newScene);
 
                 sceneSortDirty = true;
@@ -751,7 +750,6 @@ namespace DCL
             ParcelScene scene = (ParcelScene) worldState.loadedScenes[sceneId];
             
             worldState.loadedScenes.Remove(sceneId);
-            worldState.loadedScenesList.Remove(scene);
             worldState.globalSceneIds.Remove(sceneId);
             DataStore.i.world.portableExperienceIds.Remove(sceneId);
             
@@ -875,7 +873,6 @@ namespace DCL
             }
 
             worldState.loadedScenes.Add(newGlobalSceneId, newScene);
-            worldState.loadedScenesList.Add(newScene);
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)

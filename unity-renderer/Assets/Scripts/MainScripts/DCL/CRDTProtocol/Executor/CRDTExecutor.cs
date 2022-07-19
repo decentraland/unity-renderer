@@ -23,6 +23,7 @@ namespace DCL.CRDT
         public void Dispose()
         {
             DataStore.i.ecs7.componentsManagers.Remove(ownerScene);
+            DataStore.i.ecs7.scenes.Remove(ownerScene);
         }
 
         public void Execute(CRDTMessage crdtMessage)
@@ -111,6 +112,7 @@ namespace DCL.CRDT
             }
             ecsManager = new ECSComponentsManager(scene, ecsComponentsFactory.componentBuilders);
             DataStore.i.ecs7.componentsManagers.Add(scene, ecsManager);
+            DataStore.i.ecs7.scenes.Add(scene);
             return ecsManager;
         }
 

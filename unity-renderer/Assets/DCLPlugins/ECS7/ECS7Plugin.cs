@@ -34,7 +34,7 @@ namespace DCL.ECS7
         private void SetUpReferences()
         {
             ReferencesContainer.componentsWriter = componentWriter;
-            ReferencesContainer.loadedScenes = Environment.i.world.state.loadedScenesList;
+            ReferencesContainer.loadedScenes = DataStore.i.ecs7.scenes;
         }
     }
 }
