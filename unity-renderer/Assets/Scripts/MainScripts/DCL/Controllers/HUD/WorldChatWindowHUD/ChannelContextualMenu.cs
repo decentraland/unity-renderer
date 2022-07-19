@@ -6,6 +6,7 @@ namespace DCL.Chat.HUD
 {
     public class ChannelContextualMenu : BaseComponentView
     {
+        [Flags]
         internal enum Options
         {
             Leave = 1 << 0
