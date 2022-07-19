@@ -33,8 +33,8 @@ namespace DCL.ECS7
 
         private void SetUpReferences()
         {
-            ReferencesContainer.componentsWriter = componentWriter;
-            ReferencesContainer.loadedScenes = DataStore.i.ecs7.scenes;
+            ECSSystemsReferencesContainer.componentsWriter = componentWriter;
+            ECSSystemsReferencesContainer.loadedScenes = DataStore.i.ecs7.scenes;
         }
     }
 }
