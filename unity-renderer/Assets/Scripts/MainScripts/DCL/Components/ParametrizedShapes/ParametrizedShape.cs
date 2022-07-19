@@ -118,6 +118,7 @@ namespace DCL.Components
         void OnShapeFinishedLoading(IDCLEntity entity)
         {
             entity.OnShapeUpdated?.Invoke(entity);
+            entity.OnShapeLoaded?.Invoke(entity);
         }
 
         void OnShapeDetached(IDCLEntity entity)

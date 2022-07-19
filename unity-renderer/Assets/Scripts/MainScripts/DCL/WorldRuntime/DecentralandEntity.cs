@@ -87,6 +87,7 @@ namespace DCL.Models
             boundsCheckCollider.isTrigger = true;
 
             OnShapeLoaded += UpdateBoundsCheckColliderBasedOnMesh;
+            OnShapeUpdated += UpdateBoundsCheckColliderBasedOnMesh;
         }
 
         void UpdateBoundsCheckColliderBasedOnMesh(IDCLEntity entity)
@@ -95,7 +96,7 @@ namespace DCL.Models
             {
                 Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
                 boundsCheckColliderTransform.localScale = Vector3.one;
-                boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center + CommonScriptableObjects.worldOffset;
+                boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center;
                 boundsCheckCollider.size = meshesInfo.mergedBounds.size;
             }
         }
@@ -176,8 +177,6 @@ namespace DCL.Models
             OnCleanupEvent?.Invoke(this);
 
             scene.componentsManagerLegacy.CleanComponents(this);
-            
-            OnShapeLoaded -= UpdateBoundsCheckColliderBasedOnMesh;
 
             if (meshesInfo.meshRootGameObject)
             {
@@ -198,6 +197,8 @@ namespace DCL.Models
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
                 gameObject = null;
                 
+                OnShapeLoaded -= UpdateBoundsCheckColliderBasedOnMesh;
+                OnShapeUpdated -= UpdateBoundsCheckColliderBasedOnMesh;
                 boundsCollisionChecker.OnParcelEntered -= OnParcelEnter;
                 boundsCollisionChecker.OnParcelExited -= OnParcelExited;
                 Utils.SafeDestroy(boundsCheckCollider.gameObject);
