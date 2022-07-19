@@ -64,5 +64,21 @@ namespace DCL
             if(self.shapesReady.ContainsKey(entityId))
                 self.shapesReady.Remove(entityId);
         }
+        
+        public static void AddOnPointerCollider( this DataStore_ECS7 self, long entityId, GameObject gameObject )
+        {
+            if (self.entityOnPointerEventColliderGameObject.TryGetValue(entityId, out List<GameObject> colliders))
+            {
+                colliders.Add(gameObject);
+            }
+            else
+            {
+                colliders = new List<GameObject>()
+                {
+                    gameObject
+                };
+                self.entityOnPointerEventColliderGameObject.Add(entityId,colliders);
+            }
+        }
     }
 }

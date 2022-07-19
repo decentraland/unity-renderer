@@ -37,7 +37,7 @@ public static class ECSComponentsUtils
         // However, if the model change and now the colliders should be enable and we didn't create them, we create them first
         if (meshesInfo.colliders.Count == 0 && shouldColliderBeEnabled)
         {
-            CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions, isPointerBlocker));
+            //CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions, isPointerBlocker));
         }
         else
         {

@@ -16,6 +16,6 @@ namespace DCL
         // Those are related to the OnPointerEvents
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseRefCounter<long> entitiesOnPointerEvent = new BaseRefCounter<long>();
-        public readonly BaseDictionary<long, GameObject> entityOnPointerEventColliderGameObject = new BaseDictionary<long, GameObject>();
+        public readonly BaseDictionary<long, List<GameObject>> entityOnPointerEventColliderGameObject = new BaseDictionary<long, List<GameObject>>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using DCL;
+﻿using System.Collections.Generic;
+using DCL;
 using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -38,7 +39,11 @@ namespace DCL.ECSComponents.OnPointerUp
             dataStore.entitiesOnPointerEvent.RemoveRefCount(entity.entityId);
             if (!dataStore.entitiesOnPointerEvent.ContainsKey(entity.entityId))
             {
-                GameObject.Destroy(dataStore.entityOnPointerEventColliderGameObject[entity.entityId]);
+                List<GameObject> collidersToDestroy = dataStore.entityOnPointerEventColliderGameObject[entity.entityId];
+                for (int x = 0; x < collidersToDestroy.Count; x++)
+                {
+                    GameObject.Destroy(collidersToDestroy[x]);
+                }
                 dataStore.entityOnPointerEventColliderGameObject.Remove(entity.entityId);
             }
 

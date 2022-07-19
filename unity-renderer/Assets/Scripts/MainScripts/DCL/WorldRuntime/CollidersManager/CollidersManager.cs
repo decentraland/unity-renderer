@@ -183,7 +183,11 @@ namespace DCL
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
-                collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
+                collider = meshFilters[i].GetComponent<MeshCollider>();
+                
+                if (collider == null)
+                    collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
+                
                 collider.sharedMesh = meshFilters[i].sharedMesh;
                 
                 AddOrUpdateEntityCollider(entity, collider);

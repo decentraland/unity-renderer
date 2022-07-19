@@ -174,12 +174,6 @@ namespace DCL.Components
         
         private void GenerateColliders(IDCLEntity entity)
         {
-            GameObject onPointerEventGameObjectCollider = new GameObject(COLLIDER_NAME);
-
-            onPointerEventGameObjectCollider.name = COLLIDER_NAME;
-            onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
-            onPointerEventGameObjectCollider.transform.SetParent(entity.gameObject.transform, false);
-
             var renderers = entity?.meshesInfo?.renderers;
             if(renderers == null || renderers.Length == 0)
                 return;
@@ -190,10 +184,18 @@ namespace DCL.Components
             {
                 if (renderers[i] == null)
                     continue;
+                
+                GameObject onPointerEventGameObjectCollider = new GameObject(COLLIDER_NAME);
+
+                onPointerEventGameObjectCollider.name = COLLIDER_NAME;
+                onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
+                onPointerEventGameObjectCollider.transform.SetParent(renderers[i].transform, false);
                 colliders[i] = CreateCollider(renderers[i], onPointerEventGameObjectCollider);
                 AddColliderName(colliders[i]);
+                
+                DataStore.i.ecs7.AddOnPointerCollider(entity.entityId, onPointerEventGameObjectCollider);
             }
-            DataStore.i.ecs7.entityOnPointerEventColliderGameObject.Add(entity.entityId,onPointerEventGameObjectCollider);
+
         }
     }
 }
