@@ -226,6 +226,18 @@ namespace DCL
 
             DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(data.sceneId, data);
         }
+        
+        [ContextMenu("Enable Animation Culling")]
+        public void EnableAnimationCulling()
+        {
+            debugController.SetAnimationCulling(true);
+        }
+        
+        [ContextMenu("Disable Animation Culling")]
+        public void DisableAnimationCulling()
+        {
+            debugController.SetAnimationCulling(false);
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]

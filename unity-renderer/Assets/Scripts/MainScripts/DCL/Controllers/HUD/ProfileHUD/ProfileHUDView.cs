@@ -141,6 +141,7 @@ public class ProfileHUDView : MonoBehaviour
     internal event Action OnOpen;
     internal event Action OnClose;
     internal bool isStartMenuInitialized = false;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     private void Awake()
     {
@@ -160,6 +161,7 @@ public class ProfileHUDView : MonoBehaviour
         descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
         descriptionEditionInput.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
         copyToast.gameObject.SetActive(false);
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
 
     internal void SetProfile(UserProfile userProfile)
@@ -296,6 +298,7 @@ public class ProfileHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
+        hudCanvasCameraModeController?.Dispose();
         if (profile)
             profile.snapshotObserver.RemoveListener(SetProfileImage);
     }
