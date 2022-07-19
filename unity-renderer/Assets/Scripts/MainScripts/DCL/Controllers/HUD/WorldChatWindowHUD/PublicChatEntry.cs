@@ -32,7 +32,9 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     {
         base.Awake();
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
-        optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
+        
+        if (optionsButton)
+            optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
     }
 
     public void Initialize(IChatController chatController)
