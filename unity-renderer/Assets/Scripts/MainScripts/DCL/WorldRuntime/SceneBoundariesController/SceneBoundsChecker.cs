@@ -10,7 +10,10 @@ namespace DCL.Controllers
     {
         public const int TRIGGER_HIGHPRIO_VALUE = 1000;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
-        public bool enabled => entitiesCheckRoutine != null;
+        
+        // public bool enabled => entitiesCheckRoutine != null;
+        public bool enabled => false;
+        
         public float timeBetweenChecks { get; set; } = 0.5f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
@@ -115,6 +118,8 @@ namespace DCL.Controllers
 
         public void Start()
         {
+            return;
+            
             if (entitiesCheckRoutine != null)
                 return;
 
@@ -242,6 +247,17 @@ namespace DCL.Controllers
             UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateComponents(entity, isInsideBoundaries);
+        }
+
+        // TODO: Move logic elsewhere
+        public void ForceEntityInsideBoundariesState(IDCLEntity entity, bool newState)
+        {
+            entity.isInsideBoundaries = newState;
+            OnEntityBoundsCheckerStatusChanged?.Invoke(entity, newState);
+            
+            UpdateEntityMeshesValidState(entity.meshesInfo, newState);
+            UpdateEntityCollidersValidState(entity.meshesInfo, newState);
+            UpdateComponents(entity, newState);
         }
 
         protected bool AreSubmeshesInsideBoundaries(IDCLEntity entity)

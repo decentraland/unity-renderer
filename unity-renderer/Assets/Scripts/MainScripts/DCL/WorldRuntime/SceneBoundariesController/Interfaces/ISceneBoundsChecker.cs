@@ -19,6 +19,7 @@ namespace DCL.Controllers
         void Start();
         void Stop();
         void AddEntityToBeChecked(IDCLEntity entity);
+        void ForceEntityInsideBoundariesState(IDCLEntity entity, bool newState); // TODO: Move logic elsewhere
 
         /// <summary>
         /// Add an entity that will be consistently checked, until manually removed from the list.

@@ -17,7 +17,6 @@ namespace DCL.Models
         public Dictionary<long, IDCLEntity> children { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IDCLEntity parent { get; private set; }
         public GameObject gameObject { get; private set; }
-        public BoxCollider boundsCheckCollider { get; private set; } = null;
         public long entityId { get; set; }
         public MeshesInfo meshesInfo { get; set; }
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
@@ -36,6 +35,9 @@ namespace DCL.Models
         const string MESH_GAMEOBJECT_NAME = "Mesh";
         const string BOUNDS_CHECK_COLLIDER_GAMEOBJECT_NAME = "BoundsCheckCollider";
 
+        BoxCollider boundsCheckCollider = null;
+        EntityBoundsCollisionChecker boundsCollisionChecker = null;
+        int trespassingScenesCounter = 0;
         bool isReleased = false;
 
         public DecentralandEntity()
@@ -67,14 +69,18 @@ namespace DCL.Models
             this.gameObject = gameObject;
 
             // Create bounds trigger collider
+            // TODO: every entity will always need this, we should avoid destroying it (cleaning its EntityBoundsCollisionChecker on clean)
             GameObject boundsCheckColliderGO = new GameObject(BOUNDS_CHECK_COLLIDER_GAMEOBJECT_NAME);
             boundsCheckColliderGO.layer = PhysicsLayers.entityBoundsCheckColliderLayer;
-            
+
+            boundsCollisionChecker = boundsCheckColliderGO.AddComponent<EntityBoundsCollisionChecker>();
+            boundsCollisionChecker.OnParcelEntered += OnParcelEnter;
+            boundsCollisionChecker.OnParcelExited += OnParcelExited;
             boundsCheckCollider = boundsCheckColliderGO.AddComponent<BoxCollider>();
             
             Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
             boundsCheckColliderTransform.SetParent(gameObject.transform);
-            boundsCheckColliderTransform.localScale = Vector3.one * 0.01f;
+            boundsCheckColliderTransform.localScale = Vector3.one * 0.009f;
 
             UpdateBoundsCheckColliderBasedOnMesh(this);
 
@@ -91,6 +97,35 @@ namespace DCL.Models
                 boundsCheckColliderTransform.localScale = Vector3.one;
                 boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center + CommonScriptableObjects.worldOffset;
                 boundsCheckCollider.size = meshesInfo.mergedBounds.size;
+            }
+        }
+
+        void OnParcelEnter(string parcelSceneId)
+        {
+            if (parcelSceneId != scene.sceneData.id)
+                trespassingScenesCounter++;
+            
+            EvaluateOutOfBoundsState();
+        }
+        
+        void OnParcelExited(string parcelSceneId)
+        {
+            if (parcelSceneId != scene.sceneData.id)
+                trespassingScenesCounter--;
+
+            EvaluateOutOfBoundsState();
+        }
+
+        void EvaluateOutOfBoundsState()
+        {
+            if (isInsideBoundaries)
+            {
+                if(trespassingScenesCounter > 0)
+                    Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, false);
+            }
+            else if(trespassingScenesCounter <= 0)
+            {
+                Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, true);
             }
         }
 
@@ -162,6 +197,9 @@ namespace DCL.Models
 
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
                 gameObject = null;
+                
+                boundsCollisionChecker.OnParcelEntered -= OnParcelEnter;
+                boundsCollisionChecker.OnParcelExited -= OnParcelExited;
                 Utils.SafeDestroy(boundsCheckCollider.gameObject);
             }
 
