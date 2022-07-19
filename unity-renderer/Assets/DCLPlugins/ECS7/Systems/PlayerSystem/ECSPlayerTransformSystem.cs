@@ -10,9 +10,6 @@ namespace ECSSystems.PlayerSystem
 {
     public static class ECSPlayerTransformSystem
     {
-
-        private static readonly BaseVariable<Transform> avatarTransform = DataStore.i.world.avatarTransform;
-
         private class State
         {
             public BaseVariable<Transform> avatarTransform;
@@ -29,7 +26,6 @@ namespace ECSSystems.PlayerSystem
                 avatarTransform = DataStore.i.world.avatarTransform,
                 rendererState = CommonScriptableObjects.rendererState,
                 worldOffset = CommonScriptableObjects.worldOffset
-
             };
             return () => Update(state);
         }
@@ -39,7 +35,7 @@ namespace ECSSystems.PlayerSystem
             if (!state.rendererState.Get())
                 return;
 
-            Transform avatarT = avatarTransform.Get();
+            Transform avatarT = state.avatarTransform.Get();
 
             UnityEngine.Vector3 avatarPosition = avatarT.position;
             Quaternion avatarRotation = avatarT.rotation;

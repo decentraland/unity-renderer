@@ -26,7 +26,6 @@ namespace ECSSystems.CameraSystem
                 cameraTransform = DataStore.i.camera.transform,
                 rendererState = CommonScriptableObjects.rendererState,
                 worldOffset = CommonScriptableObjects.worldOffset
-
             };
             return () => Update(state);
         }
