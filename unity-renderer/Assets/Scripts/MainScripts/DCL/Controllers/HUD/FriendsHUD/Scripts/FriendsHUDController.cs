@@ -22,7 +22,7 @@ public class FriendsHUDController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
     private readonly ILastReadMessagesService lastReadMessagesService;
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private UserProfile ownUserProfile;
 

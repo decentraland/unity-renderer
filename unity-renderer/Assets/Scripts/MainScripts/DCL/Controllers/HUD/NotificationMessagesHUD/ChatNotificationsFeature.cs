@@ -1,3 +1,6 @@
+using DCL;
+using DCL.Helpers;
+
 /// <summary>
 /// Plugin feature that initialize the chat notifications feature.
 /// </summary>
@@ -10,7 +13,7 @@ public class ChatNotificationsFeature : IPlugin
         chatNotificationController = CreateController();
     }
 
-    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(ChatController.i, new UserProfileWebInterfaceBridge());
+    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(DataStore.i, MainChatNotificationsComponentView.Create(), ChatController.i, new UserProfileWebInterfaceBridge());
 
     public void Dispose()
     {

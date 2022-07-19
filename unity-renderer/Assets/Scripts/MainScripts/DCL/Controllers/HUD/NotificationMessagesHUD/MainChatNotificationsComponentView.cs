@@ -87,29 +87,29 @@ public class MainChatNotificationsComponentView : BaseComponentView
         entryPool = GetNotificationEntryPool();
         var newNotification = entryPool.Get();
         
-        ChatNotificationMessageComponentView chatNotificationComponentView = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
+        ChatNotificationMessageComponentView entry = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
         poolableQueue.Enqueue(newNotification);
-        notificationQueue.Enqueue(chatNotificationComponentView);
+        notificationQueue.Enqueue(entry);
 
-        chatNotificationComponentView.OnClickedNotification -= ClickedOnNotification;
-        chatNotificationComponentView.onFocused -= FocusedOnNotification;
-        chatNotificationComponentView.showHideAnimator.OnWillFinishHide -= _ => SetScrollToEnd();
+        entry.OnClickedNotification -= ClickedOnNotification;
+        entry.onFocused -= FocusedOnNotification;
+        entry.showHideAnimator.OnWillFinishHide -= _ => SetScrollToEnd();
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            PopulatePrivateNotification(chatNotificationComponentView, message, username, profilePicture);
+            PopulatePrivateNotification(entry, message, username, profilePicture);
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
-            PopulatePublicNotification(chatNotificationComponentView, message, username);
+            PopulatePublicNotification(entry, message, username);
         }
 
-        chatNotificationComponentView.transform.SetParent(chatEntriesContainer, false);
-        chatNotificationComponentView.RefreshControl();
-        chatNotificationComponentView.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
-        chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
-        chatNotificationComponentView.onFocused += FocusedOnNotification;
-        chatNotificationComponentView.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
+        entry.transform.SetParent(chatEntriesContainer, false);
+        entry.RefreshControl();
+        entry.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
+        entry.OnClickedNotification += ClickedOnNotification;
+        entry.onFocused += FocusedOnNotification;
+        entry.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
 
         if (isOverMessage)
         {
@@ -124,7 +124,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
         controller.ResetFadeout(!isOverMessage && !isOverPanel);
         CheckNotificationCountAndRelease();
-        return chatNotificationComponentView;
+        return entry;
     }
 
     private void ResetNotificationButton()
