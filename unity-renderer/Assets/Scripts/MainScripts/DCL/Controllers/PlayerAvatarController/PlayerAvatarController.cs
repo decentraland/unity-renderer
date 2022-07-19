@@ -14,7 +14,7 @@ using SocialFeaturesAnalytics;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
-public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
+public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHidePassportAreaHandler
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
@@ -245,8 +245,17 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-    public void ApplyHideModifier() { avatar.AddVisibilityConstrain(IN_HIDE_AREA); }
-    public void RemoveHideModifier() { avatar.RemoveVisibilityConstrain(IN_HIDE_AREA); }
+    public void ApplyHideModifier()
+    {
+        avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+    }
+    public void RemoveHideModifier()
+    {
+        avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+    }
+    
+    public void EnableHidePassportModifier() {  }
+    public void DisableHidePassportModifier() {  }
 
     private void OnDisable()
     {
@@ -261,4 +270,5 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         avatarLoadingCts = null;
         avatar?.Dispose();
     }
+
 }

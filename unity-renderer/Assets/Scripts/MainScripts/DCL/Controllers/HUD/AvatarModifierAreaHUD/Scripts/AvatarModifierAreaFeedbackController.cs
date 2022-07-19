@@ -9,8 +9,8 @@ namespace DCL.AvatarModifierAreaFeedback
     {
         internal IAvatarModifierAreaFeedbackView view;
 
-        private BaseStack<List<string>> avatarModifierStack;
-        public AvatarModifierAreaFeedbackController(BaseStack<List<string>> stack, IAvatarModifierAreaFeedbackView view)
+        private BaseStack<List<IAvatarModifier>> avatarModifierStack;
+        public AvatarModifierAreaFeedbackController(BaseStack<List<IAvatarModifier>> stack, IAvatarModifierAreaFeedbackView view)
         {
             this.view = view;
 
@@ -20,13 +20,13 @@ namespace DCL.AvatarModifierAreaFeedback
             avatarModifierStack.OnRemoved += OnAvatarModifierWarningReset;
         }
 
-        private void OnAvatarModifierValueChanged(List<string> avatarModifiersActivated)
+        private void OnAvatarModifierValueChanged(List<IAvatarModifier> avatarModifiersActivated)
         {
             view.SetWarningMessage(avatarModifiersActivated);
             view.SetVisibility(true);
         }
         
-        private void OnAvatarModifierWarningReset(List<string> obj)
+        private void OnAvatarModifierWarningReset(List<IAvatarModifier> obj)
         {
             view.ResetWarningMessage();
             view.SetVisibility(false);

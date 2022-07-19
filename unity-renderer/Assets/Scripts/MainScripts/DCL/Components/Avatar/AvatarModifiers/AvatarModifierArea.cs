@@ -33,7 +33,7 @@ public class AvatarModifierArea : BaseComponent
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
-    private List<string> currentModifiers;
+    private List<IAvatarModifier> currentModifiers;
     public override string componentName => "avatarModifierArea";
 
     public AvatarModifierArea()
@@ -174,7 +174,7 @@ public class AvatarModifierArea : BaseComponent
         DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
 
         cachedModel = (Model)this.model;
-        currentModifiers = new List<string>();
+        currentModifiers = new List<IAvatarModifier>();
         if (cachedModel.modifiers != null)
         {
             // Add all listeners
@@ -186,7 +186,7 @@ public class AvatarModifierArea : BaseComponent
                 OnAvatarEnter += modifier.ApplyModifier;
                 OnAvatarExit += modifier.RemoveModifier;
                 
-                currentModifiers.Add(modifier.GetWarningDescription());
+                currentModifiers.Add(modifier);
             }
 
             // Set excluded colliders

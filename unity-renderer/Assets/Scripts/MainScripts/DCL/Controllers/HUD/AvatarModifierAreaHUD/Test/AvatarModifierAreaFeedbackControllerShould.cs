@@ -14,17 +14,17 @@ namespace Tests.AvatarModifierAreaFeedback
     
         private AvatarModifierAreaFeedbackController hudController;
         private IAvatarModifierAreaFeedbackView hudView;
-        private BaseStack<List<string>> warningMessagesStack => DataStore.i.HUDs.inAvatarModifierStackWarnings;
-        private List<string> mockWarningMessages;
+        private BaseStack<List<IAvatarModifier>> warningMessagesStack => DataStore.i.HUDs.inAvatarModifierStackWarnings;
+        private List<IAvatarModifier> mockAvatarModifiers;
 
         [SetUp]
         public void SetUp()
         {
             hudView = Substitute.For<IAvatarModifierAreaFeedbackView>();
             hudController = new AvatarModifierAreaFeedbackController(warningMessagesStack, hudView);
-            mockWarningMessages = new List<string>();
-            mockWarningMessages.Add("MOCK_MESSAGE_1");
-            mockWarningMessages.Add("MOCK_MESSAGE_2");
+            mockAvatarModifiers = new List<IAvatarModifier>();
+            mockAvatarModifiers.Add(new HideAvatarsModifier());
+            mockAvatarModifiers.Add(new DisablePassportModifier());
         }
         
         [Test]
@@ -36,9 +36,9 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void EntryAndExitOfAvatar()
         {
-            warningMessagesStack.Add(mockWarningMessages);
-            hudController.view.Received().SetWarningMessage(mockWarningMessages);
-            warningMessagesStack.Remove(mockWarningMessages);
+            warningMessagesStack.Add(mockAvatarModifiers);
+            hudController.view.Received().SetWarningMessage(mockAvatarModifiers);
+            warningMessagesStack.Remove(mockAvatarModifiers);
             hudController.view.Received().ResetWarningMessage();
         }
 

@@ -17,7 +17,7 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
@@ -130,7 +130,7 @@ namespace DCL
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
 
-            DisablePassport();
+            EnableHidePassportModifier();
 
             var model = (AvatarModel) newModel;
 
@@ -224,7 +224,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            EnablePassport();
+            DisableHidePassportModifier();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -310,15 +310,14 @@ namespace DCL
             }
         }
 
-        public void DisablePassport()
+        public void EnableHidePassportModifier()
         {
             if (onPointerDown.collider == null)
                 return;
 
             onPointerDown.SetPassportEnabled(false);
         }
-
-        public void EnablePassport()
+        public void DisableHidePassportModifier()
         {
             if (onPointerDown.collider == null)
                 return;
@@ -410,5 +409,6 @@ namespace DCL
 
         [ContextMenu("Print current profile")]
         private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
+
     }
 }

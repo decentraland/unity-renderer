@@ -6,20 +6,16 @@ public class DisablePassportModifier : IAvatarModifier
 
     public void ApplyModifier(GameObject avatar)
     {
-        AvatarShape avatarShape = avatar.GetComponent<AvatarShape>();
-        if (avatarShape != null)
-        {
-            avatarShape.DisablePassport();
-        }
+        if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
+            return;
+        handler.DisableHidePassportModifier();
     }
 
     public void RemoveModifier(GameObject avatar)
     {
-        AvatarShape avatarShape = avatar.GetComponent<AvatarShape>();
-        if (avatarShape != null)
-        {
-            avatarShape.EnablePassport();
-        }
+        if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
+            return;
+        handler.EnableHidePassportModifier();
     }
     
     public string GetWarningDescription()

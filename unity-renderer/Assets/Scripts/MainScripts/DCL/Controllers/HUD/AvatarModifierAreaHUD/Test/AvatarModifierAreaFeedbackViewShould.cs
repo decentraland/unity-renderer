@@ -11,14 +11,14 @@ namespace Tests.AvatarModifierAreaFeedback
     {
     
         private AvatarModifierAreaFeedbackView hudView;
-        private List<string> mockWarningMessages;
+        private List<IAvatarModifier> mockAvatarModifiers;
 
         [SetUp]
         public void SetUp()
         {
             hudView = AvatarModifierAreaFeedbackView.Create();
-            mockWarningMessages = new List<string>();
-            mockWarningMessages.Add("MOCK_MESSAGE_1");
+            mockAvatarModifiers = new List<IAvatarModifier>();
+            mockAvatarModifiers.Add(new HideAvatarsModifier());
         }
         
         [Test]
@@ -30,7 +30,7 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void IsVisible()
         {
-            hudView.SetWarningMessage(mockWarningMessages);
+            hudView.SetWarningMessage(mockAvatarModifiers);
             hudView.SetVisibility(true);
             Assert.True(hudView.isVisible);
             
@@ -42,7 +42,7 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void CheckPointerEnter()
         {
-            hudView.SetWarningMessage(mockWarningMessages);
+            hudView.SetWarningMessage(mockAvatarModifiers);
             hudView.SetVisibility(true);
             hudView.OnPointerEnter(null);
             Assert.True(hudView.isVisible);
@@ -59,8 +59,8 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void CheckMessageDescription()
         {
-            hudView.SetWarningMessage(mockWarningMessages);
-            Assert.AreEqual(hudView.descriptionText.text, mockWarningMessages[0] + "\n");
+            hudView.SetWarningMessage(mockAvatarModifiers);
+            Assert.AreEqual(hudView.descriptionText.text, mockAvatarModifiers[0].GetWarningDescription() + "\n");
         }
 
         [TearDown]
