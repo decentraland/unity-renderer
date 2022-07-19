@@ -1,5 +1,5 @@
 {
-    "name": "ECS7Plugin_Systems_Player",
+    "name": "ECS7Plugin.Systems.Player",
     "rootNamespace": "",
     "references": [
         "GUID:2f65f91ec3d84150a37ed886555c85c6",
