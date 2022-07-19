@@ -12,11 +12,16 @@ public class PrivateChatWindowController : IHUD
 {
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
-    internal const float REQUEST_PRIVATE_MESSAGES_TIME_OUT = 5;
+    internal const float REQUEST_MESSAGES_TIME_OUT = 2;
 
     public IPrivateChatComponentView View { get; private set; }
-    
-    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE, PREVIEW_MODE }
+
+    private enum ChatWindowVisualState
+    {
+        NONE_VISIBLE,
+        INPUT_MODE,
+        PREVIEW_MODE
+    }
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -30,9 +35,7 @@ public class PrivateChatWindowController : IHUD
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
-    internal Dictionary<string, long> lastTimestampRequestedByUser = new Dictionary<string, long>();
-    internal bool isRequestingOldMessages;
-    internal float lastRequestTime;
+    private float lastRequestTime;
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
@@ -255,7 +258,6 @@ public class PrivateChatWindowController : IHUD
             MarkUserChatMessagesAsRead();
         }
 
-        isRequestingOldMessages = false;
         View?.SetLoadingMessagesActive(false);
         View?.SetOldMessagesLoadingActive(false);
 
@@ -263,7 +265,7 @@ public class PrivateChatWindowController : IHUD
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
-        
+
         if (currentState.Equals(ChatWindowVisualState.NONE_VISIBLE))
         {
             ActivatePreview();
@@ -308,7 +310,7 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleInputFieldDeselected()
     {
-        if (View.IsFocused) 
+        if (View.IsFocused)
             return;
         WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
     }
@@ -321,7 +323,7 @@ public class PrivateChatWindowController : IHUD
             deactivatePreviewCancellationToken = new CancellationTokenSource();
             deactivateFadeOutCancellationToken.Cancel();
             deactivateFadeOutCancellationToken = new CancellationTokenSource();
-            
+
             if (currentState.Equals(ChatWindowVisualState.NONE_VISIBLE))
             {
                 ActivatePreviewOnMessages();
@@ -329,15 +331,15 @@ public class PrivateChatWindowController : IHUD
         }
         else
         {
-            if (chatHudController.IsInputSelected) 
+            if (chatHudController.IsInputSelected)
                 return;
-            
+
             if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
             {
                 WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
                 return;
             }
-            
+
             if (currentState.Equals(ChatWindowVisualState.PREVIEW_MODE))
             {
                 WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
@@ -410,6 +412,7 @@ public class PrivateChatWindowController : IHUD
             skipChatInputTrigger = false;
             return;
         }
+
         if (!View.IsActive)
             return;
         chatHudController.FocusInputField();
@@ -425,39 +428,32 @@ public class PrivateChatWindowController : IHUD
 
     internal void RequestOldConversations()
     {
-        if (isRequestingOldMessages)
-            return;
+        if (IsLoadingMessages()) return;
 
-        isRequestingOldMessages = true;
+        var currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
+
+        if (currentPrivateMessages.Count <= 0) return;
+
+        var minTimestamp = (long) currentPrivateMessages.Min(x => x.timestamp);
+
+        chatController.GetPrivateMessages(
+            ConversationUserId,
+            USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
+            minTimestamp);
+
+        lastRequestTime = Time.realtimeSinceStartup;
         View?.SetOldMessagesLoadingActive(true);
-
-        if (!lastTimestampRequestedByUser.ContainsKey(ConversationUserId))
-            lastTimestampRequestedByUser.Add(ConversationUserId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-
-        List<ChatMessage> currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
-
-        if (currentPrivateMessages.Count > 0)
-        {
-            long minTimestamp = (long)currentPrivateMessages.Min(x => x.timestamp);
-
-            if (minTimestamp < lastTimestampRequestedByUser[ConversationUserId])
-            {
-                chatController.GetPrivateMessages(
-                    ConversationUserId,
-                    USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
-                    minTimestamp);
-
-                lastTimestampRequestedByUser[ConversationUserId] = minTimestamp;
-                WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
-            }
-        }
+        WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
     }
+
+    private bool IsLoadingMessages() =>
+        Time.realtimeSinceStartup - lastRequestTime < REQUEST_MESSAGES_TIME_OUT;
 
     private async UniTaskVoid WaitForRequestTimeOutThenHideLoadingFeedback()
     {
         lastRequestTime = Time.realtimeSinceStartup;
-        
-        await UniTask.WaitUntil(() => (Time.realtimeSinceStartup - lastRequestTime) > REQUEST_PRIVATE_MESSAGES_TIME_OUT);
+
+        await UniTask.WaitUntil(() => Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT);
 
         View?.SetLoadingMessagesActive(false);
         View?.SetOldMessagesLoadingActive(false);

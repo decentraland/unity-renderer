@@ -1,5 +1,4 @@
 using System;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -315,11 +314,8 @@ public class PrivateChatWindowControllerShould
     public void RequestOldConversationsCorrectly()
     {
         WhenControllerInitializes(FRIEND_ID);
-        controller.lastTimestampRequestedByUser = new Dictionary<string, long>();
-        controller.lastTimestampRequestedByUser.Add(FRIEND_ID, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         controller.ConversationUserId = FRIEND_ID;
         GivenPrivateMessages(FRIEND_ID, 3);
-        controller.isRequestingOldMessages = false;
 
         controller.RequestOldConversations();
 

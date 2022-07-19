@@ -16,7 +16,6 @@ namespace DCL.ECSComponents
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
         
-        private long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
         private bool isAudioClipReady = false;
         
@@ -156,13 +155,10 @@ namespace DCL.ECSComponents
             if (audioSource.clip != clip)
                 audioSource.clip = clip;
             
-            bool shouldPlay = playedAtTimestamp != model.PlayedAtTimestamp ||
-                              (model.Playing && !audioSource.isPlaying);
+            bool shouldPlay = model.Playing && !audioSource.isPlaying;
             
             if (audioSource.enabled && model.Playing && shouldPlay)
                 audioSource.Play();
-            
-            playedAtTimestamp = model.PlayedAtTimestamp;
         }
 
         private void OnAudioClipLoadComplete(Asset_AudioClip assetAudioClip)

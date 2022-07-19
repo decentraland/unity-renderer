@@ -58,6 +58,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public int Count => Entries.Count + creationQueue.Keys.Count(s => !Entries.ContainsKey(s));
 
+    public int ReceivedCount => receivedRequestsList.Count() +
+                                creationQueue.Count(pair => pair.Value.isReceived && !Entries.ContainsKey(pair.Key));
+    public int SentCount => sentRequestsList.Count() +
+                                creationQueue.Count(pair => !pair.Value.isReceived && !Entries.ContainsKey(pair.Key));
+
     public event Action<FriendRequestEntryModel> OnCancelConfirmation;
     public event Action<FriendRequestEntryModel> OnRejectConfirmation;
     public event Action<FriendRequestEntryModel> OnFriendRequestApproved;

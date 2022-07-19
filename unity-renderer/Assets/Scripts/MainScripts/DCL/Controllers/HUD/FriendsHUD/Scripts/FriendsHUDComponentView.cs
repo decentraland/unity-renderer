@@ -85,6 +85,8 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public int FriendCount => friendsTab.Count;
     public int FriendRequestCount => friendRequestsTab.Count;
+    public int FriendRequestSentCount => friendRequestsTab.SentCount;
+    public int FriendRequestReceivedCount => friendRequestsTab.ReceivedCount;
     public bool IsFriendListActive => friendsTab.gameObject.activeInHierarchy;
     public bool IsRequestListActive => friendRequestsTab.gameObject.activeInHierarchy;
 
