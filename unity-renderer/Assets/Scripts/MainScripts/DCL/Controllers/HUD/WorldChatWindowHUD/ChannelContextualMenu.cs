@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
@@ -59,11 +62,16 @@ namespace DCL.Chat.HUD
 
         private void HideWhenClickedOutsideArea()
         {
-            if (Input.GetMouseButtonDown(0) &&
-                !RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
+            if (!Input.GetMouseButtonDown(0)) return;
+            var pointerEventData = new PointerEventData(EventSystem.current)
             {
+                position = Input.mousePosition
+            };
+            var raycastResults = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+                
+            if (raycastResults.All(result => result.gameObject != gameObject))
                 Hide();
-            }
         }
     }
 }
