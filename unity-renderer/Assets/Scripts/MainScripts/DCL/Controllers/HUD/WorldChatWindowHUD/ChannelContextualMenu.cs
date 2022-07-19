@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
-    public class ChannelContextualMenu : MonoBehaviour
+    public class ChannelContextualMenu : BaseComponentView
     {
         internal enum Options
         {
@@ -18,24 +18,34 @@ namespace DCL.Chat.HUD
 
         public event Action OnLeave;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+            
             rectTransform = (RectTransform) transform; 
             leaveButton.onClick.AddListener(() =>
             {
                 OnLeave?.Invoke();
                 Hide();
             });
-            leaveButton.gameObject.SetActive((options & Options.Leave) != 0);
+            
+            RefreshControl();
         }
 
         public void Show() => gameObject.SetActive(true);
 
         public void Hide() => gameObject.SetActive(false);
 
-        private void Update()
+        public override void Update()
         {
+            base.Update();
+            
             HideWhenClickedOutsideArea();
+        }
+
+        public override void RefreshControl()
+        {
+            leaveButton.gameObject.SetActive((options & Options.Leave) != 0);
         }
 
         private void HideWhenClickedOutsideArea()
