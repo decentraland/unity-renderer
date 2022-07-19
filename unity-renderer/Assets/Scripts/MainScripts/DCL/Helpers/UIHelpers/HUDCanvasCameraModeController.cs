@@ -5,12 +5,12 @@ using UnityEngine.Assertions;
 /// <summary>
 /// This helper will prepare the canvas to work in screen space or camera space if the proper DataStore is set
 /// </summary>
-public class HUDCameraCanvasHelper : IDisposable
+public class HUDCanvasCameraModeController : IDisposable
 {
     internal readonly Canvas canvas;
     internal readonly BaseVariable<Camera> hudCameraVariable;
 
-    public HUDCameraCanvasHelper(Canvas canvas, BaseVariable<Camera> hudCameraVariable)
+    public HUDCanvasCameraModeController(Canvas canvas, BaseVariable<Camera> hudCameraVariable)
     {
         Assert.IsNotNull(canvas);
         Assert.IsNotNull(hudCameraVariable);

@@ -35,7 +35,7 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
 
-    private HUDCameraCanvasHelper hudCameraCanvasHelper;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     internal static TaskbarHUDView Create()
     {
@@ -44,7 +44,7 @@ public class TaskbarHUDView : MonoBehaviour
         return view;
     }
 
-    private void Awake() { hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
+    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     private void Initialize()
     {
@@ -82,7 +82,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
-        hudCameraCanvasHelper?.Dispose();
+        hudCanvasCameraModeController?.Dispose();
 
         if (chatButton != null)
         {

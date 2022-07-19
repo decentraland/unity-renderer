@@ -5,7 +5,7 @@ using Assert = UnityEngine.Assertions.Assert;
 public class HUDCameraCanvasHelperShould
 {
     private Canvas canvas;
-    private HUDCameraCanvasHelper canvasHelper;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
     private BaseVariable<Camera> hudCameraVariable;
     private Camera hudCamera;
 
@@ -17,7 +17,7 @@ public class HUDCameraCanvasHelperShould
         canvas = new GameObject().AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        canvasHelper = new HUDCameraCanvasHelper(canvas, hudCameraVariable);
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, hudCameraVariable);
 
         hudCamera = new GameObject().AddComponent<Camera>();
     }
@@ -28,8 +28,8 @@ public class HUDCameraCanvasHelperShould
     [Test]
     public void BeInitializedOnConstruction()
     {
-        Assert.AreEqual(canvas, canvasHelper.canvas);
-        Assert.AreEqual(hudCameraVariable, canvasHelper.hudCameraVariable);
+        Assert.AreEqual(canvas, hudCanvasCameraModeController.canvas);
+        Assert.AreEqual(hudCameraVariable, hudCanvasCameraModeController.hudCameraVariable);
         Assert.AreEqual(1, hudCameraVariable.OnChangeListenersCount());
     }
 
@@ -58,7 +58,7 @@ public class HUDCameraCanvasHelperShould
     [Test]
     public void Dispose()
     {
-        canvasHelper.Dispose();
+        hudCanvasCameraModeController.Dispose();
 
         Assert.AreEqual(0, hudCameraVariable.OnChangeListenersCount());
     }

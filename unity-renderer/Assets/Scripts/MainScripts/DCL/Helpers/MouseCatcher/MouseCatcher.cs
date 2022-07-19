@@ -33,17 +33,17 @@ namespace DCL
         //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
 
-        private HUDCameraCanvasHelper hudCameraCanvasHelper;
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
         
         private void Start()
         {
-            hudCameraCanvasHelper = new HUDCameraCanvasHelper(canvas, DataStore.i.camera.hudsCamera);
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, DataStore.i.camera.hudsCamera);
             unlockInputAction.OnTriggered += HandleUnlockInput;
         }
 
         private void OnDestroy()
         {
-            hudCameraCanvasHelper?.Dispose();
+            hudCanvasCameraModeController?.Dispose();
             unlockInputAction.OnTriggered -= HandleUnlockInput;
         }
 

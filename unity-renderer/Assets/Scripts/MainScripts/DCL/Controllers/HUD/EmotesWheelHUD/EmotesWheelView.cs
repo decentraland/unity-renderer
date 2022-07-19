@@ -36,7 +36,7 @@ namespace DCL.EmotesWheel
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
 
-        private HUDCameraCanvasHelper hudCameraCanvasHelper;
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
         
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
@@ -53,7 +53,7 @@ namespace DCL.EmotesWheel
             });
 
             selectedEmoteName.text = string.Empty;
-            hudCameraCanvasHelper = new HUDCameraCanvasHelper(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
 
         public void SetVisiblity(bool visible)
@@ -121,7 +121,7 @@ namespace DCL.EmotesWheel
         public void OnDestroy()
         {
             CleanUp();
-            hudCameraCanvasHelper?.Dispose();
+            hudCanvasCameraModeController?.Dispose();
         }
 
         public void CleanUp()
