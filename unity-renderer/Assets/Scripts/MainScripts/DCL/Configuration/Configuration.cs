@@ -219,12 +219,12 @@ namespace DCL.Configuration
         // Layers related to the components that can have physics. All models that have a withCollisions or isPointerBlocker will use them 
         public static readonly int defaultLayer = LayerMask.NameToLayer("Default");
         public static readonly int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
-        public static readonly int onPointerEventBlockerWithouthCollisionsLayer = LayerMask.NameToLayer("OnPointerEventBlockerWithoutCollisions");
+        public static readonly int collisionsWithoutPointerEvent = LayerMask.NameToLayer("CollisionsWithoutPointerEvent");
 
         // Layers related to the Avatar
         public static readonly int characterLayer = LayerMask.NameToLayer("CharacterController");
         public static readonly int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
-        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer | 1 <<onPointerEventBlockerWithouthCollisionsLayer;
+        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
 
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
                                                                        & ~(1 << characterLayer)

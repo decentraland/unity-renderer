@@ -30,9 +30,12 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
+            if (lastModel != null && lastModel.Equals(model))
+                return;
+            
             if (meshesInfo != null)
             {
-                ECSComponentsUtils.UpdateMeshInfo(entity.entityId, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(entity, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
             }
             else
             {

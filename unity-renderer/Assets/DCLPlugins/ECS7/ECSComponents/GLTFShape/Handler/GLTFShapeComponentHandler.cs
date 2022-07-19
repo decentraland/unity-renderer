@@ -85,7 +85,7 @@ namespace DCL.ECSComponents
                     meshesInfo = entity.meshesInfo;
                     
                     // We create the colliders for the GLTF
-                    collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity);
+                    collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity, ECSComponentsUtils.CalculateCollidersLayer(model.WithCollisions,model.IsPointerBlocker));
                     
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
@@ -115,10 +115,10 @@ namespace DCL.ECSComponents
             
             // If the model didn't had collider because the first model came with WithCollisions = false and IsPointerBlocker = false
             if(meshesInfo.colliders.Count == 0 || meshesInfo.meshFilters.Length > 0)
-                collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity);
+                collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity, ECSComponentsUtils.CalculateCollidersLayer(model.WithCollisions,model.IsPointerBlocker));
 
             // Set collisions and pointer blocker
-            ECSComponentsUtils.UpdateMeshInfoColliders(entity.entityId, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+            ECSComponentsUtils.UpdateMeshInfoColliders(entity, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
         }
 
         internal void Dispose(IParcelScene scene)

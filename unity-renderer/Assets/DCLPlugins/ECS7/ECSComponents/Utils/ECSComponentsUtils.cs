@@ -18,24 +18,34 @@ public static class ECSComponentsUtils
             GameObject.Destroy(materialTransitionControllers[i]);
     }
     
-    public static void UpdateMeshInfo(long entityId, bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    public static void UpdateMeshInfo(IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         for (var i = 0; i < meshesInfo.renderers.Length; i++)
         {
             UpdateRendererVisibility(meshesInfo.renderers[i], isVisible);
         }
 
-        UpdateMeshInfoColliders(entityId, withCollisions, isPointerBlocker, meshesInfo);
+        UpdateMeshInfoColliders(entity, withCollisions, isPointerBlocker, meshesInfo);
     }
 
-    public static void UpdateMeshInfoColliders(long entityId, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
+    public static void UpdateMeshInfoColliders(IDCLEntity entity, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         int colliderLayer =  CalculateCollidersLayer(withCollisions,isPointerBlocker);
+        bool shouldColliderBeEnabled =  withCollisions || isPointerBlocker;
         
-        foreach (Collider collider in meshesInfo.colliders)
+        // This is for a special case, when the model first came, if it didn't have collisions or is not a pointer blocker, we don't generate colliders
+        // However, if the model change and now the colliders should be enable and we didn't create them, we create them first
+        if (meshesInfo.colliders.Count == 0 && shouldColliderBeEnabled)
         {
-            collider.enabled = withCollisions;
-            collider.gameObject.layer = colliderLayer;
+            CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions, isPointerBlocker));
+        }
+        else
+        {
+            foreach (Collider collider in meshesInfo.colliders)
+            {
+                collider.enabled = shouldColliderBeEnabled;
+                collider.gameObject.layer = colliderLayer;
+            }
         }
     }
 
@@ -74,7 +84,7 @@ public static class ECSComponentsUtils
         ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
         // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
-        CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity);
+        CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
 
     public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool isVisible, Renderer[] meshRenderers = null)
@@ -156,10 +166,12 @@ public static class ECSComponentsUtils
         }
     }
     
-    private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
+    public static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         if (!withCollisions && isPointerBlocker)
             return PhysicsLayers.onPointerEventLayer;
+        if (withCollisions && !isPointerBlocker)
+            return PhysicsLayers.collisionsWithoutPointerEvent;
 
         return PhysicsLayers.defaultLayer;
     }
