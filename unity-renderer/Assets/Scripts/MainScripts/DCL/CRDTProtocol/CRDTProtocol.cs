@@ -117,10 +117,6 @@ namespace DCL.CRDT
 
             if (containState)
             {
-                if (keyIndex < 0 || keyIndex >= state.Count)
-                {
-                    var a = 0;
-                }
                 state[keyIndex] = newMessageState;
             }
             else
