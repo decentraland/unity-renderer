@@ -33,9 +33,17 @@ namespace DCL.Chat.HUD
             RefreshControl();
         }
 
-        public void Show() => gameObject.SetActive(true);
+        public override void Show(bool instant = false)
+        {
+            base.Show(instant);
+            gameObject.SetActive(true);
+        }
 
-        public void Hide() => gameObject.SetActive(false);
+        public override void Hide(bool instant = false)
+        {
+            base.Hide(instant);
+            gameObject.SetActive(false);
+        }
 
         public override void Update()
         {
