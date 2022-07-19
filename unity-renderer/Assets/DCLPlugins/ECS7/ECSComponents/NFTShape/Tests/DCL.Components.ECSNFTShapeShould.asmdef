@@ -38,7 +38,8 @@
         "nunit.framework.dll",
         "NSubstitute.dll",
         "System.Threading.Tasks.Extensions.dll",
-        "Google.Protobuf.dll"
+        "Google.Protobuf.dll",
+        "System.Memory.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

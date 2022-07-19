@@ -463,6 +463,9 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
+            
+            // TODO: remove useBinaryTransform after ECS7 is fully in prod
+            public bool useBinaryTransform = true;
         }
 
         [System.Serializable]
