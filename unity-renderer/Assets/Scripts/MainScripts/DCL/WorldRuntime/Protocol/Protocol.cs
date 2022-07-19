@@ -20,10 +20,10 @@ namespace DCL.Models
         public const long CAMERA_ENTITY = 2;
         
         // To be deprecated soon
-        public const long AVATAR_ENTITY_REFERENCE = 509;
-        public const long AVATAR_POSITION_REFERENCE = 510;
-        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 511;
-        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 512;
+        public const long AVATAR_ENTITY_REFERENCE = 3;
+        public const long AVATAR_POSITION_REFERENCE = 4;
+        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 5;
+        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 6;
     }
 
     public static class ComponentNameLiterals
