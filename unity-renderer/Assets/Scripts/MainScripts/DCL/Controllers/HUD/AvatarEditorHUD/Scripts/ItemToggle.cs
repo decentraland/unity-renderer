@@ -24,6 +24,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
+    [SerializeField] internal GameObject root;
 
     private bool selectedValue;
 
@@ -74,6 +75,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public virtual void Initialize(WearableItem w, bool isSelected, int amount)
     {
+        root.gameObject.SetActive(true);
+
         wearableItem = w;
         selected = isSelected;
         amountContainer.gameObject.SetActive(amount > 1);
@@ -178,5 +181,14 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
         loadedThumbnailURL = null;
         loadedThumbnailPromise = null;
+    }
+    public void Hide()
+    {
+        root.gameObject.SetActive(false);
+    }
+    public void SetCallbacks(Action<ItemToggle> toggleClicked, Action<ItemToggle> sellClicked)
+    {
+        OnClicked = toggleClicked;
+        OnSellClicked = sellClicked;
     }
 }

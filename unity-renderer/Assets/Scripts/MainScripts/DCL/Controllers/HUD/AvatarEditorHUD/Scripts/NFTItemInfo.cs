@@ -151,6 +151,7 @@ public class NFTItemInfo : MonoBehaviour
             Destroy(thumbnail.sprite);
         }
 
+        Debug.Log("Updated Thumbnail", this);
         thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
         thumbnail.preserveAspect = true;
     }

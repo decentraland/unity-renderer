@@ -12,7 +12,7 @@ namespace DCL
         const FilterMode DEFAULT_FILTER_MODE = FilterMode.Bilinear;
         private const string PLAIN_BASE64_PROTOCOL = "data:text/plain;base64,";
 
-        string url;
+        public string Url { get; }
         string idWithTexSettings;
         string idWithDefaultTexSettings;
         TextureWrapMode wrapMode;
@@ -25,14 +25,14 @@ namespace DCL
 
         public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true, int? overrideMaxTextureSize = null)
         {
-            url = textureUrl;
+            Url = textureUrl;
             wrapMode = textureWrapMode;
             filterMode = textureFilterMode;
             this.storeDefaultTextureInAdvance = storeDefaultTextureInAdvance;
             this.storeTexAsNonReadable = storeTexAsNonReadable;
             maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureConfig.generalMaxSize.Get();
-            idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
-            idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode, maxTextureSize);
+            idWithDefaultTexSettings = ConstructId(Url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
+            idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(Url, wrapMode, filterMode, maxTextureSize);
         }
 
         protected override void OnAfterLoadOrReuse() { }
@@ -56,10 +56,10 @@ namespace DCL
                 return;
             }
 
-            if (!url.StartsWith(PLAIN_BASE64_PROTOCOL))
+            if (!Url.StartsWith(PLAIN_BASE64_PROTOCOL))
             {
                 webRequestOp = DCL.Environment.i.platform.webRequest.GetTexture(
-                    url: url,
+                    url: Url,
                     OnSuccess: (webRequestResult) =>
                     {
                         if (asset != null)
@@ -87,7 +87,7 @@ namespace DCL
                 //For Base64 protocols we just take the bytes and create the texture
                 //to avoid Unity's web request issue with large URLs
                 try {
-                    string substring = url.Substring(PLAIN_BASE64_PROTOCOL.Length);
+                    string substring = Url.Substring(PLAIN_BASE64_PROTOCOL.Length);
                     byte[] decodedTexture = Convert.FromBase64String(substring);
                     asset.texture = new Texture2D(1, 1);
                     asset.texture.LoadImage(decodedTexture);

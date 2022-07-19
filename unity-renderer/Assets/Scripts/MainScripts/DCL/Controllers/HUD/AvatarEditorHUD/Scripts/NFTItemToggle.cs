@@ -26,6 +26,7 @@ public class NFTItemToggle : ItemToggle
 
     public override void Initialize(WearableItem w, bool isSelected, int amount)
     {
+        Debug.Log("initialized " + w.GetName());
         base.Initialize(w, isSelected, amount);
         nftItemInfo.SetModel(NFTItemInfo.Model.FromWearableItem(wearableItem));
         smartItemBadge.SetActive(w.IsSmart());
