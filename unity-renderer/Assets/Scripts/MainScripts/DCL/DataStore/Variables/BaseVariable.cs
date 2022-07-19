@@ -27,5 +27,7 @@ public class BaseVariable<T> : IBaseVariable<T>, IEquatable<T>
         }
     }
 
+    public int OnChangeListenersCount() => OnChange == null ? 0 : OnChange.GetInvocationList().Length;
+
     public virtual bool Equals(T other) { return EqualityComparer<T>.Default.Equals(value, other); }
 }
