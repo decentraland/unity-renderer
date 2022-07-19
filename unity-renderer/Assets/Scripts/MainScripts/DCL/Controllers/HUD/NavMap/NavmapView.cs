@@ -277,9 +277,6 @@ namespace DCL
 
                 scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
 
-                // Reparent the player icon parent to scroll everything together
-                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
-
                 // Center map
                 MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition));
 
@@ -297,10 +294,6 @@ namespace DCL
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
                 MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
                 MapRenderer.i.atlas.UpdateCulling();
-
-                // Restore the player icon to its original parent
-                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
-                (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
 
                 MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
 
