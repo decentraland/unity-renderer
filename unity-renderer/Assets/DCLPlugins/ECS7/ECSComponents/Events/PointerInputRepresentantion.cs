@@ -61,7 +61,10 @@ namespace DCLPlugins.ECSComponents
 
         IDCLEntity IPointerEvent.entity => eventEntity;
 
-        void IPointerEvent.SetHoverState(bool hoverState) { pointerEventHandler.SetFeedbackState(showFeedback, hoverState, button.ToString(), hoverText); }
+        void IPointerEvent.SetHoverState(bool hoverState)
+        {
+            pointerEventHandler.SetFeedbackState(showFeedback, hoverState, ((WebInterface.ACTION_BUTTON) button).ToString(), hoverText);
+        }
 
         public bool /*IPointerEvent*/ IsAtHoverDistance(float distance) => distance <= this.distance;
 
