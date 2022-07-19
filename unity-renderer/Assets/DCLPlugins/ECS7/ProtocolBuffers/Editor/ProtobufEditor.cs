@@ -46,7 +46,7 @@ namespace DCL.Protobuf
         private const string COMPILED_VERSION_FILENAME = "compiledVersion.gen.txt";
         private const string EXECUTABLE_VERSION_FILENAME = "executableVersion.gen.txt";
 
-        private const string PROTO_VERSION = "3.12.3";
+        private const string PROTO_VERSION = "3.20.1";
 
         // Use this parameter when you want a fixed version of the @dcl/protocol, otherwise leave it empty
         //private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2611997102.commit-8e362ff.tgz";
