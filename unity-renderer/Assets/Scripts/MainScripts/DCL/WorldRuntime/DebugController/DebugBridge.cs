@@ -240,6 +240,12 @@ namespace DCL
         }
 
 #if UNITY_EDITOR
+        [ContextMenu("Run Performance Meter Tool for 2 seconds")]
+        public void ShortDebugPerformanceMeter()
+        {
+            RunPerformanceMeterTool(2);
+        }
+
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
         public void DebugPerformanceMeter()
         {
