@@ -1,18 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using DCL;
+using DCL.Chat.HUD;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
 public class CollapsablePublicChannelListComponentView : CollapsableSortedListComponentView<string, PublicChatEntry>
 {
-    private const string POOL_NAME_PREFIX = "PublicChannelEntriesPool_";
-    
-    [SerializeField] private PublicChatEntry entryPrefab;
+    [SerializeField] private ChannelEntryFactory entryFactory;
 
-    private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
-    private Pool entryPool;
     private bool releaseEntriesFromPool = true;
     private IChatController chatController;
 
@@ -35,19 +30,16 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         this.releaseEntriesFromPool = releaseEntriesFromPool;
         base.Clear();
         this.releaseEntriesFromPool = true;
-        pooleableEntries.Clear();
     }
 
     public override PublicChatEntry Remove(string key)
     {
-        if (releaseEntriesFromPool)
-        {
-            if (pooleableEntries.ContainsKey(key))
-                pooleableEntries[key].Release();
-            pooleableEntries.Remove(key);    
-        }
+        var entry = base.Remove(key);
         
-        return base.Remove(key);
+        if (releaseEntriesFromPool && entry)
+            Destroy(entry.gameObject);
+        
+        return entry;
     }
 
     public void Set(string channelId, PublicChatEntry.PublicChatEntryModel entryModel)
@@ -61,9 +53,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
     
     private void CreateEntry(string channelId)
     {
-        entryPool = GetEntryPool();
-        var newFriendEntry = entryPool.Get();
-        pooleableEntries.Add(channelId, newFriendEntry);
+        var newFriendEntry = entryFactory.Create(channelId);
         var entry = newFriendEntry.gameObject.GetComponent<PublicChatEntry>();
         Add(channelId, entry);
         entry.Initialize(chatController);
@@ -72,19 +62,4 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
     }
 
     private void HandleEntryOpenChat(PublicChatEntry entry) => OnOpenChat?.Invoke(entry);
-
-    private Pool GetEntryPool()
-    {
-        var entryPool = PoolManager.i.GetPool(POOL_NAME_PREFIX + name + GetInstanceID());
-        if (entryPool != null) return entryPool;
-
-        entryPool = PoolManager.i.AddPool(
-            POOL_NAME_PREFIX + name + GetInstanceID(),
-            Instantiate(entryPrefab).gameObject,
-            maxPrewarmCount: 20,
-            isPersistent: true);
-        entryPool.ForcePrewarm();
-
-        return entryPool;
-    }
 }
