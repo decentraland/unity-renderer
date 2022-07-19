@@ -46,7 +46,7 @@ namespace DCL.Protobuf
         private const string COMPILED_VERSION_FILENAME = "compiledVersion.gen.txt";
         private const string EXECUTABLE_VERSION_FILENAME = "executableVersion.gen.txt";
 
-        private const string PROTO_VERSION = "3.12.3";
+        private const string PROTO_VERSION = "3.20.1";
 
         // Use this parameter when you want a fixed version of the @dcl/protocol, otherwise leave it empty
         //private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2611997102.commit-8e362ff.tgz";
@@ -81,9 +81,9 @@ namespace DCL.Protobuf
             if (!IsProtoVersionValid())
                 DownloadProtobuffExecutable();
 
-            DownloadProtoDefinitions(version);
-            GenerateComponentCode(version);
-            CompilationPipeline.RequestScriptCompilation();
+             DownloadProtoDefinitions(version);
+             GenerateComponentCode(version);
+             CompilationPipeline.RequestScriptCompilation();
         }
         
         [MenuItem("Decentraland/Protobuf/Download latest proto definitions (For debugging)")]
@@ -420,7 +420,13 @@ namespace DCL.Protobuf
         {
             string path = Application.dataPath + PATH_TO_GENERATED + EXECUTABLE_VERSION_FILENAME;
             string version = GetVersion(path);
-            return version == PROTO_VERSION;
+            string protoPath = GetPathToProto();
+            
+            // If we are in windows, we add the extension of the file
+#if UNITY_EDITOR_WIN
+            protoPath += ".exe";
+#endif
+            return version == PROTO_VERSION && File.Exists(protoPath);
         }
         
         private static string GetVersion(string path)

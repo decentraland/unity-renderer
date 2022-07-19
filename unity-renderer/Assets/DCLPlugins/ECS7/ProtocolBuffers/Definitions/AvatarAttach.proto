@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1073;
+
+message PBAvatarAttach {
+  string avatar_id = 1;
+  int32 anchor_point_id = 2;
+}
