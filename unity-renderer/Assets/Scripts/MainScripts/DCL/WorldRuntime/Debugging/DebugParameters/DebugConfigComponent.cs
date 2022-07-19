@@ -77,7 +77,6 @@ namespace DCL
         public bool soloScene = true;
         public bool multithreaded = false;
         public bool disableAssetBundles = false;
-        public bool disableTextureCompress = false;
         public bool disableGLTFDownloadThrottle = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
@@ -91,7 +90,6 @@ namespace DCL
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
             DataStore.i.performance.multithreading.Set(multithreaded);
-            DataStore.i.performance.disableTextureCompression.Set(disableTextureCompress);
             if (disableGLTFDownloadThrottle) DataStore.i.performance.maxDownloads.Set(999);
             Texture.allowThreadedTextureCreation = multithreaded;
         }
