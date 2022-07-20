@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!65 &8945800721175881169
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3404554814531378405}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1.03, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3938059399478818367
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 8945800721175881169}
+  meshCollider: {fileID: 1462253687897527362}
   meshRenderer: {fileID: 3964221675984070713}
   loadingSpinnerGameObject: {fileID: 3938059399478818367}
   materials:
@@ -242,6 +229,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Blocky_01
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 86e95660f525b48aaa7cfa2ab55c25c2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86e95660f525b48aaa7cfa2ab55c25c2, type: 3}
 --- !u!1 &3404554814531378405 stripped
@@ -262,3 +254,17 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 6637889714524407276}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &1462253687897527362
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3404554814531378405}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 9118321046688701539, guid: 86e95660f525b48aaa7cfa2ab55c25c2, type: 3}

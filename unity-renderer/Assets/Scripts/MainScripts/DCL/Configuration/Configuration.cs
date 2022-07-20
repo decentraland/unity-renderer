@@ -220,11 +220,12 @@ namespace DCL.Configuration
         public static readonly int defaultLayer = LayerMask.NameToLayer("Default");
         public static readonly int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
         public static readonly int collisionsWithoutPointerEvent = LayerMask.NameToLayer("CollisionsWithoutPointerEvent");
+        public static readonly int noCollisionsLayer = LayerMask.NameToLayer("NoCollisions");
 
         // Layers related to the Avatar
         public static readonly int characterLayer = LayerMask.NameToLayer("CharacterController");
         public static readonly int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
-        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
+        public static LayerMask physicsCastLayerMask = (1 << onPointerEventLayer | 1 << noCollisionsLayer);
 
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
                                                                        & ~(1 << characterLayer)

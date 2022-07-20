@@ -48,44 +48,56 @@ public class NFTInfoRetriever : INFTInfoRetriever
     {
         tokenSource = new CancellationTokenSource();
         tokenSource.Token.ThrowIfCancellationRequested();
-        // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
-        var regexMatches = Regex.Matches(src, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
-        if (regexMatches.Count == 0 || regexMatches[0].Groups["protocol"] == null || regexMatches[0].Groups["registry"] == null || regexMatches[0].Groups["asset"] == null)
+        try
         {
-            string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + ACCEPTED_URL_FORMAT, src);
-            Debug.Log(errorMessage);
-            OnFetchInfoFail?.Invoke();
-            return null;
-        }
+            // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
+            var regexMatches = Regex.Matches(src, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
+            if (regexMatches.Count == 0 || regexMatches[0].Groups["protocol"] == null || regexMatches[0].Groups["registry"] == null || regexMatches[0].Groups["asset"] == null)
+            {
+                string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + ACCEPTED_URL_FORMAT, src);
+                Debug.Log(errorMessage);
+                OnFetchInfoFail?.Invoke();
+                return null;
+            }
 
-        Match match = regexMatches[0];
-        string darURLProtocol = match.Groups["protocol"].ToString();
-        if (darURLProtocol != "ethereum")
+            Match match = regexMatches[0];
+            string darURLProtocol = match.Groups["protocol"].ToString();
+            if (darURLProtocol != "ethereum")
+            {
+                string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + SUPPORTED_PROTOCOL + " " + ACCEPTED_URL_FORMAT, src);
+                Debug.Log(errorMessage);
+                OnFetchInfoFail?.Invoke();
+                return null;
+            }
+
+            string darURLRegistry = match.Groups["registry"].ToString();
+            string darURLAsset = match.Groups["asset"].ToString();
+
+            NFTInfo nftInformation = null;
+
+            var rutine = NFTUtils.FetchNFTInfo(darURLRegistry, darURLAsset,
+                (info) =>
+                {
+                    nftInformation = info;
+                },
+                (error) =>
+                {
+                    Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
+                });
+
+            await rutine.WithCancellation(tokenSource.Token);
+
+            return nftInformation;
+        }
+        catch (OperationCanceledException)
         {
-            string errorMessage = string.Format(COULD_NOT_FETCH_DAR_URL + " " + SUPPORTED_PROTOCOL + " " + ACCEPTED_URL_FORMAT, src);
-            Debug.Log(errorMessage);
-            OnFetchInfoFail?.Invoke();
-            return null;
+            // We ignore if the operation has been canceled
         }
-
-        string darURLRegistry = match.Groups["registry"].ToString();
-        string darURLAsset = match.Groups["asset"].ToString();
-
-        NFTInfo nftInformation = null;
-        
-        var rutine = NFTUtils.FetchNFTInfo(darURLRegistry, darURLAsset,
-            (info) =>
-            {
-                nftInformation = info;
-            },
-            (error) =>
-            {
-                Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
-            });
-        
-        await rutine.WithCancellation(tokenSource.Token);
-
-        return nftInformation;
+        catch (Exception e)
+        {
+            Debug.LogError($"Couldn't fetch NFT: '{src}");
+        }
+        return null;
     }
 
     private IEnumerator FetchNFTInfoCoroutine(string address, string id)

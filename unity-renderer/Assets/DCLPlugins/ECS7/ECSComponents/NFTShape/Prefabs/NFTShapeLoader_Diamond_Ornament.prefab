@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 2899620639632212599}
+  meshCollider: {fileID: 724249035869718739}
   meshRenderer: {fileID: 4973049366238270409}
   loadingSpinnerGameObject: {fileID: 5307763429851324907}
   materials:
@@ -139,19 +139,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2899620639632212599
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6719093568860792597}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.25, y: 1.29, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &3323349855853641244
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -249,6 +236,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Barroque_02
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 167ccc7527b474aae99efeb8b2228c39,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 167ccc7527b474aae99efeb8b2228c39, type: 3}
 --- !u!1 &6719093568860792597 stripped
@@ -269,3 +261,17 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 3323349855853641244}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &724249035869718739
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6719093568860792597}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1669671345750389303, guid: 167ccc7527b474aae99efeb8b2228c39, type: 3}

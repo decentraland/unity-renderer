@@ -189,6 +189,10 @@ namespace DCL.Components
                 onPointerEventGameObjectCollider.name = COLLIDER_NAME;
                 onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
                 onPointerEventGameObjectCollider.transform.SetParent(renderers[i].transform, false);
+                
+                // We need to increase it a little bit since if the shape is pointer blocker, it shouldn't block its own pointer event
+                // This way, there is no collision fighting 
+                onPointerEventGameObjectCollider.transform.localScale *= 1.0001f;
                 colliders[i] = CreateCollider(renderers[i], onPointerEventGameObjectCollider);
                 AddColliderName(colliders[i]);
                 

@@ -31,16 +31,29 @@ namespace DCL
         {
             tokenSource = new CancellationTokenSource();
             tokenSource.Token.ThrowIfCancellationRequested();
-            INFTAsset result = null;
-            await LoadNFTAsset(url, (nftAsset) =>
+            try
             {
-                result = nftAsset;
-            }, (exception) =>
-            {
-                Debug.Log("Fail to load nft " + url + " due to " + exception.Message);
-            }).WithCancellation(tokenSource.Token);
+                INFTAsset result = null;
+                await LoadNFTAsset(url, (nftAsset) =>
+                    {
+                        result = nftAsset;
+                    }, (exception) =>
+                    {
+                        Debug.Log("Fail to load nft " + url + " due to " + exception.Message);
+                    })
+                    .WithCancellation(tokenSource.Token);
 
-            return result;
+                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                // We ignore if the operation has been canceled
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Couldn't fetch NFT Asset: '{url}");
+            }
+            return null;
         }
         
         public IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)

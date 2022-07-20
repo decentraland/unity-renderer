@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!65 &8925098737512318515
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1741805000833810630}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.21, y: 1.18, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5010534842837482945
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 8925098737512318515}
+  meshCollider: {fileID: 3095838281594727219}
   meshRenderer: {fileID: 4772326119896090}
   loadingSpinnerGameObject: {fileID: 5451459993038393849}
   materials:
@@ -249,6 +236,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SimpleBlack
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 423f69351cb3e419caae961fd2c1521e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 423f69351cb3e419caae961fd2c1521e, type: 3}
 --- !u!1 &1741805000833810630 stripped
@@ -269,3 +261,17 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 7714049872948468175}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &3095838281594727219
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741805000833810630}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4220979089121436517, guid: 423f69351cb3e419caae961fd2c1521e, type: 3}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8610059194845194693}
   - component: {fileID: 9198562179203825540}
   - component: {fileID: 4661880471493902596}
-  - component: {fileID: 1262058857067365171}
+  - component: {fileID: 3447064964554163818}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Untagged
@@ -82,8 +82,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1262058857067365171
-BoxCollider:
+--- !u!64 &3447064964554163818
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -92,9 +92,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &7265222117836226858
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 1262058857067365171}
+  meshCollider: {fileID: 3447064964554163818}
   meshRenderer: {fileID: 4661880471493902596}
   loadingSpinnerGameObject: {fileID: 7709254479030627602}
   materials:

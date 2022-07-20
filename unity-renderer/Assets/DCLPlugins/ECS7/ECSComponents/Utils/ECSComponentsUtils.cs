@@ -154,12 +154,16 @@ public static class ECSComponentsUtils
     private static void UpdateRendererVisibility(Renderer renderer, bool isVisible)
     {
         renderer.enabled = isVisible;
-        
+        UpdateOnPointerColliderVisibility(renderer.transform, isVisible);
+    }
+
+    public static void UpdateOnPointerColliderVisibility(Transform parent, bool isVisible)
+    {
         // If there is a child, it means that we added an OnPointerEvent collider, if the renderer is not active, the event shouldn't either
         // This should disappear since we should handle the event logic in a different way
-        if (renderer.transform.childCount > 0)
+        if (parent.childCount > 0)
         {
-            var onPointerEventCollider = renderer.transform.GetChild(0).GetComponent<Collider>();
+            var onPointerEventCollider = parent.GetChild(0).GetComponent<Collider>();
 
             if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
                 onPointerEventCollider.enabled = isVisible;
