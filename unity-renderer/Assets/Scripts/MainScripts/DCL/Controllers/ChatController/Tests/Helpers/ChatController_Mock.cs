@@ -17,7 +17,6 @@ public class ChatController_Mock : IChatController
     public event Action<string, string> OnMuteChannelError;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
-    public event Action<int> OnTotalUnseenChannelsMessagesUpdated;
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
     public int TotalJoinedChannelCount { get; }
@@ -91,5 +90,11 @@ public class ChatController_Mock : IChatController
     {
     }
 
+    public void GetUnseenMessagesByChannel()
+    {
+    }
+
     public int GetAllocatedUnseenMessages(string userId) => 0;
+
+    public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
 }

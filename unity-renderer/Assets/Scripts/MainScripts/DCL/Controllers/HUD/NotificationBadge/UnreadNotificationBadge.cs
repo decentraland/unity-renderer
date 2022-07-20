@@ -52,12 +52,21 @@ public class UnreadNotificationBadge : MonoBehaviour
         chatController.OnUserUnseenMessagesUpdated -= HandleUnseenMessagesUpdated;
         chatController.OnUserUnseenMessagesUpdated += HandleUnseenMessagesUpdated;
 
+        chatController.OnChannelUnseenMessagesUpdated -= HandleChannelUnseenMessagesUpdated;
+        chatController.OnChannelUnseenMessagesUpdated += HandleChannelUnseenMessagesUpdated;
+
         isInitialized = true;
     }
 
     private void HandleUnseenMessagesUpdated(string userId, int unseenMessages)
     {
         if (userId != currentUserId) return;
+        CurrentUnreadMessages = unseenMessages;
+    }
+
+    private void HandleChannelUnseenMessagesUpdated(string channelId, int unseenMessages)
+    {
+        if (channelId != currentUserId) return;
         CurrentUnreadMessages = unseenMessages;
     }
 
@@ -70,8 +79,12 @@ public class UnreadNotificationBadge : MonoBehaviour
     private void OnDestroy()
     {
         if (chatController != null)
+        {
             chatController.OnUserUnseenMessagesUpdated -= HandleUnseenMessagesUpdated;
+            chatController.OnChannelUnseenMessagesUpdated -= HandleChannelUnseenMessagesUpdated;
+        }
     }
 
-    private void UpdateUnreadMessages() => CurrentUnreadMessages = chatController.GetAllocatedUnseenMessages(currentUserId);
+    private void UpdateUnreadMessages() =>
+        CurrentUnreadMessages = chatController.GetAllocatedUnseenMessages(currentUserId) + chatController.GetAllocatedUnseenChannelMessages(currentUserId);
 }

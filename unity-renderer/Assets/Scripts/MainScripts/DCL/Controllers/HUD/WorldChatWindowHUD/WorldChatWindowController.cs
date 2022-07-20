@@ -29,6 +29,7 @@ public class WorldChatWindowController : IHUD
     private UserProfile ownUserProfile;
     internal bool areDMsRequestedByFirstTime;
     internal bool isRequestingDMs;
+    internal bool areJoinedChannelsRequestedByFirstTime;
 
     public IWorldChatWindowView View => view;
 
@@ -124,20 +125,27 @@ public class WorldChatWindowController : IHUD
                     USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
                 RequestUnreadMessages();
-                DisplayMoreJoinedChannels();
+            }
+
+            if (!areJoinedChannelsRequestedByFirstTime)
+            {
+                RequestJoinedChannels();
+                RequestUnreadChannelsMessages();
             }
         }
         else
             view.Hide();
     }
 
-    private void DisplayMoreJoinedChannels()
+    private void RequestJoinedChannels()
     {
         if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
         
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
+
+        areJoinedChannelsRequestedByFirstTime = true;
     }
 
     private void HandleFriendsControllerInitialization()
@@ -148,7 +156,7 @@ public class WorldChatWindowController : IHUD
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             RequestUnreadMessages();
-            DisplayMoreJoinedChannels();
+            //RequestJoinedChannels();
         }
         else
             view.HidePrivateChatsLoading();
@@ -406,6 +414,8 @@ public class WorldChatWindowController : IHUD
     }
     
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
+
+    private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
 
     private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
 }

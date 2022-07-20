@@ -305,7 +305,7 @@ public class PrivateChatWindowController : IHUD
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         DeactivatePreview();
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
-        MarkUserChatMessagesAsRead();
+        //MarkUserChatMessagesAsRead();
     }
 
     private void HandleInputFieldDeselected()

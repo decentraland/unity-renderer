@@ -42,12 +42,6 @@ public class LazyLoadingChatControllerMock : IChatController
         add => controller.OnUserUnseenMessagesUpdated += value;
         remove => controller.OnUserUnseenMessagesUpdated -= value;
     }
-    
-    public event Action<int> OnTotalUnseenChannelsMessagesUpdated
-    {
-        add => controller.OnTotalUnseenChannelsMessagesUpdated += value;
-        remove => controller.OnTotalUnseenChannelsMessagesUpdated -= value;
-    }
 
     public event Action<string, int> OnChannelUnseenMessagesUpdated
     {
@@ -81,7 +75,11 @@ public class LazyLoadingChatControllerMock : IChatController
     
     public void GetUnseenMessagesByUser() => SimulateDelayedResponseFor_TotalUnseenMessagesByUser().Forget();
 
+    public void GetUnseenMessagesByChannel() => controller.GetUnseenMessagesByChannel();
+
     public int GetAllocatedUnseenMessages(string userId) => Random.Range(0, 10);
+
+    public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
 
     public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
 

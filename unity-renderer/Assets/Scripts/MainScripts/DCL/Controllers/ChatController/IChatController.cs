@@ -14,7 +14,6 @@ public interface IChatController
     event Action<string, string> OnMuteChannelError;
     event Action<int> OnTotalUnseenMessagesUpdated;
     event Action<string, int> OnUserUnseenMessagesUpdated;
-    event Action<int> OnTotalUnseenChannelsMessagesUpdated;
     event Action<string, int> OnChannelUnseenMessagesUpdated;
 
     int TotalJoinedChannelCount { get; }
@@ -36,5 +35,7 @@ public interface IChatController
     Channel GetAllocatedChannel(string channelId);
     List<ChatMessage> GetAllocatedEntriesByChannel(string channelId);
     void GetUnseenMessagesByUser();
+    void GetUnseenMessagesByChannel();
     int GetAllocatedUnseenMessages(string userId);
+    int GetAllocatedUnseenChannelMessages(string channelId);
 }
