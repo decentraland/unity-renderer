@@ -7,18 +7,19 @@ public class HideAvatarsModifier : IAvatarModifier
     {
         if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-        handler.ApplyHideModifier();
+        handler.ApplyHideModifier(GetWarningDescription());
     }
 
     public void RemoveModifier(GameObject avatar)
     {
         if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-        handler.RemoveHideModifier();
+        handler.RemoveHideModifier(GetWarningDescription());
     }
     
     public string GetWarningDescription()
     {
         return "\u2022  The avatars are hidden";
     }
+    
 }

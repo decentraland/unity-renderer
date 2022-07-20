@@ -33,7 +33,6 @@ public class AvatarModifierArea : BaseComponent
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
-    private List<IAvatarModifier> currentModifiers;
     public override string componentName => "avatarModifierArea";
 
     public AvatarModifierArea()
@@ -104,20 +103,12 @@ public class AvatarModifierArea : BaseComponent
         foreach (GameObject avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
         {
             OnAvatarEnter?.Invoke(avatarThatEntered);
-            if (avatarThatEntered.tag.Equals("Player"))
-            {
-                DataStore.i.HUDs.inAvatarModifierStackWarnings.Add(currentModifiers);
-            }
         }
 
         // Call events for avatars that just exited the area
         foreach (GameObject avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
         {
             OnAvatarExit?.Invoke(avatarThatExited);
-            if (avatarThatExited && avatarThatExited.tag.Equals("Player"))
-            {
-                DataStore.i.HUDs.inAvatarModifierStackWarnings.Remove(null);
-            }
         }
 
         avatarsInArea = newAvatarsInArea;
@@ -174,7 +165,6 @@ public class AvatarModifierArea : BaseComponent
         DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
 
         cachedModel = (Model)this.model;
-        currentModifiers = new List<IAvatarModifier>();
         if (cachedModel.modifiers != null)
         {
             // Add all listeners
@@ -185,8 +175,6 @@ public class AvatarModifierArea : BaseComponent
 
                 OnAvatarEnter += modifier.ApplyModifier;
                 OnAvatarExit += modifier.RemoveModifier;
-                
-                currentModifiers.Add(modifier);
             }
 
             // Set excluded colliders

@@ -130,7 +130,7 @@ namespace DCL
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
 
-            EnableHidePassportModifier();
+            EnableHidePassportModifier("");
 
             var model = (AvatarModel) newModel;
 
@@ -224,7 +224,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            DisableHidePassportModifier();
+            DisableHidePassportModifier("");
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -310,21 +310,6 @@ namespace DCL
             }
         }
 
-        public void EnableHidePassportModifier()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(false);
-        }
-        public void DisableHidePassportModifier()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(true);
-        }
-
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
@@ -355,7 +340,7 @@ namespace DCL
             player = null;
         }
 
-        public void ApplyHideModifier()
+        public void ApplyHideModifier(string warning)
         {
             avatar.AddVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
@@ -363,11 +348,26 @@ namespace DCL
 
         }
 
-        public void RemoveHideModifier()
+        public void RemoveHideModifier(string warning)
         {
             avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(true);
             playerNameContainer.SetActive(true);
+        }
+        
+        public void EnableHidePassportModifier(string warning)
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(false);
+        }
+        public void DisableHidePassportModifier(string warning)
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(true);
         }
 
         public override void Cleanup()

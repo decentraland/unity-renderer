@@ -11,56 +11,57 @@ namespace Tests.AvatarModifierAreaFeedback
     {
     
         private AvatarModifierAreaFeedbackView hudView;
-        private List<IAvatarModifier> mockAvatarModifiers;
+        private List<string> warningMessagesMock;
 
         [SetUp]
         public void SetUp()
         {
             hudView = AvatarModifierAreaFeedbackView.Create();
-            mockAvatarModifiers = new List<IAvatarModifier>();
-            mockAvatarModifiers.Add(new HideAvatarsModifier());
-        }
-        
-        [Test]
-        public void InitializeProperly()
-        {
-            Assert.AreEqual(hudView.currentState, AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.NEVER_SHOWN);
+            warningMessagesMock = new List<string>() { "MOCK_WARNING_1", "MOCK_WARNING_2" };
         }
         
         [Test]
         public void IsVisible()
         {
-            hudView.SetWarningMessage(mockAvatarModifiers);
+            hudView.SetWarningMessage(warningMessagesMock);
             hudView.SetVisibility(true);
             Assert.True(hudView.isVisible);
-            
-            hudView.ResetWarningMessage();
-            hudView.SetVisibility(false);
-            Assert.False(hudView.isVisible);
         }
         
         [Test]
         public void CheckPointerEnter()
         {
-            hudView.SetWarningMessage(mockAvatarModifiers);
+            Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.NEVER_SHOWN, hudView.currentState);
+            hudView.SetWarningMessage(warningMessagesMock);
             hudView.SetVisibility(true);
             hudView.OnPointerEnter(null);
-            Assert.True(hudView.isVisible);
+            Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE,hudView.currentState);
         }
         
         [Test]
         public void CheckPointerExit()
         {
+            hudView.SetWarningMessage(warningMessagesMock);
+            hudView.SetVisibility(true);
             hudView.OnPointerExit(null);
-            hudView.SetVisibility(false);
-            Assert.False(hudView.isVisible);
+            Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.ICON_VISIBLE, hudView.currentState);
         }
         
         [Test]
         public void CheckMessageDescription()
         {
-            hudView.SetWarningMessage(mockAvatarModifiers);
-            Assert.AreEqual(hudView.descriptionText.text, mockAvatarModifiers[0].GetWarningDescription() + "\n");
+            string testDescription = "";
+            foreach (string newAvatarModifierWarning in warningMessagesMock)
+            {
+                testDescription += newAvatarModifierWarning + "\n";
+            }
+            
+            hudView.SetWarningMessage(warningMessagesMock);
+            Assert.AreEqual(hudView.descriptionText.text, testDescription);
+            
+            warningMessagesMock.Add("MOCK_WARNING_1");
+            hudView.SetWarningMessage(warningMessagesMock);
+            Assert.AreEqual(hudView.descriptionText.text, testDescription);
         }
 
         [TearDown]

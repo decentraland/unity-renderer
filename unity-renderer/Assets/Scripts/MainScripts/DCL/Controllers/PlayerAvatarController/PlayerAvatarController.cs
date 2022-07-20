@@ -245,17 +245,25 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-    public void ApplyHideModifier()
+    public void ApplyHideModifier(string warning)
     {
         avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+        DataStore.i.HUDs.inAvatarModifierStackWarnings.Add(warning);
     }
-    public void RemoveHideModifier()
+    public void RemoveHideModifier(string warning)
     {
         avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+        DataStore.i.HUDs.inAvatarModifierStackWarnings.Remove(warning);
     }
-    
-    public void EnableHidePassportModifier() {  }
-    public void DisableHidePassportModifier() {  }
+
+    public void EnableHidePassportModifier(string warning)
+    {
+        DataStore.i.HUDs.inAvatarModifierStackWarnings.Add(warning);
+    }
+    public void DisableHidePassportModifier(string warning)
+    {
+        DataStore.i.HUDs.inAvatarModifierStackWarnings.Remove(warning);
+    }
 
     private void OnDisable()
     {

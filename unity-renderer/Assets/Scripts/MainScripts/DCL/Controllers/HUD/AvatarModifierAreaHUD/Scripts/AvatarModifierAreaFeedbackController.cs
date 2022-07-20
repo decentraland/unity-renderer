@@ -9,35 +9,37 @@ namespace DCL.AvatarModifierAreaFeedback
     {
         internal IAvatarModifierAreaFeedbackView view;
 
-        private BaseStack<List<IAvatarModifier>> avatarModifierStack;
-        public AvatarModifierAreaFeedbackController(BaseStack<List<IAvatarModifier>> stack, IAvatarModifierAreaFeedbackView view)
+        private BaseCollection<string> avatarModifiersWarnings;
+        public AvatarModifierAreaFeedbackController(BaseCollection<string> avatarModifiersWarnings, IAvatarModifierAreaFeedbackView view)
         {
             this.view = view;
 
-            this.avatarModifierStack = stack;
+            this.avatarModifiersWarnings = avatarModifiersWarnings;
             
-            avatarModifierStack.OnAdded += OnAvatarModifierValueChanged;
-            avatarModifierStack.OnRemoved += OnAvatarModifierWarningReset;
+            avatarModifiersWarnings.OnAdded += OnAvatarModifierAdded;
+            avatarModifiersWarnings.OnRemoved += OnAvatarModifierRemoved;
         }
-
-        private void OnAvatarModifierValueChanged(List<IAvatarModifier> avatarModifiersActivated)
+        private void OnAvatarModifierAdded(string obj)
         {
-            view.SetWarningMessage(avatarModifiersActivated);
+            view.SetWarningMessage(avatarModifiersWarnings.Get());
             view.SetVisibility(true);
         }
         
-        private void OnAvatarModifierWarningReset(List<IAvatarModifier> obj)
+        private void OnAvatarModifierRemoved(string obj)
         {
-            view.ResetWarningMessage();
-            view.SetVisibility(false);
+            if (avatarModifiersWarnings.Count() == 0)
+            {
+                view.SetVisibility(false);
+            }
         }
-
+        
         public void Dispose()
         {
-            avatarModifierStack.OnAdded -= OnAvatarModifierValueChanged;
-            avatarModifierStack.OnRemoved -= OnAvatarModifierWarningReset;
+            avatarModifiersWarnings.OnAdded -= OnAvatarModifierAdded;
+            avatarModifiersWarnings.OnRemoved -= OnAvatarModifierRemoved;
             view.Dispose();
         }
+   
         public void SetVisibility(bool visible)
         {
         

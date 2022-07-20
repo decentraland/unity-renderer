@@ -14,17 +14,13 @@ namespace Tests.AvatarModifierAreaFeedback
     
         private AvatarModifierAreaFeedbackController hudController;
         private IAvatarModifierAreaFeedbackView hudView;
-        private BaseStack<List<IAvatarModifier>> warningMessagesStack => DataStore.i.HUDs.inAvatarModifierStackWarnings;
-        private List<IAvatarModifier> mockAvatarModifiers;
+        private BaseCollection<string> warningMessageList => DataStore.i.HUDs.inAvatarModifierStackWarnings;
 
         [SetUp]
         public void SetUp()
         {
             hudView = Substitute.For<IAvatarModifierAreaFeedbackView>();
-            hudController = new AvatarModifierAreaFeedbackController(warningMessagesStack, hudView);
-            mockAvatarModifiers = new List<IAvatarModifier>();
-            mockAvatarModifiers.Add(new HideAvatarsModifier());
-            mockAvatarModifiers.Add(new DisablePassportModifier());
+            hudController = new AvatarModifierAreaFeedbackController(warningMessageList, hudView);
         }
         
         [Test]
@@ -36,10 +32,19 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void EntryAndExitOfAvatar()
         {
-            warningMessagesStack.Add(mockAvatarModifiers);
-            hudController.view.Received().SetWarningMessage(mockAvatarModifiers);
-            warningMessagesStack.Remove(mockAvatarModifiers);
-            hudController.view.Received().ResetWarningMessage();
+            warningMessageList.Add("MOCK_WARNING_1");
+            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
+            hudController.view.Received().SetVisibility(true);
+            
+            warningMessageList.Add("MOCK_WARNING_2");
+            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
+            
+            warningMessageList.Remove("MOCK_WARNING_1");
+            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
+            
+            warningMessageList.Remove("MOCK_WARNING_2");
+            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
+            hudController.view.Received().SetVisibility(false);
         }
 
         [TearDown]

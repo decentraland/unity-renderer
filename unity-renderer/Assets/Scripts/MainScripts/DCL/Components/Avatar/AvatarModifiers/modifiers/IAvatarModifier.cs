@@ -5,6 +5,4 @@ public interface IAvatarModifier
     void ApplyModifier(GameObject avatar);
     void RemoveModifier(GameObject avatar);
     string GetWarningDescription();
-
-
 }
