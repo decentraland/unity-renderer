@@ -1,4 +1,4 @@
-#if UNITY_EDITOR && UNITY_EDITOR_OSX
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
@@ -15,7 +15,12 @@ public class PreBuildProcessing : IPreprocessBuildWithReport
     public int callbackOrder => 1;
     public void OnPreprocessBuild(BuildReport report)
     {
+#if UNITY_EDITOR && UNITY_EDITOR_OSX
         System.Environment.SetEnvironmentVariable("EMSDK_PYTHON", "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3");
+#endif
+        
+#if UNITY_WEBGL
+        PlayerSettings.WebGL.emscriptenArgs += "-s ALLOW_MEMORY_GROWTH -s MAXIMUM_MEMORY=4GB ";
+#endif
     }
 }
-#endif
