@@ -90,7 +90,7 @@ namespace DCL.Chat.HUD
             lastRequestTime = 0;
 
             var channel = chatController.GetAllocatedChannel(channelId);
-            View.Setup(new PublicChatModel(channelId, $"#{channel.Name}", channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+            View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
             ReloadAllChats().Forget();
         }
@@ -107,7 +107,7 @@ namespace DCL.Chat.HUD
                 if (!string.IsNullOrEmpty(channelId))
                 {
                     var channel = chatController.GetAllocatedChannel(channelId);
-                    View.Setup(new PublicChatModel(channelId, $"#{channel.Name}", channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+                    View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
                     if (!directMessagesAlreadyRequested.Contains(channelId))
                     {

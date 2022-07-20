@@ -21,8 +21,8 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatEntry.PublicChatEntryModel("nearby", "~nearby", 0, true, 0));
-        view.nameLabel.text = "~nearby";
+        view.Configure(new PublicChatEntry.PublicChatEntryModel("nearby", "nearby", 0, true, 0));
+        view.nameLabel.text = "#nearby";
     }
 
     [Test]

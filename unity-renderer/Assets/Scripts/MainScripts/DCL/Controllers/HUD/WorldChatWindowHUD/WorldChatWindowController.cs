@@ -65,7 +65,7 @@ public class WorldChatWindowController : IHUD
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
         
         // TODO: this data should come from the chat service when channels are implemented
-        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, "~nearby",
+        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, "nearby",
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
             0, true, 0);
         view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
@@ -383,7 +383,7 @@ public class WorldChatWindowController : IHUD
         }
         
         var channelId = channel.ChannelId;
-        var model = new PublicChatModel(channelId, $"#{channel.Name}", channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount);
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount);
         
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);
