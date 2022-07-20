@@ -48,31 +48,23 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
-  public sealed partial class PBTextShape : pb::IMessage<PBTextShape>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBTextShape : pb::IMessage<PBTextShape> {
     private static readonly pb::MessageParser<PBTextShape> _parser = new pb::MessageParser<PBTextShape>(() => new PBTextShape());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBTextShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.TextShapeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape() {
       OnConstruction();
     }
@@ -80,7 +72,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape(PBTextShape other) : this() {
       text_ = other.text_;
       visible_ = other.visible_;
@@ -110,7 +101,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape Clone() {
       return new PBTextShape(this);
     }
@@ -119,7 +109,6 @@ namespace DCL.ECSComponents {
     public const int TextFieldNumber = 1;
     private string text_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Text {
       get { return text_; }
       set {
@@ -131,7 +120,6 @@ namespace DCL.ECSComponents {
     public const int VisibleFieldNumber = 2;
     private bool visible_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Visible {
       get { return visible_; }
       set {
@@ -143,7 +131,6 @@ namespace DCL.ECSComponents {
     public const int FontFieldNumber = 3;
     private string font_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Font {
       get { return font_; }
       set {
@@ -155,7 +142,6 @@ namespace DCL.ECSComponents {
     public const int OpacityFieldNumber = 4;
     private float opacity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Opacity {
       get { return opacity_; }
       set {
@@ -167,7 +153,6 @@ namespace DCL.ECSComponents {
     public const int FontSizeFieldNumber = 5;
     private float fontSize_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FontSize {
       get { return fontSize_; }
       set {
@@ -179,7 +164,6 @@ namespace DCL.ECSComponents {
     public const int FontAutoSizeFieldNumber = 6;
     private bool fontAutoSize_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool FontAutoSize {
       get { return fontAutoSize_; }
       set {
@@ -191,7 +175,6 @@ namespace DCL.ECSComponents {
     public const int HTextAlignFieldNumber = 7;
     private string hTextAlign_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string HTextAlign {
       get { return hTextAlign_; }
       set {
@@ -203,7 +186,6 @@ namespace DCL.ECSComponents {
     public const int VTextAlignFieldNumber = 8;
     private string vTextAlign_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string VTextAlign {
       get { return vTextAlign_; }
       set {
@@ -215,7 +197,6 @@ namespace DCL.ECSComponents {
     public const int WidthFieldNumber = 9;
     private float width_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Width {
       get { return width_; }
       set {
@@ -227,7 +208,6 @@ namespace DCL.ECSComponents {
     public const int HeightFieldNumber = 10;
     private float height_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Height {
       get { return height_; }
       set {
@@ -239,7 +219,6 @@ namespace DCL.ECSComponents {
     public const int PaddingTopFieldNumber = 11;
     private float paddingTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingTop {
       get { return paddingTop_; }
       set {
@@ -251,7 +230,6 @@ namespace DCL.ECSComponents {
     public const int PaddingRightFieldNumber = 12;
     private float paddingRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingRight {
       get { return paddingRight_; }
       set {
@@ -263,7 +241,6 @@ namespace DCL.ECSComponents {
     public const int PaddingBottomFieldNumber = 13;
     private float paddingBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingBottom {
       get { return paddingBottom_; }
       set {
@@ -275,7 +252,6 @@ namespace DCL.ECSComponents {
     public const int PaddingLeftFieldNumber = 14;
     private float paddingLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingLeft {
       get { return paddingLeft_; }
       set {
@@ -287,7 +263,6 @@ namespace DCL.ECSComponents {
     public const int LineSpacingFieldNumber = 15;
     private float lineSpacing_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float LineSpacing {
       get { return lineSpacing_; }
       set {
@@ -299,7 +274,6 @@ namespace DCL.ECSComponents {
     public const int LineCountFieldNumber = 16;
     private int lineCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int LineCount {
       get { return lineCount_; }
       set {
@@ -311,7 +285,6 @@ namespace DCL.ECSComponents {
     public const int TextWrappingFieldNumber = 17;
     private bool textWrapping_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool TextWrapping {
       get { return textWrapping_; }
       set {
@@ -323,7 +296,6 @@ namespace DCL.ECSComponents {
     public const int ShadowBlurFieldNumber = 18;
     private float shadowBlur_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowBlur {
       get { return shadowBlur_; }
       set {
@@ -335,7 +307,6 @@ namespace DCL.ECSComponents {
     public const int ShadowOffsetXFieldNumber = 19;
     private float shadowOffsetX_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetX {
       get { return shadowOffsetX_; }
       set {
@@ -347,7 +318,6 @@ namespace DCL.ECSComponents {
     public const int ShadowOffsetYFieldNumber = 20;
     private float shadowOffsetY_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetY {
       get { return shadowOffsetY_; }
       set {
@@ -359,7 +329,6 @@ namespace DCL.ECSComponents {
     public const int OutlineWidthFieldNumber = 21;
     private float outlineWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float OutlineWidth {
       get { return outlineWidth_; }
       set {
@@ -371,7 +340,6 @@ namespace DCL.ECSComponents {
     public const int ShadowColorFieldNumber = 22;
     private global::Color3 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 ShadowColor {
       get { return shadowColor_; }
       set {
@@ -383,7 +351,6 @@ namespace DCL.ECSComponents {
     public const int OutlineColorFieldNumber = 23;
     private global::Color3 outlineColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 OutlineColor {
       get { return outlineColor_; }
       set {
@@ -395,7 +362,6 @@ namespace DCL.ECSComponents {
     public const int TextColorFieldNumber = 24;
     private global::Color3 textColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 TextColor {
       get { return textColor_; }
       set {
@@ -404,13 +370,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBTextShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBTextShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -446,7 +410,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Text.Length != 0) hash ^= Text.GetHashCode();
@@ -480,17 +443,12 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (Text.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Text);
@@ -590,117 +548,9 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Text.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Text);
-      }
-      if (Visible != false) {
-        output.WriteRawTag(16);
-        output.WriteBool(Visible);
-      }
-      if (Font.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Font);
-      }
-      if (Opacity != 0F) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Opacity);
-      }
-      if (FontSize != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(FontSize);
-      }
-      if (FontAutoSize != false) {
-        output.WriteRawTag(48);
-        output.WriteBool(FontAutoSize);
-      }
-      if (HTextAlign.Length != 0) {
-        output.WriteRawTag(58);
-        output.WriteString(HTextAlign);
-      }
-      if (VTextAlign.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(VTextAlign);
-      }
-      if (Width != 0F) {
-        output.WriteRawTag(77);
-        output.WriteFloat(Width);
-      }
-      if (Height != 0F) {
-        output.WriteRawTag(85);
-        output.WriteFloat(Height);
-      }
-      if (PaddingTop != 0F) {
-        output.WriteRawTag(93);
-        output.WriteFloat(PaddingTop);
-      }
-      if (PaddingRight != 0F) {
-        output.WriteRawTag(101);
-        output.WriteFloat(PaddingRight);
-      }
-      if (PaddingBottom != 0F) {
-        output.WriteRawTag(109);
-        output.WriteFloat(PaddingBottom);
-      }
-      if (PaddingLeft != 0F) {
-        output.WriteRawTag(117);
-        output.WriteFloat(PaddingLeft);
-      }
-      if (LineSpacing != 0F) {
-        output.WriteRawTag(125);
-        output.WriteFloat(LineSpacing);
-      }
-      if (LineCount != 0) {
-        output.WriteRawTag(128, 1);
-        output.WriteInt32(LineCount);
-      }
-      if (TextWrapping != false) {
-        output.WriteRawTag(136, 1);
-        output.WriteBool(TextWrapping);
-      }
-      if (ShadowBlur != 0F) {
-        output.WriteRawTag(149, 1);
-        output.WriteFloat(ShadowBlur);
-      }
-      if (ShadowOffsetX != 0F) {
-        output.WriteRawTag(157, 1);
-        output.WriteFloat(ShadowOffsetX);
-      }
-      if (ShadowOffsetY != 0F) {
-        output.WriteRawTag(165, 1);
-        output.WriteFloat(ShadowOffsetY);
-      }
-      if (OutlineWidth != 0F) {
-        output.WriteRawTag(173, 1);
-        output.WriteFloat(OutlineWidth);
-      }
-      if (shadowColor_ != null) {
-        output.WriteRawTag(178, 1);
-        output.WriteMessage(ShadowColor);
-      }
-      if (outlineColor_ != null) {
-        output.WriteRawTag(186, 1);
-        output.WriteMessage(OutlineColor);
-      }
-      if (textColor_ != null) {
-        output.WriteRawTag(194, 1);
-        output.WriteMessage(TextColor);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Text.Length != 0) {
@@ -782,7 +632,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBTextShape other) {
       if (other == null) {
         return;
@@ -872,11 +721,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -990,128 +835,7 @@ namespace DCL.ECSComponents {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            Text = input.ReadString();
-            break;
-          }
-          case 16: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 26: {
-            Font = input.ReadString();
-            break;
-          }
-          case 37: {
-            Opacity = input.ReadFloat();
-            break;
-          }
-          case 45: {
-            FontSize = input.ReadFloat();
-            break;
-          }
-          case 48: {
-            FontAutoSize = input.ReadBool();
-            break;
-          }
-          case 58: {
-            HTextAlign = input.ReadString();
-            break;
-          }
-          case 66: {
-            VTextAlign = input.ReadString();
-            break;
-          }
-          case 77: {
-            Width = input.ReadFloat();
-            break;
-          }
-          case 85: {
-            Height = input.ReadFloat();
-            break;
-          }
-          case 93: {
-            PaddingTop = input.ReadFloat();
-            break;
-          }
-          case 101: {
-            PaddingRight = input.ReadFloat();
-            break;
-          }
-          case 109: {
-            PaddingBottom = input.ReadFloat();
-            break;
-          }
-          case 117: {
-            PaddingLeft = input.ReadFloat();
-            break;
-          }
-          case 125: {
-            LineSpacing = input.ReadFloat();
-            break;
-          }
-          case 128: {
-            LineCount = input.ReadInt32();
-            break;
-          }
-          case 136: {
-            TextWrapping = input.ReadBool();
-            break;
-          }
-          case 149: {
-            ShadowBlur = input.ReadFloat();
-            break;
-          }
-          case 157: {
-            ShadowOffsetX = input.ReadFloat();
-            break;
-          }
-          case 165: {
-            ShadowOffsetY = input.ReadFloat();
-            break;
-          }
-          case 173: {
-            OutlineWidth = input.ReadFloat();
-            break;
-          }
-          case 178: {
-            if (shadowColor_ == null) {
-              ShadowColor = new global::Color3();
-            }
-            input.ReadMessage(ShadowColor);
-            break;
-          }
-          case 186: {
-            if (outlineColor_ == null) {
-              OutlineColor = new global::Color3();
-            }
-            input.ReadMessage(OutlineColor);
-            break;
-          }
-          case 194: {
-            if (textColor_ == null) {
-              TextColor = new global::Color3();
-            }
-            input.ReadMessage(TextColor);
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 

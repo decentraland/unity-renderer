@@ -35,14 +35,14 @@ namespace DCL.Helpers
         /// <param name="camera">camera used for taking the snapshot</param>
         /// <param name="shotPosition">camera will be placed here.</param>
         /// <param name="shotTarget">camera will point towards here.</param>
-        public static IEnumerator TakeSnapshot(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        public static IEnumerator TakeSnapshot(string snapshotName, UnityEngine.Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
             snapshotName = snapshotName.Replace(".", "_");
             yield return TakeSnapshotOrTest(snapshotName + "_" + snapshotIndex + ".png", camera, shotPosition, shotTarget);
             snapshotIndex++;
         }
 
-        private static IEnumerator TakeSnapshotOrBaseline(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        private static IEnumerator TakeSnapshotOrBaseline(string snapshotName, UnityEngine.Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
             if (shotPosition.HasValue || shotTarget.HasValue)
             {
@@ -74,7 +74,7 @@ namespace DCL.Helpers
         /// <param name="camera">camera used for taking the snapshot</param>
         /// <param name="shotPosition">camera will be placed here.</param>
         /// <param name="shotTarget">camera will point towards here.</param>
-        private static IEnumerator TakeSnapshotOrTest(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        private static IEnumerator TakeSnapshotOrTest(string snapshotName, UnityEngine.Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
             yield return TakeSnapshotOrBaseline(snapshotName, camera, shotPosition, shotTarget);
 
@@ -107,7 +107,7 @@ namespace DCL.Helpers
         /// <param name="camera">camera used to take the shot</param>
         /// <param name="width">Width of the final image</param>
         /// <param name="height">Height of the final image</param>
-        private static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
+        private static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, UnityEngine.Camera camera, int width,
             int height)
         {
             if (string.IsNullOrEmpty(snapshotName) || camera == null)
@@ -326,7 +326,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null) { RepositionVisualTestsCamera(camera.transform, position, target); }
+        public static void RepositionVisualTestsCamera(UnityEngine.Camera camera, Vector3? position = null, Vector3? target = null) { RepositionVisualTestsCamera(camera.transform, position, target); }
 
         public static void SetSSAOActive(bool active)
         {

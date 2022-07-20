@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AvatarSystem;
 using DCL;
+using DCL.Camera;
 using DCL.Helpers;
 using KernelConfigurationTypes;
 using NSubstitute;

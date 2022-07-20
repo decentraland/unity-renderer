@@ -12,7 +12,7 @@ namespace DCL.Tutorial
 
         [Header("3D Model Teacher references")]
         [SerializeField]
-        internal Camera teacherCamera;
+        internal UnityEngine.Camera teacherCamera;
 
         [SerializeField]
         internal RawImage teacherRawImage;

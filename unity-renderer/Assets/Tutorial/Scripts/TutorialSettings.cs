@@ -43,13 +43,13 @@ namespace DCL.Tutorial
         public int debugStartingStepIndex;
         public bool debugOpenedFromDeepLink = false;
 
-        internal Camera teacherCamera;
+        internal UnityEngine.Camera teacherCamera;
         internal RawImage teacherRawImage;
         internal TutorialTeacher teacher;
         internal Canvas teacherCanvas;
         internal CinemachineVirtualCamera eagleEyeCamera;
 
-        public void ConfigureTeacher(Camera teacherCamera, RawImage teacherRawImage, TutorialTeacher teacher, Canvas teacherCanvas)
+        public void ConfigureTeacher(UnityEngine.Camera teacherCamera, RawImage teacherRawImage, TutorialTeacher teacher, Canvas teacherCanvas)
         {
             this.teacherCamera = teacherCamera;
             this.teacherRawImage = teacherRawImage;

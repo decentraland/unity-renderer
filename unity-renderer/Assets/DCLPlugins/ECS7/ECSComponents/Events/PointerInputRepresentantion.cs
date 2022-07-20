@@ -26,7 +26,7 @@ namespace DCLPlugins.ECSComponents
 
         // This represents the model component, since we have several components model, we just use their data
         private bool showFeedback = false;
-        private int button;
+        private ActionButton button;
         private string hoverText;
         private float distance;
 
@@ -40,7 +40,7 @@ namespace DCLPlugins.ECSComponents
             Initializate(entity);
         }
 
-        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, int button, float distance, string hoverText)
+        public void SetData(IParcelScene scene, IDCLEntity entity, bool showFeedback, ActionButton button, float distance, string hoverText)
         {
             this.scene = scene;
             eventEntity = entity;
@@ -102,7 +102,7 @@ namespace DCLPlugins.ECSComponents
                     case PointerInputEventType.DOWN:
                         componentId = ComponentID.ON_POINTER_DOWN_RESULT;
                         
-                        PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel((int)buttonId, meshName, ray, hit);
+                        PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel(button, meshName, ray, hit);
                         downPayload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
                             downPayload);
@@ -110,7 +110,7 @@ namespace DCLPlugins.ECSComponents
                     case PointerInputEventType.UP:
                         componentId = ComponentID.ON_POINTER_UP_RESULT;
                         
-                        PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel((int)buttonId, meshName, ray, hit);
+                        PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel(button, meshName, ray, hit);
                         payload.Timestamp = GetLamportTimestamp();
                         componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
                             payload);
@@ -131,7 +131,7 @@ namespace DCLPlugins.ECSComponents
         {
             return IsVisible() &&
                    IsAtHoverDistance(hit.distance) &&
-                   (button == (int)WebInterface.ACTION_BUTTON.ANY || buttonId == (WebInterface.ACTION_BUTTON)button);
+                   ((int) button == (int)WebInterface.ACTION_BUTTON.ANY || buttonId == (WebInterface.ACTION_BUTTON)button);
         }
         
         private void Initializate(IDCLEntity entity)

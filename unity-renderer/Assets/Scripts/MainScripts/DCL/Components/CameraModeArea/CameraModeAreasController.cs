@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL.Camera;
 using DCL.NotificationModel;
 
 namespace DCL.Components

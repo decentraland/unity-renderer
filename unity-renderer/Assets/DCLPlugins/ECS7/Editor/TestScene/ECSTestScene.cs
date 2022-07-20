@@ -9,6 +9,7 @@ using DCL.ECSRuntime;
 using DCL.Interface;
 using DCL.Models;
 using UnityEngine;
+using CameraMode = DCL.Camera.CameraMode;
 using Environment = DCL.Environment;
 
 public class ECSTestScene : MonoBehaviour

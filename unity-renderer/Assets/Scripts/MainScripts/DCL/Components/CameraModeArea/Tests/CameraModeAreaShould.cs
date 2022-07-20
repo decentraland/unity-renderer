@@ -1,4 +1,5 @@
 using System;
+using DCL.Camera;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;

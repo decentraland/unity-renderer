@@ -1,3 +1,4 @@
+using DCL.Camera;
 using DCL.Components;
 using NSubstitute;
 using NUnit.Framework;

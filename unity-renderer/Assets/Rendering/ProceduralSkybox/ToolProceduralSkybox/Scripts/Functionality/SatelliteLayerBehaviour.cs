@@ -30,9 +30,9 @@ namespace DCL.Skybox
 
             if (camTransform == null)
             {
-                if (Camera.main != null)
+                if (UnityEngine.Camera.main != null)
                 {
-                    camTransform = Camera.main.transform;
+                    camTransform = UnityEngine.Camera.main.transform;
                 }
             }
 

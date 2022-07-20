@@ -1,4 +1,5 @@
 using System.Collections;
+using DCL.Camera;
 using UnityEngine;
 
 namespace DCL.Tutorial

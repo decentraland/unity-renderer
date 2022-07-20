@@ -9,7 +9,7 @@ namespace DCL.Skybox
     public class SkyboxCamera
     {
         private GameObject skyboxCameraGO;
-        private Camera skyboxCamera;
+        private UnityEngine.Camera skyboxCamera;
         private SkyboxCameraBehaviour camBehavior;
 
         public SkyboxCamera()
@@ -20,7 +20,7 @@ namespace DCL.Skybox
             skyboxCameraGO.transform.rotation = Quaternion.identity;
 
             // Attach camera component
-            skyboxCamera = skyboxCameraGO.AddComponent<Camera>();
+            skyboxCamera = skyboxCameraGO.AddComponent<UnityEngine.Camera>();
 
             var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
             cameraData.renderShadows = false;
@@ -36,7 +36,7 @@ namespace DCL.Skybox
             if (mainCam == null)
                 return;
 
-            Camera mainCamComponent = mainCam.GetComponent<Camera>();
+            UnityEngine.Camera mainCamComponent = mainCam.GetComponent<UnityEngine.Camera>();
             var mainCameraData = mainCamComponent.GetUniversalAdditionalCameraData();
             var cameraStack = mainCameraData.cameraStack;
 
@@ -44,7 +44,7 @@ namespace DCL.Skybox
 
             var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
             cameraData.cameraStack.Add(mainCamComponent);
-            foreach (Camera camera in cameraStack)
+            foreach (UnityEngine.Camera camera in cameraStack)
             {
                 cameraData.cameraStack.Add(camera);
             }
