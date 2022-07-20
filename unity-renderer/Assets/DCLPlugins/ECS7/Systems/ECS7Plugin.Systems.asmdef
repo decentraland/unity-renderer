@@ -1,0 +1,17 @@
+{
+    "name": "ECS7Plugin.Systems",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
