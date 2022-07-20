@@ -97,7 +97,7 @@ namespace DCL.Controllers
                 boundsCheckColliderGO.layer = PhysicsLayers.parcelBoundsCheckColliderLayer;
                 boundsCheckColliderGO.transform.SetParent(boundsCheckCollidersContainerGO.transform);
                 // TODO: Height limits? For now we set a very high height for the colliders
-                float colliderHeight = 30f;
+                float colliderHeight = 150f;
                 float safeThreshold = 0.01f;
                 float boundsHorizontalSize = ParcelSettings.PARCEL_SIZE * (1 - safeThreshold);
                 boundsCheckColliderGO.transform.localScale = new Vector3(boundsHorizontalSize, colliderHeight, boundsHorizontalSize);
