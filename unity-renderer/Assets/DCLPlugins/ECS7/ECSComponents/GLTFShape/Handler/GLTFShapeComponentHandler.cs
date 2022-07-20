@@ -38,8 +38,11 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
+            if (this.model != null && this.model.Equals(model))
+                return;
+            
             this.entity = entity;
-
+            
             // If we didn't create the shape, or if the shape is different from the last time, we load the shape, if not we update model
             if(ShouldLoadShape(model))
                 LoadShape(scene,entity,model);

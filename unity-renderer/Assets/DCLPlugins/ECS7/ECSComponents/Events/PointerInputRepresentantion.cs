@@ -144,7 +144,7 @@ namespace DCLPlugins.ECSComponents
         private void Initializate(IDCLEntity entity)
         {
             // If we already have created the collider in another OnPointerEvent, we can skip since we have 1 collider for all OnPointerEvent
-            if (dataStore.entitiesOnPointerEvent.ContainsKey(entity.entityId))
+            if (dataStore.entitiesOnPointerEventCounter.ContainsKey(entity.entityId))
                 return;
             
             // If the shape is already ready, we create the colliders now, if not, we wait to the shape to be ready and then we create them
