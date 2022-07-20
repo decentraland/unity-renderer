@@ -10,7 +10,6 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal PublicChatEntryModel model;
     [SerializeField] internal UnreadNotificationBadge unreadNotifications;
-    [SerializeField] internal string namePrefix = "#";
     [SerializeField] internal GameObject joinedContainer;
     [SerializeField] internal GameObject notJoinedContainer;
     [SerializeField] internal TMP_Text memberCountLabel;
@@ -50,7 +49,7 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
 
     public override void RefreshControl()
     {
-        nameLabel.text = $"{namePrefix}{model.name}";
+        nameLabel.text = model.name;
         if (unreadNotifications)
             unreadNotifications.Initialize(chatController, model.channelId);
         if (joinedContainer)

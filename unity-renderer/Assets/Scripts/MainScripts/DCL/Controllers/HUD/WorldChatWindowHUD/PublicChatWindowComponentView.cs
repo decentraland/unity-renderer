@@ -48,7 +48,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public override void RefreshControl()
     {
-        nameLabel.text = $"#{model.name}";
+        nameLabel.text = model.name;
         descriptionLabel.text = model.description;
     }
 
