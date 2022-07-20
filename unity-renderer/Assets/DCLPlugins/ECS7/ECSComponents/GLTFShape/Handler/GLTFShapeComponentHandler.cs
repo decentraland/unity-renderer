@@ -128,13 +128,15 @@ namespace DCL.ECSComponents
 
         internal void Dispose(IParcelScene scene)
         {
-            // We dispose the colliders
-            ECSComponentsUtils.DisposeColliders(meshesInfo.colliders);
-            
-            // Clean the references to the entity mesh info
             if (meshesInfo != null)
+            {
+                // We dispose the colliders
+                ECSComponentsUtils.DisposeColliders(meshesInfo.colliders);
+                
+                // Clean the references to the entity mesh info
                 meshesInfo.CleanReferences();
-            
+            }
+
             // We notify that the shape is not ready anymore, so others component can be notify
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
@@ -148,7 +150,8 @@ namespace DCL.ECSComponents
             model = null;
             
             // We unload the loader wrapper so it can handle the GLTF asset management
-            loadWrapper.Unload();
+            if(loadWrapper != null)
+                loadWrapper.Unload();
         }
     }
 }
