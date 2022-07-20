@@ -28,5 +28,6 @@ namespace DCL
         event Action OnSortScenes;
         event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         event Action<IParcelScene> OnNewSceneAdded;
+        event Action<IParcelScene> OnSceneRemoved;
     }
 }

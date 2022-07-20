@@ -1,0 +1,16 @@
+{
+    "name": "RPC.Services.CRDTService.CRDTStream",
+    "rootNamespace": "",
+    "references": [
+        "GUID:374252a1740a422eb7762fc12ff3bf8a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
