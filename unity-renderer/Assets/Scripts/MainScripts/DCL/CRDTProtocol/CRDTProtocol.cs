@@ -89,14 +89,15 @@ namespace DCL.CRDT
         private CRDTMessage UpdateState(int key1, int key2, object data, long remoteTimestamp)
         {
             long stateTimeStamp = 0;
-            int crdtStateIndex = -1;
+            int crdtStateIndex = 0;
+            bool stateExists = false;
 
             if (stateIndexer.TryGetValue(key1, out Dictionary<int, int> innerDictionary))
             {
-                innerDictionary.TryGetValue(key2, out crdtStateIndex);
+                stateExists = innerDictionary.TryGetValue(key2, out crdtStateIndex);
             }
 
-            if (crdtStateIndex >= 0)
+            if (stateExists)
             {
                 stateTimeStamp = state[crdtStateIndex].timestamp;
             }
@@ -110,7 +111,7 @@ namespace DCL.CRDT
                 data = data
             };
 
-            if (crdtStateIndex >= 0)
+            if (stateExists)
             {
                 state[crdtStateIndex] = newMessageState;
             }
