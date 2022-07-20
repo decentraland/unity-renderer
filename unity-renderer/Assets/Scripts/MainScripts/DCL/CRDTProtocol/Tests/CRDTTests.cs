@@ -49,7 +49,7 @@ namespace Tests
 
             foreach (var kvp in inputDictionary)
             {
-                if (!crdt.state.TryGetValue(kvp.Key, out CRDTMessage storedMessage))
+                if (!crdt.TryGetState(kvp.Key, out CRDTMessage storedMessage))
                     return false;
 
                 if (!(storedMessage.timestamp == kvp.Value.timestamp

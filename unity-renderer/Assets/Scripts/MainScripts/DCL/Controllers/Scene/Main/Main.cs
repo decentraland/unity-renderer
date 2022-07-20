@@ -54,11 +54,6 @@ namespace DCL
             InitializeDataStore();
             SetupPlugins();
             InitializeCommunication();
-
-            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
-            // We should re-enable this later as produces a performance regression.
-            if (!EnvironmentSettings.RUNNING_TESTS)
-                Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
         protected virtual void InitializeDataStore()
