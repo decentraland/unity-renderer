@@ -1667,6 +1667,11 @@ namespace DCL.Interface
             SendMessage("GetUnseenMessagesByUser");
         }
 
+        public static void GetUnseenMessagesByChannel()
+        {
+            SendMessage("GetUnseenMessagesByChannel");
+        }
+
         public static void GetFriends(int limit, int skip)
         {
             SendMessage("GetFriends", new GetFriendsPayload
