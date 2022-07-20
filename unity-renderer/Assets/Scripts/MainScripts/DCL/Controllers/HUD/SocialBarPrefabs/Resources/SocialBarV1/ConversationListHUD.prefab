@@ -1983,8 +1983,7 @@ MonoBehaviour:
   model:
     isVisible: 0
     isExpanded: 0
-  entryPrefab: {fileID: 54474813580769298, guid: 0d953eabd7cb1462eaaf7235b09a0af4,
-    type: 3}
+  entryFactory: {fileID: 11400000, guid: 5e3e8d91cd44046faa4236552b5d4e05, type: 2}
 --- !u!1 &4717315093682569324
 GameObject:
   m_ObjectHideFlags: 0
@@ -3629,8 +3628,7 @@ MonoBehaviour:
   model:
     isVisible: 0
     isExpanded: 0
-  entryPrefab: {fileID: 54474813580769298, guid: 0d953eabd7cb1462eaaf7235b09a0af4,
-    type: 3}
+  entryFactory: {fileID: 11400000, guid: 5e3e8d91cd44046faa4236552b5d4e05, type: 2}
 --- !u!1 &8953413587729228697
 GameObject:
   m_ObjectHideFlags: 0
