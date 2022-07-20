@@ -1,9 +1,9 @@
 {
-    "name": "RPC.Context",
+    "name": "ECS7Plugin.Systems",
     "rootNamespace": "",
     "references": [
-        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
-        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
