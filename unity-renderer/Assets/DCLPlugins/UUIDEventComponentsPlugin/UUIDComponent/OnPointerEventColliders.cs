@@ -27,7 +27,6 @@ namespace DCL.Components
         public void Initialize(IDCLEntity entity)
         {
             ownerEntity = entity;
-            
             GenerateColliders(entity);
         }
 

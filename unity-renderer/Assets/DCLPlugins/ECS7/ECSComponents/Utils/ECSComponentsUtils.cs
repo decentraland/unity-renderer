@@ -8,8 +8,6 @@ using UnityEngine;
 
 public static class ECSComponentsUtils
 {
-    public const string ON_POINTER_EVENT_COLLIDER_NAME = "OnPointerEventCollider";
-    
     public static void RemoveMaterialTransition(GameObject go)
     {
         MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
@@ -37,7 +35,7 @@ public static class ECSComponentsUtils
         // However, if the model change and now the colliders should be enable and we didn't create them, we create them first
         if (meshesInfo.colliders.Count == 0 && shouldColliderBeEnabled)
         {
-            //CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions, isPointerBlocker));
+            CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions, isPointerBlocker));
         }
         else
         {
@@ -87,7 +85,7 @@ public static class ECSComponentsUtils
         CollidersManager.i.CreateColliders(entity.meshRootGameObject, meshFilters, withCollisions, isPointerBlocker, entity, CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
 
-    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool isVisible, Renderer[] meshRenderers = null)
+    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool isVisible, Renderer[] meshRenderers)
     {
         if (meshGameObject == null)
             return;
@@ -157,6 +155,8 @@ public static class ECSComponentsUtils
     {
         renderer.enabled = isVisible;
         
+        // If there is a child, it means that we added an OnPointerEvent collider, if the renderer is not active, the event shouldn't either
+        // This should disappear since we should handle the event logic in a different way
         if (renderer.transform.childCount > 0)
         {
             var onPointerEventCollider = renderer.transform.GetChild(0).GetComponent<Collider>();

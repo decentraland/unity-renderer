@@ -77,8 +77,10 @@ namespace DCL.ECSComponents
                     initialVisibility = true
                 };
 
+                // We assign the shape representation to the entity 
                 entity.meshesInfo.currentShape = shapeRepresentation;
                 
+                // Start loading the model
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF if it is not visible
@@ -93,6 +95,8 @@ namespace DCL.ECSComponents
                     
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
+                    
+                    // We remove the asset loading and notify of the shape ready
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     

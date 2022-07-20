@@ -14,14 +14,14 @@ namespace DCL.ECSComponents.Utils
             
             // If it was the last event on the entity, we also removed the colliders created for the event
             if (!dataStore.entitiesOnPointerEventCounter.ContainsKey(entity.entityId))
-                DisposeCollider(entity, dataStore);
+                DisposeEventCollider(entity, dataStore);
 
             // We dispose all the information related to the event
             representantion?.Dispose();
             dataStore.RemovePointerEvent(entity.entityId,representantion);
         }
         
-        public static void DisposeCollider(IDCLEntity entity, DataStore_ECS7 dataStore)
+        public static void DisposeEventCollider(IDCLEntity entity, DataStore_ECS7 dataStore)
         {
             List<GameObject> collidersToDestroy = dataStore.entityOnPointerEventColliderGameObject[entity.entityId];
             for (int x = 0; x < collidersToDestroy.Count; x++)
