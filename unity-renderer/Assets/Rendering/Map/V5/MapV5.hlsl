@@ -151,7 +151,7 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
 }
 
 
-void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float2 Resolution, float Zoom, float2 TextureSize, float GridThickness, float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
+void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
 {
     float4 tempCol = float4(0, 0, 0, 0);
 
