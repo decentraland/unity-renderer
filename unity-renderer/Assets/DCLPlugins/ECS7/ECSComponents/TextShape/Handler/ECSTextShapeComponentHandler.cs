@@ -10,6 +10,11 @@ using UnityEngine;
 
 public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 {
+    private static readonly int underlayColor = Shader.PropertyToID("_UnderlayColor");
+    private static readonly int offsetX = Shader.PropertyToID("_UnderlayOffsetX");
+    private static readonly int offsetY = Shader.PropertyToID("_UnderlayOffsetY");
+    private static readonly int underlaySoftness = Shader.PropertyToID("_UnderlaySoftness");
+    
     private const string BOTTOM = "bottom";
     private const string TOP = "top";
     private const string LEFT = "left";
@@ -25,8 +30,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private PBTextShape currentModel;
     private readonly DataStore_ECS7 dataStore;
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
-
-    private bool isFontLoaded = false;
+    
     private string lastFontUsed;
 
     public ECSTextShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, AssetPromiseKeeper_Font fontPromiseKeeper)
@@ -65,6 +69,9 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {
+        if (model.Equals(currentModel))
+            return;
+        
         currentModel = model;
 
         PrepareRectTransform(model);
@@ -165,7 +172,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         if (!Mathf.Approximately(model.ShadowBlur,0))
         {
             textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
-            textComponent.fontSharedMaterial.SetFloat("_UnderlaySoftness", model.ShadowBlur);
+            textComponent.fontSharedMaterial.SetFloat(underlaySoftness, model.ShadowBlur);
             underlayKeywordEnabled = true;
         }
         
@@ -177,7 +184,9 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 underlayKeywordEnabled = true;
             }
             var shadowColor  = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
-            textComponent.fontSharedMaterial.SetColor("_UnderlayColor", shadowColor);
+            textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
+            textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
+            textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
         }
         
         if (!underlayKeywordEnabled && textComponent.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
