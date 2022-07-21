@@ -8,6 +8,5 @@ message PBAudioSource {
   float volume = 2;
   bool loop = 3;
   float pitch = 4;
-  int32 played_at_timestamp = 5;
-  string audio_clip_url = 6;
+  string audio_clip_url = 5;
 }

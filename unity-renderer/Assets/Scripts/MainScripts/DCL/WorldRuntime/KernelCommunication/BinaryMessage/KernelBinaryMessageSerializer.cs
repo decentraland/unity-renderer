@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DCL.CRDT;
 
 namespace KernelCommunication
@@ -15,6 +16,15 @@ namespace KernelCommunication
             binaryWriter.WriteInt32(type);
 
             CRDTSerializer.Serialize(binaryWriter, message);
+        }
+
+        public static void Serialize(BinaryWriter binaryWriter, CRDTProtocol crdt)
+        {
+            IReadOnlyList<CRDTMessage> state = crdt.GetState();
+            for (int i = 0; i < state.Count; i++)
+            {
+                Serialize(binaryWriter, state[i]);
+            }
         }
 
         private static int GetCRDTMessageType(CRDTMessage message)

@@ -12,6 +12,7 @@
         "GUID:132013f160565434195ba5960832b346",
         "GUID:168278a8a3b14a3ba0f7ee157fd1780b",
         "GUID:211458814b4045e7ad894e13b8f8d919",
+        "GUID:374252a1740a422eb7762fc12ff3bf8a",
         "GUID:80f579cff5cf4136aa8969bf6fa1098c"
     ],
     "includePlatforms": [],
@@ -22,7 +23,8 @@
         "NSubstitute.dll",
         "System.Threading.Tasks.Extensions.dll",
         "nunit.framework.dll",
-        "Google.Protobuf.dll"
+        "Google.Protobuf.dll",
+        "System.Memory.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

@@ -45,23 +45,9 @@ namespace DCL.Helpers
         static int entityCounter = 513;
         static int disposableIdCounter = 123;
 
-        public static PB_Transform GetPBTransform(Vector3 position, Quaternion rotation, Vector3 scale)
+        public static string GetB64Transform(Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            PB_Transform pbTranf = new PB_Transform();
-            pbTranf.Position = new PB_Vector3();
-            pbTranf.Position.X = position.x;
-            pbTranf.Position.Y = position.y;
-            pbTranf.Position.Z = position.z;
-            pbTranf.Rotation = new PB_Quaternion();
-            pbTranf.Rotation.X = rotation.x;
-            pbTranf.Rotation.Y = rotation.y;
-            pbTranf.Rotation.Z = rotation.z;
-            pbTranf.Rotation.W = rotation.w;
-            pbTranf.Scale = new PB_Vector3();
-            pbTranf.Scale.X = scale.x;
-            pbTranf.Scale.Y = scale.y;
-            pbTranf.Scale.Z = scale.z;
-            return pbTranf;
+            return DCLTransformUtils.EncodeTransform(position, rotation, scale);
         }
 
         /// <summary>
@@ -116,11 +102,10 @@ namespace DCL.Helpers
             return featureFlag;
         }
 
-        public static PB_Transform GetPBTransformFromModelJson(string json)
+        public static string GetB64TransformFromModelJson(string json)
         {
             DCLTransform.Model transfModel = JsonUtility.FromJson<DCLTransform.Model>(json);
-            PB_Transform pbTranf = GetPBTransform(transfModel.position, transfModel.rotation, transfModel.scale);
-            return pbTranf;
+            return GetB64Transform(transfModel.position, transfModel.rotation, transfModel.scale);
         }
 
         public static IDCLEntity CreateSceneEntity(ParcelScene scene)
@@ -156,8 +141,7 @@ namespace DCL.Helpers
 
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
-                PB_Transform transf = GetPBTransformFromModelJson(JsonUtility.ToJson(model));
-                data = System.Convert.ToBase64String(transf.ToByteArray());
+                data = GetB64TransformFromModelJson(JsonUtility.ToJson(model));
             }
             else
             {
@@ -284,11 +268,10 @@ namespace DCL.Helpers
 
         public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
-                System.Convert.ToBase64String(pB_Transform.ToByteArray())
+                GetB64Transform(position, rotation, scale)
             );
         }
 

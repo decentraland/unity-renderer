@@ -71,7 +71,6 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeUpdated -= UpdateBackgroundColor;
-            Environment.i.world.state.RemoveLoaderForEntity(entity);
 
             base.DetachShape(entity);
         }
