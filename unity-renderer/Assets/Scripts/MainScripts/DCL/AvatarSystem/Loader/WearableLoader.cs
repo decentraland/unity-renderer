@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -84,6 +85,8 @@ namespace AvatarSystem
                 throw;
             }
         }
+
+        public void SetBones(Transform rootBone, Transform[] bones) { AvatarSystemUtils.CopyBones(rootBone, bones, rendereable.renderers.OfType<SkinnedMeshRenderer>()); }
 
         private async UniTask FallbackToDefault(GameObject container, CancellationToken ct)
         {
