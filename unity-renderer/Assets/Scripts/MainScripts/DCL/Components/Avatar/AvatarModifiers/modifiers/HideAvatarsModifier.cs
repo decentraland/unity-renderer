@@ -1,19 +1,30 @@
-using DCL;
 using UnityEngine;
 
 public class HideAvatarsModifier : IAvatarModifier
 {
     public void ApplyModifier(GameObject avatar)
     {
-        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
+        IHideAvatarAreaHandler[] handlers = avatar.GetComponentsInChildren<IHideAvatarAreaHandler>();
+        
+        if(handlers.Length.Equals(0))
             return;
-        handler.ApplyHideModifier();
+        
+        for (int i = 0; i < handlers.Length; i++)
+        {
+            handlers[i].ApplyHideModifier();
+        }
     }
 
     public void RemoveModifier(GameObject avatar)
     {
-        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
+        IHideAvatarAreaHandler[] handlers = avatar.GetComponentsInChildren<IHideAvatarAreaHandler>();
+
+        if(handlers.Length.Equals(0))
             return;
-        handler.RemoveHideModifier();
+
+        for (int i = 0; i < handlers.Length; i++)
+        {
+            handlers[i].RemoveHideModifier();
+        }
     }
 }

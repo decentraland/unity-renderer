@@ -85,7 +85,6 @@ namespace AvatarSystem
         
         public bool IsInsideHideArea()
         {
-            Debug.Log("AAAAAAAAAA " + globalConstrains.Contains("IN_HIDE_AREA"));
             return globalConstrains.Contains("IN_HIDE_AREA");
         }
 
