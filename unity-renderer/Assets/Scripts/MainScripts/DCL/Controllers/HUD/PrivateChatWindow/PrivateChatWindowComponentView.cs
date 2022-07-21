@@ -83,12 +83,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         this.socialAnalytics = socialAnalytics;
     }
 
-    public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
-    {
-        this.friendsController = friendsController;
-        this.socialAnalytics = socialAnalytics;
-    }
-
     public override void Dispose()
     {
         if (!this) return;
