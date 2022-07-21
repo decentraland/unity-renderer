@@ -644,7 +644,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
-        chatNotificationController.OnOpenNotificationChat += OpenClickedChat;
+        if(chatNotificationController != null)
+            chatNotificationController.OnOpenNotificationChat -= OpenClickedChat;
     }
 
     private void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
