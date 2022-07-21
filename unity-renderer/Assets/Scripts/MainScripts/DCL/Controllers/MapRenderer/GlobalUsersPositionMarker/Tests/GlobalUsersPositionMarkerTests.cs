@@ -86,7 +86,7 @@ namespace DCL
             var markerPrefab = new GameObject().AddComponent<UserMarkerObject>();
             var overlay = new GameObject();
 
-            Func<float, float, Vector3> coordToMapPosFunc = (x, y) => { return new Vector3(x, y, 0); };
+            Func<Vector2Int, Vector2> coordToMapPosFunc = (v) => { return new Vector2(v.x, v.y); };
 
             // create scenes to test
             var scenes = new List<HotScenesController.HotSceneInfo>();

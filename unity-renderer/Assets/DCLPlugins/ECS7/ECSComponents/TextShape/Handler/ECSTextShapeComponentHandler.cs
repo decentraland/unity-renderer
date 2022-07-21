@@ -35,6 +35,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
         textGameObject = new GameObject(COMPONENT_NAME);
+        // We rotate the text game object so when the text face the player, it is written normally instead of inverse ( like a mirror) 
+        textGameObject.transform.Rotate(UnityEngine.Vector3.up,-180);
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
@@ -146,7 +148,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
 
         textComponent.enableWordWrapping = model.TextWrapping && !textComponent.enableAutoSizing;
-
+        
         // Shadows
         bool underlayKeywordEnabled = false;
         if (!Mathf.Approximately(model.ShadowBlur,0))

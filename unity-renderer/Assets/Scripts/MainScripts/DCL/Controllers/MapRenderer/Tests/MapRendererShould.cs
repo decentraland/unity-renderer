@@ -107,7 +107,30 @@ namespace Tests
 
             Assert.AreEqual(1, icons.Length, "Only 1 icon is marked as POI, but 2 icons were spawned");
             Assert.AreEqual(sceneInfo.name, icons[0].title.text);
-            Assert.AreEqual(new Vector3(3010, 3010, 0), icons[0].transform.localPosition);
+            Assert.AreEqual(new Vector3(0, 0, 0), icons[0].transform.localPosition);
+        }
+
+        [Test]
+        public void DisplayParcelOfInterestIconsProperly2()
+        {
+            var sceneInfo = new MinimapMetadata.MinimapSceneInfo();
+            sceneInfo.name = "important scene";
+            sceneInfo.isPOI = true;
+            sceneInfo.parcels = new List<Vector2Int>()
+            {
+                new Vector2Int() { x = 10, y = 10 },
+                new Vector2Int() { x = 10, y = 11 },
+                new Vector2Int() { x = 11, y = 10 },
+                new Vector2Int() { x = 11, y = 11 }
+            };
+
+            MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
+
+            MapSceneIcon[] icons = MapRenderer.i.GetComponentsInChildren<MapSceneIcon>();
+
+            Assert.AreEqual(1, icons.Length, "Only 1 icon is marked as POI, but 2 icons were spawned");
+            Assert.AreEqual(sceneInfo.name, icons[0].title.text);
+            Assert.AreEqual(new Vector3(220, 220, 0), icons[0].transform.localPosition);
         }
         // TODO Fix tests
         // [UnityTest]
