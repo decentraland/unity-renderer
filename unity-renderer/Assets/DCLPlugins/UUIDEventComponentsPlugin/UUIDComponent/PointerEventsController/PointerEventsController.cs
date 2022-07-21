@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using Ray = UnityEngine.Ray;
@@ -197,7 +198,7 @@ namespace DCL
         private IList<IPointerEvent> GetPointerEventList(IDCLEntity entity)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (DataStore.i.ecs7.entityPointerEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
             {
                 return pointerInputEvent.Cast<IPointerEvent>().ToList();
             }
@@ -215,7 +216,7 @@ namespace DCL
         private IPointerEvent GetPointerEvent(IDCLEntity entity)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (DataStore.i.ecs7.entityPointerEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
                 return pointerInputEvent.First();
             else
                 return entity.gameObject.GetComponentInChildren<IPointerEvent>();
@@ -224,7 +225,7 @@ namespace DCL
         private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (entity != null && DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (entity != null && DataStore.i.ecs7.entityPointerEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
                 return pointerInputEvent;
             else
                 return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
@@ -432,16 +433,16 @@ namespace DCL
             Ray ray = GetRayFromCamera();
 
             // Note: This is for hot reload, since we can do a hot reload and the scene may be unloaded
-            if (!worldState.loadedScenes.ContainsKey(worldState.currentSceneId))
+            if (!worldState.loadedScenes.TryGetValue(worldState.currentSceneId, out IParcelScene scene))
                 return;
             
             // Raycast for pointer event components
             RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane,
-                pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);
+                pointerEventLayer, scene);
 
             // Raycast for global pointer events
             RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,
-                worldState.loadedScenes[worldState.currentSceneId]);
+                scene);
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
             bool isOnClickComponentBlocked =

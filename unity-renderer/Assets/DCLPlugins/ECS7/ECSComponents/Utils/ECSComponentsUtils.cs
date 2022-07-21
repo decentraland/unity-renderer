@@ -39,10 +39,10 @@ public static class ECSComponentsUtils
         }
         else
         {
-            foreach (Collider collider in meshesInfo.colliders)
+            for(int i = 0; i < meshesInfo.colliders.Count; i++)
             {
-                collider.enabled = shouldColliderBeEnabled;
-                collider.gameObject.layer = colliderLayer;
+                meshesInfo.colliders[i].enabled = shouldColliderBeEnabled;
+                meshesInfo.colliders[i].gameObject.layer = colliderLayer;
             }
         }
     }
@@ -124,16 +124,16 @@ public static class ECSComponentsUtils
     public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
         // Dispose renderer
-        foreach (Renderer renderer in meshesInfo.renderers)
+        for(int i = 0; i < meshesInfo.renderers.Length; i++)
         {
-            Utils.CleanMaterials(renderer);
-            GameObject.Destroy(renderer);
+            Utils.CleanMaterials(meshesInfo.renderers[i]);
+            GameObject.Destroy(meshesInfo.renderers[i]);
         }
         
         // Dispose Mesh filter
-        foreach (MeshFilter meshFilter in meshesInfo.meshFilters)
+        for(int i = 0; i < meshesInfo.meshFilters.Length; i++)
         {
-            GameObject.Destroy(meshFilter);
+            GameObject.Destroy(meshesInfo.meshFilters[i]);
         }
         
         // Dispose collider
@@ -144,10 +144,10 @@ public static class ECSComponentsUtils
     }
 
     public static void DisposeColliders(List<Collider> collidersList)
-    {
-        foreach (Collider collider in collidersList)
+    {    
+        for(int i = 0; i < collidersList.Count; i++)
         {
-            GameObject.Destroy(collider);
+            GameObject.Destroy(collidersList[i]);
         } 
     }
 

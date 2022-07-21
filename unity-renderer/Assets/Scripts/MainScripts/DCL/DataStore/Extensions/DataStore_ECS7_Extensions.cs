@@ -8,7 +8,7 @@ namespace DCL
     {
         public static void AddPointerEvent( this DataStore_ECS7 self, long entityId, IPointerInputEvent pointerEvent )
         {
-            if (self.entityEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
+            if (self.entityPointerEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
             {
                events.Add(pointerEvent);
             }
@@ -18,17 +18,17 @@ namespace DCL
                 {
                     pointerEvent
                 };
-                self.entityEvents.Add(entityId,events);
+                self.entityPointerEvents.Add(entityId,events);
             }
         }
         
         public static void RemovePointerEvent( this DataStore_ECS7 self, long entityId, IPointerInputEvent pointerEvent )
         {
-            if (self.entityEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
+            if (self.entityPointerEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
             {
                 events.Remove(pointerEvent);
                 if (events.Count == 0)
-                    self.entityEvents.Remove(entityId);
+                    self.entityPointerEvents.Remove(entityId);
             }
         }
         
