@@ -39,7 +39,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> isEmotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<bool> emoteJustTriggeredFromShortcut => DataStore.i.HUDs.emoteJustTriggeredFromShortcut;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
-    internal BaseVariable<Transform> isNotificationPanelInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
+    internal BaseVariable<Transform> notificationPanelTransform => DataStore.i.HUDs.notificationPanelTransform;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
@@ -93,8 +93,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
         InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
 
-        isNotificationPanelInitialized.OnChange += InitializeNotificationPanel;
-        InitializeNotificationPanel(isNotificationPanelInitialized.Get(), null);
+        notificationPanelTransform.OnChange += InitializeNotificationPanel;
+        InitializeNotificationPanel(notificationPanelTransform.Get(), null);
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
@@ -304,7 +304,7 @@ public class TaskbarHUDController : IHUD
 
     private void OpenPublicChannelOnPreviewMode()
     {
-        if (isNotificationPanelInitialized.Get() != null)
+        if (notificationPanelTransform.Get() != null)
             return;
 
         chatToggleTargetWindow = publicChatChannel;

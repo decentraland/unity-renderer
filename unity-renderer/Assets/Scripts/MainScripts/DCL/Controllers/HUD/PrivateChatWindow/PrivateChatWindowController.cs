@@ -29,8 +29,8 @@ public class PrivateChatWindowController : IHUD
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
     private string ConversationUserId { get; set; } = string.Empty;
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
-    internal BaseVariable<UnityEngine.Transform> isNotificationPanelInitialized => DataStore.i.HUDs.isNotificationPanelInitialized;
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
 
     public event Action OnPressBack;
     public event Action OnClosed;
@@ -68,7 +68,7 @@ public class PrivateChatWindowController : IHUD
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
         
-        if (isNotificationPanelInitialized.Get() == null)
+        if (notificationPanelTransform.Get() == null)
         {
             view.OnFocused += HandleViewFocused;
             view.OnClickOverWindow += HandleViewClicked;
@@ -115,7 +115,7 @@ public class PrivateChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (View.IsActive == visible && isNotificationPanelInitialized.Get() == null)
+        if (View.IsActive == visible && notificationPanelTransform.Get() == null)
             return;
 
         SetVisiblePanelList(visible);
@@ -347,7 +347,7 @@ public class PrivateChatWindowController : IHUD
 
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        if (isNotificationPanelInitialized.Get() == null)
+        if (notificationPanelTransform.Get() == null)
             await UniTask.Delay(30000, cancellationToken: cancellationToken);
 
         await UniTask.SwitchToMainThread(cancellationToken);

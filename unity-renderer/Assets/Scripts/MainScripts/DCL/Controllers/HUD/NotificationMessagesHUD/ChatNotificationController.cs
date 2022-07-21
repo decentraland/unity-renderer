@@ -14,7 +14,7 @@ public class ChatNotificationController : IHUD
     private IChatController chatController;
     private MainChatNotificationsComponentView mainChatNotificationView;
     private IUserProfileBridge userProfileBridge;
-    private BaseVariable<Transform> isInitialized => dataStore.HUDs.isNotificationPanelInitialized;
+    private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     public CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
@@ -32,7 +32,7 @@ public class ChatNotificationController : IHUD
         this.mainChatNotificationView.OnClickedNotification += OpenNotificationChat;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
-        isInitialized.Set(mainChatNotificationView.gameObject.transform);
+        notificationPanelTransform.Set(mainChatNotificationView.gameObject.transform);
         visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
     }
 

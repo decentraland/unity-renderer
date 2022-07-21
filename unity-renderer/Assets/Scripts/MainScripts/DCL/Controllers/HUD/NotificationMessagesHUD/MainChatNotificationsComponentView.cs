@@ -9,12 +9,12 @@ using UnityEngine.UI;
 
 public class MainChatNotificationsComponentView : BaseComponentView
 {
-    [SerializeField] RectTransform chatEntriesContainer;
-    [SerializeField] GameObject chatNotification;
-    [SerializeField] ScrollRect scrollRectangle;
-    [SerializeField] Button notificationButton;
-    [SerializeField] public TMP_Text notificationMessage;
-
+    [SerializeField] private RectTransform chatEntriesContainer;
+    [SerializeField] private GameObject chatNotification;
+    [SerializeField] private ScrollRect scrollRectangle;
+    [SerializeField] private Button notificationButton;
+    
+    private TMP_Text notificationMessage;
     public ChatNotificationController controller;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
@@ -40,7 +40,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
     {
         controller = chatController;
         onFocused += FocusedOnPanel;
-
+        notificationMessage = notificationButton.GetComponentInChildren<TMP_Text>();
         notificationButton?.onClick.RemoveAllListeners();
         notificationButton?.onClick.AddListener(() => SetScrollToEnd());
 
@@ -68,17 +68,17 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
     public void ShowNotifications()
     {
-        for (int i = 0; i < notificationQueue.Count; i++)
+        foreach (ChatNotificationMessageComponentView notification in notificationQueue)
         {
-            notificationQueue.ToArray()[i].Show();
+            notification.Show();
         }
     }
 
     public void HideNotifications()
     {
-        for (int i = 0; i < notificationQueue.Count; i++)
+        foreach (ChatNotificationMessageComponentView notification in notificationQueue)
         {
-            notificationQueue.ToArray()[i].Hide();
+            notification.Hide();
         }
     }
 
