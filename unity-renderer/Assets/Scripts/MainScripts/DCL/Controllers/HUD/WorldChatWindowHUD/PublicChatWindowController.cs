@@ -187,7 +187,7 @@ public class PublicChatWindowController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
-    private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
+    internal void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
     private void HandleViewClosed() => OnClosed?.Invoke();
 

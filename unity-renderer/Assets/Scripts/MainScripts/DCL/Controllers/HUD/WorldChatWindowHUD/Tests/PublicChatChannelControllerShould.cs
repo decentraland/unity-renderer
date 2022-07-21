@@ -219,6 +219,14 @@ public class PublicChatChannelControllerShould
         Assert.IsTrue(isPreviewMode);
     }
 
+    [Test]
+    public void MarkChannelMessagesAsReadCorrectly()
+    {
+        controller.MarkChannelMessagesAsRead();
+
+        chatController.Received(1).MarkChannelMessagesAsSeen(Arg.Any<string>());
+    }
+
     private void GivenOwnProfile()
     {
         var ownProfileModel = new UserProfileModel
