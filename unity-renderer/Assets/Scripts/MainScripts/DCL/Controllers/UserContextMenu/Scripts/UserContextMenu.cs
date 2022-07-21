@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -274,11 +277,16 @@ public class UserContextMenu : MonoBehaviour
 
     private void HideIfClickedOutside()
     {
-        if (Input.GetMouseButtonDown(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
+        if (!Input.GetMouseButtonDown(0)) return;
+        var pointerEventData = new PointerEventData(EventSystem.current)
         {
+            position = Input.mousePosition
+        };
+        var raycastResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+                
+        if (raycastResults.All(result => result.gameObject != gameObject))
             Hide();
-        }
     }
 
     private void ProcessActiveElements(MenuConfigFlags flags)
