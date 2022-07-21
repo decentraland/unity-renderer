@@ -15,5 +15,8 @@ namespace AvatarSystem
 
         void AddFacialFeaturesConstrain(string key);
         void RemoveFacialFeaturesConstrain(string key);
+
+        bool IsInsideHideArea();
+        
     }
 }

@@ -88,9 +88,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded; 
-                
-                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
-                
+                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1 && !visibility.IsInsideHideArea(), linkedCt);
             }
             catch (OperationCanceledException)
             {
