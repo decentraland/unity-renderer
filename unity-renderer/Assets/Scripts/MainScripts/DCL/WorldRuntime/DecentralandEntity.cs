@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -65,7 +66,7 @@ namespace DCL.Models
         }
 
         public void SetGameObject(GameObject gameObject)
-        {
+        {   
             this.gameObject = gameObject;
 
             // Create bounds trigger collider
@@ -74,34 +75,49 @@ namespace DCL.Models
             boundsCheckColliderGO.layer = PhysicsLayers.entityBoundsCheckColliderLayer;
 
             boundsCollisionChecker = boundsCheckColliderGO.AddComponent<EntityBoundsCollisionChecker>();
-            boundsCollisionChecker.OnParcelEntered += OnParcelEnter;
-            boundsCollisionChecker.OnParcelExited += OnParcelExited;
+            boundsCollisionChecker.OnEnteredParcel += OnEnteredParcel;
+            boundsCollisionChecker.OnExitedParcel += OnExitedParcel;
             boundsCheckCollider = boundsCheckColliderGO.AddComponent<BoxCollider>();
+            boundsCheckCollider.isTrigger = true;
             
             Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
             boundsCheckColliderTransform.SetParent(gameObject.transform);
             boundsCheckColliderTransform.localScale = Vector3.one * 0.009f;
-
+            
             UpdateBoundsCheckColliderBasedOnMesh(this);
-
-            boundsCheckCollider.isTrigger = true;
 
             OnShapeLoaded += UpdateBoundsCheckColliderBasedOnMesh;
             OnShapeUpdated += UpdateBoundsCheckColliderBasedOnMesh;
+            // OnTransformChange += OnTransformUpdate; // ...
         }
 
-        void UpdateBoundsCheckColliderBasedOnMesh(IDCLEntity entity)
+        public void UpdateBoundsCheckColliderBasedOnMesh(IDCLEntity entity)
         {
             if (meshesInfo != null && meshesInfo.meshRootGameObject != null && meshesInfo.mergedBounds != null)
             {
+                meshesInfo.OnUpdated -= OnMeshesInfoUpdate;
+                meshesInfo.OnUpdated += OnMeshesInfoUpdate;
+                
                 Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
                 boundsCheckColliderTransform.localScale = Vector3.one;
                 boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center;
                 boundsCheckCollider.size = meshesInfo.mergedBounds.size;
             }
+            
+            EvaluateOutOfBoundsState();
         }
 
-        void OnParcelEnter(string parcelSceneId)
+        void OnMeshesInfoUpdate()
+        {
+            UpdateBoundsCheckColliderBasedOnMesh(this);
+        }
+
+        /*void OnTransformUpdate(object newModel)
+        {   
+            EvaluateOutOfBoundsState();
+        }*/
+
+        void OnEnteredParcel(string parcelSceneId)
         {
             if (parcelSceneId != scene.sceneData.id)
                 trespassingScenesCounter++;
@@ -109,7 +125,7 @@ namespace DCL.Models
             EvaluateOutOfBoundsState();
         }
         
-        void OnParcelExited(string parcelSceneId)
+        void OnExitedParcel(string parcelSceneId)
         {
             if (parcelSceneId != scene.sceneData.id)
                 trespassingScenesCounter--;
@@ -119,15 +135,27 @@ namespace DCL.Models
 
         void EvaluateOutOfBoundsState()
         {
+            // This better approach has problems (some meshes are re-enabled when they should be off).
+            /*
+            // Should we skip this if the shape hasn't finished loading ???
+            
+            if(isDebug) Debug.Log($"Pravs - DecentralandEntity.EvaluateOutOfBoundsState() - 1 - isInsideBoundaries? {isInsideBoundaries}; trespassingCounter? {trespassingScenesCounter}");
+            
             if (isInsideBoundaries)
             {
-                if(trespassingScenesCounter > 0)
+                if (isDebug) Debug.Log($"Pravs - DecentralandEntity.EvaluateOutOfBoundsState() - 2A - Set as OUTSIDE BOUNDARIES");
+                if (trespassingScenesCounter > 0 || boundsCheckCollider.bounds.max.y > scene.metricsCounter.maxCount.sceneHeight)
                     Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, false);
             }
-            else if(trespassingScenesCounter <= 0)
+            else if (trespassingScenesCounter <= 0 && boundsCheckCollider.bounds.max.y <= scene.metricsCounter.maxCount.sceneHeight)
             {
+                if (isDebug) Debug.Log($"Pravs - DecentralandEntity.EvaluateOutOfBoundsState() - 2B - Set as INSIDE BOUNDARIES");
                 Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, true);
             }
+            
+            if(isDebug) Debug.Log($"Pravs - DecentralandEntity.EvaluateOutOfBoundsState() - 3 - isInsideBoundaries? {isInsideBoundaries}; trespassingCounter? {trespassingScenesCounter}");*/
+
+            Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, trespassingScenesCounter <= 0 && boundsCheckCollider.bounds.max.y <= scene.metricsCounter.maxCount.sceneHeight);
         }
 
         public void SetParent(IDCLEntity entity)
@@ -199,8 +227,8 @@ namespace DCL.Models
                 
                 OnShapeLoaded -= UpdateBoundsCheckColliderBasedOnMesh;
                 OnShapeUpdated -= UpdateBoundsCheckColliderBasedOnMesh;
-                boundsCollisionChecker.OnParcelEntered -= OnParcelEnter;
-                boundsCollisionChecker.OnParcelExited -= OnParcelExited;
+                boundsCollisionChecker.OnEnteredParcel -= OnEnteredParcel;
+                boundsCollisionChecker.OnExitedParcel -= OnExitedParcel;
                 Utils.SafeDestroy(boundsCheckCollider.gameObject);
             }
 

@@ -54,6 +54,7 @@ namespace DCL.Components
             if (visibilityDirty)
             {
                 ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+                // ConfigureVisibility(entity.meshRootGameObject, entity.isInsideBoundaries && model.visible, entity.meshesInfo.renderers);
                 visibilityDirty = false;
             }
 

@@ -278,6 +278,7 @@ namespace DCL.Controllers
 
             var newEntity = new DecentralandEntity();
             newEntity.entityId = id;
+            newEntity.scene = this;
 
             PoolManagerFactory.EnsureEntityPool(false);
 
@@ -292,7 +293,6 @@ namespace DCL.Controllers
 #endif
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
             newEntity.gameObject.SetActive(true);
-            newEntity.scene = this;
 
             newEntity.OnCleanupEvent += po.OnCleanup;
 

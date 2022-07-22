@@ -7,15 +7,15 @@ public class EntityBoundsCollisionChecker : MonoBehaviour
 {
 #if UNITY_EDITOR
     [SerializeField]
-    private List<string> collidingScenes = new List<string>();
+    List<string> collidingScenes = new List<string>();
 #endif
     
-    public Action<string> OnParcelEntered;
-    public Action<string> OnParcelExited;
+    public Action<string> OnEnteredParcel;
+    public Action<string> OnExitedParcel;
 
     private void OnTriggerEnter(Collider other)
     {
-        OnParcelEntered?.Invoke(other.name);
+        OnEnteredParcel?.Invoke(other.name);
         
 #if UNITY_EDITOR
         if(!collidingScenes.Contains(other.name))
@@ -25,7 +25,7 @@ public class EntityBoundsCollisionChecker : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {   
-        OnParcelExited?.Invoke(other.name);
+        OnExitedParcel?.Invoke(other.name);
         
 #if UNITY_EDITOR
         if(collidingScenes.Contains(other.name))

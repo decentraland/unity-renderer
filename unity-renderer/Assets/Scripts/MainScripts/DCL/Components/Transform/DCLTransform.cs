@@ -58,6 +58,7 @@ namespace DCL.Components
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
                 DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
+                entity.UpdateBoundsCheckColliderBasedOnMesh(entity);
             }
         }
 

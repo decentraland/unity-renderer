@@ -17,6 +17,7 @@ namespace DCL.Models
         void AddChild(IDCLEntity entity);
         void RemoveChild(IDCLEntity entity);
         void EnsureMeshGameObject(string gameObjectName = null);
+        void UpdateBoundsCheckColliderBasedOnMesh(IDCLEntity entity);
         void ResetRelease();
         IParcelScene scene { get; set; }
         bool markedForCleanup { get; set; }
