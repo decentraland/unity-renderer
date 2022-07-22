@@ -11,10 +11,10 @@ namespace Tests.AvatarModifierAreaFeedback
 {
     public class AvatarModifierAreaFeedbackControllerShould
     {
-    
+   
         private AvatarModifierAreaFeedbackController hudController;
         private IAvatarModifierAreaFeedbackView hudView;
-        private BaseCollection<string> warningMessageList => DataStore.i.HUDs.inAvatarModifierStackWarnings;
+        private BaseRefCounter<AvatarAreaWarningID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
 
         [SetUp]
         public void SetUp()
@@ -27,25 +27,9 @@ namespace Tests.AvatarModifierAreaFeedback
         public void InitializeProperly()
         {
             Assert.AreEqual(hudView, hudController.view);
+            hudController.view.Received().SetUp(warningMessageList);
         }
         
-        [Test]
-        public void EntryAndExitOfAvatar()
-        {
-            warningMessageList.Add("MOCK_WARNING_1");
-            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
-            hudController.view.Received().SetVisibility(true);
-            
-            warningMessageList.Add("MOCK_WARNING_2");
-            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
-            
-            warningMessageList.Remove("MOCK_WARNING_1");
-            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
-            
-            warningMessageList.Remove("MOCK_WARNING_2");
-            hudController.view.Received().SetWarningMessage(warningMessageList.Get());
-            hudController.view.Received().SetVisibility(false);
-        }
 
         [TearDown]
         protected void TearDown()

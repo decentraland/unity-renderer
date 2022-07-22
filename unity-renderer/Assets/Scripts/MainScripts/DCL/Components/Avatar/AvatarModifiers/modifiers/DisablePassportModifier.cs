@@ -8,18 +8,14 @@ public class DisablePassportModifier : IAvatarModifier
     {
         if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
             return;
-        handler.DisableHidePassportModifier(GetWarningDescription());
+        handler.DisableHidePassportModifier();
     }
 
     public void RemoveModifier(GameObject avatar)
     {
         if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
             return;
-        handler.EnableHidePassportModifier(GetWarningDescription());
+        handler.EnableHidePassportModifier();
     }
     
-    public string GetWarningDescription()
-    {
-        return "\u2022  Passports can not be opened";
-    }
 }

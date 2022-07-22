@@ -11,7 +11,7 @@ public class AvatarModifierAreaFeedbackPlugin : IPlugin
 
     public AvatarModifierAreaFeedbackPlugin()
     {
-        avatarModifierAreaFeedbackController = new AvatarModifierAreaFeedbackController(DataStore.i.HUDs.inAvatarModifierStackWarnings, AvatarModifierAreaFeedbackView.Create());
+        avatarModifierAreaFeedbackController = new AvatarModifierAreaFeedbackController(DataStore.i.HUDs.avatarAreaWarnings, AvatarModifierAreaFeedbackView.Create());
     }
 
     public void Dispose()

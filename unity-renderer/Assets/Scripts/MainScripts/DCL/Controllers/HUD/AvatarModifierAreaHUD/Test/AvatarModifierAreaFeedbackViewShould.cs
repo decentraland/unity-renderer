@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.AvatarModifierAreaFeedback;
 using NUnit.Framework;
 using UnityEngine;
@@ -11,29 +12,45 @@ namespace Tests.AvatarModifierAreaFeedback
     {
     
         private AvatarModifierAreaFeedbackView hudView;
-        private List<string> warningMessagesMock;
+        private BaseRefCounter<AvatarAreaWarningID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
 
         [SetUp]
         public void SetUp()
         {
             hudView = AvatarModifierAreaFeedbackView.Create();
-            warningMessagesMock = new List<string>() { "MOCK_WARNING_1", "MOCK_WARNING_2" };
+            hudView.SetUp(warningMessageList);
         }
         
         [Test]
-        public void IsVisible()
+        public void ShowsProperly()
         {
-            hudView.SetWarningMessage(warningMessagesMock);
-            hudView.SetVisibility(true);
+            warningMessageList.Clear();
+            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
             Assert.True(hudView.isVisible);
         }
         
         [Test]
+        public void HidesProperly()
+        {
+            warningMessageList.Clear();
+            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+            Assert.True(hudView.isVisible);
+            warningMessageList.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            Assert.True(hudView.isVisible);
+            warningMessageList.RemoveRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+            Assert.False(hudView.isVisible);
+        }
+        
+        
+        [Test]
         public void CheckPointerEnter()
         {
+            warningMessageList.Clear();
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.NEVER_SHOWN, hudView.currentState);
-            hudView.SetWarningMessage(warningMessagesMock);
-            hudView.SetVisibility(true);
+            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
             hudView.OnPointerEnter(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE,hudView.currentState);
         }
@@ -41,29 +58,12 @@ namespace Tests.AvatarModifierAreaFeedback
         [Test]
         public void CheckPointerExit()
         {
-            hudView.SetWarningMessage(warningMessagesMock);
-            hudView.SetVisibility(true);
+            warningMessageList.Clear();
+            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
             hudView.OnPointerExit(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.ICON_VISIBLE, hudView.currentState);
         }
         
-        [Test]
-        public void CheckMessageDescription()
-        {
-            string testDescription = "";
-            foreach (string newAvatarModifierWarning in warningMessagesMock)
-            {
-                testDescription += newAvatarModifierWarning + "\n";
-            }
-            
-            hudView.SetWarningMessage(warningMessagesMock);
-            Assert.AreEqual(hudView.descriptionText.text, testDescription);
-            
-            warningMessagesMock.Add("MOCK_WARNING_1");
-            hudView.SetWarningMessage(warningMessagesMock);
-            Assert.AreEqual(hudView.descriptionText.text, testDescription);
-        }
-
         [TearDown]
         protected void TearDown()
         {
