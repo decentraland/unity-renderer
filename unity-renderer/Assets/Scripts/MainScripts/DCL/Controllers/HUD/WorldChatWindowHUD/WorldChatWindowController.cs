@@ -156,7 +156,6 @@ public class WorldChatWindowController : IHUD
                 USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             RequestUnreadMessages();
-            //RequestJoinedChannels();
         }
         else
             view.HidePrivateChatsLoading();

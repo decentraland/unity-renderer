@@ -113,8 +113,6 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("1", unreadNotificationBadge.notificationText.text, "Notification text should be 1");
     }
 
-    /************/
-
     [Test]
     public void ReceiveOneUnreadChannelNotification()
     {
