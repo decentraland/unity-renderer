@@ -122,13 +122,15 @@ public class MainChatNotificationsComponentView : BaseComponentView
             SetScrollToEnd();
         }
 
-        controller.ResetFadeout(!isOverMessage && !isOverPanel);
+        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
         CheckNotificationCountAndRelease();
         return entry;
     }
 
     private void ResetNotificationButton()
     {
+        if (notificationMessage == null) return;
+
         notificationButton.gameObject.SetActive(false);
         notificationCount = 0;
         notificationMessage.text = notificationCount.ToString();
@@ -136,7 +138,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
     private void IncreaseNotificationCount()
     {
-        //if (!notificationButton.gameObject.isActiveInHierarchy) return;
+        if (notificationMessage == null) return;
 
         notificationCount++;
         notificationMessage.text = notificationCount.ToString();
@@ -173,13 +175,13 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private void FocusedOnNotification(bool isInFocus)
     {
         isOverMessage = isInFocus;
-        controller.ResetFadeout(!isOverMessage && !isOverPanel);
+        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
     }
 
     private void FocusedOnPanel(bool isInFocus)
     {
         isOverPanel = isInFocus;
-        controller.ResetFadeout(!isOverMessage && !isOverPanel);
+        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
     }
 
     private void CheckNotificationCountAndRelease()
