@@ -142,7 +142,7 @@ public class PublicChatWindowController : IHUD
         if (visible)
         {
             View.Show();
-            MarkChatMessagesAsRead();
+            MarkChannelMessagesAsRead();
             
             if (focusInputField)
                 chatHudController.FocusInputField();
@@ -187,7 +187,7 @@ public class PublicChatWindowController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
-    private void MarkChatMessagesAsRead() => chatController.MarkMessagesAsSeen(channelId);
+    internal void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
     private void HandleViewClosed() => OnClosed?.Invoke();
 
@@ -202,7 +202,7 @@ public class PublicChatWindowController : IHUD
         chatHudController.AddChatMessage(message, View.IsActive);
 
         if (View.IsActive)
-            MarkChatMessagesAsRead();
+            MarkChannelMessagesAsRead();
         
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();

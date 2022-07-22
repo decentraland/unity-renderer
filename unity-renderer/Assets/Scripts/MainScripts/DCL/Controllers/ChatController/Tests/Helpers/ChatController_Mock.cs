@@ -9,7 +9,6 @@ public class ChatController_Mock : IChatController
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
     
     public event Action<ChatMessage> OnAddMessage;
-    public event Action OnInitialized;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
     public event Action<string, string> OnJoinChannelError;
@@ -18,10 +17,11 @@ public class ChatController_Mock : IChatController
     public event Action<string, string> OnMuteChannelError;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
+    public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
     public int TotalJoinedChannelCount { get; }
     public int TotalUnseenMessages { get; }
-    
+
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
@@ -43,6 +43,10 @@ public class ChatController_Mock : IChatController
     }
 
     public void MarkMessagesAsSeen(string userId)
+    {
+    }
+
+    public void MarkChannelMessagesAsSeen(string channelId)
     {
     }
 
@@ -86,5 +90,11 @@ public class ChatController_Mock : IChatController
     {
     }
 
+    public void GetUnseenMessagesByChannel()
+    {
+    }
+
     public int GetAllocatedUnseenMessages(string userId) => 0;
+
+    public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
 }

@@ -13,12 +13,14 @@ public class ChatController : MonoBehaviour, IChatController
     public static ChatController i { get; private set; }
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
+    private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
+    private bool chatAlreadyInitialized = false;
+    private bool channelsAlreadyInitialized = false;
 
-    public event Action OnInitialized;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
     public event Action<string, string> OnJoinChannelError;
@@ -28,7 +30,8 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
-    
+    public event Action<string, int> OnChannelUnseenMessagesUpdated;
+
     public int TotalJoinedChannelCount => throw new NotImplementedException();
     public int TotalUnseenMessages { get; private set; }
 
@@ -41,9 +44,13 @@ public class ChatController : MonoBehaviour, IChatController
     [UsedImplicitly]
     public void InitializeChannels(string payload)
     {
+        if (channelsAlreadyInitialized)
+            return;
+
         var msg = JsonUtility.FromJson<InitializeChannelsPayload>(payload);
-        // TODO: add unseen notifications
-        OnInitialized?.Invoke();
+        TotalUnseenMessages += msg.unseenTotalMessages;
+        OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
+        channelsAlreadyInitialized = true;
     }
 
     [UsedImplicitly]
@@ -155,10 +162,13 @@ public class ChatController : MonoBehaviour, IChatController
     [UsedImplicitly]
     public void InitializeChat(string json)
     {
-        var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
+        if (chatAlreadyInitialized)
+            return;
 
-        // TODO: add #nearby unseen messages
-        TotalUnseenMessages = msg.totalUnseenPrivateMessages;
+        var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
+        TotalUnseenMessages += msg.totalUnseenPrivateMessages;
+        OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
+        chatAlreadyInitialized = true;
     }
 
     // called by kernel
@@ -179,7 +189,6 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateTotalUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
-        // TODO: add #nearby unseen messages
         TotalUnseenMessages = msg.total;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
     }
@@ -206,9 +215,33 @@ public class ChatController : MonoBehaviour, IChatController
         }
     }
 
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateChannelUnseenMessages(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateChannelUnseenMessagesPayload>(json);
+        unseenMessagesByChannel[msg.channelId] = msg.total;
+        OnChannelUnseenMessagesUpdated?.Invoke(msg.channelId, msg.total);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalUnseenMessagesByChannel(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByChannelPayload>(json);
+
+        foreach (var unseenMessages in msg.unseenChannelMessages)
+        {
+            unseenMessagesByChannel[unseenMessages.channelId] = unseenMessages.count;
+            OnChannelUnseenMessagesUpdated?.Invoke(unseenMessages.channelId, unseenMessages.count);
+        }
+    }
+
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
+
+    public void MarkChannelMessagesAsSeen(string channelId) => WebInterface.MarkChannelMessagesAsSeen(channelId);
 
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => WebInterface.GetPrivateMessages(userId, limit, fromTimestamp);
 
@@ -216,8 +249,13 @@ public class ChatController : MonoBehaviour, IChatController
     
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
 
+    public void GetUnseenMessagesByChannel() => WebInterface.GetUnseenMessagesByChannel();
+
     public int GetAllocatedUnseenMessages(string userId) =>
         unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
+
+    public int GetAllocatedUnseenChannelMessages(string channelId) =>
+        unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0;
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
     {

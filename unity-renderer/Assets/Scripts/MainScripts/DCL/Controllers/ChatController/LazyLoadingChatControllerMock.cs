@@ -24,7 +24,6 @@ public class LazyLoadingChatControllerMock : IChatController
         remove => controller.OnAddMessage -= value;
     }
 
-    public event Action OnInitialized;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
     public event Action<string, string> OnJoinChannelError;
@@ -43,7 +42,13 @@ public class LazyLoadingChatControllerMock : IChatController
         add => controller.OnUserUnseenMessagesUpdated += value;
         remove => controller.OnUserUnseenMessagesUpdated -= value;
     }
-    
+
+    public event Action<string, int> OnChannelUnseenMessagesUpdated
+    {
+        add => controller.OnChannelUnseenMessagesUpdated += value;
+        remove => controller.OnChannelUnseenMessagesUpdated -= value;
+    }
+
     public LazyLoadingChatControllerMock(ChatController controller)
     {
         this.controller = controller;
@@ -63,12 +68,18 @@ public class LazyLoadingChatControllerMock : IChatController
         SimulateDelayedResponseFor_MarkAsSeen(userId).Forget();
     }
 
+    public void MarkChannelMessagesAsSeen(string channelId) => controller.MarkChannelMessagesAsSeen(channelId);
+
     public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
         SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp).Forget();
     
     public void GetUnseenMessagesByUser() => SimulateDelayedResponseFor_TotalUnseenMessagesByUser().Forget();
 
+    public void GetUnseenMessagesByChannel() => controller.GetUnseenMessagesByChannel();
+
     public int GetAllocatedUnseenMessages(string userId) => Random.Range(0, 10);
+
+    public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
 
     public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
 
@@ -159,7 +170,7 @@ public class LazyLoadingChatControllerMock : IChatController
         };
         controller.UpdateUserUnseenMessages(JsonUtility.ToJson(userPayload));
     }
-    
+
     private async UniTask SimulateDelayedResponseFor_TotalUnseenMessagesByUser()
     {
         await UniTask.Delay(Random.Range(50, 1000));

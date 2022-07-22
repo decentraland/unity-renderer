@@ -705,6 +705,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class MarkChannelMessagesAsSeenPayload
+        {
+            public string channelId;
+        }
+
+        [System.Serializable]
         public class GetPrivateMessagesPayload
         {
             public string userId;
@@ -900,6 +906,7 @@ namespace DCL.Interface
         private static TimeReportPayload timeReportPayload = new TimeReportPayload();
         private static GetFriendsWithDirectMessagesPayload getFriendsWithDirectMessagesPayload = new GetFriendsWithDirectMessagesPayload();
         private static MarkMessagesAsSeenPayload markMessagesAsSeenPayload = new MarkMessagesAsSeenPayload();
+        private static MarkChannelMessagesAsSeenPayload markChannelMessagesAsSeenPayload = new MarkChannelMessagesAsSeenPayload();
         private static GetPrivateMessagesPayload getPrivateMessagesPayload = new GetPrivateMessagesPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
@@ -1641,6 +1648,12 @@ namespace DCL.Interface
             SendMessage("MarkMessagesAsSeen", markMessagesAsSeenPayload);
         }
 
+        public static void MarkChannelMessagesAsSeen(string channelId)
+        {
+            markChannelMessagesAsSeenPayload.channelId = channelId;
+            SendMessage("MarkChannelMessagesAsSeen", markChannelMessagesAsSeenPayload);
+        }
+
         public static void GetPrivateMessages(string userId, int limit, long from)
         {
             getPrivateMessagesPayload.userId = userId;
@@ -1652,6 +1665,11 @@ namespace DCL.Interface
         public static void GetUnseenMessagesByUser()
         {
             SendMessage("GetUnseenMessagesByUser");
+        }
+
+        public static void GetUnseenMessagesByChannel()
+        {
+            SendMessage("GetUnseenMessagesByChannel");
         }
 
         public static void GetFriends(int limit, int skip)

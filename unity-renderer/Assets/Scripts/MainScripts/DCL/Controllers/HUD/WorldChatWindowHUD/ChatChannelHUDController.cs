@@ -131,7 +131,7 @@ namespace DCL.Chat.HUD
         public void Focus()
         {
             chatHudController.FocusInputField();
-            MarkUserChatMessagesAsRead();
+            MarkChannelMessagesAsRead();
         }
 
         public void Dispose()
@@ -226,8 +226,8 @@ namespace DCL.Chat.HUD
 
             if (View.IsActive)
             {
-                // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
-                MarkUserChatMessagesAsRead();
+                // The messages from 'channelId' are marked as read if the channel window is currently open
+                MarkChannelMessagesAsRead();
             }
 
             View?.SetLoadingMessagesActive(false);
@@ -244,15 +244,15 @@ namespace DCL.Chat.HUD
 
         private bool IsMessageFomCurrentChannel(ChatMessage message) => message.sender == channelId || message.recipient == channelId;
 
-        private void MarkUserChatMessagesAsRead() => chatController.MarkMessagesAsSeen(channelId);
+        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void HandleInputFieldSelected()
         {
             deactivatePreviewCancellationToken.Cancel();
             deactivatePreviewCancellationToken = new CancellationTokenSource();
             DeactivatePreviewMode();
-            // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
-            MarkUserChatMessagesAsRead();
+            // The messages from 'channelId' are marked as read if the player clicks on the input field of the channel window
+            //MarkChannelMessagesAsRead();
         }
 
         private void HandleInputFieldDeselected()
