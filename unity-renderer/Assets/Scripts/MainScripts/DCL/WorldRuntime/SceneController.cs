@@ -769,6 +769,7 @@ namespace DCL
             Environment.i.world.blockersController.SetupWorldBlockers();
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
+            OnSceneRemoved?.Invoke(scene);
         }
 
         public void UnloadAllScenes(bool includePersistent = false)
@@ -922,6 +923,7 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
+        public event Action<IParcelScene> OnSceneRemoved;
         
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);

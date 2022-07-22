@@ -59,7 +59,7 @@ namespace DCL
             if (!CommonScriptableObjects.focusState.Get())
                 return;
 #endif
-            if (!CommonScriptableObjects.rendererState.Get())
+            if (!CommonScriptableObjects.rendererState.Get() && !CommonScriptableObjects.forcePerformanceMeter.Get())
                 return;
 
             var deltaInMs = Time.deltaTime * 1000;
