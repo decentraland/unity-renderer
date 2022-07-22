@@ -100,6 +100,7 @@ namespace DCL.Models
                 
                 Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
                 boundsCheckColliderTransform.localScale = Vector3.one;
+                boundsCheckColliderTransform.localRotation = Quaternion.Inverse(entity.gameObject.transform.rotation);
                 boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center;
                 boundsCheckCollider.size = meshesInfo.mergedBounds.size;
             }
