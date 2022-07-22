@@ -97,7 +97,6 @@ namespace DCL.ECSComponents
             UnityEngine.Vector3 lookAtVector = GetLookAtVector();
             if (lookAtVector != UnityEngine.Vector3.zero)
                 entityTransform.forward = lookAtVector;
-            Debug.Log("Changin orientantion");
         }
     }
 }
