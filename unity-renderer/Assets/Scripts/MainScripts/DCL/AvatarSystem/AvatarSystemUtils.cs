@@ -41,16 +41,24 @@ namespace AvatarSystem
             return (mainTextureUrl, maskTextureUrl);
         }
 
-        public static void CopyBones(SkinnedMeshRenderer source, IEnumerable<SkinnedMeshRenderer> targets)
+        public static void CopyBones(Transform rootBone, Transform[] bones, IEnumerable<SkinnedMeshRenderer> targets)
         {
-            if (source == null)
+            if (rootBone == null || bones == null)
                 return;
 
             foreach (SkinnedMeshRenderer skinnedMeshRenderer in targets)
             {
-                skinnedMeshRenderer.rootBone = source.rootBone;
-                skinnedMeshRenderer.bones = source.bones;
+                CopyBones(rootBone, bones, skinnedMeshRenderer);
             }
+        }
+
+        public static void CopyBones(Transform rootBone, Transform[] bones, SkinnedMeshRenderer skinnedMeshRenderer)
+        {
+            if (rootBone == null || bones == null)
+                return;
+
+            skinnedMeshRenderer.rootBone = rootBone;
+            skinnedMeshRenderer.bones = bones;
         }
 
         public static void PrepareMaterialColors(Rendereable rendereable, Color skinColor, Color hairColor)
