@@ -65,9 +65,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
         // TODO: Remove hack in a newer Unity/TMPro version 
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
+        await UniTask.NextFrame(cancellationToken);
+        await UniTask.NextFrame(cancellationToken);
+        await UniTask.NextFrame(cancellationToken);
 
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
@@ -78,7 +78,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
-        Utils.ForceUpdateLayout(transform as RectTransform);
+        (transform as RectTransform).ForceUpdateLayout();
 
         PlaySfx(chatEntryModel);
     }
