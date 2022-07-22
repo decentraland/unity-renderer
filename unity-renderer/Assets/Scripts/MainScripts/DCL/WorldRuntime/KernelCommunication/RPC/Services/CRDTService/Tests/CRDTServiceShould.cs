@@ -62,7 +62,7 @@ namespace Tests
             string sceneId = "temptation";
             CRDTMessage crdtMessage = new CRDTMessage()
             {
-                key = 7693,
+                key1 = 7693,
                 timestamp = 799,
                 data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
             };
@@ -74,7 +74,7 @@ namespace Tests
                                    QueuedSceneMessage_Scene message = info.Arg<QueuedSceneMessage_Scene>();
                                    Assert.AreEqual(message.sceneId, sceneId);
                                    CRDTMessage received = (CRDTMessage)message.payload;
-                                   Assert.AreEqual(crdtMessage.key, received.key);
+                                   Assert.AreEqual(crdtMessage.key1, received.key1);
                                    Assert.AreEqual(crdtMessage.timestamp, received.timestamp);
                                    Assert.IsTrue(AreEqual((byte[])received.data, (byte[])crdtMessage.data));
                                });
@@ -127,7 +127,7 @@ namespace Tests
                 deserializer.MoveNext();
                 CRDTMessage message = (CRDTMessage)deserializer.Current;
 
-                Assert.AreEqual(messageToScene1.key, message.key);
+                Assert.AreEqual(messageToScene1.key1, message.key1);
                 Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
                 Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
                 Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene1));
@@ -140,7 +140,7 @@ namespace Tests
                 deserializer.MoveNext();
                 message = (CRDTMessage)deserializer.Current;
 
-                Assert.AreEqual(messageToScene2.key, message.key);
+                Assert.AreEqual(messageToScene2.key1, message.key1);
                 Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
                 Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
                 Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene2));
