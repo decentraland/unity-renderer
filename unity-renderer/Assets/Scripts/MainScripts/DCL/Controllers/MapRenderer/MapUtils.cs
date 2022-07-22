@@ -18,6 +18,8 @@ namespace DCL.Helpers
             return result;
         }
 
+        public static Vector2 CoordsToPositionUnclamped(Vector2 coords) => CoordsToPositionUnclamped(coords, PARCEL_SIZE);
+        public static Vector2 CoordsToPositionUnclamped(Vector2 coords, int parcelSize) { return coords * parcelSize; }
         public static Vector2 CoordsToPosition(Vector2Int coords) => CoordsToPosition(coords, PARCEL_SIZE);
         public static Vector2 CoordsToPosition(Vector2Int coords, int parcelSize) { return ((Vector2)coords) * parcelSize; }
         public static Vector2 CoordsToPosition(Vector2 coords) => CoordsToPosition(coords, PARCEL_SIZE);
