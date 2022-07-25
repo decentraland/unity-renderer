@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.Helpers;
 using UnityEngine;
@@ -15,17 +17,21 @@ namespace ECSSystems.CameraSystem
             public BaseVariable<Transform> cameraTransform;
             public RendererState rendererState;
             public Vector3Variable worldOffset;
+            public IReadOnlyList<IParcelScene> loadedScenes;
+            public IECSComponentWriter componentsWriter;
             public UnityEngine.Vector3 lastCameraPosition = UnityEngine.Vector3.zero;
             public Quaternion lastCameraRotation = Quaternion.identity;
         }
 
-        public static Action CreateSystem()
+        public static Action CreateSystem(IECSComponentWriter componentsWriter)
         {
             var state = new State()
             {
                 cameraTransform = DataStore.i.camera.transform,
                 rendererState = CommonScriptableObjects.rendererState,
-                worldOffset = CommonScriptableObjects.worldOffset
+                worldOffset = CommonScriptableObjects.worldOffset,
+                loadedScenes = DataStore.i.ecs7.scenes,
+                componentsWriter = componentsWriter
             };
             return () => Update(state);
         }
@@ -50,8 +56,8 @@ namespace ECSSystems.CameraSystem
 
             UnityEngine.Vector3 worldOffset = state.worldOffset.Get();
 
-            var loadedScenes = ECSSystemsReferencesContainer.loadedScenes;
-            var componentsWriter = ECSSystemsReferencesContainer.componentsWriter;
+            var loadedScenes = state.loadedScenes;
+            var componentsWriter = state.componentsWriter;
 
             IParcelScene scene;
             for (int i = 0; i < loadedScenes.Count; i++)

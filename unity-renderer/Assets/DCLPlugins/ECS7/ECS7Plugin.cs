@@ -1,6 +1,5 @@
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using ECSSystems.Helpers;
 
 namespace DCL.ECS7
 {
@@ -18,9 +17,7 @@ namespace DCL.ECS7
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(DataStore.i.ecs7.componentsFactory, componentWriter);
-            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate);
-
-            SetUpReferences();
+            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
         }
 
         public void Dispose()
@@ -29,12 +26,6 @@ namespace DCL.ECS7
             crdtWriteSystem.Dispose();
             componentWriter.Dispose();
             systemsController.Dispose();
-        }
-
-        private void SetUpReferences()
-        {
-            ECSSystemsReferencesContainer.componentsWriter = componentWriter;
-            ECSSystemsReferencesContainer.loadedScenes = DataStore.i.ecs7.scenes;
         }
     }
 }
