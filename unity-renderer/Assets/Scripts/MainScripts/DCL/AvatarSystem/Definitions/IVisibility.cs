@@ -6,7 +6,7 @@ namespace AvatarSystem
 {
     public interface IVisibility : IDisposable
     {
-        void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures);
+        void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures, IBaseAvatar baseAvatar = null);
         void AddGlobalConstrain(string key);
         void RemoveGlobalConstrain(string key);
 

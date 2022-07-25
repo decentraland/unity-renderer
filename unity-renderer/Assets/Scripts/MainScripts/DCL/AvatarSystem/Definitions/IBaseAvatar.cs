@@ -16,7 +16,6 @@ namespace AvatarSystem
         GameObject GetArmatureContainer();
         UniTask FadeOut(MeshRenderer targetRenderer, bool playParticles, CancellationToken cancellationToken);
 
-        void EnterAvatarModifierArea();
-        void ExitAvatarModifierArea();
+        void ToggleHideAvatarArea(bool entered);
     }
 }

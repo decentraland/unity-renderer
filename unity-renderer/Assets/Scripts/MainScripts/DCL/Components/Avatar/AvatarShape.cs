@@ -371,7 +371,6 @@ namespace DCL
             onPointerDown.gameObject.SetActive(true);
             playerNameContainer.SetActive(true);
             stickersControllers.ToggleHideArea(false);
-
         }
 
         public override void Cleanup()

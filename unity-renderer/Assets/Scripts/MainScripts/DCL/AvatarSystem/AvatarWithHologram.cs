@@ -81,7 +81,7 @@ namespace AvatarSystem
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
-                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
+                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers, baseAvatar);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
@@ -111,23 +111,9 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key)
-        {
-            visibility.AddGlobalConstrain(key);
-            if (key.Equals("IN_HIDE_AREA"))
-            {
-                baseAvatar.EnterAvatarModifierArea();
-            }
-        }
+        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
 
-        public void RemoveVisibilityConstrain(string key)
-        {
-            visibility.RemoveGlobalConstrain(key);
-            if (key.Equals("IN_HIDE_AREA"))
-            {
-                baseAvatar.ExitAvatarModifierArea();
-            }
-        }
+        public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
 
         public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
 
@@ -140,7 +126,7 @@ namespace AvatarSystem
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
 
         public Transform[] GetBones() => loader.GetBones();
-
+       
         public void Dispose()
         {
             status = IAvatar.Status.Idle;
