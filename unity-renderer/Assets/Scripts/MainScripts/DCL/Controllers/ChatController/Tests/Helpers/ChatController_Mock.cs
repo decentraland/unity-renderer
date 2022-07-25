@@ -97,4 +97,8 @@ public class ChatController_Mock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => 0;
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
+    
+    public void CreateChannel(string channelId)
+    {
+    }
 }

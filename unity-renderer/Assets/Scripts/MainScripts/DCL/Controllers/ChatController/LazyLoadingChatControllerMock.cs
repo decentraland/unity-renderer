@@ -80,6 +80,7 @@ public class LazyLoadingChatControllerMock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => Random.Range(0, 10);
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
+    public void CreateChannel(string channelId) => controller.CreateChannel(channelId);
 
     public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
 
