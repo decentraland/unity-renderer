@@ -6,6 +6,8 @@ using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 public class MainChatNotificationsComponentView : BaseComponentView
 {
@@ -13,12 +15,11 @@ public class MainChatNotificationsComponentView : BaseComponentView
     [SerializeField] private GameObject chatNotification;
     [SerializeField] private ScrollRect scrollRectangle;
     [SerializeField] private Button notificationButton;
-    
-    private TMP_Text notificationMessage;
     public ChatNotificationController controller;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
+    private const float TRANSITION_DURATION = 0.0075f;
 
     public event Action<string> OnClickedNotification;
     public bool areOtherPanelsOpen = false;
@@ -30,6 +31,9 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private bool isOverMessage = false;
     private bool isOverPanel = false;
     private int notificationCount = 1;
+    private Vector2 notificationOffset = new Vector2(0, -52);
+    private TMP_Text notificationMessage;
+    private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
     public static MainChatNotificationsComponentView Create()
     {
@@ -59,11 +63,16 @@ public class MainChatNotificationsComponentView : BaseComponentView
     }
 
     private void CheckScrollValue(Vector2 newValue)
-    { 
-        if(scrollRectangle.normalizedPosition == new Vector2(0, 0))
+    {
+        if(newValue.y <= 0.0)
         {
             ResetNotificationButton();
         }
+    }
+
+    public void SnapTo()
+    {
+        chatEntriesContainer.anchoredPosition += notificationOffset;
     }
 
     public void ShowNotifications()
@@ -111,6 +120,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
         entry.onFocused += FocusedOnNotification;
         entry.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
 
+        SnapTo();
         if (isOverMessage)
         {
             notificationButton.gameObject.SetActive(true);
@@ -119,7 +129,9 @@ public class MainChatNotificationsComponentView : BaseComponentView
         else
         {
             ResetNotificationButton();
-            SetScrollToEnd();
+            fadeOutCT.Cancel();
+            fadeOutCT = new CancellationTokenSource();
+            WaitThenFadeOutNotifications(fadeOutCT.Token);
         }
 
         controller?.ResetFadeout(!isOverMessage && !isOverPanel);
@@ -127,26 +139,40 @@ public class MainChatNotificationsComponentView : BaseComponentView
         return entry;
     }
 
+    private async UniTaskVoid WaitThenFadeOutNotifications(CancellationToken cancellationToken)
+    {
+        Vector2 startPosition = chatEntriesContainer.anchoredPosition;
+        Vector2 endPosition = new Vector2(0,1);
+        while (chatEntriesContainer.anchoredPosition.y < -0.1)
+        {
+            chatEntriesContainer.anchoredPosition = Vector2.MoveTowards(chatEntriesContainer.anchoredPosition, endPosition, (1f / TRANSITION_DURATION) * Time.deltaTime);
+            await UniTask.NextFrame(cancellationToken);
+        }
+
+        if (cancellationToken.IsCancellationRequested)
+            return;
+    }
+
     private void ResetNotificationButton()
     {
-        if (notificationMessage == null) return;
-
         notificationButton.gameObject.SetActive(false);
         notificationCount = 0;
-        notificationMessage.text = notificationCount.ToString();
+
+        if (notificationMessage != null)
+            notificationMessage.text = notificationCount.ToString();
     }
 
     private void IncreaseNotificationCount()
     {
-        if (notificationMessage == null) return;
-
         notificationCount++;
-        notificationMessage.text = notificationCount.ToString();
+        if (notificationMessage != null)
+            notificationMessage.text = notificationCount.ToString();
     }
 
     private void SetScrollToEnd()
     {
         scrollRectangle.normalizedPosition = new Vector2(0, 0);
+        ResetNotificationButton();
     }
 
     private void PopulatePrivateNotification(ChatNotificationMessageComponentView chatNotificationComponentView, ChatMessage message, string username = null, string profilePicture = null)
@@ -188,8 +214,9 @@ public class MainChatNotificationsComponentView : BaseComponentView
     {
         if (poolableQueue.Count >= MAX_NOTIFICATION_ENTRIES)
         {
+            ChatNotificationMessageComponentView notificationToDequeue = notificationQueue.Dequeue(); 
+            notificationToDequeue.onFocused -= FocusedOnNotification;
             entryPool.Release(poolableQueue.Dequeue());
-            notificationQueue.Dequeue();
         }
     }
 
