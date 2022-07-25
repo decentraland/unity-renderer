@@ -12,7 +12,6 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     [SerializeField] internal string namePrefix = "#";
     [SerializeField] internal GameObject joinedContainer;
-    [SerializeField] internal GameObject notJoinedContainer;
     [SerializeField] internal TMP_Text memberCountLabel;
     [SerializeField] internal Button optionsButton;
     
@@ -55,8 +54,6 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
             unreadNotifications.Initialize(chatController, model.channelId);
         if (joinedContainer)
             joinedContainer.SetActive(model.isJoined);
-        if (notJoinedContainer)
-            notJoinedContainer.SetActive(!model.isJoined);
         if (memberCountLabel)
             memberCountLabel.SetText($"{model.memberCount} members");
     }
