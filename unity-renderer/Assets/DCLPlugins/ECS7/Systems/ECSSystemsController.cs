@@ -21,7 +21,10 @@ public class ECSSystemsController : IDisposable
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
-        updateSystems = new ECS7System[] { };
+        updateSystems = new ECS7System[]
+        {
+            ECSTransformParentingSystem.Update
+        };
 
         lateUpdateSystems = new ECS7System[]
         {
