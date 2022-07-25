@@ -223,6 +223,13 @@ namespace DCL
                 return base.GetAsset(id);
             }
         }
+
+        internal override void OnForget()
+        {
+            base.OnForget();
+            featureFlags.OnChange -= OnFeatureFlagChange;
+        }
+        
     }
 
 }
