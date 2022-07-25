@@ -62,7 +62,8 @@ namespace Tests
             CRDTExecutor executor = new CRDTExecutor(scene);
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "tigre"
             };
 
@@ -85,13 +86,15 @@ namespace Tests
 
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage removeComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = null,
                 timestamp = 1
             };
@@ -118,13 +121,15 @@ namespace Tests
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage addComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = 1,
                 timestamp = 0
             };
@@ -139,13 +144,15 @@ namespace Tests
 
             CRDTMessage removeComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = null,
                 timestamp = 1
             };
             CRDTMessage removeComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = null,
                 timestamp = 1
             };
@@ -171,13 +178,15 @@ namespace Tests
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage addComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = 1,
                 timestamp = 0
             };
