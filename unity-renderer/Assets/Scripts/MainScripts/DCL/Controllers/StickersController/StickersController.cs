@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class StickersController : MonoBehaviour, IHideAvatarAreaHandler
+    public class StickersController : MonoBehaviour
     {
         private StickersFactory stickersFactory;
         private bool isInHideArea;
@@ -34,14 +34,10 @@ namespace DCL
                 emoteFollow.offset = prefab.transform.position;
             }
         }
-        
-        public void ApplyHideModifier()
+
+        public void ToggleHideArea(bool entered)
         {
-            isInHideArea = true;
-        }
-        public void RemoveHideModifier()
-        {
-            isInHideArea = false;
+            isInHideArea = entered;
         }
     }
 }

@@ -4,27 +4,15 @@ public class HideAvatarsModifier : IAvatarModifier
 {
     public void ApplyModifier(GameObject avatar)
     {
-        IHideAvatarAreaHandler[] handlers = avatar.GetComponentsInChildren<IHideAvatarAreaHandler>();
-        
-        if(handlers.Length.Equals(0))
+        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-        
-        for (int i = 0; i < handlers.Length; i++)
-        {
-            handlers[i].ApplyHideModifier();
-        }
+        handler.ApplyHideModifier();
     }
 
     public void RemoveModifier(GameObject avatar)
     {
-        IHideAvatarAreaHandler[] handlers = avatar.GetComponentsInChildren<IHideAvatarAreaHandler>();
-
-        if(handlers.Length.Equals(0))
+        if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-
-        for (int i = 0; i < handlers.Length; i++)
-        {
-            handlers[i].RemoveHideModifier();
-        }
+        handler.RemoveHideModifier();
     }
 }

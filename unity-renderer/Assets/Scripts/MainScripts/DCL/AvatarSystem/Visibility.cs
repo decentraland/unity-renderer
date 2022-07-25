@@ -82,12 +82,7 @@ namespace AvatarSystem
                 facialFeatures[i].enabled = facialFeaturesVisibility;
             }
         }
-        
-        public bool IsInsideHideArea()
-        {
-            return globalConstrains.Contains("IN_HIDE_AREA");
-        }
-
+    
         public void Dispose()
         {
             globalConstrains.Clear();
