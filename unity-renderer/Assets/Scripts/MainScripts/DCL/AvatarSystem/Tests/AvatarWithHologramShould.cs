@@ -134,7 +134,7 @@ namespace Test.AvatarSystem
             animator.Received().Prepare(settings.bodyshapeId, null);
             gpuSkinning.Received().Prepare(combinedRenderer);
             gpuSkinningThrottler.Received().Bind(gpuSkinning);
-            visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);
+            visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures, baseAvatar);
             visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             visibility.Received().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             lod.Received().Bind(gpuSkinnedRenderer);
