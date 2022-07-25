@@ -28,7 +28,7 @@ namespace DCL.CRDT
 
         public void Execute(CRDTMessage crdtMessage)
         {
-            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key);
+            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
             CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
 
             // messages are the same so state didn't change
@@ -37,8 +37,8 @@ namespace DCL.CRDT
                 return;
             }
 
-            long entityId = CRDTUtils.EntityIdFromKey(resultMessage.key);
-            int componentId = CRDTUtils.ComponentIdFromKey(resultMessage.key);
+            long entityId = resultMessage.key1;
+            int componentId = resultMessage.key2;
 
             // null data means to remove component, not null data means to update or create
             if (resultMessage.data != null)

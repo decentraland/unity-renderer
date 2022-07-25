@@ -164,19 +164,22 @@ namespace Tests
             {
                 new CRDTMessage()
                 {
-                    key = 3446567322,
+                    key1 = 34465673,
+                    key2 = 5858585,
                     timestamp = 9598327474,
                     data = null
                 },
                 new CRDTMessage()
                 {
-                    key = 7693,
+                    key1 = 7693,
+                    key2 = 6,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 },
                 new CRDTMessage()
                 {
-                    key = 0,
+                    key1 = 0,
+                    key2 = 1,
                     timestamp = 0,
                     data = new byte[] { 1 }
                 },
@@ -211,7 +214,7 @@ namespace Tests
                 while (iterator.MoveNext())
                 {
                     CRDTMessage result = (CRDTMessage)iterator.Current;
-                    Assert.AreEqual(msgs[index].key, result.key);
+                    Assert.AreEqual(msgs[index].key1, result.key1);
                     Assert.AreEqual(msgs[index].timestamp, result.timestamp);
                     Assert.IsTrue(AreEqual((byte[])msgs[index].data, (byte[])result.data));
                     index++;
