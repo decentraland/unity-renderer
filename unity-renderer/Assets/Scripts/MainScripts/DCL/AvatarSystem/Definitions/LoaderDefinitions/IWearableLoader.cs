@@ -20,5 +20,6 @@ namespace AvatarSystem
         Rendereable rendereable { get; }
         Status status { get; }
         UniTask Load(GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default);
+        void SetBones(Transform rootBone, Transform[] bones);
     }
 }

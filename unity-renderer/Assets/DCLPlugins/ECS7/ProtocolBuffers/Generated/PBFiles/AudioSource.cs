@@ -24,38 +24,45 @@ namespace DCL.ECSComponents {
     static AudioSourceReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFBdWRpb1NvdXJjZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKCAQoNUEJB",
-            "dWRpb1NvdXJjZRIPCgdwbGF5aW5nGAEgASgIEg4KBnZvbHVtZRgCIAEoAhIM",
-            "CgRsb29wGAMgASgIEg0KBXBpdGNoGAQgASgCEhsKE3BsYXllZF9hdF90aW1l",
-            "c3RhbXAYBSABKAUSFgoOYXVkaW9fY2xpcF91cmwYBiABKAlCFKoCEURDTC5F",
-            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
+            "ChFBdWRpb1NvdXJjZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJlCg1QQkF1",
+            "ZGlvU291cmNlEg8KB3BsYXlpbmcYASABKAgSDgoGdm9sdW1lGAIgASgCEgwK",
+            "BGxvb3AYAyABKAgSDQoFcGl0Y2gYBCABKAISFgoOYXVkaW9fY2xpcF91cmwY",
+            "BSABKAlCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "PlayedAtTimestamp", "AudioClipUrl" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBAudioSource : pb::IMessage<PBAudioSource> {
+  public sealed partial class PBAudioSource : pb::IMessage<PBAudioSource>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBAudioSource> _parser = new pb::MessageParser<PBAudioSource>(() => new PBAudioSource());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAudioSource> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AudioSourceReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAudioSource() {
       OnConstruction();
     }
@@ -63,17 +70,18 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAudioSource(PBAudioSource other) : this() {
       playing_ = other.playing_;
       volume_ = other.volume_;
       loop_ = other.loop_;
       pitch_ = other.pitch_;
-      playedAtTimestamp_ = other.playedAtTimestamp_;
       audioClipUrl_ = other.audioClipUrl_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAudioSource Clone() {
       return new PBAudioSource(this);
     }
@@ -82,6 +90,7 @@ namespace DCL.ECSComponents {
     public const int PlayingFieldNumber = 1;
     private bool playing_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
       get { return playing_; }
       set {
@@ -93,6 +102,7 @@ namespace DCL.ECSComponents {
     public const int VolumeFieldNumber = 2;
     private float volume_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Volume {
       get { return volume_; }
       set {
@@ -104,6 +114,7 @@ namespace DCL.ECSComponents {
     public const int LoopFieldNumber = 3;
     private bool loop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Loop {
       get { return loop_; }
       set {
@@ -115,6 +126,7 @@ namespace DCL.ECSComponents {
     public const int PitchFieldNumber = 4;
     private float pitch_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Pitch {
       get { return pitch_; }
       set {
@@ -122,21 +134,11 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "played_at_timestamp" field.</summary>
-    public const int PlayedAtTimestampFieldNumber = 5;
-    private int playedAtTimestamp_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PlayedAtTimestamp {
-      get { return playedAtTimestamp_; }
-      set {
-        playedAtTimestamp_ = value;
-      }
-    }
-
     /// <summary>Field number for the "audio_clip_url" field.</summary>
-    public const int AudioClipUrlFieldNumber = 6;
+    public const int AudioClipUrlFieldNumber = 5;
     private string audioClipUrl_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string AudioClipUrl {
       get { return audioClipUrl_; }
       set {
@@ -145,11 +147,13 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAudioSource);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAudioSource other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -161,19 +165,18 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Volume, other.Volume)) return false;
       if (Loop != other.Loop) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Pitch, other.Pitch)) return false;
-      if (PlayedAtTimestamp != other.PlayedAtTimestamp) return false;
       if (AudioClipUrl != other.AudioClipUrl) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Playing != false) hash ^= Playing.GetHashCode();
       if (Volume != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Volume);
       if (Loop != false) hash ^= Loop.GetHashCode();
       if (Pitch != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Pitch);
-      if (PlayedAtTimestamp != 0) hash ^= PlayedAtTimestamp.GetHashCode();
       if (AudioClipUrl.Length != 0) hash ^= AudioClipUrl.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -182,12 +185,47 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Playing != false) {
+        output.WriteRawTag(8);
+        output.WriteBool(Playing);
+      }
+      if (Volume != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(Volume);
+      }
+      if (Loop != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(Loop);
+      }
+      if (Pitch != 0F) {
+        output.WriteRawTag(37);
+        output.WriteFloat(Pitch);
+      }
+      if (AudioClipUrl.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(AudioClipUrl);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Playing != false) {
         output.WriteRawTag(8);
         output.WriteBool(Playing);
@@ -213,11 +251,13 @@ namespace DCL.ECSComponents {
         output.WriteString(AudioClipUrl);
       }
       if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
+        _unknownFields.WriteTo(ref output);
       }
     }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Playing != false) {
@@ -232,9 +272,6 @@ namespace DCL.ECSComponents {
       if (Pitch != 0F) {
         size += 1 + 4;
       }
-      if (PlayedAtTimestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayedAtTimestamp);
-      }
       if (AudioClipUrl.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AudioClipUrl);
       }
@@ -245,6 +282,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAudioSource other) {
       if (other == null) {
         return;
@@ -261,9 +299,6 @@ namespace DCL.ECSComponents {
       if (other.Pitch != 0F) {
         Pitch = other.Pitch;
       }
-      if (other.PlayedAtTimestamp != 0) {
-        PlayedAtTimestamp = other.PlayedAtTimestamp;
-      }
       if (other.AudioClipUrl.Length != 0) {
         AudioClipUrl = other.AudioClipUrl;
       }
@@ -271,12 +306,51 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Playing = input.ReadBool();
+            break;
+          }
+          case 21: {
+            Volume = input.ReadFloat();
+            break;
+          }
+          case 24: {
+            Loop = input.ReadBool();
+            break;
+          }
+          case 37: {
+            Pitch = input.ReadFloat();
+            break;
+          }
+          case 42: {
+            AudioClipUrl = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
             Playing = input.ReadBool();
@@ -305,6 +379,7 @@ namespace DCL.ECSComponents {
         }
       }
     }
+    #endif
 
   }
 

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Proto;
+
+message CRDTManyMessages {
+  string sceneId = 1;
+  bytes	payload = 2;
+}
+
+message CRDTResponse {}
+
+message PullCRDTRequest {
+  string sceneId = 1;
+}
+
+service CRDTService {
+  rpc SendCrdt(CRDTManyMessages) returns (CRDTResponse){}
+  rpc PullCrdt(PullCRDTRequest) returns (CRDTManyMessages) {}
+}

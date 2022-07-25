@@ -10,7 +10,7 @@ using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
-    public class ECSAudioStreamComponentHandler : IECSComponentHandler<PBAudioStream>, IOutOfSceneBoundariesHandler
+    public class ECSAudioStreamComponentHandler : IECSComponentHandler<PBAudioStream>
     {
         private float settingsVolume = 0;
 
@@ -18,27 +18,32 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal AudioSource audioSource;
         internal PBAudioStream model;
+        internal IParcelScene scene;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
         internal bool isRendererActive = false;
-        internal bool isInsideBoundaries = true;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene; 
             audioSource = entity.gameObject.AddComponent<AudioSource>();
             
-            CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
+            // If it is a smart wearable, we don't look up to see if the scene has change since the scene is global
+            if(!scene.isPersistent)
+                CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
             settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
-            DataStore.i.sceneBoundariesChecker.Add(entity,this);
+
+            isRendererActive = CommonScriptableObjects.rendererState.Get();
+            isInsideScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Dispose(entity);
+            Dispose();
         }
                 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioStream model)
@@ -57,20 +62,14 @@ namespace DCL.ECSComponents
             // If everything went ok, we update the state
             SendUpdateAudioStreamEvent(model.Playing);
         }
-        
-        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
-        {
-            this.isInsideBoundaries = isInsideBoundaries;
-            ConditionsToPlayChanged();
-        }
 
-        private void Dispose(IDCLEntity entity)
+        private void Dispose()
         {
-            CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
+            if(!scene.isPersistent)
+                CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
             
             StopStreaming();
             
@@ -112,12 +111,12 @@ namespace DCL.ECSComponents
 
         private bool CanAudioStreamBePlayed()
         {
-            return isInsideScene && isRendererActive && isInsideBoundaries;
+            return isInsideScene && isRendererActive;
         }
 
         private void OnSceneChanged(string sceneId, string prevSceneId)
         {
-            isInsideScene = sceneId == CommonScriptableObjects.sceneID.Get();
+            isInsideScene = sceneId == scene.sceneData.id;
             ConditionsToPlayChanged();
         }
 

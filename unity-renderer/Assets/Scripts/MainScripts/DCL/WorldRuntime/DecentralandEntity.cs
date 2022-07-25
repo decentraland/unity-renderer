@@ -31,6 +31,8 @@ namespace DCL.Models
 
         public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 
+        public long parentId { get; set; }
+
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
         bool isReleased = false;
@@ -68,6 +70,7 @@ namespace DCL.Models
 
             if (entity != null)
             {
+                parentId = entity.entityId;
                 entity.AddChild(this);
 
                 if (entity.gameObject && gameObject)

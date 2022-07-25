@@ -224,7 +224,7 @@ namespace DCL
         private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (entity != null && DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
                 return pointerInputEvent;
             else
                 return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();

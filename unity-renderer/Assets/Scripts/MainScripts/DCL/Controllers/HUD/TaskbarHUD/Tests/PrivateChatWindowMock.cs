@@ -1,5 +1,6 @@
 using System;
 using NSubstitute;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
@@ -28,6 +29,10 @@ public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView
     private void OnDestroy()
     {
         isDestroyed = true;
+    }
+
+    public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
+    {
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)

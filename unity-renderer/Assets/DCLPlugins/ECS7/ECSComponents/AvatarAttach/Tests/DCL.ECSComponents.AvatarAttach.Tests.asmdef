@@ -1,0 +1,36 @@
+{
+    "name": "DCL.ECSComponents.AvatarAttach.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4934d1fdcdd394c76a501f04e1a15017",
+        "GUID:66d4f6807a289498cb6aaa427dc9376a",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:c34e38f41494f834abff029ddf82af43",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:5289a39f46259954ca74010d7c9ded16",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:59748378707bc664aa6cebca2ebf461b",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

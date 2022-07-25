@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
@@ -18,6 +16,7 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingController : ICullingController
     {
+        private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
         private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
@@ -39,7 +38,9 @@ namespace DCL.Rendering
         // Cache to avoid allocations when getting names
         private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
         private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
-
+        
+        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -63,6 +64,14 @@ namespace DCL.Rendering
 
             this.urpAsset = urpAsset;
             this.settings = settings;
+            
+            featureFlags.OnChange += OnFeatureFlagChange;
+            OnFeatureFlagChange(featureFlags.Get(), null);
+        }
+
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
+        {
+            SetAnimationCulling(current.IsFeatureEnabled(ANIMATION_CULLING_STATUS_FEATURE_FLAG));
         }
 
         /// <summary>
@@ -109,7 +118,7 @@ namespace DCL.Rendering
             ResetObjects();
         }
 
-        public void StopInternal()
+        private void StopInternal()
         {
             if (updateCoroutine == null)
                 return;
@@ -383,6 +392,7 @@ namespace DCL.Rendering
         {
             objectsTracker.Dispose();
             Stop();
+            featureFlags.OnChange -= OnFeatureFlagChange;
         }
 
         public void Initialize()
