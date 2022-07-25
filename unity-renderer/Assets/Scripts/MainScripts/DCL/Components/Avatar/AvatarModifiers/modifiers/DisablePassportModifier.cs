@@ -8,14 +8,14 @@ public class DisablePassportModifier : IAvatarModifier
     {
         if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
             return;
-        handler.DisableHidePassportModifier();
+        handler.ApplyHidePassportModifier();
     }
 
     public void RemoveModifier(GameObject avatar)
     {
         if (!avatar.TryGetComponent(out IHidePassportAreaHandler handler))
             return;
-        handler.EnableHidePassportModifier();
+        handler.RemoveHidePassportModifier();
     }
     
 }

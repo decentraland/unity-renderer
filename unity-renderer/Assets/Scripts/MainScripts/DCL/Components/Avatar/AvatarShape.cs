@@ -130,7 +130,7 @@ namespace DCL
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
 
-            EnableHidePassportModifier();
+            ApplyHidePassportModifier();
 
             var model = (AvatarModel) newModel;
 
@@ -224,7 +224,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            DisableHidePassportModifier();
+            RemoveHidePassportModifier();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -340,7 +340,7 @@ namespace DCL
             player = null;
         }
 
-        public void ApplyHideModifier()
+        public void ApplyHideAvatarModifier()
         {
             avatar.AddVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
@@ -348,21 +348,21 @@ namespace DCL
 
         }
 
-        public void RemoveHideModifier()
+        public void RemoveHideAvatarModifier()
         {
             avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(true);
             playerNameContainer.SetActive(true);
         }
         
-        public void EnableHidePassportModifier()
+        public void ApplyHidePassportModifier()
         {
             if (onPointerDown.collider == null)
                 return;
 
             onPointerDown.SetPassportEnabled(false);
         }
-        public void DisableHidePassportModifier()
+        public void RemoveHidePassportModifier()
         {
             if (onPointerDown.collider == null)
                 return;

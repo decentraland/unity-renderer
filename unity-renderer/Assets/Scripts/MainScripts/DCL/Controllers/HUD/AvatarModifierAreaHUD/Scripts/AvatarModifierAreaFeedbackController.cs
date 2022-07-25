@@ -21,10 +21,7 @@ namespace DCL.AvatarModifierAreaFeedback
             view.Dispose();
         }
    
-        public void SetVisibility(bool visible)
-        {
-        
-        }
+        public void SetVisibility(bool visible) { }
     }
 }
 

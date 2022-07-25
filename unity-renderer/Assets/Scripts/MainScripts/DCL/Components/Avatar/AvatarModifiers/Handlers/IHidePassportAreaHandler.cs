@@ -1,5 +1,5 @@
 public interface IHidePassportAreaHandler
 {
-    void EnableHidePassportModifier();
-    void DisableHidePassportModifier();
+    void ApplyHidePassportModifier();
+    void RemoveHidePassportModifier();
 }
