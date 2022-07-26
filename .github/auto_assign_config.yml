@@ -3,11 +3,11 @@ numberOfAssignees: 1
 
 addReviewers: true
 useReviewGroups: false
-numberOfReviewers: 5
+numberOfReviewers: 1
 reviewers:
   - AjimenezDCL
   - pravusjif
   - sandrade-dcl
   - Kinerius
-  - loruxo
+  - lorux0
   - davidejensen
