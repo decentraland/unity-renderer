@@ -71,6 +71,7 @@ MonoBehaviour:
   closeButton: {fileID: 480243386072958103}
   userThumbnail: {fileID: 1493733428180905244}
   userNameLabel: {fileID: 8296143100839953432}
+  disclaimerContainer: {fileID: 1176892910673695435}
   chatView: {fileID: 6801816554211203788}
   jumpInButtonContainer: {fileID: 4106688029660695027}
   jumpInButton: {fileID: 2076503811779865304}
@@ -3803,6 +3804,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5599680012397558907, guid: bac007ac4ef98284c8cf05867a35ee0f,
+        type: 3}
+      propertyPath: m_Padding.w
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5782737357620484227, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3951,7 +3957,7 @@ PrefabInstance:
     - target: {fileID: 6795723292658424848, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: -118.8441
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 7259452158740017375, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
@@ -4402,7 +4408,7 @@ MonoBehaviour:
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
   model:
-    isPreviewMode: 0
+    isInPreviewMode: 0
     isInputFieldFocused: 0
     inputFieldText: 
     enableFadeoutMode: 0
