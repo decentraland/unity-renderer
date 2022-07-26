@@ -58,6 +58,14 @@ public static class ThumbnailsManager
     {
         var availableSlots = Mathf.Max(CONCURRENT_LIMIT - progressList.Count, 0);
 
+        for (int i = progressList.Count - 1; i >= 0 ; i--)
+        {
+            if (progressList[i].state == AssetPromiseState.IDLE_AND_EMPTY)
+            {
+                progressList.RemoveAt(i);
+            }
+        }
+        
         if (availableSlots > 0)
         {
             var availableDownloads = Mathf.Min(availableSlots, promiseQueue.Count);
@@ -66,6 +74,9 @@ public static class ThumbnailsManager
             {
                 for (int i = 0; i < availableDownloads; i++)
                 {
+                    if (promiseQueue.Count == 0)
+                        break;
+                    
                     var promise = promiseQueue.Dequeue();
                     AssetPromise_Texture assetPromiseTexture = promise.Promise;
                     BeginDownload(assetPromiseTexture, promise.OnComplete);
