@@ -6,15 +6,20 @@ namespace DCL.Chat.HUD
     public class CreateChannelWindowController : IHUD
     {
         private readonly IChatController chatController;
-        private readonly ICreateChannelWindowView view;
+        private ICreateChannelWindowView view;
         private string channelName;
 
         public event Action<string> OnNavigateToChannelWindow;
 
-        public CreateChannelWindowController(IChatController chatController,
-            ICreateChannelWindowView view)
+        public CreateChannelWindowController(IChatController chatController)
         {
             this.chatController = chatController;
+        }
+
+        public ICreateChannelWindowView View => view;
+
+        public void Initialize(ICreateChannelWindowView view)
+        {
             this.view = view;
         }
 
@@ -28,9 +33,12 @@ namespace DCL.Chat.HUD
             if (visible)
             {
                 view.Show();
+                view.ClearInputText();
+                view.ClearError();
                 view.OnChannelNameUpdated += HandleChannelNameUpdated;
                 view.OnCreateSubmit += CreateChannel;
                 view.OnClose += HandleViewClose;
+                view.OnOpenChannel += HandleOpenChannel;
                 chatController.OnJoinChannelError += HandleCreationError;
                 chatController.OnChannelJoined += HandleChannelJoined;
             }
@@ -40,6 +48,8 @@ namespace DCL.Chat.HUD
                 view.Hide();
             }
         }
+
+        private void HandleOpenChannel() => OnNavigateToChannelWindow?.Invoke(channelName);
 
         private void HandleViewClose() => SetVisibility(false);
 
@@ -58,17 +68,29 @@ namespace DCL.Chat.HUD
         {
             channelName = name;
 
-            if (chatController.GetAllocatedChannel(channelName) != null)
+            var channel = chatController.GetAllocatedChannel(channelName);
+            if (channel != null)
             {
-                // TODO: confirm fail flow
+                view.ShowChannelExistsError(!channel.Joined);
+                view.DisableCreateButton();
+            }
+            else
+            {
+                view.ClearError();
+                view.EnableCreateButton();
             }
         }
 
         private void CreateChannel()
         {
             chatController.CreateChannel(channelName);
+            view.DisableCreateButton();
         }
         
-        private void HandleCreationError(string channelId, string message) => view.ShowError(message);
+        private void HandleCreationError(string channelId, string message)
+        {
+            view.ShowError(message);
+            view.DisableCreateButton();
+        }
     }
 }

@@ -38,6 +38,10 @@ public class ChatController : MonoBehaviour, IChatController
     public void Awake()
     {
         i = this;
+        
+        channels["nearby"] = new Channel("nearby", 0, 0, true, false,
+            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
+            0);
     }
 
     // called by kernel
