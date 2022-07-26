@@ -1,13 +1,12 @@
 {
-    "name": "ECS7Plugin.Systems",
+    "name": "ECS7Plugin.Systems.Helpers",
     "rootNamespace": "",
     "references": [
-        "GUID:9857fe4bae4e30441bc3a577c5de790a",
-        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-        "GUID:a0758b47826540c6955e61e446724948",
-        "GUID:27120c68277e4a67bf44f9025138b8af",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
         "GUID:7eb48a6a47db4795bdee44a726fa8338",
-        "GUID:64cd64bd9da148f2882e67b9e30a1e31"
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
