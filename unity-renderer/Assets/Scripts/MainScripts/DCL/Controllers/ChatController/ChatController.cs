@@ -217,15 +217,6 @@ public class ChatController : MonoBehaviour, IChatController
 
     // called by kernel
     [UsedImplicitly]
-    public void UpdateChannelUnseenMessages(string json)
-    {
-        var msg = JsonUtility.FromJson<UpdateChannelUnseenMessagesPayload>(json);
-        unseenMessagesByChannel[msg.channelId] = msg.total;
-        OnChannelUnseenMessagesUpdated?.Invoke(msg.channelId, msg.total);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
     public void UpdateTotalUnseenMessagesByChannel(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByChannelPayload>(json);

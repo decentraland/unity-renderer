@@ -360,12 +360,18 @@ namespace DCL.Chat.Channels
             };
             controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalPayload));
 
-            var userPayload = new UpdateChannelUnseenMessagesPayload
+            var userPayload = new UpdateTotalUnseenMessagesByChannelPayload
             {
-                channelId = channelId,
-                total = 0
+                unseenChannelMessages = new[]
+                {
+                    new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage 
+                    { 
+                        channelId = channelId,
+                        count = 0
+                    }
+                }
             };
-            controller.UpdateChannelUnseenMessages(JsonUtility.ToJson(userPayload));
+            controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(userPayload));
         }
 
         private async UniTask SimulateDelayedResponseFor_TotalUnseenMessagesByChannel()
