@@ -100,8 +100,10 @@ namespace DCL.Components
             DCLFont.SetFontFromComponent(scene, model.font, text);
             
             var opacity = model.visible ? model.opacity : 0;
-            var totalSize = model.height + model.width;
-            bool isVisible = opacity > float.Epsilon && totalSize > 4;
+            var totalSize = model.fontSize;
+            var totalScale = text.transform.lossyScale.sqrMagnitude;
+            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0;
+            
             text.enabled = isVisible;
             meshRenderer.enabled = isVisible;
             
