@@ -183,7 +183,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
             if (linkIndex != -1)
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true);
@@ -222,7 +222,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = 0f;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
         if (linkIndex == -1)
         {
             isOverCoordinates = false;
@@ -354,7 +354,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (isOverCoordinates)
             return;
 
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, null);
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
 
         if (linkIndex == -1)
             return;
