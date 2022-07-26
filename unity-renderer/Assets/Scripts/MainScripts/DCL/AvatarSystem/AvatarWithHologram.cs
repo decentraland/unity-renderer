@@ -76,18 +76,18 @@ namespace AvatarSystem
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-                
+
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
-                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers, baseAvatar);
+                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
 
-                status = IAvatar.Status.Loaded; 
+                status = IAvatar.Status.Loaded;
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
             }
             catch (OperationCanceledException)
@@ -111,9 +111,20 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+        public void AddVisibilityConstrain(string key)
+        {
+            visibility.AddGlobalConstrain(key);
+            baseAvatar.ToggleHideAvatarArea(key.Equals("IN_HIDE_AREA"));
+        }
 
-        public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
+        public void RemoveVisibilityConstrain(string key)
+        {
+            visibility.RemoveGlobalConstrain(key);
+            if (key.Equals("IN_HIDE_AREA"))
+            {
+                baseAvatar.ToggleHideAvatarArea(false);
+            }
+        }
 
         public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
 
@@ -126,7 +137,7 @@ namespace AvatarSystem
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
 
         public Transform[] GetBones() => loader.GetBones();
-       
+
         public void Dispose()
         {
             status = IAvatar.Status.Idle;

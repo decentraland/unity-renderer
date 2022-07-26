@@ -11,18 +11,16 @@ namespace AvatarSystem
 
         private Renderer combinedRenderer = null;
         private List<Renderer> facialFeatures = null;
-        private IBaseAvatar baseAvatar = null;
 
         /// <summary>
         /// Bind a set of renderers, previous renderers enabled wont be modified
         /// </summary>
         /// <param name="combinedRenderer"></param>
         /// <param name="facialFeatures"></param>
-        public void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures, IBaseAvatar baseAvatar = null)
+        public void Bind(Renderer combinedRenderer, List<Renderer> facialFeatures)
         {
             this.combinedRenderer = combinedRenderer;
             this.facialFeatures = facialFeatures;
-            this.baseAvatar = baseAvatar;
             UpdateCombinedRendererVisibility();
             UpdateFacialFeatureVisibility();
         }
@@ -32,7 +30,6 @@ namespace AvatarSystem
             globalConstrains.Add(key);
             UpdateCombinedRendererVisibility();
             UpdateFacialFeatureVisibility();
-            UpdateAvatarRevealVisibility();
         }
 
         public void RemoveGlobalConstrain(string key)
@@ -40,7 +37,6 @@ namespace AvatarSystem
             globalConstrains.Remove(key);
             UpdateCombinedRendererVisibility();
             UpdateFacialFeatureVisibility();
-            UpdateAvatarRevealVisibility();
         }
 
         public void AddCombinedRendererConstrain(string key)
@@ -87,15 +83,6 @@ namespace AvatarSystem
             }
         }
 
-        private void UpdateAvatarRevealVisibility()
-        {
-            if (baseAvatar == null)
-                return;
-
-            bool isInsideHideArea = globalConstrains.Contains("IN_HIDE_AREA");
-            baseAvatar.ToggleHideAvatarArea(isInsideHideArea);
-        }
-    
         public void Dispose()
         {
             globalConstrains.Clear();
