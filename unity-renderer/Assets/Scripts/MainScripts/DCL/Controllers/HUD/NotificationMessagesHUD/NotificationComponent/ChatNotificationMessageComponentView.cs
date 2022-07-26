@@ -20,7 +20,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal GameObject imageBackground;
     [SerializeField] internal bool isPrivate;
     [SerializeField] internal RectTransform backgroundTransform;
-    [SerializeField] internal GridLayoutGroup layoutGroup;
+    [SerializeField] internal RectTransform messageContainerTransform;
 
     [Header("Configuration")]
     [SerializeField] internal ChatNotificationMessageComponentModel model;
@@ -41,7 +41,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         base.Awake();
         button?.onClick.AddListener(()=>OnClickedNotification.Invoke(notificationTargetId));
-        startingXPosition = backgroundTransform.position.x;
+        startingXPosition = messageContainerTransform.anchoredPosition.x;
         RefreshControl();
     }
 
@@ -54,34 +54,13 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public override void OnFocus()
     {
         base.OnFocus();
-        ct.Cancel();
-        ct = new CancellationTokenSource();
-        AnimateSelect(20, ct.Token).Forget();
+        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition + 5, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
-        //transform.DOMoveX(startingXPosition, 1);
-    }
-
-    private async UniTaskVoid AnimateSelect(int targetValue, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        try
-        {
-            int currentValue = layoutGroup.padding.left;
-            DOTween.To(() => currentValue, x => currentValue = x, targetValue, 0.8f).SetEase(Ease.OutCubic);
-            while (layoutGroup.padding.left != targetValue)
-            {
-                layoutGroup.padding.left = currentValue;
-                ForceUIRefresh();
-                await UniTask.NextFrame(cancellationToken);
-            }
-        }
-        catch (OperationCanceledException ex)
-        {
-        }
+        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void Hide(bool instant = false)
