@@ -22,16 +22,15 @@ static float sobelYMatrix[9] =
 };
 
 
-float MapSobel(UnityTexture2D Input, float2 UV, float Thickness, float Zoom) //COLOR EDGE DETECTION ALGORITHIM
+float MapSobel(UnityTexture2D Input, float2 UV, float Thickness, float Zoom, float ThicknessOffset) //COLOR EDGE DETECTION ALGORITHIM
 {
     float2 sobelR = 0;
     float2 sobelG = 0;
     float2 sobelB = 0;
 
-
     [unroll] for (int i = 0; i < 9; i++)
     {
-        float4 map = tex2D(Input, UV + sobelSamplePoints[i] * (Thickness / 3500));
+        float4 map = tex2D(Input, UV + sobelSamplePoints[i] * (Thickness / ThicknessOffset));
         float2 kernel = float2(sobelXMatrix[i], sobelYMatrix[i]);
 
         sobelR += map.r * kernel;
@@ -51,7 +50,7 @@ void CreateRectangle(float2 UV, float Width, float Height, out float Out) //CREA
 
 float2 MapScaleFromCenter(float2 Scale, float2 UV) //SCALE UV FROM THE CENTER
 {
-    float2 offset = (((Scale.x * -1) / 2) + 0.5, ((Scale.y * -1) / 2) + 0.5);
+    float2 offset = float2(((Scale.x * -1) / 2) + 0.5, ((Scale.y * -1) / 2) + 0.5);
     float2 finalUV = UV * Scale + offset;
 
     return finalUV;
@@ -75,7 +74,7 @@ float RegularGrid(float2 UV, float Zoom, float2 TextureSize, float Thickness) //
     float2 tempUV = UV * TextureSize;
     tempUV = frac(tempUV);
 
-    float thickness = 1 / (Thickness * 1.75);
+    float thickness = 1 / (Thickness + 1);
     float rect;
     CreateRectangle(tempUV, thickness, thickness, rect);
     rect = 1 - rect;
@@ -107,13 +106,13 @@ float4 ColorFromType(float type) //SPLIT PARCEL INTO DIFFERENT CHANNELS ACCORDIN
 
 SAMPLER(point_clamp_sampler);
 
-void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, out float Highlight, out float Outline, out float Mask)
+void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, float ThicknessOffset, out float Highlight, out float Outline, out float Mask)
 {
     SamplerState ss = point_clamp_sampler;
 
     float2 uv = MapScaleFromCenter(1 / Zoom, UV);
 
-    float2 mouseOffset = (0.5, 0.5);
+    float2 mouseOffset = float2(0.5, 0.5);
     float2 mouseTile = (MousePos + mouseOffset + TextureSize / 2) / TextureSize;
 
 
@@ -138,7 +137,7 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
     }
 
 
-    Outline = step(0.001, MapSobel(Input, uv, OutlineThickness, Zoom));
+    Outline = step(0.001, MapSobel(Input, uv, OutlineThickness, Zoom, ThicknessOffset));
 
     if ((rawData.r + rawData.g + rawData.b) != 0)
     {
@@ -151,7 +150,7 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
 }
 
 
-void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
+void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float ThicknessOffset, float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
 {
     float4 tempCol = float4(0, 0, 0, 0);
 
@@ -173,7 +172,7 @@ void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2
     outColor = tempCol;
 
     float gridMask;
-    MousePicker(IDMap, TextureSize, Zoom, UV, MousePos, GridThickness, Highlight, Outline, gridMask);
+    MousePicker(IDMap, TextureSize, Zoom, UV, MousePos, GridThickness, ThicknessOffset, Highlight, Outline, gridMask);
 
     float grid = RegularGrid(uv, Zoom, TextureSize, GridThickness);
     grid *= 1 - tempCol.g;
