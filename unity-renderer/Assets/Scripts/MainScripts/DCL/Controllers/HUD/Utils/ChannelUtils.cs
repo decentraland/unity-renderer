@@ -8,7 +8,7 @@ public class ChannelUtils
         string[] separatedWords = text.Split(' ');
         for (int i = 0; i < separatedWords.Length; i++)
         {
-            if ((separatedWords[i].StartsWith("#") || separatedWords[i].StartsWith("~")) && separatedWords[i].Length > 1)
+            if ((separatedWords[i].StartsWith("#") && separatedWords[i].Length > 1) || separatedWords[i].ToLower() == "~nearby")
                 channelsFound.Add(separatedWords[i]);
         }
 
