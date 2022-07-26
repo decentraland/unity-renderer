@@ -7,23 +7,18 @@ namespace DCL.CRDT
     public class CRDTExecutor : ICRDTExecutor
     {
         private readonly IParcelScene ownerScene;
-        private readonly ECSComponentsFactory ecsComponentsFactory;
-
-        private ECSComponentsManager ecsManager;
+        private readonly ECSComponentsManager ecsManager;
 
         public CRDTProtocol crdtProtocol { get; }
 
-        public CRDTExecutor(IParcelScene scene)
+        public CRDTExecutor(IParcelScene scene, ECSComponentsManager componentsManager)
         {
             ownerScene = scene;
             crdtProtocol = new CRDTProtocol();
-            ecsComponentsFactory = DataStore.i.ecs7.componentsFactory;
+            ecsManager = componentsManager;
         }
 
-        public void Dispose()
-        {
-            DataStore.i.ecs7.componentsManagers.Remove(ownerScene);
-        }
+        public void Dispose() { }
 
         public void Execute(CRDTMessage crdtMessage)
         {
@@ -53,8 +48,7 @@ namespace DCL.CRDT
         private void PutComponent(IParcelScene scene, long entityId, int componentId, object data)
         {
             IDCLEntity entity = GetOrCreateEntity(scene, entityId);
-            ECSComponentsManager ecsManager = GetOrCreateECSManager(scene);
-            ecsManager.DeserializeComponent(componentId, entity, data);
+            ecsManager.DeserializeComponent(componentId, scene, entity, data);
         }
 
         private void RemoveComponent(IParcelScene scene, long entityId, int componentId)
@@ -66,11 +60,11 @@ namespace DCL.CRDT
                 return;
             }
 
-            ecsManager.RemoveComponent(componentId, entity);
+            ecsManager.RemoveComponent(componentId, scene, entity);
 
             // there is no component for this entity so we remove it
             // from scene
-            if (!ecsManager.HasAnyComponent(entity))
+            if (!ecsManager.HasAnyComponent(scene, entity))
             {
                 RemoveEntity(scene, entityId);
             }
@@ -103,20 +97,9 @@ namespace DCL.CRDT
             scene.RemoveEntity(entityId);
         }
 
-        private ECSComponentsManager GetOrCreateECSManager(IParcelScene scene)
-        {
-            if (ecsManager != null)
-            {
-                return ecsManager;
-            }
-            ecsManager = new ECSComponentsManager(scene, ecsComponentsFactory.componentBuilders);
-            DataStore.i.ecs7.componentsManagers.Add(scene, ecsManager);
-            return ecsManager;
-        }
-
         private void OnEntityRemoved(IDCLEntity entity)
         {
-            ecsManager?.RemoveAllComponents(entity);
+            ecsManager?.RemoveAllComponents(ownerScene, entity);
         }
     }
 }

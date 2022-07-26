@@ -40,7 +40,7 @@ namespace MainScripts.DCL.WorldRuntime.Tests
             var initialTracker = sceneLifecycleHandler.sceneResourcesLoadTracker.tracker;
 
             // Act
-            DataStore.i.ecs7.componentsManagers.Add(parcelScene,new ECSComponentsManager(parcelScene, DataStore.i.ecs7.componentsFactory.componentBuilders));
+            //DataStore.i.ecs7.componentsManagers.Add(parcelScene,new ECSComponentsManager(parcelScene, DataStore.i.ecs7.componentsFactory.componentBuilders));
 
             // Assert
             Assert.AreNotEqual(sceneLifecycleHandler.sceneResourcesLoadTracker.tracker, initialTracker);
