@@ -24,12 +24,13 @@ namespace DCL.ECSComponents {
     static OnPointerUpReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFPblBvaW50ZXJVcC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJcCg1QQk9u",
-            "UG9pbnRlclVwEg4KBmJ1dHRvbhgBIAEoBRISCgpob3Zlcl90ZXh0GAIgASgJ",
-            "EhAKCGRpc3RhbmNlGAMgASgCEhUKDXNob3dfZmVlZGJhY2sYBCABKAhCFKoC",
-            "EURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "ChFPblBvaW50ZXJVcC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoZY29tbW9u",
+            "L0FjdGlvbkJ1dHRvbi5wcm90byJrCg1QQk9uUG9pbnRlclVwEh0KBmJ1dHRv",
+            "bhgBIAEoDjINLkFjdGlvbkJ1dHRvbhISCgpob3Zlcl90ZXh0GAIgASgJEhAK",
+            "CGRpc3RhbmNlGAMgASgCEhUKDXNob3dfZmVlZGJhY2sYBCABKAhCFKoCEURD",
+            "TC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerUp), global::DCL.ECSComponents.PBOnPointerUp.Parser, new[]{ "Button", "HoverText", "Distance", "ShowFeedback" }, null, null, null, null)
           }));
@@ -38,31 +39,23 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
-  public sealed partial class PBOnPointerUp : pb::IMessage<PBOnPointerUp>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBOnPointerUp : pb::IMessage<PBOnPointerUp> {
     private static readonly pb::MessageParser<PBOnPointerUp> _parser = new pb::MessageParser<PBOnPointerUp>(() => new PBOnPointerUp());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBOnPointerUp> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.OnPointerUpReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerUp() {
       OnConstruction();
     }
@@ -70,7 +63,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerUp(PBOnPointerUp other) : this() {
       button_ = other.button_;
       hoverText_ = other.hoverText_;
@@ -80,17 +72,15 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerUp Clone() {
       return new PBOnPointerUp(this);
     }
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 1;
-    private int button_;
+    private global::ActionButton button_ = global::ActionButton.Pointer;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Button {
+    public global::ActionButton Button {
       get { return button_; }
       set {
         button_ = value;
@@ -101,7 +91,6 @@ namespace DCL.ECSComponents {
     public const int HoverTextFieldNumber = 2;
     private string hoverText_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string HoverText {
       get { return hoverText_; }
       set {
@@ -113,7 +102,6 @@ namespace DCL.ECSComponents {
     public const int DistanceFieldNumber = 3;
     private float distance_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Distance {
       get { return distance_; }
       set {
@@ -125,7 +113,6 @@ namespace DCL.ECSComponents {
     public const int ShowFeedbackFieldNumber = 4;
     private bool showFeedback_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool ShowFeedback {
       get { return showFeedback_; }
       set {
@@ -134,13 +121,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBOnPointerUp);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBOnPointerUp other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -156,10 +141,9 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
+      if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
       if (HoverText.Length != 0) hash ^= HoverText.GetHashCode();
       if (Distance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
       if (ShowFeedback != false) hash ^= ShowFeedback.GetHashCode();
@@ -170,20 +154,15 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Button != 0) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(8);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
       if (HoverText.Length != 0) {
         output.WriteRawTag(18);
@@ -200,41 +179,13 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Button != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Button);
-      }
-      if (HoverText.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(HoverText);
-      }
-      if (Distance != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(Distance);
-      }
-      if (ShowFeedback != false) {
-        output.WriteRawTag(32);
-        output.WriteBool(ShowFeedback);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Button != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (Button != global::ActionButton.Pointer) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
       if (HoverText.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
@@ -252,12 +203,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBOnPointerUp other) {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
+      if (other.Button != global::ActionButton.Pointer) {
         Button = other.Button;
       }
       if (other.HoverText.Length != 0) {
@@ -273,11 +223,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -285,38 +231,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Button = input.ReadInt32();
-            break;
-          }
-          case 18: {
-            HoverText = input.ReadString();
-            break;
-          }
-          case 29: {
-            Distance = input.ReadFloat();
-            break;
-          }
-          case 32: {
-            ShowFeedback = input.ReadBool();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 18: {
@@ -334,7 +249,6 @@ namespace DCL.ECSComponents {
         }
       }
     }
-    #endif
 
   }
 
