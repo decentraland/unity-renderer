@@ -251,6 +251,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         avatar.AddVisibilityConstrain(IN_HIDE_AREA);
         stickersControllers.ToggleHideArea(true);
     }
+    
     public void RemoveHideModifier()
     {
         avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
