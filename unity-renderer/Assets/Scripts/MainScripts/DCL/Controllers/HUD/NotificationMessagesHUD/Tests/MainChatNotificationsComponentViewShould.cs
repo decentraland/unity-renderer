@@ -61,7 +61,7 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
     [Test]
     public void AddPublicNotificationCorrectly()
     {
-        ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", "This is a test message");
+        ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", "This is a test msg");
         view.AddNewChatNotification(newMessage, "UsernameTest");
 
         Assert.IsTrue(view.notificationQueue.Count == 1);
