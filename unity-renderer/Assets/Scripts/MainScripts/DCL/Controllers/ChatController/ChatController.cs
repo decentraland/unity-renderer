@@ -31,7 +31,7 @@ public class ChatController : MonoBehaviour, IChatController
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
 
         // TODO: add #nearby unseen messages
-        TotalUnseenMessages = msg.totalUnseenPrivateMessages;
+        TotalUnseenMessages = msg.totalUnseenMessages;
     }
 
     // called by kernel
