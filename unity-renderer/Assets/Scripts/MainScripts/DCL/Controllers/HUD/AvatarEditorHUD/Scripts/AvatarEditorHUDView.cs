@@ -129,10 +129,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal GameObject avatarSection;
     [SerializeField] internal GameObject emotesSection;
     
-    [Header("Click BLocker")]
-    [SerializeField] internal UIHelper_ClickBlocker blocker;
-    
-    [Header("Notifications")]
+    [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
     internal static CharacterPreviewController characterPreviewController;
@@ -178,7 +175,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
 
-        blocker.OnClicked += BlockerClicked;
+        clickBlocker.OnClicked += ClickBlockerClicked;
         
         ConfigureSectionSelector();
     }
@@ -571,7 +568,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
         
-        blocker.OnClicked -= BlockerClicked;
+        clickBlocker.OnClicked -= ClickBlockerClicked;
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -705,7 +702,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         });
     }
 
-    private void BlockerClicked()
+    private void ClickBlockerClicked()
     {
         noItemInCollectionWarning.Dismiss(false);
     }

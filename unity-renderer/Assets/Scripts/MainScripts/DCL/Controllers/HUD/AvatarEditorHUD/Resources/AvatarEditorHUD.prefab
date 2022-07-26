@@ -3399,7 +3399,7 @@ MonoBehaviour:
   sectionTitle: {fileID: 2772081605275111410}
   avatarSection: {fileID: 8448101185958679783}
   emotesSection: {fileID: 8105447645029322740}
-  blocker: {fileID: 1261334859402260978}
+  clickBlocker: {fileID: 1261334859402260978}
   noItemInCollectionWarning: {fileID: 8627138561593741906}
 --- !u!225 &-2971377967518096820
 CanvasGroup:
