@@ -1376,6 +1376,7 @@ MonoBehaviour:
   loadingSpinner: {fileID: 4179313932395542758}
   loadingRetry: {fileID: 2259488553649416823}
   loadingRetryButton: {fileID: 5305228558667826370}
+  wearablePagesRoot: {fileID: 2307891892433956053}
   nextWearablePage: {fileID: 1889822251144290597}
   previousWearablePage: {fileID: 6343978711949863276}
   wearablePagesText: {fileID: 7111285786873277126}

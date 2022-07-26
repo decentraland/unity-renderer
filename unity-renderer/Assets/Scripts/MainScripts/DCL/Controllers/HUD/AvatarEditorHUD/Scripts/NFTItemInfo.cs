@@ -146,13 +146,7 @@ public class NFTItemInfo : MonoBehaviour
 
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
-        if (thumbnail.sprite != null)
-        {
-            Destroy(thumbnail.sprite);
-        }
-
-        Debug.Log("Updated Thumbnail", this);
-        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
         thumbnail.preserveAspect = true;
     }
 

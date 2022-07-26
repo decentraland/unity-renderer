@@ -124,10 +124,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     {
         SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
 
-        if (thumbnail.sprite != null)
-            Destroy(thumbnail.sprite);
-
-        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
 
         if (view != null)
         {

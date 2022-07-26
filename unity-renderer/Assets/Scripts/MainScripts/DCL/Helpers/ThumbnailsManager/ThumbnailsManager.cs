@@ -12,6 +12,7 @@ public static class ThumbnailsManager
 
     private static readonly Queue<EnqueuedThumbnail> promiseQueue = new Queue<EnqueuedThumbnail>();
     private static readonly List<AssetPromise_Texture> progressList = new List<AssetPromise_Texture>();
+    private static readonly Dictionary<Texture2D, Sprite> spriteCache = new Dictionary<Texture2D, Sprite>();
     private const int CONCURRENT_LIMIT = 10;
 
     public static AssetPromise_Texture PreloadThumbnail(string url)
@@ -97,10 +98,13 @@ public static class ThumbnailsManager
         AssetPromiseKeeper_Texture.i.Keep(promise);
     }
 
-    public static Sprite CreateSpriteFromTexture(Texture2D texture)
+    public static Sprite GetOrCreateSpriteFromTexture(Texture2D texture)
     {
-        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-        return sprite;
+        if (!spriteCache.ContainsKey(texture))
+        {
+            spriteCache[texture] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        }
+        return spriteCache[texture];
     }
 }
 

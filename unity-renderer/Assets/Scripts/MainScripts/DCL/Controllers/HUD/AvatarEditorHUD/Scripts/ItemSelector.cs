@@ -10,11 +10,13 @@ using UnityEngine.UI;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public struct WearableSettings
+public class WearableSettings
 {
     public WearableItem Item { get; }
     public string CollectionName { get; }
     public int Amount { get; }
+    
+    public bool isLoading { get; set; }
     public Func<WearableItem, bool> HideOtherWearablesToastStrategy { get; }
     public Func<WearableItem, bool> ReplaceOtherWearablesToastStrategy { get; }
     public WearableSettings(WearableItem item, string collectionName, int amount, Func<WearableItem, bool> hideOtherWearablesToastStrategy, Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
@@ -26,6 +28,7 @@ public struct WearableSettings
         ReplaceOtherWearablesToastStrategy = replaceOtherWearablesToastStrategy;
     }
 
+    public override string ToString() { return Item.id; }
 }
 
 public class ItemSelector : MonoBehaviour
@@ -51,6 +54,9 @@ public class ItemSelector : MonoBehaviour
     internal Button loadingRetryButton;
     
     [SerializeField]
+    internal GameObject wearablePagesRoot;
+    
+    [SerializeField]
     internal Button nextWearablePage;
     
     [SerializeField]
@@ -65,8 +71,9 @@ public class ItemSelector : MonoBehaviour
 
     internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
     internal Dictionary<string, CollectionGroup> currentCollectionGroups = new Dictionary<string, CollectionGroup>();
-    internal List<WearableSettings> indexedWearables = new List<WearableSettings>();
-    internal HashSet<WearableItem> totalWearables = new HashSet<WearableItem>();
+    internal List<WearableSettings> availableWearables = new List<WearableSettings>();
+    internal Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
+    internal List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
 
@@ -99,31 +106,41 @@ public class ItemSelector : MonoBehaviour
     }
 
 
-    private const int MAX_WEARABLES = 21;
-    private int GetMaxSections() => 1 + indexedWearables.Count / MAX_WEARABLES;
+    private const float MAX_WEARABLES = 21;
+    private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / MAX_WEARABLES);
     private int currentSection = 0;
 
     private void OnEnable() { UpdateWearableList(); }
     private void UpdateWearableList()
     {
-        wearablePagesText.text = $"{currentSection+1}/{GetMaxSections()}";
+        int maxSections = GetMaxSections();
+        
+        wearablePagesRoot.SetActive(maxSections > 1);
+        wearablePagesText.text = $"{currentSection+1}/{maxSections}";
+        
         // TODO: Fix different collections
         CollectionGroup collection = null;
-
+        
         for (int itemToggleIndex = 0; itemToggleIndex < MAX_WEARABLES; itemToggleIndex++)
         {
-            var baseIndex = currentSection * MAX_WEARABLES;
+            var baseIndex = currentSection * (int)MAX_WEARABLES;
             var wearableIndex = itemToggleIndex + baseIndex;
             
-            if (wearableIndex < indexedWearables.Count)
+            if (wearableIndex < availableWearables.Count)
             {
-                WearableSettings wearableSettings = indexedWearables[wearableIndex];
+                WearableSettings wearableSettings = availableWearables[wearableIndex];
                 var item = wearableSettings.Item;
                 var collectionName = wearableSettings.CollectionName;
                 collection = GetCollectionGroupFor(item, collectionName);
                 var itemToggle = collection.LoadItem(itemToggleIndex, wearableSettings, collection.collectionId);
                 itemToggle.SetCallbacks(ToggleClicked, SellClicked);
+                itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
                 itemToggles[item.id] = itemToggle;
+
+                if (selectedItems.Contains(item.id))
+                {
+                    itemToggle.selected = true;
+                }
             }
             else
             {
@@ -147,38 +164,18 @@ public class ItemSelector : MonoBehaviour
         if (item == null)
             return;
         
-        if (totalWearables.Contains(item))
+        if (totalWearables.ContainsKey(item.id))
             return;
             
         GetCollectionGroupFor(item, collectionName);
 
         WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
-        totalWearables.Add(item);
-        indexedWearables.Add(wearableSettings);
+        totalWearables.Add(item.id, wearableSettings);
 
-        /*ItemToggle newToggle;
-        if (item.IsCollectible())
+        if (item.SupportsBodyShape(currentBodyShape))
         {
-            newToggle = itemToggleFactory.CreateItemToggleFromRarity(item.rarity, collectionGroup.itemContainer);
-            Debug.Log($"[Item Selector] Add COLLECTIBLE {item.GetName()} rarity: {item.rarity}");
-            newToggle.transform.SetAsFirstSibling();
+            availableWearables.Add(wearableSettings);
         }
-        else
-        {
-            newToggle = itemToggleFactory.CreateBaseWearable(collectionGroup.itemContainer);
-            Debug.Log($"[Item Selector] Add Base Wearable {item.GetName()} rarity: {item.rarity}");
-        }
-
-        newToggle.Initialize(item, false, amount);
-        newToggle.SetHideOtherWerablesToastStrategy(hideOtherWearablesToastStrategy);
-        newToggle.SetReplaceOtherWearablesToastStrategy(replaceOtherWearablesToastStrategy);
-        newToggle.OnClicked += ToggleClicked;
-        newToggle.OnSellClicked += SellClicked;
-        newToggle.collectionId = collectionGroup.collectionId;
-        itemToggles.Add(item.id, newToggle);
-
-        bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
-        newToggle.gameObject.SetActive(active);*/
     }
     private CollectionGroup GetCollectionGroupFor(WearableItem item, string collectionName)
     {
@@ -208,7 +205,8 @@ public class ItemSelector : MonoBehaviour
 
     public void RemoveAllItemToggle()
     {
-        using (var it = itemToggles.GetEnumerator())
+        // We dont really want to do this
+        /*using (var it = itemToggles.GetEnumerator())
         {
             while (it.MoveNext())
             {
@@ -217,7 +215,7 @@ public class ItemSelector : MonoBehaviour
             }
         }
 
-        itemToggles.Clear();
+        itemToggles.Clear();*/
     }
 
     public void SetBodyShape(string bodyShape)
@@ -226,7 +224,7 @@ public class ItemSelector : MonoBehaviour
             return;
 
         currentBodyShape = bodyShape;
-        ShowCompatibleWithBodyShape();
+        RefreshAvailableWearables();
     }
 
     public void UpdateSelectorLayout()
@@ -234,22 +232,15 @@ public class ItemSelector : MonoBehaviour
         UpdateWearableList();
     }
 
-    private void ShowCompatibleWithBodyShape()
+    private void RefreshAvailableWearables()
     {
-        using (Dictionary<string, ItemToggle>.Enumerator iterator = itemToggles.GetEnumerator())
-        {
-            while (iterator.MoveNext())
-            {
-                ItemToggle current = iterator.Current.Value;
-                bool active = current.wearableItem.SupportsBodyShape(currentBodyShape);
-                current.gameObject.SetActive(active);
-            }
-        }
+        availableWearables = totalWearables.Values.Where(w => w.Item.SupportsBodyShape(currentBodyShape)).ToList();
+        UpdateWearableList();
     }
 
     public void Select(string itemID)
     {
-        Debug.Log($"selecting {itemID}");
+        selectedItems.Add(itemID);
         ItemToggle toggle = GetItemToggleByID(itemID);
         if (toggle != null)
             toggle.selected = true;
@@ -257,6 +248,11 @@ public class ItemSelector : MonoBehaviour
 
     public void SetWearableLoadingSpinner(string wearableID, bool isActive)
     {
+        if (totalWearables.ContainsKey(wearableID))
+        {
+            totalWearables[wearableID].isLoading = isActive;
+        }
+        
         ItemToggle toggle = GetItemToggleByID(wearableID);
         if (toggle != null)
             toggle.SetLoadingSpinner(isActive);
@@ -264,6 +260,7 @@ public class ItemSelector : MonoBehaviour
 
     public void Unselect(string itemID)
     {
+        selectedItems.Remove(itemID);
         ItemToggle toggle = GetItemToggleByID(itemID);
         if (toggle != null)
             toggle.selected = false;
@@ -271,6 +268,7 @@ public class ItemSelector : MonoBehaviour
 
     public void UnselectAll()
     {
+        selectedItems.Clear();
         using (var iterator = itemToggles.GetEnumerator())
         {
             while (iterator.MoveNext())
