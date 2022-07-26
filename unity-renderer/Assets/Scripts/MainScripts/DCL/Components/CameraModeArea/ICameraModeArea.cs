@@ -1,3 +1,5 @@
+using DCL.CameraTool;
+
 namespace DCL.Components
 {
     public interface ICameraModeArea

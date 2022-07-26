@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;

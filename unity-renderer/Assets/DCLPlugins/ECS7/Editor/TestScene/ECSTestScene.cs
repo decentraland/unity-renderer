@@ -161,7 +161,7 @@ public class ECSTestScene : MonoBehaviour
             z = 0,
             cameraTarget = new UnityEngine.Vector3(0, 0, 1)
         };
-        CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
+        CommonScriptableObjects.cameraMode.Set(DCL.CameraTool.CameraMode.ModeId.FirstPerson);
         var cameraController = GameObject.Find("CameraController");
         cameraController.SendMessage("SetRotation", JsonUtility.ToJson(cameraConfig));
     }

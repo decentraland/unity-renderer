@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-
-public delegate void ECS7System();
+using DCL.ECSRuntime;
+using ECSSystems.CameraSystem;
+using ECSSystems.PlayerSystem;
+using ECS7System = System.Action;
 
 public class ECSSystemsController : IDisposable
 {
@@ -11,7 +13,7 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
 
-    public ECSSystemsController(IUpdateEventHandler updateEventHandler, ECS7System componentWriteSystem)
+    public ECSSystemsController(IUpdateEventHandler updateEventHandler, IECSComponentWriter componentWriter, ECS7System componentWriteSystem)
     {
         this.updateEventHandler = updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
@@ -24,7 +26,11 @@ public class ECSSystemsController : IDisposable
             ECSTransformParentingSystem.Update
         };
 
-        lateUpdateSystems = new ECS7System[] { };
+        lateUpdateSystems = new ECS7System[]
+        {
+            ECSCameraTransformSystem.CreateSystem(componentWriter),
+            ECSPlayerTransformSystem.CreateSystem(componentWriter)
+        };
     }
 
     public void Dispose()
