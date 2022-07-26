@@ -69,6 +69,8 @@ namespace DCL.Models
         {   
             this.gameObject = gameObject;
 
+            if (scene.isPersistent) return;
+
             // Create bounds trigger collider
             // TODO: every entity will always need this, we should avoid destroying it (cleaning its EntityBoundsCollisionChecker on clean)
             GameObject boundsCheckColliderGO = new GameObject(BOUNDS_CHECK_COLLIDER_GAMEOBJECT_NAME);
@@ -82,6 +84,7 @@ namespace DCL.Models
             
             Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
             boundsCheckColliderTransform.SetParent(gameObject.transform);
+            // boundsCollisionChecker.SetEntityTransform(gameObject.transform);
             boundsCheckColliderTransform.localScale = Vector3.one * 0.009f;
             
             UpdateBoundsCheckColliderBasedOnMesh(this);
@@ -93,19 +96,48 @@ namespace DCL.Models
 
         public void UpdateBoundsCheckColliderBasedOnMesh(IDCLEntity entity)
         {
+            if (scene.isPersistent) return;
+            
             if (meshesInfo != null && meshesInfo.meshRootGameObject != null && meshesInfo.mergedBounds != null)
-            {
+            {                
+                // meshesInfo.RecalculateBounds();
+                
                 meshesInfo.OnUpdated -= OnMeshesInfoUpdate;
                 meshesInfo.OnUpdated += OnMeshesInfoUpdate;
                 
                 Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
-                boundsCheckColliderTransform.localScale = Vector3.one;
+                
+                SetTransformGlobalValues(
+                        boundsCheckColliderTransform, 
+                        true,
+                        meshesInfo.mergedBounds.center,
+                        Quaternion.Inverse(entity.gameObject.transform.rotation),
+                        Vector3.one
+                    );
                 boundsCheckColliderTransform.localRotation = Quaternion.Inverse(entity.gameObject.transform.rotation);
-                boundsCheckColliderTransform.position = meshesInfo.mergedBounds.center;
                 boundsCheckCollider.size = meshesInfo.mergedBounds.size;
             }
             
             EvaluateOutOfBoundsState();
+        }
+        
+        public void SetTransformGlobalValues(Transform transform, bool setScale, Vector3 pos, Quaternion rot, Vector3 scale)
+        {
+            transform.position = pos;
+            transform.rotation = rot;
+            
+            if (setScale)
+            {
+                transform.localScale = Vector3.one;
+                var m = transform.worldToLocalMatrix;
+                
+                m.SetColumn(0, new Vector4(m.GetColumn(0).magnitude, 0f));
+                m.SetColumn(1, new Vector4(0f, m.GetColumn(1).magnitude));
+                m.SetColumn(2, new Vector4(0f, 0f, m.GetColumn(2).magnitude));
+                m.SetColumn(3, new Vector4(0f, 0f, 0f, 1f));
+                
+                transform.localScale = m.MultiplyPoint(scale);
+            }
         }
 
         void OnMeshesInfoUpdate()
@@ -115,7 +147,9 @@ namespace DCL.Models
 
         /*void OnTransformUpdate(object newModel)
         {   
-            EvaluateOutOfBoundsState();
+            // EvaluateOutOfBoundsState();
+            
+            UpdateBoundsCheckColliderBasedOnMesh(this);
         }*/
 
         void OnEnteredParcel(string parcelSceneId)
@@ -225,12 +259,15 @@ namespace DCL.Models
 
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
                 gameObject = null;
-                
-                OnShapeLoaded -= UpdateBoundsCheckColliderBasedOnMesh;
-                OnShapeUpdated -= UpdateBoundsCheckColliderBasedOnMesh;
-                boundsCollisionChecker.OnEnteredParcel -= OnEnteredParcel;
-                boundsCollisionChecker.OnExitedParcel -= OnExitedParcel;
-                Utils.SafeDestroy(boundsCheckCollider.gameObject);
+
+                if (!scene.isPersistent)
+                {
+                    OnShapeLoaded -= UpdateBoundsCheckColliderBasedOnMesh;
+                    OnShapeUpdated -= UpdateBoundsCheckColliderBasedOnMesh;
+                    boundsCollisionChecker.OnEnteredParcel -= OnEnteredParcel;
+                    boundsCollisionChecker.OnExitedParcel -= OnExitedParcel;
+                    Utils.SafeDestroy(boundsCheckCollider.gameObject);
+                }
             }
 
             OnTransformChange = null;
