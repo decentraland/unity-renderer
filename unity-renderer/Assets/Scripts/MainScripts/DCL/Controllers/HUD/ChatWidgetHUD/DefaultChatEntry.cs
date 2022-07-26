@@ -36,7 +36,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private Color originalBackgroundColor;
     private Color originalFontColor;
-    internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
     public override ChatEntryModel Model => model;
 
@@ -53,21 +52,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         originalFontColor = body.color;
     }
 
-    public override void Populate(ChatEntryModel chatEntryModel) { PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget(); }
-
-    internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
+    public override void Populate(ChatEntryModel chatEntryModel)
     {
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
         var userString = GetUserString(chatEntryModel);
-
-        // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
-        // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-        // TODO: Remove hack in a newer Unity/TMPro version 
-        await UniTask.NextFrame(cancellationToken);
-        await UniTask.NextFrame(cancellationToken);
-        await UniTask.NextFrame(cancellationToken);
 
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
@@ -86,12 +76,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private string GetUserString(ChatEntryModel chatEntryModel)
     {
         var userString = GetDefaultSenderString(chatEntryModel.senderName);
-        switch (chatEntryModel.messageType) 
+        switch (chatEntryModel.messageType)
         {
             case ChatMessage.Type.PUBLIC:
                 userString = chatEntryModel.subType switch
                 {
-            
                     ChatEntryModel.SubType.RECEIVED => userString,
                     ChatEntryModel.SubType.SENT => $"<b>You:</b>",
                     _ => userString
@@ -100,8 +89,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             case ChatMessage.Type.PRIVATE:
                 userString = chatEntryModel.subType switch
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
+                    ChatEntryModel.SubType.RECEIVED =>
+                        $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
                     ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
                     _ => userString
                 };
@@ -156,15 +145,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                         case ChatEntryModel.SubType.SENT:
                             AudioScriptableObjects.chatSend.Play(true);
                             break;
-                        default:
-                            break;
                     }
 
                     break;
                 case ChatMessage.Type.SYSTEM:
                     AudioScriptableObjects.chatReceiveGlobal.Play(true);
-                    break;
-                default:
                     break;
             }
         }
@@ -182,7 +167,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
+                DataStore.i.camera.hudsCamera.Get());
             if (linkIndex != -1)
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true);
@@ -221,7 +207,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = 0f;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
+        int linkIndex =
+            TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
+                DataStore.i.camera.hudsCamera.Get());
         if (linkIndex == -1)
         {
             isOverCoordinates = false;
@@ -232,9 +220,10 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         OnCancelHover?.Invoke();
     }
 
-    private void OnDisable() { OnPointerExit(null); }
-
-    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
+    private void OnDisable()
+    {
+        OnPointerExit(null);
+    }
 
     public override void SetFadeout(bool enabled)
     {
@@ -267,7 +256,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
     }
-    
+
     public override void FadeOut()
     {
         if (!gameObject.activeInHierarchy)
@@ -275,7 +264,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             group.alpha = 0;
             return;
         }
-        
+
         if (previewInterpolationAlphaRoutine != null)
             StopCoroutine(previewInterpolationAlphaRoutine);
 
@@ -306,7 +295,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (!gameObject.activeInHierarchy)
             return;
-        
+
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
@@ -353,7 +342,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (isOverCoordinates)
             return;
 
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
+        int linkIndex =
+            TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
 
         if (linkIndex == -1)
             return;
@@ -433,5 +423,4 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
     }
-
 }

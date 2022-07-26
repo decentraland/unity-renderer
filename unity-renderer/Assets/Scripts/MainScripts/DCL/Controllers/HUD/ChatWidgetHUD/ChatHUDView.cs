@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -316,6 +317,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (inputField.wasCanceled)
             currentMessage.body = string.Empty;
 
+        StartCoroutine(WaitThenTriggerSendMessage());
+    }
+
+    private IEnumerator WaitThenTriggerSendMessage()
+    {
+        yield return null;
         OnSendMessage?.Invoke(currentMessage);
     }
 
