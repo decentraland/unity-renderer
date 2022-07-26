@@ -231,8 +231,9 @@ MonoBehaviour:
   enableTutorial: 0
   builderInWorld: 0
   soloScene: 0
-  multithreaded: 0
   debugPanelMode: 0
+  multithreaded: 0
+  runPerformanceMeterToolDuringLoading: 1
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0

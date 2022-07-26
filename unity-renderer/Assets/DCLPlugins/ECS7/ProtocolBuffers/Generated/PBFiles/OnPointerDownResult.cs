@@ -25,14 +25,15 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChlPblBvaW50ZXJEb3duUmVzdWx0LnByb3RvEhBkZWNlbnRyYWxhbmQuZWNz",
-            "GhRjb21tb24vVmVjdG9yMy5wcm90byLIAQoVUEJPblBvaW50ZXJEb3duUmVz",
-            "dWx0Eg4KBmJ1dHRvbhgCIAEoBRIQCghtZXNoTmFtZRgDIAEoCRIYCgZvcmln",
-            "aW4YBCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgFIAEoCzIILlZlY3Rv",
-            "cjMSFwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5vcm1hbBgHIAEoCzII",
-            "LlZlY3RvcjMSEAoIZGlzdGFuY2UYCCABKAISEQoJdGltZXN0YW1wGAkgASgF",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "GhRjb21tb24vVmVjdG9yMy5wcm90bxoZY29tbW9uL0FjdGlvbkJ1dHRvbi5w",
+            "cm90byLXAQoVUEJPblBvaW50ZXJEb3duUmVzdWx0Eh0KBmJ1dHRvbhgCIAEo",
+            "DjINLkFjdGlvbkJ1dHRvbhIQCghtZXNoTmFtZRgDIAEoCRIYCgZvcmlnaW4Y",
+            "BCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgFIAEoCzIILlZlY3RvcjMS",
+            "FwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5vcm1hbBgHIAEoCzIILlZl",
+            "Y3RvcjMSEAoIZGlzdGFuY2UYCCABKAISEQoJdGltZXN0YW1wGAkgASgFQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerDownResult), global::DCL.ECSComponents.PBOnPointerDownResult.Parser, new[]{ "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance", "Timestamp" }, null, null, null, null)
           }));
@@ -41,31 +42,23 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
-  public sealed partial class PBOnPointerDownResult : pb::IMessage<PBOnPointerDownResult>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBOnPointerDownResult : pb::IMessage<PBOnPointerDownResult> {
     private static readonly pb::MessageParser<PBOnPointerDownResult> _parser = new pb::MessageParser<PBOnPointerDownResult>(() => new PBOnPointerDownResult());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBOnPointerDownResult> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.OnPointerDownResultReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerDownResult() {
       OnConstruction();
     }
@@ -73,7 +66,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerDownResult(PBOnPointerDownResult other) : this() {
       button_ = other.button_;
       meshName_ = other.meshName_;
@@ -87,17 +79,15 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerDownResult Clone() {
       return new PBOnPointerDownResult(this);
     }
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 2;
-    private int button_;
+    private global::ActionButton button_ = global::ActionButton.Pointer;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Button {
+    public global::ActionButton Button {
       get { return button_; }
       set {
         button_ = value;
@@ -108,7 +98,6 @@ namespace DCL.ECSComponents {
     public const int MeshNameFieldNumber = 3;
     private string meshName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string MeshName {
       get { return meshName_; }
       set {
@@ -120,7 +109,6 @@ namespace DCL.ECSComponents {
     public const int OriginFieldNumber = 4;
     private global::Vector3 origin_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Vector3 Origin {
       get { return origin_; }
       set {
@@ -132,7 +120,6 @@ namespace DCL.ECSComponents {
     public const int DirectionFieldNumber = 5;
     private global::Vector3 direction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Vector3 Direction {
       get { return direction_; }
       set {
@@ -144,7 +131,6 @@ namespace DCL.ECSComponents {
     public const int PointFieldNumber = 6;
     private global::Vector3 point_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Vector3 Point {
       get { return point_; }
       set {
@@ -156,7 +142,6 @@ namespace DCL.ECSComponents {
     public const int NormalFieldNumber = 7;
     private global::Vector3 normal_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Vector3 Normal {
       get { return normal_; }
       set {
@@ -168,7 +153,6 @@ namespace DCL.ECSComponents {
     public const int DistanceFieldNumber = 8;
     private float distance_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Distance {
       get { return distance_; }
       set {
@@ -180,7 +164,6 @@ namespace DCL.ECSComponents {
     public const int TimestampFieldNumber = 9;
     private int timestamp_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Timestamp {
       get { return timestamp_; }
       set {
@@ -189,13 +172,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBOnPointerDownResult);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBOnPointerDownResult other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -215,10 +196,9 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
+      if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
       if (MeshName.Length != 0) hash ^= MeshName.GetHashCode();
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
@@ -233,20 +213,15 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Button != 0) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(16);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
       if (MeshName.Length != 0) {
         output.WriteRawTag(26);
@@ -279,57 +254,13 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Button != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Button);
-      }
-      if (MeshName.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(MeshName);
-      }
-      if (origin_ != null) {
-        output.WriteRawTag(34);
-        output.WriteMessage(Origin);
-      }
-      if (direction_ != null) {
-        output.WriteRawTag(42);
-        output.WriteMessage(Direction);
-      }
-      if (point_ != null) {
-        output.WriteRawTag(50);
-        output.WriteMessage(Point);
-      }
-      if (normal_ != null) {
-        output.WriteRawTag(58);
-        output.WriteMessage(Normal);
-      }
-      if (Distance != 0F) {
-        output.WriteRawTag(69);
-        output.WriteFloat(Distance);
-      }
-      if (Timestamp != 0) {
-        output.WriteRawTag(72);
-        output.WriteInt32(Timestamp);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Button != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (Button != global::ActionButton.Pointer) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
       if (MeshName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MeshName);
@@ -359,12 +290,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBOnPointerDownResult other) {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
+      if (other.Button != global::ActionButton.Pointer) {
         Button = other.Button;
       }
       if (other.MeshName.Length != 0) {
@@ -404,11 +334,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -416,66 +342,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 16: {
-            Button = input.ReadInt32();
-            break;
-          }
-          case 26: {
-            MeshName = input.ReadString();
-            break;
-          }
-          case 34: {
-            if (origin_ == null) {
-              Origin = new global::Vector3();
-            }
-            input.ReadMessage(Origin);
-            break;
-          }
-          case 42: {
-            if (direction_ == null) {
-              Direction = new global::Vector3();
-            }
-            input.ReadMessage(Direction);
-            break;
-          }
-          case 50: {
-            if (point_ == null) {
-              Point = new global::Vector3();
-            }
-            input.ReadMessage(Point);
-            break;
-          }
-          case 58: {
-            if (normal_ == null) {
-              Normal = new global::Vector3();
-            }
-            input.ReadMessage(Normal);
-            break;
-          }
-          case 69: {
-            Distance = input.ReadFloat();
-            break;
-          }
-          case 72: {
-            Timestamp = input.ReadInt32();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 16: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 26: {
@@ -521,7 +388,6 @@ namespace DCL.ECSComponents {
         }
       }
     }
-    #endif
 
   }
 

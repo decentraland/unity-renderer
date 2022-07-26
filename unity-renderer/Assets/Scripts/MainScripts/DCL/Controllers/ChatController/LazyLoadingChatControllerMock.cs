@@ -152,7 +152,7 @@ public class LazyLoadingChatControllerMock : IChatController
         
         var payload = new InitializeChatPayload
         {
-            totalUnseenPrivateMessages = Random.Range(0, 100)
+            totalUnseenMessages = Random.Range(0, 100)
         };
         controller.InitializeChat(JsonUtility.ToJson(payload));
     }

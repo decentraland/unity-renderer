@@ -124,7 +124,7 @@ namespace DCL.ECSComponents.Test
             model.Area.Y = 2f;
             model.Area.Z = 2f;
 
-            model.Modifiers.Add(PBAvatarModifierArea.Types.Modifier.HideAvatars);
+            model.Modifiers.Add(AvatarModifier.HideAvatars);
             model.ExcludeIds.Add("IdToExclude");
             
             return model;
