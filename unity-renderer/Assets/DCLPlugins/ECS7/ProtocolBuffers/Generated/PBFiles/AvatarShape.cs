@@ -44,31 +44,23 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
-  public sealed partial class PBAvatarShape : pb::IMessage<PBAvatarShape>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBAvatarShape : pb::IMessage<PBAvatarShape> {
     private static readonly pb::MessageParser<PBAvatarShape> _parser = new pb::MessageParser<PBAvatarShape>(() => new PBAvatarShape());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAvatarShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AvatarShapeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarShape() {
       OnConstruction();
     }
@@ -76,7 +68,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarShape(PBAvatarShape other) : this() {
       id_ = other.id_;
       name_ = other.name_;
@@ -94,7 +85,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarShape Clone() {
       return new PBAvatarShape(this);
     }
@@ -103,7 +93,6 @@ namespace DCL.ECSComponents {
     public const int IdFieldNumber = 1;
     private string id_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Id {
       get { return id_; }
       set {
@@ -115,7 +104,6 @@ namespace DCL.ECSComponents {
     public const int NameFieldNumber = 2;
     private string name_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_; }
       set {
@@ -127,7 +115,6 @@ namespace DCL.ECSComponents {
     public const int BodyShapeFieldNumber = 3;
     private string bodyShape_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string BodyShape {
       get { return bodyShape_; }
       set {
@@ -139,7 +126,6 @@ namespace DCL.ECSComponents {
     public const int SkinColorFieldNumber = 4;
     private global::Color3 skinColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 SkinColor {
       get { return skinColor_; }
       set {
@@ -151,7 +137,6 @@ namespace DCL.ECSComponents {
     public const int HairColorFieldNumber = 5;
     private global::Color3 hairColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 HairColor {
       get { return hairColor_; }
       set {
@@ -163,7 +148,6 @@ namespace DCL.ECSComponents {
     public const int EyeColorFieldNumber = 6;
     private global::Color3 eyeColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 EyeColor {
       get { return eyeColor_; }
       set {
@@ -177,7 +161,6 @@ namespace DCL.ECSComponents {
         = pb::FieldCodec.ForString(58);
     private readonly pbc::RepeatedField<string> wearables_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<string> Wearables {
       get { return wearables_; }
     }
@@ -186,7 +169,6 @@ namespace DCL.ECSComponents {
     public const int ExpressionTriggerIdFieldNumber = 8;
     private string expressionTriggerId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string ExpressionTriggerId {
       get { return expressionTriggerId_; }
       set {
@@ -198,7 +180,6 @@ namespace DCL.ECSComponents {
     public const int ExpressionTriggerTimestampFieldNumber = 9;
     private long expressionTriggerTimestamp_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long ExpressionTriggerTimestamp {
       get { return expressionTriggerTimestamp_; }
       set {
@@ -210,7 +191,6 @@ namespace DCL.ECSComponents {
     public const int StickerTriggerIdFieldNumber = 10;
     private string stickerTriggerId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string StickerTriggerId {
       get { return stickerTriggerId_; }
       set {
@@ -222,7 +202,6 @@ namespace DCL.ECSComponents {
     public const int StickerTriggerTimestampFieldNumber = 11;
     private long stickerTriggerTimestamp_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long StickerTriggerTimestamp {
       get { return stickerTriggerTimestamp_; }
       set {
@@ -234,7 +213,6 @@ namespace DCL.ECSComponents {
     public const int TalkingFieldNumber = 12;
     private bool talking_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Talking {
       get { return talking_; }
       set {
@@ -243,13 +221,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAvatarShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAvatarShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -273,7 +249,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
@@ -295,17 +270,12 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (Id.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Id);
@@ -354,66 +324,9 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Id.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Id);
-      }
-      if (Name.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Name);
-      }
-      if (BodyShape.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(BodyShape);
-      }
-      if (skinColor_ != null) {
-        output.WriteRawTag(34);
-        output.WriteMessage(SkinColor);
-      }
-      if (hairColor_ != null) {
-        output.WriteRawTag(42);
-        output.WriteMessage(HairColor);
-      }
-      if (eyeColor_ != null) {
-        output.WriteRawTag(50);
-        output.WriteMessage(EyeColor);
-      }
-      wearables_.WriteTo(ref output, _repeated_wearables_codec);
-      if (ExpressionTriggerId.Length != 0) {
-        output.WriteRawTag(66);
-        output.WriteString(ExpressionTriggerId);
-      }
-      if (ExpressionTriggerTimestamp != 0L) {
-        output.WriteRawTag(72);
-        output.WriteInt64(ExpressionTriggerTimestamp);
-      }
-      if (StickerTriggerId.Length != 0) {
-        output.WriteRawTag(82);
-        output.WriteString(StickerTriggerId);
-      }
-      if (StickerTriggerTimestamp != 0L) {
-        output.WriteRawTag(88);
-        output.WriteInt64(StickerTriggerTimestamp);
-      }
-      if (Talking != false) {
-        output.WriteRawTag(96);
-        output.WriteBool(Talking);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Id.Length != 0) {
@@ -457,7 +370,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAvatarShape other) {
       if (other == null) {
         return;
@@ -509,11 +421,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -579,80 +487,7 @@ namespace DCL.ECSComponents {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            Id = input.ReadString();
-            break;
-          }
-          case 18: {
-            Name = input.ReadString();
-            break;
-          }
-          case 26: {
-            BodyShape = input.ReadString();
-            break;
-          }
-          case 34: {
-            if (skinColor_ == null) {
-              SkinColor = new global::Color3();
-            }
-            input.ReadMessage(SkinColor);
-            break;
-          }
-          case 42: {
-            if (hairColor_ == null) {
-              HairColor = new global::Color3();
-            }
-            input.ReadMessage(HairColor);
-            break;
-          }
-          case 50: {
-            if (eyeColor_ == null) {
-              EyeColor = new global::Color3();
-            }
-            input.ReadMessage(EyeColor);
-            break;
-          }
-          case 58: {
-            wearables_.AddEntriesFrom(ref input, _repeated_wearables_codec);
-            break;
-          }
-          case 66: {
-            ExpressionTriggerId = input.ReadString();
-            break;
-          }
-          case 72: {
-            ExpressionTriggerTimestamp = input.ReadInt64();
-            break;
-          }
-          case 82: {
-            StickerTriggerId = input.ReadString();
-            break;
-          }
-          case 88: {
-            StickerTriggerTimestamp = input.ReadInt64();
-            break;
-          }
-          case 96: {
-            Talking = input.ReadBool();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 

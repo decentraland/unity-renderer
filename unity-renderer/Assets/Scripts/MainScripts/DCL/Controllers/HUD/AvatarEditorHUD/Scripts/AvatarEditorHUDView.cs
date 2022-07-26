@@ -128,6 +128,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal TMP_Text sectionTitle;
     [SerializeField] internal GameObject avatarSection;
     [SerializeField] internal GameObject emotesSection;
+    
+    [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
+    [SerializeField] internal Notification noItemInCollectionWarning;
 
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
@@ -171,6 +174,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
+
+        clickBlocker.OnClicked += ClickBlockerClicked;
         
         ConfigureSectionSelector();
     }
@@ -504,7 +509,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         }
         else if (!visible && isOpen)
         {
-            collectionsDropdown.Close();
+            collectionsDropdown.Close();        
+            noItemInCollectionWarning.Dismiss(true);
             OnSetVisibility?.Invoke(visible);
         }
 
@@ -561,6 +567,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
+        
+        clickBlocker.OnClicked -= ClickBlockerClicked;
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -685,4 +693,18 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                 collectionOption.isOn = isOn;
         }
     }
+    public void ShowNoItemOfWearableCollectionWarning()
+    {
+        noItemInCollectionWarning.Dismiss(true);
+        noItemInCollectionWarning.Show(new DCL.NotificationModel.Model
+        {
+            timer = 5f,
+        });
+    }
+
+    private void ClickBlockerClicked()
+    {
+        noItemInCollectionWarning.Dismiss(false);
+    }
+        
 }

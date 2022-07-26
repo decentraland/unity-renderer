@@ -1,18 +1,21 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// Determine the player's camera mode
-/// </summary>
-[CreateAssetMenu(fileName = "CameraMode", menuName = "CameraMode")]
-public class CameraMode : BaseVariableAsset<CameraMode.ModeId>
+namespace DCL.CameraTool
 {
-    [Serializable]
-    public enum ModeId
+    /// <summary>
+    /// Determine the player's camera mode
+    /// </summary>
+    [CreateAssetMenu(fileName = "CameraMode", menuName = "CameraMode")]
+    public class CameraMode : BaseVariableAsset<CameraMode.ModeId>
     {
-        FirstPerson,
-        ThirdPerson,
-        BuildingToolGodMode
-    }
+        [Serializable]
+        public enum ModeId
+        {
+            FirstPerson,
+            ThirdPerson,
+            BuildingToolGodMode
+        }
 
+    }
 }

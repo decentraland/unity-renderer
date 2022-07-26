@@ -13,13 +13,17 @@ namespace DCL.Models
         public const string THIRD_PERSON_CAMERA_ENTITY_REFERENCE = "PlayerEntityReference";
     }
 
-    public enum SpecialEntityId
+    public static class SpecialEntityId
     {
-        SCENE_ROOT_ENTITY = 0,
-        AVATAR_ENTITY_REFERENCE = 1,
-        AVATAR_POSITION_REFERENCE = 2,
-        FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 3,
-        THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 4
+        public const long SCENE_ROOT_ENTITY = 0;
+        public const long PLAYER_ENTITY = 1;
+        public const long CAMERA_ENTITY = 2;
+        
+        // To be deprecated soon
+        public const long AVATAR_ENTITY_REFERENCE = 3;
+        public const long AVATAR_POSITION_REFERENCE = 4;
+        public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 5;
+        public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 6;
     }
 
     public static class ComponentNameLiterals

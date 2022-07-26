@@ -166,7 +166,7 @@ public class ChatController : MonoBehaviour, IChatController
             return;
 
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
-        TotalUnseenMessages += msg.totalUnseenPrivateMessages;
+        TotalUnseenMessages = msg.totalUnseenMessages;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
         chatAlreadyInitialized = true;
     }
