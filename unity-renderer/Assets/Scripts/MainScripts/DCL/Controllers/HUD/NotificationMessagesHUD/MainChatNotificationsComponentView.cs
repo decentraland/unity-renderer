@@ -16,12 +16,12 @@ public class MainChatNotificationsComponentView : BaseComponentView
     [SerializeField] private GameObject chatNotification;
     [SerializeField] private ScrollRect scrollRectangle;
     [SerializeField] private Button notificationButton;
-    public ChatNotificationController controller;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
 
     public event Action<string> OnClickedNotification;
+    public event Action<bool> OnResetFade;
     public bool areOtherPanelsOpen = false;
 
     internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
@@ -40,14 +40,12 @@ public class MainChatNotificationsComponentView : BaseComponentView
         return Instantiate(Resources.Load<MainChatNotificationsComponentView>("SocialBarV1/ChatNotificationHUD"));
     }
 
-    public void Initialize(ChatNotificationController chatController)
+    public void Awake()
     {
-        controller = chatController;
         onFocused += FocusedOnPanel;
         notificationMessage = notificationButton.GetComponentInChildren<TMP_Text>();
         notificationButton?.onClick.RemoveAllListeners();
         notificationButton?.onClick.AddListener(() => SetScrollToEnd());
-
         scrollRectangle.onValueChanged.AddListener(CheckScrollValue);
     }
 
@@ -134,7 +132,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
             AnimateNewEntry(entry.gameObject.transform, ct.Token).Forget();
         }
 
-        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
+        OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
         CheckNotificationCountAndRelease();
         return entry;
     }
@@ -211,13 +209,13 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private void FocusedOnNotification(bool isInFocus)
     {
         isOverMessage = isInFocus;
-        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
+        OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
     }
 
     private void FocusedOnPanel(bool isInFocus)
     {
         isOverPanel = isInFocus;
-        controller?.ResetFadeout(!isOverMessage && !isOverPanel);
+        OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
     }
 
     private void CheckNotificationCountAndRelease()

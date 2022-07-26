@@ -18,8 +18,6 @@ public class ChatNotificationController : IHUD
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     public CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
-    public event Action<string> OnOpenNotificationChat;
-
     private UserProfile ownUserProfile;
 
     public ChatNotificationController(DataStore dataStore, MainChatNotificationsComponentView mainChatNotificationView, IChatController chatController, IUserProfileBridge userProfileBridge)
@@ -28,8 +26,7 @@ public class ChatNotificationController : IHUD
         this.chatController = chatController;
         this.userProfileBridge = userProfileBridge;
         this.mainChatNotificationView = mainChatNotificationView;
-        this.mainChatNotificationView.Initialize(this);
-        this.mainChatNotificationView.OnClickedNotification += OpenNotificationChat;
+        mainChatNotificationView.OnResetFade += ResetFadeout;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
         notificationPanelTransform.Set(mainChatNotificationView.gameObject.transform);
@@ -68,13 +65,6 @@ public class ChatNotificationController : IHUD
             WaitThenFadeOutNotifications(fadeOutCT.Token).Forget();
     }
 
-    private void OpenNotificationChat(string targetId)
-    {
-        if (targetId == null) return;
-
-        OnOpenNotificationChat?.Invoke(targetId);
-    }
-
     private async UniTaskVoid WaitThenFadeOutNotifications(CancellationToken cancellationToken)
     {
         await UniTask.Delay(8000, cancellationToken: cancellationToken);
@@ -105,7 +95,6 @@ public class ChatNotificationController : IHUD
     public void Dispose()
     {
         chatController.OnAddMessage -= HandleMessageAdded;
-        mainChatNotificationView.OnClickedNotification -= OpenNotificationChat;
         visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
     }
 }

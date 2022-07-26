@@ -17,7 +17,6 @@ public class TaskbarHUDController : IHUD
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowController privateChatWindow;
     public PublicChatChannelController publicChatChannel;
-    public ChatNotificationController chatNotificationController;
     public FriendsHUDController friendsHud;
     public VoiceChatWindowController voiceChatHud;
 
@@ -576,8 +575,7 @@ public class TaskbarHUDController : IHUD
         notificationViewerTransform = currentPanelTransform;
         notificationViewerTransform.SetParent(view.leftWindowContainer, false);
         notificationViewerTransform.SetAsLastSibling();
-        chatNotificationController = notificationViewerTransform.GetComponent<MainChatNotificationsComponentView>().controller;
-        chatNotificationController.OnOpenNotificationChat += OpenClickedChat;
+        notificationViewerTransform.GetComponent<MainChatNotificationsComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
     private void OpenClickedChat(string chatId)
@@ -644,8 +642,6 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
-        if(chatNotificationController != null)
-            chatNotificationController.OnOpenNotificationChat -= OpenClickedChat;
     }
 
     private void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
