@@ -3,7 +3,7 @@ numberOfAssignees: 1
 
 addReviewers: true
 useReviewGroups: false
-numberOfReviewers: 1
+numberOfReviewers: 5
 reviewers:
   - AjimenezDCL
   - pravusjif
