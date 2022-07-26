@@ -87,7 +87,6 @@ namespace DCL.Chat.Channels
             this.userProfileController = userProfileController;
 
             SimulateDelayedResponseFor_ChatInitialization().Forget();
-            SimulateDelayedResponseFor_ChannelsInitialization().Forget();
         }
 
         public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
@@ -334,20 +333,9 @@ namespace DCL.Chat.Channels
 
             var payload = new InitializeChatPayload
             {
-                totalUnseenPrivateMessages = Random.Range(0, 5)
+                totalUnseenMessages = Random.Range(0, 5)
             };
             controller.InitializeChat(JsonUtility.ToJson(payload));
-        }
-
-        private async UniTask SimulateDelayedResponseFor_ChannelsInitialization()
-        {
-            await UniTask.Delay(Random.Range(50, 1000));
-
-            var payload = new InitializeChannelsPayload
-            {
-                unseenTotalMessages = Random.Range(0, 5)
-            };
-            controller.InitializeChannels(JsonUtility.ToJson(payload));
         }
 
         private async UniTask SimulateDelayedResponseFor_MarkChannelAsSeen(string channelId)
