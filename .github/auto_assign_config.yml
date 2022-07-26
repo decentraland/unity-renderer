@@ -1,0 +1,13 @@
+addAssignees: author
+numberOfAssignees: 1
+
+addReviewers: true
+useReviewGroups: false
+numberOfReviewers: 1
+reviewers:
+  - AjimenezDCL
+  - pravusjif
+  - sandrade-dcl
+  - Kinerius
+  - loruxo
+  - davidejensen
