@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -9,6 +10,9 @@ namespace DCL.CRDT
         private readonly IParcelScene ownerScene;
         private readonly ECSComponentsManager ecsManager;
 
+        private bool sceneAdded = false;
+        private readonly IList<IParcelScene> loadedScenes;
+
         public CRDTProtocol crdtProtocol { get; }
 
         public CRDTExecutor(IParcelScene scene, ECSComponentsManager componentsManager)
@@ -16,12 +20,22 @@ namespace DCL.CRDT
             ownerScene = scene;
             crdtProtocol = new CRDTProtocol();
             ecsManager = componentsManager;
+            loadedScenes = DataStore.i.ecs7.scenes;
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            loadedScenes.Remove(ownerScene);
+        }
 
         public void Execute(CRDTMessage crdtMessage)
         {
+            if (!sceneAdded)
+            {
+                sceneAdded = true;
+                loadedScenes.Add(ownerScene);
+            }
+
             CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
             CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
 
@@ -55,7 +69,7 @@ namespace DCL.CRDT
         {
             IDCLEntity entity = scene.GetEntityById(entityId);
 
-            if (entity == null || ecsManager == null)
+            if (entity == null)
             {
                 return;
             }
@@ -99,7 +113,7 @@ namespace DCL.CRDT
 
         private void OnEntityRemoved(IDCLEntity entity)
         {
-            ecsManager?.RemoveAllComponents(ownerScene, entity);
+            ecsManager.RemoveAllComponents(ownerScene, entity);
         }
     }
 }

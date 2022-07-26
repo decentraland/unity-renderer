@@ -86,7 +86,7 @@ namespace RPC.Services
                 context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
-                sceneCrdtState.Clear();
+                sceneCrdtState.ClearOnUpdated();
 
                 reusableCrdtMessage.SceneId = sceneId;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());

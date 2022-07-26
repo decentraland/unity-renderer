@@ -7,16 +7,16 @@ namespace DCL.ECSComponents
         private IAvatarModifier hideModifier;
         private IAvatarModifier disablePassportModifier;
         
-        public IAvatarModifier GetOrCreateAvatarModifier(PBAvatarModifierArea.Types.Modifier modifier)
+        public IAvatarModifier GetOrCreateAvatarModifier(AvatarModifier modifier)
         {
             switch (modifier)
             {
-                case PBAvatarModifierArea.Types.Modifier.HideAvatars:
+                case AvatarModifier.HideAvatars:
                     if (hideModifier == null)
                         hideModifier = new HideAvatarsModifier();
                     return hideModifier;
                     break;
-                case PBAvatarModifierArea.Types.Modifier.DisablePassports:
+                case AvatarModifier.DisablePassports:
                     if (disablePassportModifier == null)
                         disablePassportModifier = new DisablePassportModifier();
                     return disablePassportModifier;
