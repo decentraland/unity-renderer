@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using UnityEngine;
-
 namespace DCL.AvatarModifierAreaFeedback
 {
-    public class AvatarModifierAreaFeedbackController : IHUD
+    public class AvatarModifierAreaFeedbackController 
     {
         internal IAvatarModifierAreaFeedbackView view;
         private BaseRefCounter<AvatarAreaWarningID> avatarModifiersWarnings;
@@ -21,7 +16,6 @@ namespace DCL.AvatarModifierAreaFeedback
             view.Dispose();
         }
    
-        public void SetVisibility(bool visible) { }
     }
 }
 
