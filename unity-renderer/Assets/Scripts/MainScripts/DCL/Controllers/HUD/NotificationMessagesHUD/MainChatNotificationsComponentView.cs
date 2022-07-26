@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 public class MainChatNotificationsComponentView : BaseComponentView
 {
@@ -19,7 +20,6 @@ public class MainChatNotificationsComponentView : BaseComponentView
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
-    private const float TRANSITION_DURATION = 0.0075f;
 
     public event Action<string> OnClickedNotification;
     public bool areOtherPanelsOpen = false;
@@ -33,7 +33,7 @@ public class MainChatNotificationsComponentView : BaseComponentView
     private int notificationCount = 1;
     private Vector2 notificationOffset = new Vector2(0, -52);
     private TMP_Text notificationMessage;
-    private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
+    private CancellationTokenSource ct = new CancellationTokenSource();
 
     public static MainChatNotificationsComponentView Create()
     {
@@ -129,9 +129,9 @@ public class MainChatNotificationsComponentView : BaseComponentView
         else
         {
             ResetNotificationButton();
-            fadeOutCT.Cancel();
-            fadeOutCT = new CancellationTokenSource();
-            WaitThenFadeOutNotifications(fadeOutCT.Token);
+            ct.Cancel();
+            ct = new CancellationTokenSource();
+            AnimateNewEntry(entry.gameObject.transform, ct.Token).Forget();
         }
 
         controller?.ResetFadeout(!isOverMessage && !isOverPanel);
@@ -139,18 +139,28 @@ public class MainChatNotificationsComponentView : BaseComponentView
         return entry;
     }
 
-    private async UniTaskVoid WaitThenFadeOutNotifications(CancellationToken cancellationToken)
+    private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
     {
-        Vector2 startPosition = chatEntriesContainer.anchoredPosition;
-        Vector2 endPosition = new Vector2(0,1);
-        while (chatEntriesContainer.anchoredPosition.y < -0.1)
+        cancellationToken.ThrowIfCancellationRequested();
+        Sequence mySequence = DOTween.Sequence().AppendInterval(0.2f).Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
+        try
         {
-            chatEntriesContainer.anchoredPosition = Vector2.MoveTowards(chatEntriesContainer.anchoredPosition, endPosition, (1f / TRANSITION_DURATION) * Time.deltaTime);
-            await UniTask.NextFrame(cancellationToken);
+            Vector2 endPosition = new Vector2(0, 0);
+            Vector2 currentPosition = chatEntriesContainer.anchoredPosition;
+            notification.localScale = Vector3.zero;
+            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f).SetEase(Ease.OutCubic);
+            while (chatEntriesContainer.anchoredPosition.y < 0)
+            {
+                chatEntriesContainer.anchoredPosition = currentPosition;
+                await UniTask.NextFrame(cancellationToken);
+            }
+            mySequence.Play();
         }
-
-        if (cancellationToken.IsCancellationRequested)
-            return;
+        catch (OperationCanceledException ex)
+        {
+            if (!DOTween.IsTweening(notification))
+                notification.DOScale(1, 0.3f).SetEase(Ease.OutBack);
+        }
     }
 
     private void ResetNotificationButton()

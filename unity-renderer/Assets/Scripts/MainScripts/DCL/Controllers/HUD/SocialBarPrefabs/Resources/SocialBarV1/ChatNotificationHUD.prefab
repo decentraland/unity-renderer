@@ -142,7 +142,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 6, y: 2}
-  m_SizeDelta: {x: 410, y: 308.3551}
+  m_SizeDelta: {x: 528.3347, y: 308.3551}
   m_Pivot: {x: 0, y: 0}
 --- !u!225 &2700259136045117502
 CanvasGroup:
@@ -174,7 +174,6 @@ MonoBehaviour:
     type: 3}
   scrollRectangle: {fileID: 7808591501641491551}
   notificationButton: {fileID: 6715319879785752075}
-  notificationMessage: {fileID: 6665810587552683699}
   areOtherPanelsOpen: 0
 --- !u!1 &492256692246249359
 GameObject:
@@ -709,7 +708,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000061035156}
-  m_SizeDelta: {x: 410, y: -51}
+  m_SizeDelta: {x: 550.8033, y: -51}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &5016793088818101317
 GameObject:

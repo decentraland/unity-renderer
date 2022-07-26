@@ -2,6 +2,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public interface IChatController
 {
@@ -47,12 +48,15 @@ public class ChatController : MonoBehaviour, IChatController
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
-    
+    private static System.Random random = new System.Random();
+
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()
     {
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        string bodyText = new string(Enumerable.Repeat(chars, UnityEngine.Random.Range(5, 30))
+         .Select(s => s[random.Next(s.Length)]).ToArray());
         var model = new UserProfileModel()
         {
             userId = "test user 1",
@@ -71,7 +75,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         var msg = new ChatMessage()
         {
-            body = "test message",
+            body = bodyText,
             sender = model.userId,
             messageType = ChatMessage.Type.PUBLIC,
             timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
@@ -79,7 +83,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         var msg2 = new ChatMessage()
         {
-            body = "test message 2",
+            body = bodyText,
             sender = ownProfile.userId,
             messageType = ChatMessage.Type.PRIVATE,
             timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
