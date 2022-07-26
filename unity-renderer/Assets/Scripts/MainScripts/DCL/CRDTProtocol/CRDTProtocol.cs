@@ -6,16 +6,16 @@ namespace DCL.CRDT
     public class CRDTProtocol
     {
         internal readonly List<CRDTMessage> state = new List<CRDTMessage>();
-        private readonly Dictionary<long, int> stateIndexer = new Dictionary<long, int>();
+        private readonly Dictionary<int, Dictionary<int, int>> stateIndexer = new Dictionary<int, Dictionary<int, int>>();
 
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
-            TryGetState(message.key, out CRDTMessage storedMessage);
+            TryGetState(message.key1, message.key2, out CRDTMessage storedMessage);
 
             // The received message is > than our current value, update our state.
             if (storedMessage == null || storedMessage.timestamp < message.timestamp)
             {
-                return UpdateState(message.key, message.data, message.timestamp);
+                return UpdateState(message.key1, message.key2, message.data, message.timestamp);
             }
 
             // Outdated Message. Resend our state message through the wire.
@@ -36,24 +36,24 @@ namespace DCL.CRDT
                 return storedMessage;
             }
 
-            return UpdateState(message.key, message.data, message.timestamp);
+            return UpdateState(message.key1, message.key2, message.data, message.timestamp);
         }
 
-        public CRDTMessage GetState(long key)
+        public CRDTMessage GetState(int key1, int key2)
         {
-            if (stateIndexer.TryGetValue(key, out int index))
-            {
-                return state[index];
-            }
-            return null;
+            TryGetState(key1, key2, out CRDTMessage crdtMessage);
+            return crdtMessage;
         }
 
-        public bool TryGetState(long key, out CRDTMessage crdtMessage)
+        public bool TryGetState(int key1, int key2, out CRDTMessage crdtMessage)
         {
-            if (stateIndexer.TryGetValue(key, out int index))
+            if (stateIndexer.TryGetValue(key1, out Dictionary<int, int> innerDictionary))
             {
-                crdtMessage = state[index];
-                return true;
+                if (innerDictionary.TryGetValue(key2, out int index))
+                {
+                    crdtMessage = state[index];
+                    return true;
+                }
             }
             crdtMessage = null;
             return false;
@@ -68,11 +68,12 @@ namespace DCL.CRDT
         {
             var result = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(entityId, componentId),
+                key1 = entityId,
+                key2 = componentId,
                 data = data,
                 timestamp = 0
             };
-            if (TryGetState(result.key, out CRDTMessage storedMessage))
+            if (TryGetState(result.key1, result.key2, out CRDTMessage storedMessage))
             {
                 result.timestamp = storedMessage.timestamp + 1;
             }
@@ -85,32 +86,47 @@ namespace DCL.CRDT
             stateIndexer.Clear();
         }
 
-        private CRDTMessage UpdateState(long key, object data, long remoteTimestamp)
+        private CRDTMessage UpdateState(int key1, int key2, object data, long remoteTimestamp)
         {
             long stateTimeStamp = 0;
-            bool containState = stateIndexer.TryGetValue(key, out int keyIndex);
+            int crdtStateIndex = 0;
+            bool stateExists = false;
 
-            if (containState)
+            if (stateIndexer.TryGetValue(key1, out Dictionary<int, int> innerDictionary))
             {
-                stateTimeStamp = state[keyIndex].timestamp;
+                stateExists = innerDictionary.TryGetValue(key2, out crdtStateIndex);
+            }
+
+            if (stateExists)
+            {
+                stateTimeStamp = state[crdtStateIndex].timestamp;
             }
 
             long timestamp = Math.Max(remoteTimestamp, stateTimeStamp);
             var newMessageState = new CRDTMessage()
             {
-                key = key,
+                key1 = key1,
+                key2 = key2,
                 timestamp = timestamp,
                 data = data
             };
 
-            if (containState)
+            if (stateExists)
             {
-                state[keyIndex] = newMessageState;
+                state[crdtStateIndex] = newMessageState;
             }
             else
             {
                 state.Add(newMessageState);
-                stateIndexer.Add(key, state.Count - 1);
+                int newStateIndex = state.Count - 1;
+                if (innerDictionary != null)
+                {
+                    innerDictionary.Add(key2, newStateIndex);
+                }
+                else
+                {
+                    stateIndexer[key1] = new Dictionary<int, int>() { { key2, newStateIndex } };
+                }
             }
 
             return newMessageState;

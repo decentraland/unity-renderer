@@ -7,8 +7,8 @@ namespace DCL.CRDT
         public static void Serialize(BinaryWriter binaryWriter, CRDTMessage message)
         {
             byte[] data = (byte[])message.data;
-            int entityId = CRDTUtils.EntityIdFromKey(message.key);
-            int componentId = CRDTUtils.ComponentIdFromKey(message.key);
+            int entityId = message.key1;
+            int componentId = message.key2;
             int dataLength = data?.Length ?? 0;
 
             binaryWriter.WriteInt32(entityId);
