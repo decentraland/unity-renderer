@@ -38,45 +38,40 @@ public class ItemSelector : MonoBehaviour
     [SerializeField]
     internal NFTSkinFactory nftSkinFactory;
 
-    [SerializeField]
-    internal CollectionGroup collectionGroupPrefab;
-
-    [SerializeField]
-    internal RectTransform content;
-
-    [SerializeField]
-    internal GameObject loadingSpinner;
-
-    [SerializeField]
-    internal GameObject loadingRetry;
-
-    [SerializeField]
-    internal Button loadingRetryButton;
+    [SerializeField] internal CollectionGroup collectionGroupPrefab;
+    [SerializeField] internal RectTransform content;
+    [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal GameObject loadingRetry;
+    [SerializeField] internal Button loadingRetryButton;
     
-    [SerializeField]
-    internal GameObject wearablePagesRoot;
+    [Header("Collection Pages")]
+    [SerializeField] internal Button nextCollectionPage;
+    [SerializeField] internal Button previousCollectionPage;
+    [SerializeField] internal TMP_Text wearableCollectionText;
     
-    [SerializeField]
-    internal Button nextWearablePage;
-    
-    [SerializeField]
-    internal Button previousWearablePage;
-    
-    [SerializeField]
-    internal TMP_Text wearablePagesText;
+    [Header("Item Pages")]
+    [SerializeField] internal GameObject wearablePagesRoot;
+    [SerializeField] internal Button nextWearablePage;
+    [SerializeField] internal Button previousWearablePage;
+    [SerializeField] internal TMP_Text wearablePagesText;
 
     public event System.Action<string> OnItemClicked;
     public event System.Action<string> OnSellClicked;
     public event System.Action OnRetryClicked;
 
     internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
-    internal Dictionary<string, CollectionGroup> currentCollectionGroups = new Dictionary<string, CollectionGroup>();
+    internal Dictionary<string, CollectionGroup> collectionGroups = new Dictionary<string, CollectionGroup>();
+    internal List<string> collectionIds = new List<string>();
     internal List<WearableSettings> availableWearables = new List<WearableSettings>();
     internal Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
     internal List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
 
+    private const float MAX_WEARABLES = 21;
+    private int currentItemSection = 0;
+    private int currentCollectionSection = 0;
+    
     private void Awake()
     {
         Application.quitting += () =>
@@ -85,70 +80,86 @@ public class ItemSelector : MonoBehaviour
         };
 
         loadingRetryButton.onClick.AddListener(RetryLoading);
-        nextWearablePage.onClick.AddListener(NextPage);
-        previousWearablePage.onClick.AddListener(PreviousPage);
-    }
-    private void NextPage()
-    {
-        currentSection = (currentSection + 1 ) % GetMaxSections();
-        UpdateWearableList();
-    }
-    private void PreviousPage()
-    {
-        currentSection = (currentSection - 1 );
-
-        if (currentSection < 0)
-            currentSection = GetMaxSections();
-
-        currentSection %= GetMaxSections();
+        nextWearablePage.onClick.AddListener(NextItemPage);
+        previousWearablePage.onClick.AddListener(PreviousItemPage);
         
+        nextCollectionPage.onClick.AddListener(NextCollection);
+        previousCollectionPage.onClick.AddListener(PreviousCollection);
+    }
+    private void NextItemPage()
+    {
+        currentItemSection = (currentItemSection + 1 ) % GetMaxSections();
+        UpdateWearableList();
+    }
+    private void PreviousItemPage()
+    {
+        currentItemSection = (currentItemSection - 1 ) % GetMaxSections();
+        UpdateWearableList();
+    }
+    
+    private void NextCollection()
+    {
+        currentCollectionSection = (currentCollectionSection + 1 ) % GetMaxCollections();
+        currentItemSection = 0;
+        UpdateWearableList();
+    }
+    private void PreviousCollection()
+    {
+        currentCollectionSection = (currentCollectionSection - 1 ) % GetMaxCollections();
+        currentItemSection = 0;
         UpdateWearableList();
     }
 
-
-    private const float MAX_WEARABLES = 21;
     private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / MAX_WEARABLES);
-    private int currentSection = 0;
+    private int GetMaxCollections() => Mathf.CeilToInt(collectionGroups.Count);
 
     private void OnEnable() { UpdateWearableList(); }
     private void UpdateWearableList()
     {
-        int maxSections = GetMaxSections();
-        
-        wearablePagesRoot.SetActive(maxSections > 1);
-        wearablePagesText.text = $"{currentSection+1}/{maxSections}";
-        
-        // TODO: Fix different collections
-        CollectionGroup collection = null;
-        
+        if (collectionGroups.Count == 0) return;
+        UpdatePagesStatus();
+        UpdateItemToggles();
+    }
+    private void UpdateItemToggles()
+    {
+        CollectionGroup collection = GetCurrentCollection();
+
         for (int itemToggleIndex = 0; itemToggleIndex < MAX_WEARABLES; itemToggleIndex++)
         {
-            var baseIndex = currentSection * (int)MAX_WEARABLES;
+            var baseIndex = currentItemSection * (int)MAX_WEARABLES;
             var wearableIndex = itemToggleIndex + baseIndex;
-            
+
             if (wearableIndex < availableWearables.Count)
             {
                 WearableSettings wearableSettings = availableWearables[wearableIndex];
                 var item = wearableSettings.Item;
-                var collectionName = wearableSettings.CollectionName;
-                collection = GetCollectionGroupFor(item, collectionName);
                 var itemToggle = collection.LoadItem(itemToggleIndex, wearableSettings, collection.collectionId);
                 itemToggle.SetCallbacks(ToggleClicked, SellClicked);
                 itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
 
                 if (selectedItems.Contains(item.id))
                     itemToggle.selected = true;
-                
+
                 itemToggles[item.id] = itemToggle;
             }
             else
             {
-                if (collection != null)
-                {
-                    collection.HideItem(itemToggleIndex);
-                }
+                collection.HideItem(itemToggleIndex);
             }
         }
+    }
+    private CollectionGroup GetCurrentCollection() { return collectionGroups[collectionIds[currentCollectionSection]]; }
+    private void UpdatePagesStatus()
+    {
+        int maxSections = GetMaxSections();
+        int collections = GetMaxCollections();
+
+        wearablePagesRoot.SetActive(maxSections > 1);
+        wearablePagesText.text = $"{currentItemSection+1}/{maxSections}";
+        
+        nextCollectionPage.gameObject.SetActive(collections > 1);
+        previousCollectionPage.gameObject.SetActive(collections > 1);
+        wearableCollectionText.text = GetCurrentCollection().collectionNameValue;
     }
 
     private void OnDestroy() { loadingRetryButton.onClick.RemoveListener(RetryLoading); }
@@ -166,7 +177,7 @@ public class ItemSelector : MonoBehaviour
         if (totalWearables.ContainsKey(item.id))
             return;
 
-        var collectionGroup = GetCollectionGroupFor(item, collectionName);
+        AssureCollectionGroup(item, collectionName);
         
         WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
         totalWearables.Add(item.id, wearableSettings);
@@ -175,17 +186,6 @@ public class ItemSelector : MonoBehaviour
         {
             availableWearables.Add(wearableSettings);
         }
-    }
-    private CollectionGroup GetCollectionGroupFor(WearableItem item, string collectionName)
-    {
-        CollectionGroup collectionGroup;
-
-        if (item.IsFromThirdPartyCollection)
-            collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
-        else
-            collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
-
-        return collectionGroup;
     }
 
     public void RemoveItemToggle(string itemID)
@@ -302,29 +302,32 @@ public class ItemSelector : MonoBehaviour
 
     private void RetryLoading() { OnRetryClicked?.Invoke(); }
 
-    private CollectionGroup CreateCollectionGroupIfNeeded(string collectionId, string collectionName)
+    private void AssureCollectionGroup(WearableItem item, string collectionName)
     {
-        if (currentCollectionGroups.ContainsKey(collectionId))
-            return currentCollectionGroups[collectionId];
+        if (item.IsFromThirdPartyCollection)
+            CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
+        else
+            CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
+    }
+    
+    private void CreateCollectionGroupIfNeeded(string collectionId, string collectionName)
+    {
+        if (collectionGroups.ContainsKey(collectionId))
+            return;
 
         CollectionGroup newCollectionGroup = Instantiate(collectionGroupPrefab, content);
         newCollectionGroup.Configure(collectionId, collectionName);
-        currentCollectionGroups.Add(collectionId, newCollectionGroup);
-
-        if (collectionId == DECENTRALAND_COLLECTION_ID)
-            newCollectionGroup.transform.SetAsFirstSibling();
-        else
-            newCollectionGroup.transform.SetAsLastSibling();
-
-        return newCollectionGroup;
+        collectionIds.Add(collectionId);
+        collectionGroups.Add(collectionId, newCollectionGroup);
     }
 
     private bool RemoveCollectionGroupIfNeeded(string collectionId)
     {
-        currentCollectionGroups.TryGetValue(collectionId, out CollectionGroup collectionGroupToRemove);
+        collectionGroups.TryGetValue(collectionId, out CollectionGroup collectionGroupToRemove);
         if (collectionGroupToRemove != null && itemToggles.Count(x => x.Value.collectionId == collectionId) == 0)
         {
-            currentCollectionGroups.Remove(collectionId);
+            collectionGroups.Remove(collectionId);
+            collectionIds.Remove(collectionId);
             Destroy(collectionGroupToRemove.gameObject);
             return true;
         }

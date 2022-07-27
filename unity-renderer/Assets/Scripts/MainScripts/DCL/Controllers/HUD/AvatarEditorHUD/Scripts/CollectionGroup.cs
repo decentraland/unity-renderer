@@ -9,10 +9,12 @@ public class CollectionGroup : MonoBehaviour
     [SerializeField] private NFTSkinFactory skinFactory;
 
     public string collectionId { get; private set; }
+    public string collectionNameValue { get; private set; }
 
     public void Configure(string collectionId, string collectionName)
     {
         this.collectionId = collectionId;
+        this.collectionNameValue = collectionName;
         this.collectionName.text = $"{collectionName} collection";
     }
     public ItemToggle LoadItem(int index, WearableSettings wearableSettings, string collection)
