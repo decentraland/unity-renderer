@@ -20,6 +20,12 @@ namespace DCL.Chat.HUD
             controller.Initialize(view);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            controller.Dispose();
+        }
+
         [Test]
         public void Show()
         {

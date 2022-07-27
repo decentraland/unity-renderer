@@ -28,6 +28,7 @@ namespace DCL.Chat.HUD
         public void Dispose()
         {
             UnsubscribeFromEvents();
+            view.Dispose();
         }
 
         public void SetVisibility(bool visible)

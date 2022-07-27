@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
-    public class CreateChannelWindowComponentView : MonoBehaviour, ICreateChannelWindowView
+    public class CreateChannelWindowComponentView : BaseComponentView, ICreateChannelWindowView
     {
-        [SerializeField] private Button createButton;
-        [SerializeField] private Button closeButton;
-        [SerializeField] private Button cancelButton;
-        [SerializeField] private Button joinButton;
-        [SerializeField] private TMP_InputField channelNameInput;
-        [SerializeField] private GameObject channelExistsContainer;
-        [SerializeField] private GameObject channelExistsWithJoinOptionContainer;
-        [SerializeField] private TMP_Text genericErrorLabel;
-        [SerializeField] private TMP_Text channelNameLengthLabel;
+        [SerializeField] internal Button createButton;
+        [SerializeField] internal Button closeButton;
+        [SerializeField] internal Button cancelButton;
+        [SerializeField] internal Button joinButton;
+        [SerializeField] internal TMP_InputField channelNameInput;
+        [SerializeField] internal GameObject channelExistsContainer;
+        [SerializeField] internal GameObject channelExistsWithJoinOptionContainer;
+        [SerializeField] internal TMP_Text genericErrorLabel;
+        [SerializeField] internal TMP_Text channelNameLengthLabel;
 
         public event Action<string> OnChannelNameUpdated;
         public event Action OnCreateSubmit;
@@ -32,12 +32,17 @@ namespace DCL.Chat.HUD
             createButton.onClick.AddListener(() => OnCreateSubmit?.Invoke());
             channelNameInput.onValueChanged.AddListener(text =>
             {
-                channelNameLengthLabel.text = $"{text.Length}/17";
+                channelNameLengthLabel.text = $"{Mathf.Min(17, text.Length)}/17";
                 OnChannelNameUpdated?.Invoke(text);
             });
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             cancelButton.onClick.AddListener(() => OnClose?.Invoke());
             joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
+        }
+
+        public override void RefreshControl()
+        {
+            throw new NotImplementedException();
         }
 
         public RectTransform Transform => (RectTransform) transform;

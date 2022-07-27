@@ -18,5 +18,6 @@ namespace DCL.Chat.HUD
         void DisableCreateButton();
         void EnableCreateButton();
         void ClearInputText();
+        void Dispose();
     }
 }
