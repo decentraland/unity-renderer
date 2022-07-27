@@ -74,6 +74,11 @@ public class MaterialTransitionController : MonoBehaviour
         {
             material = newMaterials[i];
 
+            if (material == null)
+            {
+                Debug.Log("AAAAAAAAAAA " + transform.root.gameObject.name);
+                continue;
+            }
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
@@ -108,6 +113,11 @@ public class MaterialTransitionController : MonoBehaviour
         cullingFXMaterials = new Material[finalMaterials.Length];
         for (int i = 0; i < finalMaterials.Length; i++)
         {
+            if (finalMaterials[i] == null)
+            {
+                Debug.Log("BBBBBBBB " + transform.root.gameObject.name);
+                continue;
+            }
             cullingFXMaterials[i] = new Material(finalMaterials[i]);
         }
     }
@@ -173,6 +183,20 @@ public class MaterialTransitionController : MonoBehaviour
             state = State.INVALID;
             return;
         }
+
+        if (finalMaterials != null)
+        {
+            for (var i = 0; i < finalMaterials.Length; i++)
+            {
+                if (finalMaterials[i] == null)
+                {
+                    DestroyPlaceholder();
+                    state = State.INVALID;
+                    return;
+                }
+            }
+        }
+        
 
         switch (state)
         {
