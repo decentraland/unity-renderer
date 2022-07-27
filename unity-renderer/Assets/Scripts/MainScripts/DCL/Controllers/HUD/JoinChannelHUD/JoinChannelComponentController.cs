@@ -4,11 +4,15 @@ using System;
 public class JoinChannelComponentController : IDisposable
 {
     private IJoinChannelComponentView joinChannelView;
+    private IChatController chatController;
     private DataStore_Channels channelsDataStore;
 
-    public JoinChannelComponentController(DataStore_Channels channelsDataStore)
+    public JoinChannelComponentController(
+        IChatController chatController,
+        DataStore_Channels channelsDataStore)
     {
         joinChannelView = CreateJoinChannelView();
+        this.chatController = chatController;
         this.channelsDataStore = channelsDataStore;
 
         this.channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -40,6 +44,7 @@ public class JoinChannelComponentController : IDisposable
 
     private void OnConfirmJoin(string channelId)
     {
+        chatController.JoinOrCreateChannel(channelId.Replace("#", "").Replace("~", ""));
         joinChannelView.Hide();
         channelsDataStore.currentJoinChannelModal.Set(null);
     }

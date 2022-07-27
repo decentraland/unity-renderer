@@ -519,7 +519,7 @@ MonoBehaviour:
   cancelButton: {fileID: 8434618311273865349}
   confirmButton: {fileID: 4556030167265598105}
   model:
-    channelId: channel-name
+    channelId: '#channel-name'
 --- !u!1 &7363191740647058011
 GameObject:
   m_ObjectHideFlags: 0
