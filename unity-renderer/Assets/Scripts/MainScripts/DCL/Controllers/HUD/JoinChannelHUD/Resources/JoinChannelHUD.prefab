@@ -513,6 +513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adaf38a0f08381a47a86884a160c1c99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backgroundButton: {fileID: 2556586692916941271}
   closeButton: {fileID: 4584565282030240698}
   titleText: {fileID: 419214571873475484}
   cancelButton: {fileID: 8434618311273865349}

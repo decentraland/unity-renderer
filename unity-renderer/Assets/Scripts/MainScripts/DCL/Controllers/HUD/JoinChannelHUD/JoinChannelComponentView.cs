@@ -8,6 +8,7 @@ public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponent
     private const string MODAL_TITLE = "Do you want to join the channel {0}?";
 
     [Header("Prefab References")]
+    [SerializeField] internal Button backgroundButton;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal TMP_Text titleText;
     [SerializeField] internal ButtonComponentView cancelButton;
@@ -23,6 +24,7 @@ public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponent
     {
         base.Awake();
 
+        backgroundButton.onClick.AddListener(() => OnCancelJoin?.Invoke());
         closeButton.onClick.AddListener(() => OnCancelJoin?.Invoke());
         cancelButton.onClick.AddListener(() => OnCancelJoin?.Invoke());
         confirmButton.onClick.AddListener(() => OnConfirmJoin?.Invoke(model.channelId));
@@ -30,6 +32,7 @@ public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponent
 
     public override void Dispose()
     {
+        backgroundButton.onClick.RemoveAllListeners();
         closeButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
         confirmButton.onClick.RemoveAllListeners();
