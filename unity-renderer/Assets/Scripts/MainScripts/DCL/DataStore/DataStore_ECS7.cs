@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL.Controllers;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
@@ -13,5 +14,6 @@ namespace DCL
         public ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
+        public readonly BaseDictionary<string, BaseDictionary<long,PBUiTransform>> sceneCanvas = new BaseDictionary<string, BaseDictionary<long,PBUiTransform>>();
     }
 }
