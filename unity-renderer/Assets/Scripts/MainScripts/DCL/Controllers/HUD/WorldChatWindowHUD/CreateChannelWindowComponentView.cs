@@ -15,6 +15,7 @@ namespace DCL.Chat.HUD
         [SerializeField] private GameObject channelExistsContainer;
         [SerializeField] private GameObject channelExistsWithJoinOptionContainer;
         [SerializeField] private TMP_Text genericErrorLabel;
+        [SerializeField] private TMP_Text channelNameLengthLabel;
 
         public event Action<string> OnChannelNameUpdated;
         public event Action OnCreateSubmit;
@@ -29,7 +30,11 @@ namespace DCL.Chat.HUD
         private void Awake()
         {
             createButton.onClick.AddListener(() => OnCreateSubmit?.Invoke());
-            channelNameInput.onValueChanged.AddListener(text => OnChannelNameUpdated?.Invoke(text));
+            channelNameInput.onValueChanged.AddListener(text =>
+            {
+                channelNameLengthLabel.text = $"{text.Length}/17";
+                OnChannelNameUpdated?.Invoke(text);
+            });
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             cancelButton.onClick.AddListener(() => OnClose?.Invoke());
             joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
