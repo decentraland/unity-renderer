@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -316,6 +317,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (inputField.wasCanceled)
             currentMessage.body = string.Empty;
 
+        // we have to wait one frame to disengage the flow triggered by OnSendMessage
+        // otherwise it crashes the application (WebGL only) due a TextMeshPro bug
+        StartCoroutine(WaitThenTriggerSendMessage());
+    }
+
+    private IEnumerator WaitThenTriggerSendMessage()
+    {
+        yield return null;
         OnSendMessage?.Invoke(currentMessage);
     }
 
