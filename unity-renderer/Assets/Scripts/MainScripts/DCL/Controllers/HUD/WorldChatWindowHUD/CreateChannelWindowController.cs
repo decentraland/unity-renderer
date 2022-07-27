@@ -90,6 +90,9 @@ namespace DCL.Chat.HUD
 
         private void CreateChannel()
         {
+            if (string.IsNullOrEmpty(channelName)) return;
+            if (channelName.Length > MAX_ALLOWED_NAME_LENGTH) return;
+            if (chatController.GetAllocatedChannel(channelName) != null) return;
             chatController.CreateChannel(channelName);
             view.DisableCreateButton();
         }
