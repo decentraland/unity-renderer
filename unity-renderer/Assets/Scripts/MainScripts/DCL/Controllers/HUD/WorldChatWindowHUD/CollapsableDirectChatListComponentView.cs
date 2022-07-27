@@ -46,6 +46,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         this.releaseEntriesFromPool = releaseEntriesFromPool;
         base.Clear();
         this.releaseEntriesFromPool = true;
+        pooleableEntries.Clear();
     }
 
     public override PrivateChatEntry Remove(string key)
@@ -64,6 +65,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     {
         if (!Contains(entryModel.userId))
             CreateEntry(userId);
+
         var entry = Get(userId);
         entry.Configure(entryModel);
     }

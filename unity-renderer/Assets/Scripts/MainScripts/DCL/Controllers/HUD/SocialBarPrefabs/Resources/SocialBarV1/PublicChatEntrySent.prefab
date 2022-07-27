@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: -808164953336239873, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: showUserName
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 650554326901945825, guid: c419563788ffdbc44a53495651162084,
         type: 3}
@@ -132,7 +132,7 @@ PrefabInstance:
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 4919932192753732469, guid: c419563788ffdbc44a53495651162084,
         type: 3}
@@ -317,7 +317,7 @@ PrefabInstance:
     - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
         type: 3}
       propertyPath: m_text
-      value: 'The worlds '
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8068759164719752186, guid: c419563788ffdbc44a53495651162084,
         type: 3}

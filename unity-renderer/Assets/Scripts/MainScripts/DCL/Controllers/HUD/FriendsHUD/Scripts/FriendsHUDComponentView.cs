@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,27 +9,27 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     private const int FRIENDS_LIST_TAB_INDEX = 0;
     private const int FRIENDS_REQUEST_TAB_INDEX = 1;
 
-    [SerializeField] private GameObject loadingSpinner;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button friendsTabFocusButton;
-    [SerializeField] private Button friendRequestsTabFocusButton;
-    [SerializeField] private FriendsTabComponentView friendsTab;
-    [SerializeField] private FriendRequestsTabComponentView friendRequestsTab;
+    [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal Button friendsTabFocusButton;
+    [SerializeField] internal Button friendRequestsTabFocusButton;
+    [SerializeField] internal FriendsTabComponentView friendsTab;
+    [SerializeField] internal FriendRequestsTabComponentView friendRequestsTab;
     [SerializeField] private Model model;
 
-    public event Action<FriendRequestEntry> OnFriendRequestApproved
+    public event Action<FriendRequestEntryModel> OnFriendRequestApproved
     {
         add => friendRequestsTab.OnFriendRequestApproved += value;
         remove => friendRequestsTab.OnFriendRequestApproved -= value;
     }
 
-    public event Action<FriendRequestEntry> OnCancelConfirmation
+    public event Action<FriendRequestEntryModel> OnCancelConfirmation
     {
         add => friendRequestsTab.OnCancelConfirmation += value;
         remove => friendRequestsTab.OnCancelConfirmation -= value;
     }
 
-    public event Action<FriendRequestEntry> OnRejectConfirmation
+    public event Action<FriendRequestEntryModel> OnRejectConfirmation
     {
         add => friendRequestsTab.OnRejectConfirmation += value;
         remove => friendRequestsTab.OnRejectConfirmation -= value;
@@ -40,7 +41,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendRequestsTab.OnFriendRequestSent -= value;
     }
 
-    public event Action<FriendEntry> OnWhisper
+    public event Action<FriendEntryModel> OnWhisper
     {
         add => friendsTab.OnWhisper += value;
         remove => friendsTab.OnWhisper -= value;
@@ -88,6 +89,14 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             .GetComponent<FriendsHUDComponentView>();
         return view;
     }
+    
+    public void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics)
+    {
+        friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+    }
 
     public override void Awake()
     {
@@ -105,13 +114,13 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendRequestsTab.Expand();
     }
 
-    public void HideSpinner()
+    public void HideLoadingSpinner()
     {
         loadingSpinner.SetActive(false);
         model.isLoadingSpinnerActive = false;
     }
 
-    public void ShowSpinner()
+    public void ShowLoadingSpinner()
     {
         loadingSpinner.SetActive(true);
         model.isLoadingSpinnerActive = true;
@@ -134,84 +143,36 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
-    public void Destroy() => Destroy(gameObject);
-
     public void Show()
     {
         model.visible = true;
         gameObject.SetActive(true);
+        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     public void Hide()
     {
         model.visible = false;
         gameObject.SetActive(false);
+        AudioScriptableObjects.dialogClose.Play(true);
     }
-
-    public void Set(string userId,
-        FriendshipAction friendshipAction,
-        FriendEntryModel model)
+    
+    public void Set(string userId, FriendEntryModel model)
     {
-        switch (friendshipAction)
-        {
-            case FriendshipAction.NONE:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.APPROVED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Enqueue(userId, model);
-                break;
-            case FriendshipAction.REJECTED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.CANCELLED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, true));
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, false));
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.DELETED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            default:
-                Debug.LogError($"FriendshipAction not supported: {friendshipAction}");
-                break;
-        }
+        friendRequestsTab.Remove(userId);
+        friendsTab.Enqueue(userId, model);
     }
-
-    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    
+    public void Remove(string userId)
     {
-        switch (friendshipStatus)
-        {
-            case FriendshipStatus.FRIEND:
-                friendsTab.Enqueue(userId, model);
-                friendRequestsTab.Remove(userId);
-                break;
-            case FriendshipStatus.NOT_FRIEND:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Remove(userId);
-                break;
-            case FriendshipStatus.REQUESTED_TO:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, false));
-                break;
-            case FriendshipStatus.REQUESTED_FROM:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Enqueue(userId, new FriendRequestEntryModel(model, true));
-                break;
-            default:
-                Debug.LogError($"FriendshipStatus not supported: {friendshipStatus}");
-                break;
-        }
+        friendRequestsTab.Remove(userId);
+        friendsTab.Remove(userId);
+    }
+    
+    public void Set(string userId, FriendRequestEntryModel model)
+    {
+        friendRequestsTab.Enqueue(userId, model);
+        friendsTab.Remove(userId);
     }
 
     public bool IsActive() => gameObject.activeInHierarchy;
@@ -242,16 +203,24 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool ContainsFriend(string userId) => friendsTab.Get(userId) != null;
 
+    public bool ContainsFriendRequest(string userId) => friendRequestsTab.Get(userId) != null;
+
     public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
 
     public void ClearFriendFilter() => friendsTab.ClearFilter();
+    
+    public void UpdateBlockStatus(string userId, bool blocked)
+    {
+        UpdateBlockStatus(blocked, friendsTab.Get(userId));
+        UpdateBlockStatus(blocked, friendRequestsTab.Get(userId));
+    }
 
     public override void RefreshControl()
     {
         if (model.isLoadingSpinnerActive)
-            ShowSpinner();
+            ShowLoadingSpinner();
         else
-            HideSpinner();
+            HideLoadingSpinner();
 
         if (model.visible)
             Show();
@@ -261,7 +230,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         FocusTab(model.focusedTabIndex);
     }
 
-    private void FocusTab(int index)
+    internal void FocusTab(int index)
     {
         model.focusedTabIndex = index;
 
@@ -277,6 +246,14 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         }
         else
             throw new IndexOutOfRangeException();
+    }
+    
+    private void UpdateBlockStatus(bool blocked, FriendEntryBase friendEntry)
+    {
+        if (friendEntry == null) return;
+        var friendModel = friendEntry.Model;
+        friendModel.blocked = blocked;
+        friendEntry.RefreshControl();
     }
 
     [Serializable]

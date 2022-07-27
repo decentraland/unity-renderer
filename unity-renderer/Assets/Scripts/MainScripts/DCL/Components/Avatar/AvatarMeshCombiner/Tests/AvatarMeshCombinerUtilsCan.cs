@@ -7,7 +7,7 @@ using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using UnityEditor;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
@@ -121,18 +121,18 @@ public class AvatarMeshCombinerUtilsCan
             SkinnedMeshRenderer renderer = DCL.Helpers.SkinnedMeshRenderer.Create(mat);
 
             int vertexCount = renderer.sharedMesh.vertexCount;
-            var boneWeights = new BoneWeight[vertexCount];
 
-            for (int i = 0; i < boneWeights.Length; i++)
+            var nativeBonesPerVertex = new NativeArray<byte>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            var nativeBones = new NativeArray<BoneWeight1>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+            for (int i = 0; i < vertexCount; i++)
             {
-                var b = new BoneWeight();
-                b.weight0 = counter;
-                b.boneIndex1 = counter;
-                boneWeights[i] = b;
+                nativeBonesPerVertex[i] = 1;
+                nativeBones[i] = new BoneWeight1() { boneIndex = counter, weight = counter };
                 counter++;
             }
 
-            renderer.sharedMesh.boneWeights = boneWeights;
+            renderer.sharedMesh.SetBoneWeights(nativeBonesPerVertex, nativeBones);
             return renderer;
         }
 
@@ -151,17 +151,21 @@ public class AvatarMeshCombinerUtilsCan
         }
 
         // Act
-        var result = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
+        var weights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
+        var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
 
         // Assert
-        Assert.That(result.Count, Is.EqualTo(96));
+        Assert.That(weights.Length, Is.EqualTo(96));
 
         int assertCounter = 0;
 
-        foreach ( var b in result )
+        int count = bonesPerVertex.Length;
+
+        for (int i = 0; i < count; i++)
         {
-            Assert.That(b.weight0, Is.EqualTo(assertCounter));
-            Assert.That(b.boneIndex1, Is.EqualTo(assertCounter));
+            var boneWeight1 = weights[assertCounter];
+            Assert.That(boneWeight1.weight, Is.EqualTo(1), "Bone Weight");
+            Assert.That(boneWeight1.boneIndex, Is.EqualTo(assertCounter), "Bone index");
             assertCounter++;
         }
 
@@ -170,6 +174,9 @@ public class AvatarMeshCombinerUtilsCan
         layers.SelectMany( (x) => x.renderers ).ToList().ForEach(
             DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload
         );
+
+        weights.Dispose();
+        bonesPerVertex.Dispose();
     }
 
     [Test]
@@ -184,7 +191,7 @@ public class AvatarMeshCombinerUtilsCan
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData();
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -198,9 +205,9 @@ public class AvatarMeshCombinerUtilsCan
         emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
         texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
 
-        expected.colors = colors.ToArray();
-        expected.emissionColors = emissionColors.ToArray();
-        expected.texturePointers = texturePointers.ToArray();
+        expected.colors = new NativeArray<Vector4>(colors.ToArray(), Allocator.Temp);
+        expected.emissionColors = new NativeArray<Vector4>(emissionColors.ToArray(), Allocator.Temp);
+        expected.texturePointers = new NativeArray<Vector3>(texturePointers.ToArray(), Allocator.Temp);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
@@ -225,7 +232,7 @@ public class AvatarMeshCombinerUtilsCan
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData();
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -239,9 +246,9 @@ public class AvatarMeshCombinerUtilsCan
         emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
         texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
 
-        expected.colors = colors.ToArray();
-        expected.emissionColors = emissionColors.ToArray();
-        expected.texturePointers = texturePointers.ToArray();
+        expected.colors = new NativeArray<Vector4>(colors.ToArray(), Allocator.Temp);
+        expected.emissionColors = new NativeArray<Vector4>(emissionColors.ToArray(), Allocator.Temp);
+        expected.texturePointers = new NativeArray<Vector3>(texturePointers.ToArray(), Allocator.Temp);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);

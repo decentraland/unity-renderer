@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.ServerTime;
 
 namespace DCL
 {
@@ -8,7 +9,6 @@ namespace DCL
         DEFAULT,
         BUILDER_IN_WORLD_EDITION
     }
-
 
     public class DataStore
     {
@@ -54,13 +54,17 @@ namespace DCL
         public DataStore_Camera camera => i.Get<DataStore_Camera>();
         public DataStore_Settings settings => i.Get<DataStore_Settings>();
         public DataStore_SkyboxConfig skyboxConfig => i.Get<DataStore_SkyboxConfig>();
-        public ServerTime.WorldTimer worldTimer => i.Get<ServerTime.WorldTimer>();
+        public WorldTimer worldTimer => i.Get<WorldTimer>();
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
         public DataStore_ExperiencesViewer experiencesViewer => i.Get<DataStore_ExperiencesViewer>();
         public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
         public DataStore_EmotesCustomization emotesCustomization => i.Get<DataStore_EmotesCustomization>();
         public DataStore_SceneBoundariesChecker sceneBoundariesChecker => i.Get<DataStore_SceneBoundariesChecker>();
         public DataStore_ECS7 ecs7 => i.Get<DataStore_ECS7>();
-        public DataStore_TextureSize textureSize => i.Get<DataStore_TextureSize>();
+        public DataStore_VoiceChat voiceChat => i.Get<DataStore_VoiceChat>();
+        public DataStore_TextureConfig textureConfig => i.Get<DataStore_TextureConfig>();
+        public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
+        public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
+        public DataStore_RpcContext rpcContext => i.Get<DataStore_RpcContext>();
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,6 @@ public class DateSeparatorEntry : ChatEntry
     
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
-    private Coroutine previewInterpolationRoutine;
     private Color originalBackgroundColor;
     private Color originalFontColor;
 
@@ -38,7 +38,14 @@ public class DateSeparatorEntry : ChatEntry
 
     public override void SetFadeout(bool enabled)
     {
-        
+        if (!enabled)
+        {
+            group.alpha = 1;
+            fadeEnabled = false;
+            return;
+        }
+
+        fadeEnabled = true;
     }
 
     public override void DeactivatePreview()
@@ -52,8 +59,27 @@ public class DateSeparatorEntry : ChatEntry
         
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        group.alpha = 1;
+        previewInterpolationRoutine =
+            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+    }
+    
+    public override void FadeOut()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            group.alpha = 0;
+            return;
+        }
         
-        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
     public override void ActivatePreview()
@@ -68,6 +94,8 @@ public class DateSeparatorEntry : ChatEntry
             StopCoroutine(previewInterpolationRoutine);
         
         previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+        
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
     
     public override void ActivatePreviewInstantly()
@@ -100,7 +128,7 @@ public class DateSeparatorEntry : ChatEntry
         }
         else
         {
-            result = date.ToLongDateString();
+            result = date.ToString("D", DateTimeFormatInfo.InvariantInfo);
         }
 
         return result;
@@ -129,4 +157,5 @@ public class DateSeparatorEntry : ChatEntry
         previewBackgroundImage.color = backgroundColor;
         title.color = fontColor;
     }
+    
 }

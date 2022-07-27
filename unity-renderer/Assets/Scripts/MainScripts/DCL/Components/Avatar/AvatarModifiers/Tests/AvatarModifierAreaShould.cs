@@ -15,7 +15,7 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
 {
     private const string MOCK_MODIFIER_KEY = "MockModifier";
     private AvatarModifierArea avatarModifierArea;
-    private AvatarModifier mockAvatarModifier;
+    private IAvatarModifier mockAvatarModifier;
     public ParcelScene scene;
     public CoreComponentsPlugin coreComponentsPlugin;
 
@@ -35,7 +35,7 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         yield return avatarModifierArea.routine;
 
         model.modifiers = new[] { MOCK_MODIFIER_KEY };
-        mockAvatarModifier = Substitute.For<AvatarModifier>();
+        mockAvatarModifier = Substitute.For<IAvatarModifier>();
         avatarModifierArea.modifiers.Add(MOCK_MODIFIER_KEY, mockAvatarModifier);
 
         //now that the modifier has been added we trigger the Update again so it gets taken into account
@@ -146,6 +146,17 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         
         mockAvatarModifier.Received().ApplyModifier(player2.gameObject);
 
+        yield return null;
+        
+        DataStore.i.player.otherPlayers.Remove(player2.player.id);
+        DataStore.i.player.otherPlayers.Remove(player3.player.id);
+        DataStore.i.player.otherPlayers.Remove(player4.player.id);
+        
+        Object.Destroy(((PlayerName)player1.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player2.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player3.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player4.player.playerName).gameObject);
+
         Object.Destroy(player1.gameObject);
         Object.Destroy(player2.gameObject);
         Object.Destroy(player3.gameObject);
@@ -194,7 +205,8 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         Player player = new Player()
         {
             id = playerId,
-            collider = gameObject.GetComponentInChildren<Collider>()
+            collider = gameObject.GetComponentInChildren<Collider>(),
+            playerName = GameObject.Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>()
         };
         return (player, gameObject);
     }

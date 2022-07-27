@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
 {
@@ -7,6 +8,10 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_MUTED = "user_muted";
         private const string PLAYER_UNMUTED = "user_unmuted";
         private const string VOICE_MESSAGE_STARTED_BY_FIRST_TIME = "voice_chat_start_recording";
+        private const string VOICE_MESSAGE_SENT = "voice_message_sent";
+        private const string VOICE_CHANNEL_CONNECTION = "voice_channel_connection";
+        private const string VOICE_CHANNEL_DISCONNECTION = "voice_channel_disconnection";
+        private const string VOICE_CHAT_PREFERENCES_CHANGED = "voice_chat_preferences_changed";
         private const string CHANNEL_MESSAGE_SENT = "send_chat_message";
         private const string DIRECT_MESSAGE_SENT = "send_direct_message";
         private const string FRIEND_REQUEST_SENT = "friend_request_sent";
@@ -59,7 +64,7 @@ namespace SocialFeaturesAnalytics
 
         public void SendVoiceMessageStartedByFirstTime() { analytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME, new Dictionary<string, string>()); }
 
-        public void SendChannelMessageSent(string fromUserId, double messageLength, string channel)
+        public void SendVoiceMessage(double messageLength, VoiceMessageSource source, string fromUserId)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
 
@@ -69,27 +74,27 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("length", messageLength.ToString());
-            data.Add("channel", channel);
+            data.Add("source", source.ToString());
 
-            analytics.SendAnalytic(CHANNEL_MESSAGE_SENT, data);
+            analytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
-        public void SendDirectMessageSent(string fromUserId, string toUserId, double messageLength, bool areFriends, ChatContentType contentType)
+        public void SendVoiceChannelConnection(int numberOfPeers) 
         {
-            PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
-            PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
-
-            if (fromPlayerType == null || toPlayerType == null)
-                return;
-
             Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("friends", areFriends.ToString());
-            data.Add("content_type", contentType.ToString());
+            data.Add("numberOfPeers", numberOfPeers.ToString());
 
-            analytics.SendAnalytic(DIRECT_MESSAGE_SENT, data);
+            analytics.SendAnalytic(VOICE_CHANNEL_CONNECTION, data);
+        }
+
+        public void SendVoiceChannelDisconnection() { analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>()); }
+
+        public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("allow", preference.ToString());
+
+            analytics.SendAnalytic(VOICE_CHAT_PREFERENCES_CHANGED, data);
         }
 
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)

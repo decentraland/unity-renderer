@@ -13,6 +13,6 @@ public class MapUserIcon : MonoBehaviour
             return;
 
         var gridPosition = Utils.WorldToGridPositionUnclamped(trackedPlayer.worldPosition + CommonScriptableObjects.worldOffset.Get());
-        transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
+        transform.localPosition = MapUtils.CoordsToPositionUnclamped(gridPosition);
     }
 }

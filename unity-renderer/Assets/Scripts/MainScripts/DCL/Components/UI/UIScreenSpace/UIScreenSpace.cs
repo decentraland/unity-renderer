@@ -20,6 +20,7 @@ namespace DCL.Components
         private CanvasGroup canvasGroup;
         private bool isInsideSceneBounds;
         private BaseVariable<bool> isUIEnabled => DataStore.i.HUDs.isSceneUIEnabled;
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
         public UIScreenSpace()
         {
@@ -59,6 +60,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            hudCanvasCameraModeController?.Dispose();
             CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerWorldPositionChanged;
             DataStore.i.HUDs.isSceneUIEnabled.OnChange -= OnChangeSceneUI;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
@@ -123,7 +125,7 @@ namespace DCL.Components
 
             // Canvas
             canvas = canvasGameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, DataStore.i.camera.hudsCamera);
 
             // Canvas Scaler (for maintaining ui aspect ratio)
             CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();

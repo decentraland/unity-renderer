@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using System.Collections;
+using DCL.CameraTool;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Assertions;

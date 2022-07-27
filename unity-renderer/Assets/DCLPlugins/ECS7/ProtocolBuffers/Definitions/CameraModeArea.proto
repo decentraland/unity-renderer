@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1071;
+import "common/Vector3.proto";
+
+enum CameraMode {
+  FIRST_PERSON = 0;
+  THIRD_PERSON = 1;
+}
+
+message PBCameraModeArea {
+  Vector3 area = 1;
+  CameraMode mode = 2;
+}

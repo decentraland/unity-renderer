@@ -1,19 +1,25 @@
 using System;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 {
-    public event Action<FriendRequestEntry> OnFriendRequestApproved;
-    public event Action<FriendRequestEntry> OnCancelConfirmation;
-    public event Action<FriendRequestEntry> OnRejectConfirmation;
+    public event Action<FriendRequestEntryModel> OnFriendRequestApproved;
+    public event Action<FriendRequestEntryModel> OnCancelConfirmation;
+    public event Action<FriendRequestEntryModel> OnRejectConfirmation;
     public event Action<string> OnFriendRequestSent;
-    public event Action<FriendEntry> OnWhisper;
+    public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
     public event Action OnRequireMoreFriends;
     public event Action OnRequireMoreFriendRequests;
     public event Action<string> OnSearchFriendsRequested;
+
+    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController, ISocialAnalytics socialAnalytics)
+    {
+    }
 
     public RectTransform Transform => (RectTransform) transform;
     public bool ListByOnlineStatus { get; set; }
@@ -32,11 +38,11 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
         isDestroyed = true;
     }
 
-    public void HideSpinner()
+    public void HideLoadingSpinner()
     {
     }
 
-    public void ShowSpinner()
+    public void ShowLoadingSpinner()
     {
     }
 
@@ -50,27 +56,25 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public bool IsFriendListCreationReady() => false;
 
-    public int GetReceivedFriendRequestCount() => 0;
-
-    public void Destroy()
+    public void Dispose()
     {
         if (isDestroyed) return;
         Destroy(gameObject);
     }
 
-    public void Show()
+    public void Show() => gameObject.SetActive(true);
+
+    public void Hide() => gameObject.SetActive(false);
+    
+    public void Set(string userId, FriendEntryModel model)
     {
     }
 
-    public void Hide()
+    public void Set(string userId, FriendRequestEntryModel model)
     {
     }
 
-    public void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel friendEntryModel)
-    {
-    }
-
-    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    public void Remove(string userId)
     {
     }
 
@@ -102,11 +106,17 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
 
     public bool ContainsFriend(string userId) => false;
 
+    public bool ContainsFriendRequest(string userId) => false;
+
     public void FilterFriends(Dictionary<string, FriendEntryModel> friends)
     {
     }
 
     public void ClearFriendFilter()
+    {
+    }
+
+    public void UpdateBlockStatus(string userId, bool blocked)
     {
     }
 }

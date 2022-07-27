@@ -14,8 +14,21 @@ namespace DCL
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
+        
+        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        private const string AB_LOAD_ANIMATION = "ab_load_animation";
+        private bool doTransitionAnimation;
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
+        {
+            featureFlags.OnChange += OnFeatureFlagChange;
+            OnFeatureFlagChange(featureFlags.Get(), null);
+        }
+        
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
+        {
+            doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION);
+        }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
@@ -50,6 +63,15 @@ namespace DCL
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
+            if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation)
+            {
+                foreach (Renderer assetRenderer in asset.renderers)
+                {
+                    MaterialTransitionController transition =  assetRenderer.gameObject.AddComponent<MaterialTransitionController>();
+                    transition.delay = 0;
+                    transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
+                }
+            }
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
@@ -180,8 +202,6 @@ namespace DCL
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
-            var uploadToGPU = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
-
             foreach ( Mesh mesh in meshesList )
             {
                 if ( !mesh.isReadable )
@@ -189,12 +209,6 @@ namespace DCL
 
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
-
-                if (uploadToGPU)
-                {
-                    Physics.BakeMesh(mesh.GetInstanceID(), false);
-                    mesh.UploadMeshData(true);
-                }
             }
         }
 
@@ -209,6 +223,13 @@ namespace DCL
                 return base.GetAsset(id);
             }
         }
+
+        internal override void OnForget()
+        {
+            base.OnForget();
+            featureFlags.OnChange -= OnFeatureFlagChange;
+        }
+        
     }
 
 }

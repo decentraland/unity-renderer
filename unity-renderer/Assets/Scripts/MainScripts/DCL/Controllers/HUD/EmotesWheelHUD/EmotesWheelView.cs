@@ -22,7 +22,7 @@ namespace DCL.EmotesWheel
         }
 
         private const string PATH = "EmotesWheelHUD";
-        private const string EMOTES_CUSTOMIZATION_FEATURE_FLAG = "emotes_customization";
+      
 
         public event Action<string> onEmoteClicked;
         public event Action OnClose;
@@ -35,10 +35,9 @@ namespace DCL.EmotesWheel
         [SerializeField] internal TMP_Text selectedEmoteName;
         [SerializeField] internal List<RarityColor> rarityColors;
         [SerializeField] internal GameObject customizeTitle;
-        [SerializeField] internal List<GameObject> gameObjectsToHideWhenCustomizeFFIsDeactivated;
 
-        private bool isEmotesCustomizationFFEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(EMOTES_CUSTOMIZATION_FEATURE_FLAG);
-
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
+        
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
@@ -50,13 +49,11 @@ namespace DCL.EmotesWheel
 
             openCustomizeButton.onClick.AddListener(() =>
             {
-                if (!isEmotesCustomizationFFEnabled)
-                    return;
-
                 OnCustomizeClicked?.Invoke();
             });
 
             selectedEmoteName.text = string.Empty;
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
 
         public void SetVisiblity(bool visible)
@@ -67,11 +64,6 @@ namespace DCL.EmotesWheel
             gameObject.SetActive(visible);
             if (visible)
             {
-                foreach (GameObject go in gameObjectsToHideWhenCustomizeFFIsDeactivated)
-                {
-                    go.SetActive(isEmotesCustomizationFFEnabled);
-                }
-
                 AudioScriptableObjects.dialogOpen.Play(true);
             }
             else
@@ -126,7 +118,11 @@ namespace DCL.EmotesWheel
 
         private void Close() { OnClose?.Invoke(); }
 
-        public void OnDestroy() { CleanUp(); }
+        public void OnDestroy()
+        {
+            CleanUp();
+            hudCanvasCameraModeController?.Dispose();
+        }
 
         public void CleanUp()
         {

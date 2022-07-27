@@ -1,3 +1,4 @@
+using DCL.CameraTool;
 using UnityEngine;
 
 public static class NotificationScriptableObjects
@@ -149,6 +150,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable playerInfoCardVisibleStateValue;
     public static BooleanVariable playerInfoCardVisibleState => GetOrLoad(ref playerInfoCardVisibleStateValue, "ScriptableObjects/PlayerInfoCardVisibleState");
+    
+    private static BooleanVariable forcePerformanceMeterValue;
+    public static BooleanVariable forcePerformanceMeter => GetOrLoad(ref forcePerformanceMeterValue, "ScriptableObjects/ForcePerformanceMeter");
 
     public static RendererState rendererState => GetOrLoad(ref rendererStateValue, "ScriptableObjects/RendererState");
     private static RendererState rendererStateValue;

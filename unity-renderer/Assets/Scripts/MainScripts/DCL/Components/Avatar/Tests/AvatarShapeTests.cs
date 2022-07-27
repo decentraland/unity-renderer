@@ -8,6 +8,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AvatarSystem;
 
 namespace Tests
 {
@@ -27,6 +28,7 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
+            DataStore.Clear();
             coreComponentsPlugin.Dispose();
             Object.Destroy(catalogController.gameObject);
             yield return base.TearDown();
@@ -49,6 +51,24 @@ namespace Tests
         }
 
         [Test]
+        public void CreateStandardAvatar()
+        {
+            DataStore.i.avatarConfig.useHologramAvatar.Set(false);
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
+            Assert.IsTrue(avatar.avatar is AvatarSystem.Avatar);
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
+        }
+
+        [Test]
+        public void CreateAvatarWithHologram()
+        {
+            DataStore.i.avatarConfig.useHologramAvatar.Set(true);
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
+            Assert.IsTrue(avatar.avatar is AvatarSystem.AvatarWithHologram);
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
+        }
+
+        [Test]
         public void SetLayersProperly()
         {
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
@@ -56,6 +76,7 @@ namespace Tests
             Assert.AreEqual(avatar.gameObject.layer, LayerMask.NameToLayer("ViewportCullingIgnored"));
             Assert.AreEqual(avatar.avatarCollider.gameObject.layer, LayerMask.NameToLayer("AvatarTriggerDetection"));
             Assert.AreEqual(avatar.onPointerDown.gameObject.layer, LayerMask.NameToLayer("OnPointerEvent"));
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
         }
 
         [UnityTest]

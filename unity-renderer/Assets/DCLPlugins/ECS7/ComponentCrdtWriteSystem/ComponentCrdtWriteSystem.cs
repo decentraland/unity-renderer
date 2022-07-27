@@ -1,141 +1,107 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using DCL.Interface;
-using KernelCommunication;
-using BinaryWriter = KernelCommunication.BinaryWriter;
+using DCL.ECSRuntime;
+using RPC;
 
 public class ComponentCrdtWriteSystem : IDisposable
 {
-    internal const int BINARY_MSG_MAX_SIZE = 5242880;
+    private class MessageData
+    {
+        public string sceneId;
+        public long entityId;
+        public int componentId;
+        public byte[] data;
+        public ECSComponentWriteType writeType;
+    }
 
-    internal readonly Dictionary<string, Queue<CRDTMessage>> queuedMessages = new Dictionary<string, Queue<CRDTMessage>>();
-
-    private readonly IUpdateEventHandler updateEventHandler;
-    private readonly MemoryStream memoryStream;
-    private readonly BinaryWriter binaryWriter;
+    private readonly RPCContext rpcContext;
+    private readonly ISceneController sceneController;
     private readonly IWorldState worldState;
 
-    public ComponentCrdtWriteSystem(IUpdateEventHandler updateEventHandler, IWorldState worldState)
+    private readonly Dictionary<string, CRDTProtocol> outgoingCrdt = new Dictionary<string, CRDTProtocol>(60);
+    private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
+    private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
+
+    public ComponentCrdtWriteSystem(IWorldState worldState, ISceneController sceneController, RPCContext rpcContext)
     {
-        this.updateEventHandler = updateEventHandler;
+        this.sceneController = sceneController;
+        this.rpcContext = rpcContext;
         this.worldState = worldState;
-        updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, ProcessMessages);
-        memoryStream = new MemoryStream();
-        binaryWriter = new BinaryWriter(memoryStream);
+
+        sceneController.OnSceneRemoved += OnSceneRemoved;
     }
 
     public void Dispose()
     {
-        updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, ProcessMessages);
-        binaryWriter.Dispose();
-        memoryStream.Dispose();
+        sceneController.OnSceneRemoved -= OnSceneRemoved;
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data)
+    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, ECSComponentWriteType writeType)
     {
-        CRDTMessage message = new CRDTMessage()
-        {
-            key = CRDTUtils.KeyFromIds((int)entityId, componentId),
-            timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            data = data
-        };
+        MessageData messageData = messagesPool.Count > 0 ? messagesPool.Dequeue() : new MessageData();
 
-        // dispatch to scene's crdt executor
-        DispatchToCRDTExecutor(sceneId, message);
+        messageData.sceneId = sceneId;
+        messageData.entityId = entityId;
+        messageData.componentId = componentId;
+        messageData.data = data;
+        messageData.writeType = writeType;
 
-        // enqueue messages to send to kernel
-        if (!queuedMessages.TryGetValue(sceneId, out Queue<CRDTMessage> sceneMessages))
-        {
-            sceneMessages = new Queue<CRDTMessage>();
-            queuedMessages.Add(sceneId, sceneMessages);
-        }
-
-        sceneMessages.Enqueue(message);
+        queuedMessages.Enqueue(messageData);
     }
 
-    internal void ProcessMessages()
+    public void LateUpdate()
     {
-        if (queuedMessages.Count == 0)
+        int messagesCount = queuedMessages.Count;
+
+        if (messagesCount == 0)
         {
             return;
         }
 
-        Queue<CRDTMessage> sceneMessages;
-
-        // we prioritize current scene's messages
-        string currentSceneId = CommonScriptableObjects.sceneID.Get();
-        if (!string.IsNullOrEmpty(currentSceneId) && queuedMessages.TryGetValue(currentSceneId, out sceneMessages))
+        for (int i = 0; i < messagesCount; i++)
         {
-            if (DispatchSceneMessages(currentSceneId, sceneMessages))
+            var message = queuedMessages.Dequeue();
+            messagesPool.Enqueue(message);
+
+            if (!worldState.TryGetScene(message.sceneId, out IParcelScene scene))
+                continue;
+
+            CRDTMessage crdt = scene.crdtExecutor.crdtProtocol.Create((int)message.entityId, message.componentId, message.data);
+
+            if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_LOCAL))
             {
-                queuedMessages.Remove(currentSceneId);
+                scene.crdtExecutor.Execute(crdt);
             }
             else
             {
-                // if we couldn't dispatch all scene's messages we return
-                // and continue dispatching on the next frame
-                return;
+                scene.crdtExecutor.crdtProtocol.ProcessMessage(crdt);
             }
-        }
 
+            if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
+            {
+                if (!outgoingCrdt.TryGetValue(message.sceneId, out CRDTProtocol sceneCrdtState))
+                {
+                    sceneCrdtState = new CRDTProtocol();
+                    outgoingCrdt[message.sceneId] = sceneCrdtState;
+                }
 
-        // dispatch to the other scenes
-        var sceneIds = queuedMessages.Keys.ToArray();
-        for (int i = 0; i < sceneIds.Length; i++)
-        {
-            string sceneId = sceneIds[i];
-            queuedMessages.TryGetValue(sceneId, out sceneMessages);
-            if (DispatchSceneMessages(sceneId, sceneMessages))
-            {
-                queuedMessages.Remove(sceneId);
-            }
-            else
-            {
-                // if we couldn't dispatch all scene's messages we return
-                // and continue dispatching on the next frame
-                return;
+                sceneCrdtState.ProcessMessage(crdt);
+
+                if (!rpcContext.crdtContext.scenesOutgoingCrdts.ContainsKey(message.sceneId))
+                {
+                    rpcContext.crdtContext.scenesOutgoingCrdts.Add(message.sceneId, sceneCrdtState);
+                }
             }
         }
     }
 
-    private bool DispatchSceneMessages(string sceneId, Queue<CRDTMessage> messages)
+    private void OnSceneRemoved(IParcelScene scene)
     {
-        if (messages == null || messages.Count == 0)
-        {
-            return true;
-        }
-
-        while (messages.Count > 0)
-        {
-            KernelBinaryMessageSerializer.Serialize(binaryWriter, messages.Dequeue());
-
-            if (memoryStream.Length >= BINARY_MSG_MAX_SIZE && messages.Count > 0)
-            {
-                DispatchBinaryMessage(sceneId, memoryStream);
-                return false;
-            }
-        }
-
-        DispatchBinaryMessage(sceneId, memoryStream);
-        return true;
-    }
-
-    private void DispatchBinaryMessage(string sceneId, MemoryStream stream)
-    {
-        WebInterface.SendBinaryMessage(sceneId, stream.ToArray());
-        stream.SetLength(0);
-    }
-
-    private void DispatchToCRDTExecutor(string sceneId, CRDTMessage message)
-    {
-        if (worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
-        {
-            scene.crdtExecutor.Execute(message);
-        }
+        string sceneId = scene.sceneData.id;
+        outgoingCrdt.Remove(sceneId);
+        rpcContext.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
     }
 }

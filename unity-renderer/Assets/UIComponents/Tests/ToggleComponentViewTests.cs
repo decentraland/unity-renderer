@@ -116,4 +116,20 @@ public class ToggleComponentViewTests
         Assert.AreEqual(isInteractable, toggleComponent.toggle.interactable, "The toggle interactable field does not match");
         Assert.AreEqual(isInteractable, toggleComponent.IsInteractable(), "The toggle Is Interactable method does not match");
     }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetIsOnWithoutNotify(bool setOn)
+    {
+        // Arrange
+        bool isOn = !setOn;
+        toggleComponent.OnSelectedChanged += (isToggleOn, id, name) => isOn = isToggleOn;
+
+        // Act
+        toggleComponent.SetIsOnWithoutNotify(setOn);
+
+        // Assert
+        Assert.AreNotEqual(isOn, setOn);
+    }
 }

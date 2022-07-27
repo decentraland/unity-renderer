@@ -33,7 +33,10 @@ public class UIHelper_ChangeTextAndIconColorOnFocus : MonoBehaviour
 
     internal void ComponentView_onFocused(bool isFocused)
     {
-        textToChange.color = isFocused ? onFocusColor : onLoseFocusColor;
-        iconToChange.color = isFocused ? onFocusColor : onLoseFocusColor;
+        if (textToChange != null)
+            textToChange.color = isFocused ? onFocusColor : onLoseFocusColor;
+
+        if (iconToChange != null)
+            iconToChange.color = isFocused ? onFocusColor : onLoseFocusColor;
     }
 }

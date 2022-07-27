@@ -7,10 +7,11 @@ namespace DCL.CRDT
     public class CRDTExecutor : ICRDTExecutor
     {
         private readonly IParcelScene ownerScene;
-        private readonly CRDTProtocol crdtProtocol;
         private readonly ECSComponentsFactory ecsComponentsFactory;
 
         private ECSComponentsManager ecsManager;
+
+        public CRDTProtocol crdtProtocol { get; }
 
         public CRDTExecutor(IParcelScene scene)
         {
@@ -22,11 +23,12 @@ namespace DCL.CRDT
         public void Dispose()
         {
             DataStore.i.ecs7.componentsManagers.Remove(ownerScene);
+            DataStore.i.ecs7.scenes.Remove(ownerScene);
         }
 
         public void Execute(CRDTMessage crdtMessage)
         {
-            CRDTMessage storedMessage = crdtProtocol.GetSate(crdtMessage.key);
+            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
             CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
 
             // messages are the same so state didn't change
@@ -35,8 +37,8 @@ namespace DCL.CRDT
                 return;
             }
 
-            long entityId = CRDTUtils.EntityIdFromKey(resultMessage.key);
-            int componentId = CRDTUtils.ComponentIdFromKey(resultMessage.key);
+            long entityId = resultMessage.key1;
+            int componentId = resultMessage.key2;
 
             // null data means to remove component, not null data means to update or create
             if (resultMessage.data != null)
@@ -110,6 +112,7 @@ namespace DCL.CRDT
             }
             ecsManager = new ECSComponentsManager(scene, ecsComponentsFactory.componentBuilders);
             DataStore.i.ecs7.componentsManagers.Add(scene, ecsManager);
+            DataStore.i.ecs7.scenes.Add(scene);
             return ecsManager;
         }
 

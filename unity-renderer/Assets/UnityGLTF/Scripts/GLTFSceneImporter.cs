@@ -124,6 +124,8 @@ namespace UnityGLTF
         private bool useMaterialTransitionValue = true;
 
         public bool importSkeleton = true;
+        
+        public bool ignoreMaterials = false;
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
@@ -356,7 +358,15 @@ namespace UnityGLTF
                 else
                 {
                     PerformanceAnalytics.GLTFTracker.TrackFailed();
-                    throw; 
+
+                    if (Application.isPlaying)
+                        throw;
+                    else
+                    {
+                        Debug.LogException(e);
+
+                        throw;
+                    }
                 }
             }
             finally
@@ -669,7 +679,15 @@ namespace UnityGLTF
 
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+
+                if (forceSyncCoroutines)
+                {
+                    bufferContents.Stream.Read(data, 0, data.Length);
+                }
+                else
+                {
+                    await bufferContents.Stream.ReadAsync(data, 0, data.Length, cancellationToken);
+                }
 
                 ConstructUnityTexture(settings, data, imageCacheIndex);
             }
@@ -701,15 +719,10 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-
-            // We need to keep compressing in UNITY_EDITOR for the Asset Bundles Converter
-#if !UNITY_STANDALONE || UNITY_EDITOR
-            if ( Application.isPlaying )
-            {
-                //NOTE(Brian): This breaks importing in editor mode
+            
+            //NOTE(Brian): This tex compression breaks importing in editor mode
+            if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
-            }
-#endif
 
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
@@ -1308,7 +1321,7 @@ namespace UnityGLTF
                     meshId: node.Mesh.Id,
                     skin: node.Skin != null ? node.Skin.Value : null, token);
 
-                if ( stopWatch.ElapsedMilliseconds > 5)
+                if ( stopWatch.ElapsedMilliseconds > 5 && !forceSyncCoroutines)
                 {
                     await UniTask.Yield();
                     stopWatch.Restart();
@@ -1628,6 +1641,14 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             cancellationToken.ThrowIfCancellationRequested();
+            
+            if (ignoreMaterials)
+            {
+                if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
+                    primitiveObj.SetActive(true);
+                
+                return;
+            }
 
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
@@ -2267,7 +2288,10 @@ namespace UnityGLTF
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            if (!forceSyncCoroutines)
+            {
+                await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
+            }
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 return;
