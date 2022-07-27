@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DescriptionContainer : MonoBehaviour
+public class ChatDescription : MonoBehaviour
 {
 
     [SerializeField] private ChatHUDView chatView;
@@ -11,7 +11,7 @@ public class DescriptionContainer : MonoBehaviour
     private Vector3 originalAnchoredPosition;
     private Transform originalParent;
     private RectTransform myRectTransform;
-    private bool isParentedToChatContainer;
+    internal bool isParentedToChatContainer;
 
     private void Start()
     {
