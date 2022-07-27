@@ -8,7 +8,7 @@ namespace DCL.ECSRuntime
     {
         private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly KeyValueSet<int, IECSComponent> loadedComponents = new KeyValueSet<int, IECSComponent>();
-        private readonly List<IECSComponentsGroup> componentsGroups = new List<IECSComponentsGroup>();
+        internal readonly IList<IECSComponentsGroup> componentsGroups = new List<IECSComponentsGroup>();
 
         public ECSComponentsManager(IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
@@ -123,6 +123,11 @@ namespace DCL.ECSRuntime
             for (int i = 0; i < count; i++)
             {
                 loadedComponents.Pairs[i].value.Remove(scene, entity);
+            }
+
+            for (int i = 0; i < componentsGroups.Count; i++)
+            {
+                componentsGroups[i].Remove(entity);
             }
         }
 
