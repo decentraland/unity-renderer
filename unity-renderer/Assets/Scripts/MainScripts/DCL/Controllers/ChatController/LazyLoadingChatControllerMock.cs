@@ -174,13 +174,12 @@ public class LazyLoadingChatControllerMock : IChatController
     private async UniTask SimulateDelayedResponseFor_TotalUnseenMessagesByUser()
     {
         await UniTask.Delay(Random.Range(50, 1000));
-        
+
         var unseenPrivateMessages = Enumerable.Range(0, MAX_AMOUNT_OF_FAKE_USERS_IN_CATALOG)
-            .Select(i => new UpdateTotalUnseenMessagesByUserPayload.UnseenPrivateMessage
-            {
-                count = Random.Range(0, 10),
-                userId = $"fakeuser{i + 1}"
-            }).ToArray();
+            .Select(i => new KeyValuePair<string, int>(
+                $"fakeuser{i + 1}",
+                Random.Range(0, 10)))
+            .ToDictionary(x => x.Key, x => x.Value);
 
         var payload = new UpdateTotalUnseenMessagesByUserPayload
         {
@@ -196,7 +195,7 @@ public class LazyLoadingChatControllerMock : IChatController
         
         var payload = new InitializeChatPayload
         {
-            totalUnseenPrivateMessages = Random.Range(0, 100)
+            totalUnseenMessages = Random.Range(0, 100)
         };
         controller.InitializeChat(JsonUtility.ToJson(payload));
     }

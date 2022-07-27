@@ -19,7 +19,6 @@ public class ChatController : MonoBehaviour, IChatController
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
     private bool chatAlreadyInitialized = false;
-    private bool channelsAlreadyInitialized = false;
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
@@ -38,19 +37,6 @@ public class ChatController : MonoBehaviour, IChatController
     public void Awake()
     {
         i = this;
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void InitializeChannels(string payload)
-    {
-        if (channelsAlreadyInitialized)
-            return;
-
-        var msg = JsonUtility.FromJson<InitializeChannelsPayload>(payload);
-        TotalUnseenMessages += msg.unseenTotalMessages;
-        OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-        channelsAlreadyInitialized = true;
     }
 
     [UsedImplicitly]
@@ -166,7 +152,7 @@ public class ChatController : MonoBehaviour, IChatController
             return;
 
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
-        TotalUnseenMessages += msg.totalUnseenPrivateMessages;
+        TotalUnseenMessages += msg.totalUnseenMessages;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
         chatAlreadyInitialized = true;
     }
@@ -210,18 +196,9 @@ public class ChatController : MonoBehaviour, IChatController
 
         foreach (var unseenMessages in msg.unseenPrivateMessages)
         {
-            unseenMessagesByUser[unseenMessages.userId] = unseenMessages.count;
-            OnUserUnseenMessagesUpdated?.Invoke(unseenMessages.userId, unseenMessages.count);
+            unseenMessagesByUser[unseenMessages.Key] = unseenMessages.Value;
+            OnUserUnseenMessagesUpdated?.Invoke(unseenMessages.Key, unseenMessages.Value);
         }
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateChannelUnseenMessages(string json)
-    {
-        var msg = JsonUtility.FromJson<UpdateChannelUnseenMessagesPayload>(json);
-        unseenMessagesByChannel[msg.channelId] = msg.total;
-        OnChannelUnseenMessagesUpdated?.Invoke(msg.channelId, msg.total);
     }
 
     // called by kernel

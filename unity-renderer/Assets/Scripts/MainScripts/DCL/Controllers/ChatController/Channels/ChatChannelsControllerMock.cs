@@ -87,7 +87,6 @@ namespace DCL.Chat.Channels
             this.userProfileController = userProfileController;
 
             SimulateDelayedResponseFor_ChatInitialization().Forget();
-            SimulateDelayedResponseFor_ChannelsInitialization().Forget();
         }
 
         public List<ChatMessage> GetAllocatedEntries() => controller.GetAllocatedEntries();
@@ -334,20 +333,9 @@ namespace DCL.Chat.Channels
 
             var payload = new InitializeChatPayload
             {
-                totalUnseenPrivateMessages = Random.Range(0, 5)
+                totalUnseenMessages = Random.Range(0, 5)
             };
             controller.InitializeChat(JsonUtility.ToJson(payload));
-        }
-
-        private async UniTask SimulateDelayedResponseFor_ChannelsInitialization()
-        {
-            await UniTask.Delay(Random.Range(50, 1000));
-
-            var payload = new InitializeChannelsPayload
-            {
-                unseenTotalMessages = Random.Range(0, 5)
-            };
-            controller.InitializeChannels(JsonUtility.ToJson(payload));
         }
 
         private async UniTask SimulateDelayedResponseFor_MarkChannelAsSeen(string channelId)
@@ -360,12 +348,18 @@ namespace DCL.Chat.Channels
             };
             controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalPayload));
 
-            var userPayload = new UpdateChannelUnseenMessagesPayload
+            var userPayload = new UpdateTotalUnseenMessagesByChannelPayload
             {
-                channelId = channelId,
-                total = 0
+                unseenChannelMessages = new[]
+                {
+                    new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage 
+                    { 
+                        channelId = channelId,
+                        count = 0
+                    }
+                }
             };
-            controller.UpdateChannelUnseenMessages(JsonUtility.ToJson(userPayload));
+            controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(userPayload));
         }
 
         private async UniTask SimulateDelayedResponseFor_TotalUnseenMessagesByChannel()

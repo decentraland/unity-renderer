@@ -5,6 +5,6 @@ namespace DCL.Chat.WebApi
     [Serializable]
     public class InitializeChatPayload
     {
-        public int totalUnseenPrivateMessages;
+        public int totalUnseenMessages;
     }
 }
