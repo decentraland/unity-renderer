@@ -1369,7 +1369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab1eb6b4079d4dcea75f26f3857cf2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemToggleFactory: {fileID: 11400000, guid: 7083ed082c0f14ddfbc1bd87a56460f7, type: 2}
+  nftSkinFactory: {fileID: 11400000, guid: 7083ed082c0f14ddfbc1bd87a56460f7, type: 2}
   collectionGroupPrefab: {fileID: 7489104827494247140, guid: 29b8c18ad57b95a49bb73c2489608f10,
     type: 3}
   content: {fileID: 327784821258075410}

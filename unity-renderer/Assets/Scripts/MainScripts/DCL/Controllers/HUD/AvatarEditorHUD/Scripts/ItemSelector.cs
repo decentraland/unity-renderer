@@ -36,7 +36,7 @@ public class ItemSelector : MonoBehaviour
     private const string DECENTRALAND_COLLECTION_ID = "Decentraland";
 
     [SerializeField]
-    internal ItemToggleFactory itemToggleFactory;
+    internal NFTSkinFactory nftSkinFactory;
 
     [SerializeField]
     internal CollectionGroup collectionGroupPrefab;
@@ -135,12 +135,11 @@ public class ItemSelector : MonoBehaviour
                 var itemToggle = collection.LoadItem(itemToggleIndex, wearableSettings, collection.collectionId);
                 itemToggle.SetCallbacks(ToggleClicked, SellClicked);
                 itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
-                itemToggles[item.id] = itemToggle;
 
                 if (selectedItems.Contains(item.id))
-                {
                     itemToggle.selected = true;
-                }
+                
+                itemToggles[item.id] = itemToggle;
             }
             else
             {

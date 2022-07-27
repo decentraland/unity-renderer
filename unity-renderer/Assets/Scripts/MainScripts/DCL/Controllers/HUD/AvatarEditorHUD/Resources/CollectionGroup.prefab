@@ -304,6 +304,7 @@ MonoBehaviour:
   - {fileID: 5898740793479903519}
   - {fileID: 5680163647484138500}
   - {fileID: 2505138120375993846}
+  skinFactory: {fileID: 11400000, guid: 7083ed082c0f14ddfbc1bd87a56460f7, type: 2}
 --- !u!1001 &838796787462171951
 PrefabInstance:
   m_ObjectHideFlags: 0

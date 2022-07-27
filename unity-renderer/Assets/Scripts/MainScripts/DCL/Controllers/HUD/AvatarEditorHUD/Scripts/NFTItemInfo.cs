@@ -81,6 +81,7 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal GameObject ethNetwork;
     [SerializeField] internal GameObject l2Network;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal Image gradientImage;
     [SerializeField] internal TextMeshProUGUI rarityName;
     [SerializeField] internal Button sellButton;
     [SerializeField] internal Button closeButton;
@@ -88,6 +89,15 @@ public class NFTItemInfo : MonoBehaviour
     private Model currentModel;
     private AssetPromise_Texture thumbnailPromise;
 
+    public void SetSkin(string rarityName, NFTItemToggleSkin skin)
+    {
+        this.rarityName.text = rarityName;
+        this.rarityName.color = skin.rarityNameColor;
+        backgroundImage.color = skin.backgroundColor;
+        gradientImage.color = skin.gradientColor;
+        
+    }
+    
     public void SetModel(Model newModel)
     {
         if (newModel == null)

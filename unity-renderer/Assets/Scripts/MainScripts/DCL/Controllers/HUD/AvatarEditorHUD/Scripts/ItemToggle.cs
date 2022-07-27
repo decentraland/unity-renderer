@@ -73,7 +73,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
     }
 
-    public virtual void Initialize(WearableItem w, bool isSelected, int amount)
+    public virtual void Initialize(WearableItem w, bool isSelected, int amount, NFTItemToggleSkin skin)
     {
         root.gameObject.SetActive(true);
 
@@ -120,19 +120,6 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesReplacedByFunc = function;
 
-    private void OnThumbnailReady(Asset_Texture texture)
-    {
-        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
-
-        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
-
-        if (view != null)
-        {
-            if (view.avatarEditorCanvas.enabled)
-                AudioScriptableObjects.listItemAppear.Play(true);
-        }
-    }
-
     private void OnEnable() { GetThumbnail(); }
 
     protected virtual void OnDestroy()
@@ -147,6 +134,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     {
         string url = wearableItem?.ComposeThumbnailUrl();
 
+        if (ThumbnailsManager.IsCached(url))
+        {
+            thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(url);
+            return;
+        }
+        
         if (url == loadedThumbnailURL)
         {
             SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
@@ -164,7 +157,20 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
         loadedThumbnailPromise = newLoadedThumbnailPromise;
     }
+    
+    private void OnThumbnailReady(Asset_Texture texture)
+    {
+        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
 
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
+
+        if (view != null)
+        {
+            if (view.avatarEditorCanvas.enabled)
+                AudioScriptableObjects.listItemAppear.Play(true);
+        }
+    }
+    
     private void SetLoadingAnimationTrigger(int id)
     {
         if (!loadingAnimator.isInitialized || loadingAnimator.runtimeAnimatorController == null)

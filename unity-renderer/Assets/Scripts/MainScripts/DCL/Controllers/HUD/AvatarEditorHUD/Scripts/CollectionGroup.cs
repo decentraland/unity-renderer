@@ -6,6 +6,7 @@ public class CollectionGroup : MonoBehaviour
     public TMP_Text collectionName;
     public Transform itemContainer;
     [SerializeField] private ItemToggle[] items;
+    [SerializeField] private NFTSkinFactory skinFactory;
 
     public string collectionId { get; private set; }
 
@@ -24,12 +25,9 @@ public class CollectionGroup : MonoBehaviour
             newToggle.transform.SetAsFirstSibling();
         }
 
-        newToggle.Initialize(item, false, wearableSettings.Amount);
+        newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
         newToggle.SetHideOtherWerablesToastStrategy(wearableSettings.HideOtherWearablesToastStrategy);
         newToggle.SetReplaceOtherWearablesToastStrategy(wearableSettings.ReplaceOtherWearablesToastStrategy);
-
-        /*bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
-        newToggle.gameObject.SetActive(active);*/
 
         newToggle.collectionId = collection;
 

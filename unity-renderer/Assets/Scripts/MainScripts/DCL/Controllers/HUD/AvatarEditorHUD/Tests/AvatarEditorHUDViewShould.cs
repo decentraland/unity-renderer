@@ -158,7 +158,7 @@ namespace AvatarEditorHUD_Tests
             var selector = controller.myView.selectorsByCategory[dummyItem.data.category];
             var itemToggleObject = selector.itemToggles[dummyItem.id].gameObject;
 
-            var originalName = selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
+            var originalName = "";//selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
 
             Assert.IsTrue(
                 itemToggleObject.name
