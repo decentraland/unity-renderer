@@ -12,7 +12,6 @@ public static class ThumbnailsManager
 
     private static readonly Queue<EnqueuedThumbnail> promiseQueue = new Queue<EnqueuedThumbnail>();
     private static readonly List<AssetPromise_Texture> progressList = new List<AssetPromise_Texture>();
-    private static readonly Dictionary<string, AssetPromise_Texture> textureCache = new Dictionary<string, AssetPromise_Texture>();
     private static readonly Dictionary<Texture2D, Sprite> spriteCache = new Dictionary<Texture2D, Sprite>();
     private const int CONCURRENT_LIMIT = 10;
 
@@ -48,13 +47,6 @@ public static class ThumbnailsManager
 #endif
         if (string.IsNullOrEmpty(url))
             return null;
-
-        if (textureCache.ContainsKey(url))
-        {
-            AssetPromise_Texture assetPromiseTexture = textureCache[url];
-            OnComplete(assetPromiseTexture.asset);
-            return assetPromiseTexture;
-        }
         
         var promise = new AssetPromise_Texture(url);
         AddToQueue(new EnqueuedThumbnail(promise, OnComplete));
@@ -115,24 +107,16 @@ public static class ThumbnailsManager
         
         AssetPromiseKeeper_Texture.i.Keep(promise);
     }
-
-    public static Sprite GetOrCreateSpriteFromTexture(string url)
-    {
-        return GetOrCreateSpriteFromTexture(textureCache[url].asset.texture);
-    }
     
-    public static Sprite GetOrCreateSpriteFromTexture(Texture2D texture)
+    public static Sprite GetOrCreateSpriteFromTexture(Texture2D texture, out bool wasCreated)
     {
+        wasCreated = false;
         if (!spriteCache.ContainsKey(texture))
         {
             spriteCache[texture] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            wasCreated = true;
         }
         return spriteCache[texture];
-    }
-
-    public static bool IsCached(string url)
-    {
-        return textureCache.ContainsKey(url);
     }
 }
 

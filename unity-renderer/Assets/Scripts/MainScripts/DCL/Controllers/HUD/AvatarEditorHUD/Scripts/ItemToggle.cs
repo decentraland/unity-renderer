@@ -133,19 +133,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private void GetThumbnail()
     {
         string url = wearableItem?.ComposeThumbnailUrl();
-
-        if (ThumbnailsManager.IsCached(url))
-        {
-            thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(url);
-            return;
-        }
         
-        if (url == loadedThumbnailURL)
-        {
-            SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
-            return;
-        }
-
         if (wearableItem == null || string.IsNullOrEmpty(url))
         {
             SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
@@ -162,9 +150,9 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     {
         SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
 
-        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out var wasCreated);
 
-        if (view != null)
+        if (view != null && wasCreated)
         {
             if (view.avatarEditorCanvas.enabled)
                 AudioScriptableObjects.listItemAppear.Play(true);

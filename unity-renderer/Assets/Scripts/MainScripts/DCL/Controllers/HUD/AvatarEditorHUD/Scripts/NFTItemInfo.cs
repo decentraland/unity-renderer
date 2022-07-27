@@ -156,7 +156,7 @@ public class NFTItemInfo : MonoBehaviour
 
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
-        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out _);
         thumbnail.preserveAspect = true;
     }
 

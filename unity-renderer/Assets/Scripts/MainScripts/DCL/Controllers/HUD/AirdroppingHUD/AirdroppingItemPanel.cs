@@ -32,7 +32,7 @@ public class AirdroppingItemPanel : MonoBehaviour
 
     public void ThumbnailReady(Asset_Texture texture)
     {
-        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out _);
     }
 
     private void GetThumbnail()

@@ -165,13 +165,13 @@ public class ItemSelector : MonoBehaviour
         
         if (totalWearables.ContainsKey(item.id))
             return;
-            
-        GetCollectionGroupFor(item, collectionName);
 
+        var collectionGroup = GetCollectionGroupFor(item, collectionName);
+        
         WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
         totalWearables.Add(item.id, wearableSettings);
 
-        if (item.SupportsBodyShape(currentBodyShape))
+        if (item.SupportsBodyShape(currentBodyShape) || item.data.category == WearableLiterals.Categories.BODY_SHAPE)
         {
             availableWearables.Add(wearableSettings);
         }
