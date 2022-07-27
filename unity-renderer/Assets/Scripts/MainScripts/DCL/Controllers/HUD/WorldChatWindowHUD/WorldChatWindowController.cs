@@ -38,6 +38,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenChannel;
     public event Action OnOpen;
     public event Action OnOpenChannelSearch;
+    public event Action OnOpenChannelCreation;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -60,6 +61,7 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         view.OnOpenChannelSearch += OpenChannelSearch;
         view.OnLeaveChannel += LeaveChannel;
+        view.OnCreateChannel += OpenChannelCreationWindow;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -90,8 +92,6 @@ public class WorldChatWindowController : IHUD
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
 
-    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
-
     public void Dispose()
     {
         view.OnClose -= HandleViewCloseRequest;
@@ -100,6 +100,7 @@ public class WorldChatWindowController : IHUD
         view.OnSearchChatRequested -= SearchChats;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.OnOpenChannelSearch -= OpenChannelSearch;
+        view.OnCreateChannel -= OpenChannelCreationWindow;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
@@ -138,6 +139,10 @@ public class WorldChatWindowController : IHUD
         else
             view.Hide();
     }
+    
+    private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
+    
+    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
 
     private void RequestJoinedChannels()
     {

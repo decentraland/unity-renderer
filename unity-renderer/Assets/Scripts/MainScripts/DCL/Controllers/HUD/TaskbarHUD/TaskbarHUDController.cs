@@ -310,6 +310,7 @@ public class TaskbarHUDController : IHUD
 
         view.ShowChatButton();
         worldChatWindowHud.View.OnClose += OpenPublicChatOnPreviewMode;
+        worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
     }
 
     private void OpenPublicChatOnPreviewMode()
