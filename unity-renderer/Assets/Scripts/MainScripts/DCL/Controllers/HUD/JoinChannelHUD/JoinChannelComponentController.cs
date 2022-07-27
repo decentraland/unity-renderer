@@ -19,6 +19,8 @@ public class JoinChannelComponentController : IDisposable
     public void Dispose()
     {
         channelsDataStore.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        joinChannelView.OnCancelJoin -= OnCancelJoin;
+        joinChannelView.OnConfirmJoin -= OnConfirmJoin;
     }
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
