@@ -8,6 +8,7 @@ namespace DCL.ECSRuntime
     {
         private readonly IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders;
         internal readonly KeyValueSet<int, IECSComponent> loadedComponents = new KeyValueSet<int, IECSComponent>();
+        private readonly List<IECSComponentsGroup> componentsGroups = new List<IECSComponentsGroup>();
 
         public ECSComponentsManager(IReadOnlyDictionary<int, ECSComponentsFactory.ECSComponentBuilder> componentBuilders)
         {
@@ -53,19 +54,21 @@ namespace DCL.ECSRuntime
         /// <returns>the instance of existing or newly created component</returns>
         public IECSComponent GetOrCreateComponent(int componentId, IParcelScene scene, IDCLEntity entity)
         {
-            if (loadedComponents.TryGetValue(componentId, out IECSComponent component))
+            IECSComponent component = GetOrCreateComponent(componentId);
+            if (component == null || component.HasComponent(scene, entity))
+                return component;
+
+            component.Create(scene, entity);
+
+            for (int i = 0; i < componentsGroups.Count; i++)
             {
-                if (!component.HasComponent(scene, entity))
+                IECSComponentsGroup compGroup = componentsGroups[i];
+                if (compGroup.Match(component) && compGroup.Match(scene, entity))
                 {
-                    component.Create(scene, entity);
+                    compGroup.Add(scene, entity);
                 }
             }
-            else if (componentBuilders.TryGetValue(componentId, out ECSComponentsFactory.ECSComponentBuilder componentBuilder))
-            {
-                component = componentBuilder.Invoke();
-                loadedComponents.Add(componentId, component);
-                component.Create(scene, entity);
-            }
+
             return component;
         }
 
@@ -91,11 +94,22 @@ namespace DCL.ECSRuntime
         /// <returns>true if component removed successfully, false if entity didn't contain component</returns>
         public bool RemoveComponent(int componentId, IParcelScene scene, IDCLEntity entity)
         {
-            if (loadedComponents.TryGetValue(componentId, out IECSComponent component))
+            if (!loadedComponents.TryGetValue(componentId, out IECSComponent component))
+                return false;
+
+            if (!component.Remove(scene, entity))
+                return false;
+
+            for (int i = 0; i < componentsGroups.Count; i++)
             {
-                return component.Remove(scene, entity);
+                IECSComponentsGroup compGroup = componentsGroups[i];
+                if (compGroup.Match(component))
+                {
+                    compGroup.Remove(entity);
+                }
             }
-            return false;
+
+            return true;
         }
 
         /// <summary>
@@ -129,6 +143,21 @@ namespace DCL.ECSRuntime
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// creates a components group
+        /// </summary>
+        /// <param name="componentId1">id of one of the components</param>
+        /// <param name="componentId2">id of the other component</param>
+        /// <typeparam name="T1">model type of `componentId1`</typeparam>
+        /// <typeparam name="T2">model type of `componentId2`</typeparam>
+        /// <returns></returns>
+        public IECSReadOnlyComponentsGroupOfTwo<T1, T2> CreateComponentGroup<T1, T2>(int componentId1, int componentId2)
+        {
+            var compGroup = new ECSComponentsGroupOfTwo<T1, T2>(GetOrCreateComponent(componentId1), GetOrCreateComponent(componentId2));
+            componentsGroups.Add(compGroup);
+            return compGroup;
         }
     }
 }
