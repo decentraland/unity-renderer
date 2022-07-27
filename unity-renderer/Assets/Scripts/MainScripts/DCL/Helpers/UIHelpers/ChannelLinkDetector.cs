@@ -1,4 +1,4 @@
-using System;
+using DCL;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,39 +6,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(TMP_Text))]
-public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
 {
-    public event Action<string> OnChannelLinkHover;
-    public event Action OnChannelLinkCancelHover;
-    public event Action<string> OnChannelLinkClicked;
-
     private TMP_Text textComponent;
-    private bool shouldCheckChannelHovering;
-    private string lastHoveredChannel = string.Empty;
     private string currentText;
+    private bool hasNoParseLabel;
 
     private void Awake()
     {
         textComponent = GetComponent<TMP_Text>();
         textComponent.OnPreRenderText += OnTextComponentPreRenderText;
-    }
-
-    private void Update()
-    {
-        if (shouldCheckChannelHovering)
-        {
-            string channelHovered = GetChannelLinkByPointerPosition(Input.mousePosition);
-
-            if (channelHovered != lastHoveredChannel)
-            {
-                lastHoveredChannel = channelHovered;
-
-                if (!string.IsNullOrEmpty(channelHovered))
-                    OnChannelLinkHover?.Invoke(channelHovered);
-                else
-                    OnChannelLinkCancelHover?.Invoke();
-            }
-        }
     }
 
     private void OnDestroy()
@@ -51,6 +28,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler, IPointer
         if (currentText == textComponent.text)
             return;
 
+        hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
         CoroutineStarter.Start(RefreshChannelPatterns());
     }
 
@@ -64,7 +42,9 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler, IPointer
         {
             textComponent.text = textComponent.text.Replace(
                 channelFound,
-                $"<link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link>");
+                hasNoParseLabel ?
+                    $"</noparse><link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link><noparse>":
+                    $"<link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link>");
         }
 
         currentText = textComponent.text;
@@ -78,12 +58,8 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler, IPointer
         string channelClicked = GetChannelLinkByPointerPosition(eventData.position);
         
         if (!string.IsNullOrEmpty(channelClicked))
-            OnChannelLinkClicked?.Invoke(channelClicked);
+            DataStore.i.channels.currentJoinChannelModal.Set(channelClicked, true);
     }
-
-    public void OnPointerEnter(PointerEventData eventData) => shouldCheckChannelHovering = true;
-
-    public void OnPointerExit(PointerEventData eventData) => shouldCheckChannelHovering = false;
 
     private string GetChannelLinkByPointerPosition(Vector2 pointerPosition)
     {
