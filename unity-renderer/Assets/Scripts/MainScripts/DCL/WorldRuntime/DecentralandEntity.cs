@@ -67,6 +67,8 @@ namespace DCL.Models
 
         public void SetGameObject(GameObject gameObject)
         {   
+            // if(this.gameObject == gameObject) return;
+            
             this.gameObject = gameObject;
 
             if (scene.isPersistent) return;
@@ -76,7 +78,12 @@ namespace DCL.Models
             GameObject boundsCheckColliderGO = new GameObject(BOUNDS_CHECK_COLLIDER_GAMEOBJECT_NAME);
             boundsCheckColliderGO.layer = PhysicsLayers.entityBoundsCheckColliderLayer;
 
-            boundsCollisionChecker = boundsCheckColliderGO.AddComponent<EntityBoundsCollisionChecker>();
+            // boundsCollisionChecker = boundsCheckColliderGO.AddComponent<EntityBoundsCollisionChecker>();
+            boundsCollisionChecker = gameObject.AddComponent<EntityBoundsCollisionChecker>();
+            
+            if(gameObject.GetComponent<Rigidbody>() == null)
+                gameObject.AddComponent<Rigidbody>().isKinematic = true;
+            
             boundsCollisionChecker.OnEnteredParcel += OnEnteredParcel;
             boundsCollisionChecker.OnExitedParcel += OnExitedParcel;
             boundsCheckCollider = boundsCheckColliderGO.AddComponent<BoxCollider>();
@@ -105,7 +112,7 @@ namespace DCL.Models
                 meshesInfo.OnUpdated -= OnMeshesInfoUpdate;
                 meshesInfo.OnUpdated += OnMeshesInfoUpdate;
                 
-                Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
+                /*Transform boundsCheckColliderTransform = boundsCheckCollider.transform;
                 
                 SetTransformGlobalValues(
                         boundsCheckColliderTransform, 
@@ -115,13 +122,47 @@ namespace DCL.Models
                         Vector3.one
                     );
                 boundsCheckColliderTransform.localRotation = Quaternion.Inverse(entity.gameObject.transform.rotation);
-                boundsCheckCollider.size = meshesInfo.mergedBounds.size;
+                boundsCheckCollider.size = meshesInfo.mergedBounds.size;*/
+                
+                foreach (Renderer renderer in meshesInfo.renderers)
+                {
+                    MeshCollider meshCollider = null;
+                    bool foundOldCollider = false;
+                    
+                    MeshCollider[] existentMeshColliders = renderer.GetComponentsInChildren<MeshCollider>();
+                    foreach (MeshCollider existentMeshCollider in existentMeshColliders)
+                    {
+                        if (existentMeshCollider.gameObject.layer == PhysicsLayers.entityBoundsCheckColliderLayer)
+                        {
+                            // GameObject.Destroy(existentMeshCollider);
+                            meshCollider = existentMeshCollider;
+                            foundOldCollider = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundOldCollider)
+                    {
+                        GameObject triggerColliderGO = new GameObject("BoundsCheckTrigger");
+                        triggerColliderGO.layer = PhysicsLayers.entityBoundsCheckColliderLayer;
+                        meshCollider = triggerColliderGO.AddComponent<MeshCollider>();
+                        meshCollider.convex = true;
+                        meshCollider.isTrigger = true;
+                        Transform meshColliderTransform = meshCollider.transform; 
+                        meshColliderTransform.SetParent(renderer.transform);
+                        meshColliderTransform.localPosition = Vector3.zero;
+                        meshColliderTransform.localRotation = Quaternion.identity;
+                        meshColliderTransform.localScale = Vector3.one;
+                    }
+
+                    meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+                }
             }
             
             EvaluateOutOfBoundsState();
         }
         
-        public void SetTransformGlobalValues(Transform transform, bool setScale, Vector3 pos, Quaternion rot, Vector3 scale)
+        /*public void SetTransformGlobalValues(Transform transform, bool setScale, Vector3 pos, Quaternion rot, Vector3 scale)
         {
             transform.position = pos;
             transform.rotation = rot;
@@ -138,7 +179,7 @@ namespace DCL.Models
                 
                 transform.localScale = m.MultiplyPoint(scale);
             }
-        }
+        }*/
 
         void OnMeshesInfoUpdate()
         {
@@ -190,7 +231,11 @@ namespace DCL.Models
             
             if(isDebug) Debug.Log($"Pravs - DecentralandEntity.EvaluateOutOfBoundsState() - 3 - isInsideBoundaries? {isInsideBoundaries}; trespassingCounter? {trespassingScenesCounter}");*/
 
-            Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, trespassingScenesCounter <= 0 && boundsCheckCollider.bounds.max.y <= scene.metricsCounter.maxCount.sceneHeight);
+            // Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, trespassingScenesCounter <= 0 && boundsCheckCollider.bounds.max.y <= scene.metricsCounter.maxCount.sceneHeight);
+
+            bool heightSafe = meshesInfo == null || meshesInfo.meshRootGameObject == null || meshesInfo.mergedBounds == null || meshesInfo.mergedBounds.max.y <= scene.metricsCounter.maxCount.sceneHeight;  
+            
+            Environment.i.world.sceneBoundsChecker.ForceEntityInsideBoundariesState(this, trespassingScenesCounter <= 0 && heightSafe);
         }
 
         public void SetParent(IDCLEntity entity)
