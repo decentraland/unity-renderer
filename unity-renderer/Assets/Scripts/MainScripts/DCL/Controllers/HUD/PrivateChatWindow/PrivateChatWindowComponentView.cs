@@ -76,6 +76,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             if (scrollPos.y > 0.995f)
                 OnRequireMoreMessages?.Invoke();
         });
+        chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
     }
 
     public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
@@ -94,7 +95,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
         
-        chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
+        chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
         chatView.OnChatEntriesSorted -= RepositionDescriptionContainer;
 
         base.Dispose();
@@ -227,7 +228,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         disclaimerContainer.SetAsFirstSibling();
     }
-
+    
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;

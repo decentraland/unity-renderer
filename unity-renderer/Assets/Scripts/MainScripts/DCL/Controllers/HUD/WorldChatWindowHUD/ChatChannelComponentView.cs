@@ -157,11 +157,11 @@ namespace DCL.Chat.HUD
         {
             descriptionContainer.SetAsFirstSibling();
         }
-
+        
         public override void Dispose()
         {
             base.Dispose();
-            chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
+            chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
             chatView.OnChatEntriesSorted -= RepositionDescriptionContainer;
         }
         
