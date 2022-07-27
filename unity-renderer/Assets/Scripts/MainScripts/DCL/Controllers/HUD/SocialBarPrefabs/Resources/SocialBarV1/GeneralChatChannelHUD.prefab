@@ -69,7 +69,6 @@ MonoBehaviour:
   backButton: {fileID: 7105410192847587965}
   nameLabel: {fileID: 8296143100839953432}
   descriptionLabel: {fileID: 5437248798963596615}
-  descriptionContainer: {fileID: 1176892910673695435}
   chatView: {fileID: 1839742955218428433}
   model:
     channelId: 
@@ -760,6 +759,7 @@ GameObject:
   - component: {fileID: 2538042472445277732}
   - component: {fileID: 763250017725467826}
   - component: {fileID: 2676580422195266286}
+  - component: {fileID: 8859311101520454062}
   m_Layer: 5
   m_Name: DescriptionContainer
   m_TagString: Untagged
@@ -878,6 +878,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8859311101520454062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5011575803716082832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 600028bcd395eb34fb7842baf33bbe70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatView: {fileID: 1839742955218428433}
+  backToOriginOnChatViewRefresh: 0
 --- !u!1 &6479473118645207110
 GameObject:
   m_ObjectHideFlags: 0
@@ -1451,12 +1465,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bac007ac4ef98284c8cf05867a35ee0f, type: 3}
---- !u!224 &8018125211640195353 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
-    type: 3}
-  m_PrefabInstance: {fileID: 525478505490086178}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1839742955218428433 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2216557797817228083, guid: bac007ac4ef98284c8cf05867a35ee0f,
@@ -1496,6 +1504,12 @@ GameObject:
 --- !u!1 &1374057361235902167 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1466904682867656693, guid: bac007ac4ef98284c8cf05867a35ee0f,
+    type: 3}
+  m_PrefabInstance: {fileID: 525478505490086178}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8018125211640195353 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7497584698789204027, guid: bac007ac4ef98284c8cf05867a35ee0f,
     type: 3}
   m_PrefabInstance: {fileID: 525478505490086178}
   m_PrefabAsset: {fileID: 0}

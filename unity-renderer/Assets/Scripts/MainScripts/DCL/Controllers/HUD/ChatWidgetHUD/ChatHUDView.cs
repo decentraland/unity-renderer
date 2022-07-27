@@ -143,10 +143,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (updateLayoutDelayedFrames <= 0)
             {
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
+                chatEntriesContainer.ForceUpdateLayout(delayed: false);
                 OnChatContainerResized?.Invoke(chatEntriesContainer.sizeDelta);
             }
         }
-        
+
         if (isSortingDirty)
             SortEntriesImmediate();
         isSortingDirty = false;

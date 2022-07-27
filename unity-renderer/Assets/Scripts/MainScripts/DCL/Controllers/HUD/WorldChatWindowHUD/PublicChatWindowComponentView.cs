@@ -11,7 +11,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     [SerializeField] internal Button backButton;
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal TMP_Text descriptionLabel;
-    [SerializeField] internal RectTransform descriptionContainer;
     [SerializeField] internal ChatHUDView chatView;
     [SerializeField] internal PublicChatModel model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -45,7 +44,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         originalSize = ((RectTransform) transform).sizeDelta;
         backButton.onClick.AddListener(() => OnBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
-        chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
     }
     
     public override void RefreshControl()
@@ -117,31 +115,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatModel) newModel);
     
     public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
-
-    private void AnalyzeDescriptionContainerRepositioning(Vector2 chatContainerSize)
-    {
-        if (Mathf.Abs(chatContainerSize.y) < descriptionContainer.sizeDelta.y)
-        {
-            descriptionContainer.transform.SetParent(chatView.chatEntriesContainer);
-            descriptionContainer.SetAsFirstSibling();
-            chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
-            chatView.OnChatEntriesSorted += RepositionDescriptionContainer;
-        }
-    }
-        
-    private void RepositionDescriptionContainer()
-    {
-        descriptionContainer.SetAsFirstSibling();
-    }
-
-    public override void Dispose()
-    {
-        chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
-        chatView.OnChatEntriesSorted -= RepositionDescriptionContainer;
-        
-        base.Dispose();
-    }
-    
+  
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;

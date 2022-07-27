@@ -13,7 +13,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal Button closeButton;
     [SerializeField] internal UserThumbnailComponentView userThumbnail;
     [SerializeField] internal TMP_Text userNameLabel;
-    [SerializeField] internal RectTransform disclaimerContainer;
     [SerializeField] internal PrivateChatHUDView chatView;
     [SerializeField] internal GameObject jumpInButtonContainer;
     [SerializeField] internal JumpInButton jumpInButton;
@@ -76,7 +75,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             if (scrollPos.y > 0.995f)
                 OnRequireMoreMessages?.Invoke();
         });
-        chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
     }
 
     public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
@@ -95,9 +93,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
         
-        chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
-        chatView.OnChatEntriesSorted -= RepositionDescriptionContainer;
-
         base.Dispose();
     }
 
@@ -211,22 +206,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         if (userId != model.userId) return;
         model.isUserBlocked = isBlocked;
         RefreshControl();
-    }
-    
-    private void AnalyzeDescriptionContainerRepositioning(Vector2 chatContainerSize)
-    {
-        if (Mathf.Abs(chatContainerSize.y) < disclaimerContainer.sizeDelta.y)
-        {
-            disclaimerContainer.transform.SetParent(chatView.chatEntriesContainer);
-            disclaimerContainer.SetAsFirstSibling();
-            chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
-            chatView.OnChatEntriesSorted += RepositionDescriptionContainer;
-        }
-    }
-        
-    private void RepositionDescriptionContainer()
-    {
-        disclaimerContainer.SetAsFirstSibling();
     }
     
     private IEnumerator SetAlpha(float target, float duration)

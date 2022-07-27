@@ -15,7 +15,6 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text descriptionLabel;
-        [SerializeField] internal RectTransform descriptionContainer;
         [SerializeField] internal ChatHUDView chatView;
         [SerializeField] internal PublicChatModel model;
         [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -60,7 +59,6 @@ namespace DCL.Chat.HUD
                 if (scrollPos.y > 0.995f)
                     OnRequireMoreMessages?.Invoke();
             });
-            chatView.OnChatContainerResized += AnalyzeDescriptionContainerRepositioning;
         }
 
         public override void RefreshControl()
@@ -140,29 +138,6 @@ namespace DCL.Chat.HUD
         {
             base.OnPointerExit(eventData);
             OnFocused?.Invoke(false);
-        }
-        
-        private void AnalyzeDescriptionContainerRepositioning(Vector2 chatContainerSize)
-        {
-            if (Mathf.Abs(chatContainerSize.y) < descriptionContainer.sizeDelta.y)
-            {
-                descriptionContainer.transform.SetParent(chatView.chatEntriesContainer);
-                descriptionContainer.SetAsFirstSibling();
-                chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
-                chatView.OnChatEntriesSorted += RepositionDescriptionContainer;
-            }
-        }
-        
-        private void RepositionDescriptionContainer()
-        {
-            descriptionContainer.SetAsFirstSibling();
-        }
-        
-        public override void Dispose()
-        {
-            base.Dispose();
-            chatView.OnChatContainerResized -= AnalyzeDescriptionContainerRepositioning;
-            chatView.OnChatEntriesSorted -= RepositionDescriptionContainer;
         }
         
         private IEnumerator SetAlpha(float target, float duration)
