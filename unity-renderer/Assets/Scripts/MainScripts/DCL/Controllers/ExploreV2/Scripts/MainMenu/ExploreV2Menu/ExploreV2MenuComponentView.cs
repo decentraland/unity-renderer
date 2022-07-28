@@ -427,8 +427,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             return;
 
         if (Input.GetMouseButton(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, Camera.main) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, Camera.main))
+            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, DataStore.i.camera.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, DataStore.i.camera.hudsCamera.Get()))
         {
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
         }
