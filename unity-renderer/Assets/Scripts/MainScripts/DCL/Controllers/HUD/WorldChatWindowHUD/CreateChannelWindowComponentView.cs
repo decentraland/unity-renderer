@@ -31,7 +31,7 @@ namespace DCL.Chat.HUD
             createButton.onClick.AddListener(() => OnCreateSubmit?.Invoke());
             channelNameInput.onValueChanged.AddListener(text =>
             {
-                channelNameLengthLabel.text = $"{Mathf.Min(17, text.Length)}/17";
+                channelNameLengthLabel.text = $"{Mathf.Min(20, text.Length)}/20";
                 OnChannelNameUpdated?.Invoke(text);
             });
             foreach (var button in closeButtons)

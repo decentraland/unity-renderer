@@ -10,6 +10,8 @@ using Random = System.Random;
 
 public class ChatController : MonoBehaviour, IChatController
 {
+    private const string NEARBY_CHANNEL_DESCRIPTION = "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.";
+    private const string NEARBY_CHANNEL_ID = "nearby";
     public static ChatController i { get; private set; }
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
@@ -39,8 +41,8 @@ public class ChatController : MonoBehaviour, IChatController
     {
         i = this;
         
-        channels["nearby"] = new Channel("nearby", 0, 0, true, false,
-            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
+        channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, 0, 0, true, false,
+            NEARBY_CHANNEL_DESCRIPTION,
             0);
     }
 

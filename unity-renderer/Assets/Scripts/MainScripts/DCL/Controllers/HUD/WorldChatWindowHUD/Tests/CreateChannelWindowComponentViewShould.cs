@@ -83,9 +83,9 @@ namespace DCL.Chat.HUD
             Assert.IsTrue(view.createButton.interactable);
         }
 
-        [TestCase("foo", "3/17")]
-        [TestCase("woah", "4/17")]
-        [TestCase("toomanycharswithoverflow", "17/17")]
+        [TestCase("foo", "3/20")]
+        [TestCase("woah", "4/20")]
+        [TestCase("toomanycharswithoverflow3122535623", "17/20")]
         public void UpdateTextLength(string text, string expectedLength)
         {
             view.channelNameInput.text = text;

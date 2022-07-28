@@ -7,7 +7,7 @@ namespace DCL.Chat.HUD
     public class CreateChannelWindowController : IHUD
     {
         private readonly IChatController chatController;
-        private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{3,17}$");
+        private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{3,20}$");
         private ICreateChannelWindowView view;
         private string channelName;
 

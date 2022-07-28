@@ -100,7 +100,7 @@ namespace DCL.Chat.HUD
         [TestCase("cHaN _eL&")]
         [TestCase("#channel")]
         [TestCase("ch")]
-        [TestCase("verylongtextmustfail")]
+        [TestCase("verylongtextmustfail32452632")]
         public void DisableCreationButtonWhenTheNameIsUnsupported(string text)
         {
             chatController.GetAllocatedChannel(Arg.Any<string>()).Returns((Channel) null);
