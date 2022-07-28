@@ -91,6 +91,9 @@ public class HUDController : IHUDController
     
     private SearchChannelsWindowController channelSearchHud =>
         GetHUDElement(HUDElementID.CHANNELS_SEARCH) as SearchChannelsWindowController;
+    
+    private CreateChannelWindowController channelCreateHud =>
+        GetHUDElement(HUDElementID.CHANNELS_CREATE) as CreateChannelWindowController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
@@ -285,6 +288,14 @@ public class HUDController : IHUDController
                     channelSearchHud.Initialize(SearchChannelsWindowComponentView.Create());
                     channelSearchHud.SetVisibility(false);
                     taskbarHud?.AddChannelSearch(channelSearchHud);
+                }
+
+                if (channelCreateHud == null)
+                {
+                    CreateHudElement(configuration, HUDElementID.CHANNELS_CREATE);
+                    channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
+                    channelCreateHud.SetVisibility(false);
+                    taskbarHud?.AddChannelCreation(channelCreateHud);
                 }
 
                 break;

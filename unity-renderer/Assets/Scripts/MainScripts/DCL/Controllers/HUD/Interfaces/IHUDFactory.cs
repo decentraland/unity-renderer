@@ -63,8 +63,9 @@ namespace DCL
         PUBLIC_CHAT = 33,
         CHANNELS_CHAT = 34,
         CHANNELS_SEARCH = 35,
+        CHANNELS_CREATE = 36,
 
-        COUNT = 36
+        COUNT = 37
     }
 
     public interface IHUDFactory : IService

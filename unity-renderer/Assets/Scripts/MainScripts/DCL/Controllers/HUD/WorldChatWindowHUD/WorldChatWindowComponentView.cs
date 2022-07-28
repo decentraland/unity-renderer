@@ -29,6 +29,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal Button openChannelSearchButton;
     [SerializeField] internal ChannelContextualMenu channelContextualMenu;
+    [SerializeField] internal Button createChannelButton;
     [SerializeField] private WorldChatWindowModel model;
 
     [Header("Load More Entries")] [SerializeField]
@@ -57,6 +58,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public event Action OnRequireMorePrivateChats;
     public event Action OnOpenChannelSearch;
     public event Action<string> OnLeaveChannel;
+    public event Action OnCreateChannel;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -94,6 +96,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
                 OnRequireMorePrivateChats?.Invoke();
         });
         channelContextualMenu.OnLeave += () => OnLeaveChannel?.Invoke(optionsChannelId);
+        createChannelButton.onClick.AddListener(() => OnCreateChannel?.Invoke());
         UpdateHeaders();
     }
 

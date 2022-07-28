@@ -38,6 +38,7 @@ public class WorldChatWindowController : IHUD
     public event Action<string> OnOpenChannel;
     public event Action OnOpen;
     public event Action OnOpenChannelSearch;
+    public event Action OnOpenChannelCreation;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -60,15 +61,18 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         view.OnOpenChannelSearch += OpenChannelSearch;
         view.OnLeaveChannel += LeaveChannel;
+        view.OnCreateChannel += OpenChannelCreationWindow;
         
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
         
-        // TODO: this data should come from the chat service when channels are implemented
-        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, "nearby",
-            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
-            0, true, 0);
+        var channel = chatController.GetAllocatedChannel(NEARBY_CHANNEL_ID);
+        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, channel.Name,
+            channel.Description,
+            channel.LastMessageTimestamp,
+            channel.Joined,
+            channel.MemberCount);
         view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
         
         foreach (var value in chatController.GetAllocatedEntries())
@@ -88,8 +92,6 @@ public class WorldChatWindowController : IHUD
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
 
-    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
-
     public void Dispose()
     {
         view.OnClose -= HandleViewCloseRequest;
@@ -98,6 +100,7 @@ public class WorldChatWindowController : IHUD
         view.OnSearchChatRequested -= SearchChats;
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.OnOpenChannelSearch -= OpenChannelSearch;
+        view.OnCreateChannel -= OpenChannelCreationWindow;
         view.Dispose();
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
@@ -136,6 +139,10 @@ public class WorldChatWindowController : IHUD
         else
             view.Hide();
     }
+    
+    private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
+    
+    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
 
     private void RequestJoinedChannels()
     {

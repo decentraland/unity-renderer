@@ -311,6 +311,26 @@ namespace DCL.Chat.Channels
         public int GetAllocatedUnseenMessages(string userId) => controller.GetAllocatedUnseenMessages(userId);
 
         public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
+        
+        public void CreateChannel(string channelId)
+        {
+            SimulateDelayedResponseFor_CreateChannel(channelId).Forget();
+        }
+
+        private async UniTask SimulateDelayedResponseFor_CreateChannel(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+            
+            controller.JoinChannelConfirmation(JsonUtility.ToJson(new ChannelInfoPayload
+            {
+                description = "",
+                channelId = channelId,
+                joined = true,
+                memberCount = 1,
+                muted = false,
+                unseenMessages = 0
+            }));
+        }
 
         private async UniTask MuteFakeChannel(string channelId)
         {

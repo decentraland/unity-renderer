@@ -11,6 +11,7 @@ public interface IWorldChatWindowView
     event Action OnRequireMorePrivateChats;
     event Action OnOpenChannelSearch;
     event Action<string> OnLeaveChannel;
+    event Action OnCreateChannel;
 
     RectTransform Transform { get; }
     bool IsActive { get; }

@@ -18,6 +18,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal GameObject loadMoreContainer;
+        [SerializeField] internal Button[] createChannelButtons;
+        [SerializeField] internal GameObject notEmptyContainer;
 
         private bool isLayoutDirty;
         private bool isSortDirty;
@@ -29,6 +31,7 @@ namespace DCL.Chat.HUD
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreChannels;
         public event Action<string> OnJoinChannel;
+        public event Action OnCreateChannel;
 
         public RectTransform Transform => (RectTransform) transform;
         public int EntryCount => channelList.Count();
@@ -42,6 +45,9 @@ namespace DCL.Chat.HUD
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
             channelList.SortingMethod = (a, b) => b.Model.memberCount.CompareTo(a.Model.memberCount);
             scroll.onValueChanged.AddListener(LoadMoreEntries);
+
+            foreach (var button in createChannelButtons)
+                button.onClick.AddListener(() => OnCreateChannel?.Invoke());
         }
 
         public override void Update()
@@ -51,9 +57,12 @@ namespace DCL.Chat.HUD
             if (isLayoutDirty)
                 ((RectTransform) scroll.transform).ForceUpdateLayout();
             isLayoutDirty = false;
-            
+
             if (isSortDirty)
+            {
                 channelList.Sort();
+                notEmptyContainer.transform.SetAsLastSibling();
+            }
             isSortDirty = false;
         }
 
@@ -72,6 +81,7 @@ namespace DCL.Chat.HUD
         public void ClearAllEntries()
         {
             channelList.Clear(true);
+            notEmptyContainer.SetActive(false);
             UpdateLayout();
             UpdateHeaders();
         }
@@ -86,6 +96,8 @@ namespace DCL.Chat.HUD
         {
             channelList.Set(channel.ChannelId,
                 new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+            
+            notEmptyContainer.SetActive(channelList.Count() > 0);
 
             var entry = channelList.Get(channel.ChannelId);
             entry.OnOpenChat -= HandleJoinRequest;

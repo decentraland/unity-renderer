@@ -38,4 +38,5 @@ public interface IChatController
     void GetUnseenMessagesByChannel();
     int GetAllocatedUnseenMessages(string userId);
     int GetAllocatedUnseenChannelMessages(string channelId);
+    void CreateChannel(string channelId);
 }

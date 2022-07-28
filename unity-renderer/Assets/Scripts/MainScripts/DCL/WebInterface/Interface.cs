@@ -759,6 +759,12 @@ namespace DCL.Interface
         {
             public string channelId;
         }
+        
+        [Serializable]
+        private class CreateChannelPayload
+        {
+            public string channelId;
+        }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
@@ -1705,6 +1711,14 @@ namespace DCL.Interface
         public static void LeaveChannel(string channelId)
         {
             SendMessage("LeaveChannel", new LeaveChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void CreateChannel(string channelId)
+        {
+            SendMessage("CreateChannel", new CreateChannelPayload
             {
                 channelId = channelId
             });

@@ -11,6 +11,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public event Action OnRequireMorePrivateChats;
     public event Action OnOpenChannelSearch;
     public event Action<string> OnLeaveChannel;
+    public event Action OnCreateChannel;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
