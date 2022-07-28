@@ -56,6 +56,7 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
+        public MeshRenderer meshRenderer;
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
@@ -97,8 +98,17 @@ namespace DCL.Components
             }
 
             DCLFont.SetFontFromComponent(scene, model.font, text);
+            
+            var opacity = model.visible ? model.opacity : 0;
+            var totalSize = model.fontSize;
+            var totalScale = text.transform.lossyScale.sqrMagnitude;
+            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0;
+            
+            text.enabled = isVisible;
+            meshRenderer.enabled = isVisible;
+            
             ApplyModelChanges(text, model);
-
+            
             if (entity.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = gameObject;
 

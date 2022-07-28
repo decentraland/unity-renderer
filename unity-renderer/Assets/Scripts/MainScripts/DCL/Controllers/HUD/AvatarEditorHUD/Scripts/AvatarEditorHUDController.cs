@@ -839,6 +839,8 @@ public class AvatarEditorHUDController : IHUD
         CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
             .Then(wearables =>
             {
+                if (wearables.Count().Equals(0)) view.ShowNoItemOfWearableCollectionWarning();
+                
                 foreach (var wearable in wearables)
                 {
                     if (!userProfile.ContainsInInventory(wearable.id))
