@@ -36,6 +36,10 @@ public class NFTSkinFactory : ScriptableObject
     public NFTItemToggleSkin GetSkinForRarity(string rarity)
     {
         EnsureNFTDictionary();
+        
+        if (string.IsNullOrEmpty(rarity))
+            return nftDictionary["base"].skin;
+        
         if (!nftDictionary.ContainsKey(rarity))
             return nftDictionary["base"].skin;
         
