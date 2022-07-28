@@ -85,7 +85,7 @@ namespace DCL.Chat.HUD
 
         [TestCase("foo", "3/20")]
         [TestCase("woah", "4/20")]
-        [TestCase("toomanycharswithoverflow3122535623", "17/20")]
+        [TestCase("toomanycharswithoverflow3122535623", "20/20")]
         public void UpdateTextLength(string text, string expectedLength)
         {
             view.channelNameInput.text = text;
