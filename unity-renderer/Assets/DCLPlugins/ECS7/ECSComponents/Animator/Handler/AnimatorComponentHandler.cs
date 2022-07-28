@@ -70,7 +70,7 @@ namespace DCL.ECSComponents
                 return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
-            animComponent = entity.gameObject.transform.parent.GetComponentInChildren<Animation>(true);
+            animComponent = entity.gameObject.GetComponentInChildren<Animation>(true);
 
             if (animComponent == null)
                 return;
