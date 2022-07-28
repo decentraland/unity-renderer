@@ -48,7 +48,7 @@ namespace AvatarSystem
             meshRenderer = avatarRevealer.GetMainRenderer();
         }
 
-        public async UniTask FadeOut(MeshRenderer targetRenderer, bool playParticles, CancellationToken cancellationToken) 
+        public async UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken) 
         {
             if (avatarRevealerContainer == null) 
                 return;
@@ -58,7 +58,8 @@ namespace AvatarSystem
             linkedCt.ThrowIfCancellationRequested();
             
             avatarRevealer.AddTarget(targetRenderer);
-            await avatarRevealer.StartAvatarRevealAnimation(playParticles, linkedCt);
+            //If canceled, the final state of the avatar is handle inside StartAvatarRevealAnimation
+            await avatarRevealer.StartAvatarRevealAnimation(withTransition, linkedCt);
             
             transitionCts?.Dispose();
             transitionCts = null;
