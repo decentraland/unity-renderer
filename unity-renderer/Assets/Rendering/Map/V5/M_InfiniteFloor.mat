@@ -24,6 +24,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 9fd4d3757b5f1c148ac6903817ed6c8a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _GrassTexture:
+        m_Texture: {fileID: 2800000, guid: 1eb9e05916d74464a96ac4b1d9af5d72, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -52,8 +56,9 @@ Material:
     - Vector1_1c9e145453bc4d3084d993844ff76c8f: 0
     - Vector1_3e4dba6a9e7b4572814d37341fc8d106: 0
     - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
-    - _GridThickness: 0.02
-    - _Zoom: 2.5
+    - _GrassScale: 0.001
+    - _GridThickness: 0.04
+    - _Zoom: 0.82
     m_Colors:
     - _Color01: {r: 0.16990031, g: 0.4339623, b: 0.30474046, a: 1}
     - _Color02: {r: 0.1372549, g: 0.6784314, b: 0.5587118, a: 1}

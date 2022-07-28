@@ -57,7 +57,7 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Zoom: 1
+    - _Zoom: 0.44
     m_Colors:
     - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
         a: 1}
