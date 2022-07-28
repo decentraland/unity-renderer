@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
+            componentHandler = new BillboardComponentHandler(DataStore.i.player,Substitute.For<IUpdateEventHandler>());
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
