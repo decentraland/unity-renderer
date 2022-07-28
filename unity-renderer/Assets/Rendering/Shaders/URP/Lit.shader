@@ -83,6 +83,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
         [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
+        [IntRange] _StencilID("Stencil ID", Range(0, 255)) = 0
         
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
@@ -166,6 +167,15 @@ Shader "DCL/Universal Render Pipeline/Lit"
             ZTest LEqual
             ColorMask 0
             Cull[_Cull]
+            
+            Stencil
+            {
+                Ref[_StencilID]
+                Comp Always
+                Pass Replace
+                Fail Replace
+                ZFail Replace
+            }
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
