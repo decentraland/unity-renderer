@@ -64,7 +64,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     private string GetChannelLinkByPointerPosition(Vector2 pointerPosition)
     {
         string result = string.Empty;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, pointerPosition, null);
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, pointerPosition, textComponent.canvas.worldCamera);
 
         if (linkIndex != -1)
         {

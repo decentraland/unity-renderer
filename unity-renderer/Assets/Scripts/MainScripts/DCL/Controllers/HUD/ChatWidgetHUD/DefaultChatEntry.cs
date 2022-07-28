@@ -360,9 +360,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         isOverCoordinates = true;
         TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-        currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-        hoverGotoPanelTimer = timeToHoverGotoPanel;
-        OnCancelHover?.Invoke();
+        if (!linkInfo.GetLinkID().Contains("#") || linkInfo.GetLinkID().Contains("~"))
+        {
+            currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+            hoverGotoPanelTimer = timeToHoverGotoPanel;
+            OnCancelHover?.Invoke();
+        }
     }
 
     private void ProcessHoverPanelTimer()

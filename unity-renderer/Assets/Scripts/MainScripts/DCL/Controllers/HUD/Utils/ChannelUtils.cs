@@ -9,6 +9,7 @@ public class ChannelUtils
         string[] separatedWords = text
             .Replace("<noparse>", "")
             .Replace("</noparse>", "")
+            .Replace('\n', ' ')
             .Split(' ');
 
         for (int i = 0; i < separatedWords.Length; i++)
