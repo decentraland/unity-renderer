@@ -62,6 +62,16 @@ namespace AvatarSystem
             facialFeaturesConstrains.Remove(key);
             UpdateFacialFeatureVisibility();
         }
+        
+        public bool IsFacialFeaturesVisible()
+        {
+            return globalConstrains.Count == 0 && facialFeaturesConstrains.Count == 0;
+        }
+        
+        public bool IsCombinedRenderVisible()
+        {
+            return globalConstrains.Count == 0 && combinedRendererConstrains.Count == 0;
+        }
 
         internal void UpdateCombinedRendererVisibility()
         {

@@ -11,8 +11,7 @@ namespace AvatarSystem
         public IBaseAvatarRevealer avatarRevealer { get; set; }
         private ILOD lod;
         private Transform avatarRevealerContainer;
-        private bool isInsideHideArea;
-        private CancellationTokenSource disposeCts = new CancellationTokenSource();
+        private CancellationTokenSource transitionCts = new CancellationTokenSource();
         
         public GameObject armatureContainer;
         public SkinnedMeshRenderer meshRenderer { get; private set; }
@@ -54,21 +53,22 @@ namespace AvatarSystem
             if (avatarRevealerContainer == null) 
                 return;
             
-            disposeCts ??= new CancellationTokenSource();
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disposeCts.Token).Token;
+            transitionCts ??= new CancellationTokenSource();
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, transitionCts.Token).Token;
             linkedCt.ThrowIfCancellationRequested();
             
             avatarRevealer.AddTarget(targetRenderer);
-            await avatarRevealer.StartAvatarRevealAnimation(playParticles && !isInsideHideArea, linkedCt);
+            await avatarRevealer.StartAvatarRevealAnimation(playParticles, linkedCt);
             
-            disposeCts?.Dispose();
-            disposeCts = null;
+            transitionCts?.Dispose();
+            transitionCts = null;
         }
         
-        public void ToggleHideAvatarArea(bool entered)
+        public void CancelTransition()
         {
-            if(entered) disposeCts?.Cancel();
-            isInsideHideArea = entered;
+            transitionCts?.Cancel();
+            transitionCts?.Dispose();
+            transitionCts = null;
         }
 
     }

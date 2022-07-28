@@ -88,7 +88,7 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
-                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
+                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsCombinedRenderVisible(), linkedCt);
             }
             catch (OperationCanceledException)
             {
@@ -114,16 +114,12 @@ namespace AvatarSystem
         public void AddVisibilityConstrain(string key)
         {
             visibility.AddGlobalConstrain(key);
-            baseAvatar.ToggleHideAvatarArea(key.Equals("IN_HIDE_AREA"));
+            baseAvatar.CancelTransition();
         }
 
         public void RemoveVisibilityConstrain(string key)
         {
             visibility.RemoveGlobalConstrain(key);
-            if (key.Equals("IN_HIDE_AREA"))
-            {
-                baseAvatar.ToggleHideAvatarArea(false);
-            }
         }
 
         public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }

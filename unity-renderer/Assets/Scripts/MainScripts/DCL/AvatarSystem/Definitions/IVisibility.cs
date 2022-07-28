@@ -16,5 +16,8 @@ namespace AvatarSystem
         void AddFacialFeaturesConstrain(string key);
         void RemoveFacialFeaturesConstrain(string key);
 
+        bool IsCombinedRenderVisible();
+        bool IsFacialFeaturesVisible();
+
     }
 }
