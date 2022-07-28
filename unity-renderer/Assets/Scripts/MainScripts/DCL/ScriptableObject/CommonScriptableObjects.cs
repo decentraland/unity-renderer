@@ -1,3 +1,4 @@
+using DCL.CameraTool;
 using UnityEngine;
 
 public static class NotificationScriptableObjects

@@ -143,7 +143,7 @@ namespace DCL.ECSComponents
                 boxArea = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
                 
                 // Add all listeners
-                foreach (PBAvatarModifierArea.Types.Modifier modifierKey in model.Modifiers)
+                foreach (AvatarModifier modifierKey in model.Modifiers)
                 {
                     var modifier = factory.GetOrCreateAvatarModifier(modifierKey);
 
