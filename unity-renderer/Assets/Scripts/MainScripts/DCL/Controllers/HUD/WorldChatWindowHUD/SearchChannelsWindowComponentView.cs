@@ -19,7 +19,6 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button closeButton;
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal Button[] createChannelButtons;
-        [SerializeField] internal GameObject notEmptyContainer;
 
         private bool isLayoutDirty;
         private bool isSortDirty;
@@ -59,10 +58,7 @@ namespace DCL.Chat.HUD
             isLayoutDirty = false;
 
             if (isSortDirty)
-            {
                 channelList.Sort();
-                notEmptyContainer.transform.SetAsLastSibling();
-            }
             isSortDirty = false;
         }
 
@@ -81,7 +77,6 @@ namespace DCL.Chat.HUD
         public void ClearAllEntries()
         {
             channelList.Clear(true);
-            notEmptyContainer.SetActive(false);
             UpdateLayout();
             UpdateHeaders();
         }
@@ -96,8 +91,6 @@ namespace DCL.Chat.HUD
         {
             channelList.Set(channel.ChannelId,
                 new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
-            
-            notEmptyContainer.SetActive(channelList.Count() > 0);
 
             var entry = channelList.Get(channel.ChannelId);
             entry.OnOpenChat -= HandleJoinRequest;
