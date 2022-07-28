@@ -360,7 +360,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         isOverCoordinates = true;
         TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-        if (!linkInfo.GetLinkID().Contains("#") || linkInfo.GetLinkID().Contains("~"))
+        if (!linkInfo.GetLinkID().Contains("#") && !linkInfo.GetLinkID().Contains("~"))
         {
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
             hoverGotoPanelTimer = timeToHoverGotoPanel;

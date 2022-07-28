@@ -11,6 +11,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     private TMP_Text textComponent;
     private string currentText;
     private bool hasNoParseLabel;
+    private List<string> channelsFoundInText = new List<string>();
 
     private void Awake()
     {
@@ -36,7 +37,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
         yield return new WaitForEndOfFrame();
 
-        List<string> channelsFoundInText = ChannelUtils.ExtractChannelPatternsFromText(textComponent.text);
+        channelsFoundInText = ChannelUtils.ExtractChannelPatternsFromText(textComponent.text);
 
         foreach (var channelFound in channelsFoundInText)
         {
@@ -52,13 +53,13 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left)
-            return;
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
 
-        string channelClicked = GetChannelLinkByPointerPosition(eventData.position);
-        
-        if (!string.IsNullOrEmpty(channelClicked))
-            DataStore.i.channels.currentJoinChannelModal.Set(channelClicked, true);
+            if (!string.IsNullOrEmpty(clickedLink) && channelsFoundInText.Contains(clickedLink))
+                DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
+        }
     }
 
     private string GetChannelLinkByPointerPosition(Vector2 pointerPosition)
