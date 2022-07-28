@@ -1,13 +1,13 @@
 using System;
+using System.Text.RegularExpressions;
 using DCL.Chat.Channels;
 
 namespace DCL.Chat.HUD
 {
     public class CreateChannelWindowController : IHUD
     {
-        private const int MAX_ALLOWED_NAME_LENGTH = 17;
-        
         private readonly IChatController chatController;
+        private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{3,17}$");
         private ICreateChannelWindowView view;
         private string channelName;
 
@@ -70,7 +70,7 @@ namespace DCL.Chat.HUD
 
         private void HandleChannelNameUpdated(string name)
         {
-            channelName = name;
+            channelName = name.ToLower();
 
             var channel = chatController.GetAllocatedChannel(channelName);
             if (channel != null)
@@ -80,7 +80,7 @@ namespace DCL.Chat.HUD
             }
             else if (name.Length == 0)
                 view.DisableCreateButton();
-            else if (name.Length > MAX_ALLOWED_NAME_LENGTH)
+            else if (!nameFormatRegex.IsMatch(name))
                 view.DisableCreateButton();
             else
             {
@@ -92,7 +92,7 @@ namespace DCL.Chat.HUD
         private void CreateChannel()
         {
             if (string.IsNullOrEmpty(channelName)) return;
-            if (channelName.Length > MAX_ALLOWED_NAME_LENGTH) return;
+            if (!nameFormatRegex.IsMatch(channelName)) return;
             if (chatController.GetAllocatedChannel(channelName) != null) return;
             chatController.CreateChannel(channelName);
             view.DisableCreateButton();

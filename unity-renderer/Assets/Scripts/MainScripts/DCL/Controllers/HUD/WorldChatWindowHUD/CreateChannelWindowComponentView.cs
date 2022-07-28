@@ -8,8 +8,7 @@ namespace DCL.Chat.HUD
     public class CreateChannelWindowComponentView : BaseComponentView, ICreateChannelWindowView
     {
         [SerializeField] internal Button createButton;
-        [SerializeField] internal Button closeButton;
-        [SerializeField] internal Button cancelButton;
+        [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal Button joinButton;
         [SerializeField] internal TMP_InputField channelNameInput;
         [SerializeField] internal GameObject channelExistsContainer;
@@ -35,8 +34,8 @@ namespace DCL.Chat.HUD
                 channelNameLengthLabel.text = $"{Mathf.Min(17, text.Length)}/17";
                 OnChannelNameUpdated?.Invoke(text);
             });
-            closeButton.onClick.AddListener(() => OnClose?.Invoke());
-            cancelButton.onClick.AddListener(() => OnClose?.Invoke());
+            foreach (var button in closeButtons)
+                button.onClick.AddListener(() => OnClose?.Invoke());
             joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
         }
 

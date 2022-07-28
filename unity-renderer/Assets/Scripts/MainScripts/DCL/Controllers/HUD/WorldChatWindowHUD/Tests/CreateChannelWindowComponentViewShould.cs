@@ -99,18 +99,7 @@ namespace DCL.Chat.HUD
             var called = false;
             view.OnClose += () => called = true;
             
-            view.closeButton.onClick.Invoke();
-            
-            Assert.IsTrue(called);
-        }
-        
-        [Test]
-        public void TriggerEventWhenCancelButtonClicks()
-        {
-            var called = false;
-            view.OnClose += () => called = true;
-            
-            view.cancelButton.onClick.Invoke();
+            view.closeButtons[0].onClick.Invoke();
             
             Assert.IsTrue(called);
         }

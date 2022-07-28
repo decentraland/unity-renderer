@@ -96,15 +96,18 @@ namespace DCL.Chat.HUD
             
             view.Received(1).DisableCreateButton();
         }
-        
-        [Test]
-        public void DisableCreationButtonWhenTextIsTooLong()
+
+        [TestCase("cHaN _eL&")]
+        [TestCase("#channel")]
+        [TestCase("ch")]
+        [TestCase("verylongtextmustfail")]
+        public void DisableCreationButtonWhenTheNameIsUnsupported(string text)
         {
             chatController.GetAllocatedChannel(Arg.Any<string>()).Returns((Channel) null);
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
 
-            view.OnChannelNameUpdated += Raise.Event<Action<string>>("verylongtextmustfail");
+            view.OnChannelNameUpdated += Raise.Event<Action<string>>(text);
             
             view.Received(1).DisableCreateButton();
         }
