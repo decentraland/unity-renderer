@@ -67,6 +67,8 @@ namespace DCL
             {
                 foreach (Renderer assetRenderer in asset.renderers)
                 {
+                    if (assetRenderer.TryGetComponent(out MaterialTransitionController materialTransitionController)) continue;
+                    
                     MaterialTransitionController transition =  assetRenderer.gameObject.AddComponent<MaterialTransitionController>();
                     transition.delay = 0;
                     transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
