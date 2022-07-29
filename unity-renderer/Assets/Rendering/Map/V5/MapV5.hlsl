@@ -106,7 +106,8 @@ float4 ColorFromType(float type) //SPLIT PARCEL INTO DIFFERENT CHANNELS ACCORDIN
 
 SAMPLER(point_clamp_sampler);
 
-void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, float ThicknessOffset, out float Highlight, out float Outline, out float Mask)
+void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, float ThicknessOffset, 
+                 out float Highlight, out float Outline, out float Mask)
 {
     SamplerState ss = point_clamp_sampler;
 
@@ -150,7 +151,8 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
 }
 
 
-void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float ThicknessOffset, float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
+void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float ThicknessOffset,
+                float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
 {
     float4 tempCol = float4(0, 0, 0, 0);
 
