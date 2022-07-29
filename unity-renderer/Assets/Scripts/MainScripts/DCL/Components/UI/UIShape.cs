@@ -2,8 +2,8 @@ using System;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -131,6 +131,7 @@ namespace DCL.Components
 
     public class UIShape : BaseDisposable
     {
+
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -164,12 +165,47 @@ namespace DCL.Components
 
         private Coroutine layoutRefreshWatcher;
         private CancellationTokenSource cancellationSource;
+        
+        private static bool staticDirtyWatcher;
+        private static readonly Queue<UIShape> dirtyUIShapes = new Queue<UIShape>();
+        private const float DirtyWatcherUpdateBudget = 2/1000f;
 
         public UIShape()
         {
             cancellationSource = new CancellationTokenSource();
             screenSize.OnChange += OnScreenResize;
             model = new Model();
+
+            if (!staticDirtyWatcher)
+            {
+                // Kinerius: This breaks the domain design but its better than having one coroutine for each UIShape
+                Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, DirtyWatcher);
+                staticDirtyWatcher = true;
+            }
+        }
+
+        // Kinerius: This update function should be on a manager outside of this domain, hence avoiding the usage of static properties
+        private static void DirtyWatcher()
+        {
+            if (dirtyUIShapes.Count == 0)
+                return;
+
+            var startTime = Time.time;
+
+            while (dirtyUIShapes.Count > 0 && Time.time - startTime < DirtyWatcherUpdateBudget)
+            {
+                UIShape uiShape = dirtyUIShapes.Peek();
+                if (!uiShape.IsReadyForRefresh())
+                {
+                    uiShape = dirtyUIShapes.Dequeue();
+                    dirtyUIShapes.Enqueue(uiShape);
+                    return;
+                }
+            
+                uiShape.RefreshRecursively();
+                uiShape.IsLayoutDirty = false;
+                dirtyUIShapes.Dequeue();
+            }
         }
 
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
@@ -240,34 +276,19 @@ namespace DCL.Components
         public virtual void RefreshAll()
         {
             IsLayoutDirty = true;
-            UniTask.Run(async () => await RefreshAll_Internal(cancellationSource.Token), true, cancellationSource.Token);
+            dirtyUIShapes.Enqueue(this);
         }
 
-        private async UniTask RefreshAll_Internal(CancellationToken token)
+        private void RefreshRecursively()
         {
-            try
-            {
-                await UniTask.SwitchToMainThread();
-                await UniTask.WaitUntil(IsReadyForRefresh, cancellationToken: token);
+            // We are not using the _Internal here because the method is overridden
+            // by some UI shapes.
+            RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
+            FixMaxStretchRecursively();
+            RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
 
-                if (!Application.isBatchMode) await UniTask.WaitForEndOfFrame();
-
-                token.ThrowIfCancellationRequested();
-            
-                // We are not using the _Internal here because the method is overridden
-                // by some UI shapes.
-                RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
-                FixMaxStretchRecursively();
-                RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
-
-                OnLayoutRefresh?.Invoke();
-                OnLayoutRefresh = null; 
-            }
-            catch (OperationCanceledException) { }
-            finally
-            {
-                IsLayoutDirty = false;
-            }
+            OnLayoutRefresh?.Invoke();
+            OnLayoutRefresh = null;
         }
         private bool IsReadyForRefresh()
         {
