@@ -188,7 +188,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         for (int i = 0; i < messages.messages.Length; i++)
         {
-            entries.Add(messages.messages[i]);
+            this.messages.Add(messages.messages[i]);
             OnAddMessage?.Invoke(messages.messages[i]);
         }
     }
@@ -245,8 +245,6 @@ public class ChatController : MonoBehaviour, IChatController
         WebInterface.GetPrivateMessages(userId, limit, fromMessageId);
     
     public void MarkChannelMessagesAsSeen(string channelId) => WebInterface.MarkChannelMessagesAsSeen(channelId);
-
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) => WebInterface.GetPrivateMessages(userId, limit, fromTimestamp);
 
     public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(messages);
     
