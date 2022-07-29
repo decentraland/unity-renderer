@@ -138,7 +138,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
         GetFakeRequestsAsync(sentLimit).Forget();
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, int skip)
     {
         SimulateDelayedResponseFor_GetFriendsWithDirectMessages(limit).Forget();
     }
