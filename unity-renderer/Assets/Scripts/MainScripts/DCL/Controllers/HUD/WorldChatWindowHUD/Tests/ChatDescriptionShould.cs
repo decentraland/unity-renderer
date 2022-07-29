@@ -52,7 +52,6 @@ namespace DCL.Chat.HUD
             yield return null;
             yield return null;
             chatHUDView.ClearAllEntries();
-            chatHUDView.AddEntry(modelChat);
             yield return null;
             yield return null;
             yield return null;

@@ -281,6 +281,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (entries.Count <= 0) return;
         Destroy(entries[0].gameObject);
         entries.Remove(entries[0]);
+        
+        UpdateLayout();
     }
 
     public override void Hide(bool instant = false)
@@ -302,6 +304,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         foreach (var entry in entries)
             Destroy(entry.gameObject);
         entries.Clear();
+        
+        UpdateLayout();
     }
 
     private bool IsEntryVisible(ChatEntry entry)
