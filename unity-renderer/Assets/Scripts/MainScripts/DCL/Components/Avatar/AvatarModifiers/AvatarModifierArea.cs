@@ -41,7 +41,7 @@ public class AvatarModifierArea : BaseComponent
         this.modifiers = new Dictionary<string, IAvatarModifier>()
         {
             { "HIDE_AVATARS", new HideAvatarsModifier() },
-            { "DISABLE_PASSPORTS", new DisablePassportModifier() }
+            { "DISABLE_PASSPORTS", new HidePassportModifier() }
         };
         model = new Model();
     }

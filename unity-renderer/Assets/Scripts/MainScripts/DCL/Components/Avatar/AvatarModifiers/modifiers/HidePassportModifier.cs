@@ -1,7 +1,7 @@
 using DCL;
 using UnityEngine;
 
-public class DisablePassportModifier : IAvatarModifier
+public class HidePassportModifier : IAvatarModifier
 {
 
     public void ApplyModifier(GameObject avatar)
