@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;

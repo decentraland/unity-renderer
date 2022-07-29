@@ -185,31 +185,23 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
-  public sealed partial class PBUiTransform : pb::IMessage<PBUiTransform>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBUiTransform : pb::IMessage<PBUiTransform> {
     private static readonly pb::MessageParser<PBUiTransform> _parser = new pb::MessageParser<PBUiTransform>(() => new PBUiTransform());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBUiTransform> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.UiTransformReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiTransform() {
       OnConstruction();
     }
@@ -217,7 +209,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiTransform(PBUiTransform other) : this() {
       positionType_ = other.positionType_;
       alignContent_ = other.alignContent_;
@@ -278,7 +269,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiTransform Clone() {
       return new PBUiTransform(this);
     }
@@ -287,7 +277,6 @@ namespace DCL.ECSComponents {
     public const int PositionTypeFieldNumber = 1;
     private global::DCL.ECSComponents.YGPositionType positionType_ = global::DCL.ECSComponents.YGPositionType.Static;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGPositionType PositionType {
       get { return positionType_; }
       set {
@@ -299,7 +288,6 @@ namespace DCL.ECSComponents {
     public const int AlignContentFieldNumber = 2;
     private global::DCL.ECSComponents.YGAlign alignContent_ = global::DCL.ECSComponents.YGAlign.Auto;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGAlign AlignContent {
       get { return alignContent_; }
       set {
@@ -311,7 +299,6 @@ namespace DCL.ECSComponents {
     public const int AlignItemsFieldNumber = 3;
     private global::DCL.ECSComponents.YGAlign alignItems_ = global::DCL.ECSComponents.YGAlign.Auto;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGAlign AlignItems {
       get { return alignItems_; }
       set {
@@ -323,7 +310,6 @@ namespace DCL.ECSComponents {
     public const int AlignSelfFieldNumber = 4;
     private global::DCL.ECSComponents.YGAlign alignSelf_ = global::DCL.ECSComponents.YGAlign.Auto;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGAlign AlignSelf {
       get { return alignSelf_; }
       set {
@@ -335,7 +321,6 @@ namespace DCL.ECSComponents {
     public const int FlexDirectionFieldNumber = 5;
     private global::DCL.ECSComponents.YGFlexDirection flexDirection_ = global::DCL.ECSComponents.YGFlexDirection.Column;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGFlexDirection FlexDirection {
       get { return flexDirection_; }
       set {
@@ -347,7 +332,6 @@ namespace DCL.ECSComponents {
     public const int FlexWrapFieldNumber = 6;
     private global::DCL.ECSComponents.YGWrap flexWrap_ = global::DCL.ECSComponents.YGWrap.NoWrap;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGWrap FlexWrap {
       get { return flexWrap_; }
       set {
@@ -359,7 +343,6 @@ namespace DCL.ECSComponents {
     public const int JustifyContentFieldNumber = 7;
     private global::DCL.ECSComponents.YGJustify justifyContent_ = global::DCL.ECSComponents.YGJustify.FlexStart;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGJustify JustifyContent {
       get { return justifyContent_; }
       set {
@@ -371,7 +354,6 @@ namespace DCL.ECSComponents {
     public const int OverflowFieldNumber = 8;
     private global::DCL.ECSComponents.YGOverflow overflow_ = global::DCL.ECSComponents.YGOverflow.Visible;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGOverflow Overflow {
       get { return overflow_; }
       set {
@@ -383,7 +365,6 @@ namespace DCL.ECSComponents {
     public const int DisplayFieldNumber = 9;
     private global::DCL.ECSComponents.YGDisplay display_ = global::DCL.ECSComponents.YGDisplay.Flex;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGDisplay Display {
       get { return display_; }
       set {
@@ -395,7 +376,6 @@ namespace DCL.ECSComponents {
     public const int DirectionFieldNumber = 10;
     private global::DCL.ECSComponents.YGDirection direction_ = global::DCL.ECSComponents.YGDirection.Inherit;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGDirection Direction {
       get { return direction_; }
       set {
@@ -407,7 +387,6 @@ namespace DCL.ECSComponents {
     public const int FlexFieldNumber = 11;
     private float flex_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Flex {
       get { return flex_; }
       set {
@@ -419,7 +398,6 @@ namespace DCL.ECSComponents {
     public const int FlexBasisUnitFieldNumber = 13;
     private global::DCL.ECSComponents.YGUnit flexBasisUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit FlexBasisUnit {
       get { return flexBasisUnit_; }
       set {
@@ -431,7 +409,6 @@ namespace DCL.ECSComponents {
     public const int FlexBasisFieldNumber = 14;
     private float flexBasis_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FlexBasis {
       get { return flexBasis_; }
       set {
@@ -443,7 +420,6 @@ namespace DCL.ECSComponents {
     public const int FlexGrowFieldNumber = 15;
     private float flexGrow_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FlexGrow {
       get { return flexGrow_; }
       set {
@@ -455,7 +431,6 @@ namespace DCL.ECSComponents {
     public const int FlexShrinkFieldNumber = 16;
     private float flexShrink_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FlexShrink {
       get { return flexShrink_; }
       set {
@@ -467,7 +442,6 @@ namespace DCL.ECSComponents {
     public const int WidthUnitFieldNumber = 17;
     private global::DCL.ECSComponents.YGUnit widthUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit WidthUnit {
       get { return widthUnit_; }
       set {
@@ -479,7 +453,6 @@ namespace DCL.ECSComponents {
     public const int WidthFieldNumber = 18;
     private float width_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Width {
       get { return width_; }
       set {
@@ -491,7 +464,6 @@ namespace DCL.ECSComponents {
     public const int HeightUnitFieldNumber = 19;
     private global::DCL.ECSComponents.YGUnit heightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit HeightUnit {
       get { return heightUnit_; }
       set {
@@ -503,7 +475,6 @@ namespace DCL.ECSComponents {
     public const int HeightFieldNumber = 20;
     private float height_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Height {
       get { return height_; }
       set {
@@ -515,7 +486,6 @@ namespace DCL.ECSComponents {
     public const int MinWidthUnitFieldNumber = 21;
     private global::DCL.ECSComponents.YGUnit minWidthUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MinWidthUnit {
       get { return minWidthUnit_; }
       set {
@@ -527,7 +497,6 @@ namespace DCL.ECSComponents {
     public const int MinWidthFieldNumber = 22;
     private float minWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MinWidth {
       get { return minWidth_; }
       set {
@@ -539,7 +508,6 @@ namespace DCL.ECSComponents {
     public const int MinHeightUnitFieldNumber = 23;
     private global::DCL.ECSComponents.YGUnit minHeightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MinHeightUnit {
       get { return minHeightUnit_; }
       set {
@@ -551,7 +519,6 @@ namespace DCL.ECSComponents {
     public const int MinHeightFieldNumber = 24;
     private float minHeight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MinHeight {
       get { return minHeight_; }
       set {
@@ -563,7 +530,6 @@ namespace DCL.ECSComponents {
     public const int MaxWidthUnitFieldNumber = 31;
     private global::DCL.ECSComponents.YGUnit maxWidthUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MaxWidthUnit {
       get { return maxWidthUnit_; }
       set {
@@ -575,7 +541,6 @@ namespace DCL.ECSComponents {
     public const int MaxWidthFieldNumber = 32;
     private float maxWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxWidth {
       get { return maxWidth_; }
       set {
@@ -587,7 +552,6 @@ namespace DCL.ECSComponents {
     public const int MaxHeightUnitFieldNumber = 33;
     private global::DCL.ECSComponents.YGUnit maxHeightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MaxHeightUnit {
       get { return maxHeightUnit_; }
       set {
@@ -599,7 +563,6 @@ namespace DCL.ECSComponents {
     public const int MaxHeightFieldNumber = 34;
     private float maxHeight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxHeight {
       get { return maxHeight_; }
       set {
@@ -611,7 +574,6 @@ namespace DCL.ECSComponents {
     public const int PositionLeftUnitFieldNumber = 41;
     private global::DCL.ECSComponents.YGUnit positionLeftUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionLeftUnit {
       get { return positionLeftUnit_; }
       set {
@@ -623,7 +585,6 @@ namespace DCL.ECSComponents {
     public const int PositionLeftFieldNumber = 42;
     private float positionLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionLeft {
       get { return positionLeft_; }
       set {
@@ -635,7 +596,6 @@ namespace DCL.ECSComponents {
     public const int PositionTopUnitFieldNumber = 43;
     private global::DCL.ECSComponents.YGUnit positionTopUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionTopUnit {
       get { return positionTopUnit_; }
       set {
@@ -647,7 +607,6 @@ namespace DCL.ECSComponents {
     public const int PositionTopFieldNumber = 44;
     private float positionTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionTop {
       get { return positionTop_; }
       set {
@@ -659,7 +618,6 @@ namespace DCL.ECSComponents {
     public const int PositionRightUnitFieldNumber = 45;
     private global::DCL.ECSComponents.YGUnit positionRightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionRightUnit {
       get { return positionRightUnit_; }
       set {
@@ -671,7 +629,6 @@ namespace DCL.ECSComponents {
     public const int PositionRightFieldNumber = 46;
     private float positionRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionRight {
       get { return positionRight_; }
       set {
@@ -683,7 +640,6 @@ namespace DCL.ECSComponents {
     public const int PositionBottomUnitFieldNumber = 47;
     private global::DCL.ECSComponents.YGUnit positionBottomUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionBottomUnit {
       get { return positionBottomUnit_; }
       set {
@@ -695,7 +651,6 @@ namespace DCL.ECSComponents {
     public const int PositionBottomFieldNumber = 48;
     private float positionBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionBottom {
       get { return positionBottom_; }
       set {
@@ -710,7 +665,6 @@ namespace DCL.ECSComponents {
     /// margin
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginLeftUnit {
       get { return marginLeftUnit_; }
       set {
@@ -722,7 +676,6 @@ namespace DCL.ECSComponents {
     public const int MarginLeftFieldNumber = 52;
     private float marginLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginLeft {
       get { return marginLeft_; }
       set {
@@ -734,7 +687,6 @@ namespace DCL.ECSComponents {
     public const int MarginTopUnitFieldNumber = 53;
     private global::DCL.ECSComponents.YGUnit marginTopUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginTopUnit {
       get { return marginTopUnit_; }
       set {
@@ -746,7 +698,6 @@ namespace DCL.ECSComponents {
     public const int MarginTopFieldNumber = 54;
     private float marginTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginTop {
       get { return marginTop_; }
       set {
@@ -758,7 +709,6 @@ namespace DCL.ECSComponents {
     public const int MarginRightUnitFieldNumber = 55;
     private global::DCL.ECSComponents.YGUnit marginRightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginRightUnit {
       get { return marginRightUnit_; }
       set {
@@ -770,7 +720,6 @@ namespace DCL.ECSComponents {
     public const int MarginRightFieldNumber = 56;
     private float marginRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginRight {
       get { return marginRight_; }
       set {
@@ -782,7 +731,6 @@ namespace DCL.ECSComponents {
     public const int MarginBottomUnitFieldNumber = 57;
     private global::DCL.ECSComponents.YGUnit marginBottomUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginBottomUnit {
       get { return marginBottomUnit_; }
       set {
@@ -794,7 +742,6 @@ namespace DCL.ECSComponents {
     public const int MarginBottomFieldNumber = 58;
     private float marginBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginBottom {
       get { return marginBottom_; }
       set {
@@ -806,7 +753,6 @@ namespace DCL.ECSComponents {
     public const int PaddingLeftUnitFieldNumber = 61;
     private global::DCL.ECSComponents.YGUnit paddingLeftUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingLeftUnit {
       get { return paddingLeftUnit_; }
       set {
@@ -818,7 +764,6 @@ namespace DCL.ECSComponents {
     public const int PaddingLeftFieldNumber = 62;
     private float paddingLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingLeft {
       get { return paddingLeft_; }
       set {
@@ -830,7 +775,6 @@ namespace DCL.ECSComponents {
     public const int PaddingTopUnitFieldNumber = 63;
     private global::DCL.ECSComponents.YGUnit paddingTopUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingTopUnit {
       get { return paddingTopUnit_; }
       set {
@@ -842,7 +786,6 @@ namespace DCL.ECSComponents {
     public const int PaddingTopFieldNumber = 64;
     private float paddingTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingTop {
       get { return paddingTop_; }
       set {
@@ -854,7 +797,6 @@ namespace DCL.ECSComponents {
     public const int PaddingRightUnitFieldNumber = 65;
     private global::DCL.ECSComponents.YGUnit paddingRightUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingRightUnit {
       get { return paddingRightUnit_; }
       set {
@@ -866,7 +808,6 @@ namespace DCL.ECSComponents {
     public const int PaddingRightFieldNumber = 66;
     private float paddingRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingRight {
       get { return paddingRight_; }
       set {
@@ -878,7 +819,6 @@ namespace DCL.ECSComponents {
     public const int PaddingBottomUnitFieldNumber = 67;
     private global::DCL.ECSComponents.YGUnit paddingBottomUnit_ = global::DCL.ECSComponents.YGUnit.Undefined;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingBottomUnit {
       get { return paddingBottomUnit_; }
       set {
@@ -890,7 +830,6 @@ namespace DCL.ECSComponents {
     public const int PaddingBottomFieldNumber = 68;
     private float paddingBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingBottom {
       get { return paddingBottom_; }
       set {
@@ -902,7 +841,6 @@ namespace DCL.ECSComponents {
     public const int BorderLeftFieldNumber = 72;
     private float borderLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float BorderLeft {
       get { return borderLeft_; }
       set {
@@ -914,7 +852,6 @@ namespace DCL.ECSComponents {
     public const int BorderTopFieldNumber = 74;
     private float borderTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float BorderTop {
       get { return borderTop_; }
       set {
@@ -926,7 +863,6 @@ namespace DCL.ECSComponents {
     public const int BorderRightFieldNumber = 76;
     private float borderRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float BorderRight {
       get { return borderRight_; }
       set {
@@ -938,7 +874,6 @@ namespace DCL.ECSComponents {
     public const int BorderBottomFieldNumber = 78;
     private float borderBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float BorderBottom {
       get { return borderBottom_; }
       set {
@@ -947,13 +882,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBUiTransform);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBUiTransform other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1020,7 +953,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) hash ^= PositionType.GetHashCode();
@@ -1085,17 +1017,12 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) {
         output.WriteRawTag(8);
         output.WriteEnum((int) PositionType);
@@ -1319,241 +1246,9 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) PositionType);
-      }
-      if (AlignContent != global::DCL.ECSComponents.YGAlign.Auto) {
-        output.WriteRawTag(16);
-        output.WriteEnum((int) AlignContent);
-      }
-      if (AlignItems != global::DCL.ECSComponents.YGAlign.Auto) {
-        output.WriteRawTag(24);
-        output.WriteEnum((int) AlignItems);
-      }
-      if (AlignSelf != global::DCL.ECSComponents.YGAlign.Auto) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) AlignSelf);
-      }
-      if (FlexDirection != global::DCL.ECSComponents.YGFlexDirection.Column) {
-        output.WriteRawTag(40);
-        output.WriteEnum((int) FlexDirection);
-      }
-      if (FlexWrap != global::DCL.ECSComponents.YGWrap.NoWrap) {
-        output.WriteRawTag(48);
-        output.WriteEnum((int) FlexWrap);
-      }
-      if (JustifyContent != global::DCL.ECSComponents.YGJustify.FlexStart) {
-        output.WriteRawTag(56);
-        output.WriteEnum((int) JustifyContent);
-      }
-      if (Overflow != global::DCL.ECSComponents.YGOverflow.Visible) {
-        output.WriteRawTag(64);
-        output.WriteEnum((int) Overflow);
-      }
-      if (Display != global::DCL.ECSComponents.YGDisplay.Flex) {
-        output.WriteRawTag(72);
-        output.WriteEnum((int) Display);
-      }
-      if (Direction != global::DCL.ECSComponents.YGDirection.Inherit) {
-        output.WriteRawTag(80);
-        output.WriteEnum((int) Direction);
-      }
-      if (Flex != 0F) {
-        output.WriteRawTag(93);
-        output.WriteFloat(Flex);
-      }
-      if (FlexBasisUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(104);
-        output.WriteEnum((int) FlexBasisUnit);
-      }
-      if (FlexBasis != 0F) {
-        output.WriteRawTag(117);
-        output.WriteFloat(FlexBasis);
-      }
-      if (FlexGrow != 0F) {
-        output.WriteRawTag(125);
-        output.WriteFloat(FlexGrow);
-      }
-      if (FlexShrink != 0F) {
-        output.WriteRawTag(133, 1);
-        output.WriteFloat(FlexShrink);
-      }
-      if (WidthUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(136, 1);
-        output.WriteEnum((int) WidthUnit);
-      }
-      if (Width != 0F) {
-        output.WriteRawTag(149, 1);
-        output.WriteFloat(Width);
-      }
-      if (HeightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(152, 1);
-        output.WriteEnum((int) HeightUnit);
-      }
-      if (Height != 0F) {
-        output.WriteRawTag(165, 1);
-        output.WriteFloat(Height);
-      }
-      if (MinWidthUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(168, 1);
-        output.WriteEnum((int) MinWidthUnit);
-      }
-      if (MinWidth != 0F) {
-        output.WriteRawTag(181, 1);
-        output.WriteFloat(MinWidth);
-      }
-      if (MinHeightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(184, 1);
-        output.WriteEnum((int) MinHeightUnit);
-      }
-      if (MinHeight != 0F) {
-        output.WriteRawTag(197, 1);
-        output.WriteFloat(MinHeight);
-      }
-      if (MaxWidthUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(248, 1);
-        output.WriteEnum((int) MaxWidthUnit);
-      }
-      if (MaxWidth != 0F) {
-        output.WriteRawTag(133, 2);
-        output.WriteFloat(MaxWidth);
-      }
-      if (MaxHeightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(136, 2);
-        output.WriteEnum((int) MaxHeightUnit);
-      }
-      if (MaxHeight != 0F) {
-        output.WriteRawTag(149, 2);
-        output.WriteFloat(MaxHeight);
-      }
-      if (PositionLeftUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(200, 2);
-        output.WriteEnum((int) PositionLeftUnit);
-      }
-      if (PositionLeft != 0F) {
-        output.WriteRawTag(213, 2);
-        output.WriteFloat(PositionLeft);
-      }
-      if (PositionTopUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(216, 2);
-        output.WriteEnum((int) PositionTopUnit);
-      }
-      if (PositionTop != 0F) {
-        output.WriteRawTag(229, 2);
-        output.WriteFloat(PositionTop);
-      }
-      if (PositionRightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(232, 2);
-        output.WriteEnum((int) PositionRightUnit);
-      }
-      if (PositionRight != 0F) {
-        output.WriteRawTag(245, 2);
-        output.WriteFloat(PositionRight);
-      }
-      if (PositionBottomUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(248, 2);
-        output.WriteEnum((int) PositionBottomUnit);
-      }
-      if (PositionBottom != 0F) {
-        output.WriteRawTag(133, 3);
-        output.WriteFloat(PositionBottom);
-      }
-      if (MarginLeftUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(152, 3);
-        output.WriteEnum((int) MarginLeftUnit);
-      }
-      if (MarginLeft != 0F) {
-        output.WriteRawTag(165, 3);
-        output.WriteFloat(MarginLeft);
-      }
-      if (MarginTopUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(168, 3);
-        output.WriteEnum((int) MarginTopUnit);
-      }
-      if (MarginTop != 0F) {
-        output.WriteRawTag(181, 3);
-        output.WriteFloat(MarginTop);
-      }
-      if (MarginRightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(184, 3);
-        output.WriteEnum((int) MarginRightUnit);
-      }
-      if (MarginRight != 0F) {
-        output.WriteRawTag(197, 3);
-        output.WriteFloat(MarginRight);
-      }
-      if (MarginBottomUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(200, 3);
-        output.WriteEnum((int) MarginBottomUnit);
-      }
-      if (MarginBottom != 0F) {
-        output.WriteRawTag(213, 3);
-        output.WriteFloat(MarginBottom);
-      }
-      if (PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(232, 3);
-        output.WriteEnum((int) PaddingLeftUnit);
-      }
-      if (PaddingLeft != 0F) {
-        output.WriteRawTag(245, 3);
-        output.WriteFloat(PaddingLeft);
-      }
-      if (PaddingTopUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(248, 3);
-        output.WriteEnum((int) PaddingTopUnit);
-      }
-      if (PaddingTop != 0F) {
-        output.WriteRawTag(133, 4);
-        output.WriteFloat(PaddingTop);
-      }
-      if (PaddingRightUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(136, 4);
-        output.WriteEnum((int) PaddingRightUnit);
-      }
-      if (PaddingRight != 0F) {
-        output.WriteRawTag(149, 4);
-        output.WriteFloat(PaddingRight);
-      }
-      if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.Undefined) {
-        output.WriteRawTag(152, 4);
-        output.WriteEnum((int) PaddingBottomUnit);
-      }
-      if (PaddingBottom != 0F) {
-        output.WriteRawTag(165, 4);
-        output.WriteFloat(PaddingBottom);
-      }
-      if (BorderLeft != 0F) {
-        output.WriteRawTag(197, 4);
-        output.WriteFloat(BorderLeft);
-      }
-      if (BorderTop != 0F) {
-        output.WriteRawTag(213, 4);
-        output.WriteFloat(BorderTop);
-      }
-      if (BorderRight != 0F) {
-        output.WriteRawTag(229, 4);
-        output.WriteFloat(BorderRight);
-      }
-      if (BorderBottom != 0F) {
-        output.WriteRawTag(245, 4);
-        output.WriteFloat(BorderBottom);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) {
@@ -1728,7 +1423,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBUiTransform other) {
       if (other == null) {
         return;
@@ -1902,11 +1596,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -2135,243 +1825,7 @@ namespace DCL.ECSComponents {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            PositionType = (global::DCL.ECSComponents.YGPositionType) input.ReadEnum();
-            break;
-          }
-          case 16: {
-            AlignContent = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
-            break;
-          }
-          case 24: {
-            AlignItems = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
-            break;
-          }
-          case 32: {
-            AlignSelf = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
-            break;
-          }
-          case 40: {
-            FlexDirection = (global::DCL.ECSComponents.YGFlexDirection) input.ReadEnum();
-            break;
-          }
-          case 48: {
-            FlexWrap = (global::DCL.ECSComponents.YGWrap) input.ReadEnum();
-            break;
-          }
-          case 56: {
-            JustifyContent = (global::DCL.ECSComponents.YGJustify) input.ReadEnum();
-            break;
-          }
-          case 64: {
-            Overflow = (global::DCL.ECSComponents.YGOverflow) input.ReadEnum();
-            break;
-          }
-          case 72: {
-            Display = (global::DCL.ECSComponents.YGDisplay) input.ReadEnum();
-            break;
-          }
-          case 80: {
-            Direction = (global::DCL.ECSComponents.YGDirection) input.ReadEnum();
-            break;
-          }
-          case 93: {
-            Flex = input.ReadFloat();
-            break;
-          }
-          case 104: {
-            FlexBasisUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 117: {
-            FlexBasis = input.ReadFloat();
-            break;
-          }
-          case 125: {
-            FlexGrow = input.ReadFloat();
-            break;
-          }
-          case 133: {
-            FlexShrink = input.ReadFloat();
-            break;
-          }
-          case 136: {
-            WidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 149: {
-            Width = input.ReadFloat();
-            break;
-          }
-          case 152: {
-            HeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 165: {
-            Height = input.ReadFloat();
-            break;
-          }
-          case 168: {
-            MinWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 181: {
-            MinWidth = input.ReadFloat();
-            break;
-          }
-          case 184: {
-            MinHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 197: {
-            MinHeight = input.ReadFloat();
-            break;
-          }
-          case 248: {
-            MaxWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 261: {
-            MaxWidth = input.ReadFloat();
-            break;
-          }
-          case 264: {
-            MaxHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 277: {
-            MaxHeight = input.ReadFloat();
-            break;
-          }
-          case 328: {
-            PositionLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 341: {
-            PositionLeft = input.ReadFloat();
-            break;
-          }
-          case 344: {
-            PositionTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 357: {
-            PositionTop = input.ReadFloat();
-            break;
-          }
-          case 360: {
-            PositionRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 373: {
-            PositionRight = input.ReadFloat();
-            break;
-          }
-          case 376: {
-            PositionBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 389: {
-            PositionBottom = input.ReadFloat();
-            break;
-          }
-          case 408: {
-            MarginLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 421: {
-            MarginLeft = input.ReadFloat();
-            break;
-          }
-          case 424: {
-            MarginTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 437: {
-            MarginTop = input.ReadFloat();
-            break;
-          }
-          case 440: {
-            MarginRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 453: {
-            MarginRight = input.ReadFloat();
-            break;
-          }
-          case 456: {
-            MarginBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 469: {
-            MarginBottom = input.ReadFloat();
-            break;
-          }
-          case 488: {
-            PaddingLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 501: {
-            PaddingLeft = input.ReadFloat();
-            break;
-          }
-          case 504: {
-            PaddingTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 517: {
-            PaddingTop = input.ReadFloat();
-            break;
-          }
-          case 520: {
-            PaddingRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 533: {
-            PaddingRight = input.ReadFloat();
-            break;
-          }
-          case 536: {
-            PaddingBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
-            break;
-          }
-          case 549: {
-            PaddingBottom = input.ReadFloat();
-            break;
-          }
-          case 581: {
-            BorderLeft = input.ReadFloat();
-            break;
-          }
-          case 597: {
-            BorderTop = input.ReadFloat();
-            break;
-          }
-          case 613: {
-            BorderRight = input.ReadFloat();
-            break;
-          }
-          case 629: {
-            BorderBottom = input.ReadFloat();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 

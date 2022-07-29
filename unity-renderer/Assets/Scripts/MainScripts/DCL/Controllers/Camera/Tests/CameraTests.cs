@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using DCL;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;

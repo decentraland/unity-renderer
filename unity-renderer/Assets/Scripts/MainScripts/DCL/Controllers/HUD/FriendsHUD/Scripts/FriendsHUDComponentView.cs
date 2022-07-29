@@ -156,77 +156,23 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
         AudioScriptableObjects.dialogClose.Play(true);
     }
-
-    public void Set(string userId,
-        FriendshipAction friendshipAction,
-        FriendEntryModel model)
+    
+    public void Set(string userId, FriendEntryModel model)
     {
-        switch (friendshipAction)
-        {
-            case FriendshipAction.NONE:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.APPROVED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Enqueue(userId, model);
-                break;
-            case FriendshipAction.REJECTED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.CANCELLED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                friendRequestsTab.Enqueue(userId, (FriendRequestEntryModel) model);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                friendRequestsTab.Enqueue(userId, (FriendRequestEntryModel) model);
-                friendsTab.Remove(userId);
-                break;
-            case FriendshipAction.DELETED:
-                friendRequestsTab.Remove(userId);
-                friendsTab.Remove(userId);
-                break;
-            default:
-                Debug.LogError($"FriendshipAction not supported: {friendshipAction}");
-                break;
-        }
+        friendRequestsTab.Remove(userId);
+        friendsTab.Enqueue(userId, model);
     }
-
-    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    
+    public void Remove(string userId)
     {
-        switch (friendshipStatus)
-        {
-            case FriendshipStatus.FRIEND:
-                friendsTab.Enqueue(userId, model);
-                friendRequestsTab.Remove(userId);
-                break;
-            case FriendshipStatus.NOT_FRIEND:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Remove(userId);
-                break;
-            case FriendshipStatus.REQUESTED_TO:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Enqueue(userId, (FriendRequestEntryModel) model);
-                break;
-            case FriendshipStatus.REQUESTED_FROM:
-                friendsTab.Remove(userId);
-                friendRequestsTab.Enqueue(userId, (FriendRequestEntryModel) model);
-                break;
-            default:
-                Debug.LogError($"FriendshipStatus not supported: {friendshipStatus}");
-                break;
-        }
+        friendRequestsTab.Remove(userId);
+        friendsTab.Remove(userId);
     }
-
-    public void Populate(string userId, FriendEntryModel model)
+    
+    public void Set(string userId, FriendRequestEntryModel model)
     {
-        friendsTab.Populate(userId, model);
-        friendRequestsTab.Populate(userId, (FriendRequestEntryModel) model);
+        friendRequestsTab.Enqueue(userId, model);
+        friendsTab.Remove(userId);
     }
 
     public bool IsActive() => gameObject.activeInHierarchy;
@@ -262,6 +208,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
 
     public void ClearFriendFilter() => friendsTab.ClearFilter();
+    
+    public void UpdateBlockStatus(string userId, bool blocked)
+    {
+        UpdateBlockStatus(blocked, friendsTab.Get(userId));
+        UpdateBlockStatus(blocked, friendRequestsTab.Get(userId));
+    }
 
     public override void RefreshControl()
     {
@@ -294,6 +246,14 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         }
         else
             throw new IndexOutOfRangeException();
+    }
+    
+    private void UpdateBlockStatus(bool blocked, FriendEntryBase friendEntry)
+    {
+        if (friendEntry == null) return;
+        var friendModel = friendEntry.Model;
+        friendModel.blocked = blocked;
+        friendEntry.RefreshControl();
     }
 
     [Serializable]
