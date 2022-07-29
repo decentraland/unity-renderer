@@ -45,16 +45,10 @@ namespace DCL.Components
         }
 
 #if UNITY_EDITOR
-        [Header("Debug")]
-        public bool forceRefresh;
-
-        public void LateUpdate()
+        [ContextMenu("Force Refresh")]
+        public void ForceRefresh()
         {
-            if (forceRefresh)
-            {
-                owner.RefreshAll();
-                forceRefresh = false;
-            }
+            owner.RefreshAll();
         }
 #endif
     }
