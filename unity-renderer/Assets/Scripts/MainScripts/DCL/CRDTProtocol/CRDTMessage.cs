@@ -2,7 +2,8 @@ namespace DCL.CRDT
 {
     public class CRDTMessage
     {
-        public long key;
+        public int key1;
+        public int key2;
         public long timestamp;
         public object data;
     }
