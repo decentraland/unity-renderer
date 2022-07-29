@@ -246,7 +246,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-<<<<<<< HEAD
     public void ApplyHideAvatarModifier()
     {
         avatar.AddVisibilityConstrain(IN_HIDE_AREA);
