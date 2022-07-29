@@ -25,7 +25,7 @@ namespace Tests
             entity.entityId.Returns(42);
 
             scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>());
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>());
         }
 
         [TearDown]

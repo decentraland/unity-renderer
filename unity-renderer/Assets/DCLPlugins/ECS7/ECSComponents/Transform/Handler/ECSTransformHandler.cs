@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.ECSRuntime;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -8,11 +9,13 @@ namespace DCL.ECSComponents
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
         private IWorldState worldState;
+        private BaseVariable<Vector3> playerWorldPosition;
 
-        public ECSTransformHandler(IWorldState worldState)
+        public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerWorldPosition)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(10);
             this.worldState = worldState;
+            this.playerWorldPosition = playerWorldPosition;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -33,23 +36,7 @@ namespace DCL.ECSComponents
             // move character across the scene
             if (entity.entityId == SpecialEntityId.PLAYER_ENTITY)
             {
-                // If player is not at the scene that triggered this event
-                // we'll ignore it
-                if (scene.sceneData.id != worldState.currentSceneId)
-                {
-                    return;
-                }
-
-                Vector2Int targetCoords = scene.sceneData.basePosition
-                                          + new Vector2Int(Mathf.CeilToInt(model.position.x), Mathf.CeilToInt(model.position.z));
-
-                // If target coordinates are outside the scene we'll ignore it
-                if (!scene.IsInsideSceneBoundaries(targetCoords))
-                {
-                    return;
-                }
-
-                // MOVE CHARACTER
+                TryMoveCharacter(scene, model.position, worldState, playerWorldPosition);
                 return;
             }
 
@@ -71,6 +58,30 @@ namespace DCL.ECSComponents
                     ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
                 }
             }
+        }
+
+        private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,
+            IWorldState worldState, BaseVariable<Vector3> playerWorldPosition)
+        {
+            // If player is not at the scene that triggered this event
+            // we'll ignore it
+            if (scene.sceneData.id != worldState.currentSceneId)
+            {
+                return false;
+            }
+
+            Vector2Int targetCoords = scene.sceneData.basePosition
+                                      + new Vector2Int(Mathf.CeilToInt(localPosition.x), Mathf.CeilToInt(localPosition.z));
+
+            // If target coordinates are outside the scene we'll ignore it
+            if (!scene.IsInsideSceneBoundaries(targetCoords))
+            {
+                return false;
+            }
+
+            playerWorldPosition.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
+                                    + localPosition);
+            return true;
         }
     }
 }

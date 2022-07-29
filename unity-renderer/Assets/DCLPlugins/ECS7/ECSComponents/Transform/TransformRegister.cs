@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public TransformRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            ECSTransformHandler handler = new ECSTransformHandler(Environment.i.world.state);
+            ECSTransformHandler handler = new ECSTransformHandler(Environment.i.world.state, DataStore.i.player.playerWorldPosition);
             factory.AddOrReplaceComponent(componentId, ECSTransformSerialization.Deserialize, () => handler);
             componentWriter.AddOrReplaceComponentSerializer<ECSTransform>(componentId, ECSTransformSerialization.Serialize);
 
