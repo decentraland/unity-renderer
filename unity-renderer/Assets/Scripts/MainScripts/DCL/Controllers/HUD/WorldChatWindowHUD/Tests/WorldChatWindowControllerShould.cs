@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using NSubstitute;
@@ -27,6 +28,7 @@ public class WorldChatWindowControllerShould
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, "", 0));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
         controller = new WorldChatWindowController(userProfileBridge,
