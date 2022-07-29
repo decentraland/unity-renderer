@@ -94,6 +94,8 @@ public class DCLCharacterController : MonoBehaviour
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
+    private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
+
     [System.NonSerialized]
     public float movingPlatformSpeed;
     private CollisionFlags lastCharacterControllerCollision;
@@ -117,8 +119,9 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
-        DataStore.i.player.playerGridPosition.Set(Vector2Int.zero);
+        dataStorePlayer.playerGridPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
+        dataStorePlayer.playerWorldPosition.Set(Vector3.zero);
 
         characterPosition = new DCLCharacterPosition();
         characterController = GetComponent<CharacterController>();
@@ -141,6 +144,8 @@ public class DCLCharacterController : MonoBehaviour
         var worldData = DataStore.i.Get<DataStore_World>();
         worldData.avatarTransform.Set(avatarGameObject.transform);
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
+
+        dataStorePlayer.playerWorldPosition.OnChange += Teleport;
     }
 
     private void SubscribeToInput()
@@ -168,6 +173,7 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnStarted -= walkStartedDelegate;
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
+        dataStorePlayer.playerWorldPosition.OnChange -= Teleport;
         i = null;
     }
 
@@ -197,10 +203,11 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
+        dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition, notifyEvent: false);
         Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
         CommonScriptableObjects.playerCoords.Set(playerPosition);
-        DataStore.i.player.playerGridPosition.Set(playerPosition);
-        DataStore.i.player.playerUnityPosition.Set(characterPosition.unityPosition);
+        dataStorePlayer.playerGridPosition.Set(playerPosition);
+        dataStorePlayer.playerUnityPosition.Set(characterPosition.unityPosition);
 
         if (Moved(lastPosition))
         {
@@ -221,10 +228,10 @@ public class DCLCharacterController : MonoBehaviour
     public void Teleport(string teleportPayload)
     {
         var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
-        Teleport(new Vector3(payload.x, payload.y, payload.z));
+        Teleport(new Vector3(payload.x, payload.y, payload.z), lastPosition);
     }
     
-    public void Teleport(Vector3 newPosition)
+    private void Teleport(Vector3 newPosition, Vector3 prevPosition)
     {
         ResetGround();
 
@@ -235,7 +242,7 @@ public class DCLCharacterController : MonoBehaviour
             OnPositionSet.Invoke(characterPosition);
         }
 
-        DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
+        dataStorePlayer.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
         {
@@ -258,7 +265,7 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        if(!DataStore.i.player.canPlayerMove.Get())
+        if(!dataStorePlayer.canPlayerMove.Get())
             return;
 
         if (transform.position.y < minimumYPosition)

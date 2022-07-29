@@ -7,6 +7,7 @@ namespace DCL
         // Current player position
         public readonly BaseVariable<Vector2Int> playerGridPosition = new BaseVariable<Vector2Int>(Vector2Int.zero);
         public readonly BaseVariable<Vector3> playerUnityPosition = new BaseVariable<Vector3>(Vector3.zero);
+        public readonly BaseVariable<Vector3> playerWorldPosition = new BaseVariable<Vector3>(Vector3.zero);
         
         // NOTE: set when character is teleported (DCLCharacterController - Teleport)
         public readonly BaseVariable<Vector3> lastTeleportPosition = new BaseVariable<Vector3>(Vector3.zero);
