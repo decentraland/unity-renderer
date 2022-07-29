@@ -14,7 +14,7 @@ namespace DCL
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
-        
+
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
         private bool doTransitionAnimation;
@@ -24,11 +24,8 @@ namespace DCL
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
-        
-        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
-        {
-            doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION);
-        }
+
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
@@ -59,17 +56,14 @@ namespace DCL
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             asset.Show(OnSuccess);
         }
-        
+
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
-        protected override void OnBeforeLoadOrReuse()
-        {
-            settings.ApplyBeforeLoad(asset.container.transform);
-        }
+        protected override void OnBeforeLoadOrReuse() { settings.ApplyBeforeLoad(asset.container.transform); }
 
         protected override void OnCancelLoading()
         {
@@ -137,7 +131,7 @@ namespace DCL
             }
         }
 
-                public IEnumerator InstantiateABGameObjects()
+        public IEnumerator InstantiateABGameObjects()
         {
             var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
 
@@ -166,7 +160,7 @@ namespace DCL
                 asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(assetBundleModelGO);
                 asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                 asset.SetTextures(MeshesInfoUtils.ExtractUniqueTextures(asset.materials));
-                
+
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
@@ -188,7 +182,7 @@ namespace DCL
                 assetBundleModelGO.transform.ResetLocalTRS();
 
                 yield return null;
-                
+
                 yield return SetMaterialTransition();
             }
         }
@@ -222,7 +216,7 @@ namespace DCL
             base.OnForget();
             featureFlags.OnChange -= OnFeatureFlagChange;
         }
-        
+
         IEnumerator SetMaterialTransition(Action OnSuccess = null)
         {
             if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation)
@@ -243,21 +237,21 @@ namespace DCL
             }
             OnSuccess?.Invoke();
         }
-        
+
         private bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
         {
             bool finishedTransition = true;
-        
+
             for (int i = 0; i < matTransitions.Length; i++)
             {
                 if (matTransitions[i] != null)
                 {
                     finishedTransition = false;
-        
+
                     break;
                 }
             }
-        
+
             return finishedTransition;
         }
 
