@@ -1,3 +1,4 @@
+using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -45,6 +46,7 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json)
             {
                 Model model = Utils.SafeFromJson<Model>(json);
+
                 return model;
             }
         }
@@ -59,9 +61,9 @@ namespace DCL.Components
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
-        public override IEnumerator ApplyChanges(BaseModel newModel)
+        public override IEnumerator ApplyChanges(BaseModel baseModel)
         {
-            model = (Model) newModel;
+            model = (Model) baseModel;
 
             // We avoid using even yield break; as this instruction skips a frame and we don't want that.
             if ( !DCLFont.IsFontLoaded(scene, model.font) )
@@ -70,8 +72,20 @@ namespace DCL.Components
             }
 
             DCLFont.SetFontFromComponent(scene, model.font, referencesContainer.text);
+            bool shouldMarkDirty = ShouldMarkDirty();
+
             ApplyModelChanges(referencesContainer.text, model);
-            MarkLayoutDirty();
+            if (shouldMarkDirty) MarkLayoutDirty();
+        }
+        private bool ShouldMarkDirty()
+        {
+            TextMeshProUGUI text = referencesContainer.text;
+
+            return model.value != text.text
+                   || Math.Abs(model.fontSize - text.fontSize) > float.Epsilon
+                   || model.fontAutoSize != text.enableAutoSizing
+                   || Math.Abs(model.lineSpacing - text.lineSpacing) > float.Epsilon
+                   || new Vector4((int) model.paddingLeft, (int) model.paddingTop, (int) model.paddingRight, (int) model.paddingBottom) != text.margin;
         }
 
         protected override void RefreshDCLSize(RectTransform parentTransform = null)
