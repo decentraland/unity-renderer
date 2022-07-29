@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Models;
@@ -24,7 +25,7 @@ namespace Tests
             entity.entityId.Returns(42);
 
             scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler();
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>());
         }
 
         [TearDown]
