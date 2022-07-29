@@ -42,7 +42,7 @@ namespace Tests
                     },
                 };
 
-            componentsManager = new ECSComponentsManager(scene, components);
+            componentsManager = new ECSComponentsManager(components);
         }
 
         [Test]
@@ -51,8 +51,8 @@ namespace Tests
             IDCLEntity entity = Substitute.For<IDCLEntity>();
             entity.entityId.Returns(1);
 
-            IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
-            IECSComponent comp1 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, entity);
+            IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, scene, entity);
+            IECSComponent comp1 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, scene, entity);
 
             componentHandler0.Received(1).OnComponentCreated(scene, entity);
             componentHandler1.Received(1).OnComponentCreated(scene, entity);
@@ -64,11 +64,11 @@ namespace Tests
             Assert.NotNull(comp1);
             Assert.AreNotEqual(comp0, comp1);
 
-            Assert.IsTrue(comp0.HasComponent(entity));
-            Assert.IsTrue(comp1.HasComponent(entity));
+            Assert.IsTrue(comp0.HasComponent(scene, entity));
+            Assert.IsTrue(comp1.HasComponent(scene, entity));
 
-            IECSComponent comp0II = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
-            IECSComponent comp1II = componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, entity);
+            IECSComponent comp0II = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, scene, entity);
+            IECSComponent comp1II = componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, scene, entity);
 
             componentHandler0.DidNotReceive().OnComponentCreated(scene, entity);
             componentHandler1.DidNotReceive().OnComponentCreated(scene, entity);
@@ -79,10 +79,10 @@ namespace Tests
             Assert.AreEqual(comp0, comp0II);
             Assert.AreEqual(comp1, comp1II);
 
-            Assert.AreEqual(comp0, componentsManager.sceneComponents[(int)ComponentsID.Component0]);
-            Assert.AreEqual(comp1, componentsManager.sceneComponents[(int)ComponentsID.Component1]);
+            Assert.AreEqual(comp0, componentsManager.loadedComponents[(int)ComponentsID.Component0]);
+            Assert.AreEqual(comp1, componentsManager.loadedComponents[(int)ComponentsID.Component1]);
 
-            Assert.AreEqual(2, componentsManager.sceneComponents.Count);
+            Assert.AreEqual(2, componentsManager.loadedComponents.Count);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace Tests
             IDCLEntity entity = Substitute.For<IDCLEntity>();
             entity.entityId.Returns(1);
 
-            IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
+            IECSComponent comp0 = componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, scene, entity);
             IECSComponent comp1 = componentsManager.GetComponent((int)ComponentsID.Component0);
 
             Assert.AreEqual(comp0, comp1);
@@ -110,17 +110,17 @@ namespace Tests
             };
             var serializedModel = TestingComponentSerialization.Serialize(newComponentModel);
 
-            componentsManager.DeserializeComponent((int)ComponentsID.Component0, entity, serializedModel);
+            componentsManager.DeserializeComponent((int)ComponentsID.Component0, scene, entity, serializedModel);
 
             componentHandler0.Received(1).OnComponentCreated(scene, entity);
             componentHandler0.Received(1).OnComponentModelUpdated(scene, entity, Arg.Any<TestingComponent>());
 
-            Assert.AreEqual(1, componentsManager.sceneComponents.Count);
+            Assert.AreEqual(1, componentsManager.loadedComponents.Count);
 
-            ECSComponent<TestingComponent> typedComponent = ((ECSComponent<TestingComponent>)componentsManager.sceneComponents[(int)ComponentsID.Component0]);
-            Assert.AreEqual(newComponentModel.someString, typedComponent.Get(entity).model.someString);
-            Assert.AreEqual(newComponentModel.someVector, typedComponent.Get(entity).model.someVector);
-            Assert.IsTrue(typedComponent.HasComponent(entity));
+            ECSComponent<TestingComponent> typedComponent = ((ECSComponent<TestingComponent>)componentsManager.loadedComponents[(int)ComponentsID.Component0]);
+            Assert.AreEqual(newComponentModel.someString, typedComponent.Get(scene, entity).model.someString);
+            Assert.AreEqual(newComponentModel.someVector, typedComponent.Get(scene, entity).model.someVector);
+            Assert.IsTrue(typedComponent.HasComponent(scene, entity));
         }
 
         [Test]
@@ -129,23 +129,23 @@ namespace Tests
             IDCLEntity entity = Substitute.For<IDCLEntity>();
             entity.entityId.Returns(1);
 
-            componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, entity);
-            componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, entity);
+            componentsManager.GetOrCreateComponent((int)ComponentsID.Component0, scene, entity);
+            componentsManager.GetOrCreateComponent((int)ComponentsID.Component1, scene, entity);
 
-            componentsManager.RemoveComponent((int)ComponentsID.Component0, entity);
-            componentsManager.RemoveComponent((int)ComponentsID.Component1, entity);
+            componentsManager.RemoveComponent((int)ComponentsID.Component0, scene, entity);
+            componentsManager.RemoveComponent((int)ComponentsID.Component1, scene, entity);
 
             componentHandler0.Received(1).OnComponentRemoved(scene, entity);
             componentHandler1.Received(1).OnComponentRemoved(scene, entity);
 
-            ECSComponent<TestingComponent> typedComponent0 = ((ECSComponent<TestingComponent>)componentsManager.sceneComponents[(int)ComponentsID.Component0]);
-            ECSComponent<TestingComponent> typedComponent1 = ((ECSComponent<TestingComponent>)componentsManager.sceneComponents[(int)ComponentsID.Component1]);
+            ECSComponent<TestingComponent> typedComponent0 = ((ECSComponent<TestingComponent>)componentsManager.loadedComponents[(int)ComponentsID.Component0]);
+            ECSComponent<TestingComponent> typedComponent1 = ((ECSComponent<TestingComponent>)componentsManager.loadedComponents[(int)ComponentsID.Component1]);
 
-            Assert.IsFalse(typedComponent0.HasComponent(entity));
-            Assert.IsFalse(typedComponent1.HasComponent(entity));
+            Assert.IsFalse(typedComponent0.HasComponent(scene, entity));
+            Assert.IsFalse(typedComponent1.HasComponent(scene, entity));
 
-            Assert.AreEqual(0, typedComponent0.entities.Count);
-            Assert.AreEqual(0, typedComponent1.entities.Count);
+            Assert.AreEqual(0, typedComponent0.componentData.Count);
+            Assert.AreEqual(0, typedComponent1.componentData.Count);
         }
     }
 }

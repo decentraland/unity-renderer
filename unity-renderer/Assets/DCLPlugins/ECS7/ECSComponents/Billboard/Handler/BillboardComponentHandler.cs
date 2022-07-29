@@ -9,6 +9,7 @@ namespace DCL.ECSComponents
     public class BillboardComponentHandler : IECSComponentHandler<PBBillboard>
     {
         private readonly IUpdateEventHandler updateEventHandler;
+        private readonly DataStore_Player playerDataStore;
         
         private Transform entityTransform;
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
@@ -18,8 +19,9 @@ namespace DCL.ECSComponents
         private IParcelScene scene;
         private PBBillboard model;
         
-        public BillboardComponentHandler(IUpdateEventHandler updateEventHandler)
+        public BillboardComponentHandler(DataStore_Player playerDataStore, IUpdateEventHandler updateEventHandler)
         {
+            this.playerDataStore = playerDataStore;
             this.updateEventHandler = updateEventHandler;
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
@@ -53,10 +55,13 @@ namespace DCL.ECSComponents
 
             if (entityTransform == null)
                 return;
-            if (entityTransform.position == lastPosition)
+       
+            UnityEngine.Vector3 playerPosition = playerDataStore.playerUnityPosition.Get();
+            
+            if (playerPosition == lastPosition)
                 return;
 
-            lastPosition = entityTransform.position;
+            lastPosition = playerPosition;
 
             ChangeOrientation();
         }

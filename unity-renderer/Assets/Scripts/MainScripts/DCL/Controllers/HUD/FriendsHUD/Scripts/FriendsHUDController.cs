@@ -66,8 +66,8 @@ public class FriendsHUDController : IHUD
 
         if (friendsController != null)
         {
-            friendsController.OnUpdateFriendship += OnUpdateFriendship;
-            friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
+            friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
+            friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
             friendsController.OnFriendNotFound += OnFriendNotFound;
             
             if (friendsController.IsInitialized)
@@ -81,7 +81,7 @@ public class FriendsHUDController : IHUD
                 friendsController.OnInitialized += HandleFriendsInitialized;
             }
         }
-        
+
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
@@ -91,8 +91,8 @@ public class FriendsHUDController : IHUD
         if (friendsController != null)
         {
             friendsController.OnInitialized -= HandleFriendsInitialized;
-            friendsController.OnUpdateFriendship -= OnUpdateFriendship;
-            friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
+            friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
+            friendsController.OnUpdateUserStatus -= HandleUserStatusUpdated;
         }
 
         if (View != null)
@@ -170,7 +170,7 @@ public class FriendsHUDController : IHUD
     private async UniTask UpdateBlockStatus(UserProfile profile)
     {
         const int iterationsPerFrame = 10;
-        
+
         //NOTE(Brian): HashSet to check Contains quicker.
         var allBlockedUsers = profile.blocked != null
             ? new HashSet<string>(profile.blocked)
@@ -182,11 +182,11 @@ public class FriendsHUDController : IHUD
         {
             var friendId = friendPair.Key;
             var model = friendPair.Value;
-            
+
             model.blocked = allBlockedUsers.Contains(friendId);
             await UniTask.SwitchToMainThread();
-            View.Populate(friendId, model);
-            
+            View.UpdateBlockStatus(friendId, model.blocked);
+
             iterations++;
             if (iterations > 0 && iterations % iterationsPerFrame == 0)
                 await UniTask.NextFrame();
@@ -223,19 +223,52 @@ public class FriendsHUDController : IHUD
                && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
 
-    private void OnUpdateUserStatus(string userId, UserStatus newStatus)
+    private void HandleUserStatusUpdated(string userId, UserStatus status) =>
+        UpdateUserStatus(userId, status);
+
+    private void UpdateUserStatus(string userId, UserStatus status)
     {
-        var model = GetOrCreateModel(userId, newStatus);
-        model.CopyFrom(newStatus);
-        
-        View.Set(userId, newStatus.friendshipStatus, model);
+        switch (status.friendshipStatus)
+        {
+            case FriendshipStatus.FRIEND:
+                var friend = friends.ContainsKey(userId)
+                    ? new FriendEntryModel(friends[userId])
+                    : new FriendEntryModel();
+                friend.CopyFrom(status);
+                friend.blocked = IsUserBlocked(userId);
+                friends[userId] = friend;
+                View.Set(userId, friend);
+                break;
+            case FriendshipStatus.NOT_FRIEND:
+                View.Remove(userId);
+                friends.Remove(userId);
+                break;
+            case FriendshipStatus.REQUESTED_TO:
+                var sentRequest = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], false)
+                    : new FriendRequestEntryModel {isReceived = false};
+                sentRequest.CopyFrom(status);
+                sentRequest.blocked = IsUserBlocked(userId);
+                friends[userId] = sentRequest;
+                View.Set(userId, sentRequest);
+                break;
+            case FriendshipStatus.REQUESTED_FROM:
+                var receivedRequest = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], true)
+                    : new FriendRequestEntryModel {isReceived = true};
+                receivedRequest.CopyFrom(status);
+                receivedRequest.blocked = IsUserBlocked(userId);
+                friends[userId] = receivedRequest;
+                View.Set(userId, receivedRequest);
+                break;
+        }
         
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
-    private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
+    private void HandleFriendshipUpdated(string userId, FriendshipAction friendshipAction)
     {
         var userProfile = userProfileBridge.Get(userId);
 
@@ -246,14 +279,48 @@ public class FriendsHUDController : IHUD
         }
 
         userProfile.OnUpdate -= HandleFriendProfileUpdated;
-        userProfile.OnUpdate += HandleFriendProfileUpdated;
-        
-        var model = GetOrCreateModel(userId, friendshipAction);
-        model.CopyFrom(userProfile);
-        model.blocked = IsUserBlocked(userId);
 
-        View.Set(userId, friendshipAction, model);
-        
+        switch (friendshipAction)
+        {
+            case FriendshipAction.NONE:
+            case FriendshipAction.REJECTED:
+            case FriendshipAction.CANCELLED:
+            case FriendshipAction.DELETED:
+                friends.Remove(userId);
+                View.Remove(userId);
+                break;
+            case FriendshipAction.APPROVED:
+                var approved = friends.ContainsKey(userId)
+                    ? new FriendEntryModel(friends[userId])
+                    : new FriendEntryModel();
+                approved.CopyFrom(userProfile);
+                approved.blocked = IsUserBlocked(userId);
+                friends[userId] = approved;
+                View.Set(userId, approved);
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
+                break;
+            case FriendshipAction.REQUESTED_FROM:
+                var requestReceived = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], true)
+                    : new FriendRequestEntryModel {isReceived = true};
+                requestReceived.CopyFrom(userProfile);
+                requestReceived.blocked = IsUserBlocked(userId);
+                friends[userId] = requestReceived;
+                View.Set(userId, requestReceived);
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
+                break;
+            case FriendshipAction.REQUESTED_TO:
+                var requestSent = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], false)
+                    : new FriendRequestEntryModel {isReceived = false};
+                requestSent.CopyFrom(userProfile);
+                requestSent.blocked = IsUserBlocked(userId);
+                friends[userId] = requestSent;
+                View.Set(userId, requestSent);
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
+                break;
+        }
+
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
@@ -263,12 +330,12 @@ public class FriendsHUDController : IHUD
     {
         var userId = profile.userId;
         if (!friends.ContainsKey(userId)) return;
-        
-        var model = friends[userId];
-        model.CopyFrom(profile);
-        model.blocked = IsUserBlocked(userId);
-        
-        View.Populate(userId, model);
+        friends[userId].CopyFrom(profile);
+
+        var status = friendsController.GetUserStatus(profile.userId);
+        if (status == null) return;
+
+        UpdateUserStatus(userId, status);
     }
 
     private bool IsUserBlocked(string userId)
@@ -276,68 +343,6 @@ public class FriendsHUDController : IHUD
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             return ownUserProfile.blocked.Contains(userId);
         return false;
-    }
-
-    private FriendEntryModel GetOrCreateModel(string userId, FriendshipAction friendshipAction)
-    {
-        if (!friends.ContainsKey(userId))
-        {
-            if (friendshipAction == FriendshipAction.REQUESTED_TO
-                || friendshipAction == FriendshipAction.REQUESTED_FROM
-                || friendshipAction == FriendshipAction.CANCELLED
-                || friendshipAction == FriendshipAction.REJECTED)
-            {
-                friends[userId] = new FriendRequestEntryModel
-                {
-                    isReceived = friendshipAction == FriendshipAction.REQUESTED_FROM
-                };
-            }
-            else
-                friends[userId] = new FriendEntryModel();
-        }
-        else
-        {
-            if (friendshipAction == FriendshipAction.REQUESTED_TO
-                || friendshipAction == FriendshipAction.REQUESTED_FROM
-                || friendshipAction == FriendshipAction.CANCELLED
-                || friendshipAction == FriendshipAction.REJECTED)
-            {
-                friends[userId] = new FriendRequestEntryModel(friends[userId],
-                    friendshipAction == FriendshipAction.REQUESTED_FROM);
-            }
-            else
-                friends[userId] = new FriendEntryModel(friends[userId]);
-        }
-
-        return friends[userId];
-    }
-
-    private FriendEntryModel GetOrCreateModel(string userId, UserStatus newStatus)
-    {
-        if (!friends.ContainsKey(userId))
-        {
-            if (newStatus.friendshipStatus == FriendshipStatus.REQUESTED_TO
-                || newStatus.friendshipStatus == FriendshipStatus.REQUESTED_FROM)
-            {
-                friends[userId] = new FriendRequestEntryModel
-                {
-                    isReceived = newStatus.friendshipStatus == FriendshipStatus.REQUESTED_FROM
-                };
-            }
-            else
-                friends[userId] = new FriendEntryModel();
-        }
-        else
-        {
-            if (newStatus.friendshipStatus == FriendshipStatus.REQUESTED_TO
-                || newStatus.friendshipStatus == FriendshipStatus.REQUESTED_FROM)
-                friends[userId] = new FriendRequestEntryModel(friends[userId],
-                    newStatus.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
-            else
-                friends[userId] = new FriendEntryModel(friends[userId]);
-        }
-
-        return friends[userId];
     }
 
     private void OnFriendNotFound(string name)
@@ -350,7 +355,7 @@ public class FriendsHUDController : IHUD
         if (View.IsActive())
             dataStore.friendNotifications.seenFriends.Set(View.FriendCount);
         
-        dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.TotalFriendRequestCount);
+        dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.ReceivedRequestCount);
     }
 
     private void HandleOpenWhisperChat(FriendEntryModel entry) => OnPressWhisper?.Invoke(entry.userId);
@@ -398,7 +403,7 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendsToLoadHint();
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
     }
-    
+
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
