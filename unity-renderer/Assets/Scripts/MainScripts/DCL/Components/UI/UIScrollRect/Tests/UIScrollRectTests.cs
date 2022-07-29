@@ -62,7 +62,7 @@ namespace Tests
                 });
 
             yield return null;
-            yield return new WaitUntil( () => !scrollRect.isLayoutDirty );
+            yield return new WaitUntil( () => !scrollRect.IsLayoutDirty );
 
 
             // Check updated properties are applied correctly

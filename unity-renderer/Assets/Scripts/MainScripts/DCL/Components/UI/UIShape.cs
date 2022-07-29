@@ -1,9 +1,13 @@
+using System;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -151,7 +155,7 @@ namespace DCL.Components
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
-        public bool isLayoutDirty { get; protected set; }
+        public bool IsLayoutDirty { get; private set; }
         protected System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
@@ -159,19 +163,18 @@ namespace DCL.Components
         public UIShape parentUIComponent { get; protected set; }
 
         private Coroutine layoutRefreshWatcher;
+        private CancellationTokenSource cancellationSource;
 
         public UIShape()
         {
             screenSize.OnChange += OnScreenResize;
             model = new Model();
-
-            if ( layoutRefreshWatcher == null )
-                layoutRefreshWatcher = CoroutineStarter.Start(LayoutRefreshWatcher());
         }
 
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
         {
-            isLayoutDirty = GetRootParent() == this;
+            if (GetRootParent() == this)
+                RefreshAll();
         }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
@@ -232,38 +235,44 @@ namespace DCL.Components
 
             return referencesContainer as T;
         }
-
-        IEnumerator LayoutRefreshWatcher()
-        {
-            while (true)
-            {
-                // WaitForEndOfFrame doesn't work in batch mode
-                yield return Application.isBatchMode ? null : new WaitForEndOfFrame();
-
-                if ( !isLayoutDirty )
-                    continue;
-
-                // When running tests this is empty.
-                if (!string.IsNullOrEmpty(CommonScriptableObjects.sceneID))
-                {
-                    if (CommonScriptableObjects.sceneID.Get() != scene.sceneData.id)
-                        continue;
-                }
-
-                RefreshAll();
-            }
-        }
-
+        
         public virtual void RefreshAll()
         {
-            // We are not using the _Internal here because the method is overridden
-            // by some UI shapes.
-            RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
-            FixMaxStretchRecursively();
-            RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
-            isLayoutDirty = false;
-            OnLayoutRefresh?.Invoke();
-            OnLayoutRefresh = null;
+            cancellationSource?.Cancel();
+            cancellationSource = new CancellationTokenSource();
+            IsLayoutDirty = true;
+            UniTask.Run(async () => await RefreshAll_Internal(cancellationSource.Token), true, cancellationSource.Token);
+        }
+
+        private async UniTask RefreshAll_Internal(CancellationToken token)
+        {
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                await UniTask.WaitUntil(IsReadyForRefresh, cancellationToken: token);
+
+                if (!Application.isBatchMode) await UniTask.WaitForEndOfFrame();
+
+                token.ThrowIfCancellationRequested();
+            
+                // We are not using the _Internal here because the method is overridden
+                // by some UI shapes.
+                RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
+                FixMaxStretchRecursively();
+                RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
+
+                OnLayoutRefresh?.Invoke();
+                OnLayoutRefresh = null; 
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                IsLayoutDirty = false;
+            }
+        }
+        private bool IsReadyForRefresh()
+        {
+            return string.IsNullOrEmpty(CommonScriptableObjects.sceneID) || CommonScriptableObjects.sceneID.Get() == scene.sceneData.id;
         }
 
         public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
@@ -275,8 +284,8 @@ namespace DCL.Components
             if (rootParent.referencesContainer == null)
                 return;
 
-            rootParent.isLayoutDirty = true;
-
+            RefreshAll();
+            
             if ( OnRefresh != null )
                 rootParent.OnLayoutRefresh += OnRefresh;
         }
