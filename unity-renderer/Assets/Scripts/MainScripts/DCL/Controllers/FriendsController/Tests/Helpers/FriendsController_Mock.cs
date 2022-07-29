@@ -57,7 +57,7 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, int skip)
     {
     }
 
