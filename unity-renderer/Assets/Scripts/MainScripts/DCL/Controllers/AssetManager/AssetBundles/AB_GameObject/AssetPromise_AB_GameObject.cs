@@ -57,8 +57,7 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            CoroutineStarter.Start(SetMaterialTransition(()=>asset.Show(OnSuccess)));
-
+            asset.Show(OnSuccess);
         }
         
         protected override void OnAfterLoadOrReuse()
