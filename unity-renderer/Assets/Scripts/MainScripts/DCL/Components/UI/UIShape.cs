@@ -167,6 +167,7 @@ namespace DCL.Components
 
         public UIShape()
         {
+            cancellationSource = new CancellationTokenSource();
             screenSize.OnChange += OnScreenResize;
             model = new Model();
         }
@@ -238,8 +239,6 @@ namespace DCL.Components
         
         public virtual void RefreshAll()
         {
-            cancellationSource?.Cancel();
-            cancellationSource = new CancellationTokenSource();
             IsLayoutDirty = true;
             UniTask.Run(async () => await RefreshAll_Internal(cancellationSource.Token), true, cancellationSource.Token);
         }
@@ -502,6 +501,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            cancellationSource.Cancel();
+            cancellationSource.Dispose();
+            
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
