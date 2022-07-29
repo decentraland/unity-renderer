@@ -268,7 +268,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenFriendshipActionUpdates()
     {
-        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.FriendCount.Returns(FRIENDS_COUNT);
         view.IsActive().Returns(true);
 
@@ -282,7 +282,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void NotificationsAreUpdatedWhenIsVisible()
     {
-        friendsController.TotalFriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
+        friendsController.ReceivedRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         view.IsActive().Returns(true);
         view.FriendCount.Returns(FRIENDS_COUNT);
 
@@ -290,34 +290,6 @@ public class FriendsHUDControllerShould
 
         Assert.AreEqual(FRIENDS_COUNT, dataStore.friendNotifications.seenFriends.Get());
         Assert.AreEqual(FRIEND_REQUEST_SHOWN, dataStore.friendNotifications.pendingFriendRequestCount.Get());
-    }
-
-    [Test]
-    public void EnqueueFriendWhenTooManyEntriesDisplayed()
-    {
-        view.FriendCount.Returns(10000);
-
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(2);
-    }
-
-    [Test]
-    public void EnqueueFriendRequestWhenTooManyEntriesDisplayed()
-    {
-        view.FriendRequestCount.Returns(10000);
-
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
-        friendsController.OnUpdateFriendship +=
-            Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(2);
     }
 
     [Test]
@@ -366,50 +338,6 @@ public class FriendsHUDControllerShould
 
         view.Received(1).Set(OTHER_USER_ID,
             Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
-    }
-
-    [Test]
-    public void EnqueueUserStatusWhenTooManyEntries()
-    {
-        view.FriendCount.Returns(10000);
-
-        var status = new UserStatus
-        {
-            position = Vector2.zero,
-            presence = PresenceStatus.OFFLINE,
-            friendshipStatus = FriendshipStatus.FRIEND,
-            realm = null,
-            userId = OTHER_USER_ID,
-            friendshipStartedTime = DateTime.UtcNow
-        };
-
-        friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, default);
-        view.Received(1).ShowMoreFriendsToLoadHint(1);
-    }
-
-    [Test]
-    public void EnqueueUserStatusAsRequestWhenTooManyEntries()
-    {
-        view.FriendRequestCount.Returns(10000);
-
-        var status = new UserStatus
-        {
-            position = Vector2.zero,
-            presence = PresenceStatus.OFFLINE,
-            friendshipStatus = FriendshipStatus.REQUESTED_FROM,
-            realm = null,
-            userId = OTHER_USER_ID,
-            friendshipStartedTime = DateTime.UtcNow
-        };
-
-        friendsController.OnUpdateUserStatus +=
-            Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
-
-        view.DidNotReceiveWithAnyArgs().Set(default, default);
-        view.Received(1).ShowMoreRequestsToLoadHint(1);
     }
 
     [Test]
@@ -599,7 +527,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void UpdatePendingRequestCountToDatastoreWhenFriendsInitializes()
     {
-        friendsController.TotalFriendRequestCount.Returns(87);
+        friendsController.ReceivedRequestCount.Returns(87);
         friendsController.OnInitialized += Raise.Event<Action>();
 
         Assert.AreEqual(87, dataStore.friendNotifications.pendingFriendRequestCount.Get());
