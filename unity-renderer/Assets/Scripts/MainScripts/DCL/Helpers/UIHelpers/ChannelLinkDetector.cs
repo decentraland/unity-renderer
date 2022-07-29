@@ -5,22 +5,27 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(TMP_Text))]
 public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
 {
-    private TMP_Text textComponent;
+    [SerializeField] internal TMP_Text textComponent;
+
     private string currentText;
     private bool hasNoParseLabel;
     private List<string> channelsFoundInText = new List<string>();
 
     private void Awake()
     {
-        textComponent = GetComponent<TMP_Text>();
+        if (textComponent == null)
+            return;
+
         textComponent.OnPreRenderText += OnTextComponentPreRenderText;
     }
 
     private void OnDestroy()
     {
+        if (textComponent == null)
+            return;
+
         textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
     }
 
@@ -44,7 +49,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             textComponent.text = textComponent.text.Replace(
                 channelFound,
                 hasNoParseLabel ?
-                    $"</noparse><link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link><noparse>":
+                    $"</noparse><link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link><noparse>" :
                     $"<link={channelFound}><color=#4886E3><u>{channelFound}</u></color></link>");
         }
 
@@ -57,13 +62,16 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
         {
             string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
 
-            if (!string.IsNullOrEmpty(clickedLink) && channelsFoundInText.Contains(clickedLink))
+            if (ChannelUtils.IsAChannel(clickedLink))
                 DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
         }
     }
 
     private string GetChannelLinkByPointerPosition(Vector2 pointerPosition)
     {
+        if (textComponent == null)
+            return "";
+
         string result = string.Empty;
         int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, pointerPosition, textComponent.canvas.worldCamera);
 

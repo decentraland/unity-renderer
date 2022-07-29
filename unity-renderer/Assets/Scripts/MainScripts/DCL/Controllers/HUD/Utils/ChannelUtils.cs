@@ -3,11 +3,12 @@ using System.Text.RegularExpressions;
 
 public class ChannelUtils
 {
-    public const string CHANNEL_MATCH_REGEX = "^#[a-zA-Z0-9-]{3,20}$";
+    private const string CHANNEL_MATCH_REGEX = "^#[a-zA-Z0-9-]{3,20}$";
+    private const string NEAR_BY_CHANNEL = "~nearby";
+    private static Regex filter = new Regex(CHANNEL_MATCH_REGEX);
 
     public static List<string> ExtractChannelPatternsFromText(string text)
     {
-        Regex filter = new Regex(CHANNEL_MATCH_REGEX);
         List<string> channelsFound = new List<string>();
         
         string[] separatedWords = text
@@ -18,12 +19,16 @@ public class ChannelUtils
 
         for (int i = 0; i < separatedWords.Length; i++)
         {
-            var match = filter.Match(separatedWords[i]);
-
-            if (match.Success || separatedWords[i].ToLower() == "~nearby")
+            if (IsAChannel(separatedWords[i]))
                 channelsFound.Add(separatedWords[i]);
         }
 
         return channelsFound;
+    }
+
+    public static bool IsAChannel(string text)
+    {
+        var match = filter.Match(text);
+        return match.Success || text.ToLower() == NEAR_BY_CHANNEL;
     }
 }

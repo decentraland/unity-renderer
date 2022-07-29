@@ -185,11 +185,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
             if (linkIndex != -1)
             {
-                DataStore.i.HUDs.gotoPanelVisible.Set(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-                ParcelCoordinates parcelCoordinate =
-                    CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                if (!ChannelUtils.IsAChannel(linkInfo.GetLinkID()))
+                {
+                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                    ParcelCoordinates parcelCoordinate =
+                        CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                }
             }
 
             if (Model.messageType != ChatMessage.Type.PRIVATE)
@@ -360,7 +363,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         isOverCoordinates = true;
         TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-        if (!linkInfo.GetLinkID().Contains("#") && !linkInfo.GetLinkID().Contains("~"))
+        if (!ChannelUtils.IsAChannel(linkInfo.GetLinkID()))
         {
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
             hoverGotoPanelTimer = timeToHoverGotoPanel;
