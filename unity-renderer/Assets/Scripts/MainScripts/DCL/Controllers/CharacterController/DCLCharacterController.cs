@@ -117,11 +117,10 @@ public class DCLCharacterController : MonoBehaviour
 
         SubscribeToInput();
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
-        CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
+        dataStorePlayer.playerWorldPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
         dataStorePlayer.playerGridPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
-        dataStorePlayer.playerWorldPosition.Set(Vector3.zero);
 
         characterPosition = new DCLCharacterPosition();
         characterController = GetComponent<CharacterController>();
@@ -202,7 +201,6 @@ public class DCLCharacterController : MonoBehaviour
         Environment.i.platform.physicsSyncController?.MarkDirty();
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
-        CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
         dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition, notifyEvent: false);
         Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
         CommonScriptableObjects.playerCoords.Set(playerPosition);
