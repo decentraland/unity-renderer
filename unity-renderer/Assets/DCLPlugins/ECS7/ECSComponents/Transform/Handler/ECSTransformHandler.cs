@@ -70,8 +70,7 @@ namespace DCL.ECSComponents
                 return false;
             }
 
-            Vector2Int targetCoords = scene.sceneData.basePosition
-                                      + new Vector2Int(Mathf.CeilToInt(localPosition.x), Mathf.CeilToInt(localPosition.z));
+            Vector2Int targetCoords = scene.sceneData.basePosition + Utils.WorldToGridPosition(localPosition);
 
             // If target coordinates are outside the scene we'll ignore it
             if (!scene.IsInsideSceneBoundaries(targetCoords))
