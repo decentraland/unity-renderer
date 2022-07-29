@@ -143,7 +143,7 @@ public class PrivateChatWindowController : IHUD
                     RequestPrivateMessages(
                         ConversationUserId,
                         USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
-                        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                        null);
                 }
             }
 
@@ -418,10 +418,10 @@ public class PrivateChatWindowController : IHUD
         chatHudController.FocusInputField();
     }
 
-    internal void RequestPrivateMessages(string userId, int limit, long fromTimestamp)
+    internal void RequestPrivateMessages(string userId, int limit, string fromMessageId)
     {
         View?.SetLoadingMessagesActive(true);
-        chatController.GetPrivateMessages(userId, limit, fromTimestamp);
+        chatController.GetPrivateMessages(userId, limit, fromMessageId);
         directMessagesAlreadyRequested.Add(userId);
         WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
     }
@@ -434,12 +434,18 @@ public class PrivateChatWindowController : IHUD
 
         if (currentPrivateMessages.Count <= 0) return;
 
-        var minTimestamp = (long) currentPrivateMessages.Min(x => x.timestamp);
+        var oldestMessageId = currentPrivateMessages
+            .OrderBy(x => x.timestamp)
+            .Select(x => x.messageId)
+            .FirstOrDefault();
+
+        if (string.IsNullOrEmpty(oldestMessageId))
+            return;
 
         chatController.GetPrivateMessages(
             ConversationUserId,
             USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
-            minTimestamp);
+            oldestMessageId);
 
         lastRequestTime = Time.realtimeSinceStartup;
         View?.SetOldMessagesLoadingActive(true);

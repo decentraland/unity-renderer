@@ -108,11 +108,11 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         }
     }
 
-    public async UniTask StartAvatarRevealAnimation(bool instant, CancellationToken cancellationToken)
+    public async UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken cancellationToken)
     {
         try
         {
-            if (!instant)
+            if (!withTransition)
             {
                 SetFullRendered();
                 return;

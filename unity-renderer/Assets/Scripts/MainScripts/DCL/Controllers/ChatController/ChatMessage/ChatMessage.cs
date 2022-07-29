@@ -19,6 +19,12 @@ namespace DCL.Interface
             this.body = body;
         }
 
+        public ChatMessage(string messageId, Type messageType, string sender, string body): this(messageType, sender, body)
+        {
+            this.messageId = messageId;
+        }
+
+        public string messageId;
         public Type messageType;
         public string sender;
         public string recipient;
