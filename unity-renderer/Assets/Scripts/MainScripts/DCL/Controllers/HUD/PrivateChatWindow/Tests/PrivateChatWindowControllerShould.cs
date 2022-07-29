@@ -300,13 +300,13 @@ public class PrivateChatWindowControllerShould
         controller.Initialize(view);
         string userId = "testId";
         int limit = 30;
-        long timestamp = 500;
+        string testMessageId = "testId";
         controller.directMessagesAlreadyRequested.Clear();
 
-        controller.RequestPrivateMessages(userId, limit, timestamp);
+        controller.RequestPrivateMessages(userId, limit, testMessageId);
 
         view.Received(1).SetLoadingMessagesActive(true);
-        chatController.Received(1).GetPrivateMessages(userId, limit, timestamp);
+        chatController.Received(1).GetPrivateMessages(userId, limit, testMessageId);
         Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
     }
 
@@ -323,7 +323,7 @@ public class PrivateChatWindowControllerShould
         chatController.Received(1).GetPrivateMessages(
             FRIEND_ID,
             PrivateChatWindowController.USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
-            Arg.Any<long>());
+            Arg.Any<string>());
     }
 
     private void WhenControllerInitializes(string friendId)
@@ -369,7 +369,7 @@ public class PrivateChatWindowControllerShould
     {
         var messages = new List<ChatMessage>();
         for (var i = 0; i < count; i++)
-            messages.Add(new ChatMessage(ChatMessage.Type.PRIVATE, friendId, $"message{i}")
+            messages.Add(new ChatMessage(Guid.NewGuid().ToString(), ChatMessage.Type.PRIVATE, friendId, $"message{i}")
                 {recipient = friendId});
         
         chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
