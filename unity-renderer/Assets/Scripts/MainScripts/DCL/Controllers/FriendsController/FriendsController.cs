@@ -93,9 +93,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
             receivedSkip);
     }
 
-    public void GetFriendsWithDirectMessages(int limit, long fromTimestamp)
+    public void GetFriendsWithDirectMessages(int limit, int skip)
     {
-        WebInterface.GetFriendsWithDirectMessages("", limit, fromTimestamp);
+        WebInterface.GetFriendsWithDirectMessages("", limit, skip);
     }
 
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)

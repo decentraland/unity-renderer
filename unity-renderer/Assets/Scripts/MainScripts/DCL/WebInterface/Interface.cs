@@ -696,7 +696,7 @@ namespace DCL.Interface
         {
             public string userNameOrId;
             public int limit;
-            public long from;
+            public int skip;
         }
 
         [System.Serializable]
@@ -1622,11 +1622,11 @@ namespace DCL.Interface
             SendMessage("ReportDecentralandTime", timeReportPayload);
         }
 
-        public static void GetFriendsWithDirectMessages(string userNameOrId, int limit, long from)
+        public static void GetFriendsWithDirectMessages(string userNameOrId, int limit, int skip)
         {
             getFriendsWithDirectMessagesPayload.userNameOrId = userNameOrId;
             getFriendsWithDirectMessagesPayload.limit = limit;
-            getFriendsWithDirectMessagesPayload.from = from;
+            getFriendsWithDirectMessagesPayload.skip = skip;
             SendMessage("GetFriendsWithDirectMessages", getFriendsWithDirectMessagesPayload);
         }
 
