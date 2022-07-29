@@ -283,7 +283,7 @@ namespace Tests
             RectTransform child2RT = childComponent2.referencesContainer.transform.parent as RectTransform;
             RectTransform child3RT = childComponent3.referencesContainer.transform.parent as RectTransform;
 
-            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+            yield return new WaitUntil( () => !uiContainerStack.IsLayoutDirty );
 
             Assert.AreEqual(new Vector2(65, -35).ToString(), child1RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(37.5f, -87.5f).ToString(), child2RT.anchoredPosition.ToString());
@@ -369,7 +369,7 @@ namespace Tests
             RectTransform child2RT = childComponent2.referencesContainer.transform.parent as RectTransform;
             RectTransform child3RT = childComponent3.referencesContainer.transform.parent as RectTransform;
 
-            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+            yield return new WaitUntil( () => !uiContainerStack.IsLayoutDirty );
 
             Assert.AreEqual(new Vector2(65, -35).ToString(), child1RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(167.5f, -17.5f).ToString(), child2RT.anchoredPosition.ToString());
@@ -448,7 +448,7 @@ namespace Tests
 
             yield return null;
 
-            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+            yield return new WaitUntil( () => !uiContainerStack.IsLayoutDirty );
 
             // Check stacked components position
             Assert.AreEqual(150f, uiContainerStack.childHookRectTransform.rect.width, 0.01f);
