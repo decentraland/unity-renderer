@@ -49,6 +49,22 @@ public class ChatController : MonoBehaviour, IChatController
 
     // called by kernel
     [UsedImplicitly]
+    public void AddChatMessages(string jsonMessage)
+    {
+        ChatMessageListPayload messages = JsonUtility.FromJson<ChatMessageListPayload>(jsonMessage);
+
+        if (messages == null)
+            return;
+
+        for (int i = 0; i < messages.messages.Length; i++)
+        {
+            entries.Add(messages.messages[i]);
+            OnAddMessage?.Invoke(messages.messages[i]);
+        }
+    }
+
+    // called by kernel
+    [UsedImplicitly]
     public void UpdateTotalUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
@@ -83,9 +99,9 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, string fromMessageId)
     {
-        WebInterface.GetPrivateMessages(userId, limit, fromTimestamp);
+        WebInterface.GetPrivateMessages(userId, limit, fromMessageId);
     }
 
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();

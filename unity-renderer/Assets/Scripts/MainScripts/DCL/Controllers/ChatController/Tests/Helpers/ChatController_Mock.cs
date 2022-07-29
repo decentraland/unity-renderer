@@ -35,7 +35,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    public void GetPrivateMessages(string userId, int limit, string fromMessageId)
     {
     }
 

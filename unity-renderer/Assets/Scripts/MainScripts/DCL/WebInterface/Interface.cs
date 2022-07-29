@@ -710,7 +710,7 @@ namespace DCL.Interface
         {
             public string userId;
             public int limit;
-            public long from;
+            public string fromMessageId;
         }
         
         [Serializable]
@@ -1636,11 +1636,11 @@ namespace DCL.Interface
             SendMessage("MarkMessagesAsSeen", markMessagesAsSeenPayload);
         }
 
-        public static void GetPrivateMessages(string userId, int limit, long from)
+        public static void GetPrivateMessages(string userId, int limit, string fromMessageId)
         {
             getPrivateMessagesPayload.userId = userId;
             getPrivateMessagesPayload.limit = limit;
-            getPrivateMessagesPayload.from = from;
+            getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
 

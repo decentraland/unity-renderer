@@ -36,7 +36,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private Color originalBackgroundColor;
     private Color originalFontColor;
-    internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
     public override ChatEntryModel Model => model;
 
@@ -53,9 +53,10 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         originalFontColor = body.color;
     }
 
-    public override void Populate(ChatEntryModel chatEntryModel) { PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget(); }
+    public override void Populate(ChatEntryModel chatEntryModel) =>
+        PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
 
-    internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
+    private async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
     {
         model = chatEntryModel;
 

@@ -22,14 +22,14 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            scenes = new[] { Substitute.For<IParcelScene>() };
+            scenes = DataStore.i.ecs7.scenes;
+            scenes.Add(Substitute.For<IParcelScene>());
             scenes[0]
                 .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
                     id = "temptation", basePosition = new Vector2Int(1, 0)
                 });
 
-            DataStore.i.ecs7.scenes.AddRange(scenes);
             componentsWriter = Substitute.For<IECSComponentWriter>();
             cameraTransform = (new GameObject("GO")).transform;
             cameraTransform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
