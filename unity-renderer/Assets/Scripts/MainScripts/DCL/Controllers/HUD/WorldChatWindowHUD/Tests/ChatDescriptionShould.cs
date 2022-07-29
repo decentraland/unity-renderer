@@ -9,14 +9,16 @@ namespace DCL.Chat.HUD
     public class ChatDescriptionShould
     {
 
-        private ChatChannelComponentView chatChannelComponenetView;
+        private ChatChannelComponentView chatChannelComponentView;
         private ChatDescription chatDescription;
+        private ChatHUDView chatHUDView;
 
         [SetUp]
         public void SetUp()
         {
-            chatChannelComponenetView = ChatChannelComponentView.Create();
-            chatDescription = chatChannelComponenetView.Transform.GetComponentInChildren<ChatDescription>();
+            chatChannelComponentView = ChatChannelComponentView.Create();
+            chatDescription = chatChannelComponentView.Transform.GetComponentInChildren<ChatDescription>();
+            chatHUDView = chatChannelComponentView.Transform.GetComponentInChildren<ChatHUDView>();
         }
 
         [UnityTest]
@@ -25,24 +27,46 @@ namespace DCL.Chat.HUD
             ChatEntryModel modelChat = new ChatEntryModel();
             for (int i = 0; i < 20; i++)
             {
-                chatChannelComponenetView.chatView.AddEntry(modelChat);
+                chatHUDView.AddEntry(modelChat);
             }
             yield return null;
             yield return null;
             yield return null;
             yield return null;
+            yield return null;
             Assert.True(chatDescription.isParentedToChatContainer);
+            Assert.True(chatDescription.transform.IsChildOf(chatHUDView.chatEntriesContainer));
         }
 
         [UnityTest]
         public IEnumerator CheckRepositioningOnClearEntries()
         {
-            chatChannelComponenetView.chatView.ClearAllEntries();
+            ChatEntryModel modelChat = new ChatEntryModel();
+            for (int i = 0; i < 20; i++)
+            {
+                chatHUDView.AddEntry(modelChat);
+            }
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            chatHUDView.ClearAllEntries();
+            chatHUDView.AddEntry(modelChat);
+            yield return null;
             yield return null;
             yield return null;
             yield return null;
             yield return null;
             Assert.False(chatDescription.isParentedToChatContainer);
+            Assert.False(chatDescription.transform.IsChildOf(chatHUDView.chatEntriesContainer));
+            Assert.True(chatDescription.transform.IsChildOf(chatDescription.originalParent));
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            chatChannelComponentView.Dispose();
         }
 
     }

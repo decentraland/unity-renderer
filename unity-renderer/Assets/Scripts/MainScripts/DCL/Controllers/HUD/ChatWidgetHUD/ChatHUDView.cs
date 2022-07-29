@@ -93,7 +93,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public event Action<ChatMessage> OnSendMessage;
 
-    public event Action<Vector2> OnChatContainerResized;
+    public event Action OnChatContainerResized;
     public event Action OnChatEntriesSorted;
     
     public int EntryCount => entries.Count;
@@ -143,8 +143,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (updateLayoutDelayedFrames <= 0)
             {
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
-                chatEntriesContainer.ForceUpdateLayout(delayed: false);
-                OnChatContainerResized?.Invoke(chatEntriesContainer.sizeDelta);
+                OnChatContainerResized?.Invoke();
             }
         }
 
