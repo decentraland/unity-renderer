@@ -139,7 +139,7 @@ namespace DCL.Chat.HUD
             base.OnPointerExit(eventData);
             OnFocused?.Invoke(false);
         }
-
+        
         private IEnumerator SetAlpha(float target, float duration)
         {
             var t = 0f;

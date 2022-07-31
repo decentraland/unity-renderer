@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
@@ -92,7 +92,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
-
+        
         base.Dispose();
     }
 
@@ -207,7 +207,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         model.isUserBlocked = isBlocked;
         RefreshControl();
     }
-
+    
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;

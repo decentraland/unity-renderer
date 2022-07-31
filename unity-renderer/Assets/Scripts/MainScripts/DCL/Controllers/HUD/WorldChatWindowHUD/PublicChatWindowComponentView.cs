@@ -45,7 +45,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         backButton.onClick.AddListener(() => OnBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
     }
-
+    
     public override void RefreshControl()
     {
         nameLabel.text = $"~{model.name}";
@@ -115,7 +115,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public void Configure(BaseComponentModel newModel) => Configure((PublicChatModel) newModel);
     
     public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
-    
+  
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;
