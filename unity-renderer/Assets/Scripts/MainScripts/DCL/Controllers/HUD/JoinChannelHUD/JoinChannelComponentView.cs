@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponentView, IComponentModelConfig
 {
-    private const string MODAL_TITLE = "Do you want to join the channel {0}?";
+    internal const string MODAL_TITLE = "Do you want to join the channel {0}?";
 
     [Header("Prefab References")]
     [SerializeField] internal Button backgroundButton;
