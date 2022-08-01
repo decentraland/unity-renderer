@@ -8,5 +8,6 @@ namespace DCL.ECSRuntime
         public IParcelScene scene { get; set; }
         public IDCLEntity entity { get; set; }
         public T model { get; set; }
+        public IECSComponentHandler<T> handler { get; set; }
     }
 }

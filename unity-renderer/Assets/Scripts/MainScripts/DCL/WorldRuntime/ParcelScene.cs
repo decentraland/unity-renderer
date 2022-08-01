@@ -43,7 +43,7 @@ namespace DCL.Controllers
 
         public SceneLifecycleHandler sceneLifecycleHandler;
 
-        public ICRDTExecutor crdtExecutor { get; private set; }
+        public ICRDTExecutor crdtExecutor { get; set; }
 
         public bool isReleased { get; private set; }
         
@@ -55,7 +55,6 @@ namespace DCL.Controllers
             componentsManagerLegacy = new ECSComponentsManagerLegacy(this);
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
             metricsCounter = new SceneMetricsCounter(DataStore.i.sceneWorldObjects);
-            crdtExecutor = new CRDTExecutor(this);
         }
 
         private void OnDestroy()

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.ECSRuntime.Tests;
@@ -12,44 +11,61 @@ namespace Tests
 {
     public class ECSComponentShould
     {
-        private IParcelScene scene;
+        private IParcelScene scene0;
+        private IParcelScene scene1;
         private IECSComponentHandler<TestingComponent> componentHandler;
         private ECSComponent<TestingComponent> component;
 
         [SetUp]
         public void SetUp()
         {
-            scene = Substitute.For<IParcelScene>();
+            scene0 = Substitute.For<IParcelScene>();
+            scene1 = Substitute.For<IParcelScene>();
             componentHandler = Substitute.For<IECSComponentHandler<TestingComponent>>();
-            component = new ECSComponent<TestingComponent>(scene, TestingComponentSerialization.Deserialize, () => componentHandler);
+            component = new ECSComponent<TestingComponent>(TestingComponentSerialization.Deserialize, () => componentHandler);
         }
 
         [Test]
         public void CreateComponent()
         {
-            IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns(1);
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+            entity0.entityId.Returns(1);
+            
+            IDCLEntity entity1 = Substitute.For<IDCLEntity>();
+            entity1.entityId.Returns(1);
 
-            component.Create(entity);
+            component.Create(scene0, entity0);
+            component.Create(scene1, entity1);
 
-            componentHandler.Received(1).OnComponentCreated(scene, entity);
-            Assert.AreEqual(1, component.entities.Count);
-            Assert.AreEqual(entity.entityId, component.entities.FirstOrDefault().Key);
-            Assert.IsTrue(component.HasComponent(entity));
+            componentHandler.Received(1).OnComponentCreated(scene0, entity0);
+            componentHandler.Received(1).OnComponentCreated(scene1, entity1);
+            Assert.AreEqual(2, component.componentData.Count);
+            Assert.IsTrue(component.HasComponent(scene0, entity0));
+            Assert.IsTrue(component.HasComponent(scene1, entity1));
         }
 
         [Test]
         public void RemoveComponent()
         {
-            IDCLEntity entity = Substitute.For<IDCLEntity>();
-            entity.entityId.Returns(1);
+            IDCLEntity entity0 = Substitute.For<IDCLEntity>();
+            entity0.entityId.Returns(1);
+            
+            IDCLEntity entity1 = Substitute.For<IDCLEntity>();
+            entity1.entityId.Returns(1);
 
-            component.Create(entity);
-            component.Remove(entity);
+            component.Create(scene0, entity0);
+            component.Remove(scene0, entity0);
 
-            componentHandler.Received(1).OnComponentRemoved(scene, entity);
-            Assert.AreEqual(0, component.entities.Count);
-            Assert.IsFalse(component.HasComponent(entity));
+            component.Create(scene1, entity1);
+
+            componentHandler.Received(1).OnComponentRemoved(scene0, entity0);
+            Assert.AreEqual(1, component.componentData.Count);
+            Assert.IsFalse(component.HasComponent(scene0, entity0));
+            
+            component.Remove(scene1, entity1);
+            componentHandler.Received(1).OnComponentRemoved(scene1, entity1);
+            Assert.AreEqual(0, component.componentData.Count);
+            Assert.IsFalse(component.HasComponent(scene1, entity1));
         }
 
         [Test]
@@ -65,11 +81,11 @@ namespace Tests
             };
             var serializedModel = TestingComponentSerialization.Serialize(newComponentModel);
 
-            component.Create(entity);
-            component.Deserialize(entity, serializedModel);
+            component.Create(scene0, entity);
+            component.Deserialize(scene0, entity, serializedModel);
 
-            componentHandler.Received(1).OnComponentModelUpdated(scene, entity, Arg.Any<TestingComponent>());
-            var componentData = component.Get(entity);
+            componentHandler.Received(1).OnComponentModelUpdated(scene0, entity, Arg.Any<TestingComponent>());
+            var componentData = component.Get(scene0, entity);
             Assert.AreEqual(newComponentModel.someString, componentData.model.someString);
             Assert.AreEqual(newComponentModel.someVector, componentData.model.someVector);
         }
@@ -94,24 +110,24 @@ namespace Tests
                 trackedEntities.Add(entity);
                 trackedModels.Add(entity, entityModel);
 
-                component.Create(entity);
-                component.SetModel(entity, entityModel);
+                component.Create(scene0, entity);
+                component.SetModel(scene0, entity, entityModel);
             }
 
-            componentHandler.Received(entitiesCount).OnComponentCreated(scene, Arg.Any<IDCLEntity>());
-            componentHandler.Received(entitiesCount).OnComponentModelUpdated(scene, Arg.Any<IDCLEntity>(), Arg.Any<TestingComponent>());
+            componentHandler.Received(entitiesCount).OnComponentCreated(scene0, Arg.Any<IDCLEntity>());
+            componentHandler.Received(entitiesCount).OnComponentModelUpdated(scene0, Arg.Any<IDCLEntity>(), Arg.Any<TestingComponent>());
 
             for (int i = entitiesCount - 2; i > 3; i--)
             {
                 IDCLEntity entity = trackedEntities[i];
-                component.Remove(entity);
+                component.Remove(scene0, entity);
                 trackedEntities.RemoveAt(i);
                 trackedModels.Remove(entity);
             }
 
-            Assert.AreEqual(trackedEntities.Count, component.entities.Count);
+            Assert.AreEqual(trackedEntities.Count, component.componentData[scene0].Count);
 
-            using (var iterator = component.Get())
+            using (var iterator = component.componentData[scene0].Values.GetEnumerator())
             {
                 IDCLEntity currentEntity = null;
                 while (iterator.MoveNext())

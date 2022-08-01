@@ -25,7 +25,7 @@ namespace DCL.Controllers
         float loadingProgress { get; }
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
-        ICRDTExecutor crdtExecutor { get; }
+        ICRDTExecutor crdtExecutor { get; set; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);

@@ -25,6 +25,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
     public GameObject avatarContainer;
     public GameObject armatureContainer;
     public Transform loadingAvatarContainer;
+    public StickersController stickersControllers;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
@@ -245,8 +246,17 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-    public void ApplyHideModifier() { avatar.AddVisibilityConstrain(IN_HIDE_AREA); }
-    public void RemoveHideModifier() { avatar.RemoveVisibilityConstrain(IN_HIDE_AREA); }
+    public void ApplyHideModifier()
+    {
+        avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+        stickersControllers.ToggleHideArea(true);
+    }
+    
+    public void RemoveHideModifier()
+    {
+        avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+        stickersControllers.ToggleHideArea(false);
+    }
 
     private void OnDisable()
     {

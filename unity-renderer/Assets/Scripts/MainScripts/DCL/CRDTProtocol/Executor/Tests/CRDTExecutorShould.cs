@@ -30,6 +30,7 @@ namespace Tests
 
         IECSComponentHandler<ComponentString> stringCompHandler;
         IECSComponentHandler<ComponentInt> intCompHandler;
+        private ECSComponentsManager componentsManager;
 
         [SetUp]
         public void SetUp()
@@ -37,15 +38,18 @@ namespace Tests
             stringCompHandler = Substitute.For<IECSComponentHandler<ComponentString>>();
             intCompHandler = Substitute.For<IECSComponentHandler<ComponentInt>>();
 
-            DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(
+            ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_STRING,
                 data => new ComponentString() { value = (string)data },
                 () => stringCompHandler);
 
-            DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_INT,
                 data => new ComponentInt() { value = (int)data },
                 () => intCompHandler);
+
+            componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
         }
 
         [TearDown]
@@ -59,7 +63,7 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
                 key1 = ENTITY_ID,
@@ -82,7 +86,7 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
@@ -117,7 +121,7 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
@@ -174,7 +178,7 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
