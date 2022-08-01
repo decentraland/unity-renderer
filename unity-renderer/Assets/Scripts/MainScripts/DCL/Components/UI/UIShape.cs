@@ -1,9 +1,7 @@
-using System;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -162,50 +160,52 @@ namespace DCL.Components
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
 
         public UIShape parentUIComponent { get; protected set; }
-
-        private Coroutine layoutRefreshWatcher;
-        private CancellationTokenSource cancellationSource;
         
-        private static bool staticDirtyWatcher;
+        private static Coroutine dirtyWatcher;
         private static readonly Queue<UIShape> dirtyUIShapes = new Queue<UIShape>();
+        private static readonly List<UIShape> dirtyUIShapesNotReady = new List<UIShape>();
         private const float DirtyWatcherUpdateBudget = 2/1000f;
+        private static readonly WaitForEndOfFrame eof = new WaitForEndOfFrame();
 
         public UIShape()
         {
-            cancellationSource = new CancellationTokenSource();
             screenSize.OnChange += OnScreenResize;
-            model = new Model();
-
-            if (!staticDirtyWatcher)
-            {
-                // Kinerius: This breaks the domain design but its better than having one coroutine for each UIShape
-                Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, DirtyWatcher);
-                staticDirtyWatcher = true;
-            }
+            model = new Model(); 
         }
 
-        // Kinerius: This update function should be on a manager outside of this domain, hence avoiding the usage of static properties
-        private static void DirtyWatcher()
+        // Kinerius: This update function should be on a manager outside of this domain,
+        // hence avoiding the usage of static properties. For now its better than having one coroutine for each UIShape
+        private static IEnumerator DirtyWatcher()
         {
-            if (dirtyUIShapes.Count == 0)
-                return;
-
-            var startTime = Time.time;
-
-            while (dirtyUIShapes.Count > 0 && Time.time - startTime < DirtyWatcherUpdateBudget)
+            while (dirtyUIShapes.Count > 0)
             {
-                UIShape uiShape = dirtyUIShapes.Peek();
-                if (!uiShape.IsReadyForRefresh())
+                yield return eof;
+                
+                var startTime = Time.time;
+                while (dirtyUIShapes.Count > 0 && Time.time - startTime < DirtyWatcherUpdateBudget)
                 {
-                    uiShape = dirtyUIShapes.Dequeue();
-                    dirtyUIShapes.Enqueue(uiShape);
-                    return;
-                }
+                    UIShape uiShape = dirtyUIShapes.Peek();
+                    if (!uiShape.IsReadyForRefresh())
+                    {
+                        dirtyUIShapesNotReady.Add(dirtyUIShapes.Dequeue());
+                        continue;
+                    }
             
-                uiShape.RefreshRecursively();
-                uiShape.IsLayoutDirty = false;
-                dirtyUIShapes.Dequeue();
+                    uiShape.RefreshRecursively();
+                    uiShape.IsLayoutDirty = false;
+                    dirtyUIShapes.Dequeue();
+                }
+
+                foreach (UIShape uiShape in dirtyUIShapesNotReady)
+                {
+                    dirtyUIShapes.Enqueue(uiShape);
+                }
+                
+                dirtyUIShapesNotReady.Clear();
             }
+
+            dirtyWatcher = null;
+            yield return null;
         }
 
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
@@ -277,6 +277,8 @@ namespace DCL.Components
         {
             IsLayoutDirty = true;
             dirtyUIShapes.Enqueue(this);
+            
+            dirtyWatcher ??= CoroutineStarter.Start(DirtyWatcher());
         }
 
         private void RefreshRecursively()
@@ -522,16 +524,11 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            cancellationSource.Cancel();
-            cancellationSource.Dispose();
-            
+
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
             screenSize.OnChange -= OnScreenResize;
-
-            if ( layoutRefreshWatcher != null )
-                CoroutineStarter.Stop(layoutRefreshWatcher);
 
             base.Dispose();
         }
