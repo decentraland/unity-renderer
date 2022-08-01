@@ -186,6 +186,7 @@ namespace DCL
             }
 
             asset.SetAssetBundle(assetBundle);
+            asset.LoadMetrics();
 
             return true;
         }

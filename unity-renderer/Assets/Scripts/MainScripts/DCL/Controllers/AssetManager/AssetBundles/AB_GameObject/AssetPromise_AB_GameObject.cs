@@ -183,8 +183,8 @@ namespace DCL
                 yield return MaterialCachingHelper.Process(asset.renderers.ToList(), enableRenderers: false, settings.cachingFlags);
 
                 var animators = MeshesInfoUtils.ExtractUniqueAnimations(assetBundleModelGO);
-                asset.animationClipSize = 0; // TODO(Brian): Extract animation clip size from metadata
-                asset.meshDataSize = 0; // TODO(Brian): Extract mesh clip size from metadata
+                asset.animationClipSize = subPromise.asset.metrics.animation_size;
+                asset.meshDataSize = subPromise.asset.metrics.meshes_size;
 
                 foreach (var animator in animators)
                 {
