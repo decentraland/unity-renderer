@@ -21,9 +21,9 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly ISceneController sceneController;
     private readonly IWorldState worldState;
 
-    private readonly Dictionary<string, CRDTProtocol> outgoingCrdt = new Dictionary<string, CRDTProtocol>(24);
-    private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(24);
-    private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(24);
+    private readonly Dictionary<string, CRDTProtocol> outgoingCrdt = new Dictionary<string, CRDTProtocol>(60);
+    private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
+    private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
 
     public ComponentCrdtWriteSystem(IWorldState worldState, ISceneController sceneController, RPCContext rpcContext)
     {
