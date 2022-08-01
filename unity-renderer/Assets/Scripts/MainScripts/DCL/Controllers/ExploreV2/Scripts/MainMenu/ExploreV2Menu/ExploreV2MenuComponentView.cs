@@ -171,6 +171,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal RectTransform profileCardRectTranform;
     internal RealmSelectorComponentView realmSelectorModal;
     internal HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private DataStore_Camera cameraDataStore;
 
     public override void Awake()
     {
@@ -426,9 +427,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (!DataStore.i.exploreV2.profileCardIsOpen.Get())
             return;
 
+        cameraDataStore ??= DataStore.i.camera;
+        
         if (Input.GetMouseButton(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, Camera.main) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, Camera.main))
+            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
         {
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
         }
