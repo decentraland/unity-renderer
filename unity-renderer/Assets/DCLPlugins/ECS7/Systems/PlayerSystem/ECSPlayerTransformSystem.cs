@@ -65,7 +65,7 @@ namespace ECSSystems.PlayerSystem
 
                 var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
                 componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
-                    transform, ECSComponentWriteType.SEND_TO_SCENE);
+                    transform);
             }
         }
     }
