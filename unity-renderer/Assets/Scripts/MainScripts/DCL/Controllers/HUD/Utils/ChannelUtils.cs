@@ -15,6 +15,8 @@ public class ChannelUtils
             .Replace("<noparse>", "")
             .Replace("</noparse>", "")
             .Replace('\n', ' ')
+            .Replace('.', ' ')
+            .Replace(',', ' ')
             .Split(' ');
 
         for (int i = 0; i < separatedWords.Length; i++)
