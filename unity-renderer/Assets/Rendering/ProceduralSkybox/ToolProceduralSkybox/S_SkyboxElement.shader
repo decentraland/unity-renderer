@@ -3,16 +3,18 @@ Shader "Custom/S_SkyboxElement"
     Properties
     {
         [NoScaleOffset] _Albedo("Albedo", 2D) = "white" {}
+        _AlbedoTilingAndOffset("AlbedoTilingAndOffset", Vector) = (1, 1, 0, 0)
         _Tint("Tint", Color) = (1, 1, 1, 1)
-        Smoothness("Smoothness", Range(0, 1)) = 0
+        _Smoothness("Smoothness", Range(0, 1)) = 0
         _Metallic("Metallic", Range(0, 1)) = 0
         [NoScaleOffset]_NormalMap("NormalMap", 2D) = "bump" {}
+        _NormalTilingAndOffset("NormalTilingAndOffset", Vector) = (1, 1, 0, 0)
         _Emission("Emission", Color) = (0, 0, 0, 0)
         _Opacity("Opacity", Range(0, 1)) = 1
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
-        [IntRange] _StencilID("Stencil ID", Range(0, 255)) = 0
+        [IntRange] _StencilID("Stencil ID", Range(0, 255)) = 1
     }
         SubShader
     {
@@ -36,7 +38,7 @@ Shader "Custom/S_SkyboxElement"
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
-
+        
         Stencil
         {
             Ref[_StencilID]
@@ -90,7 +92,7 @@ Shader "Custom/S_SkyboxElement"
         #define VARYINGS_NEED_TANGENT_WS
         #define VARYINGS_NEED_TEXCOORD0
         #define VARYINGS_NEED_VIEWDIRECTION_WS
-        //#define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+        #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_FORWARD
@@ -258,10 +260,12 @@ Shader "Custom/S_SkyboxElement"
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -274,6 +278,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -314,7 +323,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -322,7 +340,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2;
     Unity_Multiply_float(_Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0, _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0, _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2);
     UnityTexture2D _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0 = UnityBuildTexture2DStructNoScale(_NormalMap);
-    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_e289010ff9674279931de78587d0dcdb_Out_0 = _NormalTilingAndOffset;
+    float _Split_98d85fb56d364f1b9c3396499113e785_R_1 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[0];
+    float _Split_98d85fb56d364f1b9c3396499113e785_G_2 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[1];
+    float _Split_98d85fb56d364f1b9c3396499113e785_B_3 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[2];
+    float _Split_98d85fb56d364f1b9c3396499113e785_A_4 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[3];
+    float2 _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_R_1, _Split_98d85fb56d364f1b9c3396499113e785_G_2);
+    float2 _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_B_3, _Split_98d85fb56d364f1b9c3396499113e785_A_4);
+    float2 _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0, _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
+    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
     _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.rgb = UnpackNormal(_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0);
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_R_4 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.r;
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_G_5 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.g;
@@ -330,7 +357,7 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_A_7 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.a;
     float4 _Property_37b6a1744fc1434e9179f2fd202f19bc_Out_0 = _Emission;
     float _Property_0544af7e81e8476783581dc73ab9e181_Out_0 = _Metallic;
-    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = Smoothness;
+    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = _Smoothness;
     float _Property_8fad9d779fed404e8c999751b8566e66_Out_0 = _Opacity;
     surface.BaseColor = (_Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2.xyz);
     surface.NormalTS = (_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.xyz);
@@ -443,7 +470,7 @@ Pass
         #define VARYINGS_NEED_TANGENT_WS
         #define VARYINGS_NEED_TEXCOORD0
         #define VARYINGS_NEED_VIEWDIRECTION_WS
-        //#define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+        #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_GBUFFER
@@ -611,10 +638,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -627,6 +656,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -667,7 +701,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -675,7 +718,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2;
     Unity_Multiply_float(_Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0, _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0, _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2);
     UnityTexture2D _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0 = UnityBuildTexture2DStructNoScale(_NormalMap);
-    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_e289010ff9674279931de78587d0dcdb_Out_0 = _NormalTilingAndOffset;
+    float _Split_98d85fb56d364f1b9c3396499113e785_R_1 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[0];
+    float _Split_98d85fb56d364f1b9c3396499113e785_G_2 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[1];
+    float _Split_98d85fb56d364f1b9c3396499113e785_B_3 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[2];
+    float _Split_98d85fb56d364f1b9c3396499113e785_A_4 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[3];
+    float2 _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_R_1, _Split_98d85fb56d364f1b9c3396499113e785_G_2);
+    float2 _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_B_3, _Split_98d85fb56d364f1b9c3396499113e785_A_4);
+    float2 _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0, _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
+    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
     _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.rgb = UnpackNormal(_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0);
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_R_4 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.r;
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_G_5 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.g;
@@ -683,7 +735,7 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_A_7 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.a;
     float4 _Property_37b6a1744fc1434e9179f2fd202f19bc_Out_0 = _Emission;
     float _Property_0544af7e81e8476783581dc73ab9e181_Out_0 = _Metallic;
-    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = Smoothness;
+    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = _Smoothness;
     float _Property_8fad9d779fed404e8c999751b8566e66_Out_0 = _Opacity;
     surface.BaseColor = (_Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2.xyz);
     surface.NormalTS = (_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.xyz);
@@ -894,10 +946,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -1139,10 +1193,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -1404,10 +1460,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -1420,7 +1478,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
-// GraphFunctions: <None>
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 // Graph Vertex
 struct VertexDescription
@@ -1450,7 +1512,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     UnityTexture2D _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0 = UnityBuildTexture2DStructNoScale(_NormalMap);
-    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_e289010ff9674279931de78587d0dcdb_Out_0 = _NormalTilingAndOffset;
+    float _Split_98d85fb56d364f1b9c3396499113e785_R_1 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[0];
+    float _Split_98d85fb56d364f1b9c3396499113e785_G_2 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[1];
+    float _Split_98d85fb56d364f1b9c3396499113e785_B_3 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[2];
+    float _Split_98d85fb56d364f1b9c3396499113e785_A_4 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[3];
+    float2 _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_R_1, _Split_98d85fb56d364f1b9c3396499113e785_G_2);
+    float2 _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_B_3, _Split_98d85fb56d364f1b9c3396499113e785_A_4);
+    float2 _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0, _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
+    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
     _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.rgb = UnpackNormal(_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0);
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_R_4 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.r;
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_G_5 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.g;
@@ -1667,10 +1738,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -1683,6 +1756,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -1719,7 +1797,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -1936,10 +2023,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -1952,6 +2041,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -1987,7 +2081,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -2112,7 +2215,7 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
         #define VARYINGS_NEED_TANGENT_WS
         #define VARYINGS_NEED_TEXCOORD0
         #define VARYINGS_NEED_VIEWDIRECTION_WS
-        //#define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+        #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
         #define FEATURES_GRAPH_VERTEX
         /* WARNING: $splice Could not find named fragment 'PassInstancing' */
         #define SHADERPASS SHADERPASS_FORWARD
@@ -2280,10 +2383,12 @@ VertexDescriptionInputs BuildVertexDescriptionInputs(Attributes input)
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -2296,6 +2401,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -2336,7 +2446,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -2344,7 +2463,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float4 _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2;
     Unity_Multiply_float(_Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0, _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0, _Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2);
     UnityTexture2D _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0 = UnityBuildTexture2DStructNoScale(_NormalMap);
-    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_e289010ff9674279931de78587d0dcdb_Out_0 = _NormalTilingAndOffset;
+    float _Split_98d85fb56d364f1b9c3396499113e785_R_1 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[0];
+    float _Split_98d85fb56d364f1b9c3396499113e785_G_2 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[1];
+    float _Split_98d85fb56d364f1b9c3396499113e785_B_3 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[2];
+    float _Split_98d85fb56d364f1b9c3396499113e785_A_4 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[3];
+    float2 _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_R_1, _Split_98d85fb56d364f1b9c3396499113e785_G_2);
+    float2 _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_B_3, _Split_98d85fb56d364f1b9c3396499113e785_A_4);
+    float2 _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0, _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
+    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
     _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.rgb = UnpackNormal(_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0);
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_R_4 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.r;
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_G_5 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.g;
@@ -2352,7 +2480,7 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_A_7 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.a;
     float4 _Property_37b6a1744fc1434e9179f2fd202f19bc_Out_0 = _Emission;
     float _Property_0544af7e81e8476783581dc73ab9e181_Out_0 = _Metallic;
-    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = Smoothness;
+    float _Property_c5567af7f54949989ed5723f02968300_Out_0 = _Smoothness;
     float _Property_8fad9d779fed404e8c999751b8566e66_Out_0 = _Opacity;
     surface.BaseColor = (_Multiply_919a61e1fb034b70b5743fa8ebd1b7c8_Out_2.xyz);
     surface.NormalTS = (_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.xyz);
@@ -2561,10 +2689,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -2805,10 +2935,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -3069,10 +3201,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -3085,7 +3219,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
-// GraphFunctions: <None>
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 // Graph Vertex
 struct VertexDescription
@@ -3115,7 +3253,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
 {
     SurfaceDescription surface = (SurfaceDescription)0;
     UnityTexture2D _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0 = UnityBuildTexture2DStructNoScale(_NormalMap);
-    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_e289010ff9674279931de78587d0dcdb_Out_0 = _NormalTilingAndOffset;
+    float _Split_98d85fb56d364f1b9c3396499113e785_R_1 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[0];
+    float _Split_98d85fb56d364f1b9c3396499113e785_G_2 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[1];
+    float _Split_98d85fb56d364f1b9c3396499113e785_B_3 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[2];
+    float _Split_98d85fb56d364f1b9c3396499113e785_A_4 = _Property_e289010ff9674279931de78587d0dcdb_Out_0[3];
+    float2 _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_R_1, _Split_98d85fb56d364f1b9c3396499113e785_G_2);
+    float2 _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0 = float2(_Split_98d85fb56d364f1b9c3396499113e785_B_3, _Split_98d85fb56d364f1b9c3396499113e785_A_4);
+    float2 _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_696d8f509dc642ada4e5b178df2a704e_Out_0, _Vector2_bd4d8612134d4a3fb06901a1a9f129b7_Out_0, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
+    float4 _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0 = SAMPLE_TEXTURE2D(_Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.tex, _Property_4c4a8ff3d62f4588b4c02a5a32db5051_Out_0.samplerstate, _TilingAndOffset_0727dd655c424cb3886554263cef4feb_Out_3);
     _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.rgb = UnpackNormal(_SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0);
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_R_4 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.r;
     float _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_G_5 = _SampleTexture2D_8e15f67455e6442b95c07fa1a61c1e75_RGBA_0.g;
@@ -3332,10 +3479,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -3348,6 +3497,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -3384,7 +3538,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;
@@ -3602,10 +3765,12 @@ Pass
     // Graph Properties
     CBUFFER_START(UnityPerMaterial)
 float4 _Albedo_TexelSize;
+float4 _AlbedoTilingAndOffset;
 float4 _Tint;
-float Smoothness;
+float _Smoothness;
 float _Metallic;
 float4 _NormalMap_TexelSize;
+float4 _NormalTilingAndOffset;
 float4 _Emission;
 float _Opacity;
 CBUFFER_END
@@ -3618,6 +3783,11 @@ TEXTURE2D(_NormalMap);
 SAMPLER(sampler_NormalMap);
 
 // Graph Functions
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 
 void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
 {
@@ -3653,7 +3823,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     SurfaceDescription surface = (SurfaceDescription)0;
     float4 _Property_2063d88286a94fd7b6ab6974a9ac1a87_Out_0 = _Tint;
     UnityTexture2D _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0 = UnityBuildTexture2DStructNoScale(_Albedo);
-    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, IN.uv0.xy);
+    float4 _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0 = _AlbedoTilingAndOffset;
+    float _Split_562912dba70f4dcc85a95f91bb920174_R_1 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[0];
+    float _Split_562912dba70f4dcc85a95f91bb920174_G_2 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[1];
+    float _Split_562912dba70f4dcc85a95f91bb920174_B_3 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[2];
+    float _Split_562912dba70f4dcc85a95f91bb920174_A_4 = _Property_71e15a202f0c43bfb70e02e75d6a3fee_Out_0[3];
+    float2 _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_R_1, _Split_562912dba70f4dcc85a95f91bb920174_G_2);
+    float2 _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0 = float2(_Split_562912dba70f4dcc85a95f91bb920174_B_3, _Split_562912dba70f4dcc85a95f91bb920174_A_4);
+    float2 _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, _Vector2_9bff33ad332a4f55a7977305a8e5a1a5_Out_0, _Vector2_9892061fe9a24b1a8ff85d1eb43628cd_Out_0, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
+    float4 _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.tex, _Property_d59dcda96c2c46769d659c1ddee9c981_Out_0.samplerstate, _TilingAndOffset_99b60e9f470a4db0b7471e74eb129f1a_Out_3);
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_R_4 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.r;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_G_5 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.g;
     float _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_B_6 = _SampleTexture2D_f75daeefca0a47eeb9d6a96c2ef4fb33_RGBA_0.b;

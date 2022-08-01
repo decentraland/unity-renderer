@@ -107,7 +107,7 @@ namespace DCL.Skybox
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
-            skyboxCam.AssignTargetCamera(currentTransform);
+            //skyboxCam.AssignTargetCamera(currentTransform);
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
