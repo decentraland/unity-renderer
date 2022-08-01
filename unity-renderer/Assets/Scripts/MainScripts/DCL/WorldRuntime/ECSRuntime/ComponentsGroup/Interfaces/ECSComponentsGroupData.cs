@@ -3,14 +3,14 @@ using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public readonly struct ECSComponentsGroupOfTwoData<TD1, TD2>
+    public readonly struct ECSComponentsGroupData<TD1, TD2>
     {
         public readonly IECSReadOnlyComponentData<TD1> componentData1;
         public readonly IECSReadOnlyComponentData<TD2> componentData2;
         public readonly IParcelScene scene;
         public readonly IDCLEntity entity;
 
-        public ECSComponentsGroupOfTwoData(IParcelScene scene, IDCLEntity entity,
+        public ECSComponentsGroupData(IParcelScene scene, IDCLEntity entity,
             IECSReadOnlyComponentData<TD1> componentData1,
             IECSReadOnlyComponentData<TD2> componentData2)
         {

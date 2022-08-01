@@ -158,9 +158,9 @@ namespace DCL.ECSRuntime
         /// <typeparam name="T1">model type of `componentId1`</typeparam>
         /// <typeparam name="T2">model type of `componentId2`</typeparam>
         /// <returns></returns>
-        public IECSReadOnlyComponentsGroupOfTwo<T1, T2> CreateComponentGroup<T1, T2>(int componentId1, int componentId2)
+        public IECSReadOnlyComponentsGroup<T1, T2> CreateComponentGroup<T1, T2>(int componentId1, int componentId2)
         {
-            var compGroup = new ECSComponentsGroupOfTwo<T1, T2>(GetOrCreateComponent(componentId1), GetOrCreateComponent(componentId2));
+            var compGroup = new ECSComponentsGroup<T1, T2>(GetOrCreateComponent(componentId1), GetOrCreateComponent(componentId2));
             componentsGroups.Add(compGroup);
             return compGroup;
         }

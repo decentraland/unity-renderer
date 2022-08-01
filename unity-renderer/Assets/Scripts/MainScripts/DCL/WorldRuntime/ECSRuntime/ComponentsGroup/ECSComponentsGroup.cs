@@ -1,19 +1,22 @@
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using UnityEngine.Assertions;
 
 namespace DCL.ECSRuntime
 {
-    public class ECSComponentsGroupOfTwo<T1, T2> : IECSComponentsGroup, IECSReadOnlyComponentsGroupOfTwo<T1, T2>
+    public class ECSComponentsGroup<T1, T2> : IECSComponentsGroup, IECSReadOnlyComponentsGroup<T1, T2>
     {
         private readonly IECSComponent component1;
         private readonly IECSComponent component2;
-        private readonly List<ECSComponentsGroupOfTwoData<T1, T2>> list = new List<ECSComponentsGroupOfTwoData<T1, T2>>();
+        private readonly List<ECSComponentsGroupData<T1, T2>> list = new List<ECSComponentsGroupData<T1, T2>>();
 
-        IReadOnlyList<ECSComponentsGroupOfTwoData<T1, T2>> IECSReadOnlyComponentsGroupOfTwo<T1, T2>.group => list;
+        IReadOnlyList<ECSComponentsGroupData<T1, T2>> IECSReadOnlyComponentsGroup<T1, T2>.group => list;
 
-        public ECSComponentsGroupOfTwo(IECSComponent component1, IECSComponent component2)
+        public ECSComponentsGroup(IECSComponent component1, IECSComponent component2)
         {
+            Assert.IsNotNull(component1, $"component1 must not be null");
+            Assert.IsNotNull(component2, $"component2 must not be null");
             this.component1 = component1;
             this.component2 = component2;
         }
@@ -30,7 +33,7 @@ namespace DCL.ECSRuntime
 
         void IECSComponentsGroup.Add(IParcelScene scene, IDCLEntity entity)
         {
-            ECSComponentsGroupOfTwoData<T1, T2> data = new ECSComponentsGroupOfTwoData<T1, T2>
+            ECSComponentsGroupData<T1, T2> data = new ECSComponentsGroupData<T1, T2>
             (
                 scene: scene,
                 entity: entity,
@@ -44,7 +47,7 @@ namespace DCL.ECSRuntime
         {
             for (int i = 0; i < list.Count; i++)
             {
-                ECSComponentsGroupOfTwoData<T1, T2> data = list[i];
+                ECSComponentsGroupData<T1, T2> data = list[i];
                 if (data.entity != entity)
                     continue;
 
