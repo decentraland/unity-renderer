@@ -75,7 +75,7 @@ public class CharacterPreviewController : MonoBehaviour
             onDone?.Invoke();
             return;
         }
-
+        Debug.Log("CALLED UPDATE MODEL");
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();

@@ -9,6 +9,7 @@ public class UserProfileController : MonoBehaviour
 
     private static UserProfileDictionary userProfilesCatalogValue;
     private bool baseWearablesAlreadyRequested = false;
+    private bool letsUpdateOnlyFirstTime = false;
 
     public static UserProfileDictionary userProfilesCatalog
     {
@@ -47,9 +48,13 @@ public class UserProfileController : MonoBehaviour
         if (payload == null)
             return;
 
-        var model = JsonUtility.FromJson<UserProfileModel>(payload);
-        ownUserProfile.UpdateData(model);
-        userProfilesCatalog.Add(model.userId, ownUserProfile);
+        if (!letsUpdateOnlyFirstTime)
+        {
+            var model = JsonUtility.FromJson<UserProfileModel>(payload);
+            ownUserProfile.UpdateData(model);
+            userProfilesCatalog.Add(model.userId, ownUserProfile);
+            letsUpdateOnlyFirstTime = true;
+        }
     }
 
     public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload)); }
