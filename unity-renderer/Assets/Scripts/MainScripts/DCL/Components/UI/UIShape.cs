@@ -179,7 +179,8 @@ namespace DCL.Components
         {
             while (dirtyUIShapes.Count > 0)
             {
-                yield return eof;
+                // WaitForEndOfFrame doesn't work in batch mode
+                yield return Application.isBatchMode ? null : eof;
                 
                 var startTime = Time.time;
                 while (dirtyUIShapes.Count > 0 && Time.time - startTime < DirtyWatcherUpdateBudget)
@@ -196,11 +197,11 @@ namespace DCL.Components
                     dirtyUIShapes.Dequeue();
                 }
 
-                foreach (UIShape uiShape in dirtyUIShapesNotReady)
+                for (int i = 0; i < dirtyUIShapesNotReady.Count; i++)
                 {
-                    dirtyUIShapes.Enqueue(uiShape);
+                    dirtyUIShapes.Enqueue(dirtyUIShapesNotReady[i]);
                 }
-                
+
                 dirtyUIShapesNotReady.Clear();
             }
 
