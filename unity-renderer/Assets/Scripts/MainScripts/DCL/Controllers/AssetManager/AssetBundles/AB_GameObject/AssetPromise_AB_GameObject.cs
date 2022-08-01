@@ -54,7 +54,7 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            asset.Show(OnSuccess);
+            CoroutineStarter.Start(SetMaterialTransition(()=>asset.Show(OnSuccess)));
         }
 
         protected override void OnAfterLoadOrReuse()
@@ -225,7 +225,7 @@ namespace DCL
                 int index = 0;
                 foreach (Renderer assetRenderer in asset.renderers)
                 {
-                    MaterialTransitionController transition = assetRenderer.gameObject.AddComponent<MaterialTransitionController>();
+                    MaterialTransitionController transition = assetRenderer.gameObject.GetOrCreateComponent<MaterialTransitionController>();
                     materialTransitionControllers[index] = transition;
                     transition.delay = 0;
                     transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
