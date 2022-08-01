@@ -9,9 +9,9 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] internal TMP_Text textComponent;
 
-    private string currentText;
-    private bool hasNoParseLabel;
-    private List<string> channelsFoundInText = new List<string>();
+    internal string currentText;
+    internal bool hasNoParseLabel;
+    internal List<string> channelsFoundInText = new List<string>();
 
     private void Awake()
     {
@@ -38,7 +38,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
         CoroutineStarter.Start(RefreshChannelPatterns());
     }
 
-    private IEnumerator RefreshChannelPatterns()
+    internal IEnumerator RefreshChannelPatterns()
     {
         yield return new WaitForEndOfFrame();
 
