@@ -46,6 +46,8 @@ public class CharacterPreviewController : MonoBehaviour
     private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
     private CancellationTokenSource loadingCts = new CancellationTokenSource();
 
+    private bool currentlyRunning;
+
     private void Awake()
     {
         cameraFocusLookUp = new Dictionary<CameraFocus, Transform>()
@@ -70,12 +72,12 @@ public class CharacterPreviewController : MonoBehaviour
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
-        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+        if (newModel.HaveSameWearablesAndColors(currentAvatarModel) || currentlyRunning)
         {
             onDone?.Invoke();
             return;
         }
-        Debug.Log("CALLED UPDATE MODEL");
+        currentlyRunning = true;
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
@@ -109,7 +111,6 @@ public class CharacterPreviewController : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            Debug.Log("CANCELED THE UPDATE MODEL ROUTINE");
             return;
         }
         catch (Exception e)
@@ -117,6 +118,7 @@ public class CharacterPreviewController : MonoBehaviour
             Debug.LogException(e);
             return;
         }
+        currentlyRunning = false;
         onDone?.Invoke();
     }
 
