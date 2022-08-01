@@ -50,7 +50,6 @@ public class UserProfileController : MonoBehaviour
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
-        letsUpdateOnlyFirstTime = true;
     }
 
     public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload)); }
