@@ -23,8 +23,8 @@ public interface IChatController
     List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId);
     void Send(ChatMessage message);
     void MarkMessagesAsSeen(string userId);
+    void GetPrivateMessages(string userId, int limit, string fromMessageId);
     void MarkChannelMessagesAsSeen(string channelId);
-    void GetPrivateMessages(string userId, int limit, long fromTimestamp);
     void JoinOrCreateChannel(string channelId);
     void LeaveChannel(string channelId);
     void GetChannelMessages(string channelId, int limit, long fromTimestamp);
@@ -38,4 +38,5 @@ public interface IChatController
     void GetUnseenMessagesByChannel();
     int GetAllocatedUnseenMessages(string userId);
     int GetAllocatedUnseenChannelMessages(string channelId);
+    void CreateChannel(string channelId);
 }

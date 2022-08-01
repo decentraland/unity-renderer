@@ -80,10 +80,13 @@ public class PublicChatWindowController : IHUD
         if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
         this.channelId = channelId;
 
-        // TODO: retrieve data from a channel provider
-        View.Configure(new PublicChatModel(this.channelId, "nearby",
-            "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.",
-            0, true, 0));
+        var channel = chatController.GetAllocatedChannel(channelId);
+        View.Configure(new PublicChatModel(this.channelId,
+            channel.Name,
+            channel.Description,
+            channel.LastMessageTimestamp,
+            channel.Joined,
+            channel.MemberCount));
 
         ReloadAllChats().Forget();
     }

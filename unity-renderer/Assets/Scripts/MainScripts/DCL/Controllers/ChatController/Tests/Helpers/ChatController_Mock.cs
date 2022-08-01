@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DCL.Chat.Channels;
-using UnityEngine;
 using DCL.Interface;
 
 public class ChatController_Mock : IChatController
@@ -46,6 +45,10 @@ public class ChatController_Mock : IChatController
     {
     }
 
+    public void GetPrivateMessages(string userId, int limit, string fromMessageId)
+    {
+    }
+    
     public void MarkChannelMessagesAsSeen(string channelId)
     {
     }
@@ -97,4 +100,8 @@ public class ChatController_Mock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => 0;
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
+    
+    public void CreateChannel(string channelId)
+    {
+    }
 }

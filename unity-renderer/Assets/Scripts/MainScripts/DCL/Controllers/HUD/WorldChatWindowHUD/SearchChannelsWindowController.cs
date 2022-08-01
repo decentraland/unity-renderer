@@ -20,6 +20,7 @@ namespace DCL.Chat.HUD
 
         public event Action OnClosed;
         public event Action OnBack;
+        public event Action OnOpenChannelCreation;
 
         public SearchChannelsWindowController(IChatController chatController)
         {
@@ -55,6 +56,7 @@ namespace DCL.Chat.HUD
                 view.OnBack += HandleViewBacked;
                 view.OnClose += HandleViewClosed;
                 view.OnJoinChannel += HandleJoinChannel;
+                view.OnCreateChannel += OpenChannelCreationWindow;
                 chatController.OnChannelUpdated += ShowChannel;
                 
                 view.Show();
@@ -74,6 +76,8 @@ namespace DCL.Chat.HUD
                 view.Hide();
             }
         }
+
+        private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
 
         private void SearchChannels(string searchText)
         {
@@ -121,8 +125,10 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated -= ShowChannel;
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
-            chatController.OnChannelUpdated -= ShowChannel;
+            view.OnBack -= HandleViewBacked;
+            view.OnClose -= HandleViewClosed;
             view.OnJoinChannel -= HandleJoinChannel;
+            view.OnCreateChannel -= OpenChannelCreationWindow;
         }
 
         private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)

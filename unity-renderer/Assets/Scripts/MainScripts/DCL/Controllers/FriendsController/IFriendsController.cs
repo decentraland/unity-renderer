@@ -33,6 +33,6 @@ public interface IFriendsController
     void GetFriends(int limit, int skip);
     void GetFriends(string usernameOrId, int limit);
     void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
-    void GetFriendsWithDirectMessages(int limit, long fromTimestamp);
+    void GetFriendsWithDirectMessages(int limit, int skip);
     void GetFriendsWithDirectMessages(string userNameOrId, int limit);
 }

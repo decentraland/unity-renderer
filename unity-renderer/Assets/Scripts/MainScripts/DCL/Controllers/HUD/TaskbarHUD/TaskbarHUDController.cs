@@ -31,6 +31,7 @@ public class TaskbarHUDController : IHUD
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
     private SearchChannelsWindowController searchChannelsHud;
+    private CreateChannelWindowController channelCreationWindow;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -309,6 +310,7 @@ public class TaskbarHUDController : IHUD
 
         view.ShowChatButton();
         worldChatWindowHud.View.OnClose += OpenPublicChatOnPreviewMode;
+        worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
     }
 
     private void OpenPublicChatOnPreviewMode()
@@ -725,6 +727,28 @@ public class TaskbarHUDController : IHUD
             OpenPublicChatOnPreviewMode();
         };
         controller.OnBack += GoBackFromChat;
+        controller.OnOpenChannelCreation += OpenChannelCreation;
+    }
+
+    public void AddChannelCreation(CreateChannelWindowController controller)
+    {
+        if (controller.View.Transform.parent == view.fullScreenWindowContainer) return;
+        
+        controller.View.Transform.SetParent(view.fullScreenWindowContainer, false);
+        experiencesViewerTransform?.SetAsLastSibling();
+
+        channelCreationWindow = controller;
+
+        controller.OnNavigateToChannelWindow += channelId =>
+        {
+            OpenChannelChat(channelId);
+            channelCreationWindow.SetVisibility(false);
+        };
+    }
+
+    private void OpenChannelCreation()
+    {
+        channelCreationWindow.SetVisibility(true);
     }
 
     public void OpenChannelSearch()

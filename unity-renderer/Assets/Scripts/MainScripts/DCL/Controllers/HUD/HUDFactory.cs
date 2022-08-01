@@ -116,6 +116,11 @@ public class HUDFactory : IHUDFactory
                     // TODO (channels): Pass ChatController.i after kernel integration
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
                 break;
+            case HUDElementID.CHANNELS_CREATE:
+                hudElement = new CreateChannelWindowController(
+                    // TODO (channels): Pass ChatController.i after kernel integration
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
                 break;

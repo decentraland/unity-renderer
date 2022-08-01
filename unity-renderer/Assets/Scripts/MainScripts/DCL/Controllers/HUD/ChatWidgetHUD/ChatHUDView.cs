@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -93,6 +94,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public event Action<ChatMessage> OnSendMessage;
 
+    public event Action OnChatContainerResized;
+    public event Action OnChatEntriesSorted;
+    
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
     public bool IsInputFieldSelected => inputField.isFocused;
@@ -136,11 +140,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (updateLayoutDelayedFrames > 0)
         {
             updateLayoutDelayedFrames--;
-            
+
             if (updateLayoutDelayedFrames <= 0)
+            {
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
+                OnChatContainerResized?.Invoke();
+            }
         }
-        
+
         if (isSortingDirty)
             SortEntriesImmediate();
         isSortingDirty = false;
@@ -275,6 +282,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (entries.Count <= 0) return;
         Destroy(entries[0].gameObject);
         entries.Remove(entries[0]);
+        
+        UpdateLayout();
     }
 
     public override void Hide(bool instant = false)
@@ -296,6 +305,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         foreach (var entry in entries)
             Destroy(entry.gameObject);
         entries.Clear();
+        
+        UpdateLayout();
     }
 
     private bool IsEntryVisible(ChatEntry entry)
@@ -316,6 +327,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (inputField.wasCanceled)
             currentMessage.body = string.Empty;
 
+        // we have to wait one frame to disengage the flow triggered by OnSendMessage
+        // otherwise it crashes the application (WebGL only) due a TextMeshPro bug
+        StartCoroutine(WaitThenTriggerSendMessage());
+    }
+
+    private IEnumerator WaitThenTriggerSendMessage()
+    {
+        yield return null;
         OnSendMessage?.Invoke(currentMessage);
     }
 
@@ -371,6 +390,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (entries[i].transform.GetSiblingIndex() != i)
                 entries[i].transform.SetSiblingIndex(i);
         }
+        OnChatEntriesSorted?.Invoke();
     }
     
     private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();

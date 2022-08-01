@@ -68,10 +68,10 @@ public class LazyLoadingChatControllerMock : IChatController
         SimulateDelayedResponseFor_MarkAsSeen(userId).Forget();
     }
 
+    public void GetPrivateMessages(string userId, int limit, string fromMessageId) =>
+        SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromMessageId).Forget();
+    
     public void MarkChannelMessagesAsSeen(string channelId) => controller.MarkChannelMessagesAsSeen(channelId);
-
-    public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
-        SimulateDelayedResponseFor_GetPrivateMessages(userId, limit, fromTimestamp).Forget();
     
     public void GetUnseenMessagesByUser() => SimulateDelayedResponseFor_TotalUnseenMessagesByUser().Forget();
 
@@ -80,6 +80,8 @@ public class LazyLoadingChatControllerMock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => Random.Range(0, 10);
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
+    
+    public void CreateChannel(string channelId) => controller.CreateChannel(channelId);
 
     public void JoinOrCreateChannel(string channelId) => controller.JoinOrCreateChannel(channelId);
 
@@ -106,33 +108,38 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) => controller.GetPrivateAllocatedEntriesByUser(userId);
 
-    private async UniTask SimulateDelayedResponseFor_GetPrivateMessages(string userId, int limit, long fromTimestamp)
+    private async UniTask SimulateDelayedResponseFor_GetPrivateMessages(string userId, int limit, string fromMessageId)
     {
         await UniTask.Delay(Random.Range(1000, 3000));
 
+        ChatMessageListPayload messagesListPayload = new ChatMessageListPayload();
+        messagesListPayload.messages = new ChatMessage[limit];
+
         for (int i = limit - 1; i >= 0; i--)
         {
-            controller.AddMessageToChatWindow(
+            messagesListPayload.messages[i] = 
                 CreateMockedDataFor_AddMessageToChatWindowPayload(
                     userId,
                     $"fake message {i + 1} from user {userId}",
-                    DateTimeOffset.FromUnixTimeMilliseconds(fromTimestamp).AddMinutes(-10 * (i + 1)).ToUnixTimeMilliseconds(),
-                    Random.Range(0, 2) != 0));
+                    Random.Range(0, 2) != 0);
         }
+
+        controller.AddChatMessages(JsonUtility.ToJson(messagesListPayload));
     }
 
-    private string CreateMockedDataFor_AddMessageToChatWindowPayload(string userId, string messageBody, long fromTimestamp, bool isOwnMessage)
+    private ChatMessage CreateMockedDataFor_AddMessageToChatWindowPayload(string userId, string messageBody, bool isOwnMessage)
     {
         var fakeMessage = new ChatMessage
         {
+            messageId = Guid.NewGuid().ToString(),
             body = messageBody,
             sender = isOwnMessage ? UserProfile.GetOwnUserProfile().userId : userId,
             recipient = isOwnMessage ? userId : UserProfile.GetOwnUserProfile().userId,
             messageType = ChatMessage.Type.PRIVATE,
-            timestamp = (ulong)fromTimestamp
+            timestamp = (ulong)Random.Range(0, int.MaxValue)
         };
 
-        return JsonUtility.ToJson(fakeMessage);
+        return fakeMessage;
     }
 
     private void CreateFakeUsersInCatalog()

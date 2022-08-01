@@ -7,13 +7,14 @@ public class TaskbarHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "Taskbar";
 
+    [SerializeField] internal RectTransform fullScreenWindowContainer;
+
     [Header("Taskbar Animation")] [SerializeField]
     internal ShowHideAnimator taskbarAnimator;
 
     [Header("Left Side Config")]
     [SerializeField] internal RectTransform leftWindowContainer;
     [SerializeField] internal RectTransform altSectionContainer;
-
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
     [SerializeField] internal TaskbarButton chatButton;

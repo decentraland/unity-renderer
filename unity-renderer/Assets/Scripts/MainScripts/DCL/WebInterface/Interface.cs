@@ -696,7 +696,7 @@ namespace DCL.Interface
         {
             public string userNameOrId;
             public int limit;
-            public long from;
+            public int skip;
         }
 
         [System.Serializable]
@@ -716,7 +716,7 @@ namespace DCL.Interface
         {
             public string userId;
             public int limit;
-            public long from;
+            public string fromMessageId;
         }
         
         [Serializable]
@@ -756,6 +756,12 @@ namespace DCL.Interface
         
         [Serializable]
         private class LeaveChannelPayload
+        {
+            public string channelId;
+        }
+        
+        [Serializable]
+        private class CreateChannelPayload
         {
             public string channelId;
         }
@@ -1635,11 +1641,11 @@ namespace DCL.Interface
             SendMessage("ReportDecentralandTime", timeReportPayload);
         }
 
-        public static void GetFriendsWithDirectMessages(string userNameOrId, int limit, long from)
+        public static void GetFriendsWithDirectMessages(string userNameOrId, int limit, int skip)
         {
             getFriendsWithDirectMessagesPayload.userNameOrId = userNameOrId;
             getFriendsWithDirectMessagesPayload.limit = limit;
-            getFriendsWithDirectMessagesPayload.from = from;
+            getFriendsWithDirectMessagesPayload.skip = skip;
             SendMessage("GetFriendsWithDirectMessages", getFriendsWithDirectMessagesPayload);
         }
 
@@ -1649,18 +1655,18 @@ namespace DCL.Interface
             SendMessage("MarkMessagesAsSeen", markMessagesAsSeenPayload);
         }
 
+        public static void GetPrivateMessages(string userId, int limit, string fromMessageId)
+        {
+            getPrivateMessagesPayload.userId = userId;
+            getPrivateMessagesPayload.limit = limit;
+            getPrivateMessagesPayload.fromMessageId = fromMessageId;
+            SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
+        }
+        
         public static void MarkChannelMessagesAsSeen(string channelId)
         {
             markChannelMessagesAsSeenPayload.channelId = channelId;
             SendMessage("MarkChannelMessagesAsSeen", markChannelMessagesAsSeenPayload);
-        }
-
-        public static void GetPrivateMessages(string userId, int limit, long from)
-        {
-            getPrivateMessagesPayload.userId = userId;
-            getPrivateMessagesPayload.limit = limit;
-            getPrivateMessagesPayload.from = from;
-            SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
 
         public static void GetUnseenMessagesByUser()
@@ -1705,6 +1711,14 @@ namespace DCL.Interface
         public static void LeaveChannel(string channelId)
         {
             SendMessage("LeaveChannel", new LeaveChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void CreateChannel(string channelId)
+        {
+            SendMessage("CreateChannel", new CreateChannelPayload
             {
                 channelId = channelId
             });

@@ -13,7 +13,7 @@ namespace DCL.Chat.Channels
     {
         private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
-        private List<string> joinedChannels = new List<string>();
+        private readonly List<string> joinedChannels = new List<string>();
 
         public event Action<int> OnTotalUnseenMessagesUpdated
         {
@@ -171,8 +171,8 @@ namespace DCL.Chat.Channels
             SimulateDelayedResponseFor_MarkChannelAsSeen(channelId).Forget();
         }
 
-        public void GetPrivateMessages(string userId, int limit, long fromTimestamp) =>
-            controller.GetPrivateMessages(userId, limit, fromTimestamp);
+        public void GetPrivateMessages(string userId, int limit, string fromMessageId) =>
+            controller.GetPrivateMessages(userId, limit, fromMessageId);
 
         public void JoinOrCreateChannel(string channelId) =>
             SimulateDelayedResponseFor_JoinOrCreateChannel(channelId).Forget();
@@ -311,6 +311,26 @@ namespace DCL.Chat.Channels
         public int GetAllocatedUnseenMessages(string userId) => controller.GetAllocatedUnseenMessages(userId);
 
         public int GetAllocatedUnseenChannelMessages(string channelId) => controller.GetAllocatedUnseenChannelMessages(channelId);
+        
+        public void CreateChannel(string channelId)
+        {
+            SimulateDelayedResponseFor_CreateChannel(channelId).Forget();
+        }
+
+        private async UniTask SimulateDelayedResponseFor_CreateChannel(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+            
+            controller.JoinChannelConfirmation(JsonUtility.ToJson(new ChannelInfoPayload
+            {
+                description = "",
+                channelId = channelId,
+                joined = true,
+                memberCount = 1,
+                muted = false,
+                unseenMessages = 0
+            }));
+        }
 
         private async UniTask MuteFakeChannel(string channelId)
         {
