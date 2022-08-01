@@ -109,6 +109,7 @@ public class CharacterPreviewController : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
+            Debug.Log("CANCELED THE UPDATE MODEL ROUTINE");
             return;
         }
         catch (Exception e)
