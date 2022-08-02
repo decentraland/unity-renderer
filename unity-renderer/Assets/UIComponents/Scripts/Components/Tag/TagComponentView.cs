@@ -17,7 +17,7 @@ public interface ITagComponentView
     void SetIcon(Sprite newIcon);
 }
 
-public class TagComponentView : BaseComponentView, ITagComponentView, IComponentModelConfig
+public class TagComponentView : BaseComponentView, ITagComponentView, IComponentModelConfig<TagComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Image icon;
@@ -26,9 +26,9 @@ public class TagComponentView : BaseComponentView, ITagComponentView, IComponent
     [Header("Configuration")]
     [SerializeField] internal TagComponentModel model;
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(TagComponentModel newModel)
     {
-        model = (TagComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
