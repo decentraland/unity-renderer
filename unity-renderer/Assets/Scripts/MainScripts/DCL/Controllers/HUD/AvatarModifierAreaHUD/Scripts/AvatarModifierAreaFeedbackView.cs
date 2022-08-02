@@ -18,22 +18,23 @@ namespace DCL.AvatarModifierAreaFeedback
         private const string PATH_TO_WARNING_MESSAGE = "_WarningMessageAreaFeedbackHUD";
         private BaseRefCounter<AvatarAreaWarningID> avatarAreaWarningsCounter;
         
-        [SerializeField] private CanvasGroup warningMessageCanvasGroup;
-        [SerializeField] private CanvasGroup warningIconCanvasGroup;
-        [SerializeField] private RectTransform messageContainer;
-        internal float animationDuration;
+        [SerializeField] internal RectTransform warningContainer;
+        [SerializeField] private CanvasGroup pointerEnterTriggerArea;
+        [SerializeField] private Animator messageAnimator;
+        [SerializeField] private Animator iconAnimator;
+       
         internal bool isVisible;
         internal AvatarModifierAreaFeedbackState currentState;
         internal Dictionary<AvatarAreaWarningID, GameObject> warningMessagesDictionary;
         internal CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
-        internal CancellationTokenSource deactivateIconAnimationToken = new CancellationTokenSource();
-        internal CancellationTokenSource deactivateWarningMesageAnimationToken = new CancellationTokenSource();
 
+        private string outAnimationTrigger = "Out";
+        private string inAnimationTrigger = "In";
+        private string firstInAnimationTrigger = "FirstIn";
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
 
         public void Awake()
         {
-            animationDuration = 0.5f;
             currentState = AvatarModifierAreaFeedbackState.NEVER_SHOWN;
         }
 
@@ -47,7 +48,7 @@ namespace DCL.AvatarModifierAreaFeedback
             
             foreach (AvatarAreaWarningID warningMessageEnum in Enum.GetValues(typeof(AvatarAreaWarningID)))
             {
-                GameObject newWarningMessage = Instantiate(Resources.Load<GameObject>(PATH_TO_WARNING_MESSAGE), messageContainer);
+                GameObject newWarningMessage = Instantiate(Resources.Load<GameObject>(PATH_TO_WARNING_MESSAGE), warningContainer);
                 newWarningMessage.GetComponent<TMP_Text>().text = GetWarningMessage(warningMessageEnum);
                 newWarningMessage.SetActive(false);
                 warningMessagesDictionary.Add(warningMessageEnum, newWarningMessage);
@@ -75,12 +76,14 @@ namespace DCL.AvatarModifierAreaFeedback
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
-                ShowWarningMessage();
+                currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
+                messageAnimator.SetTrigger(firstInAnimationTrigger);
                 HideFirstTimeWarningMessageUniTask(deactivatePreviewCancellationToken.Token).Forget();
             }
             else
             {
-                ShowIcon();
+                iconAnimator.SetTrigger(inAnimationTrigger);
+                pointerEnterTriggerArea.blocksRaycasts = true;
             }
         }
         
@@ -90,15 +93,15 @@ namespace DCL.AvatarModifierAreaFeedback
             
             deactivatePreviewCancellationToken.Cancel();
             
-            warningIconCanvasGroup.blocksRaycasts = false;
+            pointerEnterTriggerArea.blocksRaycasts = false;
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE))
             {
-                HideWarningMessage();
+                messageAnimator.SetTrigger(outAnimationTrigger);
             }
             else
             {
-                HideIcon();
+                iconAnimator.SetTrigger(outAnimationTrigger);
             }
         }
         
@@ -106,112 +109,37 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             if (!isVisible) return;
 
-            ShowWarningMessage();
+            iconAnimator.SetTrigger(outAnimationTrigger);
+            messageAnimator.SetTrigger(inAnimationTrigger);
+            currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
         }
         
         public void OnPointerExit(PointerEventData eventData)
         {
             if (!isVisible) return;
             
-            HideWarningMessage();
-            ShowIcon(true);
-        }
-        
-        private void HideWarningMessage()
-        {
-            deactivateWarningMesageAnimationToken.Cancel();
-            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
-            WarningMessageAnimationUniTask(0, deactivateWarningMesageAnimationToken.Token).Forget();
-        }
-        
-        private void ShowWarningMessage()
-        {
-            deactivateWarningMesageAnimationToken.Cancel();
-            deactivateWarningMesageAnimationToken  = new CancellationTokenSource();
-            WarningMessageAnimationUniTask(1, deactivateWarningMesageAnimationToken.Token).Forget();
-            HideIcon(true);
-            currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
-        }
-        
-        private void HideIcon(bool instant = false)
-        {
-            deactivateIconAnimationToken.Cancel();
-            deactivateIconAnimationToken  = new CancellationTokenSource();
-            IconAnimationUniTask(0, deactivateWarningMesageAnimationToken.Token, instant).Forget();
-        }
-        
-        private void ShowIcon(bool instant=false)
-        {
+            iconAnimator.SetTrigger(inAnimationTrigger);
+            messageAnimator.SetTrigger(outAnimationTrigger);
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
-            
-            warningIconCanvasGroup.blocksRaycasts = true;
-            
-            deactivateIconAnimationToken.Cancel();
-            deactivateIconAnimationToken  = new CancellationTokenSource();
-            IconAnimationUniTask(1, deactivateIconAnimationToken.Token, instant).Forget();;
         }
-       
+        
+      
         async UniTaskVoid HideFirstTimeWarningMessageUniTask(CancellationToken cancellationToken)
         {
             await UniTask.Delay(5000, cancellationToken: cancellationToken);
             await UniTask.SwitchToMainThread(cancellationToken);
             if (cancellationToken.IsCancellationRequested) return;
-            HideWarningMessage();
-            ShowIcon(true);
-        }
-
-        async UniTaskVoid WarningMessageAnimationUniTask(float destinationAlpha, CancellationToken cancellationToken)
-        {
-            float startAlpha = warningMessageCanvasGroup.alpha;
-            var t = 0f;
-
-            while (t < animationDuration)
-            {
-                t += Time.deltaTime;
-
-                warningMessageCanvasGroup.alpha = Mathf.Lerp(startAlpha, destinationAlpha, t / animationDuration);
-                
-                await UniTask.Yield();
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-            }
-
-            warningMessageCanvasGroup.alpha = destinationAlpha;
-        }
-
-        async UniTaskVoid IconAnimationUniTask(float destinationAlpha, CancellationToken cancellationToken, bool instant=false)
-        {
-            if (instant)
-            {
-                warningIconCanvasGroup.alpha = destinationAlpha;
-                return;
-            }
+            messageAnimator.SetTrigger(outAnimationTrigger);
+            iconAnimator.SetTrigger(inAnimationTrigger);
             
-            var t = 0f;
-            float startAlphaMessage = warningIconCanvasGroup.alpha;
-
-            while (t < animationDuration)
-            {
-                t += Time.deltaTime;
-
-                warningIconCanvasGroup.alpha = Mathf.Lerp(startAlphaMessage, destinationAlpha,  t / animationDuration);
-                
-                await UniTask.Yield();
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-            }
-            
-            warningIconCanvasGroup.alpha = destinationAlpha;
+            currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
+            pointerEnterTriggerArea.blocksRaycasts = true;
         }
 
         public void Dispose()
         {
             deactivatePreviewCancellationToken?.Cancel();
-            deactivateWarningMesageAnimationToken?.Cancel();
-            deactivateIconAnimationToken?.Cancel();
             deactivatePreviewCancellationToken?.Dispose();
-            deactivateWarningMesageAnimationToken?.Dispose();
-            deactivateIconAnimationToken?.Dispose();
             avatarAreaWarningsCounter.OnAdded -= AddedNewWarning;
             avatarAreaWarningsCounter.OnRemoved -= RemovedWarning;
         }
@@ -223,7 +151,7 @@ namespace DCL.AvatarModifierAreaFeedback
                 case AvatarAreaWarningID.HIDE_AVATAR:
                     return "\u2022  The avatars are hidden";
                 case AvatarAreaWarningID.DISABLE_PASSPORT:
-                    return "\u2022  Your passport is disable for other players";
+                    return "\u2022  Your passport is disable for\n    other players";
                 default:
                     throw new NotImplementedException();
             }
