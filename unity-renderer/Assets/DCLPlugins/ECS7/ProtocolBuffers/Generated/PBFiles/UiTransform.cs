@@ -24,7 +24,7 @@ namespace DCL.ECSComponents {
     static UiTransformReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFVaVRyYW5zZm9ybS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKcEAoNUEJV",
+            "ChFVaVRyYW5zZm9ybS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKyEAoNUEJV",
             "aVRyYW5zZm9ybRI3Cg1wb3NpdGlvbl90eXBlGAEgASgOMiAuZGVjZW50cmFs",
             "YW5kLmVjcy5ZR1Bvc2l0aW9uVHlwZRIwCg1hbGlnbl9jb250ZW50GAIgASgO",
             "MhkuZGVjZW50cmFsYW5kLmVjcy5ZR0FsaWduEi4KC2FsaWduX2l0ZW1zGAMg",
@@ -70,37 +70,37 @@ namespace DCL.ECSComponents {
             "dHRvbV91bml0GEMgASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQSFgoO",
             "cGFkZGluZ19ib3R0b20YRCABKAISEwoLYm9yZGVyX2xlZnQYSCABKAISEgoK",
             "Ym9yZGVyX3RvcBhKIAEoAhIUCgxib3JkZXJfcmlnaHQYTCABKAISFQoNYm9y",
-            "ZGVyX2JvdHRvbRhOIAEoAkoECCgQKUoECEcQSEoECEkQSkoECEsQTEoECE0Q",
-            "TipiCg5ZR1Bvc2l0aW9uVHlwZRIYChRZR1Bvc2l0aW9uVHlwZVN0YXRpYxAA",
-            "EhoKFllHUG9zaXRpb25UeXBlUmVsYXRpdmUQARIaChZZR1Bvc2l0aW9uVHlw",
-            "ZUFic29sdXRlEAIqsQEKB1lHQWxpZ24SDwoLWUdBbGlnbkF1dG8QABIUChBZ",
-            "R0FsaWduRmxleFN0YXJ0EAESEQoNWUdBbGlnbkNlbnRlchACEhIKDllHQWxp",
-            "Z25GbGV4RW5kEAMSEgoOWUdBbGlnblN0cmV0Y2gQBBITCg9ZR0FsaWduQmFz",
-            "ZWxpbmUQBRIXChNZR0FsaWduU3BhY2VCZXR3ZWVuEAYSFgoSWUdBbGlnblNw",
-            "YWNlQXJvdW5kEAcqUQoGWUdVbml0EhMKD1lHVW5pdFVuZGVmaW5lZBAAEg8K",
-            "C1lHVW5pdFBvaW50EAESEQoNWUdVbml0UGVyY2VudBACEg4KCllHVW5pdEF1",
-            "dG8QAypNCgtZR0RpcmVjdGlvbhIWChJZR0RpcmVjdGlvbkluaGVyaXQQABIS",
-            "Cg5ZR0RpcmVjdGlvbkxUUhABEhIKDllHRGlyZWN0aW9uUlRMEAIqhQEKD1lH",
-            "RmxleERpcmVjdGlvbhIZChVZR0ZsZXhEaXJlY3Rpb25Db2x1bW4QABIgChxZ",
-            "R0ZsZXhEaXJlY3Rpb25Db2x1bW5SZXZlcnNlEAESFgoSWUdGbGV4RGlyZWN0",
-            "aW9uUm93EAISHQoZWUdGbGV4RGlyZWN0aW9uUm93UmV2ZXJzZRADKkEKBllH",
-            "V3JhcBIQCgxZR1dyYXBOb1dyYXAQABIOCgpZR1dyYXBXcmFwEAESFQoRWUdX",
-            "cmFwV3JhcFJldmVyc2UQAiqdAQoJWUdKdXN0aWZ5EhYKEllHSnVzdGlmeUZs",
-            "ZXhTdGFydBAAEhMKD1lHSnVzdGlmeUNlbnRlchABEhQKEFlHSnVzdGlmeUZs",
-            "ZXhFbmQQAhIZChVZR0p1c3RpZnlTcGFjZUJldHdlZW4QAxIYChRZR0p1c3Rp",
-            "ZnlTcGFjZUFyb3VuZBAEEhgKFFlHSnVzdGlmeVNwYWNlRXZlbmx5EAUqTwoK",
-            "WUdPdmVyZmxvdxIVChFZR092ZXJmbG93VmlzaWJsZRAAEhQKEFlHT3ZlcmZs",
-            "b3dIaWRkZW4QARIUChBZR092ZXJmbG93U2Nyb2xsEAIqMQoJWUdEaXNwbGF5",
-            "EhEKDVlHRGlzcGxheUZsZXgQABIRCg1ZR0Rpc3BsYXlOb25lEAEqowEKBllH",
-            "RWRnZRIOCgpZR0VkZ2VMZWZ0EAASDQoJWUdFZGdlVG9wEAESDwoLWUdFZGdl",
-            "UmlnaHQQAhIQCgxZR0VkZ2VCb3R0b20QAxIPCgtZR0VkZ2VTdGFydBAEEg0K",
-            "CVlHRWRnZUVuZBAFEhQKEFlHRWRnZUhvcml6b250YWwQBhISCg5ZR0VkZ2VW",
-            "ZXJ0aWNhbBAHEg0KCVlHRWRnZUFsbBAIQhSqAhFEQ0wuRUNTQ29tcG9uZW50",
-            "c2IGcHJvdG8z"));
+            "ZGVyX2JvdHRvbRhOIAEoAhIUCgxwYXJlbnRFbnRpdHkYTyABKANKBAgoEClK",
+            "BAhHEEhKBAhJEEpKBAhLEExKBAhNEE4qYgoOWUdQb3NpdGlvblR5cGUSGAoU",
+            "WUdQb3NpdGlvblR5cGVTdGF0aWMQABIaChZZR1Bvc2l0aW9uVHlwZVJlbGF0",
+            "aXZlEAESGgoWWUdQb3NpdGlvblR5cGVBYnNvbHV0ZRACKrEBCgdZR0FsaWdu",
+            "Eg8KC1lHQWxpZ25BdXRvEAASFAoQWUdBbGlnbkZsZXhTdGFydBABEhEKDVlH",
+            "QWxpZ25DZW50ZXIQAhISCg5ZR0FsaWduRmxleEVuZBADEhIKDllHQWxpZ25T",
+            "dHJldGNoEAQSEwoPWUdBbGlnbkJhc2VsaW5lEAUSFwoTWUdBbGlnblNwYWNl",
+            "QmV0d2VlbhAGEhYKEllHQWxpZ25TcGFjZUFyb3VuZBAHKlEKBllHVW5pdBIT",
+            "Cg9ZR1VuaXRVbmRlZmluZWQQABIPCgtZR1VuaXRQb2ludBABEhEKDVlHVW5p",
+            "dFBlcmNlbnQQAhIOCgpZR1VuaXRBdXRvEAMqTQoLWUdEaXJlY3Rpb24SFgoS",
+            "WUdEaXJlY3Rpb25Jbmhlcml0EAASEgoOWUdEaXJlY3Rpb25MVFIQARISCg5Z",
+            "R0RpcmVjdGlvblJUTBACKoUBCg9ZR0ZsZXhEaXJlY3Rpb24SGQoVWUdGbGV4",
+            "RGlyZWN0aW9uQ29sdW1uEAASIAocWUdGbGV4RGlyZWN0aW9uQ29sdW1uUmV2",
+            "ZXJzZRABEhYKEllHRmxleERpcmVjdGlvblJvdxACEh0KGVlHRmxleERpcmVj",
+            "dGlvblJvd1JldmVyc2UQAypBCgZZR1dyYXASEAoMWUdXcmFwTm9XcmFwEAAS",
+            "DgoKWUdXcmFwV3JhcBABEhUKEVlHV3JhcFdyYXBSZXZlcnNlEAIqnQEKCVlH",
+            "SnVzdGlmeRIWChJZR0p1c3RpZnlGbGV4U3RhcnQQABITCg9ZR0p1c3RpZnlD",
+            "ZW50ZXIQARIUChBZR0p1c3RpZnlGbGV4RW5kEAISGQoVWUdKdXN0aWZ5U3Bh",
+            "Y2VCZXR3ZWVuEAMSGAoUWUdKdXN0aWZ5U3BhY2VBcm91bmQQBBIYChRZR0p1",
+            "c3RpZnlTcGFjZUV2ZW5seRAFKk8KCllHT3ZlcmZsb3cSFQoRWUdPdmVyZmxv",
+            "d1Zpc2libGUQABIUChBZR092ZXJmbG93SGlkZGVuEAESFAoQWUdPdmVyZmxv",
+            "d1Njcm9sbBACKjEKCVlHRGlzcGxheRIRCg1ZR0Rpc3BsYXlGbGV4EAASEQoN",
+            "WUdEaXNwbGF5Tm9uZRABKqMBCgZZR0VkZ2USDgoKWUdFZGdlTGVmdBAAEg0K",
+            "CVlHRWRnZVRvcBABEg8KC1lHRWRnZVJpZ2h0EAISEAoMWUdFZGdlQm90dG9t",
+            "EAMSDwoLWUdFZGdlU3RhcnQQBBINCglZR0VkZ2VFbmQQBRIUChBZR0VkZ2VI",
+            "b3Jpem9udGFsEAYSEgoOWUdFZGdlVmVydGljYWwQBxINCglZR0VkZ2VBbGwQ",
+            "CEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGDirection), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom", "BorderLeft", "BorderTop", "BorderRight", "BorderBottom" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom", "BorderLeft", "BorderTop", "BorderRight", "BorderBottom", "ParentEntity" }, null, null, null, null)
           }));
     }
     #endregion
@@ -265,6 +265,7 @@ namespace DCL.ECSComponents {
       borderTop_ = other.borderTop_;
       borderRight_ = other.borderRight_;
       borderBottom_ = other.borderBottom_;
+      parentEntity_ = other.parentEntity_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -881,6 +882,17 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "parentEntity" field.</summary>
+    public const int ParentEntityFieldNumber = 79;
+    private long parentEntity_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long ParentEntity {
+      get { return parentEntity_; }
+      set {
+        parentEntity_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PBUiTransform);
@@ -949,6 +961,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(BorderTop, other.BorderTop)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(BorderRight, other.BorderRight)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(BorderBottom, other.BorderBottom)) return false;
+      if (ParentEntity != other.ParentEntity) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1010,6 +1023,7 @@ namespace DCL.ECSComponents {
       if (BorderTop != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(BorderTop);
       if (BorderRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(BorderRight);
       if (BorderBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(BorderBottom);
+      if (ParentEntity != 0L) hash ^= ParentEntity.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1243,6 +1257,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(245, 4);
         output.WriteFloat(BorderBottom);
       }
+      if (ParentEntity != 0L) {
+        output.WriteRawTag(248, 4);
+        output.WriteInt64(ParentEntity);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1415,6 +1433,9 @@ namespace DCL.ECSComponents {
       }
       if (BorderBottom != 0F) {
         size += 2 + 4;
+      }
+      if (ParentEntity != 0L) {
+        size += 2 + pb::CodedOutputStream.ComputeInt64Size(ParentEntity);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1591,6 +1612,9 @@ namespace DCL.ECSComponents {
       }
       if (other.BorderBottom != 0F) {
         BorderBottom = other.BorderBottom;
+      }
+      if (other.ParentEntity != 0L) {
+        ParentEntity = other.ParentEntity;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1821,6 +1845,10 @@ namespace DCL.ECSComponents {
           }
           case 629: {
             BorderBottom = input.ReadFloat();
+            break;
+          }
+          case 632: {
+            ParentEntity = input.ReadInt64();
             break;
           }
         }

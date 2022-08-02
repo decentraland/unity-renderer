@@ -1,44 +1,47 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DCL.Controllers;
+using DCL.ECS7.UI;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 namespace DCL.ECSComponents
 {
     public class UITransformComponentHandler : IECSComponentHandler<PBUiTransform>
     {
-        private readonly DataStore_ECS7 dataStore;
-        private readonly IUpdateEventHandler updateEventHandler;
+        private readonly UIDataContainer uiDataContainer;
         
-        private List<PBUiTransform> models = new List<PBUiTransform>();
-        private Dictionary<long, PBUiTransform> transforms = new Dictionary<long, PBUiTransform>();
-        
-        public UITransformComponentHandler(DataStore_ECS7 dataStore, IUpdateEventHandler updateEventHandler)
+        public UITransformComponentHandler(UIDataContainer dataContainer)
         {
-            this.dataStore = dataStore;
-            this.updateEventHandler = updateEventHandler;
-            updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, DrawUI);
+            this.uiDataContainer = dataContainer;
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            
         }
         
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, DrawUI);
+            if (entity.parentId != (long)SpecialEntityId.SCENE_ROOT_ENTITY)
+            {
+                entity.parentId = (long)SpecialEntityId.SCENE_ROOT_ENTITY;
+                ECSTransformUtils.SetParent(scene, entity, (long)SpecialEntityId.SCENE_ROOT_ENTITY);
+            }
+            uiDataContainer.RemoveUIComponent(scene,entity);
         }
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
-            dataStore.sceneCanvas[scene.sceneData.id][entity.entityId] = model;
-        }
+            if (model.ParentEntity != SpecialEntityId.SCENE_ROOT_ENTITY || entity.parentId !=  model.ParentEntity)
+            {
+                entity.parentId = model.ParentEntity;
+                ECSTransformUtils.SetParent(scene, entity, model.ParentEntity);
+            }
 
-
-        private void DrawUI()
-        {
-            
+            uiDataContainer.AddUIComponent(scene,entity, model);
         }
     }
 }

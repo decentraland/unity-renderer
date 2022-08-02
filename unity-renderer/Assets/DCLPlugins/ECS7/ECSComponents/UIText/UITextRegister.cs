@@ -8,17 +8,17 @@ using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public class UITransformRegister : IDisposable
+    public class UITextRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public UITransformRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public UITextRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var handler = new UITransformComponentHandler(DataStore.i.ecs7.uiDataContainer);
-            factory.AddOrReplaceComponent(componentId, UITransformSerialization.Deserialize, () => handler);
-            componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, UITransformSerialization.Serialize);
+            var handler = new UITextComponentHandler(DataStore.i.ecs7.uiDataContainer);
+            factory.AddOrReplaceComponent(componentId, UITextSerialization.Deserialize, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<PBUiTextShape>(componentId, UITextSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

@@ -154,6 +154,8 @@ message PBUiTransform {
   float border_right = 76;
   reserved 77; // YGUnit border_bottom_unit = 77;
   float border_bottom = 78;
+  
+  int64 parentEntity = 79;
 }
 
 
