@@ -353,6 +353,8 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         yield return shape.routine;
 
         TestUtils.SharedComponentAttach(shape, entity);
+        
+        yield return null;
 
         Assert.IsTrue(entity.meshRootGameObject != null);
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
