@@ -1,10 +1,8 @@
-﻿using DCL.Controllers;
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Components
@@ -67,6 +65,8 @@ namespace DCL.Components
             {
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
+         
+            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
@@ -115,9 +115,14 @@ namespace DCL.Components
             AddRendereableToDataStore(entity);
         }
 
-        void OnShapeFinishedLoading(IDCLEntity entity)
+
+        async UniTaskVoid OnShapeFinishedLoading(IDCLEntity entity)
         {
+            // We need to wait for a frame so that MaterialTransitionController has been destroyed.
+            await UniTask.Yield();
+            
             entity.OnShapeUpdated?.Invoke(entity);
+            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         void OnShapeDetached(IDCLEntity entity)
