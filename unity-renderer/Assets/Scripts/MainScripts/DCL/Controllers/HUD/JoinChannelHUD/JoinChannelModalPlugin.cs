@@ -11,6 +11,7 @@ public class JoinChannelModalPlugin : IPlugin
     public JoinChannelModalPlugin()
     {
         joinChannelComponentController = new JoinChannelComponentController(
+            JoinChannelComponentView.Create(),
             // TODO (channels): Pass ChatController.i after kernel integration
             new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
             DataStore.i.channels);

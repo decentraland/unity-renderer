@@ -7,26 +7,18 @@ public class JoinChannelComponentController : IDisposable
     internal IChatController chatController;
     internal DataStore_Channels channelsDataStore;
 
-    public JoinChannelComponentController() { }
-
     public JoinChannelComponentController(
+        IJoinChannelComponentView joinChannelView,
         IChatController chatController,
         DataStore_Channels channelsDataStore)
     {
-        Initialize(chatController, channelsDataStore);
-    }
-
-    public void Initialize(
-        IChatController chatController,
-        DataStore_Channels channelsDataStore)
-    {
-        joinChannelView = CreateJoinChannelView();
+        this.joinChannelView = joinChannelView;
         this.chatController = chatController;
         this.channelsDataStore = channelsDataStore;
 
         this.channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
-        joinChannelView.OnCancelJoin += OnCancelJoin;
-        joinChannelView.OnConfirmJoin += OnConfirmJoin;
+        this.joinChannelView.OnCancelJoin += OnCancelJoin;
+        this.joinChannelView.OnConfirmJoin += OnConfirmJoin;
     }
 
     public void Dispose()
@@ -56,6 +48,4 @@ public class JoinChannelComponentController : IDisposable
         joinChannelView.Hide();
         channelsDataStore.currentJoinChannelModal.Set(null);
     }
-
-    protected internal virtual IJoinChannelComponentView CreateJoinChannelView() => JoinChannelComponentView.Create();
 }

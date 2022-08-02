@@ -16,9 +16,7 @@ public class JoinChannelComponentControllerShould
         joinChannelComponentView = Substitute.For<IJoinChannelComponentView>();
         chatController = Substitute.For<IChatController>();
         channelsDataStore = new DataStore_Channels();
-        joinChannelComponentController = Substitute.ForPartsOf<JoinChannelComponentController>();
-        joinChannelComponentController.Configure().CreateJoinChannelView().Returns(info => joinChannelComponentView);
-        joinChannelComponentController.Initialize(chatController, channelsDataStore);
+        joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController, channelsDataStore);
     }
 
     [TearDown]
