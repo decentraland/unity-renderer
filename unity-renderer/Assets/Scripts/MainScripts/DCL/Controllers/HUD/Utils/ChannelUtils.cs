@@ -7,7 +7,7 @@ public class ChannelUtils
     private const string NEAR_BY_CHANNEL = "~nearby";
     private static Regex filter = new Regex(CHANNEL_MATCH_REGEX);
 
-    public static List<string> ExtractChannelPatternsFromText(string text)
+    public static List<string> ExtractChannelIdsFromText(string text)
     {
         List<string> channelsFound = new List<string>();
         

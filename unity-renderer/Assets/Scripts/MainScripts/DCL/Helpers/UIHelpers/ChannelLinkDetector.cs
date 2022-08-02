@@ -42,7 +42,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
         yield return new WaitForEndOfFrame();
 
-        channelsFoundInText = ChannelUtils.ExtractChannelPatternsFromText(textComponent.text);
+        channelsFoundInText = ChannelUtils.ExtractChannelIdsFromText(textComponent.text);
 
         foreach (var channelFound in channelsFoundInText)
         {
