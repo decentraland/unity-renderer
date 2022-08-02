@@ -8,8 +8,8 @@ namespace DCL.ECSComponents
 {
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
-        private IWorldState worldState;
-        private BaseVariable<Vector3> playerWorldPosition;
+        private readonly IWorldState worldState;
+        private readonly BaseVariable<Vector3> playerWorldPosition;
 
         public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerWorldPosition)
         {
