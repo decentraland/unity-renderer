@@ -137,10 +137,11 @@ public class LazyLoadingChatControllerMock : IChatController
         await UniTask.Delay(Random.Range(50, 1000));
 
         var unseenPrivateMessages = Enumerable.Range(0, MAX_AMOUNT_OF_FAKE_USERS_IN_CATALOG)
-            .Select(i => new KeyValuePair<string, int>(
-                $"fakeuser{i + 1}",
-                Random.Range(0, 10)))
-            .ToDictionary(x => x.Key, x => x.Value);
+            .Select(i => new UpdateTotalUnseenMessagesByUserPayload.UnseenPrivateMessage
+            {
+                userId = $"fakeuser{i + 1}",
+                count = Random.Range(0, 10) 
+            }).ToArray();
 
         var payload = new UpdateTotalUnseenMessagesByUserPayload
         {
