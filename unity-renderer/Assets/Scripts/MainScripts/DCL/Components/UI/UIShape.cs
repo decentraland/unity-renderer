@@ -2,6 +2,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Components.Interfaces;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -127,7 +128,7 @@ namespace DCL.Components
         }
     }
 
-    public class UIShape : BaseDisposable
+    public class UIShape : BaseDisposable, IUIRefreshable
     {
 
         [System.Serializable]
@@ -154,59 +155,17 @@ namespace DCL.Components
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
-        public bool IsLayoutDirty { get; private set; }
+        public bool isLayoutDirty { get; private set; }
         protected System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
-
+        private BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         public UIShape parentUIComponent { get; protected set; }
-        
-        private static Coroutine dirtyWatcher;
-        private static readonly Queue<UIShape> dirtyUIShapes = new Queue<UIShape>();
-        private static readonly List<UIShape> dirtyUIShapesNotReady = new List<UIShape>();
-        private const float DirtyWatcherUpdateBudget = 2/1000f;
-        private static readonly WaitForEndOfFrame eof = new WaitForEndOfFrame();
 
         public UIShape()
         {
             screenSize.OnChange += OnScreenResize;
             model = new Model(); 
-        }
-
-        // Kinerius: This update function should be on a manager outside of this domain,
-        // hence avoiding the usage of static properties. For now its better than having one coroutine for each UIShape
-        private static IEnumerator DirtyWatcher()
-        {
-            while (dirtyUIShapes.Count > 0)
-            {
-                // WaitForEndOfFrame doesn't work in batch mode
-                yield return Application.isBatchMode ? null : eof;
-                
-                var startTime = Time.time;
-                while (dirtyUIShapes.Count > 0 && Time.time - startTime < DirtyWatcherUpdateBudget)
-                {
-                    UIShape uiShape = dirtyUIShapes.Peek();
-                    if (!uiShape.IsReadyForRefresh())
-                    {
-                        dirtyUIShapesNotReady.Add(dirtyUIShapes.Dequeue());
-                        continue;
-                    }
-            
-                    uiShape.RefreshRecursively();
-                    uiShape.IsLayoutDirty = false;
-                    dirtyUIShapes.Dequeue();
-                }
-
-                for (int i = 0; i < dirtyUIShapesNotReady.Count; i++)
-                {
-                    dirtyUIShapes.Enqueue(dirtyUIShapesNotReady[i]);
-                }
-
-                dirtyUIShapesNotReady.Clear();
-            }
-
-            dirtyWatcher = null;
-            yield return null;
         }
 
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
@@ -276,10 +235,21 @@ namespace DCL.Components
         
         public virtual void RefreshAll()
         {
-            IsLayoutDirty = true;
-            dirtyUIShapes.Enqueue(this);
+            if (isLayoutDirty) return;
             
-            dirtyWatcher ??= CoroutineStarter.Start(DirtyWatcher());
+            isLayoutDirty = true;
+
+            var dirtyShapesByScene = dirtyShapesBySceneVariable.Get();
+
+            string sceneDataID = scene.sceneData.id;
+            if (string.IsNullOrEmpty(sceneDataID)) sceneDataID = "default";
+
+            if (!dirtyShapesByScene.ContainsKey(sceneDataID))
+            {
+                dirtyShapesByScene.Add(sceneDataID, new Queue<IUIRefreshable>());
+            }
+            
+            dirtyShapesByScene[sceneDataID].Enqueue(this);
         }
 
         private void RefreshRecursively()
@@ -292,10 +262,6 @@ namespace DCL.Components
 
             OnLayoutRefresh?.Invoke();
             OnLayoutRefresh = null;
-        }
-        private bool IsReadyForRefresh()
-        {
-            return string.IsNullOrEmpty(CommonScriptableObjects.sceneID) || CommonScriptableObjects.sceneID.Get() == scene.sceneData.id;
         }
 
         public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
@@ -537,5 +503,10 @@ namespace DCL.Components
         public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
 
         public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+        public void Refresh()
+        {
+            RefreshRecursively(); 
+            isLayoutDirty = false;
+        }
     }
 }
