@@ -25,24 +25,24 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CgxVaVRleHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaE2NvbW1vbi9Db2xv",
-            "cjMucHJvdG8iOgoNUEJVaVRleHRTaGFwZRIMCgR0ZXh0GAEgASgJEhsKCnRl",
-            "eHRfY29sb3IYAiABKAsyBy5Db2xvcjNCFKoCEURDTC5FQ1NDb21wb25lbnRz",
-            "YgZwcm90bzM="));
+            "cjMucHJvdG8iNQoIUEJVaVRleHQSDAoEdGV4dBgBIAEoCRIbCgp0ZXh0X2Nv",
+            "bG9yGAIgASgLMgcuQ29sb3IzQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTextShape), global::DCL.ECSComponents.PBUiTextShape.Parser, new[]{ "Text", "TextColor" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Text", "TextColor" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBUiTextShape : pb::IMessage<PBUiTextShape> {
-    private static readonly pb::MessageParser<PBUiTextShape> _parser = new pb::MessageParser<PBUiTextShape>(() => new PBUiTextShape());
+  public sealed partial class PBUiText : pb::IMessage<PBUiText> {
+    private static readonly pb::MessageParser<PBUiText> _parser = new pb::MessageParser<PBUiText>(() => new PBUiText());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<PBUiTextShape> Parser { get { return _parser; } }
+    public static pb::MessageParser<PBUiText> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -55,22 +55,22 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PBUiTextShape() {
+    public PBUiText() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PBUiTextShape(PBUiTextShape other) : this() {
+    public PBUiText(PBUiText other) : this() {
       text_ = other.text_;
       textColor_ = other.textColor_ != null ? other.textColor_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PBUiTextShape Clone() {
-      return new PBUiTextShape(this);
+    public PBUiText Clone() {
+      return new PBUiText(this);
     }
 
     /// <summary>Field number for the "text" field.</summary>
@@ -97,11 +97,11 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as PBUiTextShape);
+      return Equals(other as PBUiText);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(PBUiTextShape other) {
+    public bool Equals(PBUiText other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -160,7 +160,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(PBUiTextShape other) {
+    public void MergeFrom(PBUiText other) {
       if (other == null) {
         return;
       }

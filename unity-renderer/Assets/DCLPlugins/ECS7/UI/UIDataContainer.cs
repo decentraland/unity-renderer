@@ -10,7 +10,7 @@ namespace DCL.ECS7.UI
         public event Action<IDCLEntity> OnUITransformRemoved;
         
         public readonly BaseDictionary<long,PBUiTransform> sceneCanvasTransform = new BaseDictionary<long,PBUiTransform>();
-        public readonly BaseDictionary<long,PBUiTextShape> sceneCanvasText = new BaseDictionary<long,PBUiTextShape>();
+        public readonly BaseDictionary<long,PBUiText> sceneCanvasText = new BaseDictionary<long,PBUiText>();
         
         private bool isDirty = false ;
 
@@ -22,7 +22,7 @@ namespace DCL.ECS7.UI
             sceneCanvasTransform[entity.entityId] = model;
         }
                 
-        public void AddUIComponent(IDCLEntity entity, PBUiTextShape model)
+        public void AddUIComponent(IDCLEntity entity, PBUiText model)
         {
             isDirty = true;
             sceneCanvasText[entity.entityId] = model;
@@ -52,7 +52,7 @@ namespace DCL.ECS7.UI
             GetDataContainer(scene).AddUIComponent(entity,model);
         }
                 
-        public void AddUIComponent(IParcelScene scene, IDCLEntity entity, PBUiTextShape model)
+        public void AddUIComponent(IParcelScene scene, IDCLEntity entity, PBUiText model)
         {
             GetDataContainer(scene).AddUIComponent(entity,model);
         }

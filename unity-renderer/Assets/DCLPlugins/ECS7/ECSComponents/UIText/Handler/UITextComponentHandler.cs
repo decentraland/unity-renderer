@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace DCL.ECSComponents
 {
-    public class UITextComponentHandler : IECSComponentHandler<PBUiTextShape>
+    public class UITextComponentHandler : IECSComponentHandler<PBUiText>
     {
         private readonly UIDataContainer uiDataContainer;
         
@@ -28,7 +28,7 @@ namespace DCL.ECSComponents
             uiDataContainer.RemoveUIText(scene,entity);
         }
         
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTextShape model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiText model)
         {
             uiDataContainer.AddUIComponent(scene,entity, model);
         }

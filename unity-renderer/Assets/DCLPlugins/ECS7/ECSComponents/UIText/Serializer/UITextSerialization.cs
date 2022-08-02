@@ -4,7 +4,7 @@ namespace DCL.ECSComponents
 {
     public static class UITextSerialization
     {
-        public static byte[] Serialize(PBUiTextShape model)
+        public static byte[] Serialize(PBUiText model)
         {
             int size = model.CalculateSize();
             byte[] buffer = new byte[size];
@@ -13,9 +13,9 @@ namespace DCL.ECSComponents
             return buffer;
         }
         
-        public static PBUiTextShape Deserialize(object data)
+        public static PBUiText Deserialize(object data)
         {
-            return PBUiTextShape.Parser.ParseFrom((byte[])data);
+            return PBUiText.Parser.ParseFrom((byte[])data);
         }
     }
 }

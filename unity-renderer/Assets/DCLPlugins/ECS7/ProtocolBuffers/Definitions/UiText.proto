@@ -5,7 +5,7 @@ option (ecs_component_id) = 1052;
 
 import "common/Color3.proto";
 
-message PBUiTextShape {
+message PBUiText {
   string text = 1;
   Color3 text_color = 2;
 }
