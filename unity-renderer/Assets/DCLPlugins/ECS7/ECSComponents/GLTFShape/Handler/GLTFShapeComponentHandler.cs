@@ -78,7 +78,7 @@ namespace DCL.ECSComponents
 
                 loadWrapper.entity = entity;
                 loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadWrapper.initialVisibility = true;
+                loadWrapper.initialVisibility = entity.isInsideBoundaries;
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF
