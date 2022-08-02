@@ -57,6 +57,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
+        DataStore.i.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
@@ -181,6 +182,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
         OnPlacesFromAPIUpdated -= OnRequestedPlacesUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        DataStore.i.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
@@ -198,4 +200,13 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     }
 
     internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
+
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    {
+        if (!string.IsNullOrEmpty(currentChannelId))
+            return;
+
+        view.HidePlaceModal();
+        OnCloseExploreV2?.Invoke();
+    }
 }

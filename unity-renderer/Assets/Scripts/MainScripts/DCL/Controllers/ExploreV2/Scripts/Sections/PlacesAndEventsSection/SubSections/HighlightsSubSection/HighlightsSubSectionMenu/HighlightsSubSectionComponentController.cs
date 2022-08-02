@@ -78,6 +78,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
+        DataStore.i.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
@@ -257,6 +258,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
+        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        DataStore.i.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
@@ -328,4 +331,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     }
 
     internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
+
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    {
+        if (!string.IsNullOrEmpty(currentChannelId))
+            return;
+
+        view.HidePlaceModal();
+        view.HideEventModal();
+        OnCloseExploreV2?.Invoke();
+    }
 }

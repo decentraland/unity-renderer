@@ -73,6 +73,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
+        DataStore.i.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         eventsAPIApiController = eventsAPI;
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
@@ -257,6 +258,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        DataStore.i.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
@@ -309,5 +311,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
+    }
+
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    {
+        if (!string.IsNullOrEmpty(currentChannelId))
+            return;
+
+        view.HideEventModal();
+        OnCloseExploreV2?.Invoke();
     }
 }

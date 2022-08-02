@@ -48,7 +48,6 @@ public class JoinChannelComponentController : IDisposable
     internal void OnCancelJoin()
     {
         joinChannelView.Hide();
-        channelsDataStore.currentJoinChannelModal.Set(null);
     }
 
     internal void OnConfirmJoin(string channelId)
