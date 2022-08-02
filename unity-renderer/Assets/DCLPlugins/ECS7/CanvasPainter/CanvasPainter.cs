@@ -38,7 +38,7 @@ namespace ECSSystems.CameraSystem
         private Dictionary<long, VisualElementRepresentation> visualElements = new Dictionary<long, VisualElementRepresentation>();
         private List<VisualElementRepresentation> orphanVisualElements = new List<VisualElementRepresentation>();
         
-        private IECSReadOnlyComponentsGroup<PBUiTransform, PBUiTextShape> textComponentGroup;
+        private IECSReadOnlyComponentsGroup<PBUiTransform, PBUiText> textComponentGroup;
 
         private int framesCounter = 0;
         
@@ -54,7 +54,7 @@ namespace ECSSystems.CameraSystem
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
             // Group Components 
-            textComponentGroup = componentsManager.CreateComponentGroup<PBUiTransform, PBUiTextShape>(ComponentID.UI_TRANSFORM, ComponentID.UI_TEXT);
+            textComponentGroup = componentsManager.CreateComponentGroup<PBUiTransform, PBUiText>(ComponentID.UI_TRANSFORM, ComponentID.UI_TEXT);
             
 #if UNITY_EDITOR
             rootNode.name = "Scene Canvas";
