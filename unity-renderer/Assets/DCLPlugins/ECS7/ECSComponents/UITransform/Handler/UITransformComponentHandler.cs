@@ -25,21 +25,14 @@ namespace DCL.ECSComponents
         
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            if (entity.parentId != (long)SpecialEntityId.SCENE_ROOT_ENTITY)
-            {
-                entity.parentId = (long)SpecialEntityId.SCENE_ROOT_ENTITY;
-                ECSTransformUtils.SetParent(scene, entity, (long)SpecialEntityId.SCENE_ROOT_ENTITY);
-            }
+            if(entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
+                entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
             uiDataContainer.RemoveUITransform(scene,entity);
         }
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
-            if (model.ParentEntity != SpecialEntityId.SCENE_ROOT_ENTITY || entity.parentId !=  model.ParentEntity)
-            {
-                entity.parentId = model.ParentEntity;
-                ECSTransformUtils.SetParent(scene, entity, model.ParentEntity);
-            }
+            entity.parentId = model.ParentEntity;
 
             uiDataContainer.AddUIComponent(scene,entity, model);
         }
