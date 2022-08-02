@@ -5,7 +5,7 @@ namespace DCL.Friends.WebApi
     [Serializable]
     public class AddFriendsPayload
     {
-        public string[] friendsToAdd;
+        public string[] friends;
         public int totalFriends;
     }
 }
