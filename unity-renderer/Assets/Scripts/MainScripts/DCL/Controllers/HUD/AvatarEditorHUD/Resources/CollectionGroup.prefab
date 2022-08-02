@@ -282,6 +282,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectionName: {fileID: 5260524181950211568}
   itemContainer: {fileID: 6220600706063838428}
+  itemPrefab: {fileID: 8042797829365063991, guid: 72f65bd5e4281dc4287222ec7af9a07c,
+    type: 3}
   items:
   - {fileID: 8418165243339739143}
   - {fileID: 599387777045935564}
