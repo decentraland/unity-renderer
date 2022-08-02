@@ -1,4 +1,3 @@
-using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,6 +12,10 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
+        [Header("Debug")]
+        [SerializeField]
+        private bool renderOuterBoundsGizmo = true;
+    
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -43,6 +46,8 @@ namespace DCL.Controllers
         public ICRDTExecutor crdtExecutor { get; set; }
 
         public bool isReleased { get; private set; }
+        
+        private Bounds outerBounds = new Bounds();
         
         public void Awake()
         {
@@ -80,16 +85,8 @@ namespace DCL.Controllers
             contentProvider.baseUrl = data.baseUrl;
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
-
-            parcels.Clear();
-
-            for (int i = 0; i < sceneData.parcels.Length; i++)
-            {
-                parcels.Add(sceneData.parcels[i]);
-            }
-
-            gameObject.transform.position =
-                PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            
+            SetupPositionAndParcels();
 
             DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
 
@@ -99,10 +96,44 @@ namespace DCL.Controllers
             OnSetData?.Invoke(data);
         }
 
+        void SetupPositionAndParcels()
+        {
+            gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
+            
+            parcels.Clear();
+            
+            // The scene's gameobject position should already be in 'unityposition'
+            Vector3 baseParcelWorldPos = gameObject.transform.position;
+            
+            outerBounds.SetMinMax(new Vector3(baseParcelWorldPos.x, 0f, baseParcelWorldPos.z),
+                new Vector3(baseParcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0f, baseParcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
+            
+            for (int i = 0; i < sceneData.parcels.Length; i++)
+            {
+                // 1. Update outer bounds with parcel's size
+                var parcel = sceneData.parcels[i];
+                
+                Vector3 parcelWorldPos = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(parcel.x, parcel.y));
+                outerBounds.Encapsulate(new Vector3(parcelWorldPos.x, 0, parcelWorldPos.z));
+                outerBounds.Encapsulate(new Vector3(parcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0, parcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
+                
+                // 2. add parcel to collection
+                parcels.Add(parcel);
+            }
+
+            // Apply outer bounds extra threshold
+            outerBounds.SetMinMax(new Vector3(outerBounds.min.x - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD, 0f, outerBounds.min.z - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD),
+                new Vector3(outerBounds.max.x + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD, 0f, outerBounds.max.z + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD));
+        }
+
         void OnWorldReposition(Vector3 current, Vector3 previous)
         {
-            Vector3 sceneWorldPos = Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y);
-            gameObject.transform.position = PositionUtils.WorldToUnityPosition(sceneWorldPos);
+            Vector3 currentSceneWorldPos = Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y);
+            Vector3 oldSceneUnityPos = gameObject.transform.position;
+            Vector3 newSceneUnityPos = PositionUtils.WorldToUnityPosition(currentSceneWorldPos);
+            
+            gameObject.transform.position = newSceneUnityPos;
+            outerBounds.center += newSceneUnityPos - oldSceneUnityPos;
         }
 
         public virtual void SetUpdateData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -246,6 +277,29 @@ namespace DCL.Controllers
 
             return false;
         }
+        
+        public bool IsInsideSceneOuterBoundaries(Bounds objectBounds)
+        {
+            Vector3 objectBoundsMin = new Vector3(objectBounds.min.x, 0f, objectBounds.min.z);
+            Vector3 objectBoundsMax = new Vector3(objectBounds.max.x, 0f, objectBounds.max.z);
+            bool isInsideOuterBoundaries = outerBounds.Contains(objectBoundsMin) && outerBounds.Contains(objectBoundsMax);
+            
+            return isInsideOuterBoundaries;
+        }
+
+        public bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition)
+        {
+            objectUnityPosition.y = 0f;
+            return outerBounds.Contains(objectUnityPosition);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if(!renderOuterBoundsGizmo) return;
+            
+            Gizmos.color = new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, 0.5f);
+            Gizmos.DrawCube(outerBounds.center, outerBounds.size + Vector3.up);
+        }
 
         public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
         public Transform GetSceneTransform() { return transform; }
@@ -278,7 +332,7 @@ namespace DCL.Controllers
             newEntity.OnCleanupEvent += po.OnCleanup;
 
             if (Environment.i.world.sceneBoundsChecker.enabled)
-                newEntity.OnShapeUpdated += Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
+                newEntity.OnShapeUpdated += OnEntityShapeUpdated;
 
             entities.Add(id, newEntity);
 
@@ -287,6 +341,11 @@ namespace DCL.Controllers
             OnEntityAdded?.Invoke(newEntity);
 
             return newEntity;
+        }
+
+        void OnEntityShapeUpdated(IDCLEntity entity)
+        {
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, true);
         }
 
         public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
@@ -333,8 +392,8 @@ namespace DCL.Controllers
 
             if (Environment.i.world.sceneBoundsChecker.enabled)
             {
-                entity.OnShapeUpdated -= Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked;
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(entity);
+                entity.OnShapeUpdated -= OnEntityShapeUpdated;
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(entity);
             }
 
             if (removeImmediatelyFromEntitiesList)
@@ -381,6 +440,7 @@ namespace DCL.Controllers
 
                 entities.Clear();
 
+                // TODO: Does it make sense that 'RemoveAllEntities()' destroys the whole scene GameObject?
                 if (gameObject != null)
                     Destroy(gameObject);
             }
@@ -411,19 +471,17 @@ namespace DCL.Controllers
             if (parentId == (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE ||
                 parentId == (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
-
                 if (firstPersonCameraTransform == null)
                 {
                     Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
                     return;
                 }
 
-
                 // In this case, the entity will attached to the first person camera
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
                 Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                 return;
             }
@@ -442,7 +500,7 @@ namespace DCL.Controllers
                 // It will simply rotate with the avatar, regardless of where the camera is pointing
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(avatarTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
                 Environment.i.world.sceneBoundsChecker.AddPersistent(me);
                 return;
             }
@@ -470,7 +528,9 @@ namespace DCL.Controllers
                     me.SetParent(myParent);
                 }
             }
-
+            
+            // After reparenting the Entity may end up outside the scene boundaries
+            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me);
         }
 
         protected virtual void SendMetricsEvent()

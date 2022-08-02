@@ -3,7 +3,7 @@ using DCL.Models;
 
 namespace DCL.ECSRuntime
 {
-    public class ECSComponentData<T>
+    public class ECSComponentData<T> : IECSReadOnlyComponentData<T>
     {
         public IParcelScene scene { get; set; }
         public IDCLEntity entity { get; set; }
