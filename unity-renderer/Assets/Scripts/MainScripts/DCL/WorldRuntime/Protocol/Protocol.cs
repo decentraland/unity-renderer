@@ -24,6 +24,9 @@ namespace DCL.Models
         public const long AVATAR_POSITION_REFERENCE = 4;
         public const long FIRST_PERSON_CAMERA_ENTITY_REFERENCE = 5;
         public const long THIRD_PERSON_CAMERA_ENTITY_REFERENCE = 6;
+        
+        // Scene UI
+        public const long SCENE_CANVAS_ROOT = 7;
     }
 
     public static class ComponentNameLiterals

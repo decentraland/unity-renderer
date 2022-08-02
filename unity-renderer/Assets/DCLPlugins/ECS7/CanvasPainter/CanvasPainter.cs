@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using DCL.ECS7;
 using DCL.ECS7.UI;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,23 +12,37 @@ using UnityEngine.UIElements;
 
 namespace ECSSystems.CameraSystem
 {
+    public struct VisualElementRepresentation
+    {
+        public long entityId;
+        public long parentId;
+        public VisualElement visualElement;
+        public VisualElement parentVisualElement;
+    }
+    
     public class CanvasPainter
     {
         private const string UI_DOCUMENT_PREFAB_PATH = "RootNode";
+        private const int FRAMES_PER_PAINT = 10;
         
         private readonly UIDocument rootNode;
         private readonly UIDataContainer dataContainer;
         private readonly RendererState rendererState;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly IUpdateEventHandler updateEventHandler;
+        private readonly ECSComponentsManager componentsManager;
         
         private UISceneDataContainer sceneDataContainerToUse;
         private IParcelScene scene;
 
-        private Dictionary<long, VisualElement> transforms = new Dictionary<long, VisualElement>();
-        private Dictionary<long, VisualElement> transformsParent = new Dictionary<long, VisualElement>();
+        private Dictionary<long, VisualElementRepresentation> visualElements = new Dictionary<long, VisualElementRepresentation>();
+        private List<VisualElementRepresentation> orphanVisualElements = new List<VisualElementRepresentation>();
         
-        public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler )
+        private IECSReadOnlyComponentsGroup<PBUiTransform, PBUiTextShape> textComponentGroup;
+
+        private int framesCounter = 0;
+        
+        public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler, ECSComponentsManager componentsManager)
         {
             this.updateEventHandler = updateEventHandler;
             this.loadedScenes = dataStoreEcs7.scenes;
@@ -36,6 +52,9 @@ namespace ECSSystems.CameraSystem
             rootNode = GameObject.Instantiate(prefab);
             
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+
+            // Group Components 
+            textComponentGroup = componentsManager.CreateComponentGroup<PBUiTransform, PBUiTextShape>(ComponentID.UI_TRANSFORM, ComponentID.UI_TEXT);
             
 #if UNITY_EDITOR
             rootNode.name = "Scene Canvas";
@@ -46,18 +65,37 @@ namespace ECSSystems.CameraSystem
         {
             GameObject.Destroy(rootNode.gameObject);
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
         }
 
         private void SetScene(IParcelScene scene)
         {
             this.scene = scene;
-            this.sceneDataContainerToUse = dataContainer.GetDataContainer(scene);
+            
+            sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
+            
+            // We get the UI information of the scene to paint their canvas 
+            sceneDataContainerToUse = dataContainer.GetDataContainer(scene);
+            sceneDataContainerToUse.OnUITransformRemoved += RemoveVisualElement;
         }
 
-        public void Update()
+        private void RemoveVisualElement(IDCLEntity entity)
         {
-            if (!rendererState.Get())
+            // We try to get the parent
+            if (visualElements.TryGetValue(entity.entityId, out VisualElementRepresentation visualElementRepresentantion))
+            {
+                visualElementRepresentantion.parentVisualElement.Remove(visualElementRepresentantion.visualElement);
+                visualElements.Remove(entity.entityId);
+            }
+        }
+
+        private void Update()
+        {
+            framesCounter++;
+            if (!rendererState.Get() || framesCounter < FRAMES_PER_PAINT)
                 return;
+
+            framesCounter = 0;
             
             for (int i = 0; i < loadedScenes.Count; i++)
             {
@@ -69,7 +107,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        public void DrawUI(IParcelScene scene)
+        private void DrawUI(IParcelScene scene)
         {
             if(this.scene?.sceneData.id != scene.sceneData.id)
                 SetScene(scene);
@@ -94,52 +132,93 @@ namespace ECSSystems.CameraSystem
 
             //Register callback
             //visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
+
+            List<long> entitiesWithRendeerComponent = new List<long>();
+            IECSReadOnlyComponentData<PBUiTransform> componentData;
             
-            Dictionary<IDCLEntity, VisualElement> orphanVisualElements = new Dictionary<IDCLEntity, VisualElement>();
-            foreach (var kvp in sceneDataContainerToUse.sceneCanvasTransform)
+            foreach (VisualElementRepresentation visualElementRepresentation in  orphanVisualElements)
             {
-                var entity = scene.entities[kvp.Key];
-                var visualElement = TransformToVisualElement(kvp.Value);
+                SetParent(root, visualElementRepresentation, false);
                 
-                transforms[entity.entityId] = visualElement;
-                
-                // if it is the root 
-                if (entity.parent == null)
+                // If we found the parent, we remove it and set it visible
+                if (visualElementRepresentation.parentVisualElement != null)
                 {
-                    root.Add(visualElement);
-                }
-                else
-                {
-                    if (transforms.TryGetValue(entity.parentId, out VisualElement parentElement))
-                    {
-                        transformsParent[entity.entityId] = parentElement;
-                        parentElement.Add(visualElement);
-                    }
-                    else
-                    {
-                        orphanVisualElements[entity] = visualElement;
-                    }
+                    visualElementRepresentation.visualElement.visible = true;
+                    orphanVisualElements.Remove(visualElementRepresentation);
                 }
             }
             
-            foreach (var kvp in  orphanVisualElements)
+            // We create all the text elements
+            foreach (var textComponent in textComponentGroup.group)
             {
-                if (transforms.TryGetValue(kvp.Key.parentId, out VisualElement parentElement))
+                componentData = textComponent.componentData1;
+                
+                // We create the text element
+                var visualElement = TransformToVisualElement(componentData.model, new TextElement());
+                visualElements[componentData.entity.entityId] = new VisualElementRepresentation()
                 {
-                    transformsParent[kvp.Key.entityId] = parentElement;
-                    parentElement.Add(kvp.Value);
+                    entityId = componentData.entity.entityId,
+                    parentId = componentData.entity.parentId,
+                    visualElement = visualElement
+                };
+                
+                // We add the entity to a list so it doesn't create a visual element for the PBUiTransform since the transform is inside the text element
+                entitiesWithRendeerComponent.Add(componentData.entity.entityId);
+            }
+            
+            // We create all the elements that doesn't have a rendering ( Image, Text...etc) since we need them to position them correctly
+            foreach (var kvp in sceneDataContainerToUse.sceneCanvasTransform)
+            {
+                var entity = scene.entities[kvp.Key];
+
+                // If we already have a rendering element, we skip since don't need to create it again
+                if (entitiesWithRendeerComponent.Contains(entity.entityId))
+                    continue;
+                
+                // We create the element to position the rendering element correctly
+                var visualElement = TransformToVisualElement(kvp.Value, new Image());
+                visualElements[entity.entityId] = new VisualElementRepresentation()
+                {
+                    entityId = entity.entityId,
+                    parentId = entity.parentId,
+                    visualElement = visualElement
+                };
+            }
+            
+            // We set the parenting
+            foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
+            {
+                SetParent(root, kvp.Value);
+            }
+        }
+
+        private void SetParent(VisualElement root, VisualElementRepresentation visualElementRepresentation, bool addToOrphanList = true) 
+        {
+            // if the parent is the root canvas, we assign to the root
+            if (visualElementRepresentation.parentId == SpecialEntityId.SCENE_CANVAS_ROOT)
+            {
+                root.Add(visualElementRepresentation.visualElement);
+                visualElementRepresentation.parentVisualElement = root;
+            }
+            else
+            {
+                // We try to get the parent
+                if (visualElements.TryGetValue(visualElementRepresentation.parentId, out VisualElementRepresentation parentVisualElementRepresentantion))
+                {
+                    parentVisualElementRepresentantion.visualElement.Add(visualElementRepresentation.visualElement);
+                    visualElementRepresentation.parentVisualElement = parentVisualElementRepresentantion.visualElement;
                 }
-                else
-                {
-                    Debug.Log("A UITransform element doesn't have a father");
+                else if(addToOrphanList)
+                { 
+                    // There is no father so it is orphan right now. We can try to find the father the next time, we hide it until we find it
+                    visualElementRepresentation.visualElement.visible = false;
+                    orphanVisualElements.Add(visualElementRepresentation);
                 }
             }
         }
         
-        private static VisualElement TransformToVisualElement(PBUiTransform model)
+        private VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element)
         {
-            VisualElement element = new Image();
-
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
             element.style.flexBasis = model.FlexBasis;

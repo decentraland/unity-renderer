@@ -1,4 +1,5 @@
-﻿using DCL.Controllers;
+﻿using System;
+using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Models;
 
@@ -6,6 +7,8 @@ namespace DCL.ECS7.UI
 {
     public class UISceneDataContainer
     {
+        public event Action<IDCLEntity> OnUITransformRemoved;
+        
         public readonly BaseDictionary<long,PBUiTransform> sceneCanvasTransform = new BaseDictionary<long,PBUiTransform>();
         public readonly BaseDictionary<long,PBUiTextShape> sceneCanvasText = new BaseDictionary<long,PBUiTextShape>();
         
@@ -25,12 +28,19 @@ namespace DCL.ECS7.UI
             sceneCanvasText[entity.entityId] = model;
         }
 
-        public void RemoveUIComponent(IDCLEntity entity)
+        public void RemoveUITransform(IDCLEntity entity)
         {
             isDirty = true;
             sceneCanvasTransform.Remove(entity.entityId);
+            OnUITransformRemoved?.Invoke(entity);
+        }
+
+        public void RemoveUIText(IDCLEntity entity)
+        {
+            isDirty = true;
             sceneCanvasText.Remove(entity.entityId);
         }
+        
     }
     
     public class UIDataContainer
@@ -46,10 +56,15 @@ namespace DCL.ECS7.UI
         {
             GetDataContainer(scene).AddUIComponent(entity,model);
         }
-        
-        public void RemoveUIComponent(IParcelScene scene, IDCLEntity entity)
+
+        public void RemoveUITransform(IParcelScene scene, IDCLEntity entity)
         {
-            GetDataContainer(scene).RemoveUIComponent(entity);
+            GetDataContainer(scene).RemoveUITransform(entity);    
+        }
+        
+        public void RemoveUIText(IParcelScene scene, IDCLEntity entity)
+        {
+            GetDataContainer(scene).RemoveUIText(entity);
         }
 
         public UISceneDataContainer GetDataContainer(IParcelScene scene)

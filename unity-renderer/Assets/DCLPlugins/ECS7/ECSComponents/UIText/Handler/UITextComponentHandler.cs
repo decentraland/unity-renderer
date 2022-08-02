@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
         
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            uiDataContainer.RemoveUIComponent(scene,entity);
+            uiDataContainer.RemoveUIText(scene,entity);
         }
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTextShape model)

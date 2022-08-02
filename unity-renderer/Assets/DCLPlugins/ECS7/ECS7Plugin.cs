@@ -30,7 +30,7 @@ namespace DCL.ECS7
             
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter);
 
-            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler);
+            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager);
             systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
 
             sceneController.OnNewSceneAdded += OnSceneAdded;

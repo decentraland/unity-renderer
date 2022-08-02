@@ -30,7 +30,7 @@ namespace DCL.ECSComponents
                 entity.parentId = (long)SpecialEntityId.SCENE_ROOT_ENTITY;
                 ECSTransformUtils.SetParent(scene, entity, (long)SpecialEntityId.SCENE_ROOT_ENTITY);
             }
-            uiDataContainer.RemoveUIComponent(scene,entity);
+            uiDataContainer.RemoveUITransform(scene,entity);
         }
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
