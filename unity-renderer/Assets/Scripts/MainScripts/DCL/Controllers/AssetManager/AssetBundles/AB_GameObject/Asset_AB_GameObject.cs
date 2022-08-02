@@ -7,6 +7,8 @@ namespace DCL
 {
     public class Asset_AB_GameObject : Asset_WithPoolableContainer
     {
+        private const string CONTAINER_GO_NAME = "AB Container";
+    
         internal AssetPromise_AB ownerPromise;
 
         public override GameObject container { get; set; }
@@ -22,7 +24,7 @@ namespace DCL
 
         public Asset_AB_GameObject()
         {
-            container = new GameObject("AB Container");
+            container = new GameObject(CONTAINER_GO_NAME);
             // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
             container.transform.position = EnvironmentSettings.MORDOR;
         }
