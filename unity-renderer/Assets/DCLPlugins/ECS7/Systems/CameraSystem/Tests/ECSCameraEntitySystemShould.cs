@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL;
+using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -13,7 +14,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class ECSCameraTransformSystemShould
+    public class ECSCameraEntitySystemShould
     {
         private Transform cameraTransform;
         private IECSComponentWriter componentsWriter;
@@ -49,7 +50,7 @@ namespace Tests
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            var update = ECSCameraTransformSystem.CreateSystem(componentsWriter);
+            var update = ECSCameraEntitySystem.CreateSystem(componentsWriter);
 
             update.Invoke();
             componentsWriter.Received(1)
@@ -73,7 +74,7 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            var update = ECSCameraTransformSystem.CreateSystem(componentsWriter);
+            var update = ECSCameraEntitySystem.CreateSystem(componentsWriter);
 
             update.Invoke();
             componentsWriter.Received(1)
@@ -95,6 +96,36 @@ namespace Tests
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x =>
                                     x.position == new UnityEngine.Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)));
+        }
+
+        [Test]
+        public void SendCameraMode()
+        {
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
+            
+            var update = ECSCameraEntitySystem.CreateSystem(componentsWriter);
+
+            update.Invoke();
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                scenes[0].sceneData.id,
+                                SpecialEntityId.CAMERA_ENTITY,
+                                ComponentID.CAMERA_MODE,
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.FirstPerson),
+                                ECSComponentWriteType.SEND_TO_SCENE);
+
+            componentsWriter.ClearReceivedCalls();
+
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.ThirdPerson);
+
+            update.Invoke();
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                scenes[0].sceneData.id,
+                                SpecialEntityId.CAMERA_ENTITY,
+                                ComponentID.CAMERA_MODE,
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.ThirdPerson),
+                                ECSComponentWriteType.SEND_TO_SCENE);
         }
     }
 }

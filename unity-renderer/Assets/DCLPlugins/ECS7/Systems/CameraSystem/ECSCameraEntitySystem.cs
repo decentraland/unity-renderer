@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.Helpers;
@@ -10,8 +12,10 @@ using UnityEngine;
 
 namespace ECSSystems.CameraSystem
 {
-    public static class ECSCameraTransformSystem
+    public static class ECSCameraEntitySystem
     {
+        private static PBCameraMode reusableCameraMode = new PBCameraMode();
+
         private class State
         {
             public BaseVariable<Transform> cameraTransform;
@@ -19,6 +23,7 @@ namespace ECSSystems.CameraSystem
             public Vector3Variable worldOffset;
             public IReadOnlyList<IParcelScene> loadedScenes;
             public IECSComponentWriter componentsWriter;
+            public BaseVariableAsset<CameraMode.ModeId> cameraMode;
             public UnityEngine.Vector3 lastCameraPosition = UnityEngine.Vector3.zero;
             public Quaternion lastCameraRotation = Quaternion.identity;
         }
@@ -31,7 +36,8 @@ namespace ECSSystems.CameraSystem
                 rendererState = CommonScriptableObjects.rendererState,
                 worldOffset = CommonScriptableObjects.worldOffset,
                 loadedScenes = DataStore.i.ecs7.scenes,
-                componentsWriter = componentsWriter
+                componentsWriter = componentsWriter,
+                cameraMode = CommonScriptableObjects.cameraMode
             };
             return () => Update(state);
         }
@@ -46,13 +52,12 @@ namespace ECSSystems.CameraSystem
             UnityEngine.Vector3 cameraPosition = cameraT.position;
             Quaternion cameraRotation = cameraT.rotation;
 
-            if (state.lastCameraPosition == cameraPosition && state.lastCameraRotation == cameraRotation)
-            {
-                return;
-            }
+            bool updateTransform = (state.lastCameraPosition != cameraPosition || state.lastCameraRotation != cameraRotation);
 
             state.lastCameraPosition = cameraPosition;
             state.lastCameraRotation = cameraRotation;
+
+            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(state.cameraMode.Get());
 
             UnityEngine.Vector3 worldOffset = state.worldOffset.Get();
 
@@ -63,6 +68,12 @@ namespace ECSSystems.CameraSystem
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 scene = loadedScenes[i];
+
+                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE,
+                    reusableCameraMode, ECSComponentWriteType.SEND_TO_SCENE);
+
+                if (!updateTransform)
+                    continue;
 
                 var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref worldOffset);
                 componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
