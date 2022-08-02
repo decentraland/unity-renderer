@@ -65,6 +65,10 @@ namespace DCLPlugins.UIRefresherPlugin
                 }
             }
         }
-        private static bool CanRefreshMore(float startTime) { return Time.time - startTime < DirtyWatcherUpdateBudget; }
+        private static bool CanRefreshMore(float startTime)
+        {
+            if (Application.isBatchMode) return true;
+            return Time.time - startTime < DirtyWatcherUpdateBudget;
+        }
     }
 }
