@@ -28,7 +28,7 @@ public class JoinChannelComponentController : IDisposable
         joinChannelView.OnConfirmJoin -= OnConfirmJoin;
     }
 
-    internal void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
         if (string.IsNullOrEmpty(currentChannelId))
             return;
@@ -37,12 +37,12 @@ public class JoinChannelComponentController : IDisposable
         joinChannelView.Show();
     }
 
-    internal void OnCancelJoin()
+    private void OnCancelJoin()
     {
         joinChannelView.Hide();
     }
 
-    internal void OnConfirmJoin(string channelId)
+    private void OnConfirmJoin(string channelId)
     {
         chatController.JoinOrCreateChannel(channelId.Replace("#", "").Replace("~", ""));
         joinChannelView.Hide();

@@ -2,6 +2,7 @@ using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
 
 public class JoinChannelComponentControllerShould
 {
@@ -37,7 +38,7 @@ public class JoinChannelComponentControllerShould
     public void RaiseOnChannelToJoinChangedCorrectly(string testChannelId)
     {
         // Act
-        joinChannelComponentController.OnChannelToJoinChanged(testChannelId, null);
+        channelsDataStore.currentJoinChannelModal.Set(testChannelId, true);
 
         // Assert
         joinChannelComponentView.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).SetChannel(testChannelId);
@@ -48,7 +49,7 @@ public class JoinChannelComponentControllerShould
     public void RaiseOnCancelJoinCorrectly()
     {
         // Act
-        joinChannelComponentController.OnCancelJoin();
+        joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
 
         // Assert
         joinChannelComponentView.Received(1).Hide();
@@ -62,7 +63,7 @@ public class JoinChannelComponentControllerShould
         string testChannelId = "TestId";
 
         // Act
-        joinChannelComponentController.OnConfirmJoin(testChannelId);
+        joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(testChannelId);
 
         // Assert
         chatController.Received(1).JoinOrCreateChannel(testChannelId);
