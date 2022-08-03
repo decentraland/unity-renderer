@@ -12,7 +12,7 @@ namespace DCL.AvatarModifierAreaFeedback
     public class AvatarModifierAreaFeedbackView : MonoBehaviour, IAvatarModifierAreaFeedbackView, IPointerEnterHandler, IPointerExitHandler
     {
         
-        internal enum AvatarModifierAreaFeedbackState { NEVER_SHOWN, ICON_VISIBLE, WARNING_MESSAGE_VISIBLE }
+        internal enum AvatarModifierAreaFeedbackState { NEVER_SHOWN, ICON_VISIBLE, WARNING_MESSAGE_VISIBLE, NONE_VISIBLE }
 
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
         private const string PATH_TO_WARNING_MESSAGE = "_WarningMessageAreaFeedbackHUD";
@@ -76,14 +76,15 @@ namespace DCL.AvatarModifierAreaFeedback
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
-                currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
                 messageAnimator.SetTrigger(firstInAnimationTrigger);
                 HideFirstTimeWarningMessageUniTask(deactivatePreviewCancellationToken.Token).Forget();
+                currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
             }
             else
             {
                 iconAnimator.SetTrigger(inAnimationTrigger);
                 pointerEnterTriggerArea.blocksRaycasts = true;
+                currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
             }
         }
         
@@ -103,6 +104,7 @@ namespace DCL.AvatarModifierAreaFeedback
             {
                 iconAnimator.SetTrigger(outAnimationTrigger);
             }
+            currentState = AvatarModifierAreaFeedbackState.NONE_VISIBLE;
         }
         
         public void OnPointerEnter(PointerEventData eventData)
