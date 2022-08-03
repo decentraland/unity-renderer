@@ -57,7 +57,7 @@ namespace DCL.Components
             var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
-            loadableShape.initialVisibility = model.visible;
+            loadableShape.initialVisibility = entity.isInsideBoundaries;
 
             loadableShape.withCollisions = model.withCollisions;
             loadableShape.backgroundColor = model.color;
