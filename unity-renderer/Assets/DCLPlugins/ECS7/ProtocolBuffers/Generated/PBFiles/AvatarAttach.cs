@@ -37,31 +37,23 @@ namespace DCL.ECSComponents {
 
   }
   #region Messages
-  public sealed partial class PBAvatarAttach : pb::IMessage<PBAvatarAttach>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class PBAvatarAttach : pb::IMessage<PBAvatarAttach> {
     private static readonly pb::MessageParser<PBAvatarAttach> _parser = new pb::MessageParser<PBAvatarAttach>(() => new PBAvatarAttach());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAvatarAttach> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AvatarAttachReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach() {
       OnConstruction();
     }
@@ -69,7 +61,6 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach(PBAvatarAttach other) : this() {
       avatarId_ = other.avatarId_;
       anchorPointId_ = other.anchorPointId_;
@@ -77,7 +68,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach Clone() {
       return new PBAvatarAttach(this);
     }
@@ -86,7 +76,6 @@ namespace DCL.ECSComponents {
     public const int AvatarIdFieldNumber = 1;
     private string avatarId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string AvatarId {
       get { return avatarId_; }
       set {
@@ -98,7 +87,6 @@ namespace DCL.ECSComponents {
     public const int AnchorPointIdFieldNumber = 2;
     private int anchorPointId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int AnchorPointId {
       get { return anchorPointId_; }
       set {
@@ -107,13 +95,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAvatarAttach);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAvatarAttach other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -127,7 +113,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (AvatarId.Length != 0) hash ^= AvatarId.GetHashCode();
@@ -139,17 +124,12 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (AvatarId.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(AvatarId);
@@ -161,29 +141,9 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (AvatarId.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(AvatarId);
-      }
-      if (AnchorPointId != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(AnchorPointId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (AvatarId.Length != 0) {
@@ -199,7 +159,6 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAvatarAttach other) {
       if (other == null) {
         return;
@@ -214,11 +173,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -235,31 +190,7 @@ namespace DCL.ECSComponents {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            AvatarId = input.ReadString();
-            break;
-          }
-          case 16: {
-            AnchorPointId = input.ReadInt32();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 

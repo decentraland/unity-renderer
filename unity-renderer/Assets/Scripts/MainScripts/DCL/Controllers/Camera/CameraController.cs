@@ -5,6 +5,7 @@ using Cinemachine;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL;
+using DCL.CameraTool;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 

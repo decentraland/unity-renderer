@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;

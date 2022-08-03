@@ -8,8 +8,15 @@ namespace DCL.CRDT
         internal readonly List<CRDTMessage> state = new List<CRDTMessage>();
         private readonly Dictionary<int, Dictionary<int, int>> stateIndexer = new Dictionary<int, Dictionary<int, int>>();
 
+        private bool clearOnUpdated = false;
+
         public CRDTMessage ProcessMessage(CRDTMessage message)
         {
+            if (clearOnUpdated)
+            {
+                Clear();
+            }
+            
             TryGetState(message.key1, message.key2, out CRDTMessage storedMessage);
 
             // The received message is > than our current value, update our state.
@@ -84,6 +91,12 @@ namespace DCL.CRDT
         {
             state.Clear();
             stateIndexer.Clear();
+            clearOnUpdated = false;
+        }
+
+        public void ClearOnUpdated()
+        {
+            clearOnUpdated = true;
         }
 
         private CRDTMessage UpdateState(int key1, int key2, object data, long remoteTimestamp)

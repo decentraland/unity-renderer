@@ -795,7 +795,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         {
             if (entity.rootEntity.scene == sceneToEdit)
             {
-                if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
+                if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityMeshInsideSceneBoundaries(entity.rootEntity))
                 {
                     entitiesToRemove.Add(entity);
                 }
@@ -881,7 +881,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         bool areAllIn = true;
         foreach (BIWEntity entity in convertedEntities.Values)
         {
-            if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
+            if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityMeshInsideSceneBoundaries(entity.rootEntity))
             {
                 areAllIn = false;
                 break;

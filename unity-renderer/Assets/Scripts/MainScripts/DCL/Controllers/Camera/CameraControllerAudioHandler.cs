@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using UnityEngine;
 
 namespace DCL.Camera

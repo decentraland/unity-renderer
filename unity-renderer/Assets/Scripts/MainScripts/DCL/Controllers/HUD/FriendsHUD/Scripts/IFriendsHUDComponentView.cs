@@ -34,9 +34,9 @@ public interface IFriendsHUDComponentView
     void Dispose();
     void Show();
     void Hide();
-    void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel model);
-    void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model);
-    void Populate(string userId, FriendEntryModel model);
+    void Set(string userId, FriendEntryModel model);
+    void Set(string userId, FriendRequestEntryModel model);
+    void Remove(string userId);
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
@@ -48,4 +48,5 @@ public interface IFriendsHUDComponentView
     bool ContainsFriendRequest(string userId);
     void FilterFriends(Dictionary<string, FriendEntryModel> friends);
     void ClearFriendFilter();
+    void UpdateBlockStatus(string userId, bool blocked);
 }
