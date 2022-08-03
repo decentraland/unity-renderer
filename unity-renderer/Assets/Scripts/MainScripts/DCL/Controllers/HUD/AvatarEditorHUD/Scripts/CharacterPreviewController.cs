@@ -75,9 +75,9 @@ public class CharacterPreviewController : MonoBehaviour
             onDone?.Invoke();
             return;
         }
-
-        loadingCts?.Cancel();
-        loadingCts?.Dispose();
+        
+        // loadingCts?.Cancel();
+        // loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
         UpdateModelRoutine(newModel, onDone, loadingCts.Token);
     }
