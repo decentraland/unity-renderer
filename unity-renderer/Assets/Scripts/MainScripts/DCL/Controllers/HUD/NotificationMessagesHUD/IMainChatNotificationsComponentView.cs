@@ -9,8 +9,8 @@ public interface IMainChatNotificationsComponentView
 
     Transform GetPanelTransform();
     ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null);
-    void Show();
-    void Hide();
+    void Show(bool instant = false);
+    void Hide(bool instant = false);
     void ShowNotifications();
     void HideNotifications();
 }

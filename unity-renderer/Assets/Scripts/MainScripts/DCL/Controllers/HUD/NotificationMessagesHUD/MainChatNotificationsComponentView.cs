@@ -49,12 +49,12 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         scrollRectangle.onValueChanged.AddListener(CheckScrollValue);
     }
 
-    public void Show()
+    public override void Show(bool instant = false)
     {
         gameObject.SetActive(true);
     }
 
-    public void Hide()
+    public override void Hide(bool instant = false)
     {
         SetScrollToEnd();
         gameObject.SetActive(false);
