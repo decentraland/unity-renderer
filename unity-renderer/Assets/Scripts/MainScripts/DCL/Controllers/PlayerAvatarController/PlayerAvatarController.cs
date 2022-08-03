@@ -152,7 +152,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 
     private void OnEnable()
     {
-        // userProfile.OnUpdate += OnUserProfileOnUpdate;
+        userProfile.OnUpdate += OnUserProfileOnUpdate;
         userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
