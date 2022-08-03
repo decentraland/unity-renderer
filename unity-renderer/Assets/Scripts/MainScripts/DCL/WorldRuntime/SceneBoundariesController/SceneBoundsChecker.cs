@@ -12,19 +12,18 @@ namespace DCL.Controllers
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => entitiesCheckRoutine != null;
         public float timeBetweenChecks { get; set; } = 0.5f;
-
-        // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
-        HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
-        HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
-        HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
-        Coroutine entitiesCheckRoutine = null;
-        float lastCheckTime;
-        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
-
         public int entitiesToCheckCount => entitiesToCheck.Count;
         public int highPrioEntitiesToCheckCount => highPrioEntitiesToCheck.Count;
 
+        private const bool VERBOSE = false;
+        private Logger logger = new Logger("SceneBoundsChecker") {verboseEnabled = VERBOSE};
+        private HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
+        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
         private ISceneBoundsFeedbackStyle feedbackStyle;
+        private Coroutine entitiesCheckRoutine = null;
+        private float lastCheckTime;
 
         public void Initialize()
         {
@@ -50,7 +49,7 @@ namespace DCL.Controllers
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         IEnumerator CheckEntities()
-        {
+        {   
             while (true)
             {
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
@@ -62,17 +61,25 @@ namespace DCL.Controllers
                     void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
                         if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                        {
+                            if(VERBOSE)
+                                logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
                             return;
+                        }
 
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
                             if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
-                                break;
+                            {
+                                if(VERBOSE)
+                                    logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
+                                return;
+                            }
 
                             float startTime = Time.realtimeSinceStartup;
 
-                            EvaluateEntityPosition(iterator.Current);
+                            RunEntityEvaluation(iterator.Current);
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
@@ -84,19 +91,23 @@ namespace DCL.Controllers
 
                     processEntitiesList(highPrioEntitiesToCheck);
                     processEntitiesList(entitiesToCheck);
-
+                    
                     // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
                     using (var iterator = checkedEntities.GetEnumerator())
                     {
                         while (iterator.MoveNext())
                         {
-                            if (!persistentEntities.Contains(iterator.Current))
+                            IDCLEntity entity = iterator.Current;
+                            if (!persistentEntities.Contains(entity))
                             {
-                                entitiesToCheck.Remove(iterator.Current);
-                                highPrioEntitiesToCheck.Remove(iterator.Current);
+                                entitiesToCheck.Remove(entity);
+                                highPrioEntitiesToCheck.Remove(entity);
                             }
                         }
                     }
+                    
+                    if(VERBOSE)
+                        logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}; highPriorityEntities left: {highPrioEntitiesToCheck.Count}");
 
                     checkedEntities.Clear();
 
@@ -136,12 +147,12 @@ namespace DCL.Controllers
             Stop();
         }
 
-        public void AddEntityToBeChecked(IDCLEntity entity)
+        public void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false)
         {
             if (!enabled)
                 return;
 
-            OnAddEntity(entity);
+            OnAddEntity(entity, runPreliminaryEvaluation);
         }
 
         /// <summary>
@@ -159,8 +170,7 @@ namespace DCL.Controllers
 
         public void RemovePersistent(IDCLEntity entity)
         {
-            if (persistentEntities.Contains(entity))
-                persistentEntities.Remove(entity);
+            persistentEntities.Remove(entity);
         }
 
         /// <summary>
@@ -169,7 +179,7 @@ namespace DCL.Controllers
         ///
         public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
 
-        public void RemoveEntityToBeChecked(IDCLEntity entity)
+        public void RemoveEntityToBeCheckedAndResetState(IDCLEntity entity)
         {
             if (!enabled)
                 return;
@@ -177,7 +187,12 @@ namespace DCL.Controllers
             OnRemoveEntity(entity);
         }
 
-        public void EvaluateEntityPosition(IDCLEntity entity)
+        public void RunEntityEvaluation(IDCLEntity entity)
+        {
+            RunEntityEvaluation(entity, false);
+        }
+
+        public void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck)
         {
             if (entity == null || entity.scene == null || entity.gameObject == null)
                 return;
@@ -189,33 +204,59 @@ namespace DCL.Controllers
                 {
                     while (iterator.MoveNext())
                     {
-                        EvaluateEntityPosition(iterator.Current.Value);
+                        RunEntityEvaluation(iterator.Current.Value, onlyOuterBoundsCheck);
                     }
                 }
             }
 
-            if (entity.meshRootGameObject == null || entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
-            {
-                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.worldOffset.Get()));
-                return;
-            }
-
+            // If it has a mesh we don't evaluate its position due to artists 'pivot point sloppiness', we just evaluate its merged bounds
+            if (HasMesh(entity))
+                EvaluateMeshBounds(entity, onlyOuterBoundsCheck);
+            else
+                EvaluateEntityPosition(entity, onlyOuterBoundsCheck);
+        }
+        
+        void EvaluateMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
+        {
+            // TODO: Can we cache the MaterialTransitionController somewhere to avoid this GetComponent() call?
             // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
             if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-            {
                 return;
-            }
 
             var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
+            
+            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
+            if (!isInsideOuterBounds)
+                SetMeshesAndComponentsInsideBoundariesState(entity, false);
+            
+            if (!onlyOuterBoundsCheck)
+                SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
+        }
+        
+        void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
+        {
+            Vector3 entityGOPosition = entity.gameObject.transform.position;
+            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
 
-            EvaluateMeshBounds(entity);
+            if (!isInsideOuterBounds)
+                UpdateComponents(entity, false);
+                    
+            if (!onlyOuterBoundsCheck)
+                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get()));
         }
 
-        public bool IsEntityInsideSceneBoundaries(IDCLEntity entity)
+        private bool HasMesh(IDCLEntity entity)
         {
-            if (entity.meshesInfo == null || entity.meshesInfo.meshRootGameObject == null || entity.meshesInfo.mergedBounds == null)
+            return entity.meshRootGameObject != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0;
+        }
+
+        public bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity)
+        {
+            if (entity.meshesInfo == null 
+                || entity.meshesInfo.meshRootGameObject == null 
+                || entity.meshesInfo.mergedBounds == null)
                 return false;
 
             // 1st check (full mesh AABB)
@@ -229,21 +270,7 @@ namespace DCL.Controllers
 
             return isInsideBoundaries;
         }
-
-        void EvaluateMeshBounds(IDCLEntity entity)
-        {
-            bool isInsideBoundaries = IsEntityInsideSceneBoundaries(entity);
-            if (entity.isInsideBoundaries != isInsideBoundaries)
-            {
-                entity.isInsideBoundaries = isInsideBoundaries;
-                OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
-            }
-
-            UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
-            UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
-            UpdateComponents(entity, isInsideBoundaries);
-        }
-
+        
         protected bool AreSubmeshesInsideBoundaries(IDCLEntity entity)
         {
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
@@ -258,7 +285,23 @@ namespace DCL.Controllers
             return true;
         }
 
-        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries) { feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries); }
+        void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
+        {
+            if (entity.isInsideBoundaries != isInsideBoundaries)
+            {
+                entity.isInsideBoundaries = isInsideBoundaries;
+                OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
+            }
+
+            UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
+            UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
+            UpdateComponents(entity, isInsideBoundaries);
+        }
+
+        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
+        {
+            feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries);
+        }
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
@@ -296,8 +339,14 @@ namespace DCL.Controllers
             }
         }
 
-        protected void OnAddEntity(IDCLEntity entity)
+        protected void OnAddEntity(IDCLEntity entity, bool runPreliminaryEvaluation = false)
         {
+            if (runPreliminaryEvaluation)
+            {
+                // The outer bounds check is cheaper than the regular check
+                RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
+            }
+            
             AddEntityBasedOnPriority(entity);
         }
 
@@ -306,15 +355,19 @@ namespace DCL.Controllers
             highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
-            feedbackStyle.ApplyFeedback(entity.meshesInfo, true);
+            
+            SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
         protected void AddEntityBasedOnPriority(IDCLEntity entity)
         {
-            if (IsHighPrioEntity(entity) && !highPrioEntitiesToCheck.Contains(entity))
+            if (IsHighPrioEntity(entity))
+            {
                 highPrioEntitiesToCheck.Add(entity);
-            else if (!entitiesToCheck.Contains(entity))
-                entitiesToCheck.Add(entity);
+                return;
+            }
+            
+            entitiesToCheck.Add(entity);
         }
 
         protected bool IsHighPrioEntity(IDCLEntity entity)

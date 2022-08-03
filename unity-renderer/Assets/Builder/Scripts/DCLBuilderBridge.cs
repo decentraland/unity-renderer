@@ -635,7 +635,7 @@ namespace Builder
                 outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
             }
 
-            Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(entity.rootEntity);
+            Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(entity.rootEntity);
         }
 
         private void SendOutOfBoundariesEntities() { builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.id); }
@@ -646,7 +646,7 @@ namespace Builder
             {
                 for (int i = 0; i < selectedEntities.Count; i++)
                 {
-                    Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
+                    Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(selectedEntities[i].rootEntity);
                 }
             }
         }

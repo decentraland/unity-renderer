@@ -7,14 +7,11 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using DCL.Camera;
 using DCL.Controllers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -636,7 +633,7 @@ namespace Tests
         {
             long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
-
+            
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
@@ -680,7 +677,7 @@ namespace Tests
         {
             long entityId = 1;
             TestUtils.CreateSceneEntity(scene, entityId);
-
+            
             string clickUuid = "pointerevent-1";
             var OnClickComponentModel = new OnClick.Model()
             {
@@ -705,9 +702,11 @@ namespace Tests
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
 
+            yield return null;
+
             var meshFilter = component.entity.gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
-
+            
             Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist under any rendeder");
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
@@ -742,6 +741,8 @@ namespace Tests
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
 
+            yield return null;
+
             var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
 
@@ -749,8 +750,6 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-
-            yield break;
         }
 
         [UnityTest]
@@ -780,6 +779,8 @@ namespace Tests
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
+            
+            yield return null;
 
             var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
@@ -788,8 +789,6 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-
-            yield break;
         }
 
         [UnityTest]
@@ -820,6 +819,8 @@ namespace Tests
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
 
+            yield return null;
+            
             var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
 
@@ -827,8 +828,6 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-
-            yield break;
         }
 
         [UnityTest]
@@ -858,6 +857,8 @@ namespace Tests
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
                 JsonConvert.SerializeObject(new BoxShape.Model { })
             );
+            
+            yield return null;
 
             var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
             var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME);
@@ -866,8 +867,6 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-
-            yield break;
         }
 
         [UnityTest]
