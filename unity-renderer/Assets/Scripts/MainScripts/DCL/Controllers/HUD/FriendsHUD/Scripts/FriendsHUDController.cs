@@ -65,7 +65,7 @@ public class FriendsHUDController : IHUD
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
-        ownUserProfile.OnUpdate += HandleProfileUpdated;
+        // ownUserProfile.OnUpdate += HandleProfileUpdated;
 
         if (friendsController != null)
         {

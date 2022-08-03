@@ -52,8 +52,8 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
         
         ownUserProfile = userProfileBridge.GetOwn();
-        if (ownUserProfile != null)
-            ownUserProfile.OnUpdate += OnUserProfileUpdate;
+        // if (ownUserProfile != null)
+        //     ownUserProfile.OnUpdate += OnUserProfileUpdate;
         
         // TODO: this data should come from the chat service when channels are implemented
         publicChannels[GENERAL_CHANNEL_ID] = new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",

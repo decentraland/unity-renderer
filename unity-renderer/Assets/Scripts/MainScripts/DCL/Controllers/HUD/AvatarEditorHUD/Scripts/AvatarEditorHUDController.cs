@@ -100,7 +100,7 @@ public class AvatarEditorHUDController : IHUD
         SetCatalog(catalog);
 
         LoadUserProfile(userProfile, true);
-        this.userProfile.OnUpdate += LoadUserProfile;
+        // this.userProfile.OnUpdate += LoadUserProfile;
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
 
