@@ -8,6 +8,8 @@ namespace DCL
 {
     public class Asset_GLTF : Asset_WithPoolableContainer
     {
+        private const string CONTAINER_GO_NAME = "Asset_GLTF Container";
+        
         public string name;
         public bool visible = true;
 
@@ -27,8 +29,9 @@ namespace DCL
 
         public Asset_GLTF()
         {
-            container = new GameObject("Asset_GLTF Container");
-            visible = true;
+            container = new GameObject(CONTAINER_GO_NAME);
+            // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
+            container.transform.position = EnvironmentSettings.MORDOR;
         }
 
         public override object Clone()

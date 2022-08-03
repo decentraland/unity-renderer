@@ -113,7 +113,7 @@ namespace DCL.ECSRuntime
         /// <param name="scene">target scene</param>
         /// <param name="entity">target entity</param>
         /// <returns>component data, including model</returns>
-        public ECSComponentData<ModelType> Get(IParcelScene scene, IDCLEntity entity)
+        public IECSReadOnlyComponentData<ModelType> Get(IParcelScene scene, IDCLEntity entity)
         {
             if (ComponentDataTryGet(componentData, scene, entity, out ECSComponentData<ModelType> data))
             {
