@@ -197,9 +197,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                 return;
 
             OnPress?.Invoke(Model.otherUserId);
-        }
-        else if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
+            
             if ((Model.messageType != ChatMessage.Type.PUBLIC && Model.messageType != ChatMessage.Type.PRIVATE) ||
                 Model.senderId == UserProfile.GetOwnUserProfile().userId)
                 return;

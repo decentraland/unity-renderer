@@ -341,7 +341,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private void OnOpenContextMenu(DefaultChatEntry chatEntry)
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
-        contextMenu.transform.parent = transform;
+        //contextMenu.transform.parent = transform;
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
