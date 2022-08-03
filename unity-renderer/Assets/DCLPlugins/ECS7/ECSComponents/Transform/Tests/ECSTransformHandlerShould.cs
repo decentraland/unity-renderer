@@ -15,7 +15,7 @@ namespace Tests
         private GameObject entityGO;
         private ECSTransformHandler handler;
         private IWorldState worldState;
-        private BaseVariable<Vector3> playerWorldPosition;
+        private BaseVariable<Vector3> playerTeleportPosition;
 
         [SetUp]
         public void SetUp()
@@ -28,8 +28,8 @@ namespace Tests
 
             scene = Substitute.For<IParcelScene>();
             worldState = Substitute.For<IWorldState>();
-            playerWorldPosition = Substitute.For<BaseVariable<Vector3>>();
-            handler = new ECSTransformHandler(worldState, playerWorldPosition);
+            playerTeleportPosition = Substitute.For<BaseVariable<Vector3>>();
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition);
         }
 
         [TearDown]
@@ -131,7 +131,7 @@ namespace Tests
 
             Vector3 position = new Vector3(8, 0, 0);
             handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
-            playerWorldPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)));
+            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)));
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace Tests
 
             Vector3 position = new Vector3(1000, 0, 0);
             handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
-            playerWorldPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace Tests
 
             Vector3 position = new Vector3(1000, 0, 0);
             handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
-            playerWorldPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
         }
     }
 }

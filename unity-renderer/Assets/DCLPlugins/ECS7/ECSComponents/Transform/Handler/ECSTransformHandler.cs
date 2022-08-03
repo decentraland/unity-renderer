@@ -9,13 +9,13 @@ namespace DCL.ECSComponents
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
         private readonly IWorldState worldState;
-        private readonly BaseVariable<Vector3> playerWorldPosition;
+        private readonly BaseVariable<Vector3> playerTeleportVariable;
 
-        public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerWorldPosition)
+        public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(10);
             this.worldState = worldState;
-            this.playerWorldPosition = playerWorldPosition;
+            this.playerTeleportVariable = playerTeleportVariable;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -36,7 +36,7 @@ namespace DCL.ECSComponents
             // move character across the scene
             if (entity.entityId == SpecialEntityId.PLAYER_ENTITY)
             {
-                TryMoveCharacter(scene, model.position, worldState, playerWorldPosition);
+                TryMoveCharacter(scene, model.position, worldState, playerTeleportVariable);
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace DCL.ECSComponents
         }
 
         private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,
-            IWorldState worldState, BaseVariable<Vector3> playerWorldPosition)
+            IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
         {
             // If player is not at the scene that triggered this event
             // we'll ignore it
@@ -78,7 +78,7 @@ namespace DCL.ECSComponents
                 return false;
             }
 
-            playerWorldPosition.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
+            playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
                                     + localPosition);
             return true;
         }

@@ -67,7 +67,7 @@ public class DCLCharacterPosition
 
             lastRepositionFrame = Time.frameCount;
 
-            DataStore.i.player.playerWorldPosition.Set(worldPositionValue, notifyEvent: false);
+            DataStore.i.player.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.worldOffset.Set(offset);
             DCL.Environment.i.platform.physicsSyncController.MarkDirty();
         }
