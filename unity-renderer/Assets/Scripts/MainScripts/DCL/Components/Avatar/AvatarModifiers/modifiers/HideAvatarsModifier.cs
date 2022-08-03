@@ -1,4 +1,3 @@
-using DCL;
 using UnityEngine;
 
 public class HideAvatarsModifier : IAvatarModifier

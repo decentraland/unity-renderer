@@ -17,7 +17,8 @@ namespace Tests
         {
             var message = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(entityId, componentId),
+                key1 = entityId,
+                key2 = componentId,
                 timestamp = timestamp,
                 data = data
             };
@@ -29,7 +30,7 @@ namespace Tests
 
             CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes));
 
-            Assert.AreEqual(message.key, result.key);
+            Assert.AreEqual(message.key1, result.key1);
             Assert.AreEqual(message.timestamp, result.timestamp);
             Assert.IsTrue(AreEqual((byte[])message.data, (byte[])result.data));
 

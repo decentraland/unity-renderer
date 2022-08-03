@@ -49,7 +49,8 @@ namespace Tests
                         .Do(info =>
                         {
                             CRDTMessage crdtMessage = (CRDTMessage)info.Args()[0];
-                            Assert.AreEqual(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID), crdtMessage.key);
+                            Assert.AreEqual(ENTITY_ID, crdtMessage.key1);
+                            Assert.AreEqual(COMPONENT_ID, crdtMessage.key2);
                             Assert.AreEqual(timeStamp, crdtMessage.timestamp);
                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
                         });
@@ -87,7 +88,7 @@ namespace Tests
             DataStore.i.rpcContext.context.crdtContext.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
             Assert.NotNull(protocol);
 
-            CRDTMessage message = protocol.GetState(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID));
+            CRDTMessage message = protocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
             Assert.AreEqual(timeStamp, message.timestamp);
             Assert.IsTrue(AreEqual(componentData, (byte[])message.data));
@@ -120,7 +121,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
 
-            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID));
+            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
             Assert.AreEqual(timeStamp, message.timestamp);
             Assert.IsTrue(AreEqual(componentData, (byte[])message.data));

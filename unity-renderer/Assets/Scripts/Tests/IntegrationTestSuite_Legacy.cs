@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
