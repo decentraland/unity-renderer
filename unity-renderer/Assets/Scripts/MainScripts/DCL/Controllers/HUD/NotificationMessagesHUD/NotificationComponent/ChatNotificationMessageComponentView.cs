@@ -24,6 +24,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
     [Header("Configuration")]
     [SerializeField] internal ChatNotificationMessageComponentModel model;
+    [SerializeField] private Color privateColor;
+    [SerializeField] private Color publicColor;
 
     public event Action<string> OnClickedNotification;
     public string notificationTargetId;
@@ -118,7 +120,10 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         model.isPrivate = isPrivate;
         this.isPrivate = isPrivate;
         imageBackground.SetActive(isPrivate);
-
+        if (isPrivate)
+            notificationHeader.color = privateColor;
+        else
+            notificationHeader.color = publicColor;
         ForceUIRefresh();
     }
 

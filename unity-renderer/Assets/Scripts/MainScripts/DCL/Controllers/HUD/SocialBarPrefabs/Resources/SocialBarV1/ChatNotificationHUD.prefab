@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.6}
-  m_SizeDelta: {x: 3, y: 7.9}
+  m_SizeDelta: {x: 3, y: 24.03}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &7808591501641491551
 MonoBehaviour:
@@ -663,11 +663,11 @@ MonoBehaviour:
     m_Left: 0
     m_Right: 0
     m_Top: 0
-    m_Bottom: 0
+    m_Bottom: -14
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 420, y: 51}
+  m_CellSize: {x: 420, y: 56}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2

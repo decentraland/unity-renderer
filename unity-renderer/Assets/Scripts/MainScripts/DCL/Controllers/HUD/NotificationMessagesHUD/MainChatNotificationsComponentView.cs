@@ -60,7 +60,8 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         gameObject.SetActive(false);
     }
 
-    public Transform GetPanelTransform() {
+    public Transform GetPanelTransform() 
+    {
         return gameObject.transform;
     }
 
@@ -70,11 +71,6 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         {
             ResetNotificationButton();
         }
-    }
-
-    public void SnapTo()
-    {
-        chatEntriesContainer.anchoredPosition += notificationOffset;
     }
 
     public void ShowNotifications()
@@ -122,8 +118,8 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         entry.onFocused += FocusedOnNotification;
         entry.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
 
-        SnapTo();
-        if (isOverMessage)
+        chatEntriesContainer.anchoredPosition += notificationOffset;
+        if (isOverPanel)
         {
             notificationButton.gameObject.SetActive(true);
             IncreaseNotificationCount();
@@ -178,7 +174,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     {
         notificationCount++;
         if (notificationMessage != null)
-            notificationMessage.text = notificationCount.ToString();
+            notificationMessage.text = notificationCount <= 9 ? notificationCount.ToString() : "9+";
     }
 
     private void SetScrollToEnd()
