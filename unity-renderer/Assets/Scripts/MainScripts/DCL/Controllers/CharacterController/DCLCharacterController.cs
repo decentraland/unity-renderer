@@ -144,7 +144,7 @@ public class DCLCharacterController : MonoBehaviour
         worldData.avatarTransform.Set(avatarGameObject.transform);
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
 
-        dataStorePlayer.playerWorldPosition.OnChange += Teleport;
+        dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
     }
 
     private void SubscribeToInput()
@@ -172,7 +172,7 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnStarted -= walkStartedDelegate;
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
-        dataStorePlayer.playerWorldPosition.OnChange -= Teleport;
+        dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
         i = null;
     }
 
@@ -201,7 +201,7 @@ public class DCLCharacterController : MonoBehaviour
         Environment.i.platform.physicsSyncController?.MarkDirty();
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
-        dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition, notifyEvent: false);
+        dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition);
         Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
         CommonScriptableObjects.playerCoords.Set(playerPosition);
         dataStorePlayer.playerGridPosition.Set(playerPosition);
@@ -226,7 +226,7 @@ public class DCLCharacterController : MonoBehaviour
     public void Teleport(string teleportPayload)
     {
         var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
-        Teleport(new Vector3(payload.x, payload.y, payload.z), lastPosition);
+        dataStorePlayer.lastTeleportPosition.Set(payload, notifyEvent: true);
     }
     
     private void Teleport(Vector3 newPosition, Vector3 prevPosition)
@@ -239,8 +239,6 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnPositionSet.Invoke(characterPosition);
         }
-
-        dataStorePlayer.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
         {
