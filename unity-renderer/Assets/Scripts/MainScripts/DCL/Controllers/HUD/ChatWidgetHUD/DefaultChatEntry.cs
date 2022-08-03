@@ -40,12 +40,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override ChatEntryModel Model => model;
 
-    public event Action<string> OnPress;
+    public event Action<DefaultChatEntry> OnPress;
     public event Action<DefaultChatEntry> OnPressRightButton;
     public event Action<DefaultChatEntry> OnTriggerHover;
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
+    public event Action OnHover;
+
 
     private void Awake()
     {
@@ -82,6 +84,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         (transform as RectTransform).ForceUpdateLayout();
 
         PlaySfx(chatEntryModel);
+
+        if (showUserName)
+        {
+            OnHover += HighlightName;
+            OnCancelHover += RemoveHighlightName;
+        }
     }
 
     private string GetUserString(ChatEntryModel chatEntryModel)
@@ -92,7 +100,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             case ChatMessage.Type.PUBLIC:
                 userString = chatEntryModel.subType switch
                 {
-            
                     ChatEntryModel.SubType.RECEIVED => userString,
                     ChatEntryModel.SubType.SENT => $"<b>You:</b>",
                     _ => userString
@@ -101,7 +108,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             case ChatMessage.Type.PRIVATE:
                 userString = chatEntryModel.subType switch
                 {
-            
                     ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
                     ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
                     _ => userString
@@ -191,18 +197,10 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                 ParcelCoordinates parcelCoordinate =
                     CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
                 DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                return;
             }
-
-            if (Model.messageType != ChatMessage.Type.PRIVATE)
-                return;
-
-            OnPress?.Invoke(Model.otherUserId);
             
-            if ((Model.messageType != ChatMessage.Type.PUBLIC && Model.messageType != ChatMessage.Type.PRIVATE) ||
-                Model.senderId == UserProfile.GetOwnUserProfile().userId)
-                return;
-
-            OnPressRightButton?.Invoke(this);
+            OnPress?.Invoke(this);
         }
     }
 
@@ -212,6 +210,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = timeToHoverPanel;
+        
+        OnHover?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -433,4 +433,23 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         body.color = fontColor;
     }
 
+    public void HighlightName()
+    {
+        switch (model.messageType)
+        {
+            case ChatMessage.Type.PUBLIC:
+                body.text = $"<u><color=#438FFF>{GetDefaultSenderString(model.senderName)}</color></u> {model.bodyText}";
+                break;
+            case ChatMessage.Type.PRIVATE:
+                body.text = $"<u><color=#438FFF>From: {GetDefaultSenderString(model.senderName)}</color></u> {model.bodyText}";
+                break;
+        }
+       
+    }
+    
+    public void RemoveHighlightName()
+    {
+        body.text = $"{GetUserString(model)} {model.bodyText}";
+    }
+    
 }

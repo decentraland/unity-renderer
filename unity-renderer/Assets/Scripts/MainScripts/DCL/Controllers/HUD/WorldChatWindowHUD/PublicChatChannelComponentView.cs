@@ -12,9 +12,11 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal TMP_Text descriptionLabel;
     [SerializeField] internal ChatHUDView chatView;
+    [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal PublicChatChannelModel model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] internal Vector2 previewModeSize;
+
     
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
@@ -79,6 +81,7 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = previewModeSize;
+        userContextMenu.Hide();
     }
 
     public void ActivatePreviewInstantly()

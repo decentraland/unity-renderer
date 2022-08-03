@@ -250,9 +250,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         chatEntry.Populate(model);
         
-        if (model.messageType == ChatMessage.Type.PUBLIC
-            || model.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPressRightButton += OnOpenContextMenu;
+        if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED) && 
+            (model.messageType.Equals(ChatMessage.Type.PUBLIC) || model.messageType.Equals(ChatMessage.Type.PRIVATE)))
+            chatEntry.OnPress += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
         chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
@@ -341,7 +341,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private void OnOpenContextMenu(DefaultChatEntry chatEntry)
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
-        //contextMenu.transform.parent = transform;
+        contextMenu.transform.parent = transform.parent;
+        contextMenu.transform.parent.SetAsLastSibling();
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
