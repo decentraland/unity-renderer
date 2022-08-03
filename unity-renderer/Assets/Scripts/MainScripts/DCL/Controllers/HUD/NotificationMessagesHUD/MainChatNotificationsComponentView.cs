@@ -10,7 +10,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
-public class MainChatNotificationsComponentView : BaseComponentView
+public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNotificationsComponentView
 {
     [SerializeField] private RectTransform chatEntriesContainer;
     [SerializeField] private GameObject chatNotification;
@@ -58,6 +58,10 @@ public class MainChatNotificationsComponentView : BaseComponentView
     {
         SetScrollToEnd();
         gameObject.SetActive(false);
+    }
+
+    public Transform GetPanelTransform() {
+        return gameObject.transform;
     }
 
     private void CheckScrollValue(Vector2 newValue)

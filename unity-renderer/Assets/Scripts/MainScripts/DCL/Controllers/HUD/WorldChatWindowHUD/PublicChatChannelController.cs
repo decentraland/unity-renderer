@@ -12,6 +12,7 @@ public class PublicChatChannelController : IHUD
     public IChannelChatWindowView View { get; private set; }
     
     private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE, PREVIEW_MODE }
+    private const int FADEOUT_DELAY = 30000;
 
     public event Action OnBack;
     public event Action OnClosed;
@@ -342,7 +343,7 @@ public class PublicChatChannelController : IHUD
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
         if (notificationPanelTransform.Get() == null)
-            await UniTask.Delay(30000, cancellationToken: cancellationToken);
+            await UniTask.Delay(FADEOUT_DELAY, cancellationToken: cancellationToken);
 
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;

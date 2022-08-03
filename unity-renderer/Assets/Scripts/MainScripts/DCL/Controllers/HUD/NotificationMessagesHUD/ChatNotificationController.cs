@@ -12,24 +12,25 @@ public class ChatNotificationController : IHUD
 {
     private DataStore dataStore;
     private IChatController chatController;
-    private MainChatNotificationsComponentView mainChatNotificationView;
+    private IMainChatNotificationsComponentView mainChatNotificationView;
     private IUserProfileBridge userProfileBridge;
     private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private const int FADEOUT_DELAY = 8000;
     public CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
     private UserProfile ownUserProfile;
 
-    public ChatNotificationController(DataStore dataStore, MainChatNotificationsComponentView mainChatNotificationView, IChatController chatController, IUserProfileBridge userProfileBridge)
+    public ChatNotificationController(DataStore dataStore, IMainChatNotificationsComponentView mainChatNotificationView, IChatController chatController, IUserProfileBridge userProfileBridge)
     {
         this.dataStore = dataStore;
         this.chatController = chatController;
         this.userProfileBridge = userProfileBridge;
         this.mainChatNotificationView = mainChatNotificationView;
-        mainChatNotificationView.OnResetFade += ResetFadeout;
+        mainChatNotificationView.OnResetFade += ResetFadeOut;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
-        notificationPanelTransform.Set(mainChatNotificationView.gameObject.transform);
+        notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
         visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
     }
 
@@ -55,7 +56,7 @@ public class ChatNotificationController : IHUD
         }
     }
 
-    public void ResetFadeout(bool fadeOutAfterDelay = false)
+    public void ResetFadeOut(bool fadeOutAfterDelay = false)
     {
         mainChatNotificationView.ShowNotifications();
         fadeOutCT.Cancel();
@@ -67,7 +68,7 @@ public class ChatNotificationController : IHUD
 
     private async UniTaskVoid WaitThenFadeOutNotifications(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(8000, cancellationToken: cancellationToken);
+        await UniTask.Delay(FADEOUT_DELAY, cancellationToken: cancellationToken);
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
             return;
@@ -80,7 +81,7 @@ public class ChatNotificationController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        ResetFadeout(visible);
+        ResetFadeOut(visible);
         if (visible)
         {
             mainChatNotificationView.Show();
@@ -95,6 +96,7 @@ public class ChatNotificationController : IHUD
     public void Dispose()
     {
         chatController.OnAddMessage -= HandleMessageAdded;
-        visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
+        visibleTaskbarPanels.OnChange -= VisiblePanelsChanged; 
+        mainChatNotificationView.OnResetFade -= ResetFadeOut;
     }
 }

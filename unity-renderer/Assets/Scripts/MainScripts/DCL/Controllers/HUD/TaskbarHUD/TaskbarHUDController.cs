@@ -29,6 +29,7 @@ public class TaskbarHUDController : IHUD
     private IHUD chatToggleTargetWindow;
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
+    private const string NEARBY_NAME = "#nearby";
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -580,8 +581,8 @@ public class TaskbarHUDController : IHUD
 
     private void OpenClickedChat(string chatId)
     { 
-        if(chatId == "#nearby")
-            OpenPublicChatChannel("#nearby", true);
+        if(chatId == NEARBY_NAME)
+            OpenPublicChatChannel(NEARBY_NAME, true);
         else
             OpenPrivateChat(chatId);
     }

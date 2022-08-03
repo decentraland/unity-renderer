@@ -39,6 +39,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void Update()
     {
+        //TODO remove before merging
         if (Input.GetKeyDown(KeyCode.K))
         {
             FakePublicMessage();
