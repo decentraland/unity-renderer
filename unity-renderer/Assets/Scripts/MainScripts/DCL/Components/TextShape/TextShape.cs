@@ -249,7 +249,7 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
-            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, OnUpdate);
+            Environment.i.platform.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, OnUpdate);
 
             base.Cleanup();
             Destroy(cachedFontMaterial);
