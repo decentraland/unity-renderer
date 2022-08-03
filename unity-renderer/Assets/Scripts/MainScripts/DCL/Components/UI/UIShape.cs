@@ -171,7 +171,7 @@ namespace DCL.Components
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
         {
             if (GetRootParent() == this)
-                RefreshAll();
+                RequestRefresh();
         }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
@@ -233,7 +233,7 @@ namespace DCL.Components
             return referencesContainer as T;
         }
         
-        public virtual void RefreshAll()
+        public virtual void RequestRefresh()
         {
             if (isLayoutDirty) return;
             
@@ -273,7 +273,7 @@ namespace DCL.Components
             if (rootParent.referencesContainer == null)
                 return;
 
-            RefreshAll();
+            RequestRefresh();
             
             if ( OnRefresh != null )
                 rootParent.OnLayoutRefresh += OnRefresh;

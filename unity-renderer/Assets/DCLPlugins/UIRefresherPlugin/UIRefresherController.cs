@@ -8,7 +8,7 @@ namespace DCLPlugins.UIRefresherPlugin
 {
     public class UIRefresherController : IDisposable
     {
-        private const float DirtyWatcherUpdateBudget = 2/1000f;
+        private const float DIRTY_WATCHER_UPDATE_BUDGET = 2/1000f;
 
         private readonly IUpdateEventHandler eventHandler;
         private readonly StringVariable sceneID;
@@ -68,7 +68,7 @@ namespace DCLPlugins.UIRefresherPlugin
         private static bool CanRefreshMore(float startTime)
         {
             if (Application.isBatchMode) return true;
-            return Time.time - startTime < DirtyWatcherUpdateBudget;
+            return Time.time - startTime < DIRTY_WATCHER_UPDATE_BUDGET;
         }
     }
 }
