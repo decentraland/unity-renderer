@@ -71,7 +71,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
         UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
 
-        ownUserProfile.OnUpdate += UpdateProfileInfo;
+        // ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
         view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);

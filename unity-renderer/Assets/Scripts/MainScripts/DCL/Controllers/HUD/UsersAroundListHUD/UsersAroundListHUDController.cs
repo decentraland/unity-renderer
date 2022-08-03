@@ -124,7 +124,7 @@ public class UsersAroundListHUDController : IHUD
         otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
-        profile.OnUpdate += OnUserProfileUpdate;
+        // profile.OnUpdate += OnUserProfileUpdate;
     }
 
     void OnOtherPlayersStatusAdded(string userId, Player player)

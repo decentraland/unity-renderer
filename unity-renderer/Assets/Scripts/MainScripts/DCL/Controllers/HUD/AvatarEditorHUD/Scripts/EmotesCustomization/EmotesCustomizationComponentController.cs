@@ -212,7 +212,7 @@ namespace DCL.EmotesCustomization
             this.catalog = catalog;
 
             this.userProfile.OnInventorySet += OnUserProfileInventorySet;
-            this.userProfile.OnUpdate += OnUserProfileUpdated;
+            // this.userProfile.OnUpdate += OnUserProfileUpdated;
 
             OnUserProfileUpdated(this.userProfile);
         }

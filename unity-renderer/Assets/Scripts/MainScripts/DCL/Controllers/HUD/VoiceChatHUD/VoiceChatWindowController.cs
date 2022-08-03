@@ -82,7 +82,7 @@ public class VoiceChatWindowController : IHUD
 
         dataStore.player.otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
-        ownProfile.OnUpdate += OnUserProfileUpdated;
+        // ownProfile.OnUpdate += OnUserProfileUpdated;
         friendsController.OnUpdateFriendship += OnUpdateFriendship;
 
         settings.generalSettings.OnChanged += OnSettingsChanged;

@@ -58,7 +58,7 @@ namespace DCL.ExperiencesViewer
             userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
             {
-                userProfile.OnUpdate += OnUserProfileUpdated;
+                // userProfile.OnUpdate += OnUserProfileUpdated;
                 OnUserProfileUpdated(userProfile);
             }
 
