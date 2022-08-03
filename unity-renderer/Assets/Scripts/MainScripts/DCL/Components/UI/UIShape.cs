@@ -259,9 +259,6 @@ namespace DCL.Components
             RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
             FixMaxStretchRecursively();
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
-
-            OnLayoutRefresh?.Invoke();
-            OnLayoutRefresh = null;
         }
 
         public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
@@ -273,7 +270,7 @@ namespace DCL.Components
             if (rootParent.referencesContainer == null)
                 return;
 
-            RequestRefresh();
+            rootParent.RequestRefresh();
             
             if ( OnRefresh != null )
                 rootParent.OnLayoutRefresh += OnRefresh;
@@ -507,6 +504,9 @@ namespace DCL.Components
         {
             RefreshRecursively(); 
             isLayoutDirty = false;
+            
+            OnLayoutRefresh?.Invoke();
+            OnLayoutRefresh = null;
         }
     }
 }
