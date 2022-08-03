@@ -29,6 +29,7 @@ namespace DCL.ECSComponents
         private readonly OnPointerDownResultRegister pointerDownResultRegister;
         private readonly OnPointerUpResultRegister pointerUpResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
+        private readonly PointerLockRegister pointerLockRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -54,6 +55,7 @@ namespace DCL.ECSComponents
             pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
             pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
+            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -80,6 +82,7 @@ namespace DCL.ECSComponents
             pointerDownResultRegister.Dispose();
             pointerUpResultRegister.Dispose();
             cameraModeRegister.Dispose();
+            pointerLockRegister.Dispose();
         }
     }
 }

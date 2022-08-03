@@ -6,6 +6,7 @@ using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Helpers;
 using DCL.Models;
 using ECSSystems.Helpers;
 using UnityEngine;
@@ -14,7 +15,8 @@ namespace ECSSystems.CameraSystem
 {
     public static class ECSCameraEntitySystem
     {
-        private static PBCameraMode reusableCameraMode = new PBCameraMode();
+        private static readonly PBCameraMode reusableCameraMode = new PBCameraMode();
+        private static readonly PBPointerLock reusablePointerLock = new PBPointerLock();
 
         private class State
         {
@@ -58,6 +60,7 @@ namespace ECSSystems.CameraSystem
             state.lastCameraRotation = cameraRotation;
 
             reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(state.cameraMode.Get());
+            reusablePointerLock.IsPointerLocked = Utils.IsCursorLocked;
 
             UnityEngine.Vector3 worldOffset = state.worldOffset.Get();
 
@@ -71,6 +74,8 @@ namespace ECSSystems.CameraSystem
 
                 componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE,
                     reusableCameraMode, ECSComponentWriteType.SEND_TO_SCENE);
+                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK,
+                    reusablePointerLock, ECSComponentWriteType.SEND_TO_SCENE);                
 
                 if (!updateTransform)
                     continue;

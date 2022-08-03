@@ -6,6 +6,7 @@ using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Helpers;
 using DCL.Models;
 using ECSSystems.CameraSystem;
 using NSubstitute;
@@ -102,7 +103,7 @@ namespace Tests
         public void SendCameraMode()
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
-            
+
             var update = ECSCameraEntitySystem.CreateSystem(componentsWriter);
 
             update.Invoke();
@@ -125,6 +126,36 @@ namespace Tests
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
                                 Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.ThirdPerson),
+                                ECSComponentWriteType.SEND_TO_SCENE);
+        }
+
+        [Test]
+        public void SendPointerLock()
+        {
+            Utils.LockCursor();
+
+            var update = ECSCameraEntitySystem.CreateSystem(componentsWriter);
+
+            update.Invoke();
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                scenes[0].sceneData.id,
+                                SpecialEntityId.CAMERA_ENTITY,
+                                ComponentID.POINTER_LOCK,
+                                Arg.Is<PBPointerLock>(x => x.IsPointerLocked),
+                                ECSComponentWriteType.SEND_TO_SCENE);
+
+            componentsWriter.ClearReceivedCalls();
+
+            Utils.UnlockCursor();
+
+            update.Invoke();
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                scenes[0].sceneData.id,
+                                SpecialEntityId.CAMERA_ENTITY,
+                                ComponentID.POINTER_LOCK,
+                                Arg.Is<PBPointerLock>(x => !x.IsPointerLocked),
                                 ECSComponentWriteType.SEND_TO_SCENE);
         }
     }
