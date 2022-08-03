@@ -37,17 +37,19 @@ namespace DCLPlugins.UIRefresherPlugin
                 currentScene = "default";
 
             var dirtyShapesByScene = dirtyShapes.Get();
-            var startTime = Time.time;
+            var startTime = Time.realtimeSinceStartup;
 
             // prioritize current scene
             if (dirtyShapesByScene.ContainsKey(currentScene))
             {
                 var queue = dirtyShapesByScene[sceneID];
             
-                while (queue.Count > 0 && CanRefreshMore(startTime))
+                while (queue.Count > 0)
                 {
                     var uiShape = queue.Dequeue();
                     uiShape.Refresh();
+                    
+                    if (!CanRefreshMore(startTime)) return;
                 }
             }
             
@@ -58,17 +60,19 @@ namespace DCLPlugins.UIRefresherPlugin
 
                 var queue = valuePair.Value;
             
-                while (queue.Count > 0 && CanRefreshMore(startTime))
+                while (queue.Count > 0)
                 {
                     var uiShape = queue.Dequeue();
                     uiShape.Refresh();
+
+                    if (!CanRefreshMore(startTime)) return;
                 }
             }
         }
         private static bool CanRefreshMore(float startTime)
         {
             if (Application.isBatchMode) return true;
-            return Time.time - startTime < DIRTY_WATCHER_UPDATE_BUDGET;
+            return Time.realtimeSinceStartup - startTime < DIRTY_WATCHER_UPDATE_BUDGET;
         }
     }
 }
