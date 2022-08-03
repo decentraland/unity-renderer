@@ -81,7 +81,7 @@ public class ProfileHUDController : IHUD
             view.polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
         }
 
-        // ownUserProfile.OnUpdate += OnProfileUpdated;
+        ownUserProfile.OnUpdate += OnProfileUpdated;
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += OnMouseLocked;
 
