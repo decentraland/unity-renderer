@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 3826371723285139880}
   - component: {fileID: 7414607916346624055}
   - component: {fileID: 1924286501959050350}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TextMeshPro Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
