@@ -65,7 +65,7 @@ public class FriendsHUDController : IHUD
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
-        // ownUserProfile.OnUpdate += HandleProfileUpdated;
+        ownUserProfile.OnUpdate += HandleProfileUpdated;
 
         if (friendsController != null)
         {
@@ -287,7 +287,7 @@ public class FriendsHUDController : IHUD
                 friends[userId] = approved;
                 if (shouldDisplay)
                     View.Set(userId, approved);
-                // userProfile.OnUpdate += HandleFriendProfileUpdated;
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
             case FriendshipAction.REQUESTED_FROM:
                 var requestReceived = friends.ContainsKey(userId)
@@ -298,7 +298,7 @@ public class FriendsHUDController : IHUD
                 friends[userId] = requestReceived;
                 if (shouldDisplay)
                     View.Set(userId, requestReceived);
-                // userProfile.OnUpdate += HandleFriendProfileUpdated;
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
             case FriendshipAction.REQUESTED_TO:
                 var requestSent = friends.ContainsKey(userId)
@@ -309,7 +309,7 @@ public class FriendsHUDController : IHUD
                 friends[userId] = requestSent;
                 if (shouldDisplay)
                     View.Set(userId, requestSent);
-                // userProfile.OnUpdate += HandleFriendProfileUpdated;
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
         }
 

@@ -160,7 +160,7 @@ public class PlayerInfoCardHUDController : IHUD
         }
         else
         {
-            // currentUserProfile.OnUpdate += SetUserProfile;
+            currentUserProfile.OnUpdate += SetUserProfile;
 
             TaskUtils.Run(async () =>
                      {
