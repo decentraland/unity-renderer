@@ -80,8 +80,7 @@ namespace DCL
 
         public static bool IsCharacterInsideScene(IParcelScene scene)
         {
-            Vector2Int gridPosition = Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition.Get());
-            return scene.IsInsideSceneBoundaries(gridPosition);
+            return scene.IsInsideSceneBoundaries(DataStore.i.player.playerGridPosition.Get());
         }
 
         public static IParcelScene GetCurrentScene()
