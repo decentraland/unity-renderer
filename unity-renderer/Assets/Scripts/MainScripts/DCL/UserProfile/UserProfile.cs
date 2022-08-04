@@ -87,7 +87,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             bodySnapshotObserver.RefreshWithUri(model.snapshots.body);
         }
 
-        // OnUpdate?.Invoke(this);
+        OnUpdate?.Invoke(this);
     }
 
     public int GetItemAmount(string itemId)
