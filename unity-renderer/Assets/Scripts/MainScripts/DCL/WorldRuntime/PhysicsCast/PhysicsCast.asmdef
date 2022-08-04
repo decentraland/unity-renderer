@@ -1,24 +1,25 @@
 {
-  "name": "PhysicsCast",
-  "rootNamespace": "",
-  "references": [
-    "GUID:97d8897529779cb49bebd400c7f402a6",
-    "GUID:a881b57670b1d2747a6d7f9e32b63230",
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:4973650d2444c4561a15d50f24d91cd9",
-    "GUID:ed14108690fd3eb4cb06e8c9a159b673",
-    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-    "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-    "GUID:fb529e4714eec4e4da9a3ff3e4da8eee"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "PhysicsCast",
+    "rootNamespace": "",
+    "references": [
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:ed14108690fd3eb4cb06e8c9a159b673",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:fb529e4714eec4e4da9a3ff3e4da8eee",
+        "GUID:e5a4240e6d0d42b1ba57fc2555414caa"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
