@@ -21,6 +21,7 @@ namespace ECSSystems.PlayerSystem
             public IECSComponentWriter componentsWriter;
             public UnityEngine.Vector3 lastAvatarPosition = UnityEngine.Vector3.zero;
             public Quaternion lastAvatarRotation = Quaternion.identity;
+            public long timeStamp = 0;
         }
 
         public static Action CreateSystem(IECSComponentWriter componentsWriter)
@@ -64,9 +65,14 @@ namespace ECSSystems.PlayerSystem
                 scene = loadedScenes[i];
 
                 var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
+
                 componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
-                    transform);
+                    transform, state.timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
+
+                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION, ComponentID.TRANSFORM,
+                    transform, ECSComponentWriteType.EXECUTE_LOCALLY);
             }
+            state.timeStamp++;
         }
     }
 }
