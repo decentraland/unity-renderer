@@ -60,13 +60,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal bool reloadHighlights = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
+    private DataStore dataStore;
 
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
         IPlacesAPIController placesAPI,
         IEventsAPIController eventsAPI,
         IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics)
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -78,7 +80,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
-        DataStore.i.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
+
+        this.dataStore = dataStore;
+        this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
@@ -98,7 +102,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         RequestAllPlacesAndEvents();
 
         view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -126,15 +130,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         reloadHighlights = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
-        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesAndEventsFromAPI();
         else
-            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
     }
 
     internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
     {
-        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
         RequestAllPlacesAndEventsFromAPI();
     }
 
@@ -258,8 +262,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
-        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        DataStore.i.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)

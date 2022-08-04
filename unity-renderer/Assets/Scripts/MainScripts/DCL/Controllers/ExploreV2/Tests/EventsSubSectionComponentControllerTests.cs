@@ -19,7 +19,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i);
     }
 
     [TearDown]

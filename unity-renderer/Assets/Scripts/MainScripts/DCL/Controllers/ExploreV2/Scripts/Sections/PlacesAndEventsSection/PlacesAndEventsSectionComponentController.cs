@@ -20,12 +20,17 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IHighlightsSubSectionComponentController highlightsSubSectionComponentController;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
+    private DataStore dataStore;
 
-    internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
+    internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
 
-    public PlacesAndEventsSectionComponentController(IPlacesAndEventsSectionComponentView view, IExploreV2Analytics exploreV2Analytics)
+    public PlacesAndEventsSectionComponentController(
+        IPlacesAndEventsSectionComponentView view, 
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.view = view;
+        this.dataStore = dataStore;
 
         PlacesAPIController placesAPI = new PlacesAPIController();
         EventsAPIController eventsAPI = new EventsAPIController();
@@ -35,7 +40,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPI,
             eventsAPI,
             FriendsController.i,
-            exploreV2Analytics);
+            exploreV2Analytics,
+            dataStore);
 
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
         highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
@@ -51,7 +57,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
             view.currentEventsSubSectionComponentView,
             eventsAPI,
-            exploreV2Analytics);
+            exploreV2Analytics,
+            dataStore);
 
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
