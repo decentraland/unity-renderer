@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -9,6 +11,8 @@ using DCL.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using Environment = DCL.Environment;
+using Random = UnityEngine.Random;
 
 namespace ECSSystems.CameraSystem
 {
@@ -41,6 +45,7 @@ namespace ECSSystems.CameraSystem
         private IECSReadOnlyComponentsGroup<PBUiTransform, PBUiText> textComponentGroup;
 
         private int framesCounter = 0;
+        private bool canvasCleared = false;
         
         public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler, ECSComponentsManager componentsManager)
         {
@@ -65,18 +70,28 @@ namespace ECSSystems.CameraSystem
         {
             GameObject.Destroy(rootNode.gameObject);
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
-            sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
+            if(sceneDataContainerToUse != null)
+                sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
         }
 
         private void SetScene(IParcelScene scene)
         {
             this.scene = scene;
             
-            sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
+            if(sceneDataContainerToUse != null)
+                sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
             
             // We get the UI information of the scene to paint their canvas 
             sceneDataContainerToUse = dataContainer.GetDataContainer(scene);
             sceneDataContainerToUse.OnUITransformRemoved += RemoveVisualElement;
+            ClearAndHideRootLayout();
+        }
+
+        private void ClearAndHideRootLayout()
+        {
+            rootNode.rootVisualElement.visible = false;
+            rootNode.rootVisualElement.Clear();
+            canvasCleared = true;
         }
 
         private void RemoveVisualElement(IDCLEntity entity)
@@ -84,7 +99,9 @@ namespace ECSSystems.CameraSystem
             // We try to get the parent
             if (visualElements.TryGetValue(entity.entityId, out VisualElementRepresentation visualElementRepresentantion))
             {
-                visualElementRepresentantion.parentVisualElement.Remove(visualElementRepresentantion.visualElement);
+                if (visualElementRepresentantion.parentVisualElement != null)
+                    visualElementRepresentantion.parentVisualElement.Remove(visualElementRepresentantion.visualElement);
+
                 visualElements.Remove(entity.entityId);
             }
         }
@@ -96,20 +113,24 @@ namespace ECSSystems.CameraSystem
                 return;
 
             framesCounter = 0;
-            
+            bool sceneFound = false;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 if(loadedScenes[i].sceneData.id != Environment.i.world.state.currentSceneId)
                     continue;
-                
+                sceneFound = true;
                 DrawUI(loadedScenes[i]);
                 break;
             }
+            
+            // If we are entering in an empty parcel, or ECS6 scene, we should also clear the UI
+            if (!sceneFound && !canvasCleared)
+                ClearAndHideRootLayout();
         }
 
         private void DrawUI(IParcelScene scene)
         {
-            if(this.scene?.sceneData.id != scene.sceneData.id)
+            if(this.scene != scene || canvasCleared)
                 SetScene(scene);
 
             DrawUI();
@@ -117,18 +138,17 @@ namespace ECSSystems.CameraSystem
         
         public void DrawUI()
         {
-            if (!sceneDataContainerToUse.IsDirty())
+            // If the canvas hasn't change or if there is no canvas we skip
+            if (!canvasCleared && (!sceneDataContainerToUse.IsDirty() || !sceneDataContainerToUse.sceneCanvasTransform.Any()))
                 return;
+
+            canvasCleared = false;
+            sceneDataContainerToUse.UIRendered();
             
             VisualElement root = rootNode.rootVisualElement;
             
-            // VisualElements objects can contain other VisualElement following a tree hierarchy.
-            // VisualElement label = new Label("Hello World! From C#");
-            // label.style.width = 200;
-            // label.style.height = 200;
-            // label.style.alignSelf = Align.Center;
-            // label.style.backgroundColor = Color.green;
-            // root.Add(label);
+            Debug.Log("Pintando sobre un canvas de width: " + Screen.width +"   height: "+ Screen.height);
+            
 
             //Register callback
             //visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
@@ -138,7 +158,7 @@ namespace ECSSystems.CameraSystem
             
             foreach (VisualElementRepresentation visualElementRepresentation in  orphanVisualElements)
             {
-                SetParent(root, visualElementRepresentation, false);
+                SetParent(visualElementRepresentation, false);
                 
                 // If we found the parent, we remove it and set it visible
                 if (visualElementRepresentation.parentVisualElement != null)
@@ -152,9 +172,15 @@ namespace ECSSystems.CameraSystem
             foreach (var textComponent in textComponentGroup.group)
             {
                 componentData = textComponent.componentData1;
+
+                var textElement = new TextElement();
+                textElement.text = textComponent.componentData2.model.Text;
+                var color = textComponent.componentData2.model.TextColor;
+                textElement.style.color =  new UnityEngine.Color(color.R, color.G,color.B,1);
                 
                 // We create the text element
-                var visualElement = TransformToVisualElement(componentData.model, new TextElement());
+                var visualElement = TransformToVisualElement(componentData.model, textElement, false);
+
                 visualElements[componentData.entity.entityId] = new VisualElementRepresentation()
                 {
                     entityId = componentData.entity.entityId,
@@ -169,14 +195,20 @@ namespace ECSSystems.CameraSystem
             // We create all the elements that doesn't have a rendering ( Image, Text...etc) since we need them to position them correctly
             foreach (var kvp in sceneDataContainerToUse.sceneCanvasTransform)
             {
-                var entity = scene.entities[kvp.Key];
+                // If the entity doesn't exist we skip
+                if(!scene.entities.TryGetValue(kvp.Key, out IDCLEntity entity))
+                    continue;
 
                 // If we already have a rendering element, we skip since don't need to create it again
                 if (entitiesWithRendeerComponent.Contains(entity.entityId))
                     continue;
                 
+                // We ensure that the canvas is visible
+                if (entity.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                    root.visible = true;
+              
                 // We create the element to position the rendering element correctly
-                var visualElement = TransformToVisualElement(kvp.Value, new Image());
+                var visualElement = TransformToVisualElement(kvp.Value,  new Image());
                 visualElements[entity.entityId] = new VisualElementRepresentation()
                 {
                     entityId = entity.entityId,
@@ -188,17 +220,17 @@ namespace ECSSystems.CameraSystem
             // We set the parenting
             foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
             {
-                SetParent(root, kvp.Value);
+                SetParent(kvp.Value);
             }
         }
 
-        private void SetParent(VisualElement root, VisualElementRepresentation visualElementRepresentation, bool addToOrphanList = true) 
+        private void SetParent(VisualElementRepresentation visualElementRepresentation, bool addToOrphanList = true)
         {
-            // if the parent is the root canvas, we assign to the root
-            if (visualElementRepresentation.parentId == SpecialEntityId.SCENE_CANVAS_ROOT)
+            // if the parent is the root canvas, it doesn't have parent, we skip
+            if (visualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
-                root.Add(visualElementRepresentation.visualElement);
-                visualElementRepresentation.parentVisualElement = root;
+                rootNode.rootVisualElement.Add(visualElementRepresentation.visualElement);
+                visualElementRepresentation.parentVisualElement = rootNode.rootVisualElement;
             }
             else
             {
@@ -208,61 +240,95 @@ namespace ECSSystems.CameraSystem
                     parentVisualElementRepresentantion.visualElement.Add(visualElementRepresentation.visualElement);
                     visualElementRepresentation.parentVisualElement = parentVisualElementRepresentantion.visualElement;
                 }
-                else if(addToOrphanList)
-                { 
+                else if (addToOrphanList)
+                {
                     // There is no father so it is orphan right now. We can try to find the father the next time, we hide it until we find it
                     visualElementRepresentation.visualElement.visible = false;
                     orphanVisualElements.Add(visualElementRepresentation);
                 }
             }
         }
-        
-        private VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element)
+
+        private VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element, bool randomColor = true)
         {
+            // element.style.display = GetDisplay(model.Display);
+            // element.style.overflow = GetOverflow(model.Overflow);
+            
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
-            element.style.flexBasis = model.FlexBasis;
-            element.style.flexGrow = model.FlexGrow;
-            element.style.flexShrink = model.FlexShrink;
+            // element.style.flexBasis = model.FlexBasis;
+            // element.style.flexGrow = model.FlexGrow;
+            // element.style.flexShrink = model.FlexShrink;
             element.style.flexWrap = GetWrap(model.FlexWrap);
 
             // Align 
-            element.style.alignContent = GetAlign(model.AlignContent);
-            element.style.alignItems = GetAlign(model.AlignItems);
-            element.style.alignSelf = GetAlign(model.AlignSelf);
-            element.style.justifyContent = GetJustify(model.JustifyContent);
+            // element.style.alignContent = GetAlign(model.AlignContent);
+            // element.style.alignItems = GetAlign(model.AlignItems);
+            // element.style.alignSelf = GetAlign(model.AlignSelf);
+            // element.style.justifyContent = GetJustify(model.JustifyContent);
             
             // Layout
             element.style.height = model.Height;
-            element.style.width = model.Width;
+            if(!float.IsNaN(model.Width))
+                element.style.width = model.Width;
 
-            element.style.maxWidth = model.MaxWidth;
-            element.style.maxHeight = model.MaxHeight;
-            
-            element.style.minHeight = model.MinHeight;
-            element.style.minWidth = model.MinWidth;
+            // element.style.maxWidth = model.MaxWidth;
+            // element.style.maxHeight = model.MaxHeight;
+            //
+            // element.style.minHeight = model.MinHeight;
+            // element.style.minWidth = model.MinWidth;
+            //
+            // element.style.paddingBottom = model.PaddingBottom;
+            // element.style.paddingLeft = model.PaddingLeft;
+            // element.style.paddingRight = model.PaddingRight;
+            // element.style.paddingTop = model.PaddingTop;
+            //
+            // element.style.borderBottomWidth = model.BorderBottom;
+            // element.style.borderLeftWidth = model.BorderLeft;
+            // element.style.borderRightWidth = model.BorderRight;
+            // element.style.borderTopWidth = model.BorderTop;
+            //
+            // element.style.marginLeft = model.MarginLeft;
+            // element.style.marginRight = model.MarginRight;
+            // element.style.marginBottom = model.MarginBottom;
+            // element.style.marginTop = model.MarginTop;
+            //
+            //
+            // // Position
+            // element.style.position = GetPosition(model.PositionType);
 
-            element.style.paddingBottom = model.PaddingBottom;
-            element.style.paddingLeft = model.PaddingLeft;
-            element.style.paddingRight = model.PaddingRight;
-            element.style.paddingTop = model.PaddingTop;
-
-            element.style.borderBottomWidth = model.BorderBottom;
-            element.style.borderLeftWidth = model.BorderLeft;
-            element.style.borderRightWidth = model.BorderRight;
-            element.style.borderTopWidth = model.BorderTop;
-
-            element.style.marginLeft = model.MarginLeft;
-            element.style.marginRight = model.MarginRight;
-            element.style.marginBottom = model.MarginBottom;
-            element.style.marginTop = model.MarginTop;
-            
-                // Position
-            element.style.position = GetPosition(model.PositionType);
-
-            element.style.backgroundColor = Random.ColorHSV();
+            // This is for debugging purposes, we will change this to a proper approach so devs can debug the UI easily.
+            if(randomColor)
+                element.style.backgroundColor = Random.ColorHSV();
 
             return element;
+        }
+        
+        private static StyleEnum<Overflow> GetOverflow (YGOverflow overflow)
+        {
+            switch (overflow)
+            {
+                case YGOverflow.Visible:
+                    return Overflow.Visible;
+                case YGOverflow.Hidden:
+                    return Overflow.Hidden;
+                default:
+                    return Overflow.Visible;
+            }
+        }
+        
+        private static StyleEnum<DisplayStyle> GetDisplay (YGDisplay display)
+        {
+            switch (display)
+            {
+                case YGDisplay.Flex:
+                    return DisplayStyle.Flex;
+                    break;
+                case YGDisplay.None:
+                    return DisplayStyle.None;
+                default:
+                    return DisplayStyle.Flex;
+            }
         }
 
         private static StyleEnum<Justify> GetJustify (YGJustify justify)
@@ -312,7 +378,7 @@ namespace ECSSystems.CameraSystem
                 case YGFlexDirection.RowReverse:
                     return FlexDirection.RowReverse;
                 default:
-                    return FlexDirection.Column;
+                    return FlexDirection.Row;
             }
         }
 

@@ -33,6 +33,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
         {
+            
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
                 ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);

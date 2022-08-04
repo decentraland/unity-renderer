@@ -12,9 +12,11 @@ namespace DCL.ECS7.UI
         public readonly BaseDictionary<long,PBUiTransform> sceneCanvasTransform = new BaseDictionary<long,PBUiTransform>();
         public readonly BaseDictionary<long,PBUiText> sceneCanvasText = new BaseDictionary<long,PBUiText>();
         
-        private bool isDirty = false ;
+        private bool isDirty = false;
 
         public bool IsDirty() => isDirty;
+
+        public void UIRendered() => isDirty = false;
         
         public void AddUIComponent(IDCLEntity entity, PBUiTransform model)
         {
