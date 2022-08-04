@@ -6,6 +6,9 @@ using DCL;
 //In the future the AssetManager will do this
 public static class ThumbnailsManager
 {
+#if UNITY_EDITOR
+    public static bool bypassRequests = false;
+#endif
     private static readonly Queue<EnqueuedThumbnail> promiseQueue = new Queue<EnqueuedThumbnail>();
     private static readonly List<AssetPromise_Texture> progressList = new List<AssetPromise_Texture>();
     private static readonly Dictionary<Texture2D, Sprite> spriteCache = new Dictionary<Texture2D, Sprite>();
@@ -14,6 +17,10 @@ public static class ThumbnailsManager
 
     public static AssetPromise_Texture PreloadThumbnail(string url)
     {
+#if UNITY_EDITOR
+        if (bypassRequests)
+            return null;
+#endif
         if (string.IsNullOrEmpty(url))
             return null;
 
@@ -34,6 +41,10 @@ public static class ThumbnailsManager
 
     public static void GetThumbnail(string url, Action<Asset_Texture> OnComplete)
     {
+#if UNITY_EDITOR
+        if (bypassRequests)
+            return;
+#endif
         if (string.IsNullOrEmpty(url))
             return;
 
