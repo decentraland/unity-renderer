@@ -106,8 +106,8 @@ float4 ColorFromType(float type) //SPLIT PARCEL INTO DIFFERENT CHANNELS ACCORDIN
 
 SAMPLER(point_clamp_sampler);
 
-void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, float ThicknessOffset, 
-                 out float Highlight, out float Outline, out float Mask)
+void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV, float2 MousePos, float OutlineThickness, float ThicknessOffset, float HighlightThickness,
+                 out float Highlight, out float InnerHighlightOutline, out float MidHighlightOutline, out float Outline, out float Mask)
 {
     SamplerState ss = point_clamp_sampler;
 
@@ -138,6 +138,9 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
     }
 
 
+    InnerHighlightOutline = step(0.001, MapSobel(Input, uv, HighlightThickness * 2, Zoom, ThicknessOffset));
+    MidHighlightOutline = step(0.001, MapSobel(Input, uv, HighlightThickness, Zoom, ThicknessOffset));
+
     Outline = step(0.001, MapSobel(Input, uv, OutlineThickness, Zoom, ThicknessOffset));
 
     if ((rawData.r + rawData.g + rawData.b) != 0)
@@ -152,7 +155,7 @@ void MousePicker(UnityTexture2D Input, float2 TextureSize, float Zoom, float2 UV
 
 
 void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2 TextureSize, float GridThickness, float ThicknessOffset,
-                float2 MousePos, float2 UV, out float4 outColor, out float Outline, out float Highlight) //MAIN FUNCTION
+                float2 MousePos, float HighlightThickness, float2 UV, out float4 outColor, out float Outline, out float Highlight, out float HighlightInnerOutline, out float HighlightMidOutline) //MAIN FUNCTION
 {
     float4 tempCol = float4(0, 0, 0, 0);
 
@@ -174,10 +177,21 @@ void Main_float(UnityTexture2D MainMap, UnityTexture2D IDMap, float Zoom, float2
     outColor = tempCol;
 
     float gridMask;
-    MousePicker(IDMap, TextureSize, Zoom, UV, MousePos, GridThickness, ThicknessOffset, Highlight, Outline, gridMask);
+    MousePicker(IDMap, TextureSize, Zoom, UV, MousePos, GridThickness, ThicknessOffset, HighlightThickness, Highlight, HighlightInnerOutline, HighlightMidOutline, Outline, gridMask);
 
     float grid = RegularGrid(uv, Zoom, TextureSize, GridThickness);
     grid *= 1 - tempCol.g;
     
     Outline = lerp(grid, Outline, gridMask);
+
+
+    
+    float highlightInnerGrid = RegularGrid(uv, Zoom, TextureSize, HighlightThickness * 2);
+    highlightInnerGrid *= 1 - tempCol.g;    
+    
+    float highlightMidGrid = RegularGrid(uv, Zoom, TextureSize, HighlightThickness);
+    highlightMidGrid *= 1 - tempCol.g;
+
+    HighlightInnerOutline = lerp(highlightInnerGrid, HighlightInnerOutline, gridMask) * Highlight;
+    HighlightMidOutline = lerp(highlightMidGrid, HighlightMidOutline, gridMask) * Highlight;
 }

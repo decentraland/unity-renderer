@@ -52,6 +52,7 @@ Material:
     - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
     - _ColorMask: 15
     - _GridThickness: 0.5
+    - _HighlightThickness: 2
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -66,8 +67,9 @@ Material:
     - _Color03: {r: 0.44313726, g: 0.42352942, b: 0.47843137, a: 0}
     - _Color04: {r: 0.23921569, g: 0.22745098, b: 0.27450982, a: 0}
     - _Color05: {r: 0.101960786, g: 0.101960786, b: 0.101960786, a: 0}
+    - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighlightColor: {r: 0, g: 0.5686169, b: 1, a: 1}
+    - _HighlightColor: {r: 0.47932023, g: 0.44520125, b: 0.16513224, a: 1}
     - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OverlayColor: {r: 0, g: 0.8026962, b: 1, a: 0.48235294}
     - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
