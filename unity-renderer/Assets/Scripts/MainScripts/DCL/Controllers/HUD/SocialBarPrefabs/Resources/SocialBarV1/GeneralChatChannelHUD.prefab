@@ -69,6 +69,7 @@ MonoBehaviour:
   nameLabel: {fileID: 8296143100839953432}
   descriptionLabel: {fileID: 5437248798963596615}
   chatView: {fileID: 1839742955218428433}
+  userContextMenu: {fileID: 668711903175259341}
   model:
     channelId: 
     name: 
@@ -82,7 +83,6 @@ MonoBehaviour:
   - {fileID: 1465780631268768265}
   - {fileID: 2676580422195266286}
   previewModeSize: {x: 410, y: 350}
-  userContextMenu: {fileID: 668711903175259341}
 --- !u!1 &1420651169502582257
 GameObject:
   m_ObjectHideFlags: 0

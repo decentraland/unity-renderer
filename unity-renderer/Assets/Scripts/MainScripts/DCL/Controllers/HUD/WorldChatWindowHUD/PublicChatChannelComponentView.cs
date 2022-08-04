@@ -81,7 +81,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = previewModeSize;
-        userContextMenu.Hide();
     }
 
     public void ActivatePreviewInstantly()

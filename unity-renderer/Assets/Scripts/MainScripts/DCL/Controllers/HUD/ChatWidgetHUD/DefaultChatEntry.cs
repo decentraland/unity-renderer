@@ -31,6 +31,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
+    private bool isShowingPreview;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
 
@@ -41,7 +42,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     public override ChatEntryModel Model => model;
 
     public event Action<DefaultChatEntry> OnPress;
-    public event Action<DefaultChatEntry> OnPressRightButton;
     public event Action<DefaultChatEntry> OnTriggerHover;
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
@@ -85,7 +85,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         PlaySfx(chatEntryModel);
 
-        if (showUserName)
+        if (showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
         {
             OnHover += HighlightName;
             OnCancelHover += RemoveHighlightName;
@@ -233,7 +233,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void OnDisable() { OnPointerExit(null); }
 
-    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
+    private void OnDestroy()
+    {
+        populationTaskCancellationTokenSource.Cancel();
+        OnHover -= HighlightName;
+        OnCancelHover -= RemoveHighlightName;
+    }
 
     public override void SetFadeout(bool enabled)
     {
@@ -265,6 +270,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         group.alpha = 1;
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+
+        isShowingPreview = false;
     }
     
     public override void FadeOut()
@@ -299,6 +306,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
 
         previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
+        
+        isShowingPreview = true;
     }
 
     public override void ActivatePreviewInstantly()
@@ -433,23 +442,26 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         body.color = fontColor;
     }
 
-    public void HighlightName()
+    private void HighlightName()
     {
+        if (isShowingPreview)
+            return;
+        
         switch (model.messageType)
         {
             case ChatMessage.Type.PUBLIC:
-                body.text = $"<u><color=#438FFF>{GetDefaultSenderString(model.senderName)}</color></u> {model.bodyText}";
+                body.text = $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color> {model.bodyText}";
                 break;
             case ChatMessage.Type.PRIVATE:
-                body.text = $"<u><color=#438FFF>From: {GetDefaultSenderString(model.senderName)}</color></u> {model.bodyText}";
+                body.text = $"<color=#438FFF><b><u>From {GetDefaultSenderString(model.senderName)}</u></b></color> {model.bodyText}";
                 break;
         }
        
     }
     
-    public void RemoveHighlightName()
+    private void RemoveHighlightName()
     {
         body.text = $"{GetUserString(model)} {model.bodyText}";
     }
-    
+
 }

@@ -194,6 +194,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             var entry = entries[i];
             entry.ActivatePreview();
         }
+        
+        contextMenu.Hide();
     }
     public void DeactivatePreview()
     {
@@ -250,8 +252,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         chatEntry.Populate(model);
         
-        if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED) && 
-            (model.messageType.Equals(ChatMessage.Type.PUBLIC) || model.messageType.Equals(ChatMessage.Type.PRIVATE)))
+        if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
             chatEntry.OnPress += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
