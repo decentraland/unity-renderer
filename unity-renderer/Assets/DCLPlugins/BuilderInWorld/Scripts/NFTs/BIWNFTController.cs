@@ -45,7 +45,7 @@ public class BIWNFTController
         if (!isInit)
         {
             userProfile = UserProfile.GetOwnUserProfile();
-            // userProfile.OnUpdate += UserProfileUpdated;
+            userProfile.OnUpdate += UserProfileUpdated;
             FetchNftsFromOwner();
             isInit = true;
         }
