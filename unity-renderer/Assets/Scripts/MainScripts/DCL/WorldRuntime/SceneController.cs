@@ -48,7 +48,7 @@ namespace DCL
 
             SetupDeferredRunners();
 
-            CommonScriptableObjects.playerWorldPosition.OnChange += SetPositionDirty;
+            DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
             // TODO(Brian): Move this later to Main.cs
@@ -113,7 +113,7 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
 
-            CommonScriptableObjects.playerWorldPosition.OnChange -= SetPositionDirty;
+            DataStore.i.player.playerGridPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
@@ -538,18 +538,14 @@ namespace DCL
 
         public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
 
-        private void SetPositionDirty(Vector3 worldPosition, Vector3 previous)
+        private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
-            var currentX = (int) Math.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE);
-            var currentY = (int) Math.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE);
-
-            positionDirty = currentX != currentGridSceneCoordinate.x || currentY != currentGridSceneCoordinate.y;
+            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.x != currentGridSceneCoordinate.y;
 
             if (positionDirty)
             {
                 sceneSortDirty = true;
-                currentGridSceneCoordinate.x = currentX;
-                currentGridSceneCoordinate.y = currentY;
+                currentGridSceneCoordinate = gridPosition;
 
                 // Since the first position for the character is not sent from Kernel until just-before calling
                 // the rendering activation from Kernel, we need to sort the scenes to get the current scene id
@@ -769,6 +765,7 @@ namespace DCL
             Environment.i.world.blockersController.SetupWorldBlockers();
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
+            OnSceneRemoved?.Invoke(scene);
         }
 
         public void UnloadAllScenes(bool includePersistent = false)
@@ -922,6 +919,7 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
+        public event Action<IParcelScene> OnSceneRemoved;
         
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);

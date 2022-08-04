@@ -25,14 +25,15 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChlPblBvaW50ZXJEb3duUmVzdWx0LnByb3RvEhBkZWNlbnRyYWxhbmQuZWNz",
-            "GhRjb21tb24vVmVjdG9yMy5wcm90byLIAQoVUEJPblBvaW50ZXJEb3duUmVz",
-            "dWx0Eg4KBmJ1dHRvbhgCIAEoBRIQCghtZXNoTmFtZRgDIAEoCRIYCgZvcmln",
-            "aW4YBCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgFIAEoCzIILlZlY3Rv",
-            "cjMSFwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5vcm1hbBgHIAEoCzII",
-            "LlZlY3RvcjMSEAoIZGlzdGFuY2UYCCABKAISEQoJdGltZXN0YW1wGAkgASgF",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "GhRjb21tb24vVmVjdG9yMy5wcm90bxoZY29tbW9uL0FjdGlvbkJ1dHRvbi5w",
+            "cm90byLXAQoVUEJPblBvaW50ZXJEb3duUmVzdWx0Eh0KBmJ1dHRvbhgCIAEo",
+            "DjINLkFjdGlvbkJ1dHRvbhIQCghtZXNoTmFtZRgDIAEoCRIYCgZvcmlnaW4Y",
+            "BCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgFIAEoCzIILlZlY3RvcjMS",
+            "FwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5vcm1hbBgHIAEoCzIILlZl",
+            "Y3RvcjMSEAoIZGlzdGFuY2UYCCABKAISEQoJdGltZXN0YW1wGAkgASgFQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerDownResult), global::DCL.ECSComponents.PBOnPointerDownResult.Parser, new[]{ "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance", "Timestamp" }, null, null, null, null)
           }));
@@ -84,9 +85,9 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 2;
-    private int button_;
+    private global::ActionButton button_ = global::ActionButton.Pointer;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Button {
+    public global::ActionButton Button {
       get { return button_; }
       set {
         button_ = value;
@@ -197,7 +198,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
+      if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
       if (MeshName.Length != 0) hash ^= MeshName.GetHashCode();
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
@@ -218,9 +219,9 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Button != 0) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(16);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
       if (MeshName.Length != 0) {
         output.WriteRawTag(26);
@@ -258,8 +259,8 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Button != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (Button != global::ActionButton.Pointer) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
       if (MeshName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MeshName);
@@ -293,7 +294,7 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
+      if (other.Button != global::ActionButton.Pointer) {
         Button = other.Button;
       }
       if (other.MeshName.Length != 0) {
@@ -341,7 +342,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 16: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 26: {

@@ -76,7 +76,7 @@ namespace AvatarSystem
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-                
+
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
@@ -87,8 +87,8 @@ namespace AvatarSystem
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
 
-                status = IAvatar.Status.Loaded; 
-                baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1);
+                status = IAvatar.Status.Loaded;
+                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
             }
             catch (OperationCanceledException)
             {
@@ -111,9 +111,16 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+        public void AddVisibilityConstrain(string key)
+        {
+            visibility.AddGlobalConstrain(key);
+            baseAvatar.CancelTransition();
+        }
 
-        public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
+        public void RemoveVisibilityConstrain(string key)
+        {
+            visibility.RemoveGlobalConstrain(key);
+        }
 
         public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
 

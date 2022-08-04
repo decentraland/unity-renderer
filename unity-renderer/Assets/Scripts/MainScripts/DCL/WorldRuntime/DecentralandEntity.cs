@@ -21,6 +21,7 @@ namespace DCL.Models
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;
 
+        
         public Action<IDCLEntity> OnShapeUpdated { get; set; }
         public Action<IDCLEntity> OnShapeLoaded { get; set; }
         public Action<object> OnNameChange { get; set; }
@@ -28,8 +29,11 @@ namespace DCL.Models
         public Action<IDCLEntity> OnRemoved { get; set; }
         public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
+        public Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
 
         public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
+
+        public long parentId { get; set; }
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
@@ -42,7 +46,7 @@ namespace DCL.Models
             meshesInfo.OnUpdated += () => OnMeshesInfoUpdated?.Invoke(this);
             meshesInfo.OnCleanup += () => OnMeshesInfoCleaned?.Invoke(this);
         }
-
+        
         public void AddChild(IDCLEntity entity)
         {
             if (!children.ContainsKey(entity.entityId))
@@ -68,6 +72,7 @@ namespace DCL.Models
 
             if (entity != null)
             {
+                parentId = entity.entityId;
                 entity.AddChild(this);
 
                 if (entity.gameObject && gameObject)

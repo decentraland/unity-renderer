@@ -78,7 +78,7 @@ namespace DCL.ECSComponents
 
                 loadWrapper.entity = entity;
                 loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadWrapper.initialVisibility = true;
+                loadWrapper.initialVisibility = entity.isInsideBoundaries;
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF
@@ -113,7 +113,7 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model);
+            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
             
             // Set visibility
             meshesInfo.meshRootGameObject.SetActive(model.Visible);
@@ -126,8 +126,6 @@ namespace DCL.ECSComponents
         {
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
-            if (meshesInfo != null)
-                ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             if (rendereable != null)
                 ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
             if (model != null)

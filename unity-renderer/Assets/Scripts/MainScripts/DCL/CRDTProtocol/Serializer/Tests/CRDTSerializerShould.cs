@@ -17,7 +17,8 @@ namespace Tests
         {
             var message = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(entityId, componentId),
+                key1 = entityId,
+                key2 = componentId,
                 timestamp = timestamp,
                 data = data
             };
@@ -31,7 +32,7 @@ namespace Tests
             CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes), crdtMessageType);
             object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
-            Assert.AreEqual(message.key, result.key);
+            Assert.AreEqual(message.key1, result.key1);
             Assert.AreEqual(message.timestamp, result.timestamp);
             Assert.IsTrue(AreEqual((byte[])expextedData, (byte[])result.data));
 

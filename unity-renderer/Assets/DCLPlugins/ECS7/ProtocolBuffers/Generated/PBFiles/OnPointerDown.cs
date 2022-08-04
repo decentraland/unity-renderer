@@ -24,12 +24,13 @@ namespace DCL.ECSComponents {
     static OnPointerDownReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChNPblBvaW50ZXJEb3duLnByb3RvEhBkZWNlbnRyYWxhbmQuZWNzIl4KD1BC",
-            "T25Qb2ludGVyRG93bhIOCgZidXR0b24YASABKAUSEgoKaG92ZXJfdGV4dBgC",
-            "IAEoCRIQCghkaXN0YW5jZRgDIAEoAhIVCg1zaG93X2ZlZWRiYWNrGAQgASgI",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "ChNPblBvaW50ZXJEb3duLnByb3RvEhBkZWNlbnRyYWxhbmQuZWNzGhljb21t",
+            "b24vQWN0aW9uQnV0dG9uLnByb3RvIm0KD1BCT25Qb2ludGVyRG93bhIdCgZi",
+            "dXR0b24YASABKA4yDS5BY3Rpb25CdXR0b24SEgoKaG92ZXJfdGV4dBgCIAEo",
+            "CRIQCghkaXN0YW5jZRgDIAEoAhIVCg1zaG93X2ZlZWRiYWNrGAQgASgIQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerDown), global::DCL.ECSComponents.PBOnPointerDown.Parser, new[]{ "Button", "HoverText", "Distance", "ShowFeedback" }, null, null, null, null)
           }));
@@ -77,9 +78,9 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 1;
-    private int button_;
+    private global::ActionButton button_ = global::ActionButton.Pointer;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Button {
+    public global::ActionButton Button {
       get { return button_; }
       set {
         button_ = value;
@@ -142,7 +143,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
+      if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
       if (HoverText.Length != 0) hash ^= HoverText.GetHashCode();
       if (Distance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
       if (ShowFeedback != false) hash ^= ShowFeedback.GetHashCode();
@@ -159,9 +160,9 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Button != 0) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(8);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
       if (HoverText.Length != 0) {
         output.WriteRawTag(18);
@@ -183,8 +184,8 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Button != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (Button != global::ActionButton.Pointer) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
       if (HoverText.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
@@ -206,7 +207,7 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
+      if (other.Button != global::ActionButton.Pointer) {
         Button = other.Button;
       }
       if (other.HoverText.Length != 0) {
@@ -230,7 +231,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 18: {

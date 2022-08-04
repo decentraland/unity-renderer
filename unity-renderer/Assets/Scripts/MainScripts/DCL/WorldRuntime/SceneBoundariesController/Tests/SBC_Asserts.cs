@@ -42,6 +42,24 @@ namespace SceneBoundariesCheckerTests
             Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
         }
+        
+        public static IEnumerator EntityIsEvaluatedOnReparenting(ParcelScene scene)
+        {
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 2, 8));
+            var shapeEntity = boxShape.attachedEntities.First();
+
+            yield return null;
+            AssertMeshIsValid(shapeEntity.meshesInfo);
+         
+            var newParentEntity = TestUtils.CreateSceneEntity(scene);
+            TestUtils.SetEntityTransform(scene, newParentEntity, new DCLTransform.Model { position = new Vector3(100, 1, 100) });
+            
+            // Our entities parenting moves the child's local position to Vector3.zero by default...
+            TestUtils.SetEntityParent(scene, shapeEntity, newParentEntity);
+            
+            yield return null;
+            AssertMeshIsInvalid(shapeEntity.meshesInfo);
+        }
 
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
@@ -67,6 +85,74 @@ namespace SceneBoundariesCheckerTests
             yield return null;
 
             AssertMeshIsInvalid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new BoxShape.Model { })
+            );
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+            
+            yield return null;
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            
+            yield return null;
+            AssertMeshIsValid(entity.meshesInfo);
+        }
+        
+        public static IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            
+            yield return null;
+            AssertMeshIsInvalid(entity.meshesInfo);
+            
+            yield return null;
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            
+            yield return null;
+            AssertMeshIsValid(entity.meshesInfo);
         }
         
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -96,8 +182,9 @@ namespace SceneBoundariesCheckerTests
         public static IEnumerator PShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 1, 8));
-            yield return null;
 
+            yield return null;
+            yield return null;
             var entity = boxShape.attachedEntities.First();
 
             AssertMeshIsValid(entity.meshesInfo);
@@ -170,8 +257,9 @@ namespace SceneBoundariesCheckerTests
         {
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(8, 5, 8));
             var entity = boxShape.attachedEntities.First();
-            yield return null;
 
+            yield return null;
+            yield return null;
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene height boundaries
@@ -180,7 +268,6 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-
             AssertMeshIsInvalid(entity.meshesInfo);
         }
 
@@ -188,15 +275,17 @@ namespace SceneBoundariesCheckerTests
         {
             long entityId = 11;
             TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-            yield return null;
 
+            yield return null;
+            yield return null;
             AssertMeshIsValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
             long childEntityId = 20;
             TestUtils.InstantiateEntityWithShape(scene, childEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
+            
             yield return null;
-
+            yield return null;
             AssertMeshIsValid(scene.entities[childEntityId].meshesInfo);
 
             TestUtils.SetEntityParent(scene, childEntityId, entityId);
@@ -207,7 +296,6 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-
             AssertMeshIsInvalid(scene.entities[childEntityId].meshesInfo);
         }
 

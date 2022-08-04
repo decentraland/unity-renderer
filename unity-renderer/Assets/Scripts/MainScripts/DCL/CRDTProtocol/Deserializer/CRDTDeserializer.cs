@@ -26,7 +26,8 @@ namespace DCL.CRDT
 
             return new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(componentHeader.entityId, componentHeader.componentClassId),
+                key1 = componentHeader.entityId,
+                key2 = componentHeader.componentClassId,
                 timestamp = componentHeader.timestamp,
                 data = data
             };

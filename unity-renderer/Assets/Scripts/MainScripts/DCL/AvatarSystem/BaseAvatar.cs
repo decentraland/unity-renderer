@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -9,6 +11,8 @@ namespace AvatarSystem
         public IBaseAvatarRevealer avatarRevealer { get; set; }
         private ILOD lod;
         private Transform avatarRevealerContainer;
+        private CancellationTokenSource transitionCts = new CancellationTokenSource();
+        
         public GameObject armatureContainer;
         public SkinnedMeshRenderer meshRenderer { get; private set; }
 
@@ -44,13 +48,28 @@ namespace AvatarSystem
             meshRenderer = avatarRevealer.GetMainRenderer();
         }
 
-        public void FadeOut(MeshRenderer targetRenderer, bool playParticles) 
+        public async UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken) 
         {
             if (avatarRevealerContainer == null) 
                 return;
-
+            
+            transitionCts ??= new CancellationTokenSource();
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, transitionCts.Token).Token;
+            linkedCt.ThrowIfCancellationRequested();
+            
             avatarRevealer.AddTarget(targetRenderer);
-            avatarRevealer.StartAvatarRevealAnimation(playParticles);
+            //If canceled, the final state of the avatar is handle inside StartAvatarRevealAnimation
+            await avatarRevealer.StartAvatarRevealAnimation(withTransition, linkedCt);
+            
+            transitionCts?.Dispose();
+            transitionCts = null;
+        }
+        
+        public void CancelTransition()
+        {
+            transitionCts?.Cancel();
+            transitionCts?.Dispose();
+            transitionCts = null;
         }
 
     }

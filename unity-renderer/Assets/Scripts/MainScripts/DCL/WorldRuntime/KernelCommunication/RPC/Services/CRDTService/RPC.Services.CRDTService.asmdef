@@ -1,0 +1,26 @@
+{
+    "name": "RPC.Services.CRDTService",
+    "rootNamespace": "",
+    "references": [
+        "GUID:74aca8d0fa88642fabc061875471dba2",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:132013f160565434195ba5960832b346",
+        "GUID:211458814b4045e7ad894e13b8f8d919",
+        "GUID:374252a1740a422eb7762fc12ff3bf8a",
+        "GUID:168278a8a3b14a3ba0f7ee157fd1780b",
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:32414f40c5c02494097836a15ff47eac",
+        "GUID:380d0eed54d946a599aa46b502a55b42",
+        "GUID:fd239a454d9a4039b164f90867ea3216"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

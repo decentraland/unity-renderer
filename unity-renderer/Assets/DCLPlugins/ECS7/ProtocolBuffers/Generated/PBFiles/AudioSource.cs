@@ -24,15 +24,14 @@ namespace DCL.ECSComponents {
     static AudioSourceReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFBdWRpb1NvdXJjZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKCAQoNUEJB",
-            "dWRpb1NvdXJjZRIPCgdwbGF5aW5nGAEgASgIEg4KBnZvbHVtZRgCIAEoAhIM",
-            "CgRsb29wGAMgASgIEg0KBXBpdGNoGAQgASgCEhsKE3BsYXllZF9hdF90aW1l",
-            "c3RhbXAYBSABKAUSFgoOYXVkaW9fY2xpcF91cmwYBiABKAlCFKoCEURDTC5F",
-            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
+            "ChFBdWRpb1NvdXJjZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJlCg1QQkF1",
+            "ZGlvU291cmNlEg8KB3BsYXlpbmcYASABKAgSDgoGdm9sdW1lGAIgASgCEgwK",
+            "BGxvb3AYAyABKAgSDQoFcGl0Y2gYBCABKAISFgoOYXVkaW9fY2xpcF91cmwY",
+            "BSABKAlCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "PlayedAtTimestamp", "AudioClipUrl" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl" }, null, null, null, null)
           }));
     }
     #endregion
@@ -68,7 +67,6 @@ namespace DCL.ECSComponents {
       volume_ = other.volume_;
       loop_ = other.loop_;
       pitch_ = other.pitch_;
-      playedAtTimestamp_ = other.playedAtTimestamp_;
       audioClipUrl_ = other.audioClipUrl_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -122,19 +120,8 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "played_at_timestamp" field.</summary>
-    public const int PlayedAtTimestampFieldNumber = 5;
-    private int playedAtTimestamp_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PlayedAtTimestamp {
-      get { return playedAtTimestamp_; }
-      set {
-        playedAtTimestamp_ = value;
-      }
-    }
-
     /// <summary>Field number for the "audio_clip_url" field.</summary>
-    public const int AudioClipUrlFieldNumber = 6;
+    public const int AudioClipUrlFieldNumber = 5;
     private string audioClipUrl_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string AudioClipUrl {
@@ -161,7 +148,6 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Volume, other.Volume)) return false;
       if (Loop != other.Loop) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Pitch, other.Pitch)) return false;
-      if (PlayedAtTimestamp != other.PlayedAtTimestamp) return false;
       if (AudioClipUrl != other.AudioClipUrl) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -173,7 +159,6 @@ namespace DCL.ECSComponents {
       if (Volume != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Volume);
       if (Loop != false) hash ^= Loop.GetHashCode();
       if (Pitch != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Pitch);
-      if (PlayedAtTimestamp != 0) hash ^= PlayedAtTimestamp.GetHashCode();
       if (AudioClipUrl.Length != 0) hash ^= AudioClipUrl.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -204,12 +189,8 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(37);
         output.WriteFloat(Pitch);
       }
-      if (PlayedAtTimestamp != 0) {
-        output.WriteRawTag(40);
-        output.WriteInt32(PlayedAtTimestamp);
-      }
       if (AudioClipUrl.Length != 0) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(42);
         output.WriteString(AudioClipUrl);
       }
       if (_unknownFields != null) {
@@ -231,9 +212,6 @@ namespace DCL.ECSComponents {
       }
       if (Pitch != 0F) {
         size += 1 + 4;
-      }
-      if (PlayedAtTimestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayedAtTimestamp);
       }
       if (AudioClipUrl.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AudioClipUrl);
@@ -260,9 +238,6 @@ namespace DCL.ECSComponents {
       }
       if (other.Pitch != 0F) {
         Pitch = other.Pitch;
-      }
-      if (other.PlayedAtTimestamp != 0) {
-        PlayedAtTimestamp = other.PlayedAtTimestamp;
       }
       if (other.AudioClipUrl.Length != 0) {
         AudioClipUrl = other.AudioClipUrl;
@@ -294,11 +269,7 @@ namespace DCL.ECSComponents {
             Pitch = input.ReadFloat();
             break;
           }
-          case 40: {
-            PlayedAtTimestamp = input.ReadInt32();
-            break;
-          }
-          case 50: {
+          case 42: {
             AudioClipUrl = input.ReadString();
             break;
           }

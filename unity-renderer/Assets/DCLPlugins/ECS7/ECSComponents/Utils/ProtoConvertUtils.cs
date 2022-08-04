@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -7,7 +8,7 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerUpResult GetPointerUpResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerUpResult result = new PBOnPointerUpResult();
             result.Button = buttonId;
@@ -16,11 +17,15 @@ namespace DCL.ECSComponents
             result.Normal = UnityVectorToPBVector(hit.normal);
             result.Origin = UnityVectorToPBVector(ray.origin);
             result.Point = UnityVectorToPBVector(hit.point);
+            
+            // This null check will disappear when we introduce optionals to the proto
+            if(meshName == null)
+                meshName = String.Empty;
             result.MeshName = meshName;
             return result;
         }
         
-        public static PBOnPointerDownResult GetPointerDownResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerDownResult GetPointerDownResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerDownResult result = new PBOnPointerDownResult();
             result.Button = buttonId;
@@ -29,6 +34,10 @@ namespace DCL.ECSComponents
             result.Normal = UnityVectorToPBVector(hit.normal);
             result.Origin = UnityVectorToPBVector(ray.origin);
             result.Point = UnityVectorToPBVector(hit.point);
+            
+            // This null check will disappear when we introduce optionals to the proto
+            if(meshName == null)
+                meshName = String.Empty;
             result.MeshName = meshName;
             return result;
         }
@@ -51,14 +60,14 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static CameraMode.ModeId PBCameraEnumToUnityEnum(PBCameraModeArea.Types.CameraMode mode)
+        public static CameraTool.CameraMode.ModeId PBCameraEnumToUnityEnum(CameraMode mode)
         {
             switch (mode)
             {
-                case PBCameraModeArea.Types.CameraMode.FirstPerson:
-                    return CameraMode.ModeId.FirstPerson;
-                case PBCameraModeArea.Types.CameraMode.ThirdPerson:
-                    return CameraMode.ModeId.ThirdPerson;
+                case CameraMode.FirstPerson:
+                    return CameraTool.CameraMode.ModeId.FirstPerson;
+                case CameraMode.ThirdPerson:
+                    return CameraTool.CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }

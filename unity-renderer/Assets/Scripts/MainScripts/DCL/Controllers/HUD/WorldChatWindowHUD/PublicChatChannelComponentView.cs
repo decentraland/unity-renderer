@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig, IPointerDownHandler
+public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig<PublicChatChannelModel>, IPointerDownHandler
 {
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button backButton;
@@ -21,7 +21,12 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
 
     public event Action OnClose;
     public event Action OnBack;
-    public event Action<bool> OnFocused;
+    public event Action<bool> OnFocused
+    {
+        add => onFocused += value;
+        remove => onFocused -= value;
+    }
+    public event Action OnClickOverWindow;
 
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
@@ -106,17 +111,9 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
     }
-
-    public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
     
-    public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
-
-    public override void OnPointerExit(PointerEventData eventData)
-    {
-        base.OnPointerExit(eventData);
-        OnFocused?.Invoke(false);
-    }
-
+    public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
+    
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;

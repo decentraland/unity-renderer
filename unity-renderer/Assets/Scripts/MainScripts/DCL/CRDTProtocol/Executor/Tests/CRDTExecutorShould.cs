@@ -30,6 +30,7 @@ namespace Tests
 
         IECSComponentHandler<ComponentString> stringCompHandler;
         IECSComponentHandler<ComponentInt> intCompHandler;
+        private ECSComponentsManager componentsManager;
 
         [SetUp]
         public void SetUp()
@@ -37,15 +38,18 @@ namespace Tests
             stringCompHandler = Substitute.For<IECSComponentHandler<ComponentString>>();
             intCompHandler = Substitute.For<IECSComponentHandler<ComponentInt>>();
 
-            DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(
+            ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_STRING,
                 data => new ComponentString() { value = (string)data },
                 () => stringCompHandler);
 
-            DataStore.i.ecs7.componentsFactory.AddOrReplaceComponent(
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_INT,
                 data => new ComponentInt() { value = (int)data },
                 () => intCompHandler);
+
+            componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
         }
 
         [TearDown]
@@ -59,10 +63,11 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "tigre"
             };
 
@@ -81,17 +86,19 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage removeComponentMessage = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = null,
                 timestamp = 1
             };
@@ -114,17 +121,19 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage addComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = 1,
                 timestamp = 0
             };
@@ -139,13 +148,15 @@ namespace Tests
 
             CRDTMessage removeComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = null,
                 timestamp = 1
             };
             CRDTMessage removeComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = null,
                 timestamp = 1
             };
@@ -167,17 +178,19 @@ namespace Tests
         {
             const int ENTITY_ID = 42;
             IParcelScene scene = CreateScene("temptation");
-            CRDTExecutor executor = new CRDTExecutor(scene);
+            CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_STRING),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_STRING,
                 data = "",
                 timestamp = 0
             };
             CRDTMessage addComponentInt = new CRDTMessage()
             {
-                key = CRDTUtils.KeyFromIds(ENTITY_ID, (int)ComponentIds.COMPONENT_INT),
+                key1 = ENTITY_ID,
+                key2 = (int)ComponentIds.COMPONENT_INT,
                 data = 1,
                 timestamp = 0
             };

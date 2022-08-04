@@ -14,10 +14,7 @@ using UnityEngine.UI;
 
 public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] internal float timeToFade = 10f;
-    [SerializeField] internal float fadeDuration = 5f;
     [SerializeField] internal TextMeshProUGUI body;
-    [SerializeField] internal CanvasGroup group;
     [SerializeField] internal float timeToHoverPanel = 1f;
     [SerializeField] internal float timeToHoverGotoPanel = 1f;
     [SerializeField] internal bool showUserName = true;
@@ -31,17 +28,15 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] internal Color previewBackgroundColor;
     [SerializeField] internal Color previewFontColor;
 
-    private bool fadeEnabled;
-    private double fadeoutStartTime;
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
-    private Coroutine previewInterpolationRoutine;
+
     private Color originalBackgroundColor;
     private Color originalFontColor;
-    internal CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
     public override ChatEntryModel Model => model;
 
@@ -58,25 +53,23 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         originalFontColor = body.color;
     }
 
-    public override void Populate(ChatEntryModel chatEntryModel)
-    {
+    public override void Populate(ChatEntryModel chatEntryModel) =>
         PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
-    }
 
-    internal async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
+    private async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
     {
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
         var userString = GetUserString(chatEntryModel);
-        
+
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
         // TODO: Remove hack in a newer Unity/TMPro version 
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
-        await UniTask.NextFrame();
-        
+        await UniTask.NextFrame(cancellationToken);
+        await UniTask.NextFrame(cancellationToken);
+        await UniTask.NextFrame(cancellationToken);
+
         if (!string.IsNullOrEmpty(userString) && showUserName)
             body.text = $"{userString} {chatEntryModel.bodyText}";
         else
@@ -86,10 +79,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         messageLocalDateTime = UnixTimeStampToLocalDateTime(chatEntryModel.timestamp).ToString();
 
-        Utils.ForceUpdateLayout(transform as RectTransform);
-        
-        if (fadeEnabled)
-            group.alpha = 0;
+        (transform as RectTransform).ForceUpdateLayout();
 
         PlaySfx(chatEntryModel);
     }
@@ -97,22 +87,35 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private string GetUserString(ChatEntryModel chatEntryModel)
     {
         var userString = GetDefaultSenderString(chatEntryModel.senderName);
-        
-        if (chatEntryModel.messageType != ChatMessage.Type.PRIVATE) return userString;
-
-        userString = chatEntryModel.subType switch
+        switch (chatEntryModel.messageType) 
         {
-            ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
-            ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
-            _ => userString
-        };
+            case ChatMessage.Type.PUBLIC:
+                userString = chatEntryModel.subType switch
+                {
+            
+                    ChatEntryModel.SubType.RECEIVED => userString,
+                    ChatEntryModel.SubType.SENT => $"<b>You:</b>",
+                    _ => userString
+                };
+                break;
+            case ChatMessage.Type.PRIVATE:
+                userString = chatEntryModel.subType switch
+                {
+            
+                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
+                    ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
+                    _ => userString
+                };
+                break;
+        }
 
         return userString;
     }
 
     private string GetCoordinatesLink(string body)
     {
-        if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
+        if (!CoordinateUtils.HasValidTextCoordinates(body))
+            return body;
         var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
 
         for (var i = 0; i < textCoordinates.Count; i++)
@@ -129,7 +132,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void PlaySfx(ChatEntryModel chatEntryModel)
     {
-        if (HUDAudioHandler.i == null) return;
+        if (HUDAudioHandler.i == null)
+            return;
 
         // Check whether or not this message is new, and chat sounds are enabled in settings
         if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
@@ -179,7 +183,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
             if (linkIndex != -1)
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true);
@@ -218,7 +222,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = 0f;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, null);
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
         if (linkIndex == -1)
         {
             isOverCoordinates = false;
@@ -229,31 +233,20 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         OnCancelHover?.Invoke();
     }
 
-    private void OnDisable()
-    {
-        OnPointerExit(null);
-    }
+    private void OnDisable() { OnPointerExit(null); }
 
-    private void OnDestroy()
-    {
-        populationTaskCancellationTokenSource.Cancel();
-    }
+    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
 
     public override void SetFadeout(bool enabled)
     {
         if (!enabled)
         {
             group.alpha = 1;
-            group.blocksRaycasts = true;
-            group.interactable = true;
             fadeEnabled = false;
             return;
         }
 
-        fadeoutStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
         fadeEnabled = true;
-        group.blocksRaycasts = false;
-        group.interactable = false;
     }
 
     public override void DeactivatePreview()
@@ -268,8 +261,26 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        group.alpha = 1;
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
+    }
+    
+    public override void FadeOut()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            group.alpha = 0;
+            return;
+        }
+        
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
     public override void ActivatePreview()
@@ -283,17 +294,31 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
         previewInterpolationRoutine =
             StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
 
     public override void ActivatePreviewInstantly()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+        
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
         previewBackgroundImage.color = previewBackgroundColor;
         body.color = previewFontColor;
+        group.alpha = 1;
+
+        if (previewInterpolationAlphaRoutine != null)
+            StopCoroutine(previewInterpolationAlphaRoutine);
+
+        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
 
     public override void DeactivatePreviewInstantly()
@@ -319,7 +344,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void Update()
     {
-        Fade();
         CheckHoverCoordinates();
         ProcessHoverPanelTimer();
         ProcessHoverGotoPanelTimer();
@@ -330,7 +354,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (isOverCoordinates)
             return;
 
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, null);
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
 
         if (linkIndex == -1)
             return;
@@ -340,27 +364,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
         hoverGotoPanelTimer = timeToHoverGotoPanel;
         OnCancelHover?.Invoke();
-    }
-
-    private void Fade()
-    {
-        if (!fadeEnabled)
-            return;
-
-        //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
-        double yOffset = ((RectTransform) transform).anchoredPosition.y / (double) Screen.height * 2.0;
-        double fadeTime = Math.Max(Model.timestamp / 1000.0, fadeoutStartTime) + timeToFade - yOffset;
-        double currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
-
-        if (currentTime > fadeTime)
-        {
-            double timeSinceFadeTime = currentTime - fadeTime;
-            group.alpha = Mathf.Clamp01(1 - (float) (timeSinceFadeTime / fadeDuration));
-        }
-        else
-        {
-            group.alpha += (1 - group.alpha) * 0.05f;
-        }
     }
 
     private void ProcessHoverPanelTimer()
@@ -390,7 +393,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     }
 
     private string RemoveTabs(string text)
-    {   
+    {
         if (string.IsNullOrEmpty(text))
             return "";
 
@@ -431,4 +434,5 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
     }
+
 }
