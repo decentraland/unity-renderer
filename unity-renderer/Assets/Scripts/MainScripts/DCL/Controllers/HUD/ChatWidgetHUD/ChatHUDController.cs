@@ -136,35 +136,30 @@ public class ChatHUDController : IDisposable
         model.messageType = message.messageType;
         model.bodyText = message.body;
         model.timestamp = message.timestamp;
+        model.isChannelMessage = message.isChannelMessage;
 
         if (message.recipient != null)
         {
             var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
-
+        
         if (message.sender != null)
         {
             var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
-
+        
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            if (message.recipient == ownProfile.userId || message.sender.Contains("fake-user"))
-            {
-                model.subType = ChatEntryModel.SubType.RECEIVED;
-                model.otherUserId = message.sender;
-            }
-            else if (message.sender == ownProfile.userId)
+            if (message.sender == ownProfile.userId)
             {
                 model.subType = ChatEntryModel.SubType.SENT;
-                model.otherUserId = message.recipient;
             }
             else
             {
-                model.subType = ChatEntryModel.SubType.NONE;
+                model.subType = ChatEntryModel.SubType.RECEIVED;
             }
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)

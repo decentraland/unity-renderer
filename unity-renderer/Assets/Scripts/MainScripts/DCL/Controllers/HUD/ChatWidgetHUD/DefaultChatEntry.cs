@@ -62,7 +62,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
-        var userString = GetUserString(chatEntryModel);
+        var userString = GetUserString(chatEntryModel, false);
 
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
@@ -91,32 +91,52 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         }
     }
 
-    private string GetUserString(ChatEntryModel chatEntryModel)
+    private string GetUserString(ChatEntryModel chatEntryModel, bool isHiglighted)
     {
-        var userString = GetDefaultSenderString(chatEntryModel.senderName);
+        var userString = "";
         switch (chatEntryModel.messageType) 
         {
             case ChatMessage.Type.PUBLIC:
-                userString = chatEntryModel.subType switch
+                switch (chatEntryModel.subType)
                 {
-                    ChatEntryModel.SubType.RECEIVED => userString,
-                    ChatEntryModel.SubType.SENT => $"<b>You:</b>",
-                    _ => userString
-                };
+                    case ChatEntryModel.SubType.RECEIVED:
+                        if (isHiglighted)
+                        {
+                            userString = $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>";
+                        }
+                        else
+                        {
+                            userString = GetDefaultSenderString(chatEntryModel.senderName);
+                        }
+                        break;
+                    case ChatEntryModel.SubType.SENT:
+                        userString = $"<b>You:</b>";
+                        break;
+                }
                 break;
             case ChatMessage.Type.PRIVATE:
-                userString = chatEntryModel.subType switch
+                switch (chatEntryModel.subType)
                 {
-                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",                    
-                    ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
-                    _ => userString
-                };
+                    case ChatEntryModel.SubType.RECEIVED:
+                        if (isHiglighted)
+                        {
+                            userString = chatEntryModel.isChannelMessage ? $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>" : $"<color=#438FFF><b><u>From {model.senderName}</u></b></color>" ;
+                        }
+                        else
+                        {
+                            userString = chatEntryModel.isChannelMessage ? GetDefaultSenderString(chatEntryModel.senderName) : $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>" ;
+                        }
+                        break;
+                    case ChatEntryModel.SubType.SENT:
+                        userString = $"<b>To {chatEntryModel.recipientName}:</b>";
+                        break;
+                }
                 break;
         }
 
         return userString;
     }
-
+    
     private string GetCoordinatesLink(string body)
     {
         if (!CoordinateUtils.HasValidTextCoordinates(body))
@@ -455,21 +475,13 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (isShowingPreview)
             return;
-
-        switch (model.messageType)
-        {
-            case ChatMessage.Type.PUBLIC:
-                body.text = $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color> {model.bodyText}";
-                break;
-            case ChatMessage.Type.PRIVATE:
-                body.text = $"<color=#438FFF><b><u>From {GetDefaultSenderString(model.senderName)}</u></b></color> {model.bodyText}";
-                break;
-        }
+        
+        body.text = $"{GetUserString(model, true)} {model.bodyText}";
     }
 
     private void RemoveHighlightName()
     {
-        body.text = $"{GetUserString(model)} {model.bodyText}";
+        body.text = $"{GetUserString(model, false)} {model.bodyText}";
     }
-
+    
 }
