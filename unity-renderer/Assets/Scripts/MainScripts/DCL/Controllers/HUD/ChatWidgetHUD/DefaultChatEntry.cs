@@ -120,7 +120,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                     case ChatEntryModel.SubType.RECEIVED:
                         if (isHiglighted)
                         {
-                            userString = chatEntryModel.isChannelMessage ? $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>" : $"<color=#438FFF><b><u>From {model.senderName}</u></b></color>" ;
+                            userString = chatEntryModel.isChannelMessage ? $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>" : $"<color=#438FFF><b><u>From {model.senderName}:</u></b></color>" ;
                         }
                         else
                         {

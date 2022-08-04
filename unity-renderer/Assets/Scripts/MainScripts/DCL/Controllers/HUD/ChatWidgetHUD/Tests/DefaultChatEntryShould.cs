@@ -112,7 +112,7 @@ public class DefaultChatEntryShould
         await UniTask.DelayFrame(4);
         entry.OnPointerEnter(new PointerEventData(null));
 
-        Assert.AreEqual("<color=#438FFF><b><u>From <b>user-test:</b></u></b></color> test message", entry.body.text);
+        Assert.AreEqual("<color=#438FFF><b><u>From user-test:</u></b></color> test message", entry.body.text);
         
         entry.OnPointerExit(new PointerEventData(null));
         Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
