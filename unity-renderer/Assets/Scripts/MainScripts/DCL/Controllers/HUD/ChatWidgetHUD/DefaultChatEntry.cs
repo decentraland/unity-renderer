@@ -31,6 +31,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
+    private bool isShowingPreview;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
 
@@ -40,12 +41,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override ChatEntryModel Model => model;
 
-    public event Action<string> OnPress;
-    public event Action<DefaultChatEntry> OnPressRightButton;
+    public event Action<DefaultChatEntry> OnPress;
     public event Action<DefaultChatEntry> OnTriggerHover;
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
+    public event Action OnHover;
 
     private void Awake()
     {
@@ -82,6 +83,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         (transform as RectTransform).ForceUpdateLayout();
 
         PlaySfx(chatEntryModel);
+        
+        if (showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+        {
+            OnHover += HighlightName;
+            OnCancelHover += RemoveHighlightName;
+        }
     }
 
     private string GetUserString(ChatEntryModel chatEntryModel)
@@ -92,7 +99,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             case ChatMessage.Type.PUBLIC:
                 userString = chatEntryModel.subType switch
                 {
-            
                     ChatEntryModel.SubType.RECEIVED => userString,
                     ChatEntryModel.SubType.SENT => $"<b>You:</b>",
                     _ => userString
@@ -101,8 +107,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             case ChatMessage.Type.PRIVATE:
                 userString = chatEntryModel.subType switch
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
+                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",                    
                     ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
                     _ => userString
                 };
@@ -196,18 +201,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                 }
             }
 
-            if (Model.messageType != ChatMessage.Type.PRIVATE)
-                return;
-
-            OnPress?.Invoke(Model.otherUserId);
-        }
-        else if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            if ((Model.messageType != ChatMessage.Type.PUBLIC && Model.messageType != ChatMessage.Type.PRIVATE) ||
-                Model.senderId == UserProfile.GetOwnUserProfile().userId)
-                return;
-
-            OnPressRightButton?.Invoke(this);
+            OnPress?.Invoke(this);
         }
     }
 
@@ -217,6 +211,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = timeToHoverPanel;
+        
+        OnHover?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -238,7 +234,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void OnDisable() { OnPointerExit(null); }
 
-    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
+    private void OnDestroy()
+    {
+        populationTaskCancellationTokenSource.Cancel();
+        OnHover -= HighlightName;
+        OnCancelHover -= RemoveHighlightName;
+    }
 
     public override void SetFadeout(bool enabled)
     {
@@ -254,6 +255,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void DeactivatePreview()
     {
+        isShowingPreview = false;
+
         if (!gameObject.activeInHierarchy)
         {
             previewBackgroundImage.color = originalBackgroundColor;
@@ -288,6 +291,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void ActivatePreview()
     {
+        isShowingPreview = true;
+
         if (!gameObject.activeInHierarchy)
         {
             ActivatePreviewInstantly();
@@ -308,6 +313,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void ActivatePreviewInstantly()
     {
+        isShowingPreview = true;
+
         if (!gameObject.activeInHierarchy)
             return;
         
@@ -326,11 +333,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void DeactivatePreviewInstantly()
     {
+        isShowingPreview = false;
+
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
         previewBackgroundImage.color = originalBackgroundColor;
         body.color = originalFontColor;
+        
     }
 
     public void DockContextMenu(RectTransform panel)
@@ -439,6 +449,27 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
+    }
+    
+    private void HighlightName()
+    {
+        if (isShowingPreview)
+            return;
+
+        switch (model.messageType)
+        {
+            case ChatMessage.Type.PUBLIC:
+                body.text = $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color> {model.bodyText}";
+                break;
+            case ChatMessage.Type.PRIVATE:
+                body.text = $"<color=#438FFF><b><u>From {GetDefaultSenderString(model.senderName)}</u></b></color> {model.bodyText}";
+                break;
+        }
+    }
+
+    private void RemoveHighlightName()
+    {
+        body.text = $"{GetUserString(model)} {model.bodyText}";
     }
 
 }

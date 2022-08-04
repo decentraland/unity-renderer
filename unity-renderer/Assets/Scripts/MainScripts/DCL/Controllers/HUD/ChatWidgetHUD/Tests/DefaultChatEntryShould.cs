@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
 public class DefaultChatEntryShould
@@ -65,6 +66,56 @@ public class DefaultChatEntryShould
         await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+    });
+    
+    [UnityTest]
+    public IEnumerator ShowUnderlineOnHoverPublic() => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PublicChatEntryReceived");
+        
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = "test message",
+            subType = ChatEntryModel.SubType.RECEIVED
+        };
+        
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
+        entry.OnPointerEnter(new PointerEventData(null));
+
+        Assert.AreEqual("<color=#438FFF><u><b>user-test:</b></u></color> test message", entry.body.text);
+        
+        entry.OnPointerExit(new PointerEventData(null));
+        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+    });
+    
+    [UnityTest]
+    public IEnumerator ShowUnderlineOnHoverWhisper() => UniTask.ToCoroutine(async () =>
+    {
+        GivenEntryChat("PublicChatEntryReceived");
+        
+        var message = new ChatEntryModel
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "user-test",
+            recipientName = "receiver-test",
+            bodyText = "test message",
+            subType = ChatEntryModel.SubType.RECEIVED
+        };
+        
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
+        entry.OnPointerEnter(new PointerEventData(null));
+
+        Assert.AreEqual("<color=#438FFF><b><u>From <b>user-test:</b></u></b></color> test message", entry.body.text);
+        
+        entry.OnPointerExit(new PointerEventData(null));
+        Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
     });
     
     [UnityTest]

@@ -152,7 +152,7 @@ public class ChatHUDController : IDisposable
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            if (message.recipient == ownProfile.userId)
+            if (message.recipient == ownProfile.userId || message.sender.Contains("fake-user"))
             {
                 model.subType = ChatEntryModel.SubType.RECEIVED;
                 model.otherUserId = message.sender;

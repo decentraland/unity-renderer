@@ -65,7 +65,7 @@ public class PublicChatChannelControllerShould
             && model.bodyText == $"<noparse>{msg.body}</noparse>"
             && model.senderId == msg.sender));
     }
-
+    
     [Test]
     public void FilterMessageWhenIsTooOld()
     {
