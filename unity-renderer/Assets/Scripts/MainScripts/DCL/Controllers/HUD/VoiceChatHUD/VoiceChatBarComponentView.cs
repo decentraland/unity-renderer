@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarComponentView, IComponentModelConfig
+public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarComponentView, IComponentModelConfig<VoiceChatBarComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal VoiceChatButton voiceChatButton;
@@ -27,9 +27,9 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
         endCallButton.onClick.AddListener(() => OnLeaveVoiceChat?.Invoke());
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(VoiceChatBarComponentModel newModel)
     {
-        model = (VoiceChatBarComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

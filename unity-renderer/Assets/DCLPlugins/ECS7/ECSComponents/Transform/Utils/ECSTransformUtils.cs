@@ -21,11 +21,15 @@ public static class ECSTransformUtils
 
     public static bool SetParent(IParcelScene scene, IDCLEntity child, long parentId)
     {
-        if (parentId == (long)SpecialEntityId.SCENE_ROOT_ENTITY)
+        if (parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
         {
             child.SetParent(null);
             child.gameObject.transform.SetParent(scene.GetSceneTransform(), false);
             return true;
+        }
+        if (parentId == SpecialEntityId.PLAYER_ENTITY)
+        {
+            parentId = SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION;
         }
 
         IDCLEntity parent = scene.GetEntityById(parentId);

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace DCL.EmotesCustomization
 {
-    public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig
+    public class EmoteSlotCardComponentView : BaseComponentView, IEmoteSlotCardComponentView, IComponentModelConfig<EmoteSlotCardComponentModel>
     {
         internal const int SLOT_VIEWER_ROTATION_ANGLE = 36;
         internal const string EMPTY_SLOT_TEXT = "None";
@@ -44,12 +44,12 @@ namespace DCL.EmotesCustomization
                 emoteImage.OnLoaded += OnEmoteImageLoaded;
         }
 
-        public void Configure(BaseComponentModel newModel)
+        public void Configure(EmoteSlotCardComponentModel newModel)
         {
             if (model == newModel)
                 return;
 
-            model = (EmoteSlotCardComponentModel)newModel;
+            model = newModel;
             RefreshControl();
         }
 
