@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
-public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
+public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig<VoiceChatWindowComponentModel>
 {
     private const string ALLOW_USERS_TITLE_ALL = "All";
     private const string ALLOW_USERS_TITLE_REGISTERED = "Verified Users";
@@ -63,9 +63,9 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(VoiceChatWindowComponentModel newModel)
     {
-        model = (VoiceChatWindowComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

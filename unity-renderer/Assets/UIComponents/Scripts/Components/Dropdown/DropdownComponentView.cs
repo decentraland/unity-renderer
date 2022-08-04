@@ -102,7 +102,7 @@ public interface IDropdownComponentView
     /// <param name="maxHeight">Max height to apply.</param>
     void SetOptionsPanelHeightAsDynamic(bool isDynamic, float maxHeight);
 }
-public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
+public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig<DropdownComponentModel>
 {
     internal const string SELECT_ALL_OPTION_ID = "select_all";
     internal const string SELECT_ALL_OPTION_TEXT = "Select All";
@@ -154,9 +154,9 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         searchBar.OnSearchText += FilterOptions;
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(DropdownComponentModel newModel)
     {
-        model = (DropdownComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

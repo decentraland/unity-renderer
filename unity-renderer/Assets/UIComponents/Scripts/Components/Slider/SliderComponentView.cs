@@ -55,7 +55,7 @@ public interface ISliderComponentView
     bool IsInteractable();
 }
 
-public class SliderComponentView : BaseComponentView, ISliderComponentView, IComponentModelConfig
+public class SliderComponentView : BaseComponentView, ISliderComponentView, IComponentModelConfig<SliderComponentModel>
 {
 
     [Header("Prefab References")]
@@ -77,9 +77,9 @@ public class SliderComponentView : BaseComponentView, ISliderComponentView, ICom
         slider.value += value;
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(SliderComponentModel newModel)
     {
-        model = (SliderComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
