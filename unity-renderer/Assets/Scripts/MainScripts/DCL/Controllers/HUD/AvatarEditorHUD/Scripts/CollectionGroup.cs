@@ -1,13 +1,39 @@
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CollectionGroup : MonoBehaviour
 {
     public Transform itemContainer;
     [SerializeField] private ItemToggle itemPrefab;
-    [SerializeField] private ItemToggle[] items;
     [SerializeField] private NFTSkinFactory skinFactory;
-    
+
+    private List<ItemToggle> items = new List<ItemToggle>();
+    private int maxItems;
+
+    public void Setup(int newMaxItems)
+    {
+        if (maxItems == newMaxItems) return;
+        maxItems = newMaxItems;
+        
+        var diff = maxItems - items.Count;
+
+        if (diff > 0)
+        {
+            for (int i = 0; i < diff; i++)
+            {
+                var newItemToggle = Instantiate(itemPrefab, itemContainer);
+                items.Add(newItemToggle);
+            }
+        }
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            var itemToggle = items[i];
+            itemToggle.gameObject.SetActive(i < maxItems);
+            itemToggle.transform.SetAsLastSibling();
+        }
+    }
+
     public ItemToggle LoadItem(int index, WearableSettings wearableSettings)
     {
         var item = wearableSettings.Item;
@@ -21,7 +47,7 @@ public class CollectionGroup : MonoBehaviour
         newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
         newToggle.SetHideOtherWerablesToastStrategy(wearableSettings.HideOtherWearablesToastStrategy);
         newToggle.SetReplaceOtherWearablesToastStrategy(wearableSettings.ReplaceOtherWearablesToastStrategy);
-        
+
         return newToggle;
     }
     public void HideItem(int i)

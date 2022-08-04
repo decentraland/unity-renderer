@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,17 +34,6 @@ public class WearableSettings
 
 public class ItemSelector : MonoBehaviour
 {
-    private const string DECENTRALAND_COLLECTION_ID = "Decentraland";
-
-    [SerializeField]
-    internal NFTSkinFactory nftSkinFactory;
-
-    [SerializeField] internal CollectionGroup collectionGroupPrefab;
-    [SerializeField] internal RectTransform content;
-    [SerializeField] internal GameObject loadingSpinner;
-    [SerializeField] internal GameObject loadingRetry;
-    [SerializeField] internal Button loadingRetryButton;
-    
     [SerializeField] internal UIPageSelector pageSelector;
     [SerializeField] internal CollectionGroup collectionGroup;
 
@@ -57,8 +47,8 @@ public class ItemSelector : MonoBehaviour
     internal List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
-
-    private const float MAX_WEARABLES = 21;
+    private int maxWearables = 1;
+    
     
     private void Awake()
     {
@@ -67,23 +57,52 @@ public class ItemSelector : MonoBehaviour
             OnItemClicked = null;
         };
 
-        loadingRetryButton.onClick.AddListener(RetryLoading);
         pageSelector.OnValueChanged += UpdateWearableList;
     }
 
-    private void OnEnable() { SetupWearablePages(); }
+    private void CheckScreenSize(Vector2Int current, Vector2Int previous)
+    {
+        RectTransform rt = (RectTransform)transform;
+
+        var width = current.x - 450; // minus avatar margin;
+        var height = current.y;
+        var aspectRatio = width / (float)height;
+        
+        // This is a lazy approach, every controlAspectRatio increases the collumns by one
+        float controlAspectRatio = 0.15f;
+        int rows = 3;
+
+        var collumns = Mathf.FloorToInt(aspectRatio / controlAspectRatio);
+        maxWearables = rows * collumns;
+
+        SetupWearablePages();
+    }
+
+    private void OnEnable()
+    {
+        DataStore.i.screen.size.OnChange += CheckScreenSize;
+        var currentScreenSize = DataStore.i.screen.size.Get();
+        CheckScreenSize(currentScreenSize, currentScreenSize);
+    }
+
+    private void OnDisable()
+    {
+        DataStore.i.screen.size.OnChange -= CheckScreenSize;
+    }
+
     private void SetupWearablePages()
     {
+        collectionGroup.Setup(maxWearables);
         pageSelector.Setup(GetMaxSections());
     }
 
-    private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / MAX_WEARABLES);
+    private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / (float)maxWearables);
     
     private void UpdateWearableList( int page )
     {
-        for (int itemToggleIndex = 0; itemToggleIndex < MAX_WEARABLES; itemToggleIndex++)
+        for (int itemToggleIndex = 0; itemToggleIndex < maxWearables; itemToggleIndex++)
         {
-            var baseIndex = page * (int)MAX_WEARABLES;
+            var baseIndex = page * maxWearables;
             var wearableIndex = itemToggleIndex + baseIndex;
 
             if (wearableIndex < availableWearables.Count)
@@ -106,7 +125,10 @@ public class ItemSelector : MonoBehaviour
         }
     }
 
-    private void OnDestroy() { loadingRetryButton.onClick.RemoveListener(RetryLoading); }
+    private void OnDestroy()
+    {
+        
+    }
 
     public void AddItemToggle(
         WearableItem item,
@@ -231,14 +253,12 @@ public class ItemSelector : MonoBehaviour
 
     public void ShowLoading(bool isActive)
     {
-        loadingSpinner.SetActive(isActive);
-        loadingSpinner.transform.SetAsLastSibling();
+        
     }
 
     public void ShowRetryLoading(bool isActive)
     {
-        loadingRetry.SetActive(isActive);
-        loadingRetry.transform.SetAsLastSibling();
+        
     }
 
     private void RetryLoading() { OnRetryClicked?.Invoke(); }
