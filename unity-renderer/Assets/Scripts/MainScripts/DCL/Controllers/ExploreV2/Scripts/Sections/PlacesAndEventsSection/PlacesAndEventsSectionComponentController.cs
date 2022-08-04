@@ -50,7 +50,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.currentPlacesSubSectionComponentView,
             placesAPI,
             FriendsController.i,
-            exploreV2Analytics);
+            exploreV2Analytics,
+            dataStore);
 
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 

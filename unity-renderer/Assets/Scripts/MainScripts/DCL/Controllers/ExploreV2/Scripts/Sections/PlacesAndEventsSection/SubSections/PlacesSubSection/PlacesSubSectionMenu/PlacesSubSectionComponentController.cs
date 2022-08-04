@@ -44,12 +44,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal bool reloadPlaces = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
+    private DataStore dataStore;
 
     public PlacesSubSectionComponentController(
         IPlacesSubSectionComponentView view,
         IPlacesAPIController placesAPI,
         IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics)
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -57,7 +59,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
-        DataStore.i.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
+        this.dataStore = dataStore;
+        this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
@@ -76,7 +79,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllPlaces();
 
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -104,15 +107,15 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
-        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesFromAPI();
         else
-            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
     }
 
     internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
     {
-        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
         RequestAllPlacesFromAPI();
     }
 
@@ -181,8 +184,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
         OnPlacesFromAPIUpdated -= OnRequestedPlacesUpdated;
-        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        DataStore.i.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
