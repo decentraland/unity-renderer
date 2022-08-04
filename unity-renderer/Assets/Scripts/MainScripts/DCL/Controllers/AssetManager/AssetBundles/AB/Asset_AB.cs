@@ -12,7 +12,7 @@ namespace DCL
 
         private AssetBundle assetBundle;
         private Dictionary<string, List<Object>> assetsByExtension;
-        public AssetBundleMetrics metrics { get; private set; } = new AssetBundleMetrics { meshes_size = 0, animation_size = 0 };
+        public AssetBundleMetrics metrics { get; private set; } = new AssetBundleMetrics { meshesEstimatedSize = 0, animationsEstimatedSize = 0 };
 
         public Asset_AB()
         {

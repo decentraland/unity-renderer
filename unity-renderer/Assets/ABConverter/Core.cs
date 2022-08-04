@@ -158,12 +158,12 @@ namespace DCL.ABConverter
                             if (value.IsCompleted)
                             {
                                 FileInfo gltfFilePath = new FileInfo(key);
-                                var metrics = new Dictionary<string, object>()
+                                AssetBundleMetrics metrics = new AssetBundleMetrics()
                                 {
-                                    { "meshes_size", value.meshesEstimatedSize },
-                                    { "animation_size", value.animationsEstimatedSize }
+                                    meshesEstimatedSize = value.meshesEstimatedSize,
+                                    animationsEstimatedSize = value.animationsEstimatedSize
                                 };
-                                File.WriteAllText($"{gltfFilePath.Directory.FullName}/metrics.json", JsonConvert.SerializeObject(metrics, Formatting.Indented));
+                                File.WriteAllText($"{gltfFilePath.Directory.FullName}/metrics.json", JsonUtility.ToJson(metrics, true));
 
                                 GLTFImporter.PreloadedGLTFObjects.Add(GetRelativePath(key), value.lastLoadedScene);
                                 
