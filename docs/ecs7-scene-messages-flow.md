@@ -20,8 +20,8 @@ bytes payload: {
 	int64 timestamp         // Lamport timestamp
 	int32 data_length       // Amount of bytes of data
 	bytes data              // @optional
-							// Component data
-							// Missing data means the component was deleted
+				// Component data
+				// Missing data with PUT_COMPONENT means that component should use all it default properties
 }
 ```
 
