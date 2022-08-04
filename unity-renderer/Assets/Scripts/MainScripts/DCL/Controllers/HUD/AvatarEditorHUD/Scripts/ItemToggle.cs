@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using TMPro;
@@ -11,8 +10,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 {
     private static readonly int LOADING_ANIMATOR_TRIGGER_LOADED = Animator.StringToHash("Loaded");
 
-    public event System.Action<ItemToggle> OnClicked;
-    public event System.Action<ItemToggle> OnSellClicked;
+    public event Action<ItemToggle> OnClicked;
+    public event Action<ItemToggle> OnSellClicked;
 
     public WearableItem wearableItem { get; private set; }
 
@@ -27,9 +26,6 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] internal GameObject root;
 
     private bool selectedValue;
-
-    private string loadedThumbnailURL;
-    private AssetPromise_Texture loadedThumbnailPromise;
 
     private AvatarEditorHUDView view;
 
@@ -124,7 +120,6 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     protected virtual void OnDestroy()
     {
-        ForgetThumbnail();
         OnClicked = null;
     }
 
@@ -140,10 +135,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             return;
         }
 
-        loadedThumbnailURL = url;
-        var newLoadedThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
-        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
-        loadedThumbnailPromise = newLoadedThumbnailPromise;
+        ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
     }
     
     private void OnThumbnailReady(Asset_Texture texture)
@@ -166,13 +158,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         loadingAnimator.SetTrigger(id);
     }
-
-    private void ForgetThumbnail()
-    {
-        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
-        loadedThumbnailURL = null;
-        loadedThumbnailPromise = null;
-    }
+    
     public void Hide()
     {
         root.gameObject.SetActive(false);

@@ -87,8 +87,6 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal Button closeButton;
 
     private Model currentModel;
-    private AssetPromise_Texture thumbnailPromise;
-
     public void SetSkin(string rarityName, NFTItemToggleSkin skin)
     {
         this.rarityName.text = rarityName;
@@ -170,20 +168,9 @@ public class NFTItemInfo : MonoBehaviour
             thumbnail.sprite = currentModel.thumbnailSprite;
             return;
         }
-
-        //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
-        var newThumbnailPromise = ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
-        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-        thumbnailPromise = newThumbnailPromise;
-    }
-
-    private void ForgetThumbnail()
-    {
-        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-        thumbnailPromise = null;
+        
+        ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
     }
 
     private void OnEnable() { GetThumbnail(); }
-
-    private void OnDisable() { ForgetThumbnail(); }
 }

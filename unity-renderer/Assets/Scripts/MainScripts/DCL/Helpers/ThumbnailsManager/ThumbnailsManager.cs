@@ -6,21 +6,14 @@ using DCL;
 //In the future the AssetManager will do this
 public static class ThumbnailsManager
 {
-#if UNITY_EDITOR
-    public static bool bypassRequests = false;
-#endif
-
     private static readonly Queue<EnqueuedThumbnail> promiseQueue = new Queue<EnqueuedThumbnail>();
     private static readonly List<AssetPromise_Texture> progressList = new List<AssetPromise_Texture>();
     private static readonly Dictionary<Texture2D, Sprite> spriteCache = new Dictionary<Texture2D, Sprite>();
+    private static readonly Dictionary<string, AssetPromise_Texture> promiseCache = new Dictionary<string, AssetPromise_Texture>();
     private const int CONCURRENT_LIMIT = 10;
 
     public static AssetPromise_Texture PreloadThumbnail(string url)
     {
-#if UNITY_EDITOR
-        if (bypassRequests)
-            return null;
-#endif
         if (string.IsNullOrEmpty(url))
             return null;
 
@@ -39,19 +32,32 @@ public static class ThumbnailsManager
         AssetPromiseKeeper_Texture.i.Forget(promise);
     }
 
-    public static AssetPromise_Texture GetThumbnail(string url, Action<Asset_Texture> OnComplete)
+    public static void GetThumbnail(string url, Action<Asset_Texture> OnComplete)
     {
-#if UNITY_EDITOR
-        if (bypassRequests)
-            return null;
-#endif
         if (string.IsNullOrEmpty(url))
-            return null;
+            return;
+
+        if (promiseCache.ContainsKey(url))
+        {
+            var promise = promiseCache[url];
+
+            if (promise.state == AssetPromiseState.FINISHED)
+            {
+                OnComplete(promise.asset);
+            }
+            else
+            {
+                promise.OnSuccessEvent += OnComplete;
+            }
+            
+            return;
+        }
         
-        var promise = new AssetPromise_Texture(url);
-        AddToQueue(new EnqueuedThumbnail(promise, OnComplete));
+        var newPromise = new AssetPromise_Texture(url);
+        promiseCache.Add(url, newPromise);
+        
+        AddToQueue(new EnqueuedThumbnail(newPromise, OnComplete));
         CheckQueue();
-        return promise;
     }
     private static void CheckQueue()
     {
