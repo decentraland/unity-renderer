@@ -162,7 +162,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         TotalFriendCount = msg.totalFriends;
         OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
 
-        foreach (var friendId in msg.friendsToAdd)
+        foreach (var friendId in msg.friends)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 {action = FriendshipAction.APPROVED, userId = friendId});

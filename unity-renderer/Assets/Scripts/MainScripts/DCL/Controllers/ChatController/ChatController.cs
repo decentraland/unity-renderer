@@ -219,8 +219,10 @@ public class ChatController : MonoBehaviour, IChatController
 
         foreach (var unseenMessages in msg.unseenPrivateMessages)
         {
-            unseenMessagesByUser[unseenMessages.Key] = unseenMessages.Value;
-            OnUserUnseenMessagesUpdated?.Invoke(unseenMessages.Key, unseenMessages.Value);
+            var userId = unseenMessages.userId;
+            var count = unseenMessages.count;
+            unseenMessagesByUser[userId] = count;
+            OnUserUnseenMessagesUpdated?.Invoke(userId, count);
         }
     }
 

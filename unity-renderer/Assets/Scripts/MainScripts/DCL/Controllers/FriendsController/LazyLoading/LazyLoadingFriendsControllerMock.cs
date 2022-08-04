@@ -268,7 +268,7 @@ public class LazyLoadingFriendsControllerMock : IFriendsController
 
         var payload = new AddFriendsPayload
         {
-            friendsToAdd = friendIds.ToArray(),
+            friends = friendIds.ToArray(),
             totalFriends = TOTAL_FRIENDS
         };
 
