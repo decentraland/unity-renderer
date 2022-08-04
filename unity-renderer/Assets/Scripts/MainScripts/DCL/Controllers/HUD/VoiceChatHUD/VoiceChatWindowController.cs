@@ -12,7 +12,7 @@ public class VoiceChatWindowController : IHUD
     internal const string VOICE_CHAT_FEATURE_FLAG = "voice_chat";
     internal const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
     internal const string TALKING_MESSAGE_YOU = "You";
-    internal const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "Just you in the voice chat";
+    internal const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "No one else is here";
     internal const string TALKING_MESSAGE_NOBODY_TALKING = "Nobody is talking";
     internal const string TALKING_MESSAGE_SEVERAL_PEOPLE_TALKING = "Several people talking";
 
