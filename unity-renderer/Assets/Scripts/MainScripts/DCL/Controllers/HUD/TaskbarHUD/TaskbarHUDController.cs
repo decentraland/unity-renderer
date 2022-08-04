@@ -272,6 +272,10 @@ public class TaskbarHUDController : IHUD
         // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
         // view.leftWindowContainerAnimator.Hide();
         // view.ToggleAllOff();
+
+        if (notificationPanelTransform.Get() != null)
+            return;
+
         CloseFriendsWindow();
         CloseChatList();
         CloseVoiceChatWindow();
@@ -305,7 +309,10 @@ public class TaskbarHUDController : IHUD
     private void OpenPublicChannelOnPreviewMode()
     {
         if (notificationPanelTransform.Get() != null)
+        {
+            publicChatChannel.SetVisibility(false, false);
             return;
+        }
 
         chatToggleTargetWindow = publicChatChannel;
         publicChatChannel.SetVisibility(true, false);
