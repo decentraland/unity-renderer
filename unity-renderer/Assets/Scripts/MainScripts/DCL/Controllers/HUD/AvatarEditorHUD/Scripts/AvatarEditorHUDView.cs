@@ -364,6 +364,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         if (avatarModel?.wearables == null)
             return;
 
+        // We delay the updating of the avatar 1 frame to disengage from the kernel message flow
+        // otherwise the cancellation of the updating task throws an exception that is catch by
+        // kernel setthrew method, which floods the analytics.
+        // Also it updates just once if its called many times in a row
         isAvatarDirty = true;
         avatarModelToUpdate = avatarModel;
         updateAvatarShouldSkipAudio = skipAudio;
