@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEngine.Profiling;
 
 static class BuildCommand
 {
@@ -93,6 +94,7 @@ static class BuildCommand
 
     static BuildOptions GetBuildOptions()
     {
+        Profiler.maxUsedMemory = 16777000;
         return BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler | BuildOptions.EnableDeepProfilingSupport;
         /*string buildOptions = GetArgument("customBuildOptions");
 
