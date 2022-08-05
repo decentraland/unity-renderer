@@ -221,7 +221,8 @@ namespace DCL.Chat.HUD
         private void HandleMessageReceived(ChatMessage message)
         {
             if (!IsMessageFomCurrentChannel(message)) return;
-
+            
+            message.isChannelMessage = true;
             chatHudController.AddChatMessage(message, limitMaxEntries: false);
 
             if (View.IsActive)

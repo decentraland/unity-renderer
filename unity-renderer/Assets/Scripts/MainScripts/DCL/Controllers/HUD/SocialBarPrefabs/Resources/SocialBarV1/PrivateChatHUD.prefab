@@ -1034,7 +1034,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chatView: {fileID: 6801816554211203788}
-  analyzeResetPositionOnViewRefresh: 1
 --- !u!1 &6479473118645207110
 GameObject:
   m_ObjectHideFlags: 0
