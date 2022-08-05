@@ -52,6 +52,7 @@ Material:
     - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
     - _ColorMask: 15
     - _GridThickness: 0.5
+    - _HighlightRotation: 10
     - _HighlightThickness: 2
     - _Stencil: 0
     - _StencilComp: 8

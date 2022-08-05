@@ -1967,6 +1967,21 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "342fd85cdce14f5e9f724e48e040f852",
+    "m_Id": 17,
+    "m_DisplayName": "HighlightInner",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "HighlightInner",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "347aad63efd24b7a9ce09868f7141e3c",
     "m_Id": -823356011,
     "m_DisplayName": "GrassScale",
@@ -3030,6 +3045,21 @@
     "m_Property": {
         "m_Id": "bb3dbaef815b413dacdb993172399c1e"
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "6f27aa4fdfa04b99baaa6c87ab698924",
+    "m_Id": 18,
+    "m_DisplayName": "HighlightMid",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "HighlightMid",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {
@@ -5224,6 +5254,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "e8c80f5aaa9d4ba1b85f6a1a3686f670",
+    "m_Id": 19,
+    "m_DisplayName": "HighlightThickness",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "HighlightThickness",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "e943bfd340cf4709a76ba852685dbf55",
     "m_Group": {
@@ -5778,6 +5823,9 @@
             "m_Id": "99746a6c9e4e4afb82531aebfe1ae96f"
         },
         {
+            "m_Id": "e8c80f5aaa9d4ba1b85f6a1a3686f670"
+        },
+        {
             "m_Id": "1397f337bf564d30be3c091c3b1ae8ea"
         },
         {
@@ -5788,6 +5836,12 @@
         },
         {
             "m_Id": "6461b948b3ec44799a1149a944557baa"
+        },
+        {
+            "m_Id": "342fd85cdce14f5e9f724e48e040f852"
+        },
+        {
+            "m_Id": "6f27aa4fdfa04b99baaa6c87ab698924"
         }
     ],
     "synonyms": [],
