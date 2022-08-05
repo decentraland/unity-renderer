@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.EmotesCustomization
 {
-    public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig
+    public class EmoteCardComponentView : BaseComponentView, IEmoteCardComponentView, IComponentModelConfig<EmoteCardComponentModel>
     {
         internal static readonly int ON_SELECTED_CARD_COMPONENT_BOOL = Animator.StringToHash("OnSelected");
 
@@ -46,12 +46,12 @@ namespace DCL.EmotesCustomization
                 cardSelectionFrame.SetActive(false);
         }
 
-        public void Configure(BaseComponentModel newModel)
+        public void Configure(EmoteCardComponentModel newModel)
         {
             if (model == newModel)
                 return;
 
-            model = (EmoteCardComponentModel)newModel;
+            model = newModel;
             RefreshControl();
         }
 

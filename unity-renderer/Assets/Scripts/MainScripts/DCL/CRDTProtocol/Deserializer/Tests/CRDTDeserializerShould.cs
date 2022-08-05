@@ -21,7 +21,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-            
+
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -51,7 +51,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-            
+
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -75,7 +75,7 @@ namespace Tests
                 64, 73, 15, 219, 64, 73, 15, 219, 64, 73, 15, 219,
                 64, 73, 15, 219, 64, 73, 15, 219
             };
-            
+
             CRDTComponentMessageHeader expectedComponentHeader = new CRDTComponentMessageHeader()
             {
                 entityId = 666,
@@ -189,6 +189,31 @@ namespace Tests
             Marshal.FreeHGlobal(unmanagedArray);
         }
 
+        [Test]
+        public void SetDataOnPutComponentWithEmptyPayload()
+        {
+            byte[] message =
+            {
+                0, 0, 0, 32, //header: length = 32
+                0, 0, 0, 1, //header: type = 1 (PUT_COMPONENT)
+                0, 0, 0, 1, // component: entityId
+                0, 0, 0, 1, // component: componentId
+                0, 0, 0, 0, 0, 0, 0, 1, // component: timestamp (int64)
+                0, 0, 0, 0, // component: data-lenght (0)
+            };
+
+            using (var iterator =
+                KernelBinaryMessageDeserializer.Deserialize(message))
+            {
+                while (iterator.MoveNext())
+                {
+                    byte[] data = ((CRDTMessage)iterator.Current).data as byte[];
+                    Assert.NotNull(data);
+                    Assert.AreEqual(0, data.Length);
+                }
+            }
+        }
+
         static void TestInput(IBinaryReader reader, CRDTComponentMessageHeader[] expectedComponentHeader)
         {
             int count = 0;
@@ -204,7 +229,7 @@ namespace Tests
             }
             Assert.AreEqual(expectedComponentHeader.Length, count);
         }
-        
+
         static bool AreEqual(CRDTComponentMessageHeader a, CRDTComponentMessageHeader b)
         {
             return a.entityId == b.entityId

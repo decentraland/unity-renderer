@@ -23,7 +23,7 @@ public interface IRealmViewerComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 }
 
-public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView, IComponentModelConfig
+public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView, IComponentModelConfig<RealmViewerComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal HorizontalLayoutGroup horizontalLayoutGroup;
@@ -36,9 +36,9 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
 
     public Button.ButtonClickedEvent onLogoClick => logoButton?.onClick;
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(RealmViewerComponentModel newModel)
     {
-        model = (RealmViewerComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
