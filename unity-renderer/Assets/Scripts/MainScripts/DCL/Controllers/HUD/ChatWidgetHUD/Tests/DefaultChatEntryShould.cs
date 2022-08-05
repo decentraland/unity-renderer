@@ -87,7 +87,7 @@ public class DefaultChatEntryShould
         await UniTask.DelayFrame(4);
         entry.OnPointerEnter(new PointerEventData(null));
 
-        Assert.AreEqual("<color=#438FFF><u><b>user-test:</b></u></color> test message", entry.body.text);
+        Assert.AreEqual("<b><color=#438FFF><u>user-test</u></color>:</b> test message", entry.body.text);
         
         entry.OnPointerExit(new PointerEventData(null));
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
@@ -112,10 +112,10 @@ public class DefaultChatEntryShould
         await UniTask.DelayFrame(4);
         entry.OnPointerEnter(new PointerEventData(null));
 
-        Assert.AreEqual("<color=#438FFF><b><u>From user-test:</u></b></color> test message", entry.body.text);
+        Assert.AreEqual("<b><color=#438FFF><u>From user-test</u></color>:</b> test message", entry.body.text);
         
         entry.OnPointerExit(new PointerEventData(null));
-        Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
+        Assert.AreEqual("<b><color=#5EBD3D>From user-test</color>:</b> test message", entry.body.text);
     });
     
     [UnityTest]
@@ -157,7 +157,7 @@ public class DefaultChatEntryShould
         
         await UniTask.DelayFrame(4);
 
-        Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
+        Assert.AreEqual("<b><color=#5EBD3D>From user-test</color>:</b> test message", entry.body.text);
     });
     
     [UnityTest]

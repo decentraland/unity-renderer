@@ -93,48 +93,65 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private string GetUserString(ChatEntryModel chatEntryModel, bool isHiglighted)
     {
-        var userString = "";
-        switch (chatEntryModel.messageType) 
+        if (string.IsNullOrEmpty(model.senderName))
         {
-            case ChatMessage.Type.PUBLIC:
-                switch (chatEntryModel.subType)
+            return "";
+        }
+        
+        string baseName = model.senderName;
+
+        if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
+        {
+            if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+            {
+                baseName = "You";
+            }
+
+            if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+            {
+                if (!chatEntryModel.isChannelMessage)
                 {
-                    case ChatEntryModel.SubType.RECEIVED:
-                        if (isHiglighted)
-                        {
-                            userString = $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>";
-                        }
-                        else
-                        {
-                            userString = GetDefaultSenderString(chatEntryModel.senderName);
-                        }
-                        break;
-                    case ChatEntryModel.SubType.SENT:
-                        userString = $"<b>You:</b>";
-                        break;
+                    baseName = $"To {chatEntryModel.recipientName}";
                 }
-                break;
-            case ChatMessage.Type.PRIVATE:
-                switch (chatEntryModel.subType)
-                {
-                    case ChatEntryModel.SubType.RECEIVED:
-                        if (isHiglighted)
-                        {
-                            userString = chatEntryModel.isChannelMessage ? $"<color=#438FFF><u>{GetDefaultSenderString(model.senderName)}</u></color>" : $"<color=#438FFF><b><u>From {model.senderName}:</u></b></color>" ;
-                        }
-                        else
-                        {
-                            userString = chatEntryModel.isChannelMessage ? GetDefaultSenderString(chatEntryModel.senderName) : $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>" ;
-                        }
-                        break;
-                    case ChatEntryModel.SubType.SENT:
-                        userString = $"<b>To {chatEntryModel.recipientName}:</b>";
-                        break;
-                }
-                break;
+            }
         }
 
-        return userString;
+        if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
+        {
+            if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+            {
+                if (isHiglighted)
+                {
+                    baseName = $"<color=#438FFF><u>{baseName}</u></color>";
+                }
+            }
+            
+            if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+            {
+                if (chatEntryModel.isChannelMessage)
+                {
+                    if (isHiglighted)
+                    {
+                        baseName = $"<color=#438FFF><u>{baseName}</u></color>";
+                    }
+                }
+                else
+                {
+                    if (isHiglighted)
+                    {
+                        baseName = $"<color=#438FFF><u>From {baseName}</u></color>";
+                    }
+                    else
+                    {
+                        baseName = $"<color=#5EBD3D>From {baseName}</color>";
+                    }
+                }
+            }
+        }
+
+        baseName = $"<b>{baseName}:</b>";
+
+        return baseName;
     }
     
     private string GetCoordinatesLink(string body)

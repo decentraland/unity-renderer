@@ -153,14 +153,9 @@ public class ChatHUDController : IDisposable
         
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            if (message.sender == ownProfile.userId)
-            {
-                model.subType = ChatEntryModel.SubType.SENT;
-            }
-            else
-            {
-                model.subType = ChatEntryModel.SubType.RECEIVED;
-            }
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
