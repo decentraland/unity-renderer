@@ -132,11 +132,14 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
-    internal static CharacterPreviewController characterPreviewController;
+    private static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
-    private Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
+    private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
+    private bool isAvatarDirty;
+    private AvatarModel avatarModelToUpdate;
+    private bool updateAvatarShouldSkipAudio;
 
     public event Action<AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
@@ -178,6 +181,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         clickBlocker.OnClicked += ClickBlockerClicked;
         
         ConfigureSectionSelector();
+    }
+
+    private void Update()
+    {
+        UpdateAvatarModelWhenNeeded();
     }
 
     public void SetIsWeb3(bool isWeb3User)
@@ -356,22 +364,16 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         if (avatarModel?.wearables == null)
             return;
 
+        // We delay the updating of the avatar 1 frame to disengage from the kernel message flow
+        // otherwise the cancellation of the updating task throws an exception that is catch by
+        // kernel setthrew method, which floods the analytics.
+        // Also it updates just once if its called many times in a row
+        isAvatarDirty = true;
+        avatarModelToUpdate = avatarModel;
+        updateAvatarShouldSkipAudio = skipAudio;
+
         doneButton.interactable = false;
         loadingSpinnerGameObject.SetActive(true);
-        characterPreviewController.UpdateModel(avatarModel,
-            () =>
-            {
-                if (doneButton != null)
-                    doneButton.interactable = true;
-
-                loadingSpinnerGameObject?.SetActive(false);
-                
-                if(!skipAudio)
-                    OnAvatarAppear?.Invoke(avatarModel);
-                
-                ClearWearablesLoadingSpinner();
-                randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
-            });
     }
 
     public void AddWearable(WearableItem wearableItem, int amount,
@@ -706,5 +708,27 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     {
         noItemInCollectionWarning.Dismiss(false);
     }
-        
+    
+    private void UpdateAvatarModelWhenNeeded()
+    {
+        if (isAvatarDirty)
+        {
+            characterPreviewController.UpdateModel(avatarModelToUpdate,
+                () =>
+                {
+                    if (doneButton != null)
+                        doneButton.interactable = true;
+
+                    loadingSpinnerGameObject?.SetActive(false);
+
+                    if (!updateAvatarShouldSkipAudio)
+                        OnAvatarAppear?.Invoke(avatarModelToUpdate);
+
+                    ClearWearablesLoadingSpinner();
+                    randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
+                });
+
+            isAvatarDirty = false;
+        }
+    }
 }

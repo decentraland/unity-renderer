@@ -24,18 +24,18 @@ namespace KernelCommunication
             while (reader.CanRead())
             {
                 int messageLength = reader.ReadInt32();
-                int messageType = reader.ReadInt32();
+                CrdtMessageType messageType = (CrdtMessageType)reader.ReadInt32();
 
                 if (messageLength <= BinaryMessageConstants.MESSAGE_HEADER_LENGTH)
                 {
                     continue;
                 }
 
-                switch ((KernelBinaryMessageType)messageType)
+                switch (messageType)
                 {
-                    case KernelBinaryMessageType.PUT_COMPONENT:
-                    case KernelBinaryMessageType.DELETE_COMPONENT:
-                        yield return CRDTDeserializer.Deserialize(reader);
+                    case CrdtMessageType.PUT_COMPONENT:
+                    case CrdtMessageType.DELETE_COMPONENT:
+                        yield return CRDTDeserializer.Deserialize(reader, messageType);
                         break;
                     default:
                         reader.Skip(messageLength - headerLength);

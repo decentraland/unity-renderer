@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static PublicChannelEntry;
 
-public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
+public class PublicChannelEntry : BaseComponentView, IComponentModelConfig<PublicChannelEntryModel>
 {
     [SerializeField] internal Button openChatButton;
     [SerializeField] internal TMP_Text nameLabel;
@@ -32,9 +33,9 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
         this.chatController = chatController;
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(PublicChannelEntryModel newModel)
     {
-        model = (PublicChannelEntryModel) newModel;
+        model = newModel;
         RefreshControl();
     }
 

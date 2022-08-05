@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView, IComponentModelConfig
+public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView, IComponentModelConfig<WorldChatWindowModel>
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
@@ -131,9 +131,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         UpdateLayout();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(WorldChatWindowModel newModel)
     {
-        model = (WorldChatWindowModel) newModel;
+        model = newModel;
         RefreshControl();
     }
 
