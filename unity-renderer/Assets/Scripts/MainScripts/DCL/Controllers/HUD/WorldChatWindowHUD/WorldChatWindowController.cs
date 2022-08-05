@@ -7,7 +7,7 @@ using DCL.Friends.WebApi;
 
 public class WorldChatWindowController : IHUD
 {
-    private const string GENERAL_CHANNEL_ID = "general";
+    private const string GENERAL_CHANNEL_ID = "nearby";
     private const int MAX_SEARCHED_CHANNELS = 100;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
