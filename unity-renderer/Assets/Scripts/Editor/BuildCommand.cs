@@ -93,7 +93,7 @@ static class BuildCommand
 
     static BuildOptions GetBuildOptions()
     {
-        return BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler | BuildOptions.EnableDeepProfilingSupport
+        return BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler | BuildOptions.EnableDeepProfilingSupport;
         /*string buildOptions = GetArgument("customBuildOptions");
 
         return buildOptions == "AcceptExternalModificationsToPlayer"
