@@ -72,9 +72,7 @@ namespace DCL.CRDT
 
         private void RemoveComponent(IParcelScene scene, long entityId, int componentId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -91,12 +89,12 @@ namespace DCL.CRDT
 
         private IDCLEntity GetOrCreateEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity != null)
+            if (scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return entity;
             }
 
+            // CreateEntity internally adds entity to `scene.entities`
             entity = scene.CreateEntity(entityId);
             entity.OnRemoved += OnEntityRemoved;
             return entity;
@@ -104,8 +102,7 @@ namespace DCL.CRDT
 
         private void RemoveEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }

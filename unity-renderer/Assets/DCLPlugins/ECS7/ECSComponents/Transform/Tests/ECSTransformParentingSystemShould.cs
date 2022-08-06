@@ -1,7 +1,6 @@
 using DCL;
-using DCL.Controllers;
 using DCL.ECSComponents;
-using DCL.Models;
+using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,35 +9,32 @@ namespace Tests
 {
     public class ECSTransformParentingSystemShould
     {
-        private IDCLEntity entity;
-        private IParcelScene scene;
-        private GameObject entityGO;
+        private ECS7TestEntity entity;
+        private ECS7TestScene scene;
+        private ECS7TestUtilsScenesAndEntities sceneTestHelper;
         private ECSTransformHandler handler;
 
         [SetUp]
         public void SetUp()
         {
-            entityGO = new GameObject();
+            sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
+            scene = sceneTestHelper.CreateScene("temptation");
+            entity = scene.CreateEntity(42);
 
-            entity = Substitute.For<IDCLEntity>();
-            entity.gameObject.Returns(entityGO);
-            entity.entityId.Returns(42);
-
-            scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>());
+            handler = new ECSTransformHandler(0, Substitute.For<IWorldState>(),
+                Substitute.For<BaseVariable<Vector3>>(),
+                Substitute.For<IECSComponentWriter>());
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.DestroyImmediate(entityGO);
+            sceneTestHelper.Dispose();
         }
 
         [Test]
         public void WaitForParentToExists()
         {
-            scene.GetEntityById(Arg.Any<long>()).Returns(x => null);
-
             var model = new ECSTransform() { parentId = 43 };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
@@ -48,13 +44,12 @@ namespace Tests
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
             // create parent for entity
-            var parent = Substitute.For<IDCLEntity>();
-            parent.entityId.Returns(model.parentId);
-            scene.GetEntityById(Arg.Any<long>()).Returns(x => parent);
+            var parent = scene.CreateEntity(model.parentId);
 
             // parent exist so it should apply parenting
             ECSTransformParentingSystem.Update();
-            entity.Received(1).SetParent(parent);
+            Assert.AreEqual(entity.entityId, parent.childrenId[0]);
+            Assert.AreEqual(parent.gameObject.transform, entity.gameObject.transform.parent);
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
         }
     }

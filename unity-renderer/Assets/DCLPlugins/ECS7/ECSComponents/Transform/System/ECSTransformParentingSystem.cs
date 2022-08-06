@@ -1,3 +1,5 @@
+using DCL.Models;
+
 public static class ECSTransformParentingSystem
 {
     public static void Update()
@@ -13,8 +15,9 @@ public static class ECSTransformParentingSystem
         {
             var data = ECSTransformUtils.orphanEntities.Pairs[i].value;
 
-            if (ECSTransformUtils.SetParent(data.scene, data.entity, data.parentId))
+            if (ECSTransformUtils.TrySetParent(data.scene, data.entity, data.parentId, out IDCLEntity parent))
             {
+                parent.childrenId.Add(data.entity.entityId);
                 ECSTransformUtils.orphanEntities.RemoveAt(i);
             }
         }
