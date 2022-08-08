@@ -46,7 +46,7 @@ namespace DCL
             }
         }
 
-        public static void RemovePendingResource( this DataStore_ECS7 self, string sceneId, object model  )
+        public static void RemovePendingResource( this DataStore_ECS7 self, string sceneId, object model)
         {
             if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
             {

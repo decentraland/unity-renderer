@@ -18,6 +18,17 @@ namespace DCL.ECSComponents
         {
             dataStore = dataStoreEcs7;
         }
+        
+        private PBSphereShape NormalizeAndClone(PBSphereShape model)
+        {
+            PBSphereShape normalizedModel = model.Clone();
+            
+            normalizedModel.Visible = !model.HasVisible || model.Visible;
+            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
+            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
+            
+            return normalizedModel;
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -30,9 +41,10 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
+            var normalizedModel = NormalizeAndClone(model);
             if (meshesInfo != null)
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(normalizedModel.Visible, normalizedModel.WithCollisions, normalizedModel.IsPointerBlocker, meshesInfo);
             }
             else
             {
@@ -46,7 +58,7 @@ namespace DCL.ECSComponents
                 {
                     DisposeMesh(entity, scene);
                     generatedMesh = shape.mesh;
-                    GenerateRenderer(generatedMesh, scene, entity, model);
+                    GenerateRenderer(generatedMesh, scene, entity, normalizedModel);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                 };

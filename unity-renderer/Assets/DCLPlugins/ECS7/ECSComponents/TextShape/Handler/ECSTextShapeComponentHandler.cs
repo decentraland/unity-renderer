@@ -66,6 +66,23 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         rectTransform = null;
         currentModel = null;
     }
+    
+    private PBTextShape NormalizeAndClone(PBTextShape model)
+    {
+        PBTextShape normalizedModel = model.Clone();
+            
+        normalizedModel.Visible = !model.HasVisible || model.Visible;
+        normalizedModel.Opacity = model.HasOpacity ? model.Opacity : 1.0f;
+        normalizedModel.HTextAlign = model.HasHTextAlign ? model.HTextAlign : "center";
+        normalizedModel.VTextAlign = model.HasVTextAlign ? model.VTextAlign : "center";
+        normalizedModel.Width = model.HasWidth ? model.Width : 1.0f;
+        normalizedModel.Height = model.HasHeight ? model.Height : 1.0f;
+        normalizedModel.ShadowColor = model.ShadowColor != null ? model.ShadowColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
+        normalizedModel.OutlineColor = model.OutlineColor != null ? model.OutlineColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
+        normalizedModel.TextColor = model.TextColor != null ? model.TextColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
+
+        return normalizedModel;
+    }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {

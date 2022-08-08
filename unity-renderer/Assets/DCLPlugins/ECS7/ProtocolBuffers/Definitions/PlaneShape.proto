@@ -4,8 +4,8 @@ import "common/id.proto";
 option (ecs_component_id) = 1014;
 
 message PBPlaneShape {  
-  bool with_collisions = 1;
-  bool is_pointer_blocker = 2;
-  bool visible = 3;
+  optional bool with_collisions = 1; // default=true
+  optional bool is_pointer_blocker = 2; // default=true
+  optional bool visible = 3; // default=true
   repeated float uvs = 4;
 }

@@ -25,46 +25,66 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg9UZXh0U2hhcGUucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaE2NvbW1vbi9D",
-            "b2xvcjMucHJvdG8ikwQKC1BCVGV4dFNoYXBlEgwKBHRleHQYASABKAkSDwoH",
-            "dmlzaWJsZRgCIAEoCBIMCgRmb250GAMgASgJEg8KB29wYWNpdHkYBCABKAIS",
-            "EQoJZm9udF9TaXplGAUgASgCEhUKDWZvbnRfYXV0b1NpemUYBiABKAgSFAoM",
-            "aF90ZXh0X2FsaWduGAcgASgJEhQKDHZfdGV4dF9hbGlnbhgIIAEoCRINCgV3",
-            "aWR0aBgJIAEoAhIOCgZoZWlnaHQYCiABKAISEwoLcGFkZGluZ190b3AYCyAB",
-            "KAISFQoNcGFkZGluZ19yaWdodBgMIAEoAhIWCg5wYWRkaW5nX2JvdHRvbRgN",
-            "IAEoAhIUCgxwYWRkaW5nX2xlZnQYDiABKAISFAoMbGluZV9zcGFjaW5nGA8g",
-            "ASgCEhIKCmxpbmVfY291bnQYECABKAUSFQoNdGV4dF93cmFwcGluZxgRIAEo",
-            "CBITCgtzaGFkb3dfYmx1chgSIAEoAhIWCg5zaGFkb3dfb2Zmc2V0WBgTIAEo",
-            "AhIWCg5zaGFkb3dfb2Zmc2V0WRgUIAEoAhIVCg1vdXRsaW5lX3dpZHRoGBUg",
-            "ASgCEh0KDHNoYWRvd19jb2xvchgWIAEoCzIHLkNvbG9yMxIeCg1vdXRsaW5l",
-            "X2NvbG9yGBcgASgLMgcuQ29sb3IzEhsKCnRleHRfY29sb3IYGCABKAsyBy5D",
-            "b2xvcjNCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "b2xvcjMucHJvdG8i8AcKC1BCVGV4dFNoYXBlEgwKBHRleHQYASABKAkSFAoH",
+            "dmlzaWJsZRgCIAEoCEgAiAEBEhEKBGZvbnQYAyABKAlIAYgBARIUCgdvcGFj",
+            "aXR5GAQgASgCSAKIAQESFgoJZm9udF9TaXplGAUgASgCSAOIAQESGgoNZm9u",
+            "dF9hdXRvU2l6ZRgGIAEoCEgEiAEBEhkKDGhfdGV4dF9hbGlnbhgHIAEoCUgF",
+            "iAEBEhkKDHZfdGV4dF9hbGlnbhgIIAEoCUgGiAEBEhIKBXdpZHRoGAkgASgC",
+            "SAeIAQESEwoGaGVpZ2h0GAogASgCSAiIAQESGAoLcGFkZGluZ190b3AYCyAB",
+            "KAJICYgBARIaCg1wYWRkaW5nX3JpZ2h0GAwgASgCSAqIAQESGwoOcGFkZGlu",
+            "Z19ib3R0b20YDSABKAJIC4gBARIZCgxwYWRkaW5nX2xlZnQYDiABKAJIDIgB",
+            "ARIZCgxsaW5lX3NwYWNpbmcYDyABKAJIDYgBARIXCgpsaW5lX2NvdW50GBAg",
+            "ASgFSA6IAQESGgoNdGV4dF93cmFwcGluZxgRIAEoCEgPiAEBEhgKC3NoYWRv",
+            "d19ibHVyGBIgASgCSBCIAQESGwoOc2hhZG93X29mZnNldFgYEyABKAJIEYgB",
+            "ARIbCg5zaGFkb3dfb2Zmc2V0WRgUIAEoAkgSiAEBEhoKDW91dGxpbmVfd2lk",
+            "dGgYFSABKAJIE4gBARIiCgxzaGFkb3dfY29sb3IYFiABKAsyBy5Db2xvcjNI",
+            "FIgBARIjCg1vdXRsaW5lX2NvbG9yGBcgASgLMgcuQ29sb3IzSBWIAQESIAoK",
+            "dGV4dF9jb2xvchgYIAEoCzIHLkNvbG9yM0gWiAEBQgoKCF92aXNpYmxlQgcK",
+            "BV9mb250QgoKCF9vcGFjaXR5QgwKCl9mb250X1NpemVCEAoOX2ZvbnRfYXV0",
+            "b1NpemVCDwoNX2hfdGV4dF9hbGlnbkIPCg1fdl90ZXh0X2FsaWduQggKBl93",
+            "aWR0aEIJCgdfaGVpZ2h0Qg4KDF9wYWRkaW5nX3RvcEIQCg5fcGFkZGluZ19y",
+            "aWdodEIRCg9fcGFkZGluZ19ib3R0b21CDwoNX3BhZGRpbmdfbGVmdEIPCg1f",
+            "bGluZV9zcGFjaW5nQg0KC19saW5lX2NvdW50QhAKDl90ZXh0X3dyYXBwaW5n",
+            "Qg4KDF9zaGFkb3dfYmx1ckIRCg9fc2hhZG93X29mZnNldFhCEQoPX3NoYWRv",
+            "d19vZmZzZXRZQhAKDl9vdXRsaW5lX3dpZHRoQg8KDV9zaGFkb3dfY29sb3JC",
+            "EAoOX291dGxpbmVfY29sb3JCDQoLX3RleHRfY29sb3JCFKoCEURDTC5FQ1ND",
+            "b21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTextShape), global::DCL.ECSComponents.PBTextShape.Parser, new[]{ "Text", "Visible", "Font", "Opacity", "FontSize", "FontAutoSize", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTextShape), global::DCL.ECSComponents.PBTextShape.Parser, new[]{ "Text", "Visible", "Font", "Opacity", "FontSize", "FontAutoSize", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, new[]{ "Visible", "Font", "Opacity", "FontSize", "FontAutoSize", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBTextShape : pb::IMessage<PBTextShape> {
+  public sealed partial class PBTextShape : pb::IMessage<PBTextShape>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBTextShape> _parser = new pb::MessageParser<PBTextShape>(() => new PBTextShape());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBTextShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.TextShapeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape() {
       OnConstruction();
     }
@@ -72,7 +92,9 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape(PBTextShape other) : this() {
+      _hasBits0 = other._hasBits0;
       text_ = other.text_;
       visible_ = other.visible_;
       font_ = other.font_;
@@ -101,6 +123,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTextShape Clone() {
       return new PBTextShape(this);
     }
@@ -109,6 +132,7 @@ namespace DCL.ECSComponents {
     public const int TextFieldNumber = 1;
     private string text_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Text {
       get { return text_; }
       set {
@@ -119,227 +143,529 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "visible" field.</summary>
     public const int VisibleFieldNumber = 2;
     private bool visible_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Visible {
-      get { return visible_; }
+      get { if ((_hasBits0 & 1) != 0) { return visible_; } else { return false; } }
       set {
+        _hasBits0 |= 1;
         visible_ = value;
       }
+    }
+    /// <summary>Gets whether the "visible" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasVisible {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "visible" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearVisible() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "font" field.</summary>
     public const int FontFieldNumber = 3;
-    private string font_ = "";
+    private string font_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Font {
-      get { return font_; }
+      get { return font_ ?? ""; }
       set {
         font_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
+    }
+    /// <summary>Gets whether the "font" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFont {
+      get { return font_ != null; }
+    }
+    /// <summary>Clears the value of the "font" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFont() {
+      font_ = null;
     }
 
     /// <summary>Field number for the "opacity" field.</summary>
     public const int OpacityFieldNumber = 4;
     private float opacity_;
+    /// <summary>
+    /// default=1.0f
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Opacity {
-      get { return opacity_; }
+      get { if ((_hasBits0 & 2) != 0) { return opacity_; } else { return 0F; } }
       set {
+        _hasBits0 |= 2;
         opacity_ = value;
       }
+    }
+    /// <summary>Gets whether the "opacity" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasOpacity {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "opacity" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearOpacity() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "font_Size" field.</summary>
     public const int FontSizeFieldNumber = 5;
     private float fontSize_;
+    /// <summary>
+    /// default=10
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FontSize {
-      get { return fontSize_; }
+      get { if ((_hasBits0 & 4) != 0) { return fontSize_; } else { return 0F; } }
       set {
+        _hasBits0 |= 4;
         fontSize_ = value;
       }
+    }
+    /// <summary>Gets whether the "font_Size" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFontSize {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "font_Size" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFontSize() {
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "font_autoSize" field.</summary>
     public const int FontAutoSizeFieldNumber = 6;
     private bool fontAutoSize_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool FontAutoSize {
-      get { return fontAutoSize_; }
+      get { if ((_hasBits0 & 8) != 0) { return fontAutoSize_; } else { return false; } }
       set {
+        _hasBits0 |= 8;
         fontAutoSize_ = value;
       }
+    }
+    /// <summary>Gets whether the "font_autoSize" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFontAutoSize {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "font_autoSize" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFontAutoSize() {
+      _hasBits0 &= ~8;
     }
 
     /// <summary>Field number for the "h_text_align" field.</summary>
     public const int HTextAlignFieldNumber = 7;
-    private string hTextAlign_ = "";
+    private string hTextAlign_;
+    /// <summary>
+    /// default='center'
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string HTextAlign {
-      get { return hTextAlign_; }
+      get { return hTextAlign_ ?? ""; }
       set {
         hTextAlign_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
+    /// <summary>Gets whether the "h_text_align" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasHTextAlign {
+      get { return hTextAlign_ != null; }
+    }
+    /// <summary>Clears the value of the "h_text_align" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearHTextAlign() {
+      hTextAlign_ = null;
+    }
 
     /// <summary>Field number for the "v_text_align" field.</summary>
     public const int VTextAlignFieldNumber = 8;
-    private string vTextAlign_ = "";
+    private string vTextAlign_;
+    /// <summary>
+    /// default='center'
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string VTextAlign {
-      get { return vTextAlign_; }
+      get { return vTextAlign_ ?? ""; }
       set {
         vTextAlign_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
+    }
+    /// <summary>Gets whether the "v_text_align" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasVTextAlign {
+      get { return vTextAlign_ != null; }
+    }
+    /// <summary>Clears the value of the "v_text_align" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearVTextAlign() {
+      vTextAlign_ = null;
     }
 
     /// <summary>Field number for the "width" field.</summary>
     public const int WidthFieldNumber = 9;
     private float width_;
+    /// <summary>
+    /// default=1
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Width {
-      get { return width_; }
+      get { if ((_hasBits0 & 16) != 0) { return width_; } else { return 0F; } }
       set {
+        _hasBits0 |= 16;
         width_ = value;
       }
+    }
+    /// <summary>Gets whether the "width" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasWidth {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "width" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearWidth() {
+      _hasBits0 &= ~16;
     }
 
     /// <summary>Field number for the "height" field.</summary>
     public const int HeightFieldNumber = 10;
     private float height_;
+    /// <summary>
+    /// default=1
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Height {
-      get { return height_; }
+      get { if ((_hasBits0 & 32) != 0) { return height_; } else { return 0F; } }
       set {
+        _hasBits0 |= 32;
         height_ = value;
       }
+    }
+    /// <summary>Gets whether the "height" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasHeight {
+      get { return (_hasBits0 & 32) != 0; }
+    }
+    /// <summary>Clears the value of the "height" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearHeight() {
+      _hasBits0 &= ~32;
     }
 
     /// <summary>Field number for the "padding_top" field.</summary>
     public const int PaddingTopFieldNumber = 11;
     private float paddingTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingTop {
-      get { return paddingTop_; }
+      get { if ((_hasBits0 & 64) != 0) { return paddingTop_; } else { return 0F; } }
       set {
+        _hasBits0 |= 64;
         paddingTop_ = value;
       }
+    }
+    /// <summary>Gets whether the "padding_top" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPaddingTop {
+      get { return (_hasBits0 & 64) != 0; }
+    }
+    /// <summary>Clears the value of the "padding_top" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPaddingTop() {
+      _hasBits0 &= ~64;
     }
 
     /// <summary>Field number for the "padding_right" field.</summary>
     public const int PaddingRightFieldNumber = 12;
     private float paddingRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingRight {
-      get { return paddingRight_; }
+      get { if ((_hasBits0 & 128) != 0) { return paddingRight_; } else { return 0F; } }
       set {
+        _hasBits0 |= 128;
         paddingRight_ = value;
       }
+    }
+    /// <summary>Gets whether the "padding_right" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPaddingRight {
+      get { return (_hasBits0 & 128) != 0; }
+    }
+    /// <summary>Clears the value of the "padding_right" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPaddingRight() {
+      _hasBits0 &= ~128;
     }
 
     /// <summary>Field number for the "padding_bottom" field.</summary>
     public const int PaddingBottomFieldNumber = 13;
     private float paddingBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingBottom {
-      get { return paddingBottom_; }
+      get { if ((_hasBits0 & 256) != 0) { return paddingBottom_; } else { return 0F; } }
       set {
+        _hasBits0 |= 256;
         paddingBottom_ = value;
       }
+    }
+    /// <summary>Gets whether the "padding_bottom" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPaddingBottom {
+      get { return (_hasBits0 & 256) != 0; }
+    }
+    /// <summary>Clears the value of the "padding_bottom" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPaddingBottom() {
+      _hasBits0 &= ~256;
     }
 
     /// <summary>Field number for the "padding_left" field.</summary>
     public const int PaddingLeftFieldNumber = 14;
     private float paddingLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingLeft {
-      get { return paddingLeft_; }
+      get { if ((_hasBits0 & 512) != 0) { return paddingLeft_; } else { return 0F; } }
       set {
+        _hasBits0 |= 512;
         paddingLeft_ = value;
       }
+    }
+    /// <summary>Gets whether the "padding_left" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPaddingLeft {
+      get { return (_hasBits0 & 512) != 0; }
+    }
+    /// <summary>Clears the value of the "padding_left" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPaddingLeft() {
+      _hasBits0 &= ~512;
     }
 
     /// <summary>Field number for the "line_spacing" field.</summary>
     public const int LineSpacingFieldNumber = 15;
     private float lineSpacing_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float LineSpacing {
-      get { return lineSpacing_; }
+      get { if ((_hasBits0 & 1024) != 0) { return lineSpacing_; } else { return 0F; } }
       set {
+        _hasBits0 |= 1024;
         lineSpacing_ = value;
       }
+    }
+    /// <summary>Gets whether the "line_spacing" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasLineSpacing {
+      get { return (_hasBits0 & 1024) != 0; }
+    }
+    /// <summary>Clears the value of the "line_spacing" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearLineSpacing() {
+      _hasBits0 &= ~1024;
     }
 
     /// <summary>Field number for the "line_count" field.</summary>
     public const int LineCountFieldNumber = 16;
     private int lineCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int LineCount {
-      get { return lineCount_; }
+      get { if ((_hasBits0 & 2048) != 0) { return lineCount_; } else { return 0; } }
       set {
+        _hasBits0 |= 2048;
         lineCount_ = value;
       }
+    }
+    /// <summary>Gets whether the "line_count" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasLineCount {
+      get { return (_hasBits0 & 2048) != 0; }
+    }
+    /// <summary>Clears the value of the "line_count" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearLineCount() {
+      _hasBits0 &= ~2048;
     }
 
     /// <summary>Field number for the "text_wrapping" field.</summary>
     public const int TextWrappingFieldNumber = 17;
     private bool textWrapping_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool TextWrapping {
-      get { return textWrapping_; }
+      get { if ((_hasBits0 & 4096) != 0) { return textWrapping_; } else { return false; } }
       set {
+        _hasBits0 |= 4096;
         textWrapping_ = value;
       }
+    }
+    /// <summary>Gets whether the "text_wrapping" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTextWrapping {
+      get { return (_hasBits0 & 4096) != 0; }
+    }
+    /// <summary>Clears the value of the "text_wrapping" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTextWrapping() {
+      _hasBits0 &= ~4096;
     }
 
     /// <summary>Field number for the "shadow_blur" field.</summary>
     public const int ShadowBlurFieldNumber = 18;
     private float shadowBlur_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowBlur {
-      get { return shadowBlur_; }
+      get { if ((_hasBits0 & 8192) != 0) { return shadowBlur_; } else { return 0F; } }
       set {
+        _hasBits0 |= 8192;
         shadowBlur_ = value;
       }
+    }
+    /// <summary>Gets whether the "shadow_blur" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasShadowBlur {
+      get { return (_hasBits0 & 8192) != 0; }
+    }
+    /// <summary>Clears the value of the "shadow_blur" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearShadowBlur() {
+      _hasBits0 &= ~8192;
     }
 
     /// <summary>Field number for the "shadow_offsetX" field.</summary>
     public const int ShadowOffsetXFieldNumber = 19;
     private float shadowOffsetX_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetX {
-      get { return shadowOffsetX_; }
+      get { if ((_hasBits0 & 16384) != 0) { return shadowOffsetX_; } else { return 0F; } }
       set {
+        _hasBits0 |= 16384;
         shadowOffsetX_ = value;
       }
+    }
+    /// <summary>Gets whether the "shadow_offsetX" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasShadowOffsetX {
+      get { return (_hasBits0 & 16384) != 0; }
+    }
+    /// <summary>Clears the value of the "shadow_offsetX" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearShadowOffsetX() {
+      _hasBits0 &= ~16384;
     }
 
     /// <summary>Field number for the "shadow_offsetY" field.</summary>
     public const int ShadowOffsetYFieldNumber = 20;
     private float shadowOffsetY_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float ShadowOffsetY {
-      get { return shadowOffsetY_; }
+      get { if ((_hasBits0 & 32768) != 0) { return shadowOffsetY_; } else { return 0F; } }
       set {
+        _hasBits0 |= 32768;
         shadowOffsetY_ = value;
       }
+    }
+    /// <summary>Gets whether the "shadow_offsetY" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasShadowOffsetY {
+      get { return (_hasBits0 & 32768) != 0; }
+    }
+    /// <summary>Clears the value of the "shadow_offsetY" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearShadowOffsetY() {
+      _hasBits0 &= ~32768;
     }
 
     /// <summary>Field number for the "outline_width" field.</summary>
     public const int OutlineWidthFieldNumber = 21;
     private float outlineWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float OutlineWidth {
-      get { return outlineWidth_; }
+      get { if ((_hasBits0 & 65536) != 0) { return outlineWidth_; } else { return 0F; } }
       set {
+        _hasBits0 |= 65536;
         outlineWidth_ = value;
       }
+    }
+    /// <summary>Gets whether the "outline_width" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasOutlineWidth {
+      get { return (_hasBits0 & 65536) != 0; }
+    }
+    /// <summary>Clears the value of the "outline_width" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearOutlineWidth() {
+      _hasBits0 &= ~65536;
     }
 
     /// <summary>Field number for the "shadow_color" field.</summary>
     public const int ShadowColorFieldNumber = 22;
     private global::Color3 shadowColor_;
+    /// <summary>
+    /// default=(1.0,1.0,1.0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 ShadowColor {
       get { return shadowColor_; }
       set {
@@ -350,7 +676,11 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "outline_color" field.</summary>
     public const int OutlineColorFieldNumber = 23;
     private global::Color3 outlineColor_;
+    /// <summary>
+    /// default=(1.0,1.0,1.0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 OutlineColor {
       get { return outlineColor_; }
       set {
@@ -361,7 +691,11 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "text_color" field.</summary>
     public const int TextColorFieldNumber = 24;
     private global::Color3 textColor_;
+    /// <summary>
+    /// default=(1.0,1.0,1.0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 TextColor {
       get { return textColor_; }
       set {
@@ -370,11 +704,13 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBTextShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBTextShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -410,29 +746,30 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Text.Length != 0) hash ^= Text.GetHashCode();
-      if (Visible != false) hash ^= Visible.GetHashCode();
-      if (Font.Length != 0) hash ^= Font.GetHashCode();
-      if (Opacity != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Opacity);
-      if (FontSize != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FontSize);
-      if (FontAutoSize != false) hash ^= FontAutoSize.GetHashCode();
-      if (HTextAlign.Length != 0) hash ^= HTextAlign.GetHashCode();
-      if (VTextAlign.Length != 0) hash ^= VTextAlign.GetHashCode();
-      if (Width != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Width);
-      if (Height != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Height);
-      if (PaddingTop != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingTop);
-      if (PaddingRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingRight);
-      if (PaddingBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingBottom);
-      if (PaddingLeft != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingLeft);
-      if (LineSpacing != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(LineSpacing);
-      if (LineCount != 0) hash ^= LineCount.GetHashCode();
-      if (TextWrapping != false) hash ^= TextWrapping.GetHashCode();
-      if (ShadowBlur != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowBlur);
-      if (ShadowOffsetX != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowOffsetX);
-      if (ShadowOffsetY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowOffsetY);
-      if (OutlineWidth != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(OutlineWidth);
+      if (HasVisible) hash ^= Visible.GetHashCode();
+      if (HasFont) hash ^= Font.GetHashCode();
+      if (HasOpacity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Opacity);
+      if (HasFontSize) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FontSize);
+      if (HasFontAutoSize) hash ^= FontAutoSize.GetHashCode();
+      if (HasHTextAlign) hash ^= HTextAlign.GetHashCode();
+      if (HasVTextAlign) hash ^= VTextAlign.GetHashCode();
+      if (HasWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Width);
+      if (HasHeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Height);
+      if (HasPaddingTop) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingTop);
+      if (HasPaddingRight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingRight);
+      if (HasPaddingBottom) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingBottom);
+      if (HasPaddingLeft) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingLeft);
+      if (HasLineSpacing) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(LineSpacing);
+      if (HasLineCount) hash ^= LineCount.GetHashCode();
+      if (HasTextWrapping) hash ^= TextWrapping.GetHashCode();
+      if (HasShadowBlur) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowBlur);
+      if (HasShadowOffsetX) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowOffsetX);
+      if (HasShadowOffsetY) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ShadowOffsetY);
+      if (HasOutlineWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(OutlineWidth);
       if (shadowColor_ != null) hash ^= ShadowColor.GetHashCode();
       if (outlineColor_ != null) hash ^= OutlineColor.GetHashCode();
       if (textColor_ != null) hash ^= TextColor.GetHashCode();
@@ -443,93 +780,98 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (Text.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Text);
       }
-      if (Visible != false) {
+      if (HasVisible) {
         output.WriteRawTag(16);
         output.WriteBool(Visible);
       }
-      if (Font.Length != 0) {
+      if (HasFont) {
         output.WriteRawTag(26);
         output.WriteString(Font);
       }
-      if (Opacity != 0F) {
+      if (HasOpacity) {
         output.WriteRawTag(37);
         output.WriteFloat(Opacity);
       }
-      if (FontSize != 0F) {
+      if (HasFontSize) {
         output.WriteRawTag(45);
         output.WriteFloat(FontSize);
       }
-      if (FontAutoSize != false) {
+      if (HasFontAutoSize) {
         output.WriteRawTag(48);
         output.WriteBool(FontAutoSize);
       }
-      if (HTextAlign.Length != 0) {
+      if (HasHTextAlign) {
         output.WriteRawTag(58);
         output.WriteString(HTextAlign);
       }
-      if (VTextAlign.Length != 0) {
+      if (HasVTextAlign) {
         output.WriteRawTag(66);
         output.WriteString(VTextAlign);
       }
-      if (Width != 0F) {
+      if (HasWidth) {
         output.WriteRawTag(77);
         output.WriteFloat(Width);
       }
-      if (Height != 0F) {
+      if (HasHeight) {
         output.WriteRawTag(85);
         output.WriteFloat(Height);
       }
-      if (PaddingTop != 0F) {
+      if (HasPaddingTop) {
         output.WriteRawTag(93);
         output.WriteFloat(PaddingTop);
       }
-      if (PaddingRight != 0F) {
+      if (HasPaddingRight) {
         output.WriteRawTag(101);
         output.WriteFloat(PaddingRight);
       }
-      if (PaddingBottom != 0F) {
+      if (HasPaddingBottom) {
         output.WriteRawTag(109);
         output.WriteFloat(PaddingBottom);
       }
-      if (PaddingLeft != 0F) {
+      if (HasPaddingLeft) {
         output.WriteRawTag(117);
         output.WriteFloat(PaddingLeft);
       }
-      if (LineSpacing != 0F) {
+      if (HasLineSpacing) {
         output.WriteRawTag(125);
         output.WriteFloat(LineSpacing);
       }
-      if (LineCount != 0) {
+      if (HasLineCount) {
         output.WriteRawTag(128, 1);
         output.WriteInt32(LineCount);
       }
-      if (TextWrapping != false) {
+      if (HasTextWrapping) {
         output.WriteRawTag(136, 1);
         output.WriteBool(TextWrapping);
       }
-      if (ShadowBlur != 0F) {
+      if (HasShadowBlur) {
         output.WriteRawTag(149, 1);
         output.WriteFloat(ShadowBlur);
       }
-      if (ShadowOffsetX != 0F) {
+      if (HasShadowOffsetX) {
         output.WriteRawTag(157, 1);
         output.WriteFloat(ShadowOffsetX);
       }
-      if (ShadowOffsetY != 0F) {
+      if (HasShadowOffsetY) {
         output.WriteRawTag(165, 1);
         output.WriteFloat(ShadowOffsetY);
       }
-      if (OutlineWidth != 0F) {
+      if (HasOutlineWidth) {
         output.WriteRawTag(173, 1);
         output.WriteFloat(OutlineWidth);
       }
@@ -548,72 +890,180 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Text.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Text);
+      }
+      if (HasVisible) {
+        output.WriteRawTag(16);
+        output.WriteBool(Visible);
+      }
+      if (HasFont) {
+        output.WriteRawTag(26);
+        output.WriteString(Font);
+      }
+      if (HasOpacity) {
+        output.WriteRawTag(37);
+        output.WriteFloat(Opacity);
+      }
+      if (HasFontSize) {
+        output.WriteRawTag(45);
+        output.WriteFloat(FontSize);
+      }
+      if (HasFontAutoSize) {
+        output.WriteRawTag(48);
+        output.WriteBool(FontAutoSize);
+      }
+      if (HasHTextAlign) {
+        output.WriteRawTag(58);
+        output.WriteString(HTextAlign);
+      }
+      if (HasVTextAlign) {
+        output.WriteRawTag(66);
+        output.WriteString(VTextAlign);
+      }
+      if (HasWidth) {
+        output.WriteRawTag(77);
+        output.WriteFloat(Width);
+      }
+      if (HasHeight) {
+        output.WriteRawTag(85);
+        output.WriteFloat(Height);
+      }
+      if (HasPaddingTop) {
+        output.WriteRawTag(93);
+        output.WriteFloat(PaddingTop);
+      }
+      if (HasPaddingRight) {
+        output.WriteRawTag(101);
+        output.WriteFloat(PaddingRight);
+      }
+      if (HasPaddingBottom) {
+        output.WriteRawTag(109);
+        output.WriteFloat(PaddingBottom);
+      }
+      if (HasPaddingLeft) {
+        output.WriteRawTag(117);
+        output.WriteFloat(PaddingLeft);
+      }
+      if (HasLineSpacing) {
+        output.WriteRawTag(125);
+        output.WriteFloat(LineSpacing);
+      }
+      if (HasLineCount) {
+        output.WriteRawTag(128, 1);
+        output.WriteInt32(LineCount);
+      }
+      if (HasTextWrapping) {
+        output.WriteRawTag(136, 1);
+        output.WriteBool(TextWrapping);
+      }
+      if (HasShadowBlur) {
+        output.WriteRawTag(149, 1);
+        output.WriteFloat(ShadowBlur);
+      }
+      if (HasShadowOffsetX) {
+        output.WriteRawTag(157, 1);
+        output.WriteFloat(ShadowOffsetX);
+      }
+      if (HasShadowOffsetY) {
+        output.WriteRawTag(165, 1);
+        output.WriteFloat(ShadowOffsetY);
+      }
+      if (HasOutlineWidth) {
+        output.WriteRawTag(173, 1);
+        output.WriteFloat(OutlineWidth);
+      }
+      if (shadowColor_ != null) {
+        output.WriteRawTag(178, 1);
+        output.WriteMessage(ShadowColor);
+      }
+      if (outlineColor_ != null) {
+        output.WriteRawTag(186, 1);
+        output.WriteMessage(OutlineColor);
+      }
+      if (textColor_ != null) {
+        output.WriteRawTag(194, 1);
+        output.WriteMessage(TextColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Text.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
       }
-      if (Visible != false) {
+      if (HasVisible) {
         size += 1 + 1;
       }
-      if (Font.Length != 0) {
+      if (HasFont) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Font);
       }
-      if (Opacity != 0F) {
+      if (HasOpacity) {
         size += 1 + 4;
       }
-      if (FontSize != 0F) {
+      if (HasFontSize) {
         size += 1 + 4;
       }
-      if (FontAutoSize != false) {
+      if (HasFontAutoSize) {
         size += 1 + 1;
       }
-      if (HTextAlign.Length != 0) {
+      if (HasHTextAlign) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HTextAlign);
       }
-      if (VTextAlign.Length != 0) {
+      if (HasVTextAlign) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(VTextAlign);
       }
-      if (Width != 0F) {
+      if (HasWidth) {
         size += 1 + 4;
       }
-      if (Height != 0F) {
+      if (HasHeight) {
         size += 1 + 4;
       }
-      if (PaddingTop != 0F) {
+      if (HasPaddingTop) {
         size += 1 + 4;
       }
-      if (PaddingRight != 0F) {
+      if (HasPaddingRight) {
         size += 1 + 4;
       }
-      if (PaddingBottom != 0F) {
+      if (HasPaddingBottom) {
         size += 1 + 4;
       }
-      if (PaddingLeft != 0F) {
+      if (HasPaddingLeft) {
         size += 1 + 4;
       }
-      if (LineSpacing != 0F) {
+      if (HasLineSpacing) {
         size += 1 + 4;
       }
-      if (LineCount != 0) {
+      if (HasLineCount) {
         size += 2 + pb::CodedOutputStream.ComputeInt32Size(LineCount);
       }
-      if (TextWrapping != false) {
+      if (HasTextWrapping) {
         size += 2 + 1;
       }
-      if (ShadowBlur != 0F) {
+      if (HasShadowBlur) {
         size += 2 + 4;
       }
-      if (ShadowOffsetX != 0F) {
+      if (HasShadowOffsetX) {
         size += 2 + 4;
       }
-      if (ShadowOffsetY != 0F) {
+      if (HasShadowOffsetY) {
         size += 2 + 4;
       }
-      if (OutlineWidth != 0F) {
+      if (HasOutlineWidth) {
         size += 2 + 4;
       }
       if (shadowColor_ != null) {
@@ -632,6 +1082,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBTextShape other) {
       if (other == null) {
         return;
@@ -639,64 +1090,64 @@ namespace DCL.ECSComponents {
       if (other.Text.Length != 0) {
         Text = other.Text;
       }
-      if (other.Visible != false) {
+      if (other.HasVisible) {
         Visible = other.Visible;
       }
-      if (other.Font.Length != 0) {
+      if (other.HasFont) {
         Font = other.Font;
       }
-      if (other.Opacity != 0F) {
+      if (other.HasOpacity) {
         Opacity = other.Opacity;
       }
-      if (other.FontSize != 0F) {
+      if (other.HasFontSize) {
         FontSize = other.FontSize;
       }
-      if (other.FontAutoSize != false) {
+      if (other.HasFontAutoSize) {
         FontAutoSize = other.FontAutoSize;
       }
-      if (other.HTextAlign.Length != 0) {
+      if (other.HasHTextAlign) {
         HTextAlign = other.HTextAlign;
       }
-      if (other.VTextAlign.Length != 0) {
+      if (other.HasVTextAlign) {
         VTextAlign = other.VTextAlign;
       }
-      if (other.Width != 0F) {
+      if (other.HasWidth) {
         Width = other.Width;
       }
-      if (other.Height != 0F) {
+      if (other.HasHeight) {
         Height = other.Height;
       }
-      if (other.PaddingTop != 0F) {
+      if (other.HasPaddingTop) {
         PaddingTop = other.PaddingTop;
       }
-      if (other.PaddingRight != 0F) {
+      if (other.HasPaddingRight) {
         PaddingRight = other.PaddingRight;
       }
-      if (other.PaddingBottom != 0F) {
+      if (other.HasPaddingBottom) {
         PaddingBottom = other.PaddingBottom;
       }
-      if (other.PaddingLeft != 0F) {
+      if (other.HasPaddingLeft) {
         PaddingLeft = other.PaddingLeft;
       }
-      if (other.LineSpacing != 0F) {
+      if (other.HasLineSpacing) {
         LineSpacing = other.LineSpacing;
       }
-      if (other.LineCount != 0) {
+      if (other.HasLineCount) {
         LineCount = other.LineCount;
       }
-      if (other.TextWrapping != false) {
+      if (other.HasTextWrapping) {
         TextWrapping = other.TextWrapping;
       }
-      if (other.ShadowBlur != 0F) {
+      if (other.HasShadowBlur) {
         ShadowBlur = other.ShadowBlur;
       }
-      if (other.ShadowOffsetX != 0F) {
+      if (other.HasShadowOffsetX) {
         ShadowOffsetX = other.ShadowOffsetX;
       }
-      if (other.ShadowOffsetY != 0F) {
+      if (other.HasShadowOffsetY) {
         ShadowOffsetY = other.ShadowOffsetY;
       }
-      if (other.OutlineWidth != 0F) {
+      if (other.HasOutlineWidth) {
         OutlineWidth = other.OutlineWidth;
       }
       if (other.shadowColor_ != null) {
@@ -721,7 +1172,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -835,7 +1290,128 @@ namespace DCL.ECSComponents {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Text = input.ReadString();
+            break;
+          }
+          case 16: {
+            Visible = input.ReadBool();
+            break;
+          }
+          case 26: {
+            Font = input.ReadString();
+            break;
+          }
+          case 37: {
+            Opacity = input.ReadFloat();
+            break;
+          }
+          case 45: {
+            FontSize = input.ReadFloat();
+            break;
+          }
+          case 48: {
+            FontAutoSize = input.ReadBool();
+            break;
+          }
+          case 58: {
+            HTextAlign = input.ReadString();
+            break;
+          }
+          case 66: {
+            VTextAlign = input.ReadString();
+            break;
+          }
+          case 77: {
+            Width = input.ReadFloat();
+            break;
+          }
+          case 85: {
+            Height = input.ReadFloat();
+            break;
+          }
+          case 93: {
+            PaddingTop = input.ReadFloat();
+            break;
+          }
+          case 101: {
+            PaddingRight = input.ReadFloat();
+            break;
+          }
+          case 109: {
+            PaddingBottom = input.ReadFloat();
+            break;
+          }
+          case 117: {
+            PaddingLeft = input.ReadFloat();
+            break;
+          }
+          case 125: {
+            LineSpacing = input.ReadFloat();
+            break;
+          }
+          case 128: {
+            LineCount = input.ReadInt32();
+            break;
+          }
+          case 136: {
+            TextWrapping = input.ReadBool();
+            break;
+          }
+          case 149: {
+            ShadowBlur = input.ReadFloat();
+            break;
+          }
+          case 157: {
+            ShadowOffsetX = input.ReadFloat();
+            break;
+          }
+          case 165: {
+            ShadowOffsetY = input.ReadFloat();
+            break;
+          }
+          case 173: {
+            OutlineWidth = input.ReadFloat();
+            break;
+          }
+          case 178: {
+            if (shadowColor_ == null) {
+              ShadowColor = new global::Color3();
+            }
+            input.ReadMessage(ShadowColor);
+            break;
+          }
+          case 186: {
+            if (outlineColor_ == null) {
+              OutlineColor = new global::Color3();
+            }
+            input.ReadMessage(OutlineColor);
+            break;
+          }
+          case 194: {
+            if (textColor_ == null) {
+              TextColor = new global::Color3();
+            }
+            input.ReadMessage(TextColor);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

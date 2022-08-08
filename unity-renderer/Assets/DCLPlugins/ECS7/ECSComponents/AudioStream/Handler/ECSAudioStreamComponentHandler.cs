@@ -6,6 +6,7 @@ using DCL.Interface;
 using DCL.Models;
 using DCL.SettingsCommon;
 using UnityEngine;
+using UnityEngine.Video;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
@@ -83,17 +84,19 @@ namespace DCL.ECSComponents
         private void UpdateModel(PBAudioStream model)
         {
             this.model = model;
-            currentVolume = model.Volume * settingsVolume;
+            float volume = model.HasVolume ? model.Volume : 1.0f;
+            currentVolume = volume * settingsVolume;
         }
 
-        private bool StateHasChange(PBAudioStream model)
+        private bool StateHasChange(PBAudioStream model) 
         {
             // First time that the model come so the state has change
             if (this.model == null)
                 return true;
             
+            float volume = model.HasVolume ? model.Volume : 1.0f;
             bool shouldChangeState = isPlaying && !model.Playing;
-            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, model.Volume);
+            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, volume);
             bool shouldUpdateUrl = this.model.Url == model.Url;
                 
             return shouldChangeState || shouldUpdateVolume || shouldUpdateUrl;

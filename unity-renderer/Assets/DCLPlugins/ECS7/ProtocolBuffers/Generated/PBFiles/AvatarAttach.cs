@@ -24,36 +24,59 @@ namespace DCL.ECSComponents {
     static AvatarAttachReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChJBdmF0YXJBdHRhY2gucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MiPAoOUEJB",
-            "dmF0YXJBdHRhY2gSEQoJYXZhdGFyX2lkGAEgASgJEhcKD2FuY2hvcl9wb2lu",
-            "dF9pZBgCIAEoBUIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ChJBdmF0YXJBdHRhY2gucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MiegoOUEJB",
+            "dmF0YXJBdHRhY2gSEQoJYXZhdGFyX2lkGAEgASgJEkEKD2FuY2hvcl9wb2lu",
+            "dF9pZBgCIAEoDjIjLmRlY2VudHJhbGFuZC5lY3MuQXZhdGFyQW5jaG9yUG9p",
+            "bnRIAIgBAUISChBfYW5jaG9yX3BvaW50X2lkKk4KEUF2YXRhckFuY2hvclBv",
+            "aW50EgwKCFBPU0lUSU9OEAASDAoITkFNRV9UQUcQARINCglMRUZUX0hBTkQQ",
+            "AhIOCgpSSUdIVF9IQU5EEANCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarAttach), global::DCL.ECSComponents.PBAvatarAttach.Parser, new[]{ "AvatarId", "AnchorPointId" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarAnchorPoint), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarAttach), global::DCL.ECSComponents.PBAvatarAttach.Parser, new[]{ "AvatarId", "AnchorPointId" }, new[]{ "AnchorPointId" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum AvatarAnchorPoint {
+    [pbr::OriginalName("POSITION")] Position = 0,
+    [pbr::OriginalName("NAME_TAG")] NameTag = 1,
+    [pbr::OriginalName("LEFT_HAND")] LeftHand = 2,
+    [pbr::OriginalName("RIGHT_HAND")] RightHand = 3,
+  }
+
+  #endregion
+
   #region Messages
-  public sealed partial class PBAvatarAttach : pb::IMessage<PBAvatarAttach> {
+  public sealed partial class PBAvatarAttach : pb::IMessage<PBAvatarAttach>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBAvatarAttach> _parser = new pb::MessageParser<PBAvatarAttach>(() => new PBAvatarAttach());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAvatarAttach> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AvatarAttachReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach() {
       OnConstruction();
     }
@@ -61,13 +84,16 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach(PBAvatarAttach other) : this() {
+      _hasBits0 = other._hasBits0;
       avatarId_ = other.avatarId_;
       anchorPointId_ = other.anchorPointId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarAttach Clone() {
       return new PBAvatarAttach(this);
     }
@@ -76,6 +102,7 @@ namespace DCL.ECSComponents {
     public const int AvatarIdFieldNumber = 1;
     private string avatarId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string AvatarId {
       get { return avatarId_; }
       set {
@@ -85,21 +112,37 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "anchor_point_id" field.</summary>
     public const int AnchorPointIdFieldNumber = 2;
-    private int anchorPointId_;
+    private global::DCL.ECSComponents.AvatarAnchorPoint anchorPointId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int AnchorPointId {
-      get { return anchorPointId_; }
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.AvatarAnchorPoint AnchorPointId {
+      get { if ((_hasBits0 & 1) != 0) { return anchorPointId_; } else { return global::DCL.ECSComponents.AvatarAnchorPoint.Position; } }
       set {
+        _hasBits0 |= 1;
         anchorPointId_ = value;
       }
     }
+    /// <summary>Gets whether the "anchor_point_id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasAnchorPointId {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "anchor_point_id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearAnchorPointId() {
+      _hasBits0 &= ~1;
+    }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAvatarAttach);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAvatarAttach other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -113,10 +156,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (AvatarId.Length != 0) hash ^= AvatarId.GetHashCode();
-      if (AnchorPointId != 0) hash ^= AnchorPointId.GetHashCode();
+      if (HasAnchorPointId) hash ^= AnchorPointId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -124,33 +168,58 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (AvatarId.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(AvatarId);
       }
-      if (AnchorPointId != 0) {
+      if (HasAnchorPointId) {
         output.WriteRawTag(16);
-        output.WriteInt32(AnchorPointId);
+        output.WriteEnum((int) AnchorPointId);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (AvatarId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(AvatarId);
+      }
+      if (HasAnchorPointId) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) AnchorPointId);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (AvatarId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AvatarId);
       }
-      if (AnchorPointId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(AnchorPointId);
+      if (HasAnchorPointId) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AnchorPointId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -159,6 +228,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAvatarAttach other) {
       if (other == null) {
         return;
@@ -166,14 +236,18 @@ namespace DCL.ECSComponents {
       if (other.AvatarId.Length != 0) {
         AvatarId = other.AvatarId;
       }
-      if (other.AnchorPointId != 0) {
+      if (other.HasAnchorPointId) {
         AnchorPointId = other.AnchorPointId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -185,12 +259,36 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            AnchorPointId = input.ReadInt32();
+            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPoint) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            AvatarId = input.ReadString();
+            break;
+          }
+          case 16: {
+            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPoint) input.ReadEnum();
             break;
           }
         }
       }
     }
+    #endif
 
   }
 

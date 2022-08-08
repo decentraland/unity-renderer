@@ -6,12 +6,12 @@ import "common/Vector3.proto";
 import "common/ActionButton.proto";
 
 message PBOnPointerUpResult {
-  ActionButton button = 2;
-  string meshName = 3;
-  Vector3 origin = 4;
-  Vector3 direction = 5;
-  Vector3 point = 6;
-  Vector3 normal = 7;
-  float distance = 8;
-  int32 timestamp = 9;
+  optional ActionButton button = 2;
+  optional string meshName = 3;
+  optional Vector3 origin = 4;
+  optional Vector3 direction = 5;
+  optional Vector3 point = 6;
+  optional Vector3 normal = 7;
+  optional float distance = 8;
+  optional int32 timestamp = 9;
 }

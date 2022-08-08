@@ -28,6 +28,17 @@ namespace DCL.ECSComponents
             this.assetRetriever = assetRetriever;
         }
         
+        private PBNFTShape NormalizeAndClone(PBNFTShape model)
+        {
+            PBNFTShape normalizedModel = model.Clone();
+            
+            normalizedModel.Visible = !model.HasVisible || model.Visible;
+            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
+            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
+            
+            return normalizedModel;
+        }
+        
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -107,9 +118,10 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBNFTShape model)
         {
-            shapeFrame.SetVisibility(model.Visible);
-            shapeFrame.SetHasCollisions(model.WithCollisions);
-            shapeFrame.SetPointerBlocker(model.IsPointerBlocker);
+            PBNFTShape normalizedModel = NormalizeAndClone(model);
+            shapeFrame.SetVisibility(normalizedModel.Visible);
+            shapeFrame.SetHasCollisions(normalizedModel.WithCollisions);
+            shapeFrame.SetPointerBlocker(normalizedModel.IsPointerBlocker);
             UpdateBackgroundColor(model);
 
             this.model = model;

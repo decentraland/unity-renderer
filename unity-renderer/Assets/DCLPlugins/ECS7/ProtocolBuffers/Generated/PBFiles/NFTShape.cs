@@ -25,38 +25,49 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5ORlRTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9uL0Nv",
-            "bG9yMy5wcm90byKYAQoKUEJORlRTaGFwZRIXCg93aXRoX2NvbGxpc2lvbnMY",
-            "ASABKAgSGgoSaXNfcG9pbnRlcl9ibG9ja2VyGAIgASgIEg8KB3Zpc2libGUY",
-            "AyABKAgSCwoDc3JjGAQgASgJEhAKCGFzc2V0X2lkGAUgASgJEg0KBXN0eWxl",
-            "GAYgASgFEhYKBWNvbG9yGAcgASgLMgcuQ29sb3IzQhSqAhFEQ0wuRUNTQ29t",
-            "cG9uZW50c2IGcHJvdG8z"));
+            "bG9yMy5wcm90byKOAgoKUEJORlRTaGFwZRIcCg93aXRoX2NvbGxpc2lvbnMY",
+            "ASABKAhIAIgBARIfChJpc19wb2ludGVyX2Jsb2NrZXIYAiABKAhIAYgBARIU",
+            "Cgd2aXNpYmxlGAMgASgISAKIAQESCwoDc3JjGAQgASgJEhUKCGFzc2V0X2lk",
+            "GAUgASgJSAOIAQESEgoFc3R5bGUYBiABKAVIBIgBARIbCgVjb2xvchgHIAEo",
+            "CzIHLkNvbG9yM0gFiAEBQhIKEF93aXRoX2NvbGxpc2lvbnNCFQoTX2lzX3Bv",
+            "aW50ZXJfYmxvY2tlckIKCghfdmlzaWJsZUILCglfYXNzZXRfaWRCCAoGX3N0",
+            "eWxlQggKBl9jb2xvckIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "WithCollisions", "IsPointerBlocker", "Visible", "Src", "AssetId", "Style", "Color" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "WithCollisions", "IsPointerBlocker", "Visible", "Src", "AssetId", "Style", "Color" }, new[]{ "WithCollisions", "IsPointerBlocker", "Visible", "AssetId", "Style", "Color" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBNFTShape : pb::IMessage<PBNFTShape> {
+  public sealed partial class PBNFTShape : pb::IMessage<PBNFTShape>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBNFTShape> _parser = new pb::MessageParser<PBNFTShape>(() => new PBNFTShape());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBNFTShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.NFTShapeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBNFTShape() {
       OnConstruction();
     }
@@ -64,7 +75,9 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBNFTShape(PBNFTShape other) : this() {
+      _hasBits0 = other._hasBits0;
       withCollisions_ = other.withCollisions_;
       isPointerBlocker_ = other.isPointerBlocker_;
       visible_ = other.visible_;
@@ -76,6 +89,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBNFTShape Clone() {
       return new PBNFTShape(this);
     }
@@ -83,40 +97,92 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "with_collisions" field.</summary>
     public const int WithCollisionsFieldNumber = 1;
     private bool withCollisions_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool WithCollisions {
-      get { return withCollisions_; }
+      get { if ((_hasBits0 & 1) != 0) { return withCollisions_; } else { return false; } }
       set {
+        _hasBits0 |= 1;
         withCollisions_ = value;
       }
+    }
+    /// <summary>Gets whether the "with_collisions" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasWithCollisions {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "with_collisions" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearWithCollisions() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "is_pointer_blocker" field.</summary>
     public const int IsPointerBlockerFieldNumber = 2;
     private bool isPointerBlocker_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool IsPointerBlocker {
-      get { return isPointerBlocker_; }
+      get { if ((_hasBits0 & 2) != 0) { return isPointerBlocker_; } else { return false; } }
       set {
+        _hasBits0 |= 2;
         isPointerBlocker_ = value;
       }
+    }
+    /// <summary>Gets whether the "is_pointer_blocker" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasIsPointerBlocker {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "is_pointer_blocker" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearIsPointerBlocker() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "visible" field.</summary>
     public const int VisibleFieldNumber = 3;
     private bool visible_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Visible {
-      get { return visible_; }
+      get { if ((_hasBits0 & 4) != 0) { return visible_; } else { return false; } }
       set {
+        _hasBits0 |= 4;
         visible_ = value;
       }
+    }
+    /// <summary>Gets whether the "visible" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasVisible {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "visible" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearVisible() {
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "src" field.</summary>
     public const int SrcFieldNumber = 4;
     private string src_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Src {
       get { return src_; }
       set {
@@ -126,30 +192,58 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "asset_id" field.</summary>
     public const int AssetIdFieldNumber = 5;
-    private string assetId_ = "";
+    private string assetId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string AssetId {
-      get { return assetId_; }
+      get { return assetId_ ?? ""; }
       set {
         assetId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
+    }
+    /// <summary>Gets whether the "asset_id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasAssetId {
+      get { return assetId_ != null; }
+    }
+    /// <summary>Clears the value of the "asset_id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearAssetId() {
+      assetId_ = null;
     }
 
     /// <summary>Field number for the "style" field.</summary>
     public const int StyleFieldNumber = 6;
     private int style_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Style {
-      get { return style_; }
+      get { if ((_hasBits0 & 8) != 0) { return style_; } else { return 0; } }
       set {
+        _hasBits0 |= 8;
         style_ = value;
       }
+    }
+    /// <summary>Gets whether the "style" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasStyle {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "style" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearStyle() {
+      _hasBits0 &= ~8;
     }
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 7;
     private global::Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 Color {
       get { return color_; }
       set {
@@ -158,11 +252,13 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBNFTShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBNFTShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -181,14 +277,15 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (WithCollisions != false) hash ^= WithCollisions.GetHashCode();
-      if (IsPointerBlocker != false) hash ^= IsPointerBlocker.GetHashCode();
-      if (Visible != false) hash ^= Visible.GetHashCode();
+      if (HasWithCollisions) hash ^= WithCollisions.GetHashCode();
+      if (HasIsPointerBlocker) hash ^= IsPointerBlocker.GetHashCode();
+      if (HasVisible) hash ^= Visible.GetHashCode();
       if (Src.Length != 0) hash ^= Src.GetHashCode();
-      if (AssetId.Length != 0) hash ^= AssetId.GetHashCode();
-      if (Style != 0) hash ^= Style.GetHashCode();
+      if (HasAssetId) hash ^= AssetId.GetHashCode();
+      if (HasStyle) hash ^= Style.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -197,21 +294,26 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (WithCollisions != false) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasWithCollisions) {
         output.WriteRawTag(8);
         output.WriteBool(WithCollisions);
       }
-      if (IsPointerBlocker != false) {
+      if (HasIsPointerBlocker) {
         output.WriteRawTag(16);
         output.WriteBool(IsPointerBlocker);
       }
-      if (Visible != false) {
+      if (HasVisible) {
         output.WriteRawTag(24);
         output.WriteBool(Visible);
       }
@@ -219,11 +321,11 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(34);
         output.WriteString(Src);
       }
-      if (AssetId.Length != 0) {
+      if (HasAssetId) {
         output.WriteRawTag(42);
         output.WriteString(AssetId);
       }
-      if (Style != 0) {
+      if (HasStyle) {
         output.WriteRawTag(48);
         output.WriteInt32(Style);
       }
@@ -234,27 +336,67 @@ namespace DCL.ECSComponents {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasWithCollisions) {
+        output.WriteRawTag(8);
+        output.WriteBool(WithCollisions);
+      }
+      if (HasIsPointerBlocker) {
+        output.WriteRawTag(16);
+        output.WriteBool(IsPointerBlocker);
+      }
+      if (HasVisible) {
+        output.WriteRawTag(24);
+        output.WriteBool(Visible);
+      }
+      if (Src.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(Src);
+      }
+      if (HasAssetId) {
+        output.WriteRawTag(42);
+        output.WriteString(AssetId);
+      }
+      if (HasStyle) {
+        output.WriteRawTag(48);
+        output.WriteInt32(Style);
+      }
+      if (color_ != null) {
+        output.WriteRawTag(58);
+        output.WriteMessage(Color);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (WithCollisions != false) {
+      if (HasWithCollisions) {
         size += 1 + 1;
       }
-      if (IsPointerBlocker != false) {
+      if (HasIsPointerBlocker) {
         size += 1 + 1;
       }
-      if (Visible != false) {
+      if (HasVisible) {
         size += 1 + 1;
       }
       if (Src.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
       }
-      if (AssetId.Length != 0) {
+      if (HasAssetId) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AssetId);
       }
-      if (Style != 0) {
+      if (HasStyle) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Style);
       }
       if (color_ != null) {
@@ -267,26 +409,27 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBNFTShape other) {
       if (other == null) {
         return;
       }
-      if (other.WithCollisions != false) {
+      if (other.HasWithCollisions) {
         WithCollisions = other.WithCollisions;
       }
-      if (other.IsPointerBlocker != false) {
+      if (other.HasIsPointerBlocker) {
         IsPointerBlocker = other.IsPointerBlocker;
       }
-      if (other.Visible != false) {
+      if (other.HasVisible) {
         Visible = other.Visible;
       }
       if (other.Src.Length != 0) {
         Src = other.Src;
       }
-      if (other.AssetId.Length != 0) {
+      if (other.HasAssetId) {
         AssetId = other.AssetId;
       }
-      if (other.Style != 0) {
+      if (other.HasStyle) {
         Style = other.Style;
       }
       if (other.color_ != null) {
@@ -299,7 +442,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -339,7 +486,54 @@ namespace DCL.ECSComponents {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            WithCollisions = input.ReadBool();
+            break;
+          }
+          case 16: {
+            IsPointerBlocker = input.ReadBool();
+            break;
+          }
+          case 24: {
+            Visible = input.ReadBool();
+            break;
+          }
+          case 34: {
+            Src = input.ReadString();
+            break;
+          }
+          case 42: {
+            AssetId = input.ReadString();
+            break;
+          }
+          case 48: {
+            Style = input.ReadInt32();
+            break;
+          }
+          case 58: {
+            if (color_ == null) {
+              Color = new global::Color3();
+            }
+            input.ReadMessage(Color);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

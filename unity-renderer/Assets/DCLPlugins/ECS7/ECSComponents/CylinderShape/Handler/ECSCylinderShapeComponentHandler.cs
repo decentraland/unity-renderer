@@ -28,11 +28,26 @@ namespace DCL.ECSComponents
             DisposeMesh(entity, scene);
         }
 
+        private PBCylinderShape NormalizeAndCloneModel(PBCylinderShape model)
+        {
+            PBCylinderShape normalizedModel = model.Clone();
+
+            normalizedModel.Visible = !model.HasVisible || model.Visible;
+            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
+            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
+            
+            normalizedModel.RadiusTop = model.HasRadiusTop ? model.RadiusTop : 1.0f;
+            normalizedModel.RadiusBottom = model.HasRadiusBottom ? model.RadiusBottom : 1.0f;
+
+            return normalizedModel;
+        }
+
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBCylinderShape model)
         {
+            var normalizedModel = NormalizeAndCloneModel(model);
             if (meshesInfo != null)
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(normalizedModel.Visible, normalizedModel.WithCollisions, normalizedModel.IsPointerBlocker, meshesInfo);
             }
             else
             {
@@ -41,15 +56,15 @@ namespace DCL.ECSComponents
                     AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
                 PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Cylinder);
-                primitiveMeshModelModel.radiusBottom = model.RadiusBottom;
-                primitiveMeshModelModel.radiusTop = model.RadiusTop;
+                primitiveMeshModelModel.radiusBottom = normalizedModel.RadiusBottom;
+                primitiveMeshModelModel.radiusTop = normalizedModel.RadiusTop;
 
                 primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
                 primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
                 {
                     DisposeMesh(entity, scene);
                     generatedMesh = shape.mesh;
-                    GenerateRenderer(generatedMesh, scene, entity, model);
+                    GenerateRenderer(generatedMesh, scene, entity, normalizedModel.Visible, normalizedModel.WithCollisions, normalizedModel.IsPointerBlocker);
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
@@ -65,9 +80,9 @@ namespace DCL.ECSComponents
             lastModel = model;
         }
 
-        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBCylinderShape model)
+        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, isVisible, withCollisions, isPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
