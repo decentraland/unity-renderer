@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
@@ -19,6 +16,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Options options;
         [SerializeField] internal TMP_Text headerTiler;
         [SerializeField] internal Button leaveButton;
+        [SerializeField] internal Button closeButton;
 
         public event Action OnLeave;
 
@@ -31,6 +29,8 @@ namespace DCL.Chat.HUD
                 OnLeave?.Invoke();
                 Hide();
             });
+            
+            closeButton.onClick.AddListener(() => Hide());
             
             RefreshControl();
         }
@@ -47,13 +47,6 @@ namespace DCL.Chat.HUD
             gameObject.SetActive(false);
         }
 
-        public override void Update()
-        {
-            base.Update();
-            
-            HideWhenClickedOutsideArea();
-        }
-
         public override void RefreshControl()
         {
             leaveButton.gameObject.SetActive((options & Options.Leave) != 0);
@@ -62,20 +55,6 @@ namespace DCL.Chat.HUD
         public void SetHeaderTitle(string title)
         {
             headerTiler.text = title;
-        }
-
-        private void HideWhenClickedOutsideArea()
-        {
-            if (!Input.GetMouseButtonDown(0)) return;
-            var pointerEventData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-            var raycastResults = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-                
-            if (raycastResults.All(result => result.gameObject != gameObject))
-                Hide();
         }
     }
 }
