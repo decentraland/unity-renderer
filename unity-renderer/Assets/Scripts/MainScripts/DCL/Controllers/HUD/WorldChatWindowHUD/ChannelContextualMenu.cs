@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,10 +16,9 @@ namespace DCL.Chat.HUD
             Leave = 1 << 0
         }
 
-        [SerializeField] internal Options options; 
+        [SerializeField] internal Options options;
+        [SerializeField] internal TMP_Text headerTiler;
         [SerializeField] internal Button leaveButton;
-
-        private RectTransform rectTransform;
 
         public event Action OnLeave;
 
@@ -26,7 +26,6 @@ namespace DCL.Chat.HUD
         {
             base.Awake();
             
-            rectTransform = (RectTransform) transform; 
             leaveButton.onClick.AddListener(() =>
             {
                 OnLeave?.Invoke();
@@ -58,6 +57,11 @@ namespace DCL.Chat.HUD
         public override void RefreshControl()
         {
             leaveButton.gameObject.SetActive((options & Options.Leave) != 0);
+        }
+
+        public void SetHeaderTitle(string title)
+        {
+            headerTiler.text = title;
         }
 
         private void HideWhenClickedOutsideArea()

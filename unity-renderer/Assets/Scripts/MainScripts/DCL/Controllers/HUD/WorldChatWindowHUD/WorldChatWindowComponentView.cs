@@ -324,6 +324,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         optionsChannelId = entry.Model.channelId;
         entry.Dock(channelContextualMenu);
+        channelContextualMenu.SetHeaderTitle($"#{optionsChannelId.ToLower()}");
         channelContextualMenu.Show();
     }
 
