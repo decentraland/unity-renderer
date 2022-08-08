@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1077809019789342862}
   - component: {fileID: 1476570408168476103}
   - component: {fileID: 6687411364736165008}
-  m_Layer: 21
+  m_Layer: 5
   m_Name: _WarningMessageAreaFeedbackHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}

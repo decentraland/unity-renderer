@@ -17,25 +17,28 @@ namespace DCL.AvatarModifierAreaFeedback
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
         private const string PATH_TO_WARNING_MESSAGE = "_WarningMessageAreaFeedbackHUD";
         private BaseRefCounter<AvatarAreaWarningID> avatarAreaWarningsCounter;
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
+
         
         [SerializeField] internal RectTransform warningContainer;
         [SerializeField] private CanvasGroup pointerEnterTriggerArea;
         [SerializeField] private Animator messageAnimator;
-        [SerializeField] private Animator iconAnimator;
        
         internal bool isVisible;
         internal AvatarModifierAreaFeedbackState currentState;
         internal Dictionary<AvatarAreaWarningID, GameObject> warningMessagesDictionary;
         internal CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
 
-        private string outAnimationTrigger = "Out";
-        private string inAnimationTrigger = "In";
-        private string firstInAnimationTrigger = "FirstIn";
+        private string msgOutAnimationTrigger = "MsgOut";
+        private string msgInAnimationTrigger = "MsgIn";
+        private string iconInAnimationTrigger = "IconIn";
+        private string iconOutAnimationTrigger = "IconOut";
         public static AvatarModifierAreaFeedbackView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<AvatarModifierAreaFeedbackView>(); }
 
         public void Awake()
         {
             currentState = AvatarModifierAreaFeedbackState.NEVER_SHOWN;
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
 
         public void SetUp(BaseRefCounter<AvatarAreaWarningID> avatarAreaWarnings)
@@ -76,13 +79,13 @@ namespace DCL.AvatarModifierAreaFeedback
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
-                messageAnimator.SetTrigger(firstInAnimationTrigger);
+                messageAnimator.SetTrigger(msgInAnimationTrigger);
                 HideFirstTimeWarningMessageUniTask(deactivatePreviewCancellationToken.Token).Forget();
                 currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
             }
             else
             {
-                iconAnimator.SetTrigger(inAnimationTrigger);
+                messageAnimator.SetTrigger(iconInAnimationTrigger);
                 pointerEnterTriggerArea.blocksRaycasts = true;
                 currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
             }
@@ -98,11 +101,11 @@ namespace DCL.AvatarModifierAreaFeedback
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE))
             {
-                messageAnimator.SetTrigger(outAnimationTrigger);
+                messageAnimator.SetTrigger(msgOutAnimationTrigger);
             }
             else
             {
-                iconAnimator.SetTrigger(outAnimationTrigger);
+                messageAnimator.SetTrigger(iconOutAnimationTrigger);
             }
             currentState = AvatarModifierAreaFeedbackState.NONE_VISIBLE;
         }
@@ -111,8 +114,7 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             if (!isVisible) return;
 
-            iconAnimator.SetTrigger(outAnimationTrigger);
-            messageAnimator.SetTrigger(inAnimationTrigger);
+            messageAnimator.SetTrigger(msgInAnimationTrigger);
             currentState = AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE;
         }
         
@@ -120,8 +122,7 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             if (!isVisible) return;
             
-            iconAnimator.SetTrigger(inAnimationTrigger);
-            messageAnimator.SetTrigger(outAnimationTrigger);
+            messageAnimator.SetTrigger(iconInAnimationTrigger);
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
         }
         
@@ -131,8 +132,7 @@ namespace DCL.AvatarModifierAreaFeedback
             await UniTask.Delay(5000, cancellationToken: cancellationToken);
             await UniTask.SwitchToMainThread(cancellationToken);
             if (cancellationToken.IsCancellationRequested) return;
-            messageAnimator.SetTrigger(outAnimationTrigger);
-            iconAnimator.SetTrigger(inAnimationTrigger);
+            messageAnimator.SetTrigger(iconInAnimationTrigger);
             
             currentState = AvatarModifierAreaFeedbackState.ICON_VISIBLE;
             pointerEnterTriggerArea.blocksRaycasts = true;
