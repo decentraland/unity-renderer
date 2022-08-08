@@ -159,7 +159,11 @@ namespace DCL.Chat.HUD
             foreach (var group in previewCanvasGroup)
                 group.alpha = target;
         }
-        
-        private void ShowOptionsMenu() => contextualMenu.Show();
+
+        private void ShowOptionsMenu()
+        {
+            contextualMenu.SetHeaderTitle($"#{model.channelId}");
+            contextualMenu.Show();
+        }
     }
 }
