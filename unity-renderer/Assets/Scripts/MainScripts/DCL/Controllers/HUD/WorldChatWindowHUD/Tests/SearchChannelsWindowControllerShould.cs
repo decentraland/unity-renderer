@@ -133,5 +133,25 @@ namespace DCL.Chat.HUD
             view.Received(1).ShowLoading();
             chatController.Received(1).GetChannels(30, 0);
         }
+
+        [Test]
+        public void JoinChannel()
+        {
+            controller.SetVisibility(true);
+
+            view.OnJoinChannel += Raise.Event<Action<string>>("channelId");
+            
+            chatController.Received(1).JoinOrCreateChannel("channelId");
+        }
+        
+        [Test]
+        public void LeaveChannel()
+        {
+            controller.SetVisibility(true);
+
+            view.OnLeaveChannel += Raise.Event<Action<string>>("channelId");
+            
+            chatController.Received(1).LeaveChannel("channelId");
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace DCL.Chat.HUD
         event Action<string> OnSearchUpdated;
         event Action OnRequestMoreChannels;
         event Action<string> OnJoinChannel;
+        event Action<string> OnLeaveChannel;
         event Action OnCreateChannel;
         RectTransform Transform { get; }
         int EntryCount { get; }

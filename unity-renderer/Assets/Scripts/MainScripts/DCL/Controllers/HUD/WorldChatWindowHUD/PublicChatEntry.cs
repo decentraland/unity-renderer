@@ -11,15 +11,19 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
     [SerializeField] internal PublicChatEntryModel model;
     [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     [SerializeField] internal string namePrefix = "#";
-    [SerializeField] internal GameObject joinedContainer;
     [SerializeField] internal TMP_Text memberCountLabel;
     [SerializeField] internal Button optionsButton;
+    [SerializeField] internal Button leaveButton;
+    [SerializeField] internal GameObject leaveButtonContainer;
+    [SerializeField] internal GameObject openChatContainer;
+    [SerializeField] internal GameObject joinedContainer;
     
     private IChatController chatController;
 
     public PublicChatEntryModel Model => model;
 
     public event Action<PublicChatEntry> OnOpenChat;
+    public event Action<PublicChatEntry> OnLeave;
     public event Action<PublicChatEntry> OnOpenOptions;
 
     public static PublicChatEntry Create()
@@ -34,6 +38,9 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
         
         if (optionsButton)
             optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
+        
+        if (leaveButton)
+            leaveButton.onClick.AddListener(() => OnLeave?.Invoke(this));
     }
 
     public void Initialize(IChatController chatController)
@@ -52,10 +59,14 @@ public class PublicChatEntry : BaseComponentView, IComponentModelConfig
         nameLabel.text = $"{namePrefix}{model.name}";
         if (unreadNotifications)
             unreadNotifications.Initialize(chatController, model.channelId);
-        if (joinedContainer)
-            joinedContainer.SetActive(model.isJoined);
         if (memberCountLabel)
             memberCountLabel.SetText($"{model.memberCount} members");
+        if (joinedContainer)
+            joinedContainer.SetActive(model.isJoined);
+        if (leaveButtonContainer)
+            leaveButtonContainer.SetActive(model.isJoined);
+        if (openChatContainer)
+            openChatContainer.SetActive(!model.isJoined);
     }
 
     public void Dock(ChannelContextualMenu contextualMenu)

@@ -31,6 +31,7 @@ namespace DCL.Chat.HUD
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreChannels;
         public event Action<string> OnJoinChannel;
+        public event Action<string> OnLeaveChannel;
         public event Action OnCreateChannel;
 
         public RectTransform Transform => (RectTransform) transform;
@@ -96,6 +97,8 @@ namespace DCL.Chat.HUD
             var entry = channelList.Get(channel.ChannelId);
             entry.OnOpenChat -= HandleJoinRequest;
             entry.OnOpenChat += HandleJoinRequest;
+            entry.OnLeave -= HandleLeaveRequest;
+            entry.OnLeave += HandleLeaveRequest;
 
             UpdateLayout();
             Sort();
@@ -138,6 +141,8 @@ namespace DCL.Chat.HUD
         }
         
         private void HandleJoinRequest(PublicChatEntry entry) => OnJoinChannel?.Invoke(entry.Model.channelId);
+        
+        private void HandleLeaveRequest(PublicChatEntry entry) => OnLeaveChannel?.Invoke(entry.Model.channelId);
         
         private void LoadMoreEntries(Vector2 scrollPosition)
         {

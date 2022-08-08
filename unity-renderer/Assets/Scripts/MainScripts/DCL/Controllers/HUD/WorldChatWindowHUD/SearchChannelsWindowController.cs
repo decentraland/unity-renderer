@@ -53,6 +53,7 @@ namespace DCL.Chat.HUD
                 view.OnBack += HandleViewBacked;
                 view.OnClose += HandleViewClosed;
                 view.OnJoinChannel += HandleJoinChannel;
+                view.OnLeaveChannel += HandleLeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
                 chatController.OnChannelUpdated += ShowChannel;
                 
@@ -123,6 +124,7 @@ namespace DCL.Chat.HUD
             view.OnBack -= HandleViewBacked;
             view.OnClose -= HandleViewClosed;
             view.OnJoinChannel -= HandleJoinChannel;
+            view.OnLeaveChannel -= HandleLeaveChannel;
             view.OnCreateChannel -= OpenChannelCreationWindow;
         }
 
@@ -136,6 +138,11 @@ namespace DCL.Chat.HUD
         private void HandleJoinChannel(string channelId)
         {
             chatController.JoinOrCreateChannel(channelId);
+        }
+        
+        private void HandleLeaveChannel(string channelId)
+        {
+            chatController.LeaveChannel(channelId);
         }
     }
 }

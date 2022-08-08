@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9edbb0a353c2e410da27276b8fdbe98c, type: 3}
   m_Name: ChannelSearchEntryFactory
   m_EditorClassIdentifier: 
-  defaultEntryPrefab: {fileID: 54474813580769298, guid: 6feb293ae4ee32c40ae30b6436e284a3,
+  defaultEntryPrefab: {fileID: 2809209236940354223, guid: 6feb293ae4ee32c40ae30b6436e284a3,
     type: 3}
-  specialEntryPrefabs: []
+  specialEntryPrefabs:
+  - channelId: nearby
+    prefab: {fileID: 6344438857342771368, guid: 8c448d90454404160a15aa9be43aeed8,
+      type: 3}
