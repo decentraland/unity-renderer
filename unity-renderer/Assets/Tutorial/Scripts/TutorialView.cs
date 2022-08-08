@@ -23,6 +23,9 @@ namespace DCL.Tutorial
 
         [SerializeField]
         internal Canvas teacherCanvas;
+        
+        [SerializeField]
+        internal TutorialMusicHandler tutorialMusicHandler;
 
         [Header("Eagle Eye Camera references")]
         [SerializeField]

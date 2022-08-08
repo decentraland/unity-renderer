@@ -165,7 +165,6 @@ namespace DCL.Tutorial
             }
 
             DataStore.i.common.isTutorialRunning.Set(true);
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -208,7 +207,7 @@ namespace DCL.Tutorial
 
             tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(false);
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+            tutorialView.tutorialMusicHandler.StopTutorialMusic();
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
@@ -251,6 +250,7 @@ namespace DCL.Tutorial
             switch (tutorialType)
             {
                 case TutorialType.Initial:
+                    if(playerIsInGenesisPlaza) tutorialView.tutorialMusicHandler.TryPlayingMusic();
                     if (userAlreadyDidTheTutorial)
                     {
                         yield return ExecuteSteps(TutorialPath.FromUserThatAlreadyDidTheTutorial, stepIndex);
@@ -295,8 +295,9 @@ namespace DCL.Tutorial
 
             if (configuration.teacherRawImage != null)
             {
+                Vector3 destination = new Vector3(position.x, position.y, configuration.teacherRawImage.rectTransform.position.z);
                 if (animated)
-                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, position));
+                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, destination));
                 else
                     configuration.teacherRawImage.rectTransform.position = position;
             }
@@ -397,6 +398,8 @@ namespace DCL.Tutorial
         /// <param name="isActive">True for activate the eagle eye camera.</param>
         public void SetEagleEyeCameraActive(bool isActive)
         {
+            if (!IsPlayerInsideGenesisPlaza()) return;
+            
             configuration.eagleEyeCamera.gameObject.SetActive(isActive);
             CoroutineStarter.Start(BlockPlayerCameraUntilBlendingIsFinished(isActive));
 
@@ -534,18 +537,18 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
 
-        internal IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
+        internal IEnumerator MoveTeacher(Vector3 fromPosition, Vector3 toPosition)
         {
             if (configuration.teacherRawImage == null)
                 yield break;
 
             float t = 0f;
-
-            while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
+            
+            while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
-                    configuration.teacherRawImage.rectTransform.position = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
+                    configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
                     configuration.teacherRawImage.rectTransform.position = toPosition;
 

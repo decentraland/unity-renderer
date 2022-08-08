@@ -1,55 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class TutorialMusicHandler : MonoBehaviour
 {
     [SerializeField] AudioEvent tutorialMusic, avatarEditorMusic;
 
-    private bool tutorialHasBeenEnabled = false;
 
     Coroutine fadeOut;
 
     private void Awake()
     {
-        CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
         avatarEditorMusic.OnPlay += OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop += OnAvatarEditorMusicStop;
     }
 
     private void OnDestroy()
     {
-        CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
         avatarEditorMusic.OnPlay -= OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop -= OnAvatarEditorMusicStop;
     }
-
-    private void TutorialActive_OnChange(bool current, bool previous)
+    public void StopTutorialMusic()
     {
-        if (current)
-        {
-            tutorialHasBeenEnabled = true;
-            TryPlayingMusic();
-        }
-        else
-        {
-            if (tutorialMusic.source.isPlaying)
-                fadeOut = CoroutineStarter.Start(tutorialMusic.FadeOut(3f));
-            tutorialHasBeenEnabled = false;
-        }
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+        if (tutorialMusic.source.isPlaying)
+            fadeOut = CoroutineStarter.Start(tutorialMusic.FadeOut(3f));
     }
 
-    void TryPlayingMusic()
+    public void TryPlayingMusic()
     {
         if (DCL.Tutorial.TutorialController.i.userAlreadyDidTheTutorial)
             return;
 
-        if (tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)
+        if (!tutorialMusic.source.isPlaying)
         {
             if (fadeOut != null)
             {
                 CoroutineStarter.Stop(fadeOut);
             }
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             tutorialMusic.Play();
         }
     }
