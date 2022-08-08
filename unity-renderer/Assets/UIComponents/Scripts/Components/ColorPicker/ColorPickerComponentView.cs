@@ -24,7 +24,7 @@ public interface IColorPickerComponentView
     void SetIncrementAmount(float amount);
 }
 
-public class ColorPickerComponentView : BaseComponentView, IColorPickerComponentView, IComponentModelConfig
+public class ColorPickerComponentView : BaseComponentView, IColorPickerComponentView, IComponentModelConfig<ColorPickerComponentModel>
 {
 
     [SerializeField] private SliderComponentView sliderHue;
@@ -92,9 +92,9 @@ public class ColorPickerComponentView : BaseComponentView, IColorPickerComponent
         colorSelector.Populate(colorList);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(ColorPickerComponentModel newModel)
     {
-        model = (ColorPickerComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
