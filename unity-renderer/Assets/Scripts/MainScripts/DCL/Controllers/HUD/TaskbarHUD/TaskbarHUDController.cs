@@ -233,6 +233,7 @@ public class TaskbarHUDController : IHUD
         if (mouseCatcher.isLocked) return;
         worldChatWindowHud.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
+        channelChatWindow.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
@@ -289,7 +290,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.Set(false);
 
         if (!privateChatWindow.View.IsActive
-            && !publicChatWindow.View.IsActive)
+            && !publicChatWindow.View.IsActive
+            && !channelChatWindow.View.IsActive)
             OpenPublicChatOnPreviewMode();
     }
 

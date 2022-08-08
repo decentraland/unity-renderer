@@ -100,7 +100,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             userProfileBridge,
             this.chatController,
             Substitute.For<IFriendsController>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());

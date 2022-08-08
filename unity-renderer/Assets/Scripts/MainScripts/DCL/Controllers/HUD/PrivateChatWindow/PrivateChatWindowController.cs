@@ -27,7 +27,6 @@ public class PrivateChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IChatController chatController;
     private readonly IFriendsController friendsController;
-    private readonly InputAction_Trigger closeWindowTrigger;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
@@ -50,7 +49,6 @@ public class PrivateChatWindowController : IHUD
         IUserProfileBridge userProfileBridge,
         IChatController chatController,
         IFriendsController friendsController,
-        InputAction_Trigger closeWindowTrigger,
         ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
         InputAction_Trigger toggleChatTrigger)
@@ -59,7 +57,6 @@ public class PrivateChatWindowController : IHUD
         this.userProfileBridge = userProfileBridge;
         this.chatController = chatController;
         this.friendsController = friendsController;
-        this.closeWindowTrigger = closeWindowTrigger;
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
         this.toggleChatTrigger = toggleChatTrigger;
@@ -79,9 +76,6 @@ public class PrivateChatWindowController : IHUD
         view.OnFocused += HandleViewFocused;
         view.OnRequireMoreMessages += RequestOldConversations;
         view.OnClickOverWindow += HandleViewClicked;
-
-        closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
-        closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
         chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
         chatHudController.Initialize(view.ChatHUD);
@@ -240,8 +234,6 @@ public class PrivateChatWindowController : IHUD
 
         chatController.Send(message);
     }
-
-    private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
 
     private void MinimizeView() => SetVisibility(false);
 

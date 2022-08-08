@@ -19,7 +19,6 @@ namespace DCL.Chat.HUD
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
-        private readonly InputAction_Trigger closeWindowTrigger;
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly List<string> directMessagesAlreadyRequested = new List<string>();
@@ -37,14 +36,12 @@ namespace DCL.Chat.HUD
         public ChatChannelHUDController(DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IChatController chatController,
-            InputAction_Trigger closeWindowTrigger,
             IMouseCatcher mouseCatcher,
             InputAction_Trigger toggleChatTrigger)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.chatController = chatController;
-            this.closeWindowTrigger = closeWindowTrigger;
             this.mouseCatcher = mouseCatcher;
             this.toggleChatTrigger = toggleChatTrigger;
         }
@@ -60,9 +57,6 @@ namespace DCL.Chat.HUD
             view.OnFocused += HandleViewFocused;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
-
-            closeWindowTrigger.OnTriggered -= HandleCloseInputTriggered;
-            closeWindowTrigger.OnTriggered += HandleCloseInputTriggered;
 
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
             chatHudController.Initialize(view.ChatHUD);
@@ -215,8 +209,6 @@ namespace DCL.Chat.HUD
 
             chatController.Send(message);
         }
-
-        private void HandleCloseInputTriggered(DCLAction_Trigger action) => Hide();
 
         private void HandleMessageReceived(ChatMessage message)
         {

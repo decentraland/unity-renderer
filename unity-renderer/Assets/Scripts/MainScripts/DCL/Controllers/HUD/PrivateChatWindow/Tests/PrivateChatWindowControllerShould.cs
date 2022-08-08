@@ -50,7 +50,6 @@ public class PrivateChatWindowControllerShould
             userProfileBridge,
             chatController,
             friendsController,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());

@@ -37,7 +37,6 @@ namespace DCL.Chat.HUD
             controller = new ChatChannelHUDController(new DataStore(),
                 userProfileBridge,
                 chatController,
-                ScriptableObject.CreateInstance<InputAction_Trigger>(),
                 Substitute.For<IMouseCatcher>(),
                 ScriptableObject.CreateInstance<InputAction_Trigger>());
             view = Substitute.For<IChatChannelWindowView>();

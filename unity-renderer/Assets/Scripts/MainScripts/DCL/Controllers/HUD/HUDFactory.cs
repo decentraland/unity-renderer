@@ -84,7 +84,6 @@ public class HUDFactory : IHUDFactory
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
-                    Resources.Load<InputAction_Trigger>("CloseWindow"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -107,7 +106,6 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     // TODO (channels): Pass ChatController.i after kernel integration
                     new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
-                    Resources.Load<InputAction_Trigger>("CloseWindow"),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
