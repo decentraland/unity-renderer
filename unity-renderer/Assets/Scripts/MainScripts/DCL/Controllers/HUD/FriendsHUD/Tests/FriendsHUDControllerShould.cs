@@ -558,4 +558,34 @@ public class FriendsHUDControllerShould
         
         view.Received(1).ClearFriendFilter();
     }
+
+    [Test]
+    public void LoadFriendsOnlyForFirstTime()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.IsActive().Returns(true);
+        view.IsFriendListActive.Returns(true);
+        controller.SetVisibility(true);
+        controller.SetVisibility(false);
+        controller.SetVisibility(true);
+        view.OnFriendListDisplayed += Raise.Event<Action>();
+        friendsController.OnInitialized += Raise.Event<Action>();
+        
+        friendsController.ReceivedWithAnyArgs(1).GetFriends((int) default, default);
+    }
+    
+    [Test]
+    public void LoadFriendsRequestsOnlyForFirstTime()
+    {
+        friendsController.IsInitialized.Returns(true);
+        view.IsActive().Returns(true);
+        view.IsRequestListActive.Returns(true);
+        controller.SetVisibility(true);
+        controller.SetVisibility(false);
+        controller.SetVisibility(true);
+        view.OnRequestListDisplayed += Raise.Event<Action>();
+        friendsController.OnInitialized += Raise.Event<Action>();
+        
+        friendsController.ReceivedWithAnyArgs(1).GetFriendRequests(default, default, default, default);
+    }
 }

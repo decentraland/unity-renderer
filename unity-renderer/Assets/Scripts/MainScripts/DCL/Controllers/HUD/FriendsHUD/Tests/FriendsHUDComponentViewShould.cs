@@ -10,10 +10,14 @@ using UnityEngine.TestTools;
 public class FriendsHUDComponentViewShould
 {
     private FriendsHUDComponentView view;
-    
+    private GameObject friendsControllerGameObject;
+
     [SetUp]
     public void Setup()
     {
+        // we need to add friends controller because the badge internally uses FriendsController.i
+        friendsControllerGameObject = new GameObject("Main");
+        friendsControllerGameObject.AddComponent<FriendsController>();
         view = FriendsHUDComponentView.Create();
         var friendsController = Substitute.For<IFriendsController>();
         friendsController.GetAllocatedFriends().Returns(new Dictionary<string, UserStatus>());
@@ -24,6 +28,7 @@ public class FriendsHUDComponentViewShould
     [TearDown]
     public void TearDown()
     {
+        Object.Destroy(friendsControllerGameObject);
         view.Dispose();
     }
 

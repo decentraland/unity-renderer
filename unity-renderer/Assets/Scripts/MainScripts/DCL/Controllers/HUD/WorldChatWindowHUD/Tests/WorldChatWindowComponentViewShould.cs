@@ -161,7 +161,7 @@ public class WorldChatWindowComponentViewShould
     [Test]
     public void CreatePublicChannel()
     {
-        const string channelId = "general";
+        const string channelId = "nearby";
 
         GivenPublicChannel(channelId, "nearby");
 
@@ -189,7 +189,7 @@ public class WorldChatWindowComponentViewShould
     [UnityTest]
     public IEnumerator ReplacePublicChannel()
     {
-        const string channelId = "general";
+        const string channelId = "nearby";
 
         var model = new PublicChatChannelModel(channelId, "nearby", "any description");
         view.SetPublicChannel(model);
@@ -216,7 +216,7 @@ public class WorldChatWindowComponentViewShould
     [Test]
     public void TriggerOpenPublicChannel()
     {
-        const string expectedChannelId = "general";
+        const string expectedChannelId = "nearby";
         var channelId = "";
         view.OnOpenPublicChannel += s => channelId = s;
         GivenPublicChannel(expectedChannelId, "nearby");
@@ -305,7 +305,7 @@ public class WorldChatWindowComponentViewShould
         GivenPrivateChat("pepe");
         GivenPrivateChat("genio");
         GivenPrivateChat("bleh");
-        GivenPublicChannel("general", "general");
+        GivenPublicChannel("nearby", "nearby");
 
         yield return null;
 
@@ -328,7 +328,7 @@ public class WorldChatWindowComponentViewShould
         }, new Dictionary<string, PublicChatChannelModel>
         {
             {
-                "general", new PublicChatChannelModel("general", "general", "")
+                "nearby", new PublicChatChannelModel("nearby", "nearby", "")
             }
         });
 
@@ -341,7 +341,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual("Results (3)", view.searchResultsHeaderLabel.text);
         Assert.IsNotNull(view.searchResultsList.Get("genio"));
         Assert.IsNotNull(view.searchResultsList.Get("pepe"));
-        Assert.IsNotNull(view.searchResultsList.Get("general"));
+        Assert.IsNotNull(view.searchResultsList.Get("nearby"));
         Assert.IsTrue(view.searchResultsHeader.activeSelf);
         Assert.IsTrue(view.searchResultsList.isVisible);
         Assert.IsFalse(view.directChatsContainer.activeSelf);
@@ -364,7 +364,7 @@ public class WorldChatWindowComponentViewShould
         Assert.IsNotNull(view.directChatList.Get("genio"));
         Assert.IsNotNull(view.directChatList.Get("pepe"));
         Assert.IsNotNull(view.directChatList.Get("bleh"));
-        Assert.IsNotNull(view.publicChannelList.Get("general"));
+        Assert.IsNotNull(view.publicChannelList.Get("nearby"));
         Assert.IsFalse(view.searchResultsHeader.activeSelf);
         Assert.IsFalse(view.searchResultsList.isVisible);
         Assert.IsTrue(view.directChatsContainer.activeSelf);
