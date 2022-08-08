@@ -18,31 +18,81 @@ public class ECSTestScene : MonoBehaviour
         StartCoroutine(LoadScene(SceneScript));
     }
 
+    private static bool loaded = false;
+    private static string sceneId;
+    static IECSComponentWriter componentWriter;
+
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
-        AddTransform(new UnityEngine.Vector3(4, 1, 4), 3, sceneId, componentWriter);
-        AddGLTFShapeComponent(sceneId, componentWriter);
-        AddBoxComponent(sceneId, componentWriter);
-        AddTextShapeComponent(sceneId, componentWriter);
-        AddBillBoardComponent(sceneId, componentWriter);
+        AddBoxComponent(sceneId, 1000, componentWriter);
+
+        loaded = true;
+        ECSTestScene.sceneId = sceneId;
+        ECSTestScene.componentWriter = componentWriter;
+    }
+
+    private void Update()
+    {
+        if (!loaded)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            AddBoxComponent(sceneId, 1000, componentWriter);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            componentWriter.RemoveComponent(sceneId, 1000, ComponentID.BOX_SHAPE);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            componentWriter.PutComponent(sceneId, 1000, ComponentID.TRANSFORM,
+                new ECSTransform() { position = new UnityEngine.Vector3(5, 2, 5) });
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            componentWriter.PutComponent(sceneId, 1001, ComponentID.TRANSFORM,
+                new ECSTransform()
+                {
+                    position = new UnityEngine.Vector3(0, 1, 0),
+                    parentId = 1000
+                });
+            AddBoxComponent(sceneId, 1001, componentWriter);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            AddBoxComponent(sceneId, 1002, componentWriter);
+            componentWriter.PutComponent(sceneId, 1002, ComponentID.TRANSFORM,
+                new ECSTransform() { position = new UnityEngine.Vector3(2, 2, 5) });
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            componentWriter.PutComponent(sceneId, 1002, ComponentID.TRANSFORM,
+                new ECSTransform() { position = new UnityEngine.Vector3(2, 0, 0), parentId = 1000 });
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            componentWriter.RemoveComponent(sceneId, 1000, ComponentID.TRANSFORM);
+        }
     }
 
     private static void AddTransform(UnityEngine.Vector3 position, long entityId, string sceneId, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneId, entityId, ComponentID.TRANSFORM,
-            new ECSTransform() { position = position, scale = UnityEngine.Vector3.one});
+            new ECSTransform() { position = position, scale = UnityEngine.Vector3.one });
     }
-    
+
     private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.baseUrl = "https://peer.decentraland.org/content/contents/";
         Environment.i.world.state.scenesSortedByDistance[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
-            
+
         componentWriter.PutComponent(sceneId, 2, ComponentID.GLTF_SHAPE,
-            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true});
+            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true });
     }
-    
-    private static void AddTextShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+
+    private static void AddTextShapeComponent(string sceneId, long entity, IECSComponentWriter componentWriter)
     {
         PBTextShape model = new PBTextShape();
         model.Text = "Hi text";
@@ -57,8 +107,8 @@ public class ECSTestScene : MonoBehaviour
         model.Width = 200;
         model.Height = 100;
         model.Opacity = 1f;
-        componentWriter.PutComponent(sceneId,3,ComponentID.TEXT_SHAPE,
-            model );
+        componentWriter.PutComponent(sceneId, entity, ComponentID.TEXT_SHAPE,
+            model);
     }
 
     private static void AddBillBoardComponent(string sceneId, IECSComponentWriter componentWriter)
@@ -67,28 +117,29 @@ public class ECSTestScene : MonoBehaviour
         model.X = false;
         model.Y = true;
         model.Z = false;
-        componentWriter.PutComponent(sceneId,3,ComponentID.BILLBOARD,
-            model );
+        componentWriter.PutComponent(sceneId, 3, ComponentID.BILLBOARD,
+            model);
     }
-    
+
     private static void AddPlaneShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         PBPlaneShape model = new PBPlaneShape();
         model.Visible = true;
         model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId,3,ComponentID.PLANE_SHAPE,
-            model );
+        componentWriter.PutComponent(sceneId, 3, ComponentID.PLANE_SHAPE,
+            model);
     }
-    
-    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
+
+    private static void AddBoxComponent(string sceneId, long entityId, IECSComponentWriter componentWriter)
     {
         PBBoxShape model = new PBBoxShape();
         model.Visible = true;
         model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId,2,ComponentID.BOX_SHAPE,
-            model );
+        model.IsPointerBlocker = true;
+        componentWriter.PutComponent(sceneId, entityId, ComponentID.BOX_SHAPE,
+            model);
     }
-    
+
     private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         PBNFTShape model = new PBNFTShape();
@@ -100,8 +151,8 @@ public class ECSTestScene : MonoBehaviour
         model.Color.R = 0.5f;
         model.Color.G = 0.5f;
         model.Color.B = 1f;
-        componentWriter.PutComponent(sceneId,0,ComponentID.NFT_SHAPE,
-            model );
+        componentWriter.PutComponent(sceneId, 0, ComponentID.NFT_SHAPE,
+            model);
     }
 
     private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript)
@@ -129,13 +180,14 @@ public class ECSTestScene : MonoBehaviour
         var mainGO = GameObject.Find("Main");
         mainGO.SendMessage("SetDebug");
 
+        ECS7Plugin ecs7Plugin = new ECS7Plugin();
+
         Environment.i.world.sceneController.LoadParcelScenes(JsonUtility.ToJson(scene));
         var playerAvatarController = FindObjectOfType<PlayerAvatarController>();
         CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
 
         yield return new WaitForSeconds(1);
 
-        ECS7Plugin ecs7Plugin = new ECS7Plugin();
         IECSComponentWriter componentWriter = typeof(ECS7Plugin)
                                               .GetField("componentWriter", BindingFlags.NonPublic | BindingFlags.Instance)
                                               .GetValue(ecs7Plugin) as IECSComponentWriter;

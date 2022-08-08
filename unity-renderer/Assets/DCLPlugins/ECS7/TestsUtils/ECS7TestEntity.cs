@@ -19,6 +19,11 @@ public class ECS7TestEntity : IDCLEntity
 
     internal ECS7TestEntity() { }
 
+    internal void _triggerRemove()
+    {
+        OnRemoved?.Invoke(this);
+    }
+
 // FOLLOWING NOT SUPPORTED
     void ICleanable.Cleanup()
     {

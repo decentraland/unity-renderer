@@ -81,6 +81,7 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
             if (scene.entities.TryGetValue(id, out IDCLEntity entity))
             {
                 scene.entities.Remove(id);
+                ((ECS7TestEntity)entity)._triggerRemove();
                 Internal_DeleteEntity(entity);
             }
         };
