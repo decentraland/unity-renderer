@@ -173,7 +173,8 @@ namespace DCL.Camera
         public override void OnSetRotation(CameraController.SetRotationPayload payload)
         {
             var eulerDir = Vector3.zero;
-            var verticalAxisLookAt = Vector3.zero;
+            //Default looking direction is north
+            var verticalAxisLookAt = Vector3.forward;
 
             if (payload.cameraTarget.HasValue)
             {

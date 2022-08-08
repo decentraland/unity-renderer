@@ -28,7 +28,7 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSCameraTransformSystem.CreateSystem(componentWriter),
+            ECSCameraEntitySystem.CreateSystem(componentWriter),
             ECSPlayerTransformSystem.CreateSystem(componentWriter)
         };
     }

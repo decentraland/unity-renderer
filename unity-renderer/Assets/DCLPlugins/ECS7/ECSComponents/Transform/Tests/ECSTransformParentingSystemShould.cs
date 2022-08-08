@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Models;
@@ -24,7 +25,7 @@ namespace Tests
             entity.entityId.Returns(42);
 
             scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler();
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>());
         }
 
         [TearDown]
@@ -32,12 +33,12 @@ namespace Tests
         {
             Object.DestroyImmediate(entityGO);
         }
-        
+
         [Test]
         public void WaitForParentToExists()
         {
             scene.GetEntityById(Arg.Any<long>()).Returns(x => null);
-            
+
             var model = new ECSTransform() { parentId = 43 };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
@@ -45,12 +46,12 @@ namespace Tests
             // parent does not exist yet, so it should keep waiting
             ECSTransformParentingSystem.Update();
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
-            
+
             // create parent for entity
             var parent = Substitute.For<IDCLEntity>();
             parent.entityId.Returns(model.parentId);
             scene.GetEntityById(Arg.Any<long>()).Returns(x => parent);
-            
+
             // parent exist so it should apply parenting
             ECSTransformParentingSystem.Update();
             entity.Received(1).SetParent(parent);

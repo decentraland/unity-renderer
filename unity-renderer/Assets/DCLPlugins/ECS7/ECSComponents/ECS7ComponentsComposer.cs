@@ -1,6 +1,6 @@
 using System;
-using DCL.ECSRuntime;
 using DCL.ECS7;
+using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
@@ -32,6 +32,8 @@ namespace DCL.ECSComponents
         // Those components are only here to serialize over the wire, we don't need a handler for these
         private readonly OnPointerDownResultRegister pointerDownResultRegister;
         private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly CameraModeRegister cameraModeRegister;
+        private readonly PointerLockRegister pointerLockRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -60,6 +62,8 @@ namespace DCL.ECSComponents
             // Components without a handler
             pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
             pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
+            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -89,6 +93,8 @@ namespace DCL.ECSComponents
             // Components without a handler
             pointerDownResultRegister.Dispose();
             pointerUpResultRegister.Dispose();
+            cameraModeRegister.Dispose();
+            pointerLockRegister.Dispose();
         }
     }
 }

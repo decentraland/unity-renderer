@@ -72,5 +72,17 @@ namespace DCL.ECSComponents
                     return CommonScriptableObjects.cameraMode.Get();
             }
         }
+
+        public static CameraModeValue UnityEnumToPBCameraEnum(CameraTool.CameraMode.ModeId mode)
+        {
+            switch (mode)
+            {
+                case CameraTool.CameraMode.ModeId.FirstPerson:
+                    return CameraModeValue.FirstPerson;
+                case CameraTool.CameraMode.ModeId.ThirdPerson:
+                default:
+                    return CameraModeValue.ThirdPerson;
+            }
+        }
     }
 }

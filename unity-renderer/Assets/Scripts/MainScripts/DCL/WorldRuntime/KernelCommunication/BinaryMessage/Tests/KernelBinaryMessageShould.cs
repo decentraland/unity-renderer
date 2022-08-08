@@ -200,7 +200,7 @@ namespace Tests
                 // check message header values
                 Assert.AreEqual(bytes.Length, reader.ReadInt32());
 
-                int expectedType = msgs[i].data != null ? (int)KernelBinaryMessageType.PUT_COMPONENT : (int)KernelBinaryMessageType.DELETE_COMPONENT;
+                int expectedType = msgs[i].data != null ? (int)CrdtMessageType.PUT_COMPONENT : (int)CrdtMessageType.DELETE_COMPONENT;
                 Assert.AreEqual(expectedType, reader.ReadInt32());
 
                 binaryWriter.Dispose();
