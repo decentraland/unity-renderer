@@ -144,6 +144,7 @@ namespace DCL.AvatarModifierAreaFeedback
             deactivatePreviewCancellationToken?.Dispose();
             avatarAreaWarningsCounter.OnAdded -= AddedNewWarning;
             avatarAreaWarningsCounter.OnRemoved -= RemovedWarning;
+			hudCanvasCameraModeController?.Dispose();
         }
         
         private string GetWarningMessage(AvatarAreaWarningID idToSet)
