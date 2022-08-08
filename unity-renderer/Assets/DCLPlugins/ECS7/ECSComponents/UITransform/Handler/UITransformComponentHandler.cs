@@ -32,7 +32,7 @@ namespace DCL.ECSComponents
         
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
-            entity.parentId = model.ParentEntity;
+            entity.parentId = model.Parent;
 
             uiDataContainer.AddUIComponent(scene,entity, model);
         }

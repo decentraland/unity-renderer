@@ -60,13 +60,13 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static CameraTool.CameraMode.ModeId PBCameraEnumToUnityEnum(CameraMode mode)
+        public static CameraTool.CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
         {
             switch (mode)
             {
-                case CameraMode.FirstPerson:
+                case CameraModeValue.FirstPerson:
                     return CameraTool.CameraMode.ModeId.FirstPerson;
-                case CameraMode.ThirdPerson:
+                case CameraModeValue.ThirdPerson:
                     return CameraTool.CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();

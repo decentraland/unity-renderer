@@ -251,60 +251,94 @@ namespace ECSSystems.CameraSystem
 
         private VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element, bool randomColor = true)
         {
-            // element.style.display = GetDisplay(model.Display);
-            // element.style.overflow = GetOverflow(model.Overflow);
-            
+            element.style.display = GetDisplay(model.Display);
+            element.style.overflow = GetOverflow(model.Overflow);
+
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
-            // element.style.flexBasis = model.FlexBasis;
-            // element.style.flexGrow = model.FlexGrow;
-            // element.style.flexShrink = model.FlexShrink;
+            if (!float.IsNaN(model.FlexBasis))
+                element.style.flexBasis = new Length(model.FlexBasis, GetUnit(model.FlexBasisUnit));
+
+            element.style.flexGrow = model.FlexGrow;
+            element.style.flexShrink = model.FlexShrink;
             element.style.flexWrap = GetWrap(model.FlexWrap);
+            element.style.position = GetPosition(model.PositionType);
 
             // Align 
-            // element.style.alignContent = GetAlign(model.AlignContent);
-            // element.style.alignItems = GetAlign(model.AlignItems);
-            // element.style.alignSelf = GetAlign(model.AlignSelf);
-            // element.style.justifyContent = GetJustify(model.JustifyContent);
-            
-            // Layout
-            element.style.height = model.Height;
-            if(!float.IsNaN(model.Width))
-                element.style.width = model.Width;
+            if (model.AlignContent != YGAlign.FlexStart)
+                element.style.alignContent = GetAlign(model.AlignContent);
+            if (model.AlignItems != YGAlign.Auto)
+                element.style.alignItems = GetAlign(model.AlignItems);
+            if (model.AlignSelf != YGAlign.Auto)
+                element.style.alignSelf = GetAlign(model.AlignSelf);
+            element.style.justifyContent = GetJustify(model.JustifyContent);
 
-            // element.style.maxWidth = model.MaxWidth;
-            // element.style.maxHeight = model.MaxHeight;
-            //
-            // element.style.minHeight = model.MinHeight;
-            // element.style.minWidth = model.MinWidth;
-            //
-            // element.style.paddingBottom = model.PaddingBottom;
-            // element.style.paddingLeft = model.PaddingLeft;
-            // element.style.paddingRight = model.PaddingRight;
-            // element.style.paddingTop = model.PaddingTop;
-            //
-            // element.style.borderBottomWidth = model.BorderBottom;
-            // element.style.borderLeftWidth = model.BorderLeft;
-            // element.style.borderRightWidth = model.BorderRight;
-            // element.style.borderTopWidth = model.BorderTop;
-            //
-            // element.style.marginLeft = model.MarginLeft;
-            // element.style.marginRight = model.MarginRight;
-            // element.style.marginBottom = model.MarginBottom;
-            // element.style.marginTop = model.MarginTop;
-            //
-            //
-            // // Position
-            // element.style.position = GetPosition(model.PositionType);
+            // Layout size
+            if (!float.IsNaN(model.Height))
+                element.style.height = new Length(model.Height, GetUnit(model.HeightUnit));
+            if (!float.IsNaN(model.Width))
+                element.style.width = new Length(model.Width, GetUnit(model.WidthUnit));
+
+            if (!float.IsNaN(model.MaxWidth))
+                element.style.maxWidth = new Length(model.MaxWidth, GetUnit(model.MaxWidthUnit));
+            if (!float.IsNaN(model.MaxHeight))
+                element.style.maxHeight = new Length(model.MaxHeight, GetUnit(model.MaxHeightUnit));
+
+            if (!float.IsNaN(model.MinHeight))
+                element.style.minHeight = new Length(model.MinHeight, GetUnit(model.MinHeightUnit));
+            if (!float.IsNaN(model.MinWidth))
+                element.style.minWidth = new Length(model.MinWidth, GetUnit(model.MinWidthUnit));
+
+            // Paddings
+            if (!Mathf.Approximately(model.PaddingBottom, 0))
+                element.style.paddingBottom = new Length(model.PaddingBottom, GetUnit(model.PaddingBottomUnit));
+            if (!Mathf.Approximately(model.PaddingLeft, 0))
+                element.style.paddingLeft = new Length(model.PaddingLeft, GetUnit(model.PaddingLeftUnit));
+            if (!Mathf.Approximately(model.PaddingRight, 0))
+                element.style.paddingRight = new Length(model.PaddingRight, GetUnit(model.PaddingRightUnit));
+            if (!Mathf.Approximately(model.PaddingTop, 0))
+                element.style.paddingTop = new Length(model.PaddingTop, GetUnit(model.PaddingTopUnit));
+            
+            // Margins
+            if (!Mathf.Approximately(model.MarginLeft, 0))
+                element.style.marginLeft = new Length(model.MarginLeft, GetUnit(model.MarginLeftUnit));
+            if (!Mathf.Approximately(model.MarginRight, 0))
+                element.style.marginRight = new Length(model.MarginRight, GetUnit(model.MarginRightUnit));
+            if (!Mathf.Approximately(model.MarginBottom, 0))
+                element.style.marginBottom = new Length(model.MarginBottom, GetUnit(model.MarginBottomUnit));
+            if (!Mathf.Approximately(model.MarginTop, 0))
+                element.style.marginTop = new Length(model.MarginTop, GetUnit(model.MarginTopUnit));
+            
+            // Borders
+            element.style.borderBottomWidth = model.BorderBottom;
+            element.style.borderLeftWidth = model.BorderLeft;
+            element.style.borderRightWidth = model.BorderRight;
+            element.style.borderTopWidth = model.BorderTop;
+
+            // Position
+            element.style.position = GetPosition(model.PositionType);
 
             // This is for debugging purposes, we will change this to a proper approach so devs can debug the UI easily.
-            if(randomColor)
+            if (randomColor)
                 element.style.backgroundColor = Random.ColorHSV();
 
             return element;
         }
-        
-        private static StyleEnum<Overflow> GetOverflow (YGOverflow overflow)
+
+        private LengthUnit GetUnit(YGUnit unit)
+        {
+            switch (unit)
+            {
+                case YGUnit.Point:
+                    return LengthUnit.Pixel;
+                case YGUnit.Percent:
+                    return LengthUnit.Percent;
+                default:
+                    return LengthUnit.Pixel;
+            }
+        }
+
+        private StyleEnum<Overflow> GetOverflow (YGOverflow overflow)
         {
             switch (overflow)
             {
@@ -317,7 +351,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private static StyleEnum<DisplayStyle> GetDisplay (YGDisplay display)
+        private StyleEnum<DisplayStyle> GetDisplay (YGDisplay display)
         {
             switch (display)
             {
@@ -331,7 +365,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private static StyleEnum<Justify> GetJustify (YGJustify justify)
+        private StyleEnum<Justify> GetJustify (YGJustify justify)
         {
             switch (justify)
             {
@@ -350,7 +384,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private static StyleEnum<Wrap> GetWrap (YGWrap wrap)
+        private StyleEnum<Wrap> GetWrap (YGWrap wrap)
         {
             switch (wrap)
             {
@@ -365,7 +399,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private static StyleEnum<FlexDirection> GetFlexDirection (YGFlexDirection direction)
+        private StyleEnum<FlexDirection> GetFlexDirection (YGFlexDirection direction)
         {
             switch (direction)
             {
@@ -382,7 +416,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private static StyleEnum<Position> GetPosition(YGPositionType  positionType)
+        private StyleEnum<Position> GetPosition(YGPositionType  positionType)
         {
             switch (positionType)
             {
@@ -395,7 +429,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private static StyleEnum<Align> GetAlign(YGAlign align)
+        private StyleEnum<Align> GetAlign(YGAlign align)
         {
             switch (align)
             {
@@ -407,6 +441,8 @@ namespace ECSSystems.CameraSystem
                     return Align.Center;
                 case YGAlign.FlexEnd:
                     return Align.FlexEnd;
+                case YGAlign.Stretch:
+                    return Align.Stretch;
                 default:
                     return Align.Auto;
             }
