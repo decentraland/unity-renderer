@@ -70,6 +70,7 @@ MonoBehaviour:
   backButton: {fileID: 7105410192847587965}
   optionsButton: {fileID: 3976721410036088912}
   nameLabel: {fileID: 8296143100839953432}
+  descriptionContainer: {fileID: 5011575803716082832}
   descriptionLabel: {fileID: 5437248798963596615}
   chatView: {fileID: 1839742955218428433}
   model:

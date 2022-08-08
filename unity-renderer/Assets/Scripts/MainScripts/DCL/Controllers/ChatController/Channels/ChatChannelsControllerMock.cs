@@ -145,7 +145,8 @@ namespace DCL.Chat.Channels
                 channelId = channelId,
                 muted = false,
                 memberCount = Random.Range(0, 16),
-                unseenMessages = Random.Range(0, 16)
+                unseenMessages = Random.Range(0, 16),
+                description = Random.Range(0, 2) == 0 ? "" : "This is a test description for the channel. This will be used to describe the main purpose of the channel."
             };
 
             return JsonUtility.ToJson(mockedPayload);
