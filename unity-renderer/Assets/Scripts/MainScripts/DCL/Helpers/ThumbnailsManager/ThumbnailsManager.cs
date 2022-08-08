@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL;
+using Object = UnityEngine.Object;
 
 //In the future the AssetManager will do this
 public static class ThumbnailsManager
@@ -14,6 +15,33 @@ public static class ThumbnailsManager
     private static readonly Dictionary<Texture2D, Sprite> spriteCache = new Dictionary<Texture2D, Sprite>();
     private static readonly Dictionary<string, AssetPromise_Texture> promiseCache = new Dictionary<string, AssetPromise_Texture>();
     private const int CONCURRENT_LIMIT = 10;
+
+    public static void Clear()
+    {
+        foreach (EnqueuedThumbnail thumbnail in promiseQueue)
+        {
+            AssetPromiseKeeper_Texture.i.Forget(thumbnail.Promise);
+        }
+        promiseQueue.Clear();
+
+        foreach (AssetPromise_Texture promiseTexture in progressList)
+        {
+            AssetPromiseKeeper_Texture.i.Forget(promiseTexture);
+        }
+        progressList.Clear();
+
+        foreach (KeyValuePair<string,AssetPromise_Texture> assetPromiseTexture in promiseCache)
+        {
+            AssetPromiseKeeper_Texture.i.Forget(assetPromiseTexture.Value);
+        }
+        promiseCache.Clear();
+
+        foreach (KeyValuePair<Texture2D,Sprite> sprite in spriteCache)
+        {
+            Object.DestroyImmediate(sprite.Value);
+        }
+        spriteCache.Clear();
+    }
 
     public static AssetPromise_Texture PreloadThumbnail(string url)
     {

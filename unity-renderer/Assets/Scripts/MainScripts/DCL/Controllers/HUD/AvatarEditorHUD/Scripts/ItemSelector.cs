@@ -64,8 +64,8 @@ public class ItemSelector : MonoBehaviour
     {
         RectTransform rt = (RectTransform)transform;
 
-        var width = current.x - 450; // minus avatar margin;
-        var height = current.y;
+        var width = Mathf.Max(current.x - 450, 200); // minus avatar margin;
+        var height = Mathf.Max(current.y, 200);
         var aspectRatio = width / (float)height;
         
         // This is a lazy approach, every controlAspectRatio increases the collumns by one
