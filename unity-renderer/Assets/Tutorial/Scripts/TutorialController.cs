@@ -58,7 +58,6 @@ namespace DCL.Tutorial
         internal TutorialView tutorialView;
 
         internal bool openedFromDeepLink = false;
-        internal bool playerIsInGenesisPlaza = false;
         internal TutorialStep runningStep = null;
         internal bool tutorialReset = false;
         internal float elapsedTimeInCurrentStep = 0f;
@@ -72,6 +71,8 @@ namespace DCL.Tutorial
         private Coroutine eagleEyeRotationCoroutine;
 
         internal bool userAlreadyDidTheTutorial { get; set; }
+        internal bool playerIsInGenesisPlaza { get; set; }
+
 
         public TutorialController ()
         {
@@ -254,27 +255,14 @@ namespace DCL.Tutorial
                     {
                         yield return ExecuteSteps(TutorialPath.FromUserThatAlreadyDidTheTutorial, stepIndex);
                     }
-                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    else if (tutorialReset)
                     {
-                        if (tutorialReset)
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
-                        }
-                        else
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-                        }
-                    }
-                    else if (openedFromDeepLink)
-                    {
-                        yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
+                        yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
                     }
                     else
                     {
-                        SetTutorialDisabled();
-                        yield break;
+                        yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
                     }
-
                     break;
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
@@ -375,20 +363,13 @@ namespace DCL.Tutorial
                     {
                         stepIndex = configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName);
                     }
-                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    else if (tutorialReset)
                     {
-                        if (tutorialReset)
-                        {
-                            stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
-                        }
-                        else
-                        {
-                            stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
-                        }
+                        stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
                     }
-                    else if (openedFromDeepLink)
+                    else
                     {
-                        stepIndex = configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName);
+                        stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
                     }
                     break;
                 case TutorialType.BuilderInWorld:

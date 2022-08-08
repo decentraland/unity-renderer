@@ -13,11 +13,10 @@ namespace DCL.Tutorial
     {
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
 
-        [SerializeField]
-        Button okButton;
+        [SerializeField] Button okButton;
 
-        [SerializeField]
-        TMP_Text titleText;
+        [SerializeField] TMP_Text titleText;
+        [SerializeField] TMP_Text sceneDescriptionText;
 
         private bool stepIsFinished = false;
         private int defaultTeacherCanvasSortOrder;
@@ -28,7 +27,12 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
-            titleText.text = titleText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
+            bool isPlayerInGenesisPlaza = tutorialController.playerIsInGenesisPlaza;
+            string locationToSet = isPlayerInGenesisPlaza ? "Genesis Plaza" : "Decentraland";
+            sceneDescriptionText.enabled = isPlayerInGenesisPlaza;
+
+            titleText.text = titleText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName)
+                .Replace("{location}", locationToSet);
 
             okButton.onClick.AddListener(OnOkButtonClick);
 
@@ -45,12 +49,16 @@ namespace DCL.Tutorial
 
                 if (Environment.i != null && Environment.i.world != null)
                 {
-                    WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "begin");
+                    WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial",
+                        "begin");
                 }
             }
         }
 
-        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => stepIsFinished); }
+        public override IEnumerator OnStepExecute()
+        {
+            yield return new WaitUntil(() => stepIsFinished);
+        }
 
         public override IEnumerator OnStepPlayHideAnimation()
         {
@@ -64,6 +72,9 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
         }
 
-        internal void OnOkButtonClick() { stepIsFinished = true; }
+        internal void OnOkButtonClick()
+        {
+            stepIsFinished = true;
+        }
     }
 }

@@ -6,14 +6,13 @@ public class TutorialMusicHandler : MonoBehaviour
 {
     [SerializeField] AudioEvent tutorialMusic, avatarEditorMusic;
 
-    bool rendererIsReady = false, tutorialHasBeenEnabled = false;
+    private bool tutorialHasBeenEnabled = false;
 
     Coroutine fadeOut;
 
     private void Awake()
     {
         CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
-        CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         avatarEditorMusic.OnPlay += OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop += OnAvatarEditorMusicStop;
     }
@@ -21,15 +20,8 @@ public class TutorialMusicHandler : MonoBehaviour
     private void OnDestroy()
     {
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
-        CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
         avatarEditorMusic.OnPlay -= OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop -= OnAvatarEditorMusicStop;
-    }
-
-    void OnRendererStateChange(bool current, bool previous)
-    {
-        rendererIsReady = current;
-        TryPlayingMusic();
     }
 
     private void TutorialActive_OnChange(bool current, bool previous)
@@ -52,7 +44,7 @@ public class TutorialMusicHandler : MonoBehaviour
         if (DCL.Tutorial.TutorialController.i.userAlreadyDidTheTutorial)
             return;
 
-        if (rendererIsReady && tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)
+        if (tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)
         {
             if (fadeOut != null)
             {
