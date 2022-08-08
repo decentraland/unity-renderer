@@ -48,8 +48,8 @@ public class ItemSelector : MonoBehaviour
 
     private string currentBodyShape;
     private int maxWearables = 1;
-    
-    
+    private int lastPage = 0;
+
     private void Awake()
     {
         Application.quitting += () =>
@@ -94,12 +94,14 @@ public class ItemSelector : MonoBehaviour
     {
         collectionGroup.Setup(maxWearables);
         pageSelector.Setup(GetMaxSections());
+        UpdateWearableList(lastPage);
     }
 
     private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / (float)maxWearables);
     
     private void UpdateWearableList( int page )
     {
+        lastPage = page;
         for (int itemToggleIndex = 0; itemToggleIndex < maxWearables; itemToggleIndex++)
         {
             var baseIndex = page * maxWearables;

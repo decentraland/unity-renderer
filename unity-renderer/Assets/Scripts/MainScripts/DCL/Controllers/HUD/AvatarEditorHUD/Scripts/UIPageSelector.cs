@@ -11,6 +11,7 @@ public class UIPageSelector : MonoBehaviour
     [SerializeField] private Button nextButton;
     [SerializeField] private UIPageButton pageButtonPrefab;
     [SerializeField] private RectTransform pageButtonsParent;
+    [SerializeField] private RectTransform rectTransform;
     private List<UIPageButton> buttons = new List<UIPageButton>();
     private int maxPages;
     private int currentPage;
@@ -47,6 +48,12 @@ public class UIPageSelector : MonoBehaviour
 
     public void Setup(int maxPages)
     {
+        if (this.maxPages == maxPages)
+        {
+            UpdateToggleStatus(); 
+            return;
+        }
+        
         currentPage = 0;
         this.maxPages = maxPages;
 
@@ -61,6 +68,8 @@ public class UIPageSelector : MonoBehaviour
 
         EnsureButtons();
         UpdateButtonsStatus();
+        
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
     private void EnsureButtons()
     {
@@ -96,13 +105,17 @@ public class UIPageSelector : MonoBehaviour
     }
     private void UpdateButtonsStatus()
     {
+        UpdateToggleStatus();
+
+        OnValueChanged?.Invoke(currentPage);
+    }
+    private void UpdateToggleStatus()
+    {
         for (int i = 0; i < buttons.Count; i++)
         {
             var currentButton = buttons[i];
             currentButton.Toggle(i == currentPage);
         }
-        
-        OnValueChanged?.Invoke(currentPage);
     }
 
 }

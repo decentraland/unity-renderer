@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CollectionGroup : MonoBehaviour
 {
     public Transform itemContainer;
     [SerializeField] private ItemToggle itemPrefab;
     [SerializeField] private NFTSkinFactory skinFactory;
+    [SerializeField] private RectTransform rectTransform;
 
     private List<ItemToggle> items = new List<ItemToggle>();
     private int maxItems;
@@ -32,6 +34,8 @@ public class CollectionGroup : MonoBehaviour
             itemToggle.gameObject.SetActive(i < maxItems);
             itemToggle.transform.SetAsLastSibling();
         }
+        
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
     public ItemToggle LoadItem(int index, WearableSettings wearableSettings)
