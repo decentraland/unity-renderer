@@ -65,7 +65,7 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(channel);
 
             view.Received(1).HideLoading();
-            view.Received(1).HideLoadingMore();
+            view.Received(1).ShowLoadingMore();
             view.Received(1).Set(Arg.Is<Channel>(c => c.Equals(channel)));
         }
 
@@ -94,7 +94,7 @@ namespace DCL.Chat.HUD
 
             view.OnRequestMoreChannels += Raise.Event<Action>();
 
-            view.Received(1).ShowLoadingMore();
+            view.Received(1).HideLoadingMore();
             chatController.Received(1).GetChannels(30, 16);
         }
 

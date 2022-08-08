@@ -18,6 +18,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal GameObject loadMoreContainer;
+        [SerializeField] internal GameObject loadMoreSpinner;
         [SerializeField] internal Button[] createChannelButtons;
 
         private bool isLayoutDirty;
@@ -145,6 +146,7 @@ namespace DCL.Chat.HUD
                 if (requireMoreEntriesRoutine != null)
                     StopCoroutine(requireMoreEntriesRoutine);
 
+                loadMoreSpinner.SetActive(true);
                 requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
             }
 
@@ -154,6 +156,7 @@ namespace DCL.Chat.HUD
         private IEnumerator WaitThenRequireMoreEntries()
         {
             yield return new WaitForSeconds(1f);
+            loadMoreSpinner.SetActive(false);
             OnRequestMoreChannels?.Invoke();
         }
     }

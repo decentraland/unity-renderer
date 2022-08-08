@@ -14,7 +14,6 @@ namespace DCL.Chat.HUD
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource loadingMoreCancellationToken = new CancellationTokenSource();
 
         public ISearchChannelsWindowView View => view;
 
@@ -39,8 +38,6 @@ namespace DCL.Chat.HUD
             view.Dispose();
             loadingCancellationToken.Cancel();
             loadingCancellationToken.Dispose();
-            loadingMoreCancellationToken.Cancel();
-            loadingMoreCancellationToken.Dispose();
         }
 
         public void SetVisibility(bool visible)
@@ -83,6 +80,7 @@ namespace DCL.Chat.HUD
         {
             loadStartedTimestamp = DateTime.Now;
             view.ClearAllEntries();
+            view.HideLoadingMore();
             view.ShowLoading();
             
             if (string.IsNullOrEmpty(searchText))
@@ -99,7 +97,7 @@ namespace DCL.Chat.HUD
         {
             if (!view.IsActive) return;
             view.HideLoading();
-            view.HideLoadingMore();
+            view.ShowLoadingMore();
             view.Set(channel);
         }
 
@@ -107,11 +105,8 @@ namespace DCL.Chat.HUD
         {
             if (IsLoading()) return;
             loadStartedTimestamp = DateTime.Now;
-            view.ShowLoadingMore();
+            view.HideLoadingMore();
             chatController.GetChannels(LOAD_PAGE_SIZE, view.EntryCount);
-            loadingMoreCancellationToken.Cancel();
-            loadingMoreCancellationToken = new CancellationTokenSource();
-            WaitTimeoutThenHideLoadingMore(loadingMoreCancellationToken.Token).Forget();
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
@@ -136,13 +131,6 @@ namespace DCL.Chat.HUD
             await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
             if (cancellationToken.IsCancellationRequested) return;
             view.HideLoading();
-        }
-        
-        private async UniTask WaitTimeoutThenHideLoadingMore(CancellationToken cancellationToken)
-        {
-            await UniTask.Delay(LOAD_TIMEOUT * 1000, cancellationToken: cancellationToken);
-            if (cancellationToken.IsCancellationRequested) return;
-            view.HideLoadingMore();
         }
         
         private void HandleJoinChannel(string channelId)
