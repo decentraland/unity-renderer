@@ -316,7 +316,7 @@ namespace DCL.Helpers
         {
             if (position.HasValue)
             {
-                CommonScriptableObjects.playerWorldPosition.Set( cameraTransform.position );
+                DataStore.i.player.playerWorldPosition.Set( cameraTransform.position );
                 cameraTransform.position = position.Value;
             }
 

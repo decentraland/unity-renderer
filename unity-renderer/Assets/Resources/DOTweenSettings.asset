@@ -40,14 +40,14 @@ MonoBehaviour:
     showPanel: 0
     audioEnabled: 1
     physicsEnabled: 1
-    physics2DEnabled: 1
-    spriteEnabled: 1
+    physics2DEnabled: 0
+    spriteEnabled: 0
     uiEnabled: 1
     textMeshProEnabled: 0
     tk2DEnabled: 0
     deAudioEnabled: 0
     deUnityExtendedEnabled: 0
     epoOutlineEnabled: 0
-  createASMDEF: 0
+  createASMDEF: 1
   showPlayingTweens: 0
   showPausedTweens: 0
