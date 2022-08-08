@@ -19,6 +19,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal Button closeButton;
     [SerializeField] internal GameObject directChatsLoadingContainer;
     [SerializeField] internal GameObject directChatsContainer;
+    [SerializeField] internal GameObject emptyDirectChatsContainer;
     [SerializeField] internal GameObject channelsHeader;
     [SerializeField] internal GameObject directChannelHeader;
     [SerializeField] internal GameObject searchResultsHeader;
@@ -176,6 +177,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void HideMoreChatsToLoadHint()
     {
         loadMoreEntriesContainer.SetActive(false);
+        emptyDirectChatsContainer.SetActive(true);
         UpdateLayout();
     }
 
@@ -184,6 +186,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         loadMoreEntriesLabel.SetText(
             $"{count} chats hidden. Use the search bar to find them or click below to show more.");
         loadMoreEntriesContainer.SetActive(true);
+        emptyDirectChatsContainer.SetActive(false);
         UpdateLayout();
     }
 
