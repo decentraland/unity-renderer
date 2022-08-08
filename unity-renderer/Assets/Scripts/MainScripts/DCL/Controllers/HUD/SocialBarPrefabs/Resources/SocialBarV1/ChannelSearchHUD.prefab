@@ -3462,7 +3462,7 @@ PrefabInstance:
     - target: {fileID: 6847896572102695487, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_text
-      value: Search Channel
+      value: Search channel
       objectReference: {fileID: 0}
     - target: {fileID: 6847896572102695487, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
