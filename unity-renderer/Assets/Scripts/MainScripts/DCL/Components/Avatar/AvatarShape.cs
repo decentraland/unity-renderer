@@ -110,8 +110,6 @@ namespace DCL
         {
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
-            
-            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnUpdate);
         }
 
         private void PlayerClicked()
@@ -123,8 +121,6 @@ namespace DCL
 
         public void OnDestroy()
         {
-            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, OnUpdate);
-
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
@@ -305,7 +301,7 @@ namespace DCL
                 player.playerName.SetName(model.name);
         }
 
-        private void OnUpdate()
+        private void Update()
         {
             if (player != null)
             {
