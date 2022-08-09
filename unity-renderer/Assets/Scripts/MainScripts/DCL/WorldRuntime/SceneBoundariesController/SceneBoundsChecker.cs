@@ -227,9 +227,9 @@ namespace DCL.Controllers
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
             
-            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
+            entity.isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
             
-            if (!isInsideOuterBounds)
+            if (!entity.isInsideOuterBounds)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
             else if (!onlyOuterBoundsCheck)
                 SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
@@ -238,9 +238,9 @@ namespace DCL.Controllers
         void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
             Vector3 entityGOPosition = entity.gameObject.transform.position;
-            bool isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
+            entity.isInsideOuterBounds = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
             
-            if (!isInsideOuterBounds)
+            if (!entity.isInsideOuterBounds)
             {
                 UpdateEntityInsideBoundariesState(entity, false);
                 UpdateComponents(entity, false);
@@ -255,11 +255,11 @@ namespace DCL.Controllers
 
         void UpdateEntityInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if (entity.isInsideBoundaries != isInsideBoundaries)
-            {
-                entity.isInsideBoundaries = isInsideBoundaries;
-                OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
-            }
+            if (entity.isInsideBoundaries == isInsideBoundaries)
+                return;
+            
+            entity.isInsideBoundaries = isInsideBoundaries;
+            OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
         }
 
         private bool HasMesh(IDCLEntity entity)
@@ -361,9 +361,9 @@ namespace DCL.Controllers
                 // The outer bounds check is cheaper than the regular check
                 RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
 
-                // No need to add the entity to be checked later if we already found it outside its boundaries.
+                // No need to add the entity to be checked later if we already found it outside its bounds.
                 // When the correct events are triggered again, the entity will be checked again.
-                if (!entity.isInsideBoundaries)
+                if (!entity.isInsideOuterBounds)
                     return;
             }
             
