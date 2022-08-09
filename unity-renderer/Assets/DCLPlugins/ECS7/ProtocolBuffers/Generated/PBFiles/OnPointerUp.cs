@@ -149,7 +149,7 @@ namespace DCL.ECSComponents {
     public const int MaxDistanceFieldNumber = 3;
     private float maxDistance_;
     /// <summary>
-    /// default=100
+    /// default=10
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
