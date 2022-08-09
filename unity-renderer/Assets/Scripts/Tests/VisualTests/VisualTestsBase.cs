@@ -5,6 +5,7 @@ using UnityEngine;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCLPlugins.UIRefresherPlugin;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
@@ -15,6 +16,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     private AnisotropicFiltering originalAnisoSetting;
     private CoreComponentsPlugin coreComponentsPlugin;
     private UIComponentsPlugin uiComponentsPlugin;
+    private UIRefresherPlugin uiRefresherPlugin;
 
     protected override ServiceLocator InitializeServiceLocator()
     {
@@ -23,6 +25,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         result.Register<IServiceProviders>( () => new ServiceProviders());
         result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
         result.Register<IWorldState>( () => new WorldState());
+        result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
         return result;
     }
 
@@ -43,6 +46,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         scene = TestUtils.CreateTestScene();
         coreComponentsPlugin = new CoreComponentsPlugin();
         uiComponentsPlugin = new UIComponentsPlugin();
+        uiRefresherPlugin = new UIRefresherPlugin();
 
         DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
 
@@ -70,6 +74,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     {
         coreComponentsPlugin.Dispose();
         uiComponentsPlugin.Dispose();   
+        uiRefresherPlugin.Dispose();
         Object.Destroy(camera.gameObject);
         QualitySettings.anisotropicFiltering = originalAnisoSetting;
         yield return base.TearDown();
