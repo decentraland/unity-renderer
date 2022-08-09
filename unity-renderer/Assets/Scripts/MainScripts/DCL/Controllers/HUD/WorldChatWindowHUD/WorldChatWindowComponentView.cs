@@ -289,7 +289,7 @@ namespace DCL.Chat.HUD
             var user = model.user;
             var userId = user.userId;
 
-            var entry = new PrivateChatEntry.PrivateChatEntryModel(
+            var entry = new PrivateChatEntryModel(
                 user.userId,
                 user.userName,
                 model.recentMessage.body,

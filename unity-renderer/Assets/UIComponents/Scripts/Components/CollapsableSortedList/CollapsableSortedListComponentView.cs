@@ -173,7 +173,7 @@ namespace UIComponents.CollapsableSortedList
             }
         }
 
-        private void UpdateEmptyState()
+        protected virtual void UpdateEmptyState()
         {
             if (emptyStateContainer == null) return;
             emptyStateContainer.SetActive(Count() == 0);

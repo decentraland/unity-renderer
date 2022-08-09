@@ -5,7 +5,7 @@ namespace DCL.Chat.HUD
     [Serializable]
     public class WorldChatWindowModel : BaseComponentModel
     {
-        public PrivateChatEntry.PrivateChatEntryModel[] privateChats;
+        public PrivateChatEntryModel[] privateChats;
         public bool isLoadingDirectChats;
 
         public PublicChatEntryModel[] publicChannels;

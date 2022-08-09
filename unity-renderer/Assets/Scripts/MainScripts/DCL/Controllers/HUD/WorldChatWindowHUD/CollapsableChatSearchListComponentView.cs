@@ -19,6 +19,7 @@ namespace DCL.Chat.HUD
         {
             directChatList.Filter(search);
             publicChannelList.Filter(search);
+            UpdateEmptyState();
         }
 
         public void Filter(Func<PrivateChatEntry, bool> privateComparision,
@@ -26,12 +27,14 @@ namespace DCL.Chat.HUD
         {
             directChatList.Filter(privateComparision);
             publicChannelList.Filter(publicComparision);
+            UpdateEmptyState();
         }
 
         public override void Filter(Func<BaseComponentView, bool> comparision)
         {
             directChatList.Filter(comparision);
             publicChannelList.Filter(comparision);
+            UpdateEmptyState();
         }
 
         public override int Count()
@@ -43,12 +46,14 @@ namespace DCL.Chat.HUD
         {
             directChatList.Clear(releaseEntriesFromPool);
             publicChannelList.Clear(releaseEntriesFromPool);
+            UpdateEmptyState();
         }
 
         public override void Clear()
         {
             directChatList.Clear();
             publicChannelList.Clear();
+            UpdateEmptyState();
         }
 
         public override BaseComponentView Get(string key)
@@ -68,9 +73,17 @@ namespace DCL.Chat.HUD
             return (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
         }
 
-        public void Set(PrivateChatEntry.PrivateChatEntryModel model) => directChatList.Set(model.userId, model);
-    
-        public void Set(PublicChatEntryModel model) => publicChannelList.Set(model.channelId, model);
+        public void Set(PrivateChatEntryModel model)
+        {
+            directChatList.Set(model.userId, model);
+            UpdateEmptyState();
+        }
+
+        public void Set(PublicChatEntryModel model)
+        {
+            publicChannelList.Set(model.channelId, model);
+            UpdateEmptyState();
+        }
 
         public void Export(CollapsablePublicChannelListComponentView publicChannelList,
             CollapsableDirectChatListComponentView privateChatList)
@@ -93,6 +106,7 @@ namespace DCL.Chat.HUD
         
             privateChatList.Clear(false);
             publicChannelList.Clear(false);
+            UpdateEmptyState();
         }
     }
 }

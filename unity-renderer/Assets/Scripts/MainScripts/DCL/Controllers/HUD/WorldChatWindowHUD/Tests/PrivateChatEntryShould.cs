@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using DCL.Chat.HUD;
+using NSubstitute;
 using NUnit.Framework;
 
 public class PrivateChatEntryShould
@@ -26,7 +27,7 @@ public class PrivateChatEntryShould
     [TestCase(true, true)]
     public void Configure(bool online, bool blocked)
     {
-        var model = new PrivateChatEntry.PrivateChatEntryModel("userId", "name", "hello", "someUrl", blocked, online,
+        var model = new PrivateChatEntryModel("userId", "name", "hello", "someUrl", blocked, online,
             0);
         model.imageFetchingEnabled = false;
         view.Configure(model);
@@ -55,7 +56,7 @@ public class PrivateChatEntryShould
         var picture = Substitute.ForPartsOf<ImageComponentView>();
         picture.WhenForAnyArgs(component => component.Configure(default)).DoNotCallBase();
         view.picture = picture;
-        var model = new PrivateChatEntry.PrivateChatEntryModel("userId", "name", "hello", "someUrl", false, true, 0)
+        var model = new PrivateChatEntryModel("userId", "name", "hello", "someUrl", false, true, 0)
         {
             imageFetchingEnabled = false
         };
@@ -73,7 +74,7 @@ public class PrivateChatEntryShould
         picture.WhenForAnyArgs(component => component.Configure(default)).DoNotCallBase();
         picture.WhenForAnyArgs(component => component.SetImage((string) default)).DoNotCallBase();
         view.picture = picture;
-        var model = new PrivateChatEntry.PrivateChatEntryModel("userId", "name", "hello", "someUrl", false, true, 0)
+        var model = new PrivateChatEntryModel("userId", "name", "hello", "someUrl", false, true, 0)
         {
             imageFetchingEnabled = true
         };
