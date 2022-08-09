@@ -319,25 +319,13 @@ namespace DCL.Controllers
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
-            if (meshesInfo == null || meshesInfo.colliders == null)
+            if (meshesInfo == null || meshesInfo.colliders.Count == 0 || !meshesInfo.currentShape.HasCollisions())
                 return;
-
-            int collidersCount = meshesInfo.colliders.Count;
-            if (collidersCount == 0)
-                return;
-
-            if (meshesInfo.colliders[0] == null)
-                return;
-
-            if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
+            
+            foreach (Collider collider in meshesInfo.colliders)
             {
-                for (int i = 0; i < collidersCount; i++)
-                {   
-                    if (meshesInfo.colliders[i] == null)
-                        continue;
-                        
-                    meshesInfo.colliders[i].enabled = isInsideBoundaries;
-                }
+                if (collider.enabled != isInsideBoundaries)
+                    collider.enabled = isInsideBoundaries;
             }
         }
 

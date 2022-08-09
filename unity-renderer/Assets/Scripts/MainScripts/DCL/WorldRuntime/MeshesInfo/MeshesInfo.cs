@@ -31,7 +31,7 @@ namespace DCL.Models
         public IShape currentShape;
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
-        public List<Collider> colliders = new List<Collider>(); // TODO: use quicker dynamic collection ???
+        public HashSet<Collider> colliders = new HashSet<Collider>();
         public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;

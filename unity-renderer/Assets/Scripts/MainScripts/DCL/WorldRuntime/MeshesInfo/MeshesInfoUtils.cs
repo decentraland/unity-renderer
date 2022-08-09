@@ -6,11 +6,11 @@ namespace DCL.Models
 {
     public static class MeshesInfoUtils
     {
-        public static Bounds BuildMergedBounds(Renderer[] renderers, List<Collider> colliders)
+        public static Bounds BuildMergedBounds(Renderer[] renderers, HashSet<Collider> colliders)
         {
             Bounds bounds = new Bounds();
             bool initializedBounds = false;
-
+            
             for (int i = 0; i < renderers.Length; i++)
             {
                 if (renderers[i] == null)
@@ -27,18 +27,17 @@ namespace DCL.Models
                 }
             }
 
-            int collidersCount = colliders.Count;
-            for (int i = 0; i < collidersCount; i++)
+            foreach (Collider collider in colliders)
             {
                 if (!initializedBounds)
                 {
                     initializedBounds = true;
-                    bounds = colliders[i].GetSafeBounds();
+                    bounds = collider.GetSafeBounds();
                 }
                 else
                 {
-                    bounds.Encapsulate(colliders[i].GetSafeBounds());
-                }
+                    bounds.Encapsulate(collider.GetSafeBounds());
+                }   
             }
 
             return bounds;

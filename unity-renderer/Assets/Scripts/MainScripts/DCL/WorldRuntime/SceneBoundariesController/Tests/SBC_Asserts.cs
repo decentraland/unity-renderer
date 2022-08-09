@@ -426,9 +426,9 @@ namespace SceneBoundariesCheckerTests
                     Assert.IsFalse(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is enabled when it shouldn't!");
                 }
 
-                for (int i = 0; i < meshesInfo.colliders.Count; i++)
+                foreach (Collider collider in meshesInfo.colliders)
                 {
-                    Assert.IsFalse(meshesInfo.colliders[i].enabled, $"Collider {meshesInfo.renderers[i].gameObject.name} is enabled when it shouldn't!");
+                    Assert.IsFalse(collider.enabled, $"Collider {collider.gameObject.name} is enabled when it shouldn't!");
                 }
             }
         }
@@ -457,9 +457,9 @@ namespace SceneBoundariesCheckerTests
                     Assert.IsTrue(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is disabled when it should!");
                 }
 
-                for (int i = 0; i < meshesInfo.colliders.Count; i++)
+                foreach (Collider collider in meshesInfo.colliders)
                 {
-                    Assert.IsTrue(meshesInfo.colliders[i].enabled, $"Collider {meshesInfo.renderers[i].gameObject.name} is disabled when it should!");
+                    Assert.IsTrue(collider.enabled, $"Collider {collider.gameObject.name} is disabled when it should!");
                 }
             }
         }
