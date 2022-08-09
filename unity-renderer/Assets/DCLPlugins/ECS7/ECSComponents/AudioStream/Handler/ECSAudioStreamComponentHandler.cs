@@ -84,8 +84,7 @@ namespace DCL.ECSComponents
         private void UpdateModel(PBAudioStream model)
         {
             this.model = model;
-            float volume = model.HasVolume ? model.Volume : 1.0f;
-            currentVolume = volume * settingsVolume;
+            currentVolume = model.GetVolume() * settingsVolume;
         }
 
         private bool StateHasChange(PBAudioStream model) 
@@ -94,9 +93,8 @@ namespace DCL.ECSComponents
             if (this.model == null)
                 return true;
             
-            float volume = model.HasVolume ? model.Volume : 1.0f;
             bool shouldChangeState = isPlaying && !model.Playing;
-            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, volume);
+            bool shouldUpdateVolume = Mathf.Approximately( currentVolume, model.GetVolume());
             bool shouldUpdateUrl = this.model.Url == model.Url;
                 
             return shouldChangeState || shouldUpdateVolume || shouldUpdateUrl;

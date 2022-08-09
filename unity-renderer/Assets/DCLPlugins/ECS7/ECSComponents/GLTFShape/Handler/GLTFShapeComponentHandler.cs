@@ -27,17 +27,6 @@ namespace DCL.ECSComponents
             loadWrapper = new LoadWrapper_GLTF();
         }
 
-        private PBGLTFShape NormalizeAndClone(PBGLTFShape model)
-        {
-            PBGLTFShape normalizedModel = model.Clone();
-            
-            normalizedModel.Visible = !model.HasVisible || model.Visible;
-            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
-            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
-            
-            return normalizedModel;
-        }
-
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -71,9 +60,8 @@ namespace DCL.ECSComponents
 
         private void LoadShape(IParcelScene scene, IDCLEntity entity, PBGLTFShape model)
         {
-            PBGLTFShape normalizedModel = NormalizeAndClone(model);
             ContentProvider provider = scene.contentProvider;
-            if (provider.HasContentsUrl(normalizedModel.Src))
+            if (provider.HasContentsUrl(model.Src))
             {
                 entity.EnsureMeshGameObject("GLTF mesh");
 
@@ -91,10 +79,10 @@ namespace DCL.ECSComponents
                 loadWrapper.entity = entity;
                 loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadWrapper.initialVisibility = entity.isInsideBoundaries;
-                loadWrapper.Load(normalizedModel.Src, (wrapper) =>
+                loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF
-                    if (!normalizedModel.Visible)
+                    if (!model.GetVisible())
                     {
                         MaterialTransitionController[] materialTransitionControllers = entity.meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>();
 
@@ -125,15 +113,13 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            PBGLTFShape normalizedModel = NormalizeAndClone(model);
-
-            shapeRepresentation.UpdateModel(normalizedModel.Visible, normalizedModel.WithCollisions);
+            shapeRepresentation.UpdateModel(model.GetVisible(), model.GetWithCollisions());
             
             // Set visibility
-            meshesInfo.meshRootGameObject.SetActive(normalizedModel.Visible);
+            meshesInfo.meshRootGameObject.SetActive(model.GetVisible());
             
             // Set collisions and pointer blocker
-            ECSComponentsUtils.UpdateMeshInfoColliders(normalizedModel.WithCollisions, normalizedModel.IsPointerBlocker, meshesInfo);
+            ECSComponentsUtils.UpdateMeshInfoColliders(model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
         }
 
         internal void DisposeMesh(IParcelScene scene)

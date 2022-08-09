@@ -34,12 +34,9 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBBoxShape model)
         {
-            bool isVisible = !model.HasVisible || model.Visible;
-            bool withCollisions = !model.HasWithCollisions || model.WithCollisions;
-            bool isPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                ECSComponentsUtils.UpdateMeshInfo(isVisible, withCollisions, isPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
             }
             else
             {
@@ -55,7 +52,7 @@ namespace DCL.ECSComponents
                 {
                     DisposeMesh(entity,scene);
                     generatedMesh = shape.mesh;
-                    GenerateRenderer(generatedMesh, scene, entity, isVisible, withCollisions, isPointerBlocker);
+                    GenerateRenderer(generatedMesh, scene, entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };

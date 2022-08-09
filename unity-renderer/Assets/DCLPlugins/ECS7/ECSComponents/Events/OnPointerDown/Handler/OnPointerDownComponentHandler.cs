@@ -36,23 +36,10 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
             representantion?.Dispose();
             isAdded = false;
         }
-        
-        private PBOnPointerDown NormalizeAndClone(PBOnPointerDown model)
-        {
-            PBOnPointerDown normalizedModel = model.Clone();
-            
-            normalizedModel.ShowFeedback = !model.HasShowFeedback || model.ShowFeedback;
-            normalizedModel.Distance = model.HasDistance ? model.Distance : 10.0f;
-            normalizedModel.HoverText = model.HasHoverText ? model.HoverText : "Interact";
-            normalizedModel.Button = model.HasButton ? model.Button : ActionButton.Any;
-            
-            return normalizedModel;
-        }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerDown model)
         {
-            PBOnPointerDown normalizedModel = NormalizeAndClone(model);
-            representantion.SetData(scene, entity, normalizedModel.ShowFeedback, normalizedModel.Button, normalizedModel.Distance, normalizedModel.HoverText);
+            representantion.SetData(scene, entity, model.GetShowFeedback(), model.GetButton(), model.GetMaxDistance(), model.GetHoverText());
             if (!isAdded)
             {
                 isAdded = true;

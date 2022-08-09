@@ -118,10 +118,9 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBNFTShape model)
         {
-            PBNFTShape normalizedModel = NormalizeAndClone(model);
-            shapeFrame.SetVisibility(normalizedModel.Visible);
-            shapeFrame.SetHasCollisions(normalizedModel.WithCollisions);
-            shapeFrame.SetPointerBlocker(normalizedModel.IsPointerBlocker);
+            shapeFrame.SetVisibility(model.GetVisible());
+            shapeFrame.SetHasCollisions(model.GetWithCollisions());
+            shapeFrame.SetPointerBlocker(model.GetIsPointerBlocker());
             UpdateBackgroundColor(model);
 
             this.model = model;

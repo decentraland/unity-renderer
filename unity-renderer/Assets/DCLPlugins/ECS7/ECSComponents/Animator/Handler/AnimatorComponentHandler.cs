@@ -95,17 +95,6 @@ namespace DCL.ECSComponents
             }
         }
 
-        public PBAnimationState NormalizeAndCloneModel(PBAnimationState model)
-        {
-            PBAnimationState normalizedModel = model.Clone();
-
-            normalizedModel.Speed = model.HasSpeed ? model.Speed : 1.0f;
-            normalizedModel.Weight = model.HasWeight ? model.Weight : 1.0f;
-            normalizedModel.Loop = !model.HasLoop || model.Loop;
-
-            return normalizedModel;
-        }
-        
         internal void UpdateAnimationState(PBAnimator model)
         {
             if (clipNameToClip.Count == 0 || animComponent == null)
@@ -116,23 +105,22 @@ namespace DCL.ECSComponents
             
             for (int i = 0; i < model.States.Count; i++)
             {
-                var normalizedAnimationState = NormalizeAndCloneModel(model.States[i]);
-                if (clipNameToClip.ContainsKey(normalizedAnimationState.Clip))
+                if (clipNameToClip.ContainsKey(model.States[i].Clip))
                 {
-                    AnimationState unityState = animComponent[normalizedAnimationState.Clip];
-                    unityState.weight = normalizedAnimationState.Weight;
+                    AnimationState unityState = animComponent[model.States[i].Clip];
+                    unityState.weight = model.States[i].GetWeight();
 
-                    unityState.wrapMode = normalizedAnimationState.Loop ? WrapMode.Loop : WrapMode.Default;
+                    unityState.wrapMode = model.States[i].GetLoop() ? WrapMode.Loop : WrapMode.Default;
 
                     unityState.clip.wrapMode = unityState.wrapMode;
-                    unityState.speed = normalizedAnimationState.Speed;
-                    unityState.enabled = normalizedAnimationState.Playing;
+                    unityState.speed = model.States[i].GetSpeed();
+                    unityState.enabled = model.States[i].Playing;
 
-                    if (normalizedAnimationState.ShouldReset)
+                    if (model.States[i].ShouldReset)
                         ResetAnimation(model.States[i], unityState.clip);
 
-                    if (normalizedAnimationState.Playing && !animComponent.IsPlaying(normalizedAnimationState.Clip))
-                        animComponent.Play(normalizedAnimationState.Clip);
+                    if (model.States[i].Playing && !animComponent.IsPlaying(model.States[i].Clip))
+                        animComponent.Play(model.States[i].Clip);
                 }
             }
         }

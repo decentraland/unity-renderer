@@ -67,23 +67,6 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         currentModel = null;
     }
     
-    private PBTextShape NormalizeAndClone(PBTextShape model)
-    {
-        PBTextShape normalizedModel = model.Clone();
-            
-        normalizedModel.Visible = !model.HasVisible || model.Visible;
-        normalizedModel.Opacity = model.HasOpacity ? model.Opacity : 1.0f;
-        normalizedModel.HTextAlign = model.HasHTextAlign ? model.HTextAlign : "center";
-        normalizedModel.VTextAlign = model.HasVTextAlign ? model.VTextAlign : "center";
-        normalizedModel.Width = model.HasWidth ? model.Width : 1.0f;
-        normalizedModel.Height = model.HasHeight ? model.Height : 1.0f;
-        normalizedModel.ShadowColor = model.ShadowColor != null ? model.ShadowColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
-        normalizedModel.OutlineColor = model.OutlineColor != null ? model.OutlineColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
-        normalizedModel.TextColor = model.TextColor != null ? model.TextColor : new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
-
-        return normalizedModel;
-    }
-
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {
         if (model.Equals(currentModel))
@@ -141,7 +124,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         // we only set it if textWrapping is enabled.
         if (model.TextWrapping)
         {
-            rectTransform.sizeDelta = new Vector2(model.Width, model.Height);
+            rectTransform.sizeDelta = new Vector2(model.GetWidth(), model.GetHeight());
         }
         else
         {
@@ -153,10 +136,10 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     {
         textComponent.text = model.Text;
 
-        if (model.TextColor != null)
-            textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
+        var textColor = model.GetTextColor();
+        textComponent.color = new UnityEngine.Color(textColor.R, textColor.G, textColor.B, model.GetOpacity());
 
-        textComponent.fontSize = model.FontSize;
+        textComponent.fontSize = model.GetFontSize();
         textComponent.richText = true;
         textComponent.overflowMode = TextOverflowModes.Overflow;
         textComponent.enableAutoSizing = model.FontAutoSize;
@@ -170,7 +153,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 model.PaddingBottom
             );
 
-        textComponent.alignment = GetAlignment(model.VTextAlign, model.HTextAlign);
+        textComponent.alignment = GetAlignment(model.GetVTextAlign(), model.GetHTextAlign());
         textComponent.lineSpacing = model.LineSpacing;
 
         if (model.LineCount != 0)
@@ -193,18 +176,16 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
             underlayKeywordEnabled = true;
         }
         
-        if (model.ShadowColor != null)
+        if (!underlayKeywordEnabled)
         {
-            if (!underlayKeywordEnabled)
-            {
-                textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
-                underlayKeywordEnabled = true;
-            }
-            var shadowColor  = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
-            textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
-            textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
-            textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
+            textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
+            underlayKeywordEnabled = true;
         }
+        var modelShadowColor = model.GetShadowColor();
+        var shadowColor  = new UnityEngine.Color(modelShadowColor.R, modelShadowColor.G, modelShadowColor.B, model.GetOpacity());
+        textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
+        textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
+        textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
         
         if (!underlayKeywordEnabled && textComponent.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
         {
@@ -216,18 +197,16 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         {
             textComponent.fontSharedMaterial.EnableKeyword("OUTLINE_ON");
             textComponent.outlineWidth = model.OutlineWidth;
-            if (model.OutlineColor != null)
-            {
-                var outlineColor  = new UnityEngine.Color(model.OutlineColor.R, model.OutlineColor.G, model.OutlineColor.B, 1);
-                textComponent.outlineColor = outlineColor;
-            }
+            var modelOutlineColor = model.GetOutlineColor();
+            var outlineColor  = new UnityEngine.Color(modelOutlineColor.R, modelOutlineColor.G, modelOutlineColor.B, 1);
+            textComponent.outlineColor = outlineColor;
         }
         else if (textComponent.fontSharedMaterial.IsKeywordEnabled("OUTLINE_ON"))
         {
             textComponent.fontSharedMaterial.DisableKeyword("OUTLINE_ON");
         }
 
-        textGameObject.SetActive(model.Visible);
+        textGameObject.SetActive(model.GetVisible());
         entity.OnShapeUpdated?.Invoke(entity);
     }
 

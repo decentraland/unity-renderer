@@ -28,24 +28,12 @@ namespace DCL.ECSComponents
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(entity, scene);
         }
-        
-        private PBPlaneShape NormalizeAndClone(PBPlaneShape model)
-        {
-            PBPlaneShape normalizedModel = model.Clone();
-            
-            normalizedModel.Visible = !model.HasVisible || model.Visible;
-            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
-            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
-            
-            return normalizedModel;
-        }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
-            var normalizedModel = NormalizeAndClone(model);
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                ECSComponentsUtils.UpdateMeshInfo(normalizedModel.Visible, normalizedModel.WithCollisions, normalizedModel.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
             }
             else
             {
@@ -61,7 +49,7 @@ namespace DCL.ECSComponents
                 {
                     DisposeMesh(entity,scene);
                     generatedMesh = shape.mesh;
-                    GenerateRenderer(generatedMesh, scene, entity, normalizedModel);
+                    GenerateRenderer(generatedMesh, scene, entity, model);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                 };
@@ -79,7 +67,7 @@ namespace DCL.ECSComponents
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);

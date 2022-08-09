@@ -74,20 +74,16 @@ namespace DCL.ECSComponents
         {
             UnityEngine.Vector3 lookAtDir =(cameraPosition - entityTransform.position);
 
-            bool modelX = !model.HasX || model.X;
-            bool modelY = !model.HasY || model.Y;
-            bool modelZ = !model.HasZ || model.Z;
-            
             // Note (Zak): This check is here to avoid normalizing twice if not needed
-            if (!(modelX && modelY && modelZ))
+            if (!(model.GetX() && model.GetY() && model.GetZ()))
             {
                 lookAtDir.Normalize();
 
                 // Note (Zak): Model x,y,z are axis that we want to enable/disable
                 // while lookAtDir x,y,z are the components of the look-at vector
-                if (!modelX || modelZ)
+                if (!model.GetX() || model.GetZ())
                     lookAtDir.y = entityTransform.forward.y;
-                if (!modelY)
+                if (!model.GetY())
                     lookAtDir.x = entityTransform.forward.x;
             }
 

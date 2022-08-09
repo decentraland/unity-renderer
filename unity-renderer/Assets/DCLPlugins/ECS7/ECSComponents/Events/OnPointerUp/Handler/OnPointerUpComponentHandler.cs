@@ -53,8 +53,7 @@ namespace DCL.ECSComponents.OnPointerUp
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerUp model)
         {
-            PBOnPointerUp normalizedModel = NormalizeAndClone(model);
-            representantion.SetData(scene, entity, normalizedModel.ShowFeedback, normalizedModel.Button, normalizedModel.Distance, normalizedModel.HoverText);
+            representantion.SetData(scene, entity, model.GetShowFeedback(), model.GetButton(), model.GetMaxDistance(), model.GetHoverText());
             if (!isAdded)
             {
                 isAdded = true;
