@@ -329,28 +329,14 @@ namespace DCL.Controllers
             if (meshesInfo.colliders[0] == null)
                 return;
 
-            if (collidersCount > 0 && meshesInfo.currentShape.HasCollisions())
+            if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
             {
                 for (int i = 0; i < collidersCount; i++)
                 {   
                     if (meshesInfo.colliders[i] == null)
                         continue;
-                    
-                    // isDebug = meshesInfo.colliders[i].transform.parent.name == "Box7191_collider_";
-                        
-                    if(isInsideBoundaries == meshesInfo.colliders[i].enabled)
-                        continue;
                         
                     meshesInfo.colliders[i].enabled = isInsideBoundaries;
-                    // if (isDebug)
-                    // {
-                    //     Debug.Log($"PRAVS - UpdateEntityCollidersValidState - 4.{i} - enabled? {meshesInfo.colliders[i].enabled}", meshesInfo.colliders[i].gameObject);
-                    // }
-
-                    // if (meshesInfo.colliders[i].enabled)
-                    //     meshesInfo.colliders[i].gameObject.name += "%";
-                    // else
-                    //     meshesInfo.colliders[i].gameObject.name += ".";
                 }
             }
         }
