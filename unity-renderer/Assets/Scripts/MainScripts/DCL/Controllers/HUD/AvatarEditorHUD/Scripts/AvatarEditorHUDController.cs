@@ -145,15 +145,27 @@ public class AvatarEditorHUDController : IHUD
     {
         if (this.catalog != null)
         {
-            this.catalog.OnAdded -= AddWearable;
-            this.catalog.OnRemoved -= RemoveWearable;
+            this.catalog.OnAdded -= OnAdditionalWearableAdded;
+            this.catalog.OnRemoved -= OnAdditionalWearableRemoved;
         }
 
         this.catalog = catalog;
 
         ProcessCatalog(this.catalog);
-        this.catalog.OnAdded += AddWearable;
-        this.catalog.OnRemoved += RemoveWearable;
+        this.catalog.OnAdded += OnAdditionalWearableAdded;
+        this.catalog.OnRemoved += OnAdditionalWearableRemoved;
+    }
+    
+    private void OnAdditionalWearableRemoved(string s, WearableItem item)
+    {
+        RemoveWearable(s, item); 
+        view.RefreshSelectorsSize();
+    }
+    
+    private void OnAdditionalWearableAdded(string id, WearableItem item)
+    {
+        AddWearable(id, item); 
+        view.RefreshSelectorsSize();
     }
 
     private void LoadUserProfile(UserProfile userProfile)

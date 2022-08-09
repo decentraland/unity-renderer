@@ -47,7 +47,7 @@ public class ItemSelector : MonoBehaviour
     internal List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
-    private int maxWearables = 1;
+    private int maxWearables = 9;
     private int lastPage = 0;
 
     private void Awake()
@@ -72,7 +72,7 @@ public class ItemSelector : MonoBehaviour
         float controlAspectRatio = 0.15f;
         int rows = 3;
 
-        var collumns = Mathf.FloorToInt(aspectRatio / controlAspectRatio);
+        var collumns = Mathf.Max(Mathf.FloorToInt(aspectRatio / controlAspectRatio), 3);
         maxWearables = rows * collumns;
 
         SetupWearablePages();
@@ -102,6 +102,7 @@ public class ItemSelector : MonoBehaviour
     private void UpdateWearableList( int page )
     {
         lastPage = page;
+        itemToggles.Clear();
         for (int itemToggleIndex = 0; itemToggleIndex < maxWearables; itemToggleIndex++)
         {
             var baseIndex = page * maxWearables;
