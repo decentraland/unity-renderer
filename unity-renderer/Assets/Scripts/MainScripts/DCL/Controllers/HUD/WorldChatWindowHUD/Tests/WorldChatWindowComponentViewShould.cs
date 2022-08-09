@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -37,6 +37,24 @@ public class WorldChatWindowComponentViewShould
         view.Hide();
 
         Assert.IsFalse(view.gameObject.activeSelf);
+    }
+
+    [Test]
+    public void ShowChannelsLoading()
+    {
+        view.ShowChannelsLoading();
+
+        Assert.IsTrue(view.channelsLoadingContainer.activeSelf);
+        Assert.IsFalse(view.publicChannelList.gameObject.activeSelf);
+    }
+
+    [Test]
+    public void HideChannelsLoading()
+    {
+        view.HideChannelsLoading();
+
+        Assert.IsFalse(view.channelsLoadingContainer.activeSelf);
+        Assert.IsTrue(view.publicChannelList.gameObject.activeSelf);
     }
 
     [Test]

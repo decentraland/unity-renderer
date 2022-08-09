@@ -75,7 +75,8 @@ public class WorldChatWindowController : IHUD
             channel.Joined,
             channel.MemberCount);
         view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
-        
+        view.ShowChannelsLoading();
+
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
         
@@ -403,6 +404,7 @@ public class WorldChatWindowController : IHUD
             publicChannels[channelId] = model;
         
         view.SetPublicChat(model);
+        view.HideChannelsLoading();
     }
 
     private void HandleChannelJoined(Channel channel) => OpenPublicChat(channel.ChannelId);

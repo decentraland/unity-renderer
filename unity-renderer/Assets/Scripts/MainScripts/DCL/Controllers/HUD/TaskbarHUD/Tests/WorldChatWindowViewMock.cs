@@ -92,6 +92,14 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
+    public void ShowChannelsLoading()
+    {
+    }
+
+    public void HideChannelsLoading()
+    {
+    }
+
     public void ShowSearchLoading()
     {
     }

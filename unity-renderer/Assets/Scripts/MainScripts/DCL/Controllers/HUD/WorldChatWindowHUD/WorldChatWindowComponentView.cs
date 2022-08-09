@@ -18,6 +18,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal CollapsableChatSearchListComponentView searchResultsList;
     [SerializeField] internal GameObject searchLoading;
     [SerializeField] internal Button closeButton;
+    [SerializeField] internal GameObject channelsLoadingContainer;
     [SerializeField] internal GameObject directChatsLoadingContainer;
     [SerializeField] internal GameObject directChatsContainer;
     [SerializeField] internal GameObject emptyDirectChatsContainer;
@@ -170,6 +171,10 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         RefreshControl();
     }
 
+    public void ShowChannelsLoading() => SetChannelsLoadingVisibility(true);
+
+    public void HideChannelsLoading() => SetChannelsLoadingVisibility(false);
+
     public void ShowPrivateChatsLoading() => SetPrivateChatLoadingVisibility(true);
 
     public void HidePrivateChatsLoading() => SetPrivateChatLoadingVisibility(false);
@@ -270,6 +275,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         publicChannelList.Clear();
         foreach (var entry in model.publicChannels)
             publicChannelList.Set(entry.channelId, entry);
+        SetChannelsLoadingVisibility(model.isLoadingChannels);
+
         directChatList.Clear();
         foreach (var entry in model.privateChats)
             directChatList.Set(entry.userId, entry);
@@ -338,6 +345,13 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     }
 
     private void SortLists() => isSortingDirty = true;
+
+    private void SetChannelsLoadingVisibility(bool visible)
+    {
+        model.isLoadingChannels = visible;
+        channelsLoadingContainer.SetActive(visible);
+        publicChannelList.gameObject.SetActive(!visible);
+    }
 
     private void SetPrivateChatLoadingVisibility(bool visible)
     {

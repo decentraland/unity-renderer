@@ -25,6 +25,8 @@ public interface IWorldChatWindowView
     void RemovePrivateChat(string userId);
     void SetPublicChat(PublicChatModel model);
     void RemovePublicChat(string channelId);
+    void ShowChannelsLoading();
+    void HideChannelsLoading();
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);
