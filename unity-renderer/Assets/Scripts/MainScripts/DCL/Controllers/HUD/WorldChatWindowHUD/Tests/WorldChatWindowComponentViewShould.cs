@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Chat.HUD;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;

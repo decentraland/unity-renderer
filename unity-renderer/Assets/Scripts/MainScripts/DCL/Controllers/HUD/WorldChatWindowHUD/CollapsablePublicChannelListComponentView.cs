@@ -42,7 +42,7 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         return entry;
     }
 
-    public void Set(string channelId, PublicChatEntry.PublicChatEntryModel entryModel)
+    public void Set(string channelId, PublicChatEntryModel entryModel)
     {
         if (!Contains(entryModel.channelId))
             CreateEntry(channelId);

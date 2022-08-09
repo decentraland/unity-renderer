@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
-    public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowView, IComponentModelConfig,
+    public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowView, IComponentModelConfig<PublicChatModel>,
         IPointerDownHandler
     {
         [SerializeField] internal Button closeButton;
@@ -132,7 +132,7 @@ namespace DCL.Chat.HUD
             oldMessagesLoadingContainer.transform.SetAsFirstSibling();
         }
 
-        public void Configure(BaseComponentModel newModel) => Setup((PublicChatModel) newModel);
+        public void Configure(PublicChatModel newModel) => Setup(newModel);
 
         public void OnPointerDown(PointerEventData eventData) => OnFocused?.Invoke(true);
 

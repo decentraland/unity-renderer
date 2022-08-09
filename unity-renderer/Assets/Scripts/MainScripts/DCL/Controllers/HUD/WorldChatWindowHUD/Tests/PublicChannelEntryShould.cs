@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using DCL.Chat.HUD;
+using NSubstitute;
 using NUnit.Framework;
 
 public class PublicChannelEntryShould
@@ -21,7 +22,7 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatEntry.PublicChatEntryModel("nearby", "nearby", 0, true, 0));
+        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 0));
         view.nameLabel.text = "#nearby";
     }
 

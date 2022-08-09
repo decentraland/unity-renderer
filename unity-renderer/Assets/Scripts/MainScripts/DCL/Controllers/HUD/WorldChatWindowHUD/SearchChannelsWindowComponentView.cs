@@ -92,7 +92,7 @@ namespace DCL.Chat.HUD
         public void Set(Channel channel)
         {
             channelList.Set(channel.ChannelId,
-                new PublicChatEntry.PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+                new PublicChatEntryModel(channel.ChannelId, channel.Name, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
             var entry = channelList.Get(channel.ChannelId);
             entry.OnOpenChat -= HandleJoinRequest;

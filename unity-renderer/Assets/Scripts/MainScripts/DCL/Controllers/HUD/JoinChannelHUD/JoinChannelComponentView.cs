@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponentView, IComponentModelConfig
+public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponentView, IComponentModelConfig<JoinChannelComponentModel>
 {
     internal const string MODAL_TITLE = "Do you want to join the channel {0}?";
 
@@ -40,9 +40,9 @@ public class JoinChannelComponentView : BaseComponentView, IJoinChannelComponent
         base.Dispose();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(JoinChannelComponentModel newModel)
     {
-        model = (JoinChannelComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
