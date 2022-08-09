@@ -52,6 +52,12 @@ public class ItemSelector : MonoBehaviour
         CheckScreenSize();
     }
 
+    private void OnDestroy()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+
     private void OnScreenSizeChanged(Vector2Int current, Vector2Int previous)
     {
         CheckScreenSize();
