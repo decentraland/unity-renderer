@@ -599,7 +599,7 @@ namespace DCL.Controllers
                     break;
 
                 default:
-                    Debug.Log("This scene is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
+                    Debug.Log($"The scene {sceneData.id} is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
         }

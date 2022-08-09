@@ -6,19 +6,39 @@ namespace DCL.Models
 {
     public static class MeshesInfoUtils
     {
-        public static Bounds BuildMergedBounds(Renderer[] renderers)
+        public static Bounds BuildMergedBounds(Renderer[] renderers, List<Collider> colliders)
         {
             Bounds bounds = new Bounds();
+            bool initializedBounds = false;
 
             for (int i = 0; i < renderers.Length; i++)
             {
                 if (renderers[i] == null)
                     continue;
 
-                if (i == 0)
+                if (!initializedBounds)
+                {
+                    initializedBounds = true;
                     bounds = renderers[i].GetSafeBounds();
+                }
                 else
+                {
                     bounds.Encapsulate(renderers[i].GetSafeBounds());
+                }
+            }
+
+            int collidersCount = colliders.Count;
+            for (int i = 0; i < collidersCount; i++)
+            {
+                if (!initializedBounds)
+                {
+                    initializedBounds = true;
+                    bounds = colliders[i].GetSafeBounds();
+                }
+                else
+                {
+                    bounds.Encapsulate(colliders[i].GetSafeBounds());
+                }
             }
 
             return bounds;
@@ -42,6 +62,28 @@ namespace DCL.Models
                 return new Bounds(Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f);
 
             return renderer.bounds;
+        }
+        
+        // TODO: reuse code for every "GetSafeBounds()"...
+        
+        /// <summary>
+        /// This get the collider bounds with a check to ensure the collider is at a safe position.
+        /// If the collider is too far away from 0,0,0, wasm target ensures a crash.
+        /// NOTE: If returning a mocked bounds object becomes problematic (e.g. for getting real bounds size),
+        /// we should find a solution using meshFilter.mesh.bounds instead as those bounds are local.
+        /// </summary>
+        /// <param name="collider"></param>
+        /// <returns>The bounds value if the value is correct, or a mocked bounds object with clamped values if its too far away.</returns>
+        public static Bounds GetSafeBounds(this Collider collider)
+        {
+            // World extents are of 4800 world mts, so this limit far exceeds the world size.
+            const float POSITION_OVERFLOW_LIMIT = 10000;
+            const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
+
+            if (collider.transform.position.sqrMagnitude > POSITION_OVERFLOW_LIMIT_SQR)
+                return new Bounds(Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f);
+
+            return collider.bounds;
         }
 
         public static int ComputeTotalTriangles(IEnumerable<Renderer> renderers,
