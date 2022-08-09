@@ -11,6 +11,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
+    private const string NEARBY_CHANNEL = "nearby";
 
     [SerializeField] internal CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] internal CollapsableDirectChatListComponentView directChatList;
@@ -81,6 +82,11 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         
         int SortByAlphabeticalOrder(PublicChatEntry u1, PublicChatEntry u2)
         {
+            if (u1.Model.name == NEARBY_CHANNEL)
+                return -1;
+            else if (u2.Model.name == NEARBY_CHANNEL)
+                return 1;
+
             return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
         }
         
