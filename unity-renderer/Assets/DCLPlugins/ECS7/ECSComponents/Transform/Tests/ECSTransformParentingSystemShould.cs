@@ -1,6 +1,6 @@
 using DCL;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
+using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -21,9 +21,8 @@ namespace Tests
             scene = sceneTestHelper.CreateScene("temptation");
             entity = scene.CreateEntity(42);
 
-            handler = new ECSTransformHandler(0, Substitute.For<IWorldState>(),
-                Substitute.For<BaseVariable<Vector3>>(),
-                Substitute.For<IECSComponentWriter>());
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(),
+                Substitute.For<BaseVariable<Vector3>>());
         }
 
         [TearDown]
@@ -51,6 +50,20 @@ namespace Tests
             Assert.AreEqual(entity.entityId, parent.childrenId[0]);
             Assert.AreEqual(parent.gameObject.transform, entity.gameObject.transform.parent);
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+        }
+
+        [Test]
+        public void SetEntityAsChildOfSceneRootEntity()
+        {
+            var model = new ECSTransform() { parentId = 23423 };
+            handler.OnComponentModelUpdated(scene, entity, model);
+            model = new ECSTransform() { parentId = SpecialEntityId.SCENE_ROOT_ENTITY };
+            handler.OnComponentModelUpdated(scene, entity, model);
+            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+
+            ECSTransformParentingSystem.Update();
+            Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+            Assert.AreEqual(scene.GetSceneTransform(), entity.gameObject.transform.parent);
         }
     }
 }

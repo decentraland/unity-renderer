@@ -1,12 +1,9 @@
-using System.Collections;
 using DCL;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -18,7 +15,6 @@ namespace Tests
         private IWorldState worldState;
         private BaseVariable<Vector3> playerTeleportPosition;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
-        private IECSComponentWriter componentWriter;
 
         [SetUp]
         public void SetUp()
@@ -29,8 +25,7 @@ namespace Tests
 
             worldState = Substitute.For<IWorldState>();
             playerTeleportPosition = Substitute.For<BaseVariable<Vector3>>();
-            componentWriter = Substitute.For<IECSComponentWriter>();
-            handler = new ECSTransformHandler(0, worldState, playerTeleportPosition, componentWriter);
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition);
         }
 
         [TearDown]
@@ -71,31 +66,16 @@ namespace Tests
             var model = new ECSTransform() { parentId = parent.entityId };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(parent.entityId, entity.parentId);
-            Assert.AreEqual(entity.entityId, parent.childrenId[0]);
-            Assert.AreEqual(1, parent.childrenId.Count);
+            Assert.AreEqual(parent.entityId, ECSTransformUtils.orphanEntities[entity].parentId);
 
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(parent.entityId, entity.parentId);
-            Assert.AreEqual(entity.entityId, parent.childrenId[0]);
-            Assert.AreEqual(1, parent.childrenId.Count);
+            Assert.AreEqual(parent.entityId, ECSTransformUtils.orphanEntities[entity].parentId);
 
             model.parentId = 0;
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(0, entity.parentId);
-            Assert.AreEqual(0, parent.childrenId.Count);
-        }
-
-        [Test]
-        public void AddAsOrphanIfParentDontExist()
-        {
-            var model = new ECSTransform() { parentId = 43 };
-            handler.OnComponentModelUpdated(scene, entity, model);
-            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
-
-            string sceneId = scene.sceneData.id;
-            componentWriter.Received(1)
-                           .PutComponent(sceneId, model.parentId,
-                               Arg.Any<int>(), Arg.Any<ECSTransform>(), ECSComponentWriteType.EXECUTE_LOCALLY);
+            Assert.AreEqual(0, ECSTransformUtils.orphanEntities[entity].parentId);
         }
 
         [Test]
@@ -123,33 +103,17 @@ namespace Tests
                 position = localPositionChild
             });
 
+            ECSTransformParentingSystem.Update();
+
             Assert.AreEqual(1, parent.childrenId.Count);
             Assert.AreEqual(parent.entityId, entity.parentId);
             Assert.AreEqual(parent.gameObject.transform, entity.gameObject.transform.parent);
             Assert.AreEqual(localPositionParent + localPositionChild, entity.gameObject.transform.position);
 
             handler.OnComponentRemoved(scene, parent);
-            componentWriter.Received(1)
-                           .PutComponent(scene, parent,
-                               Arg.Any<int>(), Arg.Any<ECSTransform>(), ECSComponentWriteType.EXECUTE_LOCALLY);
             Assert.AreEqual(0, parent.childrenId.Count);
             Assert.AreEqual(parent.entityId, entity.parentId);
             Assert.AreEqual(localPositionChild, entity.gameObject.transform.position);
-        }
-
-        [Test]
-        public void RemoveAsOrphanOnParentingChanged()
-        {
-            var model = new ECSTransform() { parentId = 43 };
-            handler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
-
-            var parent = scene.CreateEntity(44);
-
-            model.parentId = parent.entityId;
-            handler.OnComponentModelUpdated(scene, entity, model);
-            Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
         }
 
         [Test]

@@ -8,33 +8,24 @@ namespace DCL.ECSComponents
 {
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
-        private static readonly ECSTransform TransfomIdentity = new ECSTransform()
-        {
-            position = Vector3.zero,
-            scale = Vector3.one,
-            rotation = Quaternion.identity,
-            parentId = SpecialEntityId.SCENE_ROOT_ENTITY
-        };
-
         private readonly IWorldState worldState;
         private readonly BaseVariable<Vector3> playerTeleportVariable;
-        private readonly IECSComponentWriter componentWriter;
-        private readonly int componentId;
 
-        public ECSTransformHandler(int componentId, IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable,
-            IECSComponentWriter componentWriter)
+        public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
         {
-            ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(10);
+            ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.worldState = worldState;
             this.playerTeleportVariable = playerTeleportVariable;
-            this.componentWriter = componentWriter;
-            this.componentId = componentId;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            ECSTransformUtils.orphanEntities.Remove(entity);
+
             // if entity has any parent
             if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
             {
@@ -68,12 +59,7 @@ namespace DCL.ECSComponents
                     // add child as orphan
                     ECSTransformUtils.orphanEntities[child] = new ECSTransformUtils.OrphanEntity(scene, child, child.parentId);
                 }
-
-                // create implicit transform component for this entity
-                componentWriter.PutComponent(scene, entity, componentId, TransfomIdentity, ECSComponentWriteType.EXECUTE_LOCALLY);
-
             }
-            ECSTransformUtils.orphanEntities.Remove(entity);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -90,48 +76,28 @@ namespace DCL.ECSComponents
             transform.localPosition = model.position;
             transform.localRotation = model.rotation;
             transform.localScale = model.scale;
-
+            
             if (entity.parentId != model.parentId)
             {
-                ProcessNewParent(componentId, scene, entity, model.parentId, componentWriter);
+                ProcessNewParent(scene, entity, model.parentId);
             }
         }
 
-        private static void ProcessNewParent(int componentId, IParcelScene scene, IDCLEntity entity, long parentId,
-            IECSComponentWriter componentWriter)
+        private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
         {
-            IDCLEntity parent = null;
-
             // remove as child of previous parent
             if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
             {
-                if (scene.entities.TryGetValue(entity.parentId, out parent))
+                if (scene.entities.TryGetValue(entity.parentId, out IDCLEntity parent))
                 {
                     parent.childrenId.Remove(entity.entityId);
                 }
             }
 
             entity.parentId = parentId;
-            ECSTransformUtils.orphanEntities.Remove(entity);
 
-            // if `parentId` does not exist yet, we added to `orphanEntities` so system `ECSTransformParentingSystem`
-            // can retry parenting later
-            if (ECSTransformUtils.TrySetParent(scene, entity, parentId, out parent))
-            {
-                if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
-                {
-                    parent.childrenId.Add(entity.entityId);
-                }
-            }
-            else
-            {
-                // set entity as orphan
-                ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
-
-                // create implicit transform component for parent entity
-                componentWriter.PutComponent(scene.sceneData.id, parentId, componentId, TransfomIdentity, 
-                    ECSComponentWriteType.EXECUTE_LOCALLY);
-            }
+            // add as orphan so system can parent it
+            ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
         }
 
         private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,

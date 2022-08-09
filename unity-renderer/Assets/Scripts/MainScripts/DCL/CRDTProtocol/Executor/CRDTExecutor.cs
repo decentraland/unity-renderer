@@ -11,6 +11,7 @@ namespace DCL.CRDT
         private readonly ECSComponentsManager ecsManager;
 
         private bool sceneAdded = false;
+        private bool disposed = false;
         private readonly IList<IParcelScene> loadedScenes;
 
         public CRDTProtocol crdtProtocol { get; }
@@ -25,7 +26,17 @@ namespace DCL.CRDT
 
         public void Dispose()
         {
+            disposed = true;
             loadedScenes.Remove(ownerScene);
+            using (var entities = ownerScene.entities.Values.GetEnumerator())
+            {
+                while (entities.MoveNext())
+                {
+                    var entity = entities.Current;
+                    entity.OnRemoved -= OnEntityRemoved;
+                    ecsManager.RemoveAllComponents(ownerScene, entity);
+                }
+            }
         }
 
         public void Execute(CRDTMessage crdtMessage)
@@ -50,6 +61,9 @@ namespace DCL.CRDT
 
         public void ExecuteWithoutStoringState(CRDTMessage crdtMessage)
         {
+            if (disposed)
+                return;
+
             long entityId = crdtMessage.key1;
             int componentId = crdtMessage.key2;
 
@@ -115,6 +129,7 @@ namespace DCL.CRDT
 
         private void OnEntityRemoved(IDCLEntity entity)
         {
+            entity.OnRemoved -= OnEntityRemoved;
             ecsManager.RemoveAllComponents(ownerScene, entity);
         }
     }

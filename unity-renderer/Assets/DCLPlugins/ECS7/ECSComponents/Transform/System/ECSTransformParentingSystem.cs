@@ -17,7 +17,10 @@ public static class ECSTransformParentingSystem
 
             if (ECSTransformUtils.TrySetParent(data.scene, data.entity, data.parentId, out IDCLEntity parent))
             {
-                parent.childrenId.Add(data.entity.entityId);
+                if (data.entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
+                {
+                    parent.childrenId.Add(data.entity.entityId);
+                }
                 ECSTransformUtils.orphanEntities.RemoveAt(i);
             }
         }
