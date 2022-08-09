@@ -26,7 +26,6 @@ public class WorldChatWindowController : IHUD
     private DateTime channelsRequestTimestamp;
     private bool areDMsRequestedByFirstTime;
     private bool isRequestingFriendsWithDMs;
-
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     internal bool isRequestingDMs;

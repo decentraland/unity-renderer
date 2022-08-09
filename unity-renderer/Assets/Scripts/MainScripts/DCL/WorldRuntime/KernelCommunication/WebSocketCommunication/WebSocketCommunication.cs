@@ -158,6 +158,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["AddFriends"] = "Main";
         messageTypeToBridgeName["AddFriendRequests"] = "Main";
         messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

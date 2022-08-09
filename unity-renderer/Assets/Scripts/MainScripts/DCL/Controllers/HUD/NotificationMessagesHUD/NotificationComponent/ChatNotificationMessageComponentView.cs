@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig
+public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig<ChatNotificationMessageComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -22,9 +22,9 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public string notificationTargetId;
     private int maxContentCharacters, maxHeaderCharacters;
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(ChatNotificationMessageComponentModel newModel)
     {
-        model = (ChatNotificationMessageComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

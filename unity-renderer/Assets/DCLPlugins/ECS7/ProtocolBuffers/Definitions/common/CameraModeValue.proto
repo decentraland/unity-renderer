@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+enum CameraModeValue {
+  FIRST_PERSON = 0;
+  THIRD_PERSON = 1;
+}
