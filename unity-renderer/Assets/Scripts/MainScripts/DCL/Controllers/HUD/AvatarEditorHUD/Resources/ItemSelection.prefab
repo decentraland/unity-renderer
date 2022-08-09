@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pageSelector: {fileID: 3695974503255180269}
-  collectionGroup: {fileID: 7363463681794998890}
+  itemToggleContainer: {fileID: 7363463681794998890}
 --- !u!1 &6308102166413182033
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 3689598983723368173}
   - component: {fileID: 7363463681794998890}
   m_Layer: 5
-  m_Name: CollectionGroup
+  m_Name: ItemToggleContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

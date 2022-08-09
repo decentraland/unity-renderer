@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI;   
 
-public class CollectionGroup : MonoBehaviour
+public class ItemToggleContainer : MonoBehaviour
 {
     public Transform itemContainer;
     [SerializeField] private ItemToggle itemPrefab;
@@ -42,12 +42,7 @@ public class CollectionGroup : MonoBehaviour
     {
         var item = wearableSettings.Item;
         var newToggle = items[index];
-
-        if (item.IsCollectible())
-        {
-            newToggle.transform.SetAsFirstSibling();
-        }
-
+        
         newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
         newToggle.SetHideOtherWerablesToastStrategy(wearableSettings.HideOtherWearablesToastStrategy);
         newToggle.SetReplaceOtherWearablesToastStrategy(wearableSettings.ReplaceOtherWearablesToastStrategy);

@@ -184,8 +184,6 @@ public class AvatarEditorHUDController : IHUD
             string.IsNullOrEmpty(userProfile.userId))
             return;
 
-        view.ShowCollectiblesLoadingSpinner(true);
-        view.ShowCollectiblesLoadingRetry(false);
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
@@ -200,7 +198,6 @@ public class AvatarEditorHUDController : IHUD
                              {
                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
                              }
-                             view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
                              loadingWearables = false;
                          })
@@ -222,8 +219,6 @@ public class AvatarEditorHUDController : IHUD
                                      destroyOnFinish = true
                                  });
 
-                                 view.ShowCollectiblesLoadingSpinner(false);
-                                 view.ShowCollectiblesLoadingRetry(true);
                                  Debug.LogError(error);
                                  loadingWearables = false;
                              }

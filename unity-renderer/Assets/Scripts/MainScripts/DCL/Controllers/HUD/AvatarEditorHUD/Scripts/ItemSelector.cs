@@ -1,54 +1,40 @@
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+#pragma warning disable CS4014
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public class WearableSettings
-{
-    public WearableItem Item { get; }
-    public string CollectionName { get; }
-    public int Amount { get; }
-    
-    public bool isLoading { get; set; }
-    public Func<WearableItem, bool> HideOtherWearablesToastStrategy { get; }
-    public Func<WearableItem, bool> ReplaceOtherWearablesToastStrategy { get; }
-    public WearableSettings(WearableItem item, string collectionName, int amount, Func<WearableItem, bool> hideOtherWearablesToastStrategy, Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
-    {
-        Item = item;
-        CollectionName = collectionName;
-        Amount = amount;
-        HideOtherWearablesToastStrategy = hideOtherWearablesToastStrategy;
-        ReplaceOtherWearablesToastStrategy = replaceOtherWearablesToastStrategy;
-    }
-
-    public override string ToString() { return Item.id; }
-}
-
 public class ItemSelector : MonoBehaviour
 {
+    private const int MIN_SCREEN_SIZE = 200;
+    private const int AVATAR_MARGIN = 450;
+    private const float ASPECT_RATIO_PER_COLUMN = 0.15f;
+    private const int TOTAL_ROWS_OF_ITEMS = 3;
+    private const int MIN_AMOUNT_OF_COLUMNS = 3;
+
     [SerializeField] internal UIPageSelector pageSelector;
-    [SerializeField] internal CollectionGroup collectionGroup;
+    [SerializeField] internal ItemToggleContainer itemToggleContainer;
 
-    public event System.Action<string> OnItemClicked;
-    public event System.Action<string> OnSellClicked;
-    public event System.Action OnRetryClicked;
+    public event Action<string> OnItemClicked;
+    public event Action<string> OnSellClicked;
 
-    internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
-    internal Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
+    internal readonly Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
+    internal readonly Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
     internal List<WearableSettings> availableWearables = new List<WearableSettings>();
-    internal List<string> selectedItems = new List<string>();
+    internal readonly List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
-    private int maxWearables = 9;
-    private int lastPage = 0;
+    private int maxVisibleWearables = 9;
+    private int lastPage;
+    
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private void Awake()
     {
@@ -58,61 +44,72 @@ public class ItemSelector : MonoBehaviour
         };
 
         pageSelector.OnValueChanged += UpdateWearableList;
-    }
-
-    private void CheckScreenSize(Vector2Int current, Vector2Int previous)
-    {
-        RectTransform rt = (RectTransform)transform;
-
-        var width = Mathf.Max(current.x - 450, 200); // minus avatar margin;
-        var height = Mathf.Max(current.y, 200);
-        var aspectRatio = width / (float)height;
-        
-        // This is a lazy approach, every controlAspectRatio increases the collumns by one
-        float controlAspectRatio = 0.15f;
-        int rows = 3;
-
-        var collumns = Mathf.Max(Mathf.FloorToInt(aspectRatio / controlAspectRatio), 3);
-        maxWearables = rows * collumns;
-
-        SetupWearablePages();
+        DataStore.i.screen.size.OnChange += OnScreenSizeChanged;
     }
 
     private void OnEnable()
     {
-        DataStore.i.screen.size.OnChange += CheckScreenSize;
-        var currentScreenSize = DataStore.i.screen.size.Get();
-        CheckScreenSize(currentScreenSize, currentScreenSize);
+        CheckScreenSize();
     }
 
-    private void OnDisable()
+    private void OnScreenSizeChanged(Vector2Int current, Vector2Int previous)
     {
-        DataStore.i.screen.size.OnChange -= CheckScreenSize;
+        CheckScreenSize();
+    }
+    
+    private void CheckScreenSize()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+        cancellationTokenSource = new CancellationTokenSource();
+        CheckScreenSizeAsync(cancellationTokenSource.Token);
     }
 
-    private void SetupWearablePages()
+    private async UniTask CheckScreenSizeAsync(CancellationToken cancellationToken)
     {
-        collectionGroup.Setup(maxWearables);
-        pageSelector.Setup(GetMaxSections());
+        try {
+            RectTransform rt = (RectTransform)transform;
+            LayoutRebuilder.MarkLayoutForRebuild(rt);
+
+            await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, cancellationToken);
+            
+            cancellationToken.ThrowIfCancellationRequested();
+        
+            var rect = rt.rect;
+            var width = Mathf.Max(rect.width, MIN_SCREEN_SIZE);
+            float itemAndSpaceSize = 130 + 32f;
+            var columns =  Mathf.Max(Mathf.CeilToInt(width / itemAndSpaceSize), MIN_AMOUNT_OF_COLUMNS);
+            
+            maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * columns;
+
+            SetupWearablePagination();
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private void SetupWearablePagination()
+    {
+        itemToggleContainer.Setup(maxVisibleWearables);
+        pageSelector.Setup(GetMaxPages());
         UpdateWearableList(lastPage);
     }
 
-    private int GetMaxSections() => Mathf.CeilToInt(availableWearables.Count / (float)maxWearables);
+    private int GetMaxPages() => Mathf.CeilToInt(availableWearables.Count / (float)maxVisibleWearables);
     
     private void UpdateWearableList( int page )
     {
         lastPage = page;
         itemToggles.Clear();
-        for (int itemToggleIndex = 0; itemToggleIndex < maxWearables; itemToggleIndex++)
+        for (int itemToggleIndex = 0; itemToggleIndex < maxVisibleWearables; itemToggleIndex++)
         {
-            var baseIndex = page * maxWearables;
+            var baseIndex = page * maxVisibleWearables;
             var wearableIndex = itemToggleIndex + baseIndex;
 
             if (wearableIndex < availableWearables.Count)
             {
                 WearableSettings wearableSettings = availableWearables[wearableIndex];
                 var item = wearableSettings.Item;
-                var itemToggle = collectionGroup.LoadItem(itemToggleIndex, wearableSettings);
+                var itemToggle = itemToggleContainer.LoadItem(itemToggleIndex, wearableSettings);
                 itemToggle.SetCallbacks(ToggleClicked, SellClicked);
                 itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
 
@@ -123,17 +120,12 @@ public class ItemSelector : MonoBehaviour
             }
             else
             {
-                collectionGroup.HideItem(itemToggleIndex);
+                itemToggleContainer.HideItem(itemToggleIndex);
             }
         }
     }
 
-    private void OnDestroy()
-    {
-        
-    }
-
-    public void AddItemToggle(
+    public void AddWearable(
         WearableItem item,
         string collectionName,
         int amount,
@@ -155,32 +147,24 @@ public class ItemSelector : MonoBehaviour
         }
     }
 
-    public void RemoveItemToggle(string itemID)
+    public void RemoveWearable(string itemID)
     {
         if (string.IsNullOrEmpty(itemID))
             return;
 
-        ItemToggle toggle = GetItemToggleByID(itemID);
-        if (toggle == null)
-            return;
-
+        totalWearables.Remove(itemID);
         itemToggles.Remove(itemID);
-        Destroy(toggle.gameObject);
+
+        RefreshAvailableWearables();
     }
 
-    public void RemoveAllItemToggle()
+    public void RemoveAllWearables()
     {
-        // We dont really want to do this
-        /*using (var it = itemToggles.GetEnumerator())
-        {
-            while (it.MoveNext())
-            {
-                Destroy(it.Current.Value.gameObject);
-                RemoveCollectionGroupIfNeeded(it.Current.Value.collectionId);
-            }
-        }
+        totalWearables.Clear();
+        availableWearables.Clear();
+        itemToggles.Clear();
 
-        itemToggles.Clear();*/
+        UpdateSelectorLayout();
     }
 
     public void SetBodyShape(string bodyShape)
@@ -194,13 +178,13 @@ public class ItemSelector : MonoBehaviour
 
     public void UpdateSelectorLayout()
     {
-        SetupWearablePages();
+        SetupWearablePagination();
     }
 
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.Where(w => w.Item.SupportsBodyShape(currentBodyShape)).ToList();
-        SetupWearablePages();
+        SetupWearablePagination();
     }
 
     public void Select(string itemID)
@@ -253,16 +237,4 @@ public class ItemSelector : MonoBehaviour
             return null;
         return itemToggles.ContainsKey(itemID) ? itemToggles[itemID] : null;
     }
-
-    public void ShowLoading(bool isActive)
-    {
-        
-    }
-
-    public void ShowRetryLoading(bool isActive)
-    {
-        
-    }
-
-    private void RetryLoading() { OnRetryClicked?.Invoke(); }
 }

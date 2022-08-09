@@ -146,7 +146,7 @@ public static class ThumbnailsManager
         promise.OnFailEvent += (x, error) =>
         {
             progressList.Remove(promise);
-            Debug.Log($"Error downloading: {promise.Url}, Exception: {error}"); 
+            Debug.Log($"Error downloading: {promise.url}, Exception: {error}"); 
             CheckQueue();
         };
         
