@@ -136,8 +136,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     {
         textComponent.text = model.Text;
 
-        var textColor = model.GetTextColor();
-        textComponent.color = new UnityEngine.Color(textColor.R, textColor.G, textColor.B, model.GetOpacity());
+        if (model.TextColor != null)
+            textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
 
         textComponent.fontSize = model.GetFontSize();
         textComponent.richText = true;
@@ -176,16 +176,18 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
             underlayKeywordEnabled = true;
         }
         
-        if (!underlayKeywordEnabled)
+        if (model.ShadowColor != null)
         {
-            textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
-            underlayKeywordEnabled = true;
+            if (!underlayKeywordEnabled)
+            {
+                textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
+                underlayKeywordEnabled = true;
+            }
+            var shadowColor = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
+            textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
+            textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
+            textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
         }
-        var modelShadowColor = model.GetShadowColor();
-        var shadowColor  = new UnityEngine.Color(modelShadowColor.R, modelShadowColor.G, modelShadowColor.B, model.GetOpacity());
-        textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
-        textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
-        textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
         
         if (!underlayKeywordEnabled && textComponent.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
         {
@@ -197,9 +199,11 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         {
             textComponent.fontSharedMaterial.EnableKeyword("OUTLINE_ON");
             textComponent.outlineWidth = model.OutlineWidth;
-            var modelOutlineColor = model.GetOutlineColor();
-            var outlineColor  = new UnityEngine.Color(modelOutlineColor.R, modelOutlineColor.G, modelOutlineColor.B, 1);
-            textComponent.outlineColor = outlineColor;
+            if (model.OutlineColor != null)
+            {
+                var outlineColor  = new UnityEngine.Color(model.OutlineColor.R, model.OutlineColor.G, model.OutlineColor.B, 1);
+                textComponent.outlineColor = outlineColor;
+            }
         }
         else if (textComponent.fontSharedMaterial.IsKeywordEnabled("OUTLINE_ON"))
         {
