@@ -48,9 +48,9 @@ namespace DCL.ECSComponents
             this.model = model;
         }
                 
-        public bool IsVisible() {  return !model.HasVisible || model.Visible; }
+        public bool IsVisible() {  return model.GetVisible(); }
         
-        public bool HasCollisions() {  return !model.HasWithCollisions || model.WithCollisions; }
+        public bool HasCollisions() {  return model.GetWithCollisions(); }
 
         private bool ShouldLoadShape(PBGLTFShape model)
         {
