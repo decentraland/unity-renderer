@@ -18,13 +18,15 @@ namespace DCL.ECSComponents
             this.playerTeleportVariable = playerTeleportVariable;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
-        {
-        }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             ECSTransformUtils.orphanEntities.Remove(entity);
+
+            // reset transform and re-parent to the scene
+            entity.gameObject.transform.ResetLocalTRS();
+            ECSTransformUtils.TrySetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             // if entity has any parent
             if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
@@ -35,10 +37,7 @@ namespace DCL.ECSComponents
                     parent.childrenId.Remove(entity.entityId);
                 }
 
-                // reset transform and re-parent to the scene
-                entity.gameObject.transform.ResetLocalTRS();
                 entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
-                ECSTransformUtils.TrySetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
             }
 
             // if entity has any children
@@ -76,7 +75,7 @@ namespace DCL.ECSComponents
             transform.localPosition = model.position;
             transform.localRotation = model.rotation;
             transform.localScale = model.scale;
-            
+
             if (entity.parentId != model.parentId)
             {
                 ProcessNewParent(scene, entity, model.parentId);
