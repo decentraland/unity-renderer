@@ -346,6 +346,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         directChatsHeaderLabel.text = $"Direct Messages ({directChatList.Count()})";
         searchResultsHeaderLabel.text = $"Results ({searchResultsList.Count()})";
+        searchResultsHeader.SetActive(searchResultsList.Count() > 0);
         channelsHeaderLabel.text = $"Channels ({publicChannelList.Count()})";
     }
 
