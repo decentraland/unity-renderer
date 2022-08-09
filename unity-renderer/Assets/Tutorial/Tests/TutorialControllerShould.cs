@@ -70,7 +70,6 @@ namespace DCL.Tutorial_Tests
             // Assert
             Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
-            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
             Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
