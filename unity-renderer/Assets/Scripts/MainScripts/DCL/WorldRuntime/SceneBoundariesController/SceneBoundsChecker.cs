@@ -293,10 +293,11 @@ namespace DCL.Controllers
         {
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
             {
-                if (entity.meshesInfo.renderers[i] == null)
+                Renderer renderer = entity.meshesInfo.renderers[i];
+                if (renderer == null)
                     continue;
 
-                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
+                if (!entity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.GetSafeBounds(renderer.bounds, renderer.transform.position)))
                     return false;
             }
 
