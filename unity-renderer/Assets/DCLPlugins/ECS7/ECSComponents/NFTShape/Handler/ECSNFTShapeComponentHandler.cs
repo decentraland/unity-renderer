@@ -27,18 +27,7 @@ namespace DCL.ECSComponents
             this.infoRetriever = infoRetriever;
             this.assetRetriever = assetRetriever;
         }
-        
-        private PBNFTShape NormalizeAndClone(PBNFTShape model)
-        {
-            PBNFTShape normalizedModel = model.Clone();
-            
-            normalizedModel.Visible = !model.HasVisible || model.Visible;
-            normalizedModel.WithCollisions = !model.HasWithCollisions || model.WithCollisions;
-            normalizedModel.IsPointerBlocker = !model.HasIsPointerBlocker || model.IsPointerBlocker;
-            
-            return normalizedModel;
-        }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)

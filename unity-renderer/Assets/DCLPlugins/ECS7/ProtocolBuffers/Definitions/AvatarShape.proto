@@ -5,7 +5,7 @@ option (ecs_component_id) = 1080;
 import "common/Color3.proto";
 
 message PBAvatarShape {
-  optional string id = 1;
+  string id = 1;
   optional string name = 2;
   optional string body_shape = 3;
   optional Color3 skin_color = 4;

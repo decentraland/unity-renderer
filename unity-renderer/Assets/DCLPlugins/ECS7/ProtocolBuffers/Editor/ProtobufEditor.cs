@@ -51,7 +51,7 @@ namespace DCL.Protobuf
         // Use this parameter when you want a fixed version of the @dcl/protocol, otherwise leave it empty
         //private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2611997102.commit-8e362ff.tgz";
         // REVERT THIS FILE BEFORE MERGE! (requires @dcl/protocol PR merge)
-        private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2814988995.commit-d42e93a.tgz";
+        private const string FIXED_NPM_PACKAGE_LINK = "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-2818365550.commit-b11aed2.tgz";
 
         private const string NPM_PACKAGE = "@dcl/protocol";
         private const string NPM_PACKAGE_PROTO_DEF = "/package/ecs/components/";

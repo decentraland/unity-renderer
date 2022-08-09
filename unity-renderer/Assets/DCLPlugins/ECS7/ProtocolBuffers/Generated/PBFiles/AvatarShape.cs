@@ -25,24 +25,24 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChFBdmF0YXJTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9u",
-            "L0NvbG9yMy5wcm90byK5BAoNUEJBdmF0YXJTaGFwZRIPCgJpZBgBIAEoCUgA",
-            "iAEBEhEKBG5hbWUYAiABKAlIAYgBARIXCgpib2R5X3NoYXBlGAMgASgJSAKI",
-            "AQESIAoKc2tpbl9jb2xvchgEIAEoCzIHLkNvbG9yM0gDiAEBEiAKCmhhaXJf",
-            "Y29sb3IYBSABKAsyBy5Db2xvcjNIBIgBARIfCglleWVfY29sb3IYBiABKAsy",
-            "By5Db2xvcjNIBYgBARIRCgl3ZWFyYWJsZXMYByADKAkSIgoVZXhwcmVzc2lv",
-            "bl90cmlnZ2VyX2lkGAggASgJSAaIAQESKQocZXhwcmVzc2lvbl90cmlnZ2Vy",
-            "X3RpbWVzdGFtcBgJIAEoA0gHiAEBEh8KEnN0aWNrZXJfdHJpZ2dlcl9pZBgK",
-            "IAEoCUgIiAEBEiYKGXN0aWNrZXJfdHJpZ2dlcl90aW1lc3RhbXAYCyABKANI",
-            "CYgBARIUCgd0YWxraW5nGAwgASgISAqIAQFCBQoDX2lkQgcKBV9uYW1lQg0K",
-            "C19ib2R5X3NoYXBlQg0KC19za2luX2NvbG9yQg0KC19oYWlyX2NvbG9yQgwK",
-            "Cl9leWVfY29sb3JCGAoWX2V4cHJlc3Npb25fdHJpZ2dlcl9pZEIfCh1fZXhw",
-            "cmVzc2lvbl90cmlnZ2VyX3RpbWVzdGFtcEIVChNfc3RpY2tlcl90cmlnZ2Vy",
-            "X2lkQhwKGl9zdGlja2VyX3RyaWdnZXJfdGltZXN0YW1wQgoKCF90YWxraW5n",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "L0NvbG9yMy5wcm90byKtBAoNUEJBdmF0YXJTaGFwZRIKCgJpZBgBIAEoCRIR",
+            "CgRuYW1lGAIgASgJSACIAQESFwoKYm9keV9zaGFwZRgDIAEoCUgBiAEBEiAK",
+            "CnNraW5fY29sb3IYBCABKAsyBy5Db2xvcjNIAogBARIgCgpoYWlyX2NvbG9y",
+            "GAUgASgLMgcuQ29sb3IzSAOIAQESHwoJZXllX2NvbG9yGAYgASgLMgcuQ29s",
+            "b3IzSASIAQESEQoJd2VhcmFibGVzGAcgAygJEiIKFWV4cHJlc3Npb25fdHJp",
+            "Z2dlcl9pZBgIIAEoCUgFiAEBEikKHGV4cHJlc3Npb25fdHJpZ2dlcl90aW1l",
+            "c3RhbXAYCSABKANIBogBARIfChJzdGlja2VyX3RyaWdnZXJfaWQYCiABKAlI",
+            "B4gBARImChlzdGlja2VyX3RyaWdnZXJfdGltZXN0YW1wGAsgASgDSAiIAQES",
+            "FAoHdGFsa2luZxgMIAEoCEgJiAEBQgcKBV9uYW1lQg0KC19ib2R5X3NoYXBl",
+            "Qg0KC19za2luX2NvbG9yQg0KC19oYWlyX2NvbG9yQgwKCl9leWVfY29sb3JC",
+            "GAoWX2V4cHJlc3Npb25fdHJpZ2dlcl9pZEIfCh1fZXhwcmVzc2lvbl90cmln",
+            "Z2VyX3RpbWVzdGFtcEIVChNfc3RpY2tlcl90cmlnZ2VyX2lkQhwKGl9zdGlj",
+            "a2VyX3RyaWdnZXJfdGltZXN0YW1wQgoKCF90YWxraW5nQhSqAhFEQ0wuRUNT",
+            "Q29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "Wearables", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "Wearables", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, new[]{ "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, null, null, null)
           }));
     }
     #endregion
@@ -108,26 +108,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "id" field.</summary>
     public const int IdFieldNumber = 1;
-    private string id_;
+    private string id_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Id {
-      get { return id_ ?? ""; }
+      get { return id_; }
       set {
         id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
-    }
-    /// <summary>Gets whether the "id" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasId {
-      get { return id_ != null; }
-    }
-    /// <summary>Clears the value of the "id" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearId() {
-      id_ = null;
     }
 
     /// <summary>Field number for the "name" field.</summary>
@@ -382,7 +370,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasId) hash ^= Id.GetHashCode();
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (HasName) hash ^= Name.GetHashCode();
       if (HasBodyShape) hash ^= BodyShape.GetHashCode();
       if (skinColor_ != null) hash ^= SkinColor.GetHashCode();
@@ -412,7 +400,7 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (HasId) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
@@ -467,7 +455,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasId) {
+      if (Id.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
@@ -522,7 +510,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (HasId) {
+      if (Id.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
       }
       if (HasName) {
@@ -568,7 +556,7 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.HasId) {
+      if (other.Id.Length != 0) {
         Id = other.Id;
       }
       if (other.HasName) {

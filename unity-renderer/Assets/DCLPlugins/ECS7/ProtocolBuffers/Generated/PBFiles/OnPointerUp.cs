@@ -25,16 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChFPblBvaW50ZXJVcC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoZY29tbW9u",
-            "L0FjdGlvbkJ1dHRvbi5wcm90byK4AQoNUEJPblBvaW50ZXJVcBIiCgZidXR0",
+            "L0FjdGlvbkJ1dHRvbi5wcm90byLAAQoNUEJPblBvaW50ZXJVcBIiCgZidXR0",
             "b24YASABKA4yDS5BY3Rpb25CdXR0b25IAIgBARIXCgpob3Zlcl90ZXh0GAIg",
-            "ASgJSAGIAQESFQoIZGlzdGFuY2UYAyABKAJIAogBARIaCg1zaG93X2ZlZWRi",
-            "YWNrGAQgASgISAOIAQFCCQoHX2J1dHRvbkINCgtfaG92ZXJfdGV4dEILCglf",
-            "ZGlzdGFuY2VCEAoOX3Nob3dfZmVlZGJhY2tCFKoCEURDTC5FQ1NDb21wb25l",
-            "bnRzYgZwcm90bzM="));
+            "ASgJSAGIAQESGQoMbWF4X2Rpc3RhbmNlGAMgASgCSAKIAQESGgoNc2hvd19m",
+            "ZWVkYmFjaxgEIAEoCEgDiAEBQgkKB19idXR0b25CDQoLX2hvdmVyX3RleHRC",
+            "DwoNX21heF9kaXN0YW5jZUIQCg5fc2hvd19mZWVkYmFja0IUqgIRRENMLkVD",
+            "U0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerUp), global::DCL.ECSComponents.PBOnPointerUp.Parser, new[]{ "Button", "HoverText", "Distance", "ShowFeedback" }, new[]{ "Button", "HoverText", "Distance", "ShowFeedback" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerUp), global::DCL.ECSComponents.PBOnPointerUp.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null)
           }));
     }
     #endregion
@@ -79,7 +79,7 @@ namespace DCL.ECSComponents {
       _hasBits0 = other._hasBits0;
       button_ = other.button_;
       hoverText_ = other.hoverText_;
-      distance_ = other.distance_;
+      maxDistance_ = other.maxDistance_;
       showFeedback_ = other.showFeedback_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -93,6 +93,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 1;
     private global::ActionButton button_;
+    /// <summary>
+    /// default=ActionButton.ANY
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::ActionButton Button {
@@ -118,6 +121,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "hover_text" field.</summary>
     public const int HoverTextFieldNumber = 2;
     private string hoverText_;
+    /// <summary>
+    /// default='Interact'
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string HoverText {
@@ -139,34 +145,40 @@ namespace DCL.ECSComponents {
       hoverText_ = null;
     }
 
-    /// <summary>Field number for the "distance" field.</summary>
-    public const int DistanceFieldNumber = 3;
-    private float distance_;
+    /// <summary>Field number for the "max_distance" field.</summary>
+    public const int MaxDistanceFieldNumber = 3;
+    private float maxDistance_;
+    /// <summary>
+    /// default=100
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Distance {
-      get { if ((_hasBits0 & 2) != 0) { return distance_; } else { return 0F; } }
+    public float MaxDistance {
+      get { if ((_hasBits0 & 2) != 0) { return maxDistance_; } else { return 0F; } }
       set {
         _hasBits0 |= 2;
-        distance_ = value;
+        maxDistance_ = value;
       }
     }
-    /// <summary>Gets whether the "distance" field is set</summary>
+    /// <summary>Gets whether the "max_distance" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasDistance {
+    public bool HasMaxDistance {
       get { return (_hasBits0 & 2) != 0; }
     }
-    /// <summary>Clears the value of the "distance" field</summary>
+    /// <summary>Clears the value of the "max_distance" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDistance() {
+    public void ClearMaxDistance() {
       _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "show_feedback" field.</summary>
     public const int ShowFeedbackFieldNumber = 4;
     private bool showFeedback_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool ShowFeedback {
@@ -206,7 +218,7 @@ namespace DCL.ECSComponents {
       }
       if (Button != other.Button) return false;
       if (HoverText != other.HoverText) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Distance, other.Distance)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
       if (ShowFeedback != other.ShowFeedback) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -217,7 +229,7 @@ namespace DCL.ECSComponents {
       int hash = 1;
       if (HasButton) hash ^= Button.GetHashCode();
       if (HasHoverText) hash ^= HoverText.GetHashCode();
-      if (HasDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
+      if (HasMaxDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
       if (HasShowFeedback) hash ^= ShowFeedback.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -245,9 +257,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(18);
         output.WriteString(HoverText);
       }
-      if (HasDistance) {
+      if (HasMaxDistance) {
         output.WriteRawTag(29);
-        output.WriteFloat(Distance);
+        output.WriteFloat(MaxDistance);
       }
       if (HasShowFeedback) {
         output.WriteRawTag(32);
@@ -271,9 +283,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(18);
         output.WriteString(HoverText);
       }
-      if (HasDistance) {
+      if (HasMaxDistance) {
         output.WriteRawTag(29);
-        output.WriteFloat(Distance);
+        output.WriteFloat(MaxDistance);
       }
       if (HasShowFeedback) {
         output.WriteRawTag(32);
@@ -295,7 +307,7 @@ namespace DCL.ECSComponents {
       if (HasHoverText) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
       }
-      if (HasDistance) {
+      if (HasMaxDistance) {
         size += 1 + 4;
       }
       if (HasShowFeedback) {
@@ -319,8 +331,8 @@ namespace DCL.ECSComponents {
       if (other.HasHoverText) {
         HoverText = other.HoverText;
       }
-      if (other.HasDistance) {
-        Distance = other.Distance;
+      if (other.HasMaxDistance) {
+        MaxDistance = other.MaxDistance;
       }
       if (other.HasShowFeedback) {
         ShowFeedback = other.ShowFeedback;
@@ -349,7 +361,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 29: {
-            Distance = input.ReadFloat();
+            MaxDistance = input.ReadFloat();
             break;
           }
           case 32: {
@@ -380,7 +392,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 29: {
-            Distance = input.ReadFloat();
+            MaxDistance = input.ReadFloat();
             break;
           }
           case 32: {

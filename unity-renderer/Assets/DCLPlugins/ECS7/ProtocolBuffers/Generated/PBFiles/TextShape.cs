@@ -144,7 +144,7 @@ namespace DCL.ECSComponents {
     public const int VisibleFieldNumber = 2;
     private bool visible_;
     /// <summary>
-    /// default=true
+    /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

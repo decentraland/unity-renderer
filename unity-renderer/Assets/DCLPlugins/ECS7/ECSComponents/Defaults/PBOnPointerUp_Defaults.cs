@@ -14,7 +14,7 @@
 
         public static float GetMaxDistance(this PBOnPointerUp self)
         {
-            return self.HasDistance ? self.Distance : 10.0f;
+            return self.HasMaxDistance ? self.MaxDistance : 10.0f;
         }
         
         public static bool GetShowFeedback(this PBOnPointerUp self)

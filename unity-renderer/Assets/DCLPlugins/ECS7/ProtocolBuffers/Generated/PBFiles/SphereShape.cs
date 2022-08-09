@@ -91,7 +91,7 @@ namespace DCL.ECSComponents {
     public const int WithCollisionsFieldNumber = 1;
     private bool withCollisions_;
     /// <summary>
-    /// default=true
+    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -119,7 +119,7 @@ namespace DCL.ECSComponents {
     public const int IsPointerBlockerFieldNumber = 2;
     private bool isPointerBlocker_;
     /// <summary>
-    /// default=true
+    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -147,7 +147,7 @@ namespace DCL.ECSComponents {
     public const int VisibleFieldNumber = 3;
     private bool visible_;
     /// <summary>
-    /// default=true
+    /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

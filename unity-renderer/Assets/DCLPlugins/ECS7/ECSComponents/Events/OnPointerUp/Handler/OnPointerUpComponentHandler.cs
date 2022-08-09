@@ -37,19 +37,6 @@ namespace DCL.ECSComponents.OnPointerUp
             dataStore.RemovePointerEvent(entity.entityId,representantion);
             isAdded = false;
         }
-        
-        
-        private PBOnPointerUp NormalizeAndClone(PBOnPointerUp model)
-        {
-            PBOnPointerUp normalizedModel = model.Clone();
-            
-            normalizedModel.ShowFeedback = !model.HasShowFeedback || model.ShowFeedback;
-            normalizedModel.Distance = model.HasDistance ? model.Distance : 10.0f;
-            normalizedModel.HoverText = model.HasHoverText ? model.HoverText : "Interact";
-            normalizedModel.Button = model.HasButton ? model.Button : ActionButton.Any;
-            
-            return normalizedModel;
-        }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerUp model)
         {

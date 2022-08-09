@@ -26,19 +26,16 @@ namespace DCL.ECSComponents {
           string.Concat(
             "ChlPblBvaW50ZXJEb3duUmVzdWx0LnByb3RvEhBkZWNlbnRyYWxhbmQuZWNz",
             "GhRjb21tb24vVmVjdG9yMy5wcm90bxoZY29tbW9uL0FjdGlvbkJ1dHRvbi5w",
-            "cm90byLgAgoVUEJPblBvaW50ZXJEb3duUmVzdWx0EiIKBmJ1dHRvbhgCIAEo",
-            "DjINLkFjdGlvbkJ1dHRvbkgAiAEBEhUKCG1lc2hOYW1lGAMgASgJSAGIAQES",
-            "HQoGb3JpZ2luGAQgASgLMgguVmVjdG9yM0gCiAEBEiAKCWRpcmVjdGlvbhgF",
-            "IAEoCzIILlZlY3RvcjNIA4gBARIcCgVwb2ludBgGIAEoCzIILlZlY3RvcjNI",
-            "BIgBARIdCgZub3JtYWwYByABKAsyCC5WZWN0b3IzSAWIAQESFQoIZGlzdGFu",
-            "Y2UYCCABKAJIBogBARIWCgl0aW1lc3RhbXAYCSABKAVIB4gBAUIJCgdfYnV0",
-            "dG9uQgsKCV9tZXNoTmFtZUIJCgdfb3JpZ2luQgwKCl9kaXJlY3Rpb25CCAoG",
-            "X3BvaW50QgkKB19ub3JtYWxCCwoJX2Rpc3RhbmNlQgwKCl90aW1lc3RhbXBC",
-            "FKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "cm90byLXAQoVUEJPblBvaW50ZXJEb3duUmVzdWx0Eh0KBmJ1dHRvbhgCIAEo",
+            "DjINLkFjdGlvbkJ1dHRvbhIQCghtZXNoTmFtZRgDIAEoCRIYCgZvcmlnaW4Y",
+            "BCABKAsyCC5WZWN0b3IzEhsKCWRpcmVjdGlvbhgFIAEoCzIILlZlY3RvcjMS",
+            "FwoFcG9pbnQYBiABKAsyCC5WZWN0b3IzEhgKBm5vcm1hbBgHIAEoCzIILlZl",
+            "Y3RvcjMSEAoIZGlzdGFuY2UYCCABKAISEQoJdGltZXN0YW1wGAkgASgFQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerDownResult), global::DCL.ECSComponents.PBOnPointerDownResult.Parser, new[]{ "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance", "Timestamp" }, new[]{ "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance", "Timestamp" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerDownResult), global::DCL.ECSComponents.PBOnPointerDownResult.Parser, new[]{ "Button", "MeshName", "Origin", "Direction", "Point", "Normal", "Distance", "Timestamp" }, null, null, null, null)
           }));
     }
     #endregion
@@ -52,7 +49,6 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBOnPointerDownResult> _parser = new pb::MessageParser<PBOnPointerDownResult>(() => new PBOnPointerDownResult());
     private pb::UnknownFieldSet _unknownFields;
-    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBOnPointerDownResult> Parser { get { return _parser; } }
@@ -80,7 +76,6 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerDownResult(PBOnPointerDownResult other) : this() {
-      _hasBits0 = other._hasBits0;
       button_ = other.button_;
       meshName_ = other.meshName_;
       origin_ = other.origin_ != null ? other.origin_.Clone() : null;
@@ -100,51 +95,26 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 2;
-    private global::ActionButton button_;
+    private global::ActionButton button_ = global::ActionButton.Pointer;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::ActionButton Button {
-      get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::ActionButton.Pointer; } }
+      get { return button_; }
       set {
-        _hasBits0 |= 1;
         button_ = value;
       }
-    }
-    /// <summary>Gets whether the "button" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasButton {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "button" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearButton() {
-      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "meshName" field.</summary>
     public const int MeshNameFieldNumber = 3;
-    private string meshName_;
+    private string meshName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string MeshName {
-      get { return meshName_ ?? ""; }
+      get { return meshName_; }
       set {
         meshName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
-    }
-    /// <summary>Gets whether the "meshName" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMeshName {
-      get { return meshName_ != null; }
-    }
-    /// <summary>Clears the value of the "meshName" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMeshName() {
-      meshName_ = null;
     }
 
     /// <summary>Field number for the "origin" field.</summary>
@@ -201,23 +171,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Distance {
-      get { if ((_hasBits0 & 2) != 0) { return distance_; } else { return 0F; } }
+      get { return distance_; }
       set {
-        _hasBits0 |= 2;
         distance_ = value;
       }
-    }
-    /// <summary>Gets whether the "distance" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasDistance {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "distance" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDistance() {
-      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "timestamp" field.</summary>
@@ -226,23 +183,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Timestamp {
-      get { if ((_hasBits0 & 4) != 0) { return timestamp_; } else { return 0; } }
+      get { return timestamp_; }
       set {
-        _hasBits0 |= 4;
         timestamp_ = value;
       }
-    }
-    /// <summary>Gets whether the "timestamp" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasTimestamp {
-      get { return (_hasBits0 & 4) != 0; }
-    }
-    /// <summary>Clears the value of the "timestamp" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearTimestamp() {
-      _hasBits0 &= ~4;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -275,14 +219,14 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasButton) hash ^= Button.GetHashCode();
-      if (HasMeshName) hash ^= MeshName.GetHashCode();
+      if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
+      if (MeshName.Length != 0) hash ^= MeshName.GetHashCode();
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
       if (point_ != null) hash ^= Point.GetHashCode();
       if (normal_ != null) hash ^= Normal.GetHashCode();
-      if (HasDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
-      if (HasTimestamp) hash ^= Timestamp.GetHashCode();
+      if (Distance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
+      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -301,11 +245,11 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (HasButton) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(16);
         output.WriteEnum((int) Button);
       }
-      if (HasMeshName) {
+      if (MeshName.Length != 0) {
         output.WriteRawTag(26);
         output.WriteString(MeshName);
       }
@@ -325,11 +269,11 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(58);
         output.WriteMessage(Normal);
       }
-      if (HasDistance) {
+      if (Distance != 0F) {
         output.WriteRawTag(69);
         output.WriteFloat(Distance);
       }
-      if (HasTimestamp) {
+      if (Timestamp != 0) {
         output.WriteRawTag(72);
         output.WriteInt32(Timestamp);
       }
@@ -343,11 +287,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasButton) {
+      if (Button != global::ActionButton.Pointer) {
         output.WriteRawTag(16);
         output.WriteEnum((int) Button);
       }
-      if (HasMeshName) {
+      if (MeshName.Length != 0) {
         output.WriteRawTag(26);
         output.WriteString(MeshName);
       }
@@ -367,11 +311,11 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(58);
         output.WriteMessage(Normal);
       }
-      if (HasDistance) {
+      if (Distance != 0F) {
         output.WriteRawTag(69);
         output.WriteFloat(Distance);
       }
-      if (HasTimestamp) {
+      if (Timestamp != 0) {
         output.WriteRawTag(72);
         output.WriteInt32(Timestamp);
       }
@@ -385,10 +329,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (HasButton) {
+      if (Button != global::ActionButton.Pointer) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
-      if (HasMeshName) {
+      if (MeshName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MeshName);
       }
       if (origin_ != null) {
@@ -403,10 +347,10 @@ namespace DCL.ECSComponents {
       if (normal_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Normal);
       }
-      if (HasDistance) {
+      if (Distance != 0F) {
         size += 1 + 4;
       }
-      if (HasTimestamp) {
+      if (Timestamp != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Timestamp);
       }
       if (_unknownFields != null) {
@@ -421,10 +365,10 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.HasButton) {
+      if (other.Button != global::ActionButton.Pointer) {
         Button = other.Button;
       }
-      if (other.HasMeshName) {
+      if (other.MeshName.Length != 0) {
         MeshName = other.MeshName;
       }
       if (other.origin_ != null) {
@@ -451,10 +395,10 @@ namespace DCL.ECSComponents {
         }
         Normal.MergeFrom(other.Normal);
       }
-      if (other.HasDistance) {
+      if (other.Distance != 0F) {
         Distance = other.Distance;
       }
-      if (other.HasTimestamp) {
+      if (other.Timestamp != 0) {
         Timestamp = other.Timestamp;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);

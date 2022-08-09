@@ -7,6 +7,7 @@ import "common/Color3.proto";
 
 message PBTextShape {
   string text = 1;
+  // @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
   optional bool visible = 2; // default=true
   optional string font = 3;
   optional float opacity = 4; // default=1.0f
