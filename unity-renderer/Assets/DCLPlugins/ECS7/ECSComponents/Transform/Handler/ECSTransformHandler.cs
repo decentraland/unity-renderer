@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
         {
-            ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(10);
+            ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.worldState = worldState;
             this.playerTeleportVariable = playerTeleportVariable;
         }
@@ -22,12 +22,43 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            ECSTransformUtils.orphanEntities.Remove(entity);
+
+            // reset transform and re-parent to the scene
+            entity.gameObject.transform.ResetLocalTRS();
+            ECSTransformUtils.TrySetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            // if entity has any parent
             if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
             {
+                // remove as child
+                if (scene.entities.TryGetValue(entity.parentId, out IDCLEntity parent))
+                {
+                    parent.childrenId.Remove(entity.entityId);
+                }
+
                 entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
-                ECSTransformUtils.SetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
             }
-            ECSTransformUtils.orphanEntities.Remove(entity);
+
+            // if entity has any children
+            int childrenCount = entity.childrenId.Count;
+            if (childrenCount > 0)
+            {
+                for (int i = childrenCount - 1; i >= 0; i--)
+                {
+                    long childId = entity.childrenId[i];
+                    entity.childrenId.RemoveAt(i);
+
+                    if (!scene.entities.TryGetValue(childId, out IDCLEntity child))
+                        continue;
+
+                    // re-parent child to the scene
+                    ECSTransformUtils.TrySetParent(scene, child, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+                    // add child as orphan
+                    ECSTransformUtils.orphanEntities[child] = new ECSTransformUtils.OrphanEntity(scene, child, child.parentId);
+                }
+            }
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -47,17 +78,25 @@ namespace DCL.ECSComponents
 
             if (entity.parentId != model.parentId)
             {
-                entity.parentId = model.parentId;
-                ECSTransformUtils.orphanEntities.Remove(entity);
+                ProcessNewParent(scene, entity, model.parentId);
+            }
+        }
 
-                // if `parentId` does not exist yet, we added to `orphanEntities` so system `ECSTransformParentingSystem`
-                // can retry parenting later
-                long parentId = model.parentId != entity.entityId ? model.parentId : (long)SpecialEntityId.SCENE_ROOT_ENTITY;
-                if (!ECSTransformUtils.SetParent(scene, entity, parentId))
+        private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
+        {
+            // remove as child of previous parent
+            if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
+            {
+                if (scene.entities.TryGetValue(entity.parentId, out IDCLEntity parent))
                 {
-                    ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
+                    parent.childrenId.Remove(entity.entityId);
                 }
             }
+
+            entity.parentId = parentId;
+
+            // add as orphan so system can parent it
+            ECSTransformUtils.orphanEntities[entity] = new ECSTransformUtils.OrphanEntity(scene, entity, parentId);
         }
 
         private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,
@@ -73,13 +112,13 @@ namespace DCL.ECSComponents
             Vector2Int targetCoords = scene.sceneData.basePosition + Utils.WorldToGridPosition(localPosition);
 
             // If target coordinates are outside the scene we'll ignore it
-            if (!scene.IsInsideSceneBoundaries(targetCoords))
+            if (!ECSTransformUtils.IsInsideSceneBoundaries(scene, targetCoords))
             {
                 return false;
             }
 
             playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
-                                    + localPosition);
+                                       + localPosition);
             return true;
         }
     }

@@ -174,6 +174,12 @@ namespace DCL.Controllers
 
             componentsManagerLegacy.DisposeAllSceneComponents();
 
+            if (crdtExecutor != null)
+            {
+                crdtExecutor.Dispose();
+                crdtExecutor = null;
+            }
+
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
                 RemoveAllEntitiesImmediate();
