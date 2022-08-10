@@ -32,6 +32,7 @@ namespace DCL
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate()));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

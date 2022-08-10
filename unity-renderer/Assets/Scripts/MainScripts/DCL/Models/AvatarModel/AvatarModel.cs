@@ -13,6 +13,10 @@ public class AvatarModel : BaseModel
     public Color hairColor;
     public Color eyeColor;
     public List<string> wearables = new List<string>();
+
+    //Depending on the feature flag emotes will be contained in wearables or in this property
+    public List<string> emotes = new List<string>();
+
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
     public string stickerTriggerId = null;

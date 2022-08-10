@@ -54,7 +54,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.maleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), 5000);
+                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), int.MaxValue);
                     dataStore.animations.Add((MALE, embeddedEmote.id), embeddedEmote.maleAnimation);
                     loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -64,12 +64,12 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.femaleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), 5000);
+                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), int.MaxValue);
                     dataStore.animations.Add((FEMALE, embeddedEmote.id), embeddedEmote.femaleAnimation);
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
             }
-            CatalogController.i.EmbedWearables(embeddedEmotes.emotes);
+            Environment.i.serviceLocator.Get<IEmotesCatalogService>().EmbedEmotes(embeddedEmotes.emotes);
         }
 
         private void OnRefCountUpdated((string bodyshapeId, string emoteId) value, int refCount)

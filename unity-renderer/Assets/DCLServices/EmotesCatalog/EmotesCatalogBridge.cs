@@ -1,0 +1,87 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DCL;
+using DCL.Helpers;
+using DCL.Interface;
+using UnityEngine;
+
+public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
+{
+    [Serializable]
+    private class AddEmotesResponse
+    {
+        public WearableItem[] emotes;
+        public string context;
+    }
+
+    public event IEmotesCatalogBridge.EmotesReceived OnEmotesReceived;
+    public event IEmotesCatalogBridge.OwnedEmotesReceived OnOwnedEmotesReceived;
+
+    private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
+    private bool isAlreadyDestroyed;
+
+    public static EmotesCatalogBridge GetOrCreate() { return SceneReferences.i.bridgeGameObject.GetOrCreateComponent<EmotesCatalogBridge>(); }
+
+    public void RequestEmote(string emoteId) { emotesToRequestThisFrame.Add(emoteId); }
+
+    // Alex: If at some point base emotes are not embedded in the client but sent by kernel
+    // this call wouldn't be listened by any Promise and wont be processed.
+    // This issue can be solved easily by adding a different call AddBaseEmotes and a different event
+    public void AddEmotesToCatalog(string payload)
+    {
+        AddEmotesResponse request = null;
+
+        try
+        {
+            request = JsonUtility.FromJson<AddEmotesResponse>(payload);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Fail to parse emote json {e}");
+        }
+
+        if (request == null)
+            return;
+
+        if (string.IsNullOrEmpty(request.context))
+            OnEmotesReceived?.Invoke(request.emotes);
+        else
+            OnOwnedEmotesReceived?.Invoke(request.emotes, request.context);
+    }
+
+    public void RequestOwnedEmotes(string userId)
+    {
+        WebInterface.RequestWearables(
+            ownedByUser: userId,
+            wearableIds: null,
+            collectionIds: null,
+            context: $"{userId}"
+        );
+    }
+
+    private void Update()
+    {
+        if (emotesToRequestThisFrame.Count == 0)
+            return;
+
+        WebInterface.RequestEmotes(
+            ownedByUser: null,
+            emoteIds: emotesToRequestThisFrame.ToArray(),
+            collectionIds: null,
+            context: string.Join(",", emotesToRequestThisFrame.ToArray())
+        );
+
+
+        emotesToRequestThisFrame.Clear();
+    }
+
+    public void Dispose()
+    {
+        if (isAlreadyDestroyed)
+            return;
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy() { isAlreadyDestroyed = true; }
+}
