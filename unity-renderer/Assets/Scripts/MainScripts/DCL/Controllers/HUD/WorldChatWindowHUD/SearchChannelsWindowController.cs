@@ -20,6 +20,7 @@ namespace DCL.Chat.HUD
         public event Action OnClosed;
         public event Action OnBack;
         public event Action OnOpenChannelCreation;
+        public event Action<string> OnOpenChannelLeave;
 
         public SearchChannelsWindowController(IChatController chatController)
         {
@@ -142,7 +143,7 @@ namespace DCL.Chat.HUD
         
         private void HandleLeaveChannel(string channelId)
         {
-            chatController.LeaveChannel(channelId);
+            OnOpenChannelLeave?.Invoke(channelId);
         }
     }
 }

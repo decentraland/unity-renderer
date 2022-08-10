@@ -32,6 +32,7 @@ namespace DCL.Chat.HUD
         public event Action OnPressBack;
         public event Action OnClosed;
         public event Action<bool> OnPreviewModeChanged;
+        public event Action<string> OnOpenChannelLeave;
 
         public ChatChannelHUDController(DataStore dataStore,
             IUserProfileBridge userProfileBridge,
@@ -351,8 +352,8 @@ namespace DCL.Chat.HUD
             View?.SetLoadingMessagesActive(false);
             View?.SetOldMessagesLoadingActive(false);
         }
-        
-        private void LeaveChannel() => chatController.LeaveChannel(channelId);
+
+        private void LeaveChannel() => OnOpenChannelLeave?.Invoke(channelId);
         
         private void HandleChannelLeft(string channelId)
         {

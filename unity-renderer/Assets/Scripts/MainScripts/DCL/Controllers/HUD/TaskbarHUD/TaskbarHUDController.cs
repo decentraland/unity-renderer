@@ -32,6 +32,7 @@ public class TaskbarHUDController : IHUD
     private IHUD chatBackWindow;
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
+    private LeaveChannelWindowController channelLeaveWindow;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -313,6 +314,7 @@ public class TaskbarHUDController : IHUD
         view.ShowChatButton();
         worldChatWindowHud.View.OnClose += OpenPublicChatOnPreviewMode;
         worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
+        worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeave;
     }
 
     private void OpenPublicChatOnPreviewMode()
@@ -712,6 +714,7 @@ public class TaskbarHUDController : IHUD
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
         controller.OnPreviewModeChanged += HandleChannelPreviewModeChanged;
+        controller.OnOpenChannelLeave += OpenChannelLeave;
     }
 
     public void AddChannelSearch(SearchChannelsWindowController controller)
@@ -730,6 +733,7 @@ public class TaskbarHUDController : IHUD
         };
         controller.OnBack += GoBackFromChat;
         controller.OnOpenChannelCreation += OpenChannelCreation;
+        controller.OnOpenChannelLeave += OpenChannelLeave;
     }
 
     public void AddChannelCreation(CreateChannelWindowController controller)
@@ -751,6 +755,20 @@ public class TaskbarHUDController : IHUD
     private void OpenChannelCreation()
     {
         channelCreationWindow.SetVisibility(true);
+    }
+
+    public void AddChannelLeave(LeaveChannelWindowController controller)
+    {
+        if (controller.View.Transform.parent == view.fullScreenWindowContainer) return;
+
+        controller.View.Transform.SetParent(view.fullScreenWindowContainer, false);
+        channelLeaveWindow = controller;
+    }
+
+    private void OpenChannelLeave(string channelId)
+    {
+        channelLeaveWindow.SetChannelToLeave(channelId);
+        channelLeaveWindow.SetVisibility(true);
     }
 
     public void OpenChannelSearch()
