@@ -78,9 +78,14 @@ namespace DCL.Chat.HUD
         [Test]
         public void LeaveChannelWhenViewRequests()
         {
+            string channelToLeave = "";
+            controller.OnOpenChannelLeave += channelId =>
+            {
+                channelToLeave = channelId;
+            };
             view.OnLeaveChannel += Raise.Event<Action>();
-            
-            chatController.Received(1).LeaveChannel(CHANNEL_ID);
+
+            Assert.AreEqual(channelToLeave, CHANNEL_ID);
         }
     }
 }

@@ -39,6 +39,7 @@ public class WorldChatWindowController : IHUD
     public event Action OnOpen;
     public event Action OnOpenChannelSearch;
     public event Action OnOpenChannelCreation;
+    public event Action<string> OnOpenChannelLeave;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -142,8 +143,8 @@ public class WorldChatWindowController : IHUD
     }
     
     private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
-    
-    private void LeaveChannel(string channelId) => chatController.LeaveChannel(channelId);
+
+    private void LeaveChannel(string channelId) => OnOpenChannelLeave?.Invoke(channelId);
 
     private void RequestJoinedChannels()
     {

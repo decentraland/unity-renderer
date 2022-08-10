@@ -95,6 +95,9 @@ public class HUDController : IHUDController
     private CreateChannelWindowController channelCreateHud =>
         GetHUDElement(HUDElementID.CHANNELS_CREATE) as CreateChannelWindowController;
 
+    private LeaveChannelConfirmationWindowController channelLeaveHud =>
+        GetHUDElement(HUDElementID.CHANNELS_LEAVE_CONFIRMATION) as LeaveChannelConfirmationWindowController;
+
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
     public TeleportPromptHUDController teleportHud =>
@@ -296,6 +299,14 @@ public class HUDController : IHUDController
                     channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
                     channelCreateHud.SetVisibility(false);
                     taskbarHud?.AddChannelCreation(channelCreateHud);
+                }
+
+                if (channelLeaveHud == null)
+                {
+                    CreateHudElement(configuration, HUDElementID.CHANNELS_LEAVE_CONFIRMATION);
+                    channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
+                    channelLeaveHud.SetVisibility(false);
+                    taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
                 }
 
                 break;
