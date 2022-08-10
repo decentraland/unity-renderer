@@ -1,9 +1,12 @@
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
+using DCL.Components.Interfaces;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -125,8 +128,9 @@ namespace DCL.Components
         }
     }
 
-    public class UIShape : BaseDisposable
+    public class UIShape : BaseDisposable, IUIRefreshable
     {
+
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -151,27 +155,23 @@ namespace DCL.Components
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
-        public bool isLayoutDirty { get; protected set; }
+        public bool isLayoutDirty { get; private set; }
         protected System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
-
+        private BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         public UIShape parentUIComponent { get; protected set; }
-
-        private Coroutine layoutRefreshWatcher;
 
         public UIShape()
         {
             screenSize.OnChange += OnScreenResize;
-            model = new Model();
-
-            if ( layoutRefreshWatcher == null )
-                layoutRefreshWatcher = CoroutineStarter.Start(LayoutRefreshWatcher());
+            model = new Model(); 
         }
 
         private void OnScreenResize(Vector2Int current, Vector2Int previous)
         {
-            isLayoutDirty = GetRootParent() == this;
+            if (GetRootParent() == this)
+                RequestRefresh();
         }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
@@ -232,38 +232,33 @@ namespace DCL.Components
 
             return referencesContainer as T;
         }
-
-        IEnumerator LayoutRefreshWatcher()
+        
+        public virtual void RequestRefresh()
         {
-            while (true)
+            if (isLayoutDirty) return;
+            
+            isLayoutDirty = true;
+
+            var dirtyShapesByScene = dirtyShapesBySceneVariable.Get();
+
+            string sceneDataID = scene.sceneData.id;
+            if (string.IsNullOrEmpty(sceneDataID)) sceneDataID = "default";
+
+            if (!dirtyShapesByScene.ContainsKey(sceneDataID))
             {
-                // WaitForEndOfFrame doesn't work in batch mode
-                yield return Application.isBatchMode ? null : new WaitForEndOfFrame();
-
-                if ( !isLayoutDirty )
-                    continue;
-
-                // When running tests this is empty.
-                if (!string.IsNullOrEmpty(CommonScriptableObjects.sceneID))
-                {
-                    if (CommonScriptableObjects.sceneID.Get() != scene.sceneData.id)
-                        continue;
-                }
-
-                RefreshAll();
+                dirtyShapesByScene.Add(sceneDataID, new Queue<IUIRefreshable>());
             }
+            
+            dirtyShapesByScene[sceneDataID].Enqueue(this);
         }
 
-        public virtual void RefreshAll()
+        private void RefreshRecursively()
         {
             // We are not using the _Internal here because the method is overridden
             // by some UI shapes.
             RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
             FixMaxStretchRecursively();
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
-            isLayoutDirty = false;
-            OnLayoutRefresh?.Invoke();
-            OnLayoutRefresh = null;
         }
 
         public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
@@ -275,8 +270,8 @@ namespace DCL.Components
             if (rootParent.referencesContainer == null)
                 return;
 
-            rootParent.isLayoutDirty = true;
-
+            rootParent.RequestRefresh();
+            
             if ( OnRefresh != null )
                 rootParent.OnLayoutRefresh += OnRefresh;
         }
@@ -493,13 +488,11 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
             screenSize.OnChange -= OnScreenResize;
-
-            if ( layoutRefreshWatcher != null )
-                CoroutineStarter.Stop(layoutRefreshWatcher);
 
             base.Dispose();
         }
@@ -507,5 +500,13 @@ namespace DCL.Components
         public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
 
         public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+        public void Refresh()
+        {
+            RefreshRecursively(); 
+            isLayoutDirty = false;
+            
+            OnLayoutRefresh?.Invoke();
+            OnLayoutRefresh = null;
+        }
     }
 }

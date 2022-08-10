@@ -113,7 +113,7 @@ namespace DCL.Bots
         }
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
-        private Vector3 playerWorldPosition => CommonScriptableObjects.playerWorldPosition.Get();
+        private Vector3 playerWorldPosition => DataStore.i.player.playerWorldPosition.Get();
         private WorldPosInstantiationConfig lastConfigUsed;
         /// <summary>
         /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's position
