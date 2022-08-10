@@ -567,7 +567,7 @@ namespace DCL.Tutorial
                 if (t <= 1.0f)
                     configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, destination, configuration.teacherMovementCurve.Evaluate(t));
                 else
-                    configuration.teacherRawImage.rectTransform.position = toPosition;
+                    configuration.teacherRawImage.rectTransform.position = destination;
 
                 yield return null;
             }
