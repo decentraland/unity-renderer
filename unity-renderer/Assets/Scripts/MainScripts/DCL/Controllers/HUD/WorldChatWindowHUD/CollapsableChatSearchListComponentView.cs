@@ -70,7 +70,9 @@ namespace DCL.Chat.HUD
 
         public override BaseComponentView Remove(string key)
         {
-            return (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
+            var entry = (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
+            UpdateEmptyState();
+            return entry;
         }
 
         public void Set(PrivateChatEntryModel model)
