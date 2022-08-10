@@ -6,11 +6,14 @@ option (ecs_component_id) = 1040;
 import "common/Color3.proto";
 
 message PBNFTShape {
-  bool with_collisions = 1;
-  bool is_pointer_blocker = 2;
-  bool visible = 3;
+  // @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
+  optional bool with_collisions = 1; // default=true
+  // @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
+  optional bool is_pointer_blocker = 2; // default=true
+  // @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
+  optional bool visible = 3; // default=true
   string src = 4;
-  string asset_id = 5;
-  int32 style = 6;
-  Color3 color = 7;
+  optional string asset_id = 5;
+  optional int32 style = 6;
+  optional Color3 color = 7;
 }
