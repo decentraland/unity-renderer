@@ -204,6 +204,12 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
+            if (teacherMovementCoroutine != null)
+            {
+                CoroutineStarter.Stop(teacherMovementCoroutine);
+                teacherMovementCoroutine = null;
+            }
+
             tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(false);
             tutorialView.tutorialMusicHandler.StopTutorialMusic();
