@@ -19,7 +19,7 @@ namespace DCL.Models
         void ResetRelease();
         IParcelScene scene { get; set; }
         bool markedForCleanup { get; set; }
-        bool isInsideSceneOuterBoundariess { get; set; }
+        bool isInsideSceneOuterBoundaries { get; set; }
         bool isInsideSceneBoundaries { get; set; }
         Dictionary<long, IDCLEntity> children { get; }
         IDCLEntity parent { get; }

@@ -220,25 +220,27 @@ namespace DCL.Controllers
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
             
-            entity.isInsideSceneOuterBoundariess = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
+            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
             
-            if (!entity.isInsideSceneOuterBoundariess)
+            if (!entity.isInsideSceneOuterBoundaries)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
-            else if (!onlyOuterBoundsCheck)
+            
+            if (!onlyOuterBoundsCheck)
                 SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
         }
         
         void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
             Vector3 entityGOPosition = entity.gameObject.transform.position;
-            entity.isInsideSceneOuterBoundariess = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
+            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
             
-            if (!entity.isInsideSceneOuterBoundariess)
+            if (!entity.isInsideSceneOuterBoundaries)
             {
                 UpdateEntityInsideBoundariesState(entity, false);
                 UpdateComponents(entity, false);
             }
-            else if (!onlyOuterBoundsCheck)
+            
+            if (!onlyOuterBoundsCheck)
             {
                 bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get());
                 UpdateEntityInsideBoundariesState(entity, isInsideBoundaries);
@@ -345,7 +347,7 @@ namespace DCL.Controllers
 
                 // No need to add the entity to be checked later if we already found it outside its bounds.
                 // When the correct events are triggered again, the entity will be checked again.
-                if (!entity.isInsideSceneOuterBoundariess)
+                if (!entity.isInsideSceneOuterBoundaries)
                     return;
             }
             

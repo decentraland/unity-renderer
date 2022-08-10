@@ -447,8 +447,8 @@ namespace SceneBoundariesCheckerTests
                     if (t.name.Contains("Wireframe"))
                         hasWireframe = true;
                 }
-
-                Assert.That(hasWireframe, Is.False); 
+                
+                Assert.IsFalse(hasWireframe);
             }
             else
             {
