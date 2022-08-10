@@ -11,7 +11,13 @@ namespace DCL.Chat.HUD
         [SetUp]
         public void SetUp()
         {
-            view = Resources.Load<PublicChatEntry>("SocialBarV1/ChannelSearchEntry");
+            view = Object.Instantiate(Resources.Load<PublicChatEntry>("SocialBarV1/ChannelSearchEntry"));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.Destroy(view.gameObject);
         }
 
         [TestCase(14)]
@@ -79,6 +85,34 @@ namespace DCL.Chat.HUD
             var called = false;
             view.OnOpenOptions += entry => called = true;
             view.optionsButton.onClick.Invoke();
+            
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void EnableLeaveOptionWhenIsJoined()
+        {
+            view.Configure(new PublicChatEntryModel("channelId", "bleh", 0, true, 0));
+            
+            Assert.IsTrue(view.joinedContainer.activeSelf);
+        }
+        
+        [Test]
+        public void DisableLeaveOptionWhenIsNotJoined()
+        {
+            view.Configure(new PublicChatEntryModel("channelId", "bleh", 0, false, 0));
+            
+            Assert.IsFalse(view.joinedContainer.activeSelf);
+        }
+
+        [Test]
+        public void TriggerLeave()
+        {
+            var called = false;
+            view.OnLeave += entry => called = entry == view; 
+            view.Configure(new PublicChatEntryModel("channelId", "bleh", 0, true, 0));
+            
+            view.leaveButton.onClick.Invoke();
             
             Assert.IsTrue(called);
         }
