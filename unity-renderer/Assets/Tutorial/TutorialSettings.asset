@@ -110,6 +110,6 @@ MonoBehaviour:
   eagleCamInitLookAtPoint: {x: 16, y: 105, z: 6}
   eagleCamRotationActived: 0
   eagleCamRotationSpeed: 1
-  debugRunTutorial: 1
+  debugRunTutorial: 0
   debugStartingStepIndex: 0
-  debugOpenedFromDeepLink: 1
+  debugOpenedFromDeepLink: 0
