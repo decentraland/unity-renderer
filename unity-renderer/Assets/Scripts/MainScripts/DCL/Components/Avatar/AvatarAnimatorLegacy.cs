@@ -119,10 +119,15 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.Sample();
         InitializeAvatarAudioAndParticleHandlers(animation);
 
-        if (!isOwnPlayer)
+        if (isOwnPlayer)
+        {
+            DCLCharacterController.i.OnUpdateFinish += OnUpdateWithDeltaTime;
+        }
+        else
         {
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
         }
+
         return true;
     }
 
@@ -165,11 +170,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
             // NOTE: disable MonoBehaviour's update to use DCLCharacterController event instead
             this.enabled = !isOwnPlayer;
-
-            if (isOwnPlayer)
-            {
-                DCLCharacterController.i.OnUpdateFinish += OnUpdateWithDeltaTime;
-            }
         }
 
         currentState = State_Init;
