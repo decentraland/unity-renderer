@@ -831,6 +831,7 @@ GameObject:
   - component: {fileID: 3651741205947750654}
   - component: {fileID: 801795004811327483}
   - component: {fileID: 5926612440724047820}
+  - component: {fileID: 883870854796589824}
   m_Layer: 5
   m_Name: JoinButton
   m_TagString: Untagged
@@ -940,6 +941,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &883870854796589824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3917108206330346150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &5551030891624335002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,6 +1545,7 @@ GameObject:
   - component: {fileID: 387345365747151315}
   - component: {fileID: 7988454220762572048}
   - component: {fileID: 100716840669198008}
+  - component: {fileID: 1631832890840832680}
   m_Layer: 5
   m_Name: LeaveButton
   m_TagString: Untagged
@@ -1637,3 +1655,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1631832890840832680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8694045414988930583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
