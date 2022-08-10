@@ -84,7 +84,7 @@ namespace DCL.ECSComponents
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF if it is not visible
-                    if (!model.Visible)
+                    if (!model.GetVisible())
                         ECSComponentsUtils.RemoveMaterialTransition(entity.meshRootGameObject);
                     
                     entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
@@ -116,14 +116,14 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
+            shapeRepresentation.UpdateModel(model.GetVisible(), model.GetWithCollisions());
             
             // If the model didn't had collider because the first model came with WithCollisions = false and IsPointerBlocker = false
             if(meshesInfo.colliders.Count == 0 || meshesInfo.meshFilters.Length > 0)
-                collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity, ECSComponentsUtils.CalculateCollidersLayer(model.WithCollisions,model.IsPointerBlocker));
+                collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.GetWithCollisions(), model.GetIsPointerBlocker(), entity, ECSComponentsUtils.CalculateCollidersLayer(model.GetWithCollisions(), model.GetIsPointerBlocker()));
             
             // Update the mesh info 
-            ECSComponentsUtils.UpdateMeshInfo(entity, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+            ECSComponentsUtils.UpdateMeshInfo(entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
         }
 
         internal void Dispose(IParcelScene scene)

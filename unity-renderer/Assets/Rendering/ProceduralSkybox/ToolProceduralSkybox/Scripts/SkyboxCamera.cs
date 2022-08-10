@@ -51,7 +51,5 @@ namespace DCL.Skybox
 
             camBehavior.AssignCamera(mainCamComponent, skyboxCamera);
         }
-
-        public void SetCameraEnabledState(bool enabled) { skyboxCamera.enabled = enabled; }
     }
 }

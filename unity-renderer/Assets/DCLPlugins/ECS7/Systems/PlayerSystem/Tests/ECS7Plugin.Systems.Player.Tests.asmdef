@@ -1,0 +1,32 @@
+{
+    "name": "ECS7Plugin.Systems.Player.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:7eb48a6a47db4795bdee44a726fa8338",
+        "GUID:2f65f91ec3d84150a37ed886555c85c6",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:27120c68277e4a67bf44f9025138b8af"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

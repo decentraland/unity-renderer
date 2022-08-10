@@ -29,7 +29,7 @@ namespace DCL.ECSComponents
             this.infoRetriever = infoRetriever;
             this.assetRetriever = assetRetriever;
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -114,12 +114,12 @@ namespace DCL.ECSComponents
         internal void ApplyModel(PBNFTShape model)
         {
             // If we have collisions or we need to block the pointer event, we activate the collider
-            bool shouldHaveCollider = model.WithCollisions || model.IsPointerBlocker;
+            bool shouldHaveCollider = model.GetWithCollisions() || model.GetIsPointerBlocker();
             shapeFrame.UpdateCollider(shouldHaveCollider);
             
-            shapeFrame.SetVisibility(model.Visible);
+            shapeFrame.SetVisibility(model.GetVisible());
             
-            int layer = ECSComponentsUtils.CalculateCollidersLayer(model.WithCollisions, model.IsPointerBlocker);
+            int layer = ECSComponentsUtils.CalculateCollidersLayer(model.GetWithCollisions(), model.GetIsPointerBlocker());
             shapeFrame.SetLayerMask(layer);
             UpdateBackgroundColor(model);
 

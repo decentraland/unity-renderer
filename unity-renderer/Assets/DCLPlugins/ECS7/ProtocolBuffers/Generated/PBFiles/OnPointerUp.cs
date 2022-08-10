@@ -24,14 +24,17 @@ namespace DCL.ECSComponents {
     static OnPointerUpReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFPblBvaW50ZXJVcC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJcCg1QQk9u",
-            "UG9pbnRlclVwEg4KBmJ1dHRvbhgBIAEoBRISCgpob3Zlcl90ZXh0GAIgASgJ",
-            "EhAKCGRpc3RhbmNlGAMgASgCEhUKDXNob3dfZmVlZGJhY2sYBCABKAhCFKoC",
-            "EURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "ChFPblBvaW50ZXJVcC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoZY29tbW9u",
+            "L0FjdGlvbkJ1dHRvbi5wcm90byLAAQoNUEJPblBvaW50ZXJVcBIiCgZidXR0",
+            "b24YASABKA4yDS5BY3Rpb25CdXR0b25IAIgBARIXCgpob3Zlcl90ZXh0GAIg",
+            "ASgJSAGIAQESGQoMbWF4X2Rpc3RhbmNlGAMgASgCSAKIAQESGgoNc2hvd19m",
+            "ZWVkYmFjaxgEIAEoCEgDiAEBQgkKB19idXR0b25CDQoLX2hvdmVyX3RleHRC",
+            "DwoNX21heF9kaXN0YW5jZUIQCg5fc2hvd19mZWVkYmFja0IUqgIRRENMLkVD",
+            "U0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerUp), global::DCL.ECSComponents.PBOnPointerUp.Parser, new[]{ "Button", "HoverText", "Distance", "ShowFeedback" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBOnPointerUp), global::DCL.ECSComponents.PBOnPointerUp.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null)
           }));
     }
     #endregion
@@ -45,6 +48,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBOnPointerUp> _parser = new pb::MessageParser<PBOnPointerUp>(() => new PBOnPointerUp());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBOnPointerUp> Parser { get { return _parser; } }
@@ -72,9 +76,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBOnPointerUp(PBOnPointerUp other) : this() {
+      _hasBits0 = other._hasBits0;
       button_ = other.button_;
       hoverText_ = other.hoverText_;
-      distance_ = other.distance_;
+      maxDistance_ = other.maxDistance_;
       showFeedback_ = other.showFeedback_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -87,50 +92,113 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "button" field.</summary>
     public const int ButtonFieldNumber = 1;
-    private int button_;
+    private global::ActionButton button_;
+    /// <summary>
+    /// default=ActionButton.ANY
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Button {
-      get { return button_; }
+    public global::ActionButton Button {
+      get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::ActionButton.Pointer; } }
       set {
+        _hasBits0 |= 1;
         button_ = value;
       }
+    }
+    /// <summary>Gets whether the "button" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasButton {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "button" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearButton() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "hover_text" field.</summary>
     public const int HoverTextFieldNumber = 2;
-    private string hoverText_ = "";
+    private string hoverText_;
+    /// <summary>
+    /// default='Interact'
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string HoverText {
-      get { return hoverText_; }
+      get { return hoverText_ ?? ""; }
       set {
         hoverText_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
-
-    /// <summary>Field number for the "distance" field.</summary>
-    public const int DistanceFieldNumber = 3;
-    private float distance_;
+    /// <summary>Gets whether the "hover_text" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Distance {
-      get { return distance_; }
+    public bool HasHoverText {
+      get { return hoverText_ != null; }
+    }
+    /// <summary>Clears the value of the "hover_text" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearHoverText() {
+      hoverText_ = null;
+    }
+
+    /// <summary>Field number for the "max_distance" field.</summary>
+    public const int MaxDistanceFieldNumber = 3;
+    private float maxDistance_;
+    /// <summary>
+    /// default=10
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float MaxDistance {
+      get { if ((_hasBits0 & 2) != 0) { return maxDistance_; } else { return 0F; } }
       set {
-        distance_ = value;
+        _hasBits0 |= 2;
+        maxDistance_ = value;
       }
+    }
+    /// <summary>Gets whether the "max_distance" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasMaxDistance {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "max_distance" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearMaxDistance() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "show_feedback" field.</summary>
     public const int ShowFeedbackFieldNumber = 4;
     private bool showFeedback_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool ShowFeedback {
-      get { return showFeedback_; }
+      get { if ((_hasBits0 & 4) != 0) { return showFeedback_; } else { return false; } }
       set {
+        _hasBits0 |= 4;
         showFeedback_ = value;
       }
+    }
+    /// <summary>Gets whether the "show_feedback" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasShowFeedback {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "show_feedback" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearShowFeedback() {
+      _hasBits0 &= ~4;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -150,7 +218,7 @@ namespace DCL.ECSComponents {
       }
       if (Button != other.Button) return false;
       if (HoverText != other.HoverText) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Distance, other.Distance)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
       if (ShowFeedback != other.ShowFeedback) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -159,10 +227,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
-      if (HoverText.Length != 0) hash ^= HoverText.GetHashCode();
-      if (Distance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Distance);
-      if (ShowFeedback != false) hash ^= ShowFeedback.GetHashCode();
+      if (HasButton) hash ^= Button.GetHashCode();
+      if (HasHoverText) hash ^= HoverText.GetHashCode();
+      if (HasMaxDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
+      if (HasShowFeedback) hash ^= ShowFeedback.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -181,19 +249,19 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Button != 0) {
+      if (HasButton) {
         output.WriteRawTag(8);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
-      if (HoverText.Length != 0) {
+      if (HasHoverText) {
         output.WriteRawTag(18);
         output.WriteString(HoverText);
       }
-      if (Distance != 0F) {
+      if (HasMaxDistance) {
         output.WriteRawTag(29);
-        output.WriteFloat(Distance);
+        output.WriteFloat(MaxDistance);
       }
-      if (ShowFeedback != false) {
+      if (HasShowFeedback) {
         output.WriteRawTag(32);
         output.WriteBool(ShowFeedback);
       }
@@ -207,19 +275,19 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Button != 0) {
+      if (HasButton) {
         output.WriteRawTag(8);
-        output.WriteInt32(Button);
+        output.WriteEnum((int) Button);
       }
-      if (HoverText.Length != 0) {
+      if (HasHoverText) {
         output.WriteRawTag(18);
         output.WriteString(HoverText);
       }
-      if (Distance != 0F) {
+      if (HasMaxDistance) {
         output.WriteRawTag(29);
-        output.WriteFloat(Distance);
+        output.WriteFloat(MaxDistance);
       }
-      if (ShowFeedback != false) {
+      if (HasShowFeedback) {
         output.WriteRawTag(32);
         output.WriteBool(ShowFeedback);
       }
@@ -233,16 +301,16 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Button != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (HasButton) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
       }
-      if (HoverText.Length != 0) {
+      if (HasHoverText) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
       }
-      if (Distance != 0F) {
+      if (HasMaxDistance) {
         size += 1 + 4;
       }
-      if (ShowFeedback != false) {
+      if (HasShowFeedback) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -257,16 +325,16 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
+      if (other.HasButton) {
         Button = other.Button;
       }
-      if (other.HoverText.Length != 0) {
+      if (other.HasHoverText) {
         HoverText = other.HoverText;
       }
-      if (other.Distance != 0F) {
-        Distance = other.Distance;
+      if (other.HasMaxDistance) {
+        MaxDistance = other.MaxDistance;
       }
-      if (other.ShowFeedback != false) {
+      if (other.HasShowFeedback) {
         ShowFeedback = other.ShowFeedback;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -285,7 +353,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 18: {
@@ -293,7 +361,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 29: {
-            Distance = input.ReadFloat();
+            MaxDistance = input.ReadFloat();
             break;
           }
           case 32: {
@@ -316,7 +384,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            Button = input.ReadInt32();
+            Button = (global::ActionButton) input.ReadEnum();
             break;
           }
           case 18: {
@@ -324,7 +392,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 29: {
-            Distance = input.ReadFloat();
+            MaxDistance = input.ReadFloat();
             break;
           }
           case 32: {

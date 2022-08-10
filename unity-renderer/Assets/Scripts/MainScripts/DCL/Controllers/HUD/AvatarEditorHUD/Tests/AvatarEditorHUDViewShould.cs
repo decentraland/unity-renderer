@@ -274,6 +274,13 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
         }
+        
+        [Test]
+        public void ShowWarningWhenNoLinkedWearableAvailable()
+        {
+            controller.ToggleThirdPartyCollection(true, "MOCK_COLLECTION_ID", "MOCK_COLLECTION_NAME");
+            Assert.True(controller.view.noItemInCollectionWarning.isActiveAndEnabled);
+        }
 
         private WearableItem CreateDummyNFT(string rarity)
         {

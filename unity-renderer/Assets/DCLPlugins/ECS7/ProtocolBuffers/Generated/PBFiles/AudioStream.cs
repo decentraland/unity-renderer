@@ -24,13 +24,14 @@ namespace DCL.ECSComponents {
     static AudioStreamReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFBdWRpb1N0cmVhbS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyI9Cg1QQkF1",
-            "ZGlvU3RyZWFtEg8KB3BsYXlpbmcYASABKAgSDgoGdm9sdW1lGAIgASgCEgsK",
-            "A3VybBgDIAEoCUIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ChFBdWRpb1N0cmVhbS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJeCg1QQkF1",
+            "ZGlvU3RyZWFtEhQKB3BsYXlpbmcYASABKAhIAIgBARITCgZ2b2x1bWUYAiAB",
+            "KAJIAYgBARILCgN1cmwYAyABKAlCCgoIX3BsYXlpbmdCCQoHX3ZvbHVtZUIU",
+            "qgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioStream), global::DCL.ECSComponents.PBAudioStream.Parser, new[]{ "Playing", "Volume", "Url" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioStream), global::DCL.ECSComponents.PBAudioStream.Parser, new[]{ "Playing", "Volume", "Url" }, new[]{ "Playing", "Volume" }, null, null, null)
           }));
     }
     #endregion
@@ -44,6 +45,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBAudioStream> _parser = new pb::MessageParser<PBAudioStream>(() => new PBAudioStream());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAudioStream> Parser { get { return _parser; } }
@@ -71,6 +73,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAudioStream(PBAudioStream other) : this() {
+      _hasBits0 = other._hasBits0;
       playing_ = other.playing_;
       volume_ = other.volume_;
       url_ = other.url_;
@@ -89,22 +92,51 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
-      get { return playing_; }
+      get { if ((_hasBits0 & 1) != 0) { return playing_; } else { return false; } }
       set {
+        _hasBits0 |= 1;
         playing_ = value;
       }
+    }
+    /// <summary>Gets whether the "playing" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPlaying {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "playing" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPlaying() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "volume" field.</summary>
     public const int VolumeFieldNumber = 2;
     private float volume_;
+    /// <summary>
+    /// default=1.0f
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Volume {
-      get { return volume_; }
+      get { if ((_hasBits0 & 2) != 0) { return volume_; } else { return 0F; } }
       set {
+        _hasBits0 |= 2;
         volume_ = value;
       }
+    }
+    /// <summary>Gets whether the "volume" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasVolume {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "volume" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearVolume() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "url" field.</summary>
@@ -144,8 +176,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Playing != false) hash ^= Playing.GetHashCode();
-      if (Volume != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Volume);
+      if (HasPlaying) hash ^= Playing.GetHashCode();
+      if (HasVolume) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Volume);
       if (Url.Length != 0) hash ^= Url.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -165,11 +197,11 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Playing != false) {
+      if (HasPlaying) {
         output.WriteRawTag(8);
         output.WriteBool(Playing);
       }
-      if (Volume != 0F) {
+      if (HasVolume) {
         output.WriteRawTag(21);
         output.WriteFloat(Volume);
       }
@@ -187,11 +219,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Playing != false) {
+      if (HasPlaying) {
         output.WriteRawTag(8);
         output.WriteBool(Playing);
       }
-      if (Volume != 0F) {
+      if (HasVolume) {
         output.WriteRawTag(21);
         output.WriteFloat(Volume);
       }
@@ -209,10 +241,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Playing != false) {
+      if (HasPlaying) {
         size += 1 + 1;
       }
-      if (Volume != 0F) {
+      if (HasVolume) {
         size += 1 + 4;
       }
       if (Url.Length != 0) {
@@ -230,10 +262,10 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Playing != false) {
+      if (other.HasPlaying) {
         Playing = other.Playing;
       }
-      if (other.Volume != 0F) {
+      if (other.HasVolume) {
         Volume = other.Volume;
       }
       if (other.Url.Length != 0) {

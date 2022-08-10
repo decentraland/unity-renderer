@@ -55,11 +55,14 @@ namespace DCL.ECSComponents
             dataStore.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
             dataStore.otherPlayers.OnRemoved -= OnOtherPlayersRemoved;
 
-            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, Update);
+            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarModifierArea model)
         {
+            if (model.Equals(this.model))
+                return;
+            
             // Clean up
             RemoveAllModifiers();
             OnAvatarEnter = null;
@@ -68,12 +71,12 @@ namespace DCL.ECSComponents
             this.entity = entity;
             ApplyCurrentModel(model);
         }
-        
+
         private void Update()
         {
             if (model == null)
                 return;
-            
+
             // Find avatars currently on the area
             HashSet<GameObject> newAvatarsInArea = DetectAllAvatarsInArea();
             if (AreSetEquals(avatarsInArea, newAvatarsInArea))
@@ -118,7 +121,7 @@ namespace DCL.ECSComponents
         private void RemoveAllModifiers()
         {
             RemoveAllModifiers(DetectAllAvatarsInArea());
-            avatarsInArea = null;
+            avatarsInArea.Clear();
         }
 
         private void RemoveAllModifiers(HashSet<GameObject> avatars)
@@ -143,10 +146,10 @@ namespace DCL.ECSComponents
                 boxArea = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
                 
                 // Add all listeners
-                foreach (PBAvatarModifierArea.Types.Modifier modifierKey in model.Modifiers)
+                foreach (AvatarModifier modifierKey in model.Modifiers)
                 {
                     var modifier = factory.GetOrCreateAvatarModifier(modifierKey);
-
+                    
                     OnAvatarEnter += modifier.ApplyModifier;
                     OnAvatarExit += modifier.RemoveModifier;
                 }

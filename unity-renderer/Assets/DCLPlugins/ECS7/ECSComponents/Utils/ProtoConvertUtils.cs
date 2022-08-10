@@ -8,7 +8,7 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerUpResult GetPointerUpResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerUpResult result = new PBOnPointerUpResult();
             result.Button = buttonId;
@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
             return result;
         }
         
-        public static PBOnPointerDownResult GetPointerDownResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerDownResult GetPointerDownResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerDownResult result = new PBOnPointerDownResult();
             result.Button = buttonId;
@@ -60,16 +60,28 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static CameraMode.ModeId PBCameraEnumToUnityEnum(PBCameraModeArea.Types.CameraMode mode)
+        public static CameraTool.CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
         {
             switch (mode)
             {
-                case PBCameraModeArea.Types.CameraMode.FirstPerson:
-                    return CameraMode.ModeId.FirstPerson;
-                case PBCameraModeArea.Types.CameraMode.ThirdPerson:
-                    return CameraMode.ModeId.ThirdPerson;
+                case CameraModeValue.FirstPerson:
+                    return CameraTool.CameraMode.ModeId.FirstPerson;
+                case CameraModeValue.ThirdPerson:
+                    return CameraTool.CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
+            }
+        }
+
+        public static CameraModeValue UnityEnumToPBCameraEnum(CameraTool.CameraMode.ModeId mode)
+        {
+            switch (mode)
+            {
+                case CameraTool.CameraMode.ModeId.FirstPerson:
+                    return CameraModeValue.FirstPerson;
+                case CameraTool.CameraMode.ModeId.ThirdPerson:
+                default:
+                    return CameraModeValue.ThirdPerson;
             }
         }
     }

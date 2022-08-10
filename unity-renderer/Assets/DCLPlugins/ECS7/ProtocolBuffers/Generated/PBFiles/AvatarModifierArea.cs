@@ -25,21 +25,29 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChhBdmF0YXJNb2RpZmllckFyZWEucHJvdG8SEGRlY2VudHJhbGFuZC5lY3Ma",
-            "FGNvbW1vbi9WZWN0b3IzLnByb3RvIrwBChRQQkF2YXRhck1vZGlmaWVyQXJl",
-            "YRIWCgRhcmVhGAEgASgLMgguVmVjdG9yMxITCgtleGNsdWRlX2lkcxgCIAMo",
-            "CRJCCgltb2RpZmllcnMYAyADKA4yLy5kZWNlbnRyYWxhbmQuZWNzLlBCQXZh",
-            "dGFyTW9kaWZpZXJBcmVhLk1vZGlmaWVyIjMKCE1vZGlmaWVyEhAKDEhJREVf",
-            "QVZBVEFSUxAAEhUKEURJU0FCTEVfUEFTU1BPUlRTEAFCFKoCEURDTC5FQ1ND",
-            "b21wb25lbnRzYgZwcm90bzM="));
+            "FGNvbW1vbi9WZWN0b3IzLnByb3RvIngKFFBCQXZhdGFyTW9kaWZpZXJBcmVh",
+            "EhYKBGFyZWEYASABKAsyCC5WZWN0b3IzEhMKC2V4Y2x1ZGVfaWRzGAIgAygJ",
+            "EjMKCW1vZGlmaWVycxgDIAMoDjIgLmRlY2VudHJhbGFuZC5lY3MuQXZhdGFy",
+            "TW9kaWZpZXIqOQoOQXZhdGFyTW9kaWZpZXISEAoMSElERV9BVkFUQVJTEAAS",
+            "FQoRRElTQUJMRV9QQVNTUE9SVFMQAUIUqgIRRENMLkVDU0NvbXBvbmVudHNi",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarModifierArea), global::DCL.ECSComponents.PBAvatarModifierArea.Parser, new[]{ "Area", "ExcludeIds", "Modifiers" }, null, new[]{ typeof(global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier) }, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarModifier), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarModifierArea), global::DCL.ECSComponents.PBAvatarModifierArea.Parser, new[]{ "Area", "ExcludeIds", "Modifiers" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum AvatarModifier {
+    [pbr::OriginalName("HIDE_AVATARS")] HideAvatars = 0,
+    [pbr::OriginalName("DISABLE_PASSPORTS")] DisablePassports = 1,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBAvatarModifierArea : pb::IMessage<PBAvatarModifierArea>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -112,12 +120,12 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "modifiers" field.</summary>
     public const int ModifiersFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier> _repeated_modifiers_codec
-        = pb::FieldCodec.ForEnum(26, x => (int) x, x => (global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier) x);
-    private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier> modifiers_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier>();
+    private static readonly pb::FieldCodec<global::DCL.ECSComponents.AvatarModifier> _repeated_modifiers_codec
+        = pb::FieldCodec.ForEnum(26, x => (int) x, x => (global::DCL.ECSComponents.AvatarModifier) x);
+    private readonly pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier> modifiers_ = new pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::DCL.ECSComponents.PBAvatarModifierArea.Types.Modifier> Modifiers {
+    public pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier> Modifiers {
       get { return modifiers_; }
     }
 
@@ -290,19 +298,6 @@ namespace DCL.ECSComponents {
       }
     }
     #endif
-
-    #region Nested types
-    /// <summary>Container for nested types declared in the PBAvatarModifierArea message type.</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static partial class Types {
-      public enum Modifier {
-        [pbr::OriginalName("HIDE_AVATARS")] HideAvatars = 0,
-        [pbr::OriginalName("DISABLE_PASSPORTS")] DisablePassports = 1,
-      }
-
-    }
-    #endregion
 
   }
 

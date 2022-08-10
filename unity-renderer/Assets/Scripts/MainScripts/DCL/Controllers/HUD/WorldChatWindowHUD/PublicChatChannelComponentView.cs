@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig, IPointerDownHandler
+public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWindowView, IComponentModelConfig<PublicChatChannelModel>, IPointerDownHandler
 {
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button backButton;
@@ -111,8 +111,6 @@ public class PublicChatChannelComponentView : BaseComponentView, IChannelChatWin
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
     }
-
-    public void Configure(BaseComponentModel newModel) => Configure((PublicChatChannelModel) newModel);
     
     public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
     

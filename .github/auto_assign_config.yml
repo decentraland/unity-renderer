@@ -1,0 +1,22 @@
+addAssignees: author
+numberOfAssignees: 1
+
+addReviewers: true
+numberOfReviewers: 1
+useReviewGroups: true
+reviewGroups:
+  devs:
+    - AjimenezDCL
+    - pravusjif
+    - sandrade-dcl
+    - Kinerius
+    - lorux0
+    - davidejensen
+  qa:
+    - kwssbocian
+    - kwspgoliasz
+
+filterLabels:
+  exclude:
+    - no_reviewers
+    - "Not QA Needed"

@@ -36,7 +36,7 @@ namespace DCL.ECSComponents
             
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                ECSComponentsUtils.UpdateMeshInfo(entity, model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace DCL.ECSComponents
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);

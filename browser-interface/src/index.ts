@@ -68,7 +68,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
 
   if (!isWebGLCompatible()) {
     throw new Error(
-      "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible"
+      "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible. This error may also happen when many tabs are open and the browser doesn't have enough resources available to start Decentraland, if that's the case, please try closing other tabs and specially other Decentraland instances."
     )
   }
 

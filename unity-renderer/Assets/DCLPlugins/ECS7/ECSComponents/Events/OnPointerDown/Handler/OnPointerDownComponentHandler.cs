@@ -42,7 +42,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBOnPointerDown model)
         {
-            representantion.SetData(scene, model.ShowFeedback, model.Button, model.Distance, model.HoverText);
+            representantion.SetData(scene, model.GetShowFeedback(), model.GetButton(), model.GetMaxDistance(), model.GetHoverText());
             if (!isAdded)
             {
                 isAdded = true;

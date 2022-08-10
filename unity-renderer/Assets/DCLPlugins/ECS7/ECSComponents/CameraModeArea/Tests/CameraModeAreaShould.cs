@@ -132,7 +132,7 @@ namespace DCL.ECSComponents.Test
             model.Area.Y = 2f;
             model.Area.Z = 2f;
 
-            model.Mode = PBCameraModeArea.Types.CameraMode.FirstPerson;
+            model.Mode = CameraModeValue.FirstPerson;
 
             return model;
         }

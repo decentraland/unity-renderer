@@ -25,15 +25,14 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChRDYW1lcmFNb2RlQXJlYS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoUY29t",
-            "bW9uL1ZlY3RvcjMucHJvdG8imQEKEFBCQ2FtZXJhTW9kZUFyZWESFgoEYXJl",
-            "YRgBIAEoCzIILlZlY3RvcjMSOwoEbW9kZRgCIAEoDjItLmRlY2VudHJhbGFu",
-            "ZC5lY3MuUEJDYW1lcmFNb2RlQXJlYS5DYW1lcmFNb2RlIjAKCkNhbWVyYU1v",
-            "ZGUSEAoMRklSU1RfUEVSU09OEAASEAoMVEhJUkRfUEVSU09OEAFCFKoCEURD",
-            "TC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "bW9uL1ZlY3RvcjMucHJvdG8aHGNvbW1vbi9DYW1lcmFNb2RlVmFsdWUucHJv",
+            "dG8iSgoQUEJDYW1lcmFNb2RlQXJlYRIWCgRhcmVhGAEgASgLMgguVmVjdG9y",
+            "MxIeCgRtb2RlGAIgASgOMhAuQ2FtZXJhTW9kZVZhbHVlQhSqAhFEQ0wuRUNT",
+            "Q29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Vector3Reflection.Descriptor, global::CameraModeValueReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBCameraModeArea), global::DCL.ECSComponents.PBCameraModeArea.Parser, new[]{ "Area", "Mode" }, null, new[]{ typeof(global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode) }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBCameraModeArea), global::DCL.ECSComponents.PBCameraModeArea.Parser, new[]{ "Area", "Mode" }, null, null, null, null)
           }));
     }
     #endregion
@@ -99,10 +98,10 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "mode" field.</summary>
     public const int ModeFieldNumber = 2;
-    private global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode mode_ = global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson;
+    private global::CameraModeValue mode_ = global::CameraModeValue.FirstPerson;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode Mode {
+    public global::CameraModeValue Mode {
       get { return mode_; }
       set {
         mode_ = value;
@@ -134,7 +133,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (area_ != null) hash ^= Area.GetHashCode();
-      if (Mode != global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson) hash ^= Mode.GetHashCode();
+      if (Mode != global::CameraModeValue.FirstPerson) hash ^= Mode.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -157,7 +156,7 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteMessage(Area);
       }
-      if (Mode != global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson) {
+      if (Mode != global::CameraModeValue.FirstPerson) {
         output.WriteRawTag(16);
         output.WriteEnum((int) Mode);
       }
@@ -175,7 +174,7 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteMessage(Area);
       }
-      if (Mode != global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson) {
+      if (Mode != global::CameraModeValue.FirstPerson) {
         output.WriteRawTag(16);
         output.WriteEnum((int) Mode);
       }
@@ -192,7 +191,7 @@ namespace DCL.ECSComponents {
       if (area_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Area);
       }
-      if (Mode != global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson) {
+      if (Mode != global::CameraModeValue.FirstPerson) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Mode);
       }
       if (_unknownFields != null) {
@@ -213,7 +212,7 @@ namespace DCL.ECSComponents {
         }
         Area.MergeFrom(other.Area);
       }
-      if (other.Mode != global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode.FirstPerson) {
+      if (other.Mode != global::CameraModeValue.FirstPerson) {
         Mode = other.Mode;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -239,7 +238,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Mode = (global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode) input.ReadEnum();
+            Mode = (global::CameraModeValue) input.ReadEnum();
             break;
           }
         }
@@ -265,26 +264,13 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Mode = (global::DCL.ECSComponents.PBCameraModeArea.Types.CameraMode) input.ReadEnum();
+            Mode = (global::CameraModeValue) input.ReadEnum();
             break;
           }
         }
       }
     }
     #endif
-
-    #region Nested types
-    /// <summary>Container for nested types declared in the PBCameraModeArea message type.</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static partial class Types {
-      public enum CameraMode {
-        [pbr::OriginalName("FIRST_PERSON")] FirstPerson = 0,
-        [pbr::OriginalName("THIRD_PERSON")] ThirdPerson = 1,
-      }
-
-    }
-    #endregion
 
   }
 

@@ -49,12 +49,13 @@ namespace Tests
                         .Do(info =>
                         {
                             CRDTMessage crdtMessage = (CRDTMessage)info.Args()[0];
-                            Assert.AreEqual(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID), crdtMessage.key);
+                            Assert.AreEqual(ENTITY_ID, crdtMessage.key1);
+                            Assert.AreEqual(COMPONENT_ID, crdtMessage.key2);
                             Assert.AreEqual(timeStamp, crdtMessage.timestamp);
                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
                         });
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_LOCAL);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
             crdtExecutor.Received(1).Execute(Arg.Any<CRDTMessage>());
         }
@@ -67,7 +68,7 @@ namespace Tests
 
             byte[] componentData = new byte[] { };
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
             crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
         }
@@ -81,13 +82,13 @@ namespace Tests
             byte[] componentData = new byte[] { 1, 0, 0, 1 };
             long timeStamp = 0;
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
 
             DataStore.i.rpcContext.context.crdtContext.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
             Assert.NotNull(protocol);
 
-            CRDTMessage message = protocol.GetState(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID));
+            CRDTMessage message = protocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
             Assert.AreEqual(timeStamp, message.timestamp);
             Assert.IsTrue(AreEqual(componentData, (byte[])message.data));
@@ -101,7 +102,7 @@ namespace Tests
 
             byte[] componentData = new byte[] { };
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_LOCAL);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
 
             DataStore.i.rpcContext.context.crdtContext.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
@@ -109,21 +110,63 @@ namespace Tests
         }
 
         [Test]
-        public void ProcessWriteComponent()
+        public void ExecuteLocallyWithoutModifyingState()
         {
             const int ENTITY_ID = 42;
             const int COMPONENT_ID = 2134;
 
             byte[] componentData = new byte[] { 1, 0, 0, 1 };
-            long timeStamp = 0;
 
-            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, ECSComponentWriteType.SEND_TO_SCENE);
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.EXECUTE_LOCALLY);
             crdtWriteSystem.LateUpdate();
 
-            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(CRDTUtils.KeyFromIds(ENTITY_ID, COMPONENT_ID));
+            crdtExecutor.Received(1).ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
+
+            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
+            Assert.IsNull(message);
+        }
+
+        [Test]
+        public void StoreInStateWithoutExecuting()
+        {
+            const int ENTITY_ID = 42;
+            const int COMPONENT_ID = 2134;
+
+            byte[] componentData = new byte[] { 1, 0, 0, 1 };
+
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            crdtWriteSystem.LateUpdate();
+
+            crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
+
+            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
-            Assert.AreEqual(timeStamp, message.timestamp);
+            Assert.AreEqual(0, message.timestamp);
             Assert.IsTrue(AreEqual(componentData, (byte[])message.data));
+        }
+
+        [Test]
+        public void EnforceMinimunTimeStamp()
+        {
+            const int ENTITY_ID = 42;
+            const int COMPONENT_ID = 2134;
+
+            byte[] componentData = new byte[] { 1, 0, 0, 1 };
+            const long minTimeStamp = 42;
+
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, minTimeStamp, ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            crdtWriteSystem.LateUpdate();
+
+            CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
+            Assert.AreEqual(minTimeStamp, message.timestamp);
+
+            crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            crdtWriteSystem.LateUpdate();
+
+            message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
+            Assert.AreEqual(minTimeStamp + 1, message.timestamp);
         }
 
         static bool AreEqual(byte[] a, byte[] b)

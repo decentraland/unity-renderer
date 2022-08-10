@@ -1,3 +1,4 @@
+using DCL.CameraTool;
 using UnityEngine;
 
 public static class NotificationScriptableObjects
@@ -104,9 +105,6 @@ public static class CommonScriptableObjects
 {
     private static Vector3Variable playerUnityPositionValue;
     public static Vector3Variable playerUnityPosition => GetOrLoad(ref playerUnityPositionValue, "ScriptableObjects/PlayerUnityPosition");
-
-    private static Vector3Variable playerWorldPositionValue;
-    public static Vector3Variable playerWorldPosition => GetOrLoad(ref playerWorldPositionValue, "ScriptableObjects/PlayerWorldPosition");
 
     private static Vector3Variable playerUnityEulerAnglesValue;
     public static Vector3Variable playerUnityEulerAngles => GetOrLoad(ref playerUnityEulerAnglesValue, "ScriptableObjects/PlayerUnityEulerAngles");
