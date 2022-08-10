@@ -172,5 +172,17 @@ namespace DCL.Chat.HUD
             
             Assert.IsFalse(view.loadMoreContainer.activeSelf);
         }
+
+        [Test]
+        public void TriggerLeaveChannel()
+        {
+            var leaveChannelId = "";
+            view.OnLeaveChannel += s => leaveChannelId = s; 
+            view.Set(new Channel("bleh", 7, 4, true, false, "desc", 0));
+            
+            view.channelList.Get("bleh").leaveButton.onClick.Invoke();
+            
+            Assert.AreEqual("bleh", leaveChannelId);
+        }
     }
 }
