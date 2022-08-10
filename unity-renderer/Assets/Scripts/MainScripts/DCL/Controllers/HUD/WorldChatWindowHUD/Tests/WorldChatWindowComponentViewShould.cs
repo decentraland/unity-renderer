@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Interface;
@@ -318,6 +318,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual("5 chats hidden. Use the search bar to find them or click below to show more.",
             view.loadMoreEntriesLabel.text);
         Assert.IsTrue(view.loadMoreEntriesContainer.activeSelf);
+        Assert.IsFalse(view.emptyDirectChatsContainer.activeSelf);
     }
 
     [Test]
@@ -326,6 +327,7 @@ public class WorldChatWindowComponentViewShould
         view.HideMoreChatsToLoadHint();
 
         Assert.IsFalse(view.loadMoreEntriesContainer.activeSelf);
+        Assert.IsTrue(view.emptyDirectChatsContainer.activeSelf);
     }
 
     [UnityTest]
