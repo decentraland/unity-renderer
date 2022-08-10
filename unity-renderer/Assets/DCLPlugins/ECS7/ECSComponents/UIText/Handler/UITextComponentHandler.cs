@@ -12,9 +12,9 @@ namespace DCL.ECSComponents
 {
     public class UITextComponentHandler : IECSComponentHandler<PBUiText>
     {
-        private readonly UIDataContainer uiDataContainer;
+        private readonly IUIDataContainer uiDataContainer;
         
-        public UITextComponentHandler(UIDataContainer dataContainer)
+        public UITextComponentHandler(IUIDataContainer dataContainer)
         {
             this.uiDataContainer = dataContainer;
         }

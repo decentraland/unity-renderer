@@ -12,6 +12,6 @@ namespace DCL
         public readonly BaseDictionary<string, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<string, BaseRefCountedCollection<object>>();
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
-        public readonly UIDataContainer uiDataContainer = new UIDataContainer();
+        public IUIDataContainer uiDataContainer = new UIDataContainer();
     }
 }

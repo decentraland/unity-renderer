@@ -12,9 +12,9 @@ namespace DCL.ECSComponents
 {
     public class UITransformComponentHandler : IECSComponentHandler<PBUiTransform>
     {
-        private readonly UIDataContainer uiDataContainer;
+        private readonly IUIDataContainer uiDataContainer;
         
-        public UITransformComponentHandler(UIDataContainer dataContainer)
+        public UITransformComponentHandler(IUIDataContainer dataContainer)
         {
             this.uiDataContainer = dataContainer;
         }
@@ -25,6 +25,7 @@ namespace DCL.ECSComponents
         
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            // If we remove an UITransform from a entity, it should have the root entity as parent
             if(entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
                 entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
             uiDataContainer.RemoveUITransform(scene,entity);

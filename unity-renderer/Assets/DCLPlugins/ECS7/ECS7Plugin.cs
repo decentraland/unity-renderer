@@ -2,7 +2,6 @@ using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using ECSSystems.CameraSystem;
 
 namespace DCL.ECS7
 {
@@ -30,7 +29,7 @@ namespace DCL.ECS7
             
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter);
 
-            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager);
+            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
             systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
 
             sceneController.OnNewSceneAdded += OnSceneAdded;

@@ -2,7 +2,7 @@
 
 namespace DCL.ECSComponents
 {
-    public static class UITransformSerialization
+    public static class UITransformSerializer
     {
         public static byte[] Serialize(PBUiTransform model)
         {

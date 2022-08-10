@@ -17,8 +17,8 @@ namespace DCL.ECSComponents
         public UITextRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             var handler = new UITextComponentHandler(DataStore.i.ecs7.uiDataContainer);
-            factory.AddOrReplaceComponent(componentId, UITextSerialization.Deserialize, () => handler);
-            componentWriter.AddOrReplaceComponentSerializer<PBUiText>(componentId, UITextSerialization.Serialize);
+            factory.AddOrReplaceComponent(componentId, UITextSerializer.Deserialize, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<PBUiText>(componentId, UITextSerializer.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

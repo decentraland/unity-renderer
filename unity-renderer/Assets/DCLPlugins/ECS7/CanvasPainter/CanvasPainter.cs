@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 using Environment = DCL.Environment;
 using Random = UnityEngine.Random;
 
-namespace ECSSystems.CameraSystem
+namespace DCL.ECS7
 {
     public struct VisualElementRepresentation
     {
@@ -29,30 +29,33 @@ namespace ECSSystems.CameraSystem
         private const string UI_DOCUMENT_PREFAB_PATH = "RootNode";
         private const int FRAMES_PER_PAINT = 10;
         
-        private readonly UIDocument rootNode;
-        private readonly UIDataContainer dataContainer;
+        internal readonly UIDocument rootNode;
+        internal readonly IUIDataContainer dataContainer;
         private readonly RendererState rendererState;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly IUpdateEventHandler updateEventHandler;
+        private readonly IWorldState worldState;
         private readonly ECSComponentsManager componentsManager;
         
-        private UISceneDataContainer sceneDataContainerToUse;
+        internal UISceneDataContainer sceneDataContainerToUse;
         private IParcelScene scene;
 
-        private Dictionary<long, VisualElementRepresentation> visualElements = new Dictionary<long, VisualElementRepresentation>();
-        private List<VisualElementRepresentation> orphanVisualElements = new List<VisualElementRepresentation>();
+        internal Dictionary<long, VisualElementRepresentation> visualElements = new Dictionary<long, VisualElementRepresentation>();
+        internal List<VisualElementRepresentation> orphanVisualElements = new List<VisualElementRepresentation>();
         
-        private IECSReadOnlyComponentsGroup<PBUiTransform, PBUiText> textComponentGroup;
+        internal IECSReadOnlyComponentsGroup<PBUiTransform, PBUiText> textComponentGroup;
 
-        private int framesCounter = 0;
-        private bool canvasCleared = false;
+        internal int framesCounter = 0;
+        internal bool canvasCleared = false;
         
-        public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler, ECSComponentsManager componentsManager)
+        public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler, ECSComponentsManager componentsManager, IWorldState worldState)
         {
             this.updateEventHandler = updateEventHandler;
             this.loadedScenes = dataStoreEcs7.scenes;
             this.rendererState = rendererState;
             this.dataContainer = dataStoreEcs7.uiDataContainer;
+            this.worldState = worldState;
+            
             var prefab = Resources.Load<UIDocument>(UI_DOCUMENT_PREFAB_PATH);
             rootNode = GameObject.Instantiate(prefab);
             
@@ -69,12 +72,12 @@ namespace ECSSystems.CameraSystem
         public void Dispose()
         {
             GameObject.Destroy(rootNode.gameObject);
-            updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             if(sceneDataContainerToUse != null)
                 sceneDataContainerToUse.OnUITransformRemoved -= RemoveVisualElement;
         }
 
-        private void SetScene(IParcelScene scene)
+        internal void SetScene(IParcelScene scene)
         {
             this.scene = scene;
             
@@ -106,17 +109,19 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private void Update()
+        internal void Update()
         {
             framesCounter++;
             if (!rendererState.Get() || framesCounter < FRAMES_PER_PAINT)
                 return;
 
             framesCounter = 0;
+            
+            // We look in which scene is the player, and draw the UI of that scene
             bool sceneFound = false;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if(loadedScenes[i].sceneData.id != Environment.i.world.state.currentSceneId)
+                if(loadedScenes[i].sceneData.id != worldState.currentSceneId)
                     continue;
                 sceneFound = true;
                 DrawUI(loadedScenes[i]);
@@ -145,37 +150,77 @@ namespace ECSSystems.CameraSystem
             canvasCleared = false;
             sceneDataContainerToUse.UIRendered();
             
-            VisualElement root = rootNode.rootVisualElement;
+            // We ensure that the root canvas is visible
+            rootNode.rootVisualElement.visible = true;
             
-            Debug.Log("Pintando sobre un canvas de width: " + Screen.width +"   height: "+ Screen.height);
-            
+            // This should be the way to go when we implement the UI events
+            // visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
 
-            //Register callback
-            //visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
-
-            List<long> entitiesWithRendeerComponent = new List<long>();
-            IECSReadOnlyComponentData<PBUiTransform> componentData;
+            // It can happen that we received or processed the child before the parent, that make some elements orphan
+            // If we have some orphan elements, we try to search and assign the parent here, if we don't found it, we will try next time 
+            TryToSetOrphanParents();
             
-            foreach (VisualElementRepresentation visualElementRepresentation in  orphanVisualElements)
+            List<long> entitiesWithRendererComponent = new List<long>();
+            
+            // This will create the text elements along their UITransform 
+            CreateTextElements(entitiesWithRendererComponent);
+            
+            // This will create the containers to position the elements
+            CreateContainers(entitiesWithRendererComponent);
+
+            // We set the parent of all the elements that has been created
+            foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
             {
-                SetParent(visualElementRepresentation, false);
-                
-                // If we found the parent, we remove it and set it visible
-                if (visualElementRepresentation.parentVisualElement != null)
+                var visualElement =  kvp.Value;
+                SetParent(ref visualElement);
+            }
+        }
+
+        internal void CreateContainers(List<long> excludedEntities)
+        {
+            var enumerator = sceneDataContainerToUse.sceneCanvasTransform.GetEnumerator();
+            try
+            {
+                // We create all the elements that doesn't have a rendering ( Image, Text...etc) since we need them to position them correctly
+                while (enumerator.MoveNext())
                 {
-                    visualElementRepresentation.visualElement.visible = true;
-                    orphanVisualElements.Remove(visualElementRepresentation);
+                    var kvp = enumerator.Current;
+                    // If the entity doesn't exist we skip
+                    if (!scene.entities.TryGetValue( kvp.Key, out IDCLEntity entity))
+                        continue;
+
+                    // If the entity already have a rendering element, we skip since we don't need to create it again
+                    if (excludedEntities.Contains(entity.entityId))
+                        continue;
+
+                    // We create the element to position the rendering element correctly
+                    var visualElement = TransformToVisualElement(kvp.Value,  new Image());
+                    visualElements[entity.entityId] = new VisualElementRepresentation()
+                    {
+                        entityId = entity.entityId,
+                        parentId = entity.parentId,
+                        visualElement = visualElement
+                    };
                 }
             }
+            finally
+            {
+                enumerator.Dispose();
+            }
+        }
+
+        internal void CreateTextElements(List<long> entitiesWithRendererComponent)
+        {
+            IECSReadOnlyComponentData<PBUiTransform> componentData;
             
             // We create all the text elements
-            foreach (var textComponent in textComponentGroup.group)
+            for(int i = 0; i < textComponentGroup.group.Count; i++)
             {
-                componentData = textComponent.componentData1;
+                componentData = textComponentGroup.group[i].componentData1;
 
                 var textElement = new TextElement();
-                textElement.text = textComponent.componentData2.model.Text;
-                var color = textComponent.componentData2.model.TextColor;
+                textElement.text = textComponentGroup.group[i].componentData2.model.Text;
+                var color = textComponentGroup.group[i].componentData2.model.TextColor;
                 textElement.style.color =  new UnityEngine.Color(color.R, color.G,color.B,1);
                 
                 // We create the text element
@@ -189,42 +234,27 @@ namespace ECSSystems.CameraSystem
                 };
                 
                 // We add the entity to a list so it doesn't create a visual element for the PBUiTransform since the transform is inside the text element
-                entitiesWithRendeerComponent.Add(componentData.entity.entityId);
-            }
-            
-            // We create all the elements that doesn't have a rendering ( Image, Text...etc) since we need them to position them correctly
-            foreach (var kvp in sceneDataContainerToUse.sceneCanvasTransform)
-            {
-                // If the entity doesn't exist we skip
-                if(!scene.entities.TryGetValue(kvp.Key, out IDCLEntity entity))
-                    continue;
-
-                // If we already have a rendering element, we skip since don't need to create it again
-                if (entitiesWithRendeerComponent.Contains(entity.entityId))
-                    continue;
-                
-                // We ensure that the canvas is visible
-                if (entity.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
-                    root.visible = true;
-              
-                // We create the element to position the rendering element correctly
-                var visualElement = TransformToVisualElement(kvp.Value,  new Image());
-                visualElements[entity.entityId] = new VisualElementRepresentation()
-                {
-                    entityId = entity.entityId,
-                    parentId = entity.parentId,
-                    visualElement = visualElement
-                };
-            }
-            
-            // We set the parenting
-            foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
-            {
-                SetParent(kvp.Value);
+                entitiesWithRendererComponent.Add(componentData.entity.entityId);
             }
         }
 
-        private void SetParent(VisualElementRepresentation visualElementRepresentation, bool addToOrphanList = true)
+        internal void TryToSetOrphanParents()
+        {
+            for(int i = 0; i < orphanVisualElements.Count; i++)
+            {
+                var visualElement = orphanVisualElements[i];
+                SetParent(ref visualElement, false);
+                
+                // If we found the parent, we remove it and set it visible
+                if (orphanVisualElements[i].parentVisualElement != null)
+                {
+                    orphanVisualElements[i].visualElement.visible = true;
+                    orphanVisualElements.Remove(orphanVisualElements[i]);
+                }
+            }
+        }
+
+        internal void SetParent(ref VisualElementRepresentation visualElementRepresentation, bool addToOrphanList = true)
         {
             // if the parent is the root canvas, it doesn't have parent, we skip
             if (visualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
@@ -249,7 +279,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element, bool randomColor = true)
+        internal VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element, bool randomColor = true)
         {
             element.style.display = GetDisplay(model.Display);
             element.style.overflow = GetOverflow(model.Overflow);
@@ -262,7 +292,6 @@ namespace ECSSystems.CameraSystem
             element.style.flexGrow = model.FlexGrow;
             element.style.flexShrink = model.FlexShrink;
             element.style.flexWrap = GetWrap(model.FlexWrap);
-            element.style.position = GetPosition(model.PositionType);
 
             // Align 
             if (model.AlignContent != YGAlign.FlexStart)
@@ -325,7 +354,7 @@ namespace ECSSystems.CameraSystem
             return element;
         }
 
-        private LengthUnit GetUnit(YGUnit unit)
+        internal LengthUnit GetUnit(YGUnit unit)
         {
             switch (unit)
             {
@@ -338,7 +367,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private StyleEnum<Overflow> GetOverflow (YGOverflow overflow)
+        internal StyleEnum<Overflow> GetOverflow (YGOverflow overflow)
         {
             switch (overflow)
             {
@@ -351,7 +380,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private StyleEnum<DisplayStyle> GetDisplay (YGDisplay display)
+        internal StyleEnum<DisplayStyle> GetDisplay (YGDisplay display)
         {
             switch (display)
             {
@@ -365,7 +394,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private StyleEnum<Justify> GetJustify (YGJustify justify)
+        internal StyleEnum<Justify> GetJustify (YGJustify justify)
         {
             switch (justify)
             {
@@ -384,7 +413,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private StyleEnum<Wrap> GetWrap (YGWrap wrap)
+        internal StyleEnum<Wrap> GetWrap (YGWrap wrap)
         {
             switch (wrap)
             {
@@ -399,7 +428,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private StyleEnum<FlexDirection> GetFlexDirection (YGFlexDirection direction)
+        internal StyleEnum<FlexDirection> GetFlexDirection (YGFlexDirection direction)
         {
             switch (direction)
             {
@@ -416,7 +445,7 @@ namespace ECSSystems.CameraSystem
             }
         }
 
-        private StyleEnum<Position> GetPosition(YGPositionType  positionType)
+        internal StyleEnum<Position> GetPosition(YGPositionType  positionType)
         {
             switch (positionType)
             {
@@ -429,7 +458,7 @@ namespace ECSSystems.CameraSystem
             }
         }
         
-        private StyleEnum<Align> GetAlign(YGAlign align)
+        internal StyleEnum<Align> GetAlign(YGAlign align)
         {
             switch (align)
             {

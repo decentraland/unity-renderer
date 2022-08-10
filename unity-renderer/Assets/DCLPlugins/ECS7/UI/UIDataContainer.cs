@@ -44,8 +44,17 @@ namespace DCL.ECS7.UI
         }
         
     }
+
+    public interface IUIDataContainer
+    {
+        void AddUIComponent(IParcelScene scene, IDCLEntity entity, PBUiTransform model);
+        void AddUIComponent(IParcelScene scene, IDCLEntity entity, PBUiText model);
+        void RemoveUITransform(IParcelScene scene, IDCLEntity entity);
+        void RemoveUIText(IParcelScene scene, IDCLEntity entity);
+        UISceneDataContainer GetDataContainer(IParcelScene scene);
+    }
     
-    public class UIDataContainer
+    public class UIDataContainer : IUIDataContainer
     {
         public readonly BaseDictionary<string, UISceneDataContainer> sceneData = new BaseDictionary<string, UISceneDataContainer>();
 

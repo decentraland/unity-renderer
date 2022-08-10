@@ -2,7 +2,7 @@
 
 namespace DCL.ECSComponents
 {
-    public static class UITextSerialization
+    public static class UITextSerializer
     {
         public static byte[] Serialize(PBUiText model)
         {
