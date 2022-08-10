@@ -63,7 +63,6 @@ namespace DCL.ECS7
 
             // Group Components 
             textComponentGroup = componentsManager.CreateComponentGroup<PBUiTransform, PBUiText>(ComponentID.UI_TRANSFORM, ComponentID.UI_TEXT);
-            
 #if UNITY_EDITOR
             rootNode.name = "Scene Canvas";
 #endif
@@ -141,7 +140,7 @@ namespace DCL.ECS7
             DrawUI();
         }
         
-        public void DrawUI()
+        private void DrawUI()
         {
             // If the canvas hasn't change or if there is no canvas we skip
             if (!canvasCleared && (!sceneDataContainerToUse.IsDirty() || !sceneDataContainerToUse.sceneCanvasTransform.Any()))

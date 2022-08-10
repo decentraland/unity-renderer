@@ -42,7 +42,6 @@ namespace DCL.ECS7.UI
             isDirty = true;
             sceneCanvasText.Remove(entity.entityId);
         }
-        
     }
 
     public interface IUIDataContainer
