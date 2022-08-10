@@ -8,16 +8,13 @@ namespace DCL.Controllers
 {
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
-        public const int TRIGGER_HIGHPRIO_VALUE = 1000;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => entitiesCheckRoutine != null;
         public float timeBetweenChecks { get; set; } = 0.5f;
         public int entitiesToCheckCount => entitiesToCheck.Count;
-        public int highPrioEntitiesToCheckCount => highPrioEntitiesToCheck.Count;
 
         private const bool VERBOSE = false;
         private Logger logger = new Logger("SceneBoundsChecker") {verboseEnabled = VERBOSE};
-        private HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
         private HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
         private HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
         private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
@@ -53,7 +50,7 @@ namespace DCL.Controllers
             while (true)
             {
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
-                if ((entitiesToCheck.Count > 0 || highPrioEntitiesToCheck.Count > 0) && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
+                if ((entitiesToCheck.Count > 0) && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
                 {
                     //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
                     var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
@@ -89,7 +86,6 @@ namespace DCL.Controllers
                         }
                     }
 
-                    processEntitiesList(highPrioEntitiesToCheck);
                     processEntitiesList(entitiesToCheck);
                     
                     // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
@@ -101,13 +97,12 @@ namespace DCL.Controllers
                             if (!persistentEntities.Contains(entity))
                             {
                                 entitiesToCheck.Remove(entity);
-                                highPrioEntitiesToCheck.Remove(entity);
                             }
                         }
                     }
                     
                     if(VERBOSE)
-                        logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}; highPriorityEntities left: {highPrioEntitiesToCheck.Count}");
+                        logger.Verbose($"Finished checking entities: checked entities {checkedEntities.Count}; entitiesToCheck left: {entitiesToCheck.Count}");
 
                     checkedEntities.Clear();
 
@@ -162,8 +157,6 @@ namespace DCL.Controllers
         {
             if (!enabled)
                 return;
-
-            AddEntityBasedOnPriority(entity);
 
             persistentEntities.Add(entity);
         }
@@ -356,37 +349,15 @@ namespace DCL.Controllers
                     return;
             }
             
-            AddEntityBasedOnPriority(entity);
+            entitiesToCheck.Add(entity);
         }
 
         protected void OnRemoveEntity(IDCLEntity entity)
         {
-            highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
             
             SetMeshesAndComponentsInsideBoundariesState(entity, true);
-        }
-
-        protected void AddEntityBasedOnPriority(IDCLEntity entity)
-        {
-            if (IsHighPrioEntity(entity))
-            {
-                highPrioEntitiesToCheck.Add(entity);
-                return;
-            }
-            
-            entitiesToCheck.Add(entity);
-        }
-
-        protected bool IsHighPrioEntity(IDCLEntity entity)
-        {
-            if (entity.gameObject == null)
-                return false;
-
-            Vector3 scale = entity.gameObject.transform.lossyScale;
-            Vector3 position = entity.gameObject.transform.localPosition;
-            return scale.x > TRIGGER_HIGHPRIO_VALUE || scale.y > TRIGGER_HIGHPRIO_VALUE || scale.z > TRIGGER_HIGHPRIO_VALUE || position.x > TRIGGER_HIGHPRIO_VALUE || position.y > TRIGGER_HIGHPRIO_VALUE || position.z > TRIGGER_HIGHPRIO_VALUE;
         }
     }
 }

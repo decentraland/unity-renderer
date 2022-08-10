@@ -12,7 +12,6 @@ namespace DCL.Controllers
         float timeBetweenChecks { get; set; }
         bool enabled { get; }
         int entitiesToCheckCount { get; }
-        int highPrioEntitiesToCheckCount { get; }
         void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle);
         ISceneBoundsFeedbackStyle GetFeedbackStyle();
         List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
