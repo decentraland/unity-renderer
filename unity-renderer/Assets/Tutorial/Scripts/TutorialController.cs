@@ -298,9 +298,9 @@ namespace DCL.Tutorial
         /// <summary>
         /// Move the tutorial teacher to a specific position.
         /// </summary>
-        /// <param name="position">Target position.</param>
+        /// <param name="destinationPosition">Target position.</param>
         /// <param name="animated">True for apply a smooth movement.</param>
-        public void SetTeacherPosition(Vector2 position, bool animated = true)
+        public void SetTeacherPosition(Vector2 destinationPosition, bool animated = true)
         {
             if (teacherMovementCoroutine != null)
                 CoroutineStarter.Stop(teacherMovementCoroutine);
@@ -308,9 +308,9 @@ namespace DCL.Tutorial
             if (configuration.teacherRawImage != null)
             {
                 if (animated)
-                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, position));
+                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(destinationPosition));
                 else
-                    configuration.teacherRawImage.rectTransform.position = new Vector3(position.x, position.y, configuration.teacherRawImage.rectTransform.position.z);
+                    configuration.teacherRawImage.rectTransform.position = new Vector3(destinationPosition.x, destinationPosition.y, configuration.teacherRawImage.rectTransform.position.z);
             }
         }
 
@@ -553,14 +553,14 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
 
-        internal IEnumerator MoveTeacher(Vector3 fromPosition, Vector3 toPosition)
+        internal IEnumerator MoveTeacher(Vector3 toPosition)
         {
             if (configuration.teacherRawImage == null)
                 yield break;
 
             float t = 0f;
-            
-            configuration.teacherRawImage.rectTransform.position = new Vector3(fromPosition.x, fromPosition.y, configuration.teacherRawImage.rectTransform.position.z);
+
+            Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
             Vector3 destination = Vector3.zero;
             
             while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)

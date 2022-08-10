@@ -333,10 +333,9 @@ namespace DCL.Tutorial_Tests
             // Arrange
             Vector3 toPosition = new Vector3(1, 1, 0);
             Vector3 initialPosition = new Vector3(2, 2, 0);
-            tutorialController.configuration.teacherRawImage.rectTransform.position = initialPosition;
 
             // Act
-            stepCoroutine = CoroutineStarter.Start(tutorialController.MoveTeacher(initialPosition, toPosition));
+            stepCoroutine = CoroutineStarter.Start(tutorialController.MoveTeacher(toPosition));
             yield return null;
 
             // Assert
