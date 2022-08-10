@@ -2,23 +2,23 @@ using System;
 
 namespace DCL.Chat.HUD
 {
-    public class LeaveChannelWindowController : IHUD
+    public class LeaveChannelConfirmationWindowController : IHUD
     {
-        internal ILeaveChannelWindowComponentView joinChannelView;
+        internal ILeaveChannelConfirmationWindowComponentView joinChannelView;
         internal IChatController chatController;
 
         public event Action<string> OnLeaveChannel;
 
-        public LeaveChannelWindowController(IChatController chatController)
+        public LeaveChannelConfirmationWindowController(IChatController chatController)
         {
             this.chatController = chatController;
 
             this.chatController.OnChannelLeft += HandleChannelLeft;
         }
 
-        public ILeaveChannelWindowComponentView View => joinChannelView;
+        public ILeaveChannelConfirmationWindowComponentView View => joinChannelView;
 
-        public void Initialize(ILeaveChannelWindowComponentView view)
+        public void Initialize(ILeaveChannelConfirmationWindowComponentView view)
         {
             joinChannelView = view;
 

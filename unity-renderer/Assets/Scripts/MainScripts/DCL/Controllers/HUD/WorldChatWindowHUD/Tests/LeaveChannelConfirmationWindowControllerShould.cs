@@ -4,18 +4,18 @@ using System;
 
 namespace DCL.Chat.HUD
 {
-    public class LeaveChannelWindowControllerShould
+    public class LeaveChannelConfirmationWindowControllerShould
     {
-        private LeaveChannelWindowController leaveChannelWindowController;
-        private ILeaveChannelWindowComponentView leaveChannelWindowComponentView;
+        private LeaveChannelConfirmationWindowController leaveChannelWindowController;
+        private ILeaveChannelConfirmationWindowComponentView leaveChannelWindowComponentView;
         private IChatController chatController;
 
         [SetUp]
         public void SetUp()
         {
-            leaveChannelWindowComponentView = Substitute.For<ILeaveChannelWindowComponentView>();
+            leaveChannelWindowComponentView = Substitute.For<ILeaveChannelConfirmationWindowComponentView>();
             chatController = Substitute.For<IChatController>();
-            leaveChannelWindowController = new LeaveChannelWindowController(chatController);
+            leaveChannelWindowController = new LeaveChannelConfirmationWindowController(chatController);
             leaveChannelWindowController.Initialize(leaveChannelWindowComponentView);
         }
 

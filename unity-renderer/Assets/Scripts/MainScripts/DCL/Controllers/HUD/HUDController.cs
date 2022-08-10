@@ -95,8 +95,8 @@ public class HUDController : IHUDController
     private CreateChannelWindowController channelCreateHud =>
         GetHUDElement(HUDElementID.CHANNELS_CREATE) as CreateChannelWindowController;
 
-    private LeaveChannelWindowController channelLeaveHud =>
-        GetHUDElement(HUDElementID.CHANNELS_LEAVE) as LeaveChannelWindowController;
+    private LeaveChannelConfirmationWindowController channelLeaveHud =>
+        GetHUDElement(HUDElementID.CHANNELS_LEAVE_CONFIRMATION) as LeaveChannelConfirmationWindowController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
@@ -303,10 +303,10 @@ public class HUDController : IHUDController
 
                 if (channelLeaveHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_LEAVE);
-                    channelLeaveHud.Initialize(LeaveChannelWindowComponentView.Create());
+                    CreateHudElement(configuration, HUDElementID.CHANNELS_LEAVE_CONFIRMATION);
+                    channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
                     channelLeaveHud.SetVisibility(false);
-                    taskbarHud?.AddChannelLeave(channelLeaveHud);
+                    taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
                 }
 
                 break;

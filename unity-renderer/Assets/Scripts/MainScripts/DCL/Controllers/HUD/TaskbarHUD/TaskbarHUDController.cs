@@ -32,7 +32,7 @@ public class TaskbarHUDController : IHUD
     private IHUD chatBackWindow;
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
-    private LeaveChannelWindowController channelLeaveWindow;
+    private LeaveChannelConfirmationWindowController channelLeaveWindow;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -314,7 +314,7 @@ public class TaskbarHUDController : IHUD
         view.ShowChatButton();
         worldChatWindowHud.View.OnClose += OpenPublicChatOnPreviewMode;
         worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
-        worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeave;
+        worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 
     private void OpenPublicChatOnPreviewMode()
@@ -714,6 +714,7 @@ public class TaskbarHUDController : IHUD
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
         controller.OnPreviewModeChanged += HandleChannelPreviewModeChanged;
+        controller.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 
     public void AddChannelSearch(SearchChannelsWindowController controller)
@@ -732,7 +733,7 @@ public class TaskbarHUDController : IHUD
         };
         controller.OnBack += GoBackFromChat;
         controller.OnOpenChannelCreation += OpenChannelCreation;
-        controller.OnOpenChannelLeave += OpenChannelLeave;
+        controller.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 
     public void AddChannelCreation(CreateChannelWindowController controller)
@@ -756,7 +757,7 @@ public class TaskbarHUDController : IHUD
         channelCreationWindow.SetVisibility(true);
     }
 
-    public void AddChannelLeave(LeaveChannelWindowController controller)
+    public void AddChannelLeaveConfirmation(LeaveChannelConfirmationWindowController controller)
     {
         if (controller.View.Transform.parent == view.fullScreenWindowContainer) return;
 
@@ -764,7 +765,7 @@ public class TaskbarHUDController : IHUD
         channelLeaveWindow = controller;
     }
 
-    private void OpenChannelLeave(string channelId)
+    private void OpenChannelLeaveConfirmation(string channelId)
     {
         channelLeaveWindow.SetChannelToLeave(channelId);
         channelLeaveWindow.SetVisibility(true);

@@ -1,11 +1,10 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
-    public class LeaveChannelWindowComponentView : BaseComponentView, ILeaveChannelWindowComponentView, IComponentModelConfig<LeaveChannelWindowComponentModel>
+    public class LeaveChannelConfirmationWindowComponentView : BaseComponentView, ILeaveChannelConfirmationWindowComponentView, IComponentModelConfig<LeaveChannelConfirmationWindowComponentModel>
     {
         [Header("Prefab References")]
         [SerializeField] internal Button backgroundButton;
@@ -14,7 +13,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ButtonComponentView confirmButton;
 
         [Header("Configuration")]
-        [SerializeField] internal LeaveChannelWindowComponentModel model;
+        [SerializeField] internal LeaveChannelConfirmationWindowComponentModel model;
 
         public RectTransform Transform => (RectTransform)transform;
 
@@ -41,7 +40,7 @@ namespace DCL.Chat.HUD
             base.Dispose();
         }
 
-        public void Configure(LeaveChannelWindowComponentModel newModel)
+        public void Configure(LeaveChannelConfirmationWindowComponentModel newModel)
         {
             model = newModel;
             RefreshControl();
@@ -61,10 +60,10 @@ namespace DCL.Chat.HUD
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
 
-        public static LeaveChannelWindowComponentView Create()
+        public static LeaveChannelConfirmationWindowComponentView Create()
         {
-            LeaveChannelWindowComponentView leaveChannelComponenView = Instantiate(Resources.Load<GameObject>("SocialBarV1/LeaveChannelHUD")).GetComponent<LeaveChannelWindowComponentView>();
-            leaveChannelComponenView.name = "_LeaveChannelHUD";
+            LeaveChannelConfirmationWindowComponentView leaveChannelComponenView = Instantiate(Resources.Load<GameObject>("SocialBarV1/LeaveChannelConfirmationHUD")).GetComponent<LeaveChannelConfirmationWindowComponentView>();
+            leaveChannelComponenView.name = "_LeaveChannelConfirmationHUD";
 
             return leaveChannelComponenView;
         }

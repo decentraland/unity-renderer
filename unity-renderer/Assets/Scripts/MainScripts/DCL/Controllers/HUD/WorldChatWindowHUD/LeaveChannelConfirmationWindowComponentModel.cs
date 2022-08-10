@@ -3,7 +3,7 @@
 namespace DCL.Chat.HUD
 {
     [Serializable]
-    public class LeaveChannelWindowComponentModel : BaseComponentModel
+    public class LeaveChannelConfirmationWindowComponentModel : BaseComponentModel
     {
         public string channelId;
     }

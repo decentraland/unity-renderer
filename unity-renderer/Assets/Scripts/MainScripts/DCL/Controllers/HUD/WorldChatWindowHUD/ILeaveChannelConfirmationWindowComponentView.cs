@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
-    public interface ILeaveChannelWindowComponentView
+    public interface ILeaveChannelConfirmationWindowComponentView
     {
         event Action OnCancelLeave;
         event Action<string> OnConfirmLeave;

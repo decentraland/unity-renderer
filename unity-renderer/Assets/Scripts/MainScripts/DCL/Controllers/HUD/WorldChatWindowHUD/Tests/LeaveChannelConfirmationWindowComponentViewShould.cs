@@ -2,14 +2,14 @@ using NUnit.Framework;
 
 namespace DCL.Chat.HUD
 {
-    public class LeaveChannelWindowComponentViewShould
+    public class LeaveChannelConfirmationWindowComponentViewShould
     {
-        private LeaveChannelWindowComponentView leaveChannelComponentView;
+        private LeaveChannelConfirmationWindowComponentView leaveChannelComponentView;
 
         [SetUp]
         public void Setup()
         {
-            leaveChannelComponentView = LeaveChannelWindowComponentView.Create();
+            leaveChannelComponentView = LeaveChannelConfirmationWindowComponentView.Create();
         }
 
         [TearDown]
@@ -22,7 +22,7 @@ namespace DCL.Chat.HUD
         public void ConfigureRealmSelectorCorrectly()
         {
             // Arrange
-            LeaveChannelWindowComponentModel testModel = new LeaveChannelWindowComponentModel
+            LeaveChannelConfirmationWindowComponentModel testModel = new LeaveChannelConfirmationWindowComponentModel
             {
                 channelId = "TestId"
             };
