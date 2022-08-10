@@ -92,7 +92,7 @@ namespace DCL.Components
                 return PhysicsLayers.onPointerEventLayer;
             else */
             if (model.withCollisions && !model.isPointerBlocker)
-                return PhysicsLayers.characterOnlyLayer;
+                return PhysicsLayers.collisionsWithoutPointerEvent;
 
             return PhysicsLayers.defaultLayer;
         }
