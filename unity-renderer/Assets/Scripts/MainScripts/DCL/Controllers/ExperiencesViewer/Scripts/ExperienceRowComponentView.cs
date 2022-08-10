@@ -66,7 +66,7 @@ namespace DCL.ExperiencesViewer
         void SetAllowStartStop(bool isAllowed);
     }
 
-    public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig
+    public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig<ExperienceRowComponentModel>
     {
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView iconImage;
@@ -104,9 +104,9 @@ namespace DCL.ExperiencesViewer
             SetAsPlaying(model.isPlaying);
         }
 
-        public void Configure(BaseComponentModel newModel)
+        public void Configure(ExperienceRowComponentModel newModel)
         {
-            model = (ExperienceRowComponentModel)newModel;
+            model = newModel;
             RefreshControl();
         }
 

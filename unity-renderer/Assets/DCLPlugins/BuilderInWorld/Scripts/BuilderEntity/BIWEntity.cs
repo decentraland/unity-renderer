@@ -269,8 +269,8 @@ public class BIWEntity
                 }
             }
 
-            DCL.Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(rootEntity);
-            DCL.Environment.i.world.sceneBoundsChecker?.RemoveEntityToBeChecked(rootEntity);
+            DCL.Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(rootEntity);
+            DCL.Environment.i.world.sceneBoundsChecker?.RemoveEntityToBeCheckedAndResetState(rootEntity);
         }
 
         DestroyColliders();
@@ -422,7 +422,7 @@ public class BIWEntity
         SaveOriginalMaterial();
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
-        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
+        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityMeshInsideSceneBoundaries(rootEntity));
 
         isLoaded = true;
     }

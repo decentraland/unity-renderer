@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Models;
@@ -13,6 +14,8 @@ namespace Tests
         private IParcelScene scene;
         private GameObject entityGO;
         private ECSTransformHandler handler;
+        private IWorldState worldState;
+        private BaseVariable<Vector3> playerTeleportPosition;
 
         [SetUp]
         public void SetUp()
@@ -24,7 +27,9 @@ namespace Tests
             entity.entityId.Returns(42);
 
             scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler();
+            worldState = Substitute.For<IWorldState>();
+            playerTeleportPosition = Substitute.For<BaseVariable<Vector3>>();
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition);
         }
 
         [TearDown]
@@ -114,6 +119,45 @@ namespace Tests
             model.parentId = parent.entityId;
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+        }
+
+        [Test]
+        public void MoveCharacterWhenSameSceneAndValidPosition()
+        {
+            scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = "temptation", basePosition = Vector2Int.zero });
+            scene.IsInsideSceneBoundaries(Arg.Any<Vector2Int>()).Returns(true);
+            worldState.currentSceneId.Returns("temptation");
+            entity.entityId.Returns(SpecialEntityId.PLAYER_ENTITY);
+
+            Vector3 position = new Vector3(8, 0, 0);
+            handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
+            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)));
+        }
+
+        [Test]
+        public void NotMoveCharacterWhenSameSceneButInvalidPosition()
+        {
+            scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = "temptation", basePosition = Vector2Int.zero });
+            scene.IsInsideSceneBoundaries(Arg.Any<Vector2Int>()).Returns(false);
+            worldState.currentSceneId.Returns("temptation");
+            entity.entityId.Returns(SpecialEntityId.PLAYER_ENTITY);
+
+            Vector3 position = new Vector3(1000, 0, 0);
+            handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+        }
+
+        [Test]
+        public void NotMoveCharacterWhenPlayerIsNotInScene()
+        {
+            scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = "temptation", basePosition = Vector2Int.zero });
+            scene.IsInsideSceneBoundaries(Arg.Any<Vector2Int>()).Returns(true);
+            worldState.currentSceneId.Returns("NOTtemptation");
+            entity.entityId.Returns(SpecialEntityId.PLAYER_ENTITY);
+
+            Vector3 position = new Vector3(1000, 0, 0);
+            handler.OnComponentModelUpdated(scene, entity, new ECSTransform() { position = position });
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
         }
     }
 }
