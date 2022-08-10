@@ -163,7 +163,7 @@ namespace DCL.Components
 
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadableShape.initialVisibility = entity.isInsideBoundaries;
+                loadableShape.initialVisibility = entity.isInsideSceneBoundaries;
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
@@ -180,7 +180,7 @@ namespace DCL.Components
             var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
             if (loadable != null)
-                loadable.initialVisibility = entity.isInsideBoundaries;
+                loadable.initialVisibility = entity.isInsideSceneBoundaries;
 
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
             
