@@ -714,7 +714,6 @@ public class TaskbarHUDController : IHUD
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
         controller.OnPreviewModeChanged += HandleChannelPreviewModeChanged;
-        controller.OnOpenChannelLeave += OpenChannelLeave;
     }
 
     public void AddChannelSearch(SearchChannelsWindowController controller)

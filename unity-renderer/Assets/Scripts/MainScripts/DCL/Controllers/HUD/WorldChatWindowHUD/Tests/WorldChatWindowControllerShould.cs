@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
@@ -403,9 +403,15 @@ public class WorldChatWindowControllerShould
         
         controller.Initialize(view);
 
+        string channelToLeave = "";
+        controller.OnOpenChannelLeave += channelId =>
+        {
+            channelToLeave = channelId;
+        };
+
         view.OnLeaveChannel += Raise.Event<Action<string>>(channelId);
-        
-        chatController.Received(1).LeaveChannel(channelId);
+
+        Assert.AreEqual(channelToLeave, channelId);
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)

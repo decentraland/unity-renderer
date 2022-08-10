@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using DCL.Chat.Channels;
 using NSubstitute;
@@ -149,9 +149,15 @@ namespace DCL.Chat.HUD
         {
             controller.SetVisibility(true);
 
-            view.OnLeaveChannel += Raise.Event<Action<string>>("channelId");
+            string testChannelId = "channelId";
+            string channelToLeave = "";
+            controller.OnOpenChannelLeave += channelId =>
+            {
+                channelToLeave = channelId;
+            };
+            view.OnLeaveChannel += Raise.Event<Action<string>>(testChannelId);
             
-            chatController.Received(1).LeaveChannel("channelId");
+            Assert.AreEqual(channelToLeave, testChannelId);
         }
     }
 }
