@@ -415,6 +415,7 @@ namespace DCL.Interface
         private class SendReportPlayerPayload
         {
             public string userId;
+            public string name;
         }
         
         [Serializable]
@@ -1289,11 +1290,12 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendReportPlayer(string playerName)
+        public static void SendReportPlayer(string playerId, string playerName)
         {
             SendMessage("ReportPlayer", new SendReportPlayerPayload
             {
-                userId = playerName
+                userId = playerId,
+                name = playerName
             });
         }
 
