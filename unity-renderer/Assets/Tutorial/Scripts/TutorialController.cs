@@ -310,7 +310,7 @@ namespace DCL.Tutorial
                 if (animated)
                     teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, position));
                 else
-                    configuration.teacherRawImage.rectTransform.position = position;
+                    configuration.teacherRawImage.rectTransform.position = new Vector3(position.x, position.y, configuration.teacherRawImage.rectTransform.position.z);
             }
         }
 
@@ -559,16 +559,19 @@ namespace DCL.Tutorial
                 yield break;
 
             float t = 0f;
-
-            while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
+            
+            configuration.teacherRawImage.rectTransform.position = new Vector3(fromPosition.x, fromPosition.y, configuration.teacherRawImage.rectTransform.position.z);
+            Vector3 destination = Vector3.zero;
+            
+            while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
-                Vector3 destination = new Vector3(toPosition.x, toPosition.y, configuration.teacherRawImage.rectTransform.position.z);
                 if (t <= 1.0f)
-                    configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, destination, configuration.teacherMovementCurve.Evaluate(t));
+                    destination = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
-                    configuration.teacherRawImage.rectTransform.position = destination;
+                    destination = toPosition;
 
+                configuration.teacherRawImage.rectTransform.position = new Vector3(destination.x, destination.y, configuration.teacherRawImage.rectTransform.position.z);
                 yield return null;
             }
         }
