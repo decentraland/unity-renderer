@@ -33,6 +33,7 @@ namespace DCL
 
         public enum BaseUrl
         {
+            ZONE,
             LOCAL_HOST,
             CUSTOM,
         }
@@ -40,10 +41,8 @@ namespace DCL
         public enum Environment
         {
             USE_DEFAULT_FROM_URL,
-            LOCAL,
-            ZONE,
-            TODAY,
-            ORG
+            MAINNET,
+            ROPSTEN,
         }
 
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
@@ -153,32 +152,28 @@ namespace DCL
             string baseUrl = "";
             string debugString = "";
 
-            if (baseUrlMode == BaseUrl.CUSTOM)
+            if (baseUrlMode.Equals(BaseUrl.CUSTOM))
+            {
                 baseUrl = baseUrlCustom;
-            else
+            }
+            else if (baseUrlMode.Equals(BaseUrl.LOCAL_HOST))
+            {
                 baseUrl = "http://localhost:3000/?";
+            }
+            else
+            {
+                baseUrl = "http://play.decentraland.zone/?";
+            }
 
+         
             switch (environment)
             {
-                case Environment.USE_DEFAULT_FROM_URL:
-                    break;
-                case Environment.LOCAL:
-                    debugString = "DEBUG_MODE&";
-
-                    break;
-                case Environment.ZONE:
+                case Environment.ROPSTEN:
                     debugString = "NETWORK=ropsten&";
-
                     break;
-                case Environment.TODAY:
+                case Environment.MAINNET:
                     debugString = "NETWORK=mainnet&";
-
-                    break;
-                case Environment.ORG:
-                    debugString = "NETWORK=mainnet&";
-
-                    break;
-            }
+                    break; }
 
             if (!string.IsNullOrEmpty(kernelVersion))
             {
@@ -260,7 +255,7 @@ namespace DCL
         }
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
-
+       
         private void QuitGame()
         {
 #if UNITY_EDITOR
