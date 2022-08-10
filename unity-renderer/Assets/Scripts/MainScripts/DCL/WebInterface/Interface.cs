@@ -410,6 +410,18 @@ namespace DCL.Interface
         {
             public string userId;
         }
+        
+        [Serializable]
+        private class SendReportPlayerPayload
+        {
+            public string userId;
+        }
+        
+        [Serializable]
+        private class SendReportScenePayload
+        {
+            public string sceneId;
+        }
 
         [System.Serializable]
         public class SendUnblockPlayerPayload
@@ -1269,9 +1281,21 @@ namespace DCL.Interface
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
 
-        public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
+        public static void SendReportScene(string sceneID)
+        {
+            SendMessage("ReportScene", new SendReportScenePayload
+            {
+                sceneId = sceneID
+            });
+        }
 
-        public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
+        public static void SendReportPlayer(string playerName)
+        {
+            SendMessage("ReportPlayer", new SendReportPlayerPayload
+            {
+                userId = playerName
+            });
+        }
 
         public static void SendBlockPlayer(string userId)
         {
