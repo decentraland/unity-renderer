@@ -13,9 +13,9 @@ namespace UIComponents.CollapsableSortedList
         private readonly Dictionary<K, V> entries = new Dictionary<K, V>();
         private readonly List<K> sortedEntries = new List<K>();
 
-        [SerializeField] private Transform container;
-        [SerializeField] private CollapsableListToggleButton toggleButton;
-        [SerializeField] private GameObject emptyStateContainer;
+        [SerializeField] internal Transform container;
+        [SerializeField] internal CollapsableListToggleButton toggleButton;
+        [SerializeField] internal GameObject emptyStateContainer;
         [SerializeField] private CollapsableSortedListModel model;
 
         private int filteredCount;
