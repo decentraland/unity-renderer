@@ -38,7 +38,6 @@ namespace DCL.Tutorial
         private void Awake()
         {
             teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera);
-            teacherRawImage.enabled = false;
         }
 
         private void OnDestroy() { teacherCanvasCameraModeController?.Dispose(); }

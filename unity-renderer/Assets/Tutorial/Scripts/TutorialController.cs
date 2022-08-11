@@ -563,24 +563,21 @@ namespace DCL.Tutorial
             float t = 0f;
 
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
-            Vector3 destination = Vector3.zero;
-            
-            Debug.Log("AAAAAA " + fromPosition);
-            Debug.Log("BBBBBB " + toPosition);
-            Debug.Log("CCCCCC0 " + Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition));
+            toPosition = new Vector3(toPosition.x, toPosition.y, configuration.teacherRawImage.rectTransform.position.z);
 
-            while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
+            //Had to add this check to wait for the Canvas to reposition after chaning the camera mode to CameraSpace
+            while (Math.Abs(configuration.teacherRawImage.rectTransform.position.x - toPosition.x) > 20)
             {
-                Debug.Log("CCCCCC1 " + Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition));
+                yield return null;
+            }
+            
+            while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
+            {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
-                    destination = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
+                    configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
-                    destination = toPosition;
-
-                Debug.Log("DDDDDD " + destination);
-                configuration.teacherRawImage.rectTransform.position = new Vector3(destination.x, destination.y, configuration.teacherRawImage.rectTransform.position.z);
-                Debug.Log("EEEEEE " + configuration.teacherRawImage.rectTransform.position);
+                    configuration.teacherRawImage.rectTransform.position = toPosition;
                 yield return null;
             }
         }
