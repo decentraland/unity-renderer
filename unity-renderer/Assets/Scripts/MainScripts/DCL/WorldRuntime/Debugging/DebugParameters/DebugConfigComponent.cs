@@ -38,9 +38,8 @@ namespace DCL
             CUSTOM,
         }
 
-        public enum Environment
+        public enum Network
         {
-            USE_DEFAULT_FROM_URL,
             MAINNET,
             ROPSTEN,
         }
@@ -60,7 +59,7 @@ namespace DCL
 
         public string baseUrlCustom;
 
-        [Space(10)] public Environment environment;
+        [Space(10)] public Network network;
 
         [Tooltip(
             "Set this field to force the realm (server). On the latin-american zone, recommended realms are fenrir-amber, baldr-amber and thor. Other realms can give problems to debug from Unity editor due to request certificate issues.\n\nFor auto selection leave this field blank.\n\nCheck out all the realms at https://catalyst-monitor.vercel.app/?includeDevServers")]
@@ -166,12 +165,12 @@ namespace DCL
             }
 
          
-            switch (environment)
+            switch (network)
             {
-                case Environment.ROPSTEN:
+                case Network.ROPSTEN:
                     debugString = "NETWORK=ropsten&";
                     break;
-                case Environment.MAINNET:
+                case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";
                     break; }
 
