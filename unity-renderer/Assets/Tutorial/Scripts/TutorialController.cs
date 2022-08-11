@@ -260,16 +260,13 @@ namespace DCL.Tutorial
                     {
                         yield return ExecuteSteps(TutorialPath.FromUserThatAlreadyDidTheTutorial, stepIndex);
                     }
-                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    else if (tutorialReset)
                     {
-                        if (tutorialReset)
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
-                        }
-                        else
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-                        }
+                        yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
+                    }
+                    else if (playerIsInGenesisPlaza)
+                    {
+                        yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
                     }
                     else if (openedFromDeepLink)
                     {
@@ -280,7 +277,6 @@ namespace DCL.Tutorial
                         SetTutorialDisabled();
                         yield break;
                     }
-
                     break;
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
@@ -568,6 +564,11 @@ namespace DCL.Tutorial
 
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
             Vector3 destination = Vector3.zero;
+
+            yield return null;
+            
+            Debug.Log("AAAAAAA " + configuration.teacherRawImage.rectTransform.position);
+            Debug.Log("AAAAAAA2 " + toPosition);
             
             while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
@@ -577,7 +578,9 @@ namespace DCL.Tutorial
                 else
                     destination = toPosition;
 
+                Debug.Log("BBBBB " + destination);
                 configuration.teacherRawImage.rectTransform.position = new Vector3(destination.x, destination.y, configuration.teacherRawImage.rectTransform.position.z);
+                Debug.Log("CCCCC " + configuration.teacherRawImage.rectTransform.position);
                 yield return null;
             }
         }
