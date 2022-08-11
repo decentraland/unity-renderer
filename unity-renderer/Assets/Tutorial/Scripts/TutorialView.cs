@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,7 +35,18 @@ namespace DCL.Tutorial
         internal TutorialController tutorialController;
         private HUDCanvasCameraModeController teacherCanvasCameraModeController;
 
-        private void Awake() { teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera); }
+        private void Awake()
+        {
+            teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera);
+            teacherRawImage.enabled = false;
+            StartCoroutine(WaitForCameraModeRepositioning());
+        }
+
+        IEnumerator WaitForCameraModeRepositioning()
+        {
+            yield return new WaitForSeconds(0.1f);
+            teacherRawImage.enabled = true;
+        }
 
         private void OnDestroy() { teacherCanvasCameraModeController?.Dispose(); }
 

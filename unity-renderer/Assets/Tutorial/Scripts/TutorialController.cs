@@ -252,11 +252,6 @@ namespace DCL.Tutorial
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
             
-            yield return null;
-            yield return null;
-            yield return null;
-            yield return null;
-
             switch (tutorialType)
             {
                 case TutorialType.Initial:
@@ -570,13 +565,6 @@ namespace DCL.Tutorial
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
             Vector3 destination = Vector3.zero;
 
-            yield return null;
-            yield return null;
-
-            
-            Debug.Log("AAAAAAA " + configuration.teacherRawImage.rectTransform.position);
-            Debug.Log("AAAAAAA2 " + toPosition);
-            
             while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
@@ -585,9 +573,7 @@ namespace DCL.Tutorial
                 else
                     destination = toPosition;
 
-                Debug.Log("BBBBB " + destination);
                 configuration.teacherRawImage.rectTransform.position = new Vector3(destination.x, destination.y, configuration.teacherRawImage.rectTransform.position.z);
-                Debug.Log("CCCCC " + configuration.teacherRawImage.rectTransform.position);
                 yield return null;
             }
         }
