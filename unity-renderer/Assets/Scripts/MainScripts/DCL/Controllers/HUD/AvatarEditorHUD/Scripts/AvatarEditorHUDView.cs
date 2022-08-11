@@ -138,6 +138,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
     private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
     private bool isAvatarDirty;
+    private int framesToUpdateAvatar;
     private AvatarModel avatarModelToUpdate;
     private bool updateAvatarShouldSkipAudio;
 
@@ -369,6 +370,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         // kernel setthrew method, which floods the analytics.
         // Also it updates just once if its called many times in a row
         isAvatarDirty = true;
+        framesToUpdateAvatar = 3;
         avatarModelToUpdate = avatarModel;
         updateAvatarShouldSkipAudio = skipAudio;
 
@@ -711,7 +713,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     
     private void UpdateAvatarModelWhenNeeded()
     {
-        if (isAvatarDirty)
+        if (isAvatarDirty && framesToUpdateAvatar <= 0)
         {
             characterPreviewController.UpdateModel(avatarModelToUpdate,
                 () =>
@@ -730,5 +732,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
             isAvatarDirty = false;
         }
+
+        if (framesToUpdateAvatar > 0)
+            framesToUpdateAvatar--;
     }
 }
