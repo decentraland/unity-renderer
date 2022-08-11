@@ -354,7 +354,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
         contextMenu.transform.parent = transform.parent;
-        contextMenu.transform.parent.SetAsLastSibling();
+        contextMenu.transform.SetAsLastSibling();
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
