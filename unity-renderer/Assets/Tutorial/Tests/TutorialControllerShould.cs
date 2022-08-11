@@ -124,6 +124,42 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
         }
+        
+        [UnityTest]
+        public IEnumerator MusicPlayingWhenStartingFromGenesisPlaza()
+        {
+            // Arrange
+            bool fromDeepLink = false;
+            bool enableNewTutorialCamera = true;
+            TutorialType tutorialType = TutorialType.Initial;
+            bool userAlreadyDidTheTutorial = false;
+
+            // Act
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            yield return null;
+
+            // Assert
+            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+        }
+        
+        [UnityTest]
+        public IEnumerator MusicNotPlayingWhenStartingFromDeepLink()
+        {
+            // Arrange
+            bool fromDeepLink = true;
+            bool enableNewTutorialCamera = true;
+            TutorialType tutorialType = TutorialType.Initial;
+            bool userAlreadyDidTheTutorial = false;
+            if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
+
+            // Act
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            yield return null;
+
+
+            // Assert
+            Assert.AreEqual(1f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+        }
 
         [UnityTest]
         public IEnumerator SkipTutorialStepsFromGenesisPlazaCorrectly()
