@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static PublicChannelEntry;
 
-public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
+public class PublicChannelEntry : BaseComponentView, IComponentModelConfig<PublicChannelEntryModel>
 {
-    [SerializeField] private Button openChatButton;
-    [SerializeField] private TMP_Text nameLabel;
-    [SerializeField] private PublicChannelEntryModel model;
-    [SerializeField] private UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal Button openChatButton;
+    [SerializeField] internal TMP_Text nameLabel;
+    [SerializeField] internal PublicChannelEntryModel model;
+    [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     
     private IChatController chatController;
     private ILastReadMessagesService lastReadMessagesService;
@@ -16,6 +17,11 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
     public PublicChannelEntryModel Model => model;
 
     public event Action<PublicChannelEntry> OnOpenChat;
+
+    public static PublicChannelEntry Create()
+    {
+        return Instantiate(Resources.Load<PublicChannelEntry>("SocialBarV1/PublicChannelElement"));
+    }
 
     public override void Awake()
     {
@@ -30,9 +36,9 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig
         this.lastReadMessagesService = lastReadMessagesService;
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(PublicChannelEntryModel newModel)
     {
-        model = (PublicChannelEntryModel) newModel;
+        model = newModel;
         RefreshControl();
     }
 

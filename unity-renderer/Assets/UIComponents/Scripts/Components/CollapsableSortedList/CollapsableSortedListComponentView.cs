@@ -25,6 +25,8 @@ namespace UIComponents.CollapsableSortedList
 
         public Comparison<V> SortingMethod { get; set; } = (model, model1) => 0;
 
+        public override bool isVisible => gameObject.activeInHierarchy;
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -171,7 +173,7 @@ namespace UIComponents.CollapsableSortedList
             }
         }
 
-        private void UpdateEmptyState()
+        protected virtual void UpdateEmptyState()
         {
             if (emptyStateContainer == null) return;
             emptyStateContainer.SetActive(Count() == 0);

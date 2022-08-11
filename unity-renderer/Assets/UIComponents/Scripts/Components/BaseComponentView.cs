@@ -79,13 +79,13 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig
+public interface IComponentModelConfig<T> where T: BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
     /// </summary>
     /// <param name="newModel">Data to configure the component.</param>
-    void Configure(BaseComponentModel newModel);
+    void Configure(T newModel);
 }
 
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
@@ -93,7 +93,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    public bool isVisible { get; private set; }
+    public virtual bool isVisible { get; private set; }
     private bool isDestroyed = false;
 
     public event Action<bool> onFocused;

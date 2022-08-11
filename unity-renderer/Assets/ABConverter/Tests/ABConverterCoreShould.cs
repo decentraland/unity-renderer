@@ -41,7 +41,7 @@ namespace DCL.ABConverter.Tests
 
         string basePath = @"C:\test-path\";
         string hash1 = "QmHash1", hash2 = "QmHash2", hash3 = "QmHash3", hash4 = "QmHash4";
-        string baseUrl = @"https://peer-lb.decentraland.org/lambdas/contentv2/contents/";
+        string baseUrl = @"https://peer.decentraland.org/lambdas/contentv2/contents/";
         private string contentData1 = "TestContent1 - guid: 14e357df3f3b75940b5d59e1035255b1\n";
         private string contentData2 = "TestContent2 - guid: 14e357df3f3b75940b5d59e1035255b2\n";
         private string contentData3 = "TestContent3 - guid: 14e357df3f3b75940b5d59e1035255b3\n";

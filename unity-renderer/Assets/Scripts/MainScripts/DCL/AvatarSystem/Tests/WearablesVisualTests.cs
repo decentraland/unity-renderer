@@ -199,7 +199,7 @@ public class WearablesVisualTests : VisualTestsBase
         Vector3 cachedPos = container.transform.position;
         //We need to reset the holder position for the mesh combiner
         container.transform.position = Vector3.up * -0.75f;
-        combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
+        combiner.Combine(rends[0], rends.ToArray(), avatarMaterial, false);
 
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;

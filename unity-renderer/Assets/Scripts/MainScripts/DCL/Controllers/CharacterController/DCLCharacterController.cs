@@ -94,6 +94,8 @@ public class DCLCharacterController : MonoBehaviour
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
+    private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
+
     [System.NonSerialized]
     public float movingPlatformSpeed;
     private CollisionFlags lastCharacterControllerCollision;
@@ -115,9 +117,9 @@ public class DCLCharacterController : MonoBehaviour
 
         SubscribeToInput();
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
-        CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
+        dataStorePlayer.playerWorldPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
-        DataStore.i.player.playerPosition.Set(Vector2Int.zero);
+        dataStorePlayer.playerGridPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
 
         characterPosition = new DCLCharacterPosition();
@@ -141,6 +143,8 @@ public class DCLCharacterController : MonoBehaviour
         var worldData = DataStore.i.Get<DataStore_World>();
         worldData.avatarTransform.Set(avatarGameObject.transform);
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
+
+        dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
     }
 
     private void SubscribeToInput()
@@ -168,6 +172,7 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnStarted -= walkStartedDelegate;
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
+        dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
         i = null;
     }
 
@@ -196,10 +201,11 @@ public class DCLCharacterController : MonoBehaviour
         Environment.i.platform.physicsSyncController?.MarkDirty();
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
-        CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
+        dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition);
         Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
         CommonScriptableObjects.playerCoords.Set(playerPosition);
-        DataStore.i.player.playerPosition.Set(playerPosition);
+        dataStorePlayer.playerGridPosition.Set(playerPosition);
+        dataStorePlayer.playerUnityPosition.Set(characterPosition.unityPosition);
 
         if (Moved(lastPosition))
         {
@@ -219,19 +225,20 @@ public class DCLCharacterController : MonoBehaviour
 
     public void Teleport(string teleportPayload)
     {
+        var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
+        dataStorePlayer.lastTeleportPosition.Set(payload, notifyEvent: true);
+    }
+    
+    private void Teleport(Vector3 newPosition, Vector3 prevPosition)
+    {
         ResetGround();
 
-        var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
-
-        var newPosition = new Vector3(payload.x, payload.y, payload.z);
         SetPosition(newPosition);
 
         if (OnPositionSet != null)
         {
             OnPositionSet.Invoke(characterPosition);
         }
-
-        DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
         {
@@ -254,7 +261,7 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        if(!DataStore.i.player.canPlayerMove.Get())
+        if(!dataStorePlayer.canPlayerMove.Get())
             return;
 
         if (transform.position.y < minimumYPosition)

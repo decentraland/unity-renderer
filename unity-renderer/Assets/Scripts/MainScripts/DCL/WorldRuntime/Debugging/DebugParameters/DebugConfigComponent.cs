@@ -16,6 +16,7 @@ namespace DCL
             {
                 if (sharedInstance == null)
                     sharedInstance = FindObjectOfType<DebugConfigComponent>();
+
                 return sharedInstance;
             }
             private set => sharedInstance = value;
@@ -75,8 +76,14 @@ namespace DCL
         public bool enableTutorial = false;
         public bool builderInWorld = false;
         public bool soloScene = true;
-        public bool multithreaded = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
+        public bool disableAssetBundles = false;
+
+        [Header("Performance")]
+        public bool disableGLTFDownloadThrottle = false;
+        public bool multithreaded = false;
+        public bool runPerformanceMeterToolDuringLoading = false;
+        private PerformanceMeterController performanceMeterController;
 
         private void Awake()
         {
@@ -88,6 +95,7 @@ namespace DCL
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
             DataStore.i.performance.multithreading.Set(multithreaded);
+            if (disableGLTFDownloadThrottle) DataStore.i.performance.maxDownloads.Set(999);
             Texture.allowThreadedTextureCreation = multithreaded;
         }
 
@@ -124,6 +132,19 @@ namespace DCL
 
             if (openBrowserWhenStart)
                 OpenWebBrowser();
+
+            if (runPerformanceMeterToolDuringLoading)
+            {
+                CommonScriptableObjects.forcePerformanceMeter.Set(true);
+                performanceMeterController = new PerformanceMeterController();
+                performanceMeterController.StartSampling(999);
+                CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+            }
+        }
+        private void OnRendererStateChanged(bool current, bool previous)
+        {
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+            performanceMeterController.StopSampling();
         }
 
         private void OpenWebBrowser()
@@ -143,15 +164,18 @@ namespace DCL
                     break;
                 case Environment.LOCAL:
                     debugString = "DEBUG_MODE&";
+
                     break;
                 case Environment.ZONE:
                     debugString = "NETWORK=goerli&";
                     break;
                 case Environment.TODAY:
                     debugString = "NETWORK=mainnet&";
+
                     break;
                 case Environment.ORG:
                     debugString = "NETWORK=mainnet&";
+
                     break;
             }
 
@@ -190,6 +214,11 @@ namespace DCL
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
             }
 
+            if (disableAssetBundles)
+            {
+                debugString += "DISABLE_ASSET_BUNDLES&DISABLE_WEARABLE_ASSET_BUNDLES&";
+            }
+            
             if (!string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
@@ -212,7 +241,9 @@ namespace DCL
                 {
                     Debug.LogError(
                         "play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
+
                     QuitGame();
+
                     return;
                 }
             }
@@ -227,10 +258,7 @@ namespace DCL
 #endif
         }
 
-        private void OnDestroy()
-        {
-            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
-        }
+        private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
 
         private void QuitGame()
         {

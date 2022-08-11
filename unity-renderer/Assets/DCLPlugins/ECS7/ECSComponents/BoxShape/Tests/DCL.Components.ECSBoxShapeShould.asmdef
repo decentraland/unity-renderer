@@ -15,7 +15,6 @@
         "GUID:97d8897529779cb49bebd400c7f402a6",
         "GUID:a881b57670b1d2747a6d7f9e32b63230",
         "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-        "GUID:cf6a52de4ad74e7c93b5ecf471e613f7",
         "GUID:3c42479e53c24ab098ea7aa54c818b2e",
         "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
         "GUID:f8a3a0af3ed28474c885e04c605a7962",
@@ -23,7 +22,8 @@
         "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
         "GUID:c9fbb75c15a4cd042b731877ede4a5c1",
         "GUID:28f74c468a54948bfa9f625c5d428f56",
-        "GUID:b7bf8a0febb6eee4da2a389257817682"
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:46951180f4d84b25a1619640aa317e5b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -33,7 +33,8 @@
         "nunit.framework.dll",
         "NSubstitute.dll",
         "System.Threading.Tasks.Extensions.dll",
-        "Google.Protobuf.dll"
+        "Google.Protobuf.dll",
+        "System.Memory.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

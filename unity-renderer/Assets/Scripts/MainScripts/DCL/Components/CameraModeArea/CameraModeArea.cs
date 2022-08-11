@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -96,7 +97,7 @@ namespace DCL.Components
 
             if (cameraModeChanged && isPlayerInside)
             {
-                areasController.ChangeAreaMode(this, areaModel.cameraMode);
+                areasController.ChangeAreaMode(this);
             }
         }
 

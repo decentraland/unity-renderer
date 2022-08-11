@@ -35,7 +35,7 @@ public interface ISearchBarComponentView
     void SetIdleSearchTime(float idleSearchTime);
 }
 
-public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView, IComponentModelConfig
+public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView, IComponentModelConfig<SearchBarComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal TMP_InputField inputField;
@@ -65,9 +65,9 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         SetClearMode();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(SearchBarComponentModel newModel)
     {
-        model = (SearchBarComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

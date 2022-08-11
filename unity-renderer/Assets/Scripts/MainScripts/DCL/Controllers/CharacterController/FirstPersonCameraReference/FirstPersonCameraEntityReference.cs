@@ -1,4 +1,5 @@
 using DCL.Camera;
+using DCL.CameraTool;
 using UnityEngine;
 
 public class FirstPersonCameraEntityReference : MonoBehaviour

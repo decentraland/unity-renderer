@@ -1,10 +1,7 @@
 using System;
-using DCL.ECSComponents;
-using DCL.ECSRuntime;
-using DCL;
 using DCL.ECS7;
-using DCL.ECSComponents;
-using DCL.SettingsCommon;
+using DCL.ECSRuntime;
+using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
 {
@@ -17,6 +14,22 @@ namespace DCL.ECSComponents
         private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
+        private readonly GLTFShapeRegister gltfRegister;
+        private readonly ECSTextShapeRegister textShapeRegister;
+        private readonly NFTShapeRegister nftRegister;
+        private readonly OnPointerDownRegister pointerDownRegister;
+        private readonly OnPointerUpRegister pointerUpRegister;
+        private readonly AnimatorRegister animatorRegister;
+        private readonly BillboardRegister billboardRegister;
+        private readonly CameraModeAreaRegister cameraModeAreaRegister;
+        private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
+        private readonly AvatarAttachRegister avatarAttachRegister;
+
+        // Those components are only here to serialize over the wire, we don't need a handler for these
+        private readonly OnPointerDownResultRegister pointerDownResultRegister;
+        private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly CameraModeRegister cameraModeRegister;
+        private readonly PointerLockRegister pointerLockRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -27,6 +40,22 @@ namespace DCL.ECSComponents
             cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
+            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
+            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
+            pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
+            avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter);
+            avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
+            cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
+
+            // Components without a handler
+            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
+            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
+            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -34,10 +63,26 @@ namespace DCL.ECSComponents
             transformRegister.Dispose();
             sphereShapeRegister.Dispose();
             boxShapeRegister.Dispose();
+            billboardRegister.Dispose();
             planeShapeRegister.Dispose();
             cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
+            textShapeRegister.Dispose();
+            nftRegister.Dispose();
+            gltfRegister.Dispose();
+            animatorRegister.Dispose();
+            avatarAttachRegister.Dispose();
+            avatarModifierAreaRegister.Dispose();
+            pointerDownRegister.Dispose();
+            pointerUpRegister.Dispose();
+            cameraModeAreaRegister.Dispose();
+
+            // Components without a handler
+            pointerDownResultRegister.Dispose();
+            pointerUpResultRegister.Dispose();
+            cameraModeRegister.Dispose();
+            pointerLockRegister.Dispose();
         }
     }
 }

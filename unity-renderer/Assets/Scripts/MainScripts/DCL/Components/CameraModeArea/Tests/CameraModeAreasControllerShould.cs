@@ -1,3 +1,4 @@
+using DCL.CameraTool;
 using DCL.Components;
 using NSubstitute;
 using NUnit.Framework;
@@ -84,10 +85,12 @@ namespace Tests
             Assert.AreEqual(CameraMode.ModeId.FirstPerson, CommonScriptableObjects.cameraMode.Get());
             Assert.IsTrue(CommonScriptableObjects.cameraModeInputLocked.Get());
 
-            controller.ChangeAreaMode(areas[1], CameraMode.ModeId.ThirdPerson);
+            areas[1].cameraMode.Returns( CameraMode.ModeId.ThirdPerson);
+            controller.ChangeAreaMode(areas[1]);
             Assert.AreEqual(CameraMode.ModeId.ThirdPerson, CommonScriptableObjects.cameraMode.Get());
             Assert.IsTrue(CommonScriptableObjects.cameraModeInputLocked.Get());
-
+            areas[1].cameraMode.Returns(CameraMode.ModeId.FirstPerson);
+            
             controller.RemoveInsideArea(areas[0]);
             controller.RemoveInsideArea(areas[1]);
 

@@ -47,7 +47,7 @@ public interface IImageComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig
+public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig<ImageComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Image image;
@@ -72,9 +72,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             SetFitParent(model.fitParent);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public virtual void Configure(ImageComponentModel newModel)
     {
-        model = (ImageComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
@@ -136,7 +136,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         SetFitParent(model.fitParent);
     }
 
-    public void SetImage(string uri)
+    public virtual void SetImage(string uri)
     {
         if (model.lastUriCached && uri == lastLoadedUri)
             return;

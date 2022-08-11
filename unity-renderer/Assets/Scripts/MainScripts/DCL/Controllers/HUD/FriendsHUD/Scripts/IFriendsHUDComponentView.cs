@@ -1,36 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public interface IFriendsHUDComponentView
 {
-    event Action<FriendRequestEntry> OnFriendRequestApproved;
-    event Action<FriendRequestEntry> OnCancelConfirmation;
-    event Action<FriendRequestEntry> OnRejectConfirmation;
+    event Action<FriendRequestEntryModel> OnFriendRequestApproved;
+    event Action<FriendRequestEntryModel> OnCancelConfirmation;
+    event Action<FriendRequestEntryModel> OnRejectConfirmation;
     event Action<string> OnFriendRequestSent;
-    event Action<FriendEntry> OnWhisper;
+    event Action<FriendEntryModel> OnWhisper;
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;
     event Action OnRequireMoreFriends;
     event Action OnRequireMoreFriendRequests;
     event Action<string> OnSearchFriendsRequested;
-    
+
+    void Initialize(IChatController chatController,
+        ILastReadMessagesService lastReadMessagesService,
+        IFriendsController friendsController,
+        ISocialAnalytics socialAnalytics);
     RectTransform Transform { get; }
     bool ListByOnlineStatus { set; }
     int FriendCount { get; }
     int FriendRequestCount { get; }
 
-    void HideSpinner();
-    void ShowSpinner();
+    void HideLoadingSpinner();
+    void ShowLoadingSpinner();
     List<FriendEntryBase> GetAllEntries();
     FriendEntryBase GetEntry(string userId);
     void DisplayFriendUserNotFound();
     bool IsFriendListCreationReady();
-    void Destroy();
+    void Dispose();
     void Show();
     void Hide();
-    void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel model);
-    void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model);
+    void Set(string userId, FriendEntryModel model);
+    void Set(string userId, FriendRequestEntryModel model);
+    void Remove(string userId);
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
@@ -39,6 +45,8 @@ public interface IFriendsHUDComponentView
     void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
     void HideMoreRequestsToLoadHint();
     bool ContainsFriend(string userId);
+    bool ContainsFriendRequest(string userId);
     void FilterFriends(Dictionary<string, FriendEntryModel> friends);
     void ClearFriendFilter();
+    void UpdateBlockStatus(string userId, bool blocked);
 }

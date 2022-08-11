@@ -1,7 +1,9 @@
+using System.Collections;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class EventCardComponentViewTests
 {
@@ -350,7 +352,7 @@ public class EventCardComponentViewTests
 
         // Act
         eventCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
-
+        
         // Assert
         Assert.IsFalse(eventCardModalComponent.isVisible);
     }

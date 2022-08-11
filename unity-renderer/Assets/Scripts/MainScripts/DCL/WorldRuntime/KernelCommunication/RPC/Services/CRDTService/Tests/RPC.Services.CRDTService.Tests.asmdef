@@ -1,0 +1,35 @@
+{
+    "name": "RPC.Services.CRDTService.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fd239a454d9a4039b164f90867ea3216",
+        "GUID:bd39fc5bcccf41788739ba7ccca79af2",
+        "GUID:74aca8d0fa88642fabc061875471dba2",
+        "GUID:383dfa8312be74b3fb6ebe4539536778",
+        "GUID:32414f40c5c02494097836a15ff47eac",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:132013f160565434195ba5960832b346",
+        "GUID:168278a8a3b14a3ba0f7ee157fd1780b",
+        "GUID:211458814b4045e7ad894e13b8f8d919",
+        "GUID:374252a1740a422eb7762fc12ff3bf8a",
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll",
+        "nunit.framework.dll",
+        "Google.Protobuf.dll",
+        "System.Memory.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DCL.CRDT;
-using DCL;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -45,7 +44,7 @@ namespace Tests
                     continue;
                 }
 
-                if (!line.StartsWith("{") || !line.EndsWith("}"))
+                if (!(line.StartsWith("{") && line.EndsWith("}")) || !(line.StartsWith("[") && line.EndsWith("]")))
                     continue;
 
                 if (nextLineIsState)
@@ -114,12 +113,12 @@ namespace Tests
             return msg;
         }
 
-        public static Dictionary<long, CRDTMessage> InstructionToFinalState(TestFileInstruction instruction)
+        public static IList<CRDTMessage> InstructionToFinalState(TestFileInstruction instruction)
         {
-            Dictionary<long, CRDTMessage> finalState = new Dictionary<long, CRDTMessage>();
+            CRDTMessage[] finalState = null;
             try
             {
-                finalState = JsonConvert.DeserializeObject<Dictionary<long, CRDTMessage>>(instruction.instructionValue);
+                finalState = JsonConvert.DeserializeObject<CRDTMessage[]>(instruction.instructionValue);
             }
             catch (Exception e)
             {

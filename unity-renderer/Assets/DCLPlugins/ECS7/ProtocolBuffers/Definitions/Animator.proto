@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1042;
+
+message PBAnimator {
+   repeated PBAnimationState states = 1;
+}
+
+message PBAnimationState {
+  string name = 1;
+  string clip = 2;
+  optional bool playing = 3;
+  optional float weight = 4; // default=1.0s
+  optional float speed = 5; // default=1.0
+  optional bool loop = 6; // default=true
+  optional bool should_reset = 7;
+}

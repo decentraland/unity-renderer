@@ -646,7 +646,7 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            ILand land = BIWUtils.CreateILandFromManifest(sceneToEdit.manifest, DataStore.i.player.playerPosition.Get());
+            ILand land = BIWUtils.CreateILandFromManifest(sceneToEdit.manifest, DataStore.i.player.playerGridPosition.Get());
 
             builderInWorldBridge.StartIsolatedMode(land);
         }

@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -155,7 +158,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnReportUserButtonPressed()
     {
         OnReport?.Invoke(userId);
-        WebInterface.SendReportPlayer(userId);
+        WebInterface.SendReportPlayer(userId, UserProfileController.userProfilesCatalog.Get(userId)?.userName);
         GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.ProfileContextMenu);
         Hide();
     }
@@ -163,28 +166,34 @@ public class UserContextMenu : MonoBehaviour
     private void OnDeleteUserButtonPressed()
     {
         OnUnfriend?.Invoke(userId);
+
         if (currentConfirmationDialog != null)
         {
             currentConfirmationDialog.SetText(string.Format(DELETE_MSG_PATTERN, UserProfileController.userProfilesCatalog.Get(userId)?.userName));
             currentConfirmationDialog.Show(() =>
             {
-                FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-                {
-                    userId = userId,
-                    action = FriendshipAction.DELETED
-                });
-
-                WebInterface.UpdateFriendshipStatus(
-                    new FriendsController.FriendshipUpdateStatusMessage()
-                    {
-                        action = FriendshipAction.DELETED,
-                        userId = userId
-                    });
+                UnfriendUser();
             });
         }
-        Hide();
+        else
+        {
+            UnfriendUser();
+        }
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
+        Hide();
+    }
+
+    private void UnfriendUser()
+    {
+        FriendsController.FriendshipUpdateStatusMessage newFriendshipStatusMessage = new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = userId,
+            action = FriendshipAction.DELETED
+        };
+
+        FriendsController.i.UpdateFriendshipStatus(newFriendshipStatusMessage);
+        WebInterface.UpdateFriendshipStatus(newFriendshipStatusMessage);
     }
 
     private void OnAddFriendButtonPressed()
@@ -268,11 +277,16 @@ public class UserContextMenu : MonoBehaviour
 
     private void HideIfClickedOutside()
     {
-        if (Input.GetMouseButtonDown(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
+        if (!Input.GetMouseButtonDown(0)) return;
+        var pointerEventData = new PointerEventData(EventSystem.current)
         {
+            position = Input.mousePosition
+        };
+        var raycastResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+                
+        if (raycastResults.All(result => result.gameObject != gameObject))
             Hide();
-        }
     }
 
     private void ProcessActiveElements(MenuConfigFlags flags)

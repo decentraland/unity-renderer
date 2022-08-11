@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -29,6 +31,8 @@ namespace AvatarSystem
         internal readonly IFacialFeatureRetriever eyebrowsRetriever;
         internal readonly IFacialFeatureRetriever mouthRetriever;
 
+        private readonly Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)> originalBones = new Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)>();
+
         public BodyShapeLoader(IRetrieverFactory retrieverFactory, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
         {
             wearable = bodyshape;
@@ -55,11 +59,16 @@ namespace AvatarSystem
                 }
 
                 status = IWearableLoader.Status.Idle;
-
                 await LoadWearable(container, ct);
+                // Store the original bones.
+                originalBones.Clear();
+                foreach (SkinnedMeshRenderer skm in bodyshapeRetriever.rendereable.renderers.OfType<SkinnedMeshRenderer>())
+                {
+                    originalBones[skm] = (skm.rootBone, skm.bones);
+                }
 
                 (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
-               
+
                 await (LoadEyes(ct), LoadEyebrows(ct), LoadMouth(ct));
                
                 UpdateColors(avatarSettings);
@@ -72,6 +81,8 @@ namespace AvatarSystem
                 throw;
             }
         }
+
+        public void SetBones(Transform rootBone, Transform[] bones) { AvatarSystemUtils.CopyBones(rootBone, bones, rendereable.renderers.OfType<SkinnedMeshRenderer>()); }
 
         private async UniTask LoadMouth(CancellationToken ct)
         {
@@ -157,6 +168,15 @@ namespace AvatarSystem
         public void Dispose()
         {
             status = IWearableLoader.Status.Idle;
+
+            //Restore bones
+            foreach ((SkinnedMeshRenderer skm, (Transform rootBone, Transform[] bones)) in originalBones)
+            {
+                skm.rootBone = rootBone;
+                skm.bones = bones;
+            }
+            originalBones.Clear();
+            
             bodyshapeRetriever?.Dispose();
             eyesRetriever?.Dispose();
             eyebrowsRetriever?.Dispose();

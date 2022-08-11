@@ -342,14 +342,13 @@ namespace UnityGLTF
             sceneImporter.Collider = Collider;
             sceneImporter.maximumLod = MaximumLod;
             sceneImporter.useMaterialTransition = UseVisualFeedback;
-            sceneImporter.maxTextureSize = DataStore.i.textureSize.gltfMaxSize.Get();
+            sceneImporter.maxTextureSize = DataStore.i.textureConfig.gltfMaxSize.Get();
             sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
             sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
             sceneImporter.initialVisibility = initialVisibility;
             sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
 
-            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
-                                             && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+            sceneImporter.forceGPUOnlyMesh = false;
 
             sceneImporter.OnMeshCreated += meshCreatedCallback;
             sceneImporter.OnRendererCreated += rendererCreatedCallback;

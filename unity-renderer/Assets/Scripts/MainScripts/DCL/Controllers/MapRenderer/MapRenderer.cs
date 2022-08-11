@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using KernelConfigurationTypes;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -32,15 +33,11 @@ namespace DCL
         [SerializeField] private Image parcelHighlighWithContentImagePrefab;
         [SerializeField] private Image selectParcelHighlighImagePrefab;
 
-        private float parcelSizeInMap;
-        private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
-        private Vector3[] mapWorldspaceCorners = new Vector3[4];
-        private Vector3 worldCoordsOriginInMap;
         private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
         private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
 
-        [HideInInspector] public Vector3 cursorMapCoords;
+        [HideInInspector] public Vector2Int cursorMapCoords;
         [HideInInspector] public bool showCursorCoords = true;
         public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
         public MapAtlas atlas;
@@ -68,7 +65,7 @@ namespace DCL
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
 
-        private Vector3 lastClickedCursorMapCoords;
+        private Vector2Int lastClickedCursorMapCoords;
         private Pool usersInfoPool;
 
         private bool parcelHighlightEnabledValue = false;
@@ -94,6 +91,8 @@ namespace DCL
         private List<Vector2Int> ownedLandsWithContent = new List<Vector2Int>();
         private List<Vector2Int> ownedEmptyLands = new List<Vector2Int>();
         private Vector2Int lastSelectedLand;
+        private Vector3 lastPlayerPosition = new Vector3(float.NegativeInfinity, 0, float.NegativeInfinity);
+        private BaseVariable<Vector3> playerWorldPosition = DataStore.i.player.playerWorldPosition;
 
         private bool isInitialized = false;
 
@@ -122,14 +121,13 @@ namespace DCL
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
-            playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
 
             highlight.SetScale(parcelHightlightScale);
 
             usersPositionMarkerController = new MapGlobalUsersPositionMarkerController(globalUserMarkerPrefab,
                 globalUserMarkerContainer,
-                MapUtils.GetTileToLocalPosition);
+                MapUtils.CoordsToPosition);
 
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
@@ -191,7 +189,6 @@ namespace DCL
 
             scenesOfInterestMarkers.Clear();
 
-            playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded -= OnOtherPlayersAdded;
@@ -230,19 +227,19 @@ namespace DCL
                 highlightedLands.Remove(lastSelectedLand);
             }
 
-            HighlightLands(ownedEmptyLands,ownedLandsWithContent);
-            
+            HighlightLands(ownedEmptyLands, ownedLandsWithContent);
+
             if (highlightedLands.ContainsKey(coordsToSelect))
             {
                 Destroy(highlightedLands[coordsToSelect].gameObject);
                 highlightedLands.Remove(coordsToSelect);
             }
-            
-            CreateHighlightParcel(selectParcelHighlighImagePrefab, coordsToSelect,size);
+
+            CreateHighlightParcel(selectParcelHighlighImagePrefab, coordsToSelect, size);
             lastSelectedLand = coordsToSelect;
         }
-        
-        public void HighlightLands(List<Vector2Int> landsToHighlight,List<Vector2Int> landsToHighlightWithContent)
+
+        public void HighlightLands(List<Vector2Int> landsToHighlight, List<Vector2Int> landsToHighlightWithContent)
         {
             CleanLandsHighlights();
 
@@ -251,7 +248,7 @@ namespace DCL
                 if (highlightedLands.ContainsKey(coords))
                     continue;
 
-                CreateHighlightParcel(parcelHighlighImagePrefab,coords, Vector2Int.one);
+                CreateHighlightParcel(parcelHighlighImagePrefab, coords, Vector2Int.one);
             }
             
             foreach (Vector2Int coords in landsToHighlightWithContent)
@@ -259,34 +256,34 @@ namespace DCL
                 if (highlightedLands.ContainsKey(coords))
                     continue;
 
-                if(!ownedLandsWithContent.Contains(coords))
+                if (!ownedLandsWithContent.Contains(coords))
                     ownedLandsWithContent.Add(coords);
-                CreateHighlightParcel(parcelHighlighWithContentImagePrefab,coords, Vector2Int.one);
+                CreateHighlightParcel(parcelHighlighWithContentImagePrefab, coords, Vector2Int.one);
             }
 
             ownedEmptyLands = landsToHighlight;
             ownedLandsWithContent = landsToHighlightWithContent;
         }
 
-        private void CreateHighlightParcel(Image prefab,Vector2Int coords, Vector2Int size)
+        private void CreateHighlightParcel(Image prefab, Vector2Int coords, Vector2Int size)
         {
             var highlightItem = Instantiate(prefab, overlayContainer, true).GetComponent<Image>();
-            highlightItem.rectTransform.localScale = new Vector3(parcelHightlightScale*size.x, parcelHightlightScale*size.y, 1f);
+            highlightItem.rectTransform.localScale = new Vector3(parcelHightlightScale * size.x, parcelHightlightScale * size.y, 1f);
             highlightItem.rectTransform.SetAsLastSibling();
-            highlightItem.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(coords.x, coords.y);
+            highlightItem.rectTransform.anchoredPosition = MapUtils.CoordsToPosition(coords);
             highlightedLands.Add(coords, highlightItem);
         }
 
         void Update()
         {
+            if ((playerWorldPosition.Get() - lastPlayerPosition).sqrMagnitude >= 0.1f * 0.1f)
+            {
+                lastPlayerPosition = playerWorldPosition.Get();
+                UpdateRendering(Utils.WorldToGridPositionUnclamped(lastPlayerPosition));
+            }
+
             if (!parcelHighlightEnabled)
                 return;
-
-            parcelSizeInMap = centeredReferenceParcel.rect.width * centeredReferenceParcel.lossyScale.x;
-
-            // the reference parcel has a bottom-left pivot
-            centeredReferenceParcel.GetWorldCorners(mapWorldspaceCorners);
-            worldCoordsOriginInMap = mapWorldspaceCorners[0];
 
             UpdateCursorMapCoords();
 
@@ -300,11 +297,11 @@ namespace DCL
             if (!IsCursorOverMapChunk())
                 return;
 
-            cursorMapCoords = Input.mousePosition - worldCoordsOriginInMap;
-            cursorMapCoords = cursorMapCoords / parcelSizeInMap;
-
-            cursorMapCoords.x = (int)Mathf.Floor(cursorMapCoords.x);
-            cursorMapCoords.y = (int)Mathf.Floor(cursorMapCoords.y);
+            const int OFFSET = -60; //Map is a bit off centered, we need to adjust it a little.
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(atlas.chunksParent, Input.mousePosition, DataStore.i.camera.hudsCamera.Get(), out var mapPoint);
+            mapPoint -= Vector2.one * OFFSET;
+            mapPoint -= (atlas.chunksParent.sizeDelta / 2f);
+            cursorMapCoords = Vector2Int.RoundToInt(mapPoint / MapUtils.PARCEL_SIZE);
         }
 
         bool IsCursorOverMapChunk()
@@ -330,7 +327,7 @@ namespace DCL
 
             string previousText = highlightedParcelText.text;
             parcelHighlightImage.rectTransform.SetAsLastSibling();
-            parcelHighlightImage.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(cursorMapCoords.x, cursorMapCoords.y);
+            parcelHighlightImage.rectTransform.anchoredPosition = MapUtils.CoordsToPosition(cursorMapCoords);
             highlightedParcelText.text = showCursorCoords ? $"{cursorMapCoords.x}, {cursorMapCoords.y}" : string.Empty;
 
             if (highlightedParcelText.text != previousText && !Input.GetMouseButton(0))
@@ -345,7 +342,7 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
+            if (Vector2.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
             {
                 OnCursorFarFromParcel?.Invoke();
             }
@@ -400,7 +397,7 @@ namespace DCL
                 
             }
 
-            (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileCenterToLocalPosition(centerParcel.x, centerParcel.y);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.CoordsToPosition(centerParcel);
 
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
 
@@ -431,6 +428,7 @@ namespace DCL
             marker.gameObject.transform.SetParent(overlayContainerPlayers.transform, true);
             marker.Populate(player);
             marker.gameObject.SetActive(otherPlayersIconsEnabled);
+            marker.transform.localScale = Vector3.one;
             usersInfoMarkers.Add(userId, poolable);
         }
 
@@ -448,18 +446,7 @@ namespace DCL
         private void ConfigureUserIcon(GameObject iconGO, Vector3 pos)
         {
             var gridPosition = Utils.WorldToGridPositionUnclamped(pos);
-            iconGO.transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
-        }
-
-        private void OnCharacterMove(Vector3 current, Vector3 previous)
-        {
-            current.y = 0;
-            previous.y = 0;
-
-            if (Vector3.Distance(current, previous) < 0.1f)
-                return;
-
-            UpdateRendering(Utils.WorldToGridPositionUnclamped(current));
+            iconGO.transform.localPosition = MapUtils.CoordsToPosition(Vector2Int.RoundToInt(gridPosition));
         }
 
         private void OnCharacterRotate(Vector3 current, Vector3 previous) { UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get())); }
@@ -493,18 +480,16 @@ namespace DCL
             Quaternion playerAngle = Quaternion.Euler(0, 0, Mathf.Atan2(-f.x, f.z) * Mathf.Rad2Deg);
 
             var gridPosition = playerGridPosition;
-            playerPositionIcon.anchoredPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
+            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPosition(gridPosition);
             playerPositionIcon.rotation = playerAngle;
         }
-
-        public Vector3 GetViewportCenter() { return atlas.viewport.TransformPoint(atlas.viewport.rect.center); }
 
         // Called by the parcelhighlight image button
         public void ClickMousePositionParcel()
         {
             highlightedParcelText.text = string.Empty;
-            lastClickedCursorMapCoords = new Vector3((int)cursorMapCoords.x, (int)cursorMapCoords.y, 0);
-            OnParcelClicked?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
+            lastClickedCursorMapCoords = cursorMapCoords;
+            OnParcelClicked?.Invoke(cursorMapCoords.x, cursorMapCoords.y);
         }
     }
 }

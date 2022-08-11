@@ -2,20 +2,21 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static PrivateChatEntry;
 
-public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
+public class PrivateChatEntry : BaseComponentView, IComponentModelConfig<PrivateChatEntryModel>
 {
-    [SerializeField] private Button openChatButton;
-    [SerializeField] private PrivateChatEntryModel model;
-    [SerializeField] private TMP_Text userNameLabel;
-    [SerializeField] private TMP_Text lastMessageLabel;
-    [SerializeField] private ImageComponentView picture;
-    [SerializeField] private UnreadNotificationBadge unreadNotifications;
-    [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject blockedContainer;
-    [SerializeField] private GameObject onlineStatusContainer;
-    [SerializeField] private GameObject offlineStatusContainer;
-    [SerializeField] private RectTransform userContextMenuPositionReference;
+    [SerializeField] internal Button openChatButton;
+    [SerializeField] internal PrivateChatEntryModel model;
+    [SerializeField] internal TMP_Text userNameLabel;
+    [SerializeField] internal TMP_Text lastMessageLabel;
+    [SerializeField] internal ImageComponentView picture;
+    [SerializeField] internal UnreadNotificationBadge unreadNotifications;
+    [SerializeField] internal Button optionsButton;
+    [SerializeField] internal GameObject blockedContainer;
+    [SerializeField] internal GameObject onlineStatusContainer;
+    [SerializeField] internal GameObject offlineStatusContainer;
+    [SerializeField] internal RectTransform userContextMenuPositionReference;
 
     private UserContextMenu userContextMenu;
     private IChatController chatController;
@@ -24,6 +25,11 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
     public PrivateChatEntryModel Model => model;
 
     public event Action<PrivateChatEntry> OnOpenChat;
+    
+    public static PrivateChatEntry Create()
+    {
+        return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
+    }
 
     public override void Awake()
     {
@@ -47,9 +53,9 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
         userContextMenu.OnBlock += HandleUserBlocked;
     }
     
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(PrivateChatEntryModel newModel)
     {
-        model = (PrivateChatEntryModel) newModel;
+        model = newModel;
         RefreshControl();
     }
 

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using DCL.Components.Interfaces;
 
 namespace DCL
 {
@@ -11,6 +13,7 @@ namespace DCL
         public readonly BaseVariable<bool> isAvatarEditorInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> emoteJustTriggeredFromShortcut = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isNavMapInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> chatInputVisible = new BaseVariable<bool>(false);
@@ -19,6 +22,8 @@ namespace DCL
         public readonly BaseVariable<bool> gotoPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
+        
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
         public class LoadingHUD

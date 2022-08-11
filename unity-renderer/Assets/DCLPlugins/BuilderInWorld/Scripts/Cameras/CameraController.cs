@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;

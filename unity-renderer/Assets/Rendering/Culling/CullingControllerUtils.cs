@@ -1,4 +1,5 @@
-﻿using DCL.Helpers;
+﻿using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Rendering
@@ -37,7 +38,7 @@ namespace DCL.Rendering
         /// <returns>True if renderer should be visible, false if otherwise.</returns>
         internal static bool TestRendererVisibleRule(CullingControllerProfile profile, float viewportSize, float distanceToCamera, bool boundsContainsCamera, bool isOpaque, bool isEmissive)
         {
-            bool shouldBeVisible = distanceToCamera < profile.visibleDistanceThreshold || boundsContainsCamera;
+            bool shouldBeVisible = boundsContainsCamera || distanceToCamera < profile.visibleDistanceThreshold;
 
             if (isEmissive)
                 shouldBeVisible |= viewportSize > profile.emissiveSizeThreshold;
@@ -61,11 +62,13 @@ namespace DCL.Rendering
             bool shouldHaveShadow = distanceToCamera < profile.shadowDistanceThreshold;
             shouldHaveShadow |= viewportSize > profile.shadowRendererSizeThreshold;
             shouldHaveShadow &= shadowMapTexelSize > profile.shadowMapProjectionSizeThreshold;
+
             return shouldHaveShadow;
         }
 
         internal static bool TestAvatarShadowRule(CullingControllerProfile profile, float avatarDistance) { return avatarDistance < profile.maxShadowDistanceForAvatars; }
 
+        private static readonly List<Material> allocMaterialList = new List<Material>(3);
         /// <summary>
         /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
         /// </summary>
@@ -73,7 +76,8 @@ namespace DCL.Rendering
         /// <returns>True if its opaque</returns>
         internal static bool IsOpaque(Renderer renderer)
         {
-            Material firstMat = renderer.sharedMaterials[0];
+            renderer.GetSharedMaterials(allocMaterialList);
+            Material firstMat = allocMaterialList[0];
 
             if (firstMat == null)
                 return true;
@@ -94,7 +98,8 @@ namespace DCL.Rendering
         /// <returns>True if the renderer is emissive.</returns>
         internal static bool IsEmissive(Renderer renderer)
         {
-            Material firstMat = renderer.sharedMaterials[0];
+            renderer.GetSharedMaterials(allocMaterialList);
+            Material firstMat = allocMaterialList[0];
 
             if (firstMat == null)
                 return false;
