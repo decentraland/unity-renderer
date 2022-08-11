@@ -251,6 +251,11 @@ namespace DCL.Tutorial
             yield return new WaitUntil(IsPlayerInScene);
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
+            
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
 
             switch (tutorialType)
             {
@@ -566,6 +571,8 @@ namespace DCL.Tutorial
             Vector3 destination = Vector3.zero;
 
             yield return null;
+            yield return null;
+
             
             Debug.Log("AAAAAAA " + configuration.teacherRawImage.rectTransform.position);
             Debug.Log("AAAAAAA2 " + toPosition);
