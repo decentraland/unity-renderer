@@ -347,8 +347,8 @@ namespace DCL.Controllers
 
                 // No need to add the entity to be checked later if we already found it outside its bounds.
                 // When the correct events are triggered again, the entity will be checked again.
-                if (!entity.isInsideSceneOuterBoundaries)
-                    return;
+                // if (!entity.isInsideSceneOuterBoundaries)
+                //     return;
             }
             
             entitiesToCheck.Add(entity);
