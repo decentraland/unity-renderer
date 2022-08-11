@@ -26,6 +26,7 @@ public class AvatarEditorHUDController : IHUD
     internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
+    List<string> latestOwnedWearablesRequested = new List<string>();
 
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
@@ -168,6 +169,8 @@ public class AvatarEditorHUDController : IHUD
                          {
                              ownedWearablesAlreadyLoaded = true;
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
+                             latestOwnedWearablesRequested.Clear();
+                             latestOwnedWearablesRequested = this.userProfile.GetInventoryItemsIds().ToList();
                              LoadUserProfile(userProfile, true);
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
@@ -269,6 +272,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetIsWeb3(userProfile.hasConnectedWeb3);
 
+        UpdateUserInventoryWithLatestOwnedWearablesRequested(userProfile);
         ProcessCatalog(this.catalog);
         EquipBodyShape(bodyShape);
         EquipSkinColor(userProfile.avatar.skinColor);
@@ -302,6 +306,16 @@ public class AvatarEditorHUDController : IHUD
 
         UpdateAvatarPreview(true);
         isAvatarPreviewReady = true;
+    }
+
+    private void UpdateUserInventoryWithLatestOwnedWearablesRequested(UserProfile userProfile)
+    {
+        List<string> currentInventory = userProfile.GetInventoryItemsIds().ToList();
+        foreach (var ownedWearableId in latestOwnedWearablesRequested)
+        {
+            if (!currentInventory.Contains(ownedWearableId))
+                userProfile.AddToInventory(ownedWearableId);
+        }
     }
 
     private void EnsureWearablesCategoriesNotEmpty()
