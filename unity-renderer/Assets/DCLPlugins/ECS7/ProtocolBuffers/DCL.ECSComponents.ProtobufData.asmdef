@@ -1,5 +1,5 @@
 {
-    "name": "DCL.Components.ProtobufData",
+    "name": "DCL.ECSComponents.ProtobufData",
     "rootNamespace": "",
     "references": [],
     "includePlatforms": [],
