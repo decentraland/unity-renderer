@@ -569,10 +569,11 @@ namespace DCL.Tutorial
             
             while (distance > 0)
             {
-                //Had to add this check to wait for the Canvas to reposition after chaning the camera mode to CameraSpace
+                //Had to add this check to wait for the Canvas to reposition after changing the camera mode to CameraSpace
                 if (distance > 20)
                 {
                     Debug.Log("ENTRANDO AL CHECK DE DISTANCIA");
+                    distance = Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition);
                     continue;
                 }
                 
