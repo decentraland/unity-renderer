@@ -86,6 +86,24 @@ namespace SceneBoundariesCheckerTests
 
             AssertMeshIsInvalid(entity.meshesInfo);
         }
+
+        public static IEnumerator GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/gltfshape-asset-bundle-colliders-no-renderers.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return null;
+
+            AssertMeshIsInvalid(entity.meshesInfo);
+        }
         
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
         {
@@ -407,28 +425,39 @@ namespace SceneBoundariesCheckerTests
         {
             Assert.IsTrue(meshesInfo.meshRootGameObject != null, "MeshRootGameObject is null. The object is valid when it shouldn't.");
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
+            if (meshesInfo.renderers != null && meshesInfo.renderers.Length > 0)
             {
-                bool hasWireframe = false;
-
-                foreach (Transform t in meshesInfo.innerGameObject.transform)
+                if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
                 {
-                    if (t.name.Contains("Wireframe"))
-                        hasWireframe = true;
-                }
+                    bool hasWireframe = false;
 
-                Assert.That(hasWireframe, Is.True); 
+                    foreach (Transform t in meshesInfo.innerGameObject.transform)
+                    {
+                        if (t.name.Contains("Wireframe"))
+                            hasWireframe = true;
+                    }
+
+                    Assert.That(hasWireframe, Is.True); 
+                }
+                else
+                {
+                    for (int i = 0; i < meshesInfo.renderers.Length; i++)
+                    {
+                        Assert.IsFalse(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is enabled when it shouldn't!");
+                    }
+
+                    foreach (Collider collider in meshesInfo.colliders)
+                    {
+                        Assert.IsFalse(collider.enabled, $"Collider {collider.gameObject.name} is enabled when it shouldn't!");
+                    }
+                }
             }
-            else
-            {
-                for (int i = 0; i < meshesInfo.renderers.Length; i++)
-                {
-                    Assert.IsFalse(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is enabled when it shouldn't!");
-                }
 
+            if (meshesInfo.colliders.Count > 0)
+            {
                 foreach (Collider collider in meshesInfo.colliders)
                 {
-                    Assert.IsFalse(collider.enabled, $"Collider {collider.gameObject.name} is enabled when it shouldn't!");
+                    Assert.IsFalse(collider.enabled);
                 }
             }
         }
