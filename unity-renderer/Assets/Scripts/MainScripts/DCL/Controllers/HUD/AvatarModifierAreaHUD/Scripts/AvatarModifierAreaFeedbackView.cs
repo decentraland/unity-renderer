@@ -94,7 +94,6 @@ namespace DCL.AvatarModifierAreaFeedback
         
         private void Hide()
         {
-            Debug.Log("Adding this to force recompile");
             isVisible = false;
             
             deactivatePreviewCancellationToken.Cancel();
