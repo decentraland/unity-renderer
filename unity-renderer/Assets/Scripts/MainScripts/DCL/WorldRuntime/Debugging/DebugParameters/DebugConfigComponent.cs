@@ -34,6 +34,7 @@ namespace DCL
         public enum BaseUrl
         {
             ZONE,
+            ORG,
             LOCAL_HOST,
             CUSTOM,
         }
@@ -44,9 +45,6 @@ namespace DCL
             ROPSTEN,
         }
 
-        private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
-        private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
-
         [Header("General Settings")] public bool openBrowserWhenStart;
         public bool webSocketSSL = false;
 
@@ -56,8 +54,8 @@ namespace DCL
         public string customContentServerUrl = "http://localhost:1338/";
 
         [Space(10)] public BaseUrl baseUrlMode;
-
-        public string baseUrlCustom;
+        [DrawIf("baseUrlMode", BaseUrl.CUSTOM)]
+        public string customURL;
 
         [Space(10)] public Network network;
 
@@ -69,14 +67,14 @@ namespace DCL
 
         [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
 
-        public bool allWearables = false;
-        public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
         public bool soloScene = true;
-        public DebugPanel debugPanelMode = DebugPanel.Off;
         public bool disableAssetBundles = false;
+        public bool enableDebugMode = false;
+        public DebugPanel debugPanelMode = DebugPanel.Off;
 
+        
         [Header("Performance")]
         public bool disableGLTFDownloadThrottle = false;
         public bool multithreaded = false;
@@ -153,17 +151,27 @@ namespace DCL
 
             if (baseUrlMode.Equals(BaseUrl.CUSTOM))
             {
-                baseUrl = baseUrlCustom;
+                baseUrl = this.customURL;
             }
             else if (baseUrlMode.Equals(BaseUrl.LOCAL_HOST))
             {
                 baseUrl = "http://localhost:3000/?";
             }
+            else if (baseUrlMode.Equals(BaseUrl.ORG))
+            {
+                baseUrl = "http://play.decentraland.org/?";
+                if (!webSocketSSL)
+                {
+                    Debug.LogError(
+                        "play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
+                    QuitGame();
+                    return;
+                }
+            }
             else
             {
                 baseUrl = "http://play.decentraland.zone/?";
             }
-
          
             switch (network)
             {
@@ -172,7 +180,8 @@ namespace DCL
                     break;
                 case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";
-                    break; }
+                    break; 
+            }
 
             if (!string.IsNullOrEmpty(kernelVersion))
             {
@@ -184,19 +193,9 @@ namespace DCL
                 debugString += "LOCAL_COMMS&";
             }
 
-            if (allWearables)
-            {
-                debugString += "ALL_WEARABLES&";
-            }
-
-            if (testWearables)
-            {
-                debugString += "TEST_WEARABLES&";
-            }
-
             if (enableTutorial)
             {
-                debugString += "RESET_TUTORIAL&";
+                //debugString += "RESET_TUTORIAL&";
             }
 
             if (soloScene)
@@ -213,6 +212,11 @@ namespace DCL
             {
                 debugString += "DISABLE_ASSET_BUNDLES&DISABLE_WEARABLE_ASSET_BUNDLES&";
             }
+
+            if (enableDebugMode)
+            {
+                debugString += "DEBUG_MODE&";
+            }
             
             if (!string.IsNullOrEmpty(realm))
             {
@@ -223,26 +227,14 @@ namespace DCL
 
             if (debugPanelMode == DebugPanel.Engine)
             {
-                debugPanelString = ENGINE_DEBUG_PANEL + "&";
+                debugPanelString = "ENGINE_DEBUG_PANEL&";
             }
             else if (debugPanelMode == DebugPanel.Scene)
             {
-                debugPanelString = SCENE_DEBUG_PANEL + "&";
+                debugPanelString = "SCENE_DEBUG_PANEL&";
             }
 
-            if (!webSocketSSL)
-            {
-                if (baseUrl.Contains("play.decentraland.org"))
-                {
-                    Debug.LogError(
-                        "play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
-
-                    QuitGame();
-
-                    return;
-                }
-            }
-            else
+            if (webSocketSSL)
             {
                 Debug.Log(
                     "[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified (or enabling the following option: chrome://flags/#allow-insecure-localhost). In Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS` to true, then use the ws:// rather than the wss:// address.");
