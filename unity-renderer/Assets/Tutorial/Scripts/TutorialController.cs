@@ -4,6 +4,7 @@ using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Scripting;
 using UnityEngine;
 
 namespace DCL.Tutorial
@@ -564,16 +565,23 @@ namespace DCL.Tutorial
 
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
             Vector3 destination = Vector3.zero;
+            
+            Debug.Log("AAAAAA " + fromPosition);
+            Debug.Log("BBBBBB " + toPosition);
+            Debug.Log("CCCCCC0 " + Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition));
 
             while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
+                Debug.Log("CCCCCC1 " + Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition));
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
                     destination = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
                     destination = toPosition;
 
+                Debug.Log("DDDDDD " + destination);
                 configuration.teacherRawImage.rectTransform.position = new Vector3(destination.x, destination.y, configuration.teacherRawImage.rectTransform.position.z);
+                Debug.Log("EEEEEE " + configuration.teacherRawImage.rectTransform.position);
                 yield return null;
             }
         }

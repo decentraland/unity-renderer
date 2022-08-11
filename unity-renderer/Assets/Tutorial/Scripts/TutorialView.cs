@@ -39,13 +39,6 @@ namespace DCL.Tutorial
         {
             teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera);
             teacherRawImage.enabled = false;
-            StartCoroutine(WaitForCameraModeRepositioning());
-        }
-
-        IEnumerator WaitForCameraModeRepositioning()
-        {
-            yield return new WaitForSeconds(0.1f);
-            teacherRawImage.enabled = true;
         }
 
         private void OnDestroy() { teacherCanvasCameraModeController?.Dispose(); }
