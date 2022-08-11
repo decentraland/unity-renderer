@@ -220,19 +220,18 @@ MonoBehaviour:
   kernelVersion: 
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 1
-  baseUrlCustom: https://play.decentraland.zone/?
-  environment: 4
+  baseUrlMode: 0
+  customURL: 
+  network: 0
   realm: loki
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
-  allWearables: 0
-  testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
   soloScene: 0
-  debugPanelMode: 0
   disableAssetBundles: 0
+  enableDebugMode: 0
+  debugPanelMode: 0
   disableGLTFDownloadThrottle: 0
   multithreaded: 0
   runPerformanceMeterToolDuringLoading: 0
