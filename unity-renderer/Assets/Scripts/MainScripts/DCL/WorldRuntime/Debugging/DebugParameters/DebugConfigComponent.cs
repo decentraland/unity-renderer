@@ -53,7 +53,7 @@ namespace DCL
 
         public string customContentServerUrl = "http://localhost:1338/";
 
-        [Space(10)] public BaseUrl baseUrlMode;
+        [Space(10)] public BaseUrl baseUrlMode = BaseUrl.ZONE;
         [DrawIf("baseUrlMode", BaseUrl.CUSTOM)]
         public string customURL;
 
@@ -195,7 +195,7 @@ namespace DCL
 
             if (enableTutorial)
             {
-                //debugString += "RESET_TUTORIAL&";
+                debugString += "RESET_TUTORIAL&";
             }
 
             if (soloScene)
