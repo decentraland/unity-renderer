@@ -4,7 +4,6 @@ using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Scripting;
 using UnityEngine;
 
 namespace DCL.Tutorial
