@@ -13,7 +13,23 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
-            tutorialController?.hudController?.taskbarHud?.SetVisibility(false);
+            if (tutorialController != null)
+            {
+                tutorialController.hudController?.taskbarHud?.SetVisibility(false);
+                tutorialController.ShowTeacher3DModel(false);
+            }
+            OnShowAnimationFinished += SetupAlicePosition;
+        }
+        
+        private void SetupAlicePosition()
+        {
+            if (tutorialController != null)
+            {
+                tutorialController.SetTeacherPosition(teacherPositionRef.position, false);
+                tutorialController.ShowTeacher3DModel(true);
+                tutorialController.configuration?.teacher?.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+            }
+            OnShowAnimationFinished -= SetupAlicePosition;
         }
 
         public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.isLocked); }

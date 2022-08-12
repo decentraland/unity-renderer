@@ -302,7 +302,7 @@ namespace DCL.Tutorial
         /// </summary>
         /// <param name="destinationPosition">Target position.</param>
         /// <param name="animated">True for apply a smooth movement.</param>
-        public void SetTeacherPosition(Vector2 destinationPosition, bool animated = true)
+        public void SetTeacherPosition(Vector3 destinationPosition, bool animated = true)
         {
             if (teacherMovementCoroutine != null)
                 CoroutineStarter.Stop(teacherMovementCoroutine);
@@ -561,16 +561,8 @@ namespace DCL.Tutorial
                 yield break;
 
             float t = 0f;
-
-            //Had to add this check to wait for the Canvas to reposition after changing the camera mode to CameraSpace
-            while (Math.Abs(configuration.teacherRawImage.rectTransform.position.x - toPosition.x) > 20)
-            {
-                Debug.Log("Repositioning canvas");
-                yield return null;
-            }
-            
+          
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
-            toPosition = new Vector3(toPosition.x, toPosition.y, configuration.teacherRawImage.rectTransform.position.z);
             
             while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {

@@ -55,6 +55,7 @@ namespace DCL.Tutorial
         public override IEnumerator OnStepPlayHideAnimation()
         {
             tutorialController?.SetEagleEyeCameraActive(false);
+            tutorialController?.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
             yield return base.OnStepPlayHideAnimation();
         }
 
