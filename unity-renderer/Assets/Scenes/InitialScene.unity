@@ -215,7 +215,7 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
-  OpenBrowserOnStart: 0
+  OpenBrowserOnStart: 1
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
