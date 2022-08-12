@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DCL.Chat.Channels;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL.Friends.WebApi;
 using DCL.Interface;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowController : IHUD
 {
@@ -28,8 +30,9 @@ public class WorldChatWindowController : IHUD
     private bool isRequestingFriendsWithDMs;
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
-    internal bool isRequestingDMs;
-    internal bool areJoinedChannelsRequestedByFirstTime;
+    private bool isRequestingDMs;
+    private bool areJoinedChannelsRequestedByFirstTime;
+    private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
 
     public IWorldChatWindowView View => view;
 
@@ -115,6 +118,9 @@ public class WorldChatWindowController : IHUD
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
+        
+        hideChannelsLoadingCancellationToken?.Cancel();
+        hideChannelsLoadingCancellationToken?.Dispose();
     }
 
     public void SetVisibility(bool visible)
@@ -155,6 +161,17 @@ public class WorldChatWindowController : IHUD
         channelsRequestTimestamp = DateTime.UtcNow;
 
         areJoinedChannelsRequestedByFirstTime = true;
+        
+        hideChannelsLoadingCancellationToken?.Cancel();
+        hideChannelsLoadingCancellationToken = new CancellationTokenSource();
+        WaitThenHideChannelsLoading(hideChannelsLoadingCancellationToken.Token).Forget();
+    }
+
+    private async UniTask WaitThenHideChannelsLoading(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        view.HideChannelsLoading();
     }
 
     private void HandleFriendsControllerInitialization()

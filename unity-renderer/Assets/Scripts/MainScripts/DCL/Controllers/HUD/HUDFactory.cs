@@ -66,7 +66,7 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
@@ -74,14 +74,14 @@ public class HUDFactory : IHUDFactory
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
                     new SocialAnalytics(
@@ -93,7 +93,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PUBLIC_CHAT:
                 hudElement = new PublicChatWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
@@ -105,24 +105,24 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 hudElement = new LeaveChannelConfirmationWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
