@@ -13,15 +13,17 @@ namespace DCL.ECS7
         private readonly ECSSystemsController systemsController;
         private readonly ECSComponentsFactory componentsFactory;
         private readonly ECSComponentsManager componentsManager;
+        private readonly InternalECSComponents internalEcsComponents;
 
         private readonly ISceneController sceneController;
 
         public ECS7Plugin()
         {
             sceneController = Environment.i.world.sceneController;
-            
+
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
@@ -38,7 +40,8 @@ namespace DCL.ECS7
             crdtWriteSystem.Dispose();
             componentWriter.Dispose();
             systemsController.Dispose();
-            
+            internalEcsComponents.Dispose();
+
             sceneController.OnNewSceneAdded -= OnSceneAdded;
         }
 
