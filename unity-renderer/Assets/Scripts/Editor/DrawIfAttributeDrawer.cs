@@ -6,7 +6,7 @@ using UnityEngine;
 /// Based on: https://forum.unity.com/threads/draw-a-field-only-if-a-condition-is-met.448855/
 /// </summary>
 [CustomPropertyDrawer(typeof(DrawIfAttribute))]
-public class DrawIfPropertyDrawer : PropertyDrawer
+public class DrawIfAttributeDrawer : PropertyDrawer
 {
     #region Fields
  
