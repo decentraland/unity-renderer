@@ -10,15 +10,25 @@ namespace DCL.Tutorial
         public override void OnStepStart()
         {
             base.OnStepStart();
-
+            
+            if (tutorialController == null)
+                return;
+            
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
-
-            if (tutorialController != null)
+            if (tutorialController.currentPath == TutorialController.TutorialPath.FromGenesisPlaza)
+            {
+                tutorialController.ShowTeacher3DModel(true);
+                tutorialController.SetTeacherPosition(teacherPositionRef.position);
+                if (tutorialController.configuration.teacher != null &&
+                    tutorialController.configuration.teacher.isHiddenByAnAnimation)
+                    tutorialController.configuration.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+            }
+            else
             {
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
                 tutorialController.ShowTeacher3DModel(false);
+                OnShowAnimationFinished += SetupAlicePosition;
             }
-            OnShowAnimationFinished += SetupAlicePosition;
         }
         
         private void SetupAlicePosition()
