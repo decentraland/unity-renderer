@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DCL;
 using ECSSystems.CameraSystem;
+using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECS7System = System.Action;
 
@@ -22,7 +23,8 @@ public class ECSSystemsController : IDisposable
 
         updateSystems = new ECS7System[]
         {
-            ECSTransformParentingSystem.Update
+            ECSTransformParentingSystem.Update,
+            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup, context.internalEcsComponents)
         };
 
         lateUpdateSystems = new ECS7System[]

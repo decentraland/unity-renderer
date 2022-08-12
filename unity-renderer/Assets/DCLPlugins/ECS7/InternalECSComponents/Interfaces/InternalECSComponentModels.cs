@@ -6,10 +6,12 @@ namespace DCL.ECS7.InternalComponents
     public class InternalTexturizable
     {
         public IList<Renderer> renderers = new List<Renderer>();
+        public bool dirty = true;
     }
 
     public class InternalMaterial
     {
         public Material material = null;
+        public bool dirty = true;
     }
 }
