@@ -109,7 +109,11 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
             if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
             {
-                if (!chatEntryModel.isChannelMessage)
+                if (chatEntryModel.isChannelMessage)
+                {
+                    baseName = "You";
+                }
+                else
                 {
                     baseName = $"To {chatEntryModel.recipientName}";
                 }
