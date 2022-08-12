@@ -215,13 +215,13 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
-  openBrowserWhenStart: 1
+  OpenBrowserOnStart: 0
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 0
-  customURL: 
+  baseUrlMode: 3
+  customURL: https://play.decentraland.zone/?
   network: 0
   realm: loki
   startInCoords: {x: 0, y: 0}

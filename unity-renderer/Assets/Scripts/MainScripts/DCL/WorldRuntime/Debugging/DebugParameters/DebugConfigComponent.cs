@@ -45,7 +45,7 @@ namespace DCL
             ROPSTEN,
         }
 
-        [Header("General Settings")] public bool openBrowserWhenStart;
+        [Header("General Settings")] public bool OpenBrowserOnStart;
         public bool webSocketSSL = false;
 
         [Header("Kernel General Settings")] public string kernelVersion;
@@ -55,7 +55,7 @@ namespace DCL
 
         [Space(10)] public BaseUrl baseUrlMode = BaseUrl.ZONE;
         [DrawIf("baseUrlMode", BaseUrl.CUSTOM)]
-        public string customURL;
+        public string customURL = "https://play.decentraland.zone/?";
 
         [Space(10)] public Network network;
 
@@ -126,7 +126,7 @@ namespace DCL
                 RendereableAssetLoadHelper.customContentServerUrl = customContentServerUrl;
             }
 
-            if (openBrowserWhenStart)
+            if (OpenBrowserOnStart)
                 OpenWebBrowser();
 
             if (runPerformanceMeterToolDuringLoading)
