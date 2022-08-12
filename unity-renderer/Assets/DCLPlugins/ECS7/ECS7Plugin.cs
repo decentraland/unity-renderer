@@ -29,6 +29,8 @@ namespace DCL.ECS7
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter);
+
+            ComponentGroups componentGroups = new ComponentGroups(componentsManager);
             systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
 
             sceneController.OnNewSceneAdded += OnSceneAdded;
