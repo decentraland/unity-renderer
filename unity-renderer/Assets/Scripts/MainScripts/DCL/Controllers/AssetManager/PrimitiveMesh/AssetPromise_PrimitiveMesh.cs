@@ -38,7 +38,6 @@ namespace DCL
         {
             if (!library.Add(asset))
             {
-                Debug.Log("add to library fail?");
                 return false;
             }
 
