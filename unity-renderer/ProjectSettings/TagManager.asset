@@ -25,7 +25,7 @@ TagManager:
   - OnBuilderPointerClick
   - CharacterPreview
   - CharacterController
-  - CharacterOnly
+  - CollisionsWithoutPointerEvent
   - NavmapChunk
   - FriendsHUDPlayerMenu
   - PlayerInfoCardMenu
