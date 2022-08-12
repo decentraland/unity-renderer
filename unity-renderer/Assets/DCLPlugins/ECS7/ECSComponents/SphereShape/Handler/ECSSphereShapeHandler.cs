@@ -12,20 +12,28 @@ namespace DCL.ECSComponents
         internal Rendereable rendereable;
         internal PBSphereShape lastModel;
         
+        private GameObject renderingGameObject;
         private readonly DataStore_ECS7 dataStore;
         
         public ECSSphereShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
         {
             dataStore = dataStoreEcs7;
+            renderingGameObject = new GameObject();
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            renderingGameObject.transform.SetParent(entity.gameObject.transform, false);
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             if (primitiveMeshPromisePrimitive != null)
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
             DisposeMesh(entity, scene);
+            
+            GameObject.Destroy(renderingGameObject);
+            lastModel = null;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBSphereShape model)
@@ -67,10 +75,10 @@ namespace DCL.ECSComponents
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, renderingGameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
-            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
+            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, renderingGameObject, meshesInfo.renderers);
         }
         
         internal void DisposeMesh(IDCLEntity entity, IParcelScene scene)

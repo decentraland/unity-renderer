@@ -101,7 +101,7 @@ namespace DCL.ECSComponents
             entity.meshesInfo.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
             entity.meshesInfo.meshRootGameObject.transform.ResetLocalTRS();
             entity.meshesInfo.renderers = new Renderer[] { shapeFrame.GetRenderer() };
-            
+            CollidersManager.i.AddOrUpdateEntityCollider(entity, shapeFrame.nftCollider);
             dataStore.AddShapeReady(entity.entityId, entity.meshesInfo.meshRootGameObject);
         }
 

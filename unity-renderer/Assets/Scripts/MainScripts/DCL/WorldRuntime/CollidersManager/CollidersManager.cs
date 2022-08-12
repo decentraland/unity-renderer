@@ -177,7 +177,7 @@ namespace DCL
             entity.meshesInfo.colliders.Clear(); 
             
             // This is de default layer, however, take into account that OnPointerEvents can change this layer
-            int colliderLayer = layerMask;//LayerUtils.CalculateLayerMask(entity.entityId, hasCollision, isPointerBlocker);
+            int colliderLayer = layerMask;
 
             MeshCollider collider;
 
@@ -186,8 +186,12 @@ namespace DCL
                 collider = meshFilters[i].GetComponent<MeshCollider>();
                 
                 if (collider == null)
-                    collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
-                
+                {
+                    GameObject colliderGameObject = new GameObject();
+                    colliderGameObject.transform.SetParent(meshFilters[i].transform, false);
+                    collider = colliderGameObject.AddComponent<MeshCollider>();
+                }
+
                 collider.sharedMesh = meshFilters[i].sharedMesh;
                 
                 AddOrUpdateEntityCollider(entity, collider);

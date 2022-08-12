@@ -144,10 +144,10 @@ public static class ECSComponentsUtils
     }
 
     public static void DisposeColliders(List<Collider> collidersList)
-    {    
+    {
         for(int i = 0; i < collidersList.Count; i++)
         {
-            GameObject.Destroy(collidersList[i]);
+            GameObject.Destroy(collidersList[i].gameObject);
         } 
     }
 

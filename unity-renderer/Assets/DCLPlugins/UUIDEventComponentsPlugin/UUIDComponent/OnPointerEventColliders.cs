@@ -30,7 +30,7 @@ namespace DCL.Components
             GenerateColliders(entity);
         }
 
-        // This function should be deleted when delete de old ECS
+        // This function should be deleted when we delete the old ECS6
         public void DeprecatedInitialize(IDCLEntity entity)
         {
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
@@ -190,9 +190,6 @@ namespace DCL.Components
                 onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
                 onPointerEventGameObjectCollider.transform.SetParent(renderers[i].transform, false);
                 
-                // We need to increase it a little bit since if the shape is pointer blocker, it shouldn't block its own pointer event
-                // This way, there is no collision fighting 
-                onPointerEventGameObjectCollider.transform.localScale *= 1.0001f;
                 colliders[i] = CreateCollider(renderers[i], onPointerEventGameObjectCollider);
                 AddColliderName(colliders[i]);
                 

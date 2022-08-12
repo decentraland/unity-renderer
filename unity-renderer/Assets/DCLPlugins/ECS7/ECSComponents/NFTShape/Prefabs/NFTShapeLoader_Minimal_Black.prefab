@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshCollider: {fileID: 3095838281594727219}
+  boxCollider: {fileID: 9123162427614824707}
   meshRenderer: {fileID: 4772326119896090}
   loadingSpinnerGameObject: {fileID: 5451459993038393849}
   materials:
@@ -261,8 +261,8 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 7714049872948468175}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &3095838281594727219
-MeshCollider:
+--- !u!65 &9123162427614824707
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -271,7 +271,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -4220979089121436517, guid: 423f69351cb3e419caae961fd2c1521e, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 1.3031682, y: 1.3031682, z: 0.0545614}
+  m_Center: {x: 0, y: 0, z: -0.005138606}

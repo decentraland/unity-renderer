@@ -47,7 +47,7 @@ namespace DCL.ECSComponents
             if(ShouldLoadShape(model))
                 LoadShape(scene,entity,model);
             else
-                ApplyModel(model);
+                ApplyModel(entity, model);
             
             this.model = model;
         }
@@ -91,10 +91,10 @@ namespace DCL.ECSComponents
                     meshesInfo = entity.meshesInfo;
                     
                     // We get the colliders of the GLTF, if it doesn't have colliders and it needed it, we will create in the ApplyModel
-                    collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.WithCollisions, model.IsPointerBlocker, entity, ECSComponentsUtils.CalculateCollidersLayer(model.WithCollisions,model.IsPointerBlocker));
+                    collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.GetWithCollisions(), model.GetIsPointerBlocker(), entity, ECSComponentsUtils.CalculateCollidersLayer(model.GetWithCollisions(),model.GetIsPointerBlocker()));
                     
                     // Apply the model for visibility, collision and event pointer
-                    ApplyModel(model);
+                    ApplyModel(entity, model);
                     
                     // We remove the asset loading and notify of the shape ready
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
@@ -114,12 +114,12 @@ namespace DCL.ECSComponents
             dataStore.AddPendingResource(scene.sceneData.id, model);
         }
         
-        internal void ApplyModel(PBGLTFShape model)
+        internal void ApplyModel(IDCLEntity entity, PBGLTFShape model)
         {
             shapeRepresentation.UpdateModel(model.GetVisible(), model.GetWithCollisions());
             
             // If the model didn't had collider because the first model came with WithCollisions = false and IsPointerBlocker = false
-            if(meshesInfo.colliders.Count == 0 || meshesInfo.meshFilters.Length > 0)
+            if(meshesInfo.colliders.Count == 0 && meshesInfo.meshFilters.Length > 0)
                 collidersManager.CreateColliders(entity.meshRootGameObject, meshesInfo.meshFilters, model.GetWithCollisions(), model.GetIsPointerBlocker(), entity, ECSComponentsUtils.CalculateCollidersLayer(model.GetWithCollisions(), model.GetIsPointerBlocker()));
             
             // Update the mesh info 

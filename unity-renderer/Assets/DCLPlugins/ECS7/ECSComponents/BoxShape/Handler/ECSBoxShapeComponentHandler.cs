@@ -83,7 +83,7 @@ namespace DCL.ECSComponents
             meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, renderingGameObject, isVisible, withCollisions, isPointerBlocker);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
-            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
+            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, renderingGameObject, meshesInfo.renderers);
         }
 
         internal void DisposeMesh(IDCLEntity entity,IParcelScene scene)

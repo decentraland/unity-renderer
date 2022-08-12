@@ -65,11 +65,16 @@ namespace DCL.ECSComponents
         /// </summary>
         /// <param name="newColor"></param>
         void UpdateBackgroundColor(UnityEngine.Color newColor);
+
+        /// <summary>
+        /// This will return the Collider of the frame
+        /// </summary>
+        Collider nftCollider { get; }
     }
     
     public class NFTShapeFrame : MonoBehaviour, IShape, INFTShapeLoaderController, INFTShapeFrame
     {
-        [SerializeField] private Collider meshCollider;
+        [SerializeField] private BoxCollider boxCollider;
         [SerializeField] private MeshRenderer meshRenderer;
         [SerializeField] private GameObject loadingSpinnerGameObject;
         [SerializeField] private NFTShapeMaterial[] materials;
@@ -106,9 +111,9 @@ namespace DCL.ECSComponents
         
         public bool IsVisible() { return gameObject.activeInHierarchy; }
 
-        public bool HasCollisions() { return meshCollider.enabled; }
+        public bool HasCollisions() { return boxCollider.enabled; }
         
-        public Collider nftCollider  => meshCollider;
+        public Collider nftCollider  => boxCollider;
         
         public IShape shape => this;
         
@@ -127,12 +132,12 @@ namespace DCL.ECSComponents
 
         public void UpdateCollider(bool isActive)
         {
-            meshCollider.enabled = isActive;
+            boxCollider.enabled = isActive;
         }
 
         public void SetLayerMask(int layerMask)
         {
-            meshCollider.gameObject.layer = layerMask;
+            boxCollider.gameObject.layer = layerMask;
         }
 
         public void SetImage(string name, string url, INFTAsset nftAsset)
