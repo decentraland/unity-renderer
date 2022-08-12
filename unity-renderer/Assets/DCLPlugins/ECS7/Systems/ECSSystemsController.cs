@@ -24,7 +24,8 @@ public class ECSSystemsController : IDisposable
         updateSystems = new ECS7System[]
         {
             ECSTransformParentingSystem.Update,
-            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup, context.internalEcsComponents)
+            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
+                context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent)
         };
 
         lateUpdateSystems = new ECS7System[]

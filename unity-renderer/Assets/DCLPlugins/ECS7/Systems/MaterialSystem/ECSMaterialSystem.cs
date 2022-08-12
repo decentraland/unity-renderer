@@ -11,16 +11,19 @@ namespace ECSSystems.MaterialSystem
         private class State
         {
             public IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> componentsGroup;
-            public IInternalECSComponents internalEcsComponents;
+            public IInternalECSComponent<InternalTexturizable> texturizableComponent;
+            public IInternalECSComponent<InternalMaterial> materialComponent;
         }
 
         public static Action CreateSystem(IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> componentsGroup,
-            IInternalECSComponents internalEcsComponents)
+            IInternalECSComponent<InternalTexturizable> texturizableComponent,
+            IInternalECSComponent<InternalMaterial> materialComponent)
         {
             var state = new State()
             {
                 componentsGroup = componentsGroup,
-                internalEcsComponents = internalEcsComponents
+                texturizableComponent = texturizableComponent,
+                materialComponent = materialComponent
             };
             return () => Update(state);
         }
@@ -54,8 +57,8 @@ namespace ECSSystems.MaterialSystem
                 materialModel.dirty = false;
                 texturizableModel.dirty = false;
 
-                state.internalEcsComponents.materialComponent.PutFor(entityData.scene, entityData.entity, materialModel);
-                state.internalEcsComponents.texturizableComponent.PutFor(entityData.scene, entityData.entity, texturizableModel);
+                state.materialComponent.PutFor(entityData.scene, entityData.entity, materialModel);
+                state.texturizableComponent.PutFor(entityData.scene, entityData.entity, texturizableModel);
             }
         }
     }
