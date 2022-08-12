@@ -562,28 +562,23 @@ namespace DCL.Tutorial
 
             float t = 0f;
 
+            //Had to add this check to wait for the Canvas to reposition after changing the camera mode to CameraSpace
+            while (Math.Abs(configuration.teacherRawImage.rectTransform.position.x - toPosition.x) > 20)
+            {
+                Debug.Log("Repositioning canvas");
+                yield return null;
+            }
+            
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
             toPosition = new Vector3(toPosition.x, toPosition.y, configuration.teacherRawImage.rectTransform.position.z);
-
-            float distance = Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition);
             
-            while (distance > 0)
+            while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
-                //Had to add this check to wait for the Canvas to reposition after changing the camera mode to CameraSpace
-                if (distance > 20)
-                {
-                    Debug.Log("ENTRANDO AL CHECK DE DISTANCIA");
-                    distance = Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition);
-                    continue;
-                }
-                
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
                     configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
                     configuration.teacherRawImage.rectTransform.position = toPosition;
-
-                distance = Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition);
                 yield return null;
             }
         }
