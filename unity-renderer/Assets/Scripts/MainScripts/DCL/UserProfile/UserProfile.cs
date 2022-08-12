@@ -68,14 +68,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.avatar.CopyFrom(newModel.avatar);
         model.snapshots = newModel.snapshots;
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
-        model.inventory = newModel.inventory;
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
-
-        if (model.inventory != null)
-        {
-            SetInventory(model.inventory);
-        }
 
         if (model.snapshots != null && faceSnapshotDirty)
         {

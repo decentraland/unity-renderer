@@ -34,15 +34,15 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
             userId = "userId",
             name = "username",
             description = "description",
-            email = "email",
-            inventory = new[]
-            {
-                WearableLiterals.ItemRarity.EPIC,
-                WearableLiterals.ItemRarity.LEGENDARY,
-                WearableLiterals.ItemRarity.MYTHIC,
-                WearableLiterals.ItemRarity.RARE,
-                WearableLiterals.ItemRarity.UNIQUE,
-            }
+            email = "email"
+        });
+        userProfile.SetInventory(new[]
+        {
+            WearableLiterals.ItemRarity.EPIC,
+            WearableLiterals.ItemRarity.LEGENDARY,
+            WearableLiterals.ItemRarity.MYTHIC,
+            WearableLiterals.ItemRarity.RARE,
+            WearableLiterals.ItemRarity.UNIQUE,
         });
     }
 
