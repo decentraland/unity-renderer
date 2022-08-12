@@ -30,8 +30,8 @@ namespace DCL.ECS7
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter);
 
-            ComponentGroups componentGroups = new ComponentGroups(componentsManager);
-            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
+            SystemsContext systemsContext = new SystemsContext(componentWriter, internalEcsComponents, new ComponentGroups(componentsManager));
+            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate, systemsContext);
 
             sceneController.OnNewSceneAdded += OnSceneAdded;
         }
