@@ -147,7 +147,7 @@ public static class ECSComponentsUtils
     {
         for(int i = 0; i < collidersList.Count; i++)
         {
-            GameObject.Destroy(collidersList[i].gameObject);
+            GameObject.Destroy(collidersList[i]);
         } 
     }
 

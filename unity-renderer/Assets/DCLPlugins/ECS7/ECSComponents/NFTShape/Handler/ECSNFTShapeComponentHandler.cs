@@ -107,6 +107,9 @@ namespace DCL.ECSComponents
 
         private void LoadFailed()
         {
+            if (shapeFrame == null)
+                return;
+            
             factory.InstantiateErrorFeedback(shapeFrame.gameObject);
             shapeFrame.FailLoading();
         }
