@@ -43,8 +43,10 @@ public class NativeBridgeCommunicationShould
         entryPoint = new NativeBridgeCommunication(queueHandler);
 
         const string sceneId = "test-scene-id";
+        const int sceneNumber = 1;
         const string tag = "test-tag";
         NativeBridgeCommunication.SetSceneId(sceneId);
+        NativeBridgeCommunication.SetSceneNumber(sceneNumber);
         NativeBridgeCommunication.SetTag(tag);
     }
 
