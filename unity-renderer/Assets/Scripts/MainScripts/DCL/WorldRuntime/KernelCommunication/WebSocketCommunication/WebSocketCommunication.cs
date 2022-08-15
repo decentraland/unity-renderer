@@ -160,6 +160,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Main";
         messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
         messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
+        messageTypeToBridgeName["InitializeChat"] = "Main";
+        messageTypeToBridgeName["AddChatMessages"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
