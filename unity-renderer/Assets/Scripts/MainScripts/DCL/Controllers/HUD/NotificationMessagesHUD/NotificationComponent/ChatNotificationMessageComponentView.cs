@@ -9,7 +9,7 @@ using DG.Tweening;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig
+public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig<ChatNotificationMessageComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -36,9 +36,9 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     private float startingXPosition;
     private CancellationTokenSource ct = new CancellationTokenSource();
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(ChatNotificationMessageComponentModel newModel)
     {
-        model = (ChatNotificationMessageComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

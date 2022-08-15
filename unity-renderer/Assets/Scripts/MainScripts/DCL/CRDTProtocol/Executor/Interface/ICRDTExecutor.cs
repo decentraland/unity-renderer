@@ -6,5 +6,6 @@ namespace DCL.CRDT
     {
         CRDTProtocol crdtProtocol { get; }
         void Execute(CRDTMessage crdtMessage);
+        void ExecuteWithoutStoringState(CRDTMessage crdtMessage);
     }
 }

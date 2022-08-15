@@ -45,13 +45,18 @@ namespace DCL.CRDT
                 return;
             }
 
-            long entityId = resultMessage.key1;
-            int componentId = resultMessage.key2;
+            ExecuteWithoutStoringState(resultMessage);
+        }
+
+        public void ExecuteWithoutStoringState(CRDTMessage crdtMessage)
+        {
+            long entityId = crdtMessage.key1;
+            int componentId = crdtMessage.key2;
 
             // null data means to remove component, not null data means to update or create
-            if (resultMessage.data != null)
+            if (crdtMessage.data != null)
             {
-                PutComponent(ownerScene, entityId, componentId, resultMessage.data);
+                PutComponent(ownerScene, entityId, componentId, crdtMessage.data);
             }
             else
             {
