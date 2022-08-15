@@ -180,12 +180,12 @@ public class VoiceChatWindowController : IHUD
 
         if (!isJoined)
         {
-            MuteAll(true);
+            WebInterface.DisconnectVoiceChat();
             socialAnalytics.SendVoiceChannelDisconnection();
         }
         else
         {
-            MuteAll(voiceChatWindowView.isMuteAllOn);
+            WebInterface.JoinVoiceChat();
             socialAnalytics.SendVoiceChannelConnection(voiceChatWindowView.numberOfPlayers);
         }
 

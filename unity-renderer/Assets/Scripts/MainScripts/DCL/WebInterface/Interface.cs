@@ -1332,6 +1332,10 @@ namespace DCL.Interface
             SendMessage("SetAudioStream", onAudioStreamingEvent);
         }
 
+        public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
+
+        public static void DisconnectVoiceChat() { SendMessage("DisconnectVoiceChat"); }
+
         public static void SendSetVoiceChatRecording(bool recording)
         {
             setVoiceChatRecordingPayload.recording = recording;
