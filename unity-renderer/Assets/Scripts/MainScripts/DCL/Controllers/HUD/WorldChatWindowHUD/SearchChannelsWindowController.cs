@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Channel = DCL.Chat.Channels.Channel;
+using System.Collections.Generic;
 
 namespace DCL.Chat.HUD
 {
@@ -14,6 +15,7 @@ namespace DCL.Chat.HUD
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
+        internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
 
         public ISearchChannelsWindowView View => view;
 
@@ -41,8 +43,20 @@ namespace DCL.Chat.HUD
             loadingCancellationToken.Dispose();
         }
 
+        private void SetVisiblePanelList(bool visible)
+        {
+            HashSet<string> newSet = visibleTaskbarPanels.Get();
+            if (visible)
+                newSet.Add("SearchChanel");
+            else
+                newSet.Remove("SearchChanel");
+
+            visibleTaskbarPanels.Set(newSet, true);
+        }
+
         public void SetVisibility(bool visible)
         {
+            SetVisiblePanelList(visible);
             if (visible)
             {
                 ClearListeners();
