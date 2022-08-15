@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using DCLPlugins.UIRefresherPlugin;
 using UnityEngine;
 
 namespace Tests
@@ -12,6 +13,7 @@ namespace Tests
         protected ParcelScene scene;
         private UIComponentsPlugin uiComponentsPlugin;
         private CoreComponentsPlugin coreComponentsPlugin;
+        private UIRefresherPlugin uiRefresherPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -26,6 +28,7 @@ namespace Tests
             yield return base.SetUp();
             uiComponentsPlugin = new UIComponentsPlugin();
             coreComponentsPlugin = new CoreComponentsPlugin();
+            uiRefresherPlugin = new UIRefresherPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             DCLCharacterController.i.PauseGravity();
@@ -37,6 +40,7 @@ namespace Tests
         {
             uiComponentsPlugin.Dispose();
             coreComponentsPlugin.Dispose();
+            uiRefresherPlugin.Dispose();
             yield return base.TearDown();
         }
 

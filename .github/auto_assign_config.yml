@@ -12,6 +12,7 @@ reviewGroups:
     - Kinerius
     - lorux0
     - davidejensen
+    - dalkia
   qa:
     - kwssbocian
     - kwspgoliasz
@@ -19,3 +20,4 @@ reviewGroups:
 filterLabels:
   exclude:
     - no_reviewers
+    - "Not QA Needed"
