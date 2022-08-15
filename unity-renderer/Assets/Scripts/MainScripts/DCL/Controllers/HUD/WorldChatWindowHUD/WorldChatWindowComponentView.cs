@@ -189,7 +189,7 @@ namespace DCL.Chat.HUD
         public void HideMoreChatsToLoadHint()
         {
             loadMoreEntriesContainer.SetActive(false);
-            emptyDirectChatsContainer.SetActive(true);
+            emptyDirectChatsContainer.SetActive(directChatList.Count() == 0);
             UpdateLayout();
         }
 

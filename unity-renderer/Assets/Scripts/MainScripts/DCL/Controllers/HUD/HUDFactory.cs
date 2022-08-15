@@ -38,9 +38,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i,
-                        UserProfileController.i),
+                    FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
@@ -59,8 +57,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController(DataStore.i,
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
@@ -71,8 +68,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i);
                 break;
@@ -83,7 +79,7 @@ public class HUDFactory : IHUDFactory
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i,
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
