@@ -77,8 +77,6 @@ namespace DCL.Chat.Channels
             remove => controller.OnMuteChannelError -= value;
         }
 
-        public int TotalJoinedChannelCount => 5;
-
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
         public ChatChannelsControllerMock(
@@ -94,7 +92,7 @@ namespace DCL.Chat.Channels
         public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId) =>
             controller.GetPrivateAllocatedEntriesByUser(userId);
 
-        public void GetUnseenMessagesByChannel() => SimulateDelayedResponseFor_TotalUnseenMessagesByChannel().Forget();
+        public void GetUnseenMessagesByChannel() => controller.GetUnseenMessagesByChannel();
 
         public void Send(ChatMessage message)
         {
@@ -330,7 +328,7 @@ namespace DCL.Chat.Channels
 
             var payload = new InitializeChatPayload
             {
-                totalUnseenMessages = Random.Range(0, 5)
+                totalUnseenMessages = 0
             };
             controller.InitializeChat(JsonUtility.ToJson(payload));
         }
@@ -339,43 +337,26 @@ namespace DCL.Chat.Channels
         {
             await UniTask.Delay(Random.Range(50, 1000));
 
-            var totalPayload = new UpdateTotalUnseenMessagesPayload
-            {
-                total = Random.Range(0, 10)
-            };
-            controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalPayload));
+            int currentChannelUnseenMessages = GetAllocatedUnseenChannelMessages(channelId);
 
             var userPayload = new UpdateTotalUnseenMessagesByChannelPayload
             {
                 unseenChannelMessages = new[]
                 {
-                    new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage 
-                    { 
+                    new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage
+                    {
                         channelId = channelId,
                         count = 0
                     }
                 }
             };
             controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(userPayload));
-        }
 
-        private async UniTask SimulateDelayedResponseFor_TotalUnseenMessagesByChannel()
-        {
-            await UniTask.Delay(1500);
-
-            var unseenChannelMessages = Enumerable.Range(0, joinedChannels.Count + 1)
-                .Select(i => new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage
-                {
-                    count = Random.Range(0, 10),
-                    channelId = i < joinedChannels.Count ? joinedChannels[i] : "nearby"
-                }).ToArray();
-
-            var payload = new UpdateTotalUnseenMessagesByChannelPayload
+            var totalPayload = new UpdateTotalUnseenMessagesPayload
             {
-                unseenChannelMessages = unseenChannelMessages
+                total = TotalUnseenMessages - currentChannelUnseenMessages
             };
-
-            controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(payload));
+            controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalPayload));
         }
     }
 }

@@ -16,8 +16,6 @@ public class LazyLoadingChatControllerMock : IChatController
 
     public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
-    public int TotalJoinedChannelCount => 0;
-
     public event Action<ChatMessage> OnAddMessage
     {
         add => controller.OnAddMessage += value;
