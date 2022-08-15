@@ -16,12 +16,14 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     [SerializeField] private GameObject chatNotification;
     [SerializeField] private ScrollRect scrollRectangle;
     [SerializeField] private Button notificationButton;
+    [SerializeField] private ShowHideAnimator panelAnimator;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
 
     public event Action<string> OnClickedNotification;
     public event Action<bool> OnResetFade;
+    public event Action<bool> OnPanelFocus;
     public bool areOtherPanelsOpen = false;
 
     internal Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
@@ -31,7 +33,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     private bool isOverMessage = false;
     private bool isOverPanel = false;
     private int notificationCount = 1;
-    private Vector2 notificationOffset = new Vector2(0, -52);
+    private Vector2 notificationOffset = new Vector2(0, -56);
     private TMP_Text notificationMessage;
     private CancellationTokenSource ct = new CancellationTokenSource();
 
@@ -71,6 +73,16 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         {
             ResetNotificationButton();
         }
+    }
+
+    public void ShowPanel()
+    {
+        panelAnimator?.Show();
+    }
+
+    public void HidePanel()
+    {
+        panelAnimator?.Hide();
     }
 
     public void ShowNotifications()
@@ -187,7 +199,8 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     {
         chatNotificationComponentView.SetIsPrivate(true);
         chatNotificationComponentView.SetMessage(message.body);
-        chatNotificationComponentView.SetNotificationHeader(username);
+        chatNotificationComponentView.SetNotificationHeader("Private message");
+        chatNotificationComponentView.SetNotificationSender(username);
         chatNotificationComponentView.SetNotificationTargetId(message.sender);
         if (profilePicture != null)
             chatNotificationComponentView.SetImage(profilePicture);
@@ -196,9 +209,10 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     private void PopulatePublicNotification(ChatNotificationMessageComponentView chatNotificationComponentView, ChatMessage message, string username = null)
     {
         chatNotificationComponentView.SetIsPrivate(false);
-        chatNotificationComponentView.SetMessage($"{username}: {message.body}");
+        chatNotificationComponentView.SetMessage(message.body);
         chatNotificationComponentView.SetNotificationTargetId("#nearby");
         chatNotificationComponentView.SetNotificationHeader("#nearby");
+        chatNotificationComponentView.SetNotificationSender(username);
     }
 
     private void ClickedOnNotification(string targetId)
@@ -215,6 +229,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     private void FocusedOnPanel(bool isInFocus)
     {
         isOverPanel = isInFocus;
+        OnPanelFocus?.Invoke(isOverPanel);
         OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
     }
 

@@ -13,6 +13,7 @@ public class ChatNotificationController : IHUD
     private DataStore dataStore;
     private IChatController chatController;
     private IMainChatNotificationsComponentView mainChatNotificationView;
+    private ITopNotificationsComponentView topNotificationView;
     private IUserProfileBridge userProfileBridge;
     private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -21,13 +22,15 @@ public class ChatNotificationController : IHUD
 
     private UserProfile ownUserProfile;
 
-    public ChatNotificationController(DataStore dataStore, IMainChatNotificationsComponentView mainChatNotificationView, IChatController chatController, IUserProfileBridge userProfileBridge)
+    public ChatNotificationController(DataStore dataStore, IMainChatNotificationsComponentView mainChatNotificationView, ITopNotificationsComponentView topNotificationView, IChatController chatController, IUserProfileBridge userProfileBridge)
     {
         this.dataStore = dataStore;
         this.chatController = chatController;
         this.userProfileBridge = userProfileBridge;
         this.mainChatNotificationView = mainChatNotificationView;
+        this.topNotificationView = topNotificationView;
         mainChatNotificationView.OnResetFade += ResetFadeOut;
+        mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
         notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
@@ -64,6 +67,14 @@ public class ChatNotificationController : IHUD
 
         if(fadeOutAfterDelay)
             WaitThenFadeOutNotifications(fadeOutCT.Token).Forget();
+    }
+
+    public void TogglePanelBackground(bool isInFocus)
+    {
+        if (isInFocus)
+            mainChatNotificationView.ShowPanel();
+        else
+            mainChatNotificationView.HidePanel();
     }
 
     private async UniTaskVoid WaitThenFadeOutNotifications(CancellationToken cancellationToken)

@@ -15,9 +15,12 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal Button button;
     [SerializeField] public TMP_Text notificationMessage;
     [SerializeField] internal TMP_Text notificationHeader;
+    [SerializeField] internal TMP_Text notificationSender;
     [SerializeField] internal TMP_Text notificationTimestamp;
     [SerializeField] internal ImageComponentView image;
     [SerializeField] internal GameObject imageBackground;
+    [SerializeField] internal GameObject firstSeparator;
+    [SerializeField] internal GameObject secondSeparator;
     [SerializeField] internal bool isPrivate;
     [SerializeField] internal RectTransform backgroundTransform;
     [SerializeField] internal RectTransform messageContainerTransform;
@@ -29,7 +32,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
     public event Action<string> OnClickedNotification;
     public string notificationTargetId;
-    private int maxContentCharacters, maxHeaderCharacters;
+    private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
     private float startingXPosition;
     private CancellationTokenSource ct = new CancellationTokenSource();
 
@@ -78,10 +81,12 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
         SetMaxContentCharacters(model.maxContentCharacters);
         SetMaxHeaderCharacters(model.maxHeaderCharacters);
+        SetMaxSenderCharacters(model.maxSenderCharacters);
+        SetNotificationSender(model.messageSender);
         SetMessage(model.message);
         SetTimestamp(model.time);
-        SetNotificationHeader(model.messageHeader);
         SetIsPrivate(model.isPrivate);
+        SetNotificationHeader(model.messageHeader);
         SetImage(model.imageUri);
     }
 
@@ -115,11 +120,24 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         ForceUIRefresh();
     }
 
+    public void SetNotificationSender(string sender)
+    {
+        model.messageSender = sender;
+        if (sender.Length <= maxSenderCharacters)
+            notificationSender.text = $"{sender}:";
+        else
+            notificationSender.text = $"{sender.Substring(0, maxSenderCharacters)}:";
+
+        ForceUIRefresh();
+    }
+
     public void SetIsPrivate(bool isPrivate)
     {
         model.isPrivate = isPrivate;
         this.isPrivate = isPrivate;
         imageBackground.SetActive(isPrivate);
+        firstSeparator.SetActive(isPrivate);
+        secondSeparator.SetActive(isPrivate);
         if (isPrivate)
             notificationHeader.color = privateColor;
         else
@@ -146,6 +164,12 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         model.maxHeaderCharacters = maxHeaderCharacters;
         this.maxHeaderCharacters = maxHeaderCharacters;
+    }
+
+    public void SetMaxSenderCharacters(int maxSenderCharacters)
+    {
+        model.maxSenderCharacters = maxSenderCharacters;
+        this.maxSenderCharacters = maxSenderCharacters;
     }
 
     public void SetNotificationTargetId(string notificationTargetId)
