@@ -33,18 +33,20 @@ public class MinimapHUDView : MonoBehaviour
     public InputAction_Trigger toggleNavMapAction;
     private IMouseCatcher mouseCatcher;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private MinimapHUDController controller;
 
     private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     public void Initialize(MinimapHUDController controller)
     {
+        this.controller = controller;
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         gameObject.name = VIEW_OBJECT_NAME;
         sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
-        reportSceneButton.onClick.AddListener(controller.ReportScene);
+        reportSceneButton.onClick.AddListener(ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
 
         if (mouseCatcher != null)
@@ -61,6 +63,12 @@ public class MinimapHUDView : MonoBehaviour
         usersAroundListHudButton.gameObject.SetActive(false);
     }
 
+    private void ReportScene()
+    {
+        controller.ReportScene();
+        controller.ToggleOptions();
+    }
+    
     internal void OnMouseLocked() 
     {
         sceneOptionsPanel.SetActive(false);
