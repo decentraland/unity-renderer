@@ -20,9 +20,9 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button openNavmapButton;
 
     [Header("Options")] [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject sceneOptionsPanel;
+    [SerializeField] internal GameObject sceneOptionsPanel;
     [SerializeField] private ToggleComponentView toggleSceneUI;
-    [SerializeField] private Button reportSceneButton;
+    [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
