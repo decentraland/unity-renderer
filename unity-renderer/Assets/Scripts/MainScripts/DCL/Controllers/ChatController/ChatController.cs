@@ -265,8 +265,10 @@ public class ChatController : MonoBehaviour, IChatController
     public int GetAllocatedUnseenMessages(string userId) =>
         unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
 
-    public int GetAllocatedUnseenChannelMessages(string channelId) =>
-        unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0;
+    public int GetAllocatedUnseenChannelMessages(string channelId) => 
+        !string.IsNullOrEmpty(channelId) 
+            ? (unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0)
+            : 0;
 
     public void CreateChannel(string channelId) => WebInterface.CreateChannel(channelId);
 
