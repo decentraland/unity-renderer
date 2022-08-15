@@ -18,6 +18,9 @@ namespace DCL
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
         private bool doTransitionAnimation;
+        
+        private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter();
+
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -54,7 +57,12 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            CoroutineStarter.Start(SetMaterialTransition(()=>asset.Show(OnSuccess)));
+            TaskUtils.RunThrottledCoroutine(SetMaterialTransition(() => asset.Show(OnSuccess)), OnLoadFailure, throttlingCounter.EvaluateTimeBudget);
+        }
+        
+        protected void OnLoadFailure(Exception exception)
+        {
+            Debug.Log("THROTTLING FAILED");
         }
 
         protected override void OnAfterLoadOrReuse()
@@ -229,7 +237,6 @@ namespace DCL
                     materialTransitionControllers[index] = transition;
                     transition.delay = 0;
                     transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
-
                     index++;
                 }
                 // Wait until MaterialTransitionController finishes its effect
@@ -251,7 +258,6 @@ namespace DCL
                     break;
                 }
             }
-
             return finishedTransition;
         }
 
