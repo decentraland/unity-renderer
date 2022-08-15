@@ -11,18 +11,20 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
     private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME = "UnreadWorldNotificationBadge";
 
     private UnreadWorldNotificationBadge unreadWorldNotificationBadge;
-    private ILastReadMessagesService lastReadMessagesService;
+    private IChatController chatController;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject)Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
+        GameObject go = Object.Instantiate((GameObject) Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
         unreadWorldNotificationBadge = go.GetComponent<UnreadWorldNotificationBadge>();
-        lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
-        unreadWorldNotificationBadge.Initialize(lastReadMessagesService);
+        chatController = Substitute.For<IChatController>();
+        unreadWorldNotificationBadge.Initialize(chatController);
 
-        Assert.AreEqual(0, unreadWorldNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification after initialization");
-        Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be deactivated");
+        Assert.AreEqual(0, unreadWorldNotificationBadge.CurrentUnreadMessages,
+            "There shouldn't be any unread notification after initialization");
+        Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be deactivated");
 
         yield break;
     }
@@ -36,11 +38,12 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void ReceiveOneUnreadNotification()
     {
-        lastReadMessagesService.GetAllUnreadCount().Returns(1);
-        lastReadMessagesService.OnUpdated += Raise.Event<Action<string>>("general");
+        chatController.TotalUnseenMessages.Returns(1);
+        chatController.OnTotalUnseenMessagesUpdated += Raise.Event<Action<int>>(1);
 
         Assert.AreEqual(1, unreadWorldNotificationBadge.CurrentUnreadMessages, "There should be 1 unread notification");
-        Assert.AreEqual(true, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be activated");
+        Assert.AreEqual(true, unreadWorldNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be activated");
         Assert.AreEqual("1", unreadWorldNotificationBadge.notificationText.text, "Notification text should be 1");
     }
 
@@ -48,30 +51,31 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
     public void ReceiveSeveralUnreadNotifications()
     {
         unreadWorldNotificationBadge.maxNumberToShow = 9;
-        
-        lastReadMessagesService.GetAllUnreadCount().Returns(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        for (var i = 0; i < 10; i++)
-        {
-            lastReadMessagesService.OnUpdated += Raise.Event<Action<string>>("general");
-        }
+        for (var i = 1; i <= 10; i++)
+            chatController.OnTotalUnseenMessagesUpdated += Raise.Event<Action<int>>(i);
 
-        Assert.AreEqual(unreadWorldNotificationBadge.maxNumberToShow + 1, unreadWorldNotificationBadge.CurrentUnreadMessages, "There should be [unreadWorldNotificationBadge.maxNumberToShow + 1] unread notifications");
-        Assert.AreEqual(true, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be activated");
-        Assert.AreEqual($"+{unreadWorldNotificationBadge.maxNumberToShow}", unreadWorldNotificationBadge.notificationText.text, "Notification text should be '+[unreadWorldNotificationBadge.maxNumberToShow]'");
+        Assert.AreEqual(unreadWorldNotificationBadge.maxNumberToShow + 1,
+            unreadWorldNotificationBadge.CurrentUnreadMessages,
+            "There should be [unreadWorldNotificationBadge.maxNumberToShow + 1] unread notifications");
+        Assert.AreEqual(true, unreadWorldNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be activated");
+        Assert.AreEqual($"+{unreadWorldNotificationBadge.maxNumberToShow}",
+            unreadWorldNotificationBadge.notificationText.text,
+            "Notification text should be '+[unreadWorldNotificationBadge.maxNumberToShow]'");
     }
 
     [Test]
     public void CleanAllUnreadNotifications()
     {
         ReceiveOneUnreadNotification();
-        ReadLastMessages();
-        
-        lastReadMessagesService.OnUpdated += Raise.Event<Action<string>>("general");
 
-        Assert.AreEqual(0, unreadWorldNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
-        Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be deactivated");
+        chatController.TotalUnseenMessages.Returns(0);
+        chatController.OnTotalUnseenMessagesUpdated += Raise.Event<Action<int>>(0);
+
+        Assert.AreEqual(0, unreadWorldNotificationBadge.CurrentUnreadMessages,
+            "There shouldn't be any unread notification");
+        Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be deactivated");
     }
-
-    private void ReadLastMessages() { lastReadMessagesService.GetAllUnreadCount().Returns(0); }
 }

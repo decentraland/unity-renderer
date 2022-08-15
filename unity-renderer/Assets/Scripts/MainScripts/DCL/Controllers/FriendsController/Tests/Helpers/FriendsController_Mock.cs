@@ -1,24 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Friends.WebApi;
 
 public class FriendsController_Mock : IFriendsController
 {
     public event Action<string, FriendshipAction> OnUpdateFriendship;
-    public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
+    public event Action<string, UserStatus> OnUpdateUserStatus;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
+    public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
+    public event Action<int, int> OnTotalFriendRequestUpdated;
+    public event Action<int> OnTotalFriendsUpdated;
 
-    private readonly Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
+    private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
-    public int friendCount => friends.Count;
+    public int AllocatedFriendCount => friends.Count;
 
-    public bool isInitialized => true;
+    public bool IsInitialized => true;
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
-    public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
+    public int TotalFriendCount { get; }
+    public int TotalFriendRequestCount { get; }
+    public int TotalReceivedFriendRequestCount { get; }
+    public int TotalSentFriendRequestCount { get; }
+    public int TotalFriendsWithDirectMessagesCount => friends.Count;
+
+    public Dictionary<string, UserStatus> GetAllocatedFriends() { return friends; }
     
     public void RejectFriendship(string friendUserId)
     {
@@ -35,7 +45,27 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
-    public FriendsController.UserStatus GetUserStatus(string userId)
+    public void GetFriends(int limit, int skip)
+    {
+    }
+
+    public void GetFriends(string usernameOrId, int limit)
+    {
+    }
+
+    public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    {
+    }
+
+    public void GetFriendsWithDirectMessages(int limit, int skip)
+    {
+    }
+
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
+    {
+    }
+
+    public UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
     }
@@ -48,7 +78,7 @@ public class FriendsController_Mock : IFriendsController
     public void RequestFriendship(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId))
-            friends.Add(friendUserId, new FriendsController.UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
+            friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
     }
 
@@ -77,15 +107,13 @@ public class FriendsController_Mock : IFriendsController
         if (action == FriendshipAction.APPROVED)
         {
             if (!friends.ContainsKey(id))
-                friends.Add(id, new FriendsController.UserStatus());
+                friends.Add(id, new UserStatus());
         }
 
         OnUpdateFriendship?.Invoke(id, action);
     }
 
-    public void RaiseUpdateUserStatus(string id, FriendsController.UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
+    public void RaiseUpdateUserStatus(string id, UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
 
-    public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
-
-    public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
+    public void AddFriend(UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
 }

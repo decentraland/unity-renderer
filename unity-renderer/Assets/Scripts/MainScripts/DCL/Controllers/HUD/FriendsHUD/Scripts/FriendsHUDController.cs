@@ -9,42 +9,39 @@ using UnityEngine;
 
 public class FriendsHUDController : IHUD
 {
-    private const int INITIAL_DISPLAYED_FRIEND_COUNT = 50;
     private const int LOAD_FRIENDS_ON_DEMAND_COUNT = 30;
     private const int MAX_SEARCHED_FRIENDS = 100;
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
-    private readonly Queue<string> pendingFriends = new Queue<string>();
-    private readonly Queue<string> pendingRequests = new Queue<string>();
     private readonly DataStore dataStore;
     private readonly IFriendsController friendsController;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private UserProfile ownUserProfile;
+    private bool searchingFriends;
+    private bool isFriendsLoadedForFirstTime;
+    private bool isFriendsRequestsLoadedForFirstTime;
 
     public IFriendsHUDComponentView View { get; private set; }
 
     public event Action<string> OnPressWhisper;
-    public event Action OnFriendsOpened;
-    public event Action OnFriendsClosed;
+    public event Action OnOpened;
+    public event Action OnClosed;
 
     public FriendsHUDController(DataStore dataStore,
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+        IChatController chatController)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -52,7 +49,7 @@ public class FriendsHUDController : IHUD
         view ??= FriendsHUDComponentView.Create();
         View = view;
 
-        view.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        view.Initialize(chatController, friendsController, socialAnalytics);
         view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
@@ -63,6 +60,8 @@ public class FriendsHUDController : IHUD
         view.OnRequireMoreFriends += DisplayMoreFriends;
         view.OnRequireMoreFriendRequests += DisplayMoreFriendRequests;
         view.OnSearchFriendsRequested += SearchFriends;
+        view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
+        view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
@@ -73,8 +72,8 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
             friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
             friendsController.OnFriendNotFound += OnFriendNotFound;
-
-            if (friendsController.isInitialized)
+            
+            if (friendsController.IsInitialized)
             {
                 view.HideLoadingSpinner();
             }
@@ -122,6 +121,8 @@ public class FriendsHUDController : IHUD
             View.OnRequireMoreFriends -= DisplayMoreFriends;
             View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;
             View.OnSearchFriendsRequested -= SearchFriends;
+            View.OnFriendListDisplayed -= DisplayFriendsIfAnyIsLoaded;
+            View.OnRequestListDisplayed -= DisplayFriendRequestsIfAnyIsLoaded;
             View.Dispose();
         }
 
@@ -146,12 +147,18 @@ public class FriendsHUDController : IHUD
         {
             View.Show();
             UpdateNotificationsCounter();
-            OnFriendsOpened?.Invoke();
+
+            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
+                DisplayMoreFriends();
+            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
+                DisplayMoreFriendRequests();
+            
+            OnOpened?.Invoke();
         }
         else
         {
             View.Hide();
-            OnFriendsClosed?.Invoke();
+            OnClosed?.Invoke();
         }
     }
 
@@ -161,6 +168,16 @@ public class FriendsHUDController : IHUD
     {
         friendsController.OnInitialized -= HandleFriendsInitialized;
         View.HideLoadingSpinner();
+
+        if (View.IsActive())
+        {
+            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
+                DisplayMoreFriends();
+            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
+                DisplayMoreFriendRequests();
+        }
+        
+        UpdateNotificationsCounter();
     }
 
     private void HandleProfileUpdated(UserProfile profile) => UpdateBlockStatus(profile).Forget();
@@ -221,10 +238,10 @@ public class FriendsHUDController : IHUD
                && friendsController.ContainsStatus(userId, FriendshipStatus.FRIEND);
     }
 
-    private void HandleUserStatusUpdated(string userId, FriendsController.UserStatus status) =>
-        UpdateUserStatus(userId, status, ShouldBeDisplayed(status));
+    private void HandleUserStatusUpdated(string userId, UserStatus status) =>
+        UpdateUserStatus(userId, status);
 
-    private void UpdateUserStatus(string userId, FriendsController.UserStatus status, bool shouldDisplay)
+    private void UpdateUserStatus(string userId, UserStatus status)
     {
         switch (status.friendshipStatus)
         {
@@ -235,8 +252,7 @@ public class FriendsHUDController : IHUD
                 friend.CopyFrom(status);
                 friend.blocked = IsUserBlocked(userId);
                 friends[userId] = friend;
-                if (shouldDisplay)
-                    View.Set(userId, friend);
+                View.Set(userId, friend);
                 break;
             case FriendshipStatus.NOT_FRIEND:
                 View.Remove(userId);
@@ -249,8 +265,7 @@ public class FriendsHUDController : IHUD
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
-                if (shouldDisplay)
-                    View.Set(userId, sentRequest);
+                View.Set(userId, sentRequest);
                 break;
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
@@ -259,13 +274,13 @@ public class FriendsHUDController : IHUD
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
-                if (shouldDisplay)
-                    View.Set(userId, receivedRequest);
+                View.Set(userId, receivedRequest);
                 break;
         }
-
-        if (!shouldDisplay)
-            EnqueueOnPendingToLoad(userId, status);
+        
+        UpdateNotificationsCounter();
+        ShowOrHideMoreFriendsToLoadHint();
+        ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
     private void HandleFriendshipUpdated(string userId, FriendshipAction friendshipAction)
@@ -279,8 +294,6 @@ public class FriendsHUDController : IHUD
         }
 
         userProfile.OnUpdate -= HandleFriendProfileUpdated;
-
-        var shouldDisplay = ShouldBeDisplayed(userId, friendshipAction);
 
         switch (friendshipAction)
         {
@@ -298,8 +311,7 @@ public class FriendsHUDController : IHUD
                 approved.CopyFrom(userProfile);
                 approved.blocked = IsUserBlocked(userId);
                 friends[userId] = approved;
-                if (shouldDisplay)
-                    View.Set(userId, approved);
+                View.Set(userId, approved);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
             case FriendshipAction.REQUESTED_FROM:
@@ -309,8 +321,7 @@ public class FriendsHUDController : IHUD
                 requestReceived.CopyFrom(userProfile);
                 requestReceived.blocked = IsUserBlocked(userId);
                 friends[userId] = requestReceived;
-                if (shouldDisplay)
-                    View.Set(userId, requestReceived);
+                View.Set(userId, requestReceived);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
             case FriendshipAction.REQUESTED_TO:
@@ -320,16 +331,14 @@ public class FriendsHUDController : IHUD
                 requestSent.CopyFrom(userProfile);
                 requestSent.blocked = IsUserBlocked(userId);
                 friends[userId] = requestSent;
-                if (shouldDisplay)
-                    View.Set(userId, requestSent);
+                View.Set(userId, requestSent);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
         }
 
-        if (shouldDisplay)
-            UpdateNotificationsCounter();
-        else
-            EnqueueOnPendingToLoad(userId, friendshipAction);
+        UpdateNotificationsCounter();
+        ShowOrHideMoreFriendsToLoadHint();
+        ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
     private void HandleFriendProfileUpdated(UserProfile profile)
@@ -341,7 +350,7 @@ public class FriendsHUDController : IHUD
         var status = friendsController.GetUserStatus(profile.userId);
         if (status == null) return;
 
-        UpdateUserStatus(userId, status, ShouldBeDisplayed(status));
+        UpdateUserStatus(userId, status);
     }
 
     private bool IsUserBlocked(string userId)
@@ -349,62 +358,6 @@ public class FriendsHUDController : IHUD
         if (ownUserProfile != null && ownUserProfile.blocked != null)
             return ownUserProfile.blocked.Contains(userId);
         return false;
-    }
-
-    private void EnqueueOnPendingToLoad(string userId, FriendsController.UserStatus newStatus)
-    {
-        switch (newStatus.friendshipStatus)
-        {
-            case FriendshipStatus.FRIEND:
-                pendingFriends.Enqueue(userId);
-                View.ShowMoreFriendsToLoadHint(pendingFriends.Count);
-                break;
-            case FriendshipStatus.REQUESTED_FROM:
-                pendingRequests.Enqueue(userId);
-                View.ShowMoreRequestsToLoadHint(pendingRequests.Count);
-                break;
-        }
-    }
-
-    private void EnqueueOnPendingToLoad(string userId, FriendshipAction friendshipAction)
-    {
-        switch (friendshipAction)
-        {
-            case FriendshipAction.APPROVED:
-                pendingFriends.Enqueue(userId);
-                View.ShowMoreFriendsToLoadHint(pendingFriends.Count);
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                pendingRequests.Enqueue(userId);
-                View.ShowMoreRequestsToLoadHint(pendingRequests.Count);
-                break;
-        }
-    }
-
-    private bool ShouldBeDisplayed(string userId, FriendshipAction friendshipAction)
-    {
-        return friendshipAction switch
-        {
-            FriendshipAction.APPROVED => View.FriendCount <= INITIAL_DISPLAYED_FRIEND_COUNT ||
-                                         View.ContainsFriend(userId),
-            FriendshipAction.REQUESTED_FROM => View.FriendRequestCount <= INITIAL_DISPLAYED_FRIEND_COUNT ||
-                                               View.ContainsFriendRequest(userId),
-            _ => true
-        };
-    }
-
-    private bool ShouldBeDisplayed(FriendsController.UserStatus status)
-    {
-        if (status.presence == PresenceStatus.ONLINE) return true;
-
-        return status.friendshipStatus switch
-        {
-            FriendshipStatus.FRIEND => View.FriendCount < INITIAL_DISPLAYED_FRIEND_COUNT ||
-                                       View.ContainsFriend(status.userId),
-            FriendshipStatus.REQUESTED_FROM => View.FriendRequestCount < INITIAL_DISPLAYED_FRIEND_COUNT ||
-                                               View.ContainsFriendRequest(status.userId),
-            _ => true
-        };
     }
 
     private void OnFriendNotFound(string name)
@@ -415,9 +368,9 @@ public class FriendsHUDController : IHUD
     private void UpdateNotificationsCounter()
     {
         if (View.IsActive())
-            dataStore.friendNotifications.seenFriends.Set(friendsController.friendCount);
-
-        dataStore.friendNotifications.seenRequests.Set(friendsController.ReceivedRequestCount);
+            dataStore.friendNotifications.seenFriends.Set(View.FriendCount);
+        
+        dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.ReceivedRequestCount);
     }
 
     private void HandleOpenWhisperChat(FriendEntryModel entry) => OnPressWhisper?.Invoke(entry.userId);
@@ -452,47 +405,53 @@ public class FriendsHUDController : IHUD
             socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId,
                 PlayerActionSource.FriendsHUD);
     }
+    
+    private void DisplayFriendsIfAnyIsLoaded()
+    {
+        if (View.FriendCount > 0) return;
+        if (isFriendsLoadedForFirstTime) return;
+        DisplayMoreFriends();
+    }
 
     private void DisplayMoreFriends()
     {
-        for (var i = 0; i < LOAD_FRIENDS_ON_DEMAND_COUNT && pendingFriends.Count > 0; i++)
-        {
-            var userId = pendingFriends.Dequeue();
-            var status = friendsController.GetUserStatus(userId);
-            if (status == null) continue;
-            UpdateUserStatus(userId, status, true);
-        }
-
+        if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendsToLoadHint();
+        friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
+        isFriendsLoadedForFirstTime = true;
     }
 
     private void DisplayMoreFriendRequests()
     {
-        for (var i = 0; i < LOAD_FRIENDS_ON_DEMAND_COUNT && pendingRequests.Count > 0; i++)
-        {
-            var userId = pendingRequests.Dequeue();
-            var status = friendsController.GetUserStatus(userId);
-            if (status == null) continue;
-            HandleUserStatusUpdated(userId, status);
-        }
-
+        if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendRequestsToLoadHint();
+        friendsController.GetFriendRequests(
+            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestSentCount,
+            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestReceivedCount);
+        isFriendsRequestsLoadedForFirstTime = true;
+    }
+    
+    private void DisplayFriendRequestsIfAnyIsLoaded()
+    {
+        if (View.FriendRequestCount > 0) return;
+        if (isFriendsRequestsLoadedForFirstTime) return;
+        DisplayMoreFriendRequests();
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
     {
-        if (pendingRequests.Count == 0)
+        if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
-            View.ShowMoreRequestsToLoadHint(pendingRequests.Count);
+            View.ShowMoreRequestsToLoadHint(friendsController.TotalFriendRequestCount - View.FriendRequestCount);
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
-        if (pendingFriends.Count == 0)
+        if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            View.ShowMoreFriendsToLoadHint(pendingFriends.Count);
+            View.ShowMoreFriendsToLoadHint(friendsController.TotalFriendCount - View.FriendCount);
     }
 
     private void SearchFriends(string search)
@@ -500,11 +459,14 @@ public class FriendsHUDController : IHUD
         if (string.IsNullOrEmpty(search))
         {
             View.ClearFriendFilter();
+            searchingFriends = false;
             ShowOrHideMoreFriendsToLoadHint();
             return;
         }
 
-        Dictionary<string, FriendEntryModel> FilterFriendsByUserNameAndUserId(string search)
+        friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
+
+        Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
         {
             var regex = new Regex(search, RegexOptions.IgnoreCase);
 
@@ -518,19 +480,8 @@ public class FriendsHUDController : IHUD
             }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
         }
 
-        void DisplayMissingFriends(IEnumerable<FriendEntryModel> filteredFriends)
-        {
-            foreach (var model in filteredFriends)
-            {
-                if (View.ContainsFriend(model.userId)) return;
-                var status = friendsController.GetUserStatus(model.userId);
-                if (status == null) continue;
-                UpdateUserStatus(model.userId, status, true);
-            }
-        }
-
-        var filteredFriends = FilterFriendsByUserNameAndUserId(search);
-        DisplayMissingFriends(filteredFriends.Values);
-        View.FilterFriends(filteredFriends);
+        View.FilterFriends(FilterFriendsByNameOrId(search));
+        View.HideMoreFriendsToLoadHint();
+        searchingFriends = true;
     }
 }

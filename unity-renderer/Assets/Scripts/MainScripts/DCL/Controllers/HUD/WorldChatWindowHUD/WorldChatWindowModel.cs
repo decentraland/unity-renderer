@@ -1,9 +1,14 @@
 ﻿using System;
 
-[Serializable]
-public class WorldChatWindowModel : BaseComponentModel
+namespace DCL.Chat.HUD
 {
-    public PrivateChatEntry.PrivateChatEntryModel[] privateChats;
-    public PublicChannelEntry.PublicChannelEntryModel[] publicChannels;
-    public bool isLoadingDirectChats;
+    [Serializable]
+    public class WorldChatWindowModel : BaseComponentModel
+    {
+        public PrivateChatEntryModel[] privateChats;
+        public bool isLoadingDirectChats;
+
+        public PublicChatEntryModel[] publicChannels;
+        public bool isLoadingChannels;
+    }
 }

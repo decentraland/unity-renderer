@@ -347,7 +347,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
 
-    public void HidePlaceModal() { placeModal.Hide(); }
+    public void HidePlaceModal()
+    {
+        if (placeModal == null)
+            return;
+
+        placeModal.Hide();
+    }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
@@ -355,7 +361,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
-    public void HideEventModal() { eventModal.Hide(); }
+    public void HideEventModal()
+    {
+        if (eventModal == null)
+            return;
+
+        eventModal.Hide();
+    }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 }

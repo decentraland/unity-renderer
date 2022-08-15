@@ -154,6 +154,12 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
         messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
         messageTypeToBridgeName["ToggleSceneSpawnPoints"] = "Main";
+        messageTypeToBridgeName["AddFriendsWithDirectMessages"] = "Main";
+        messageTypeToBridgeName["AddFriends"] = "Main";
+        messageTypeToBridgeName["AddFriendRequests"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

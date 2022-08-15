@@ -6,21 +6,27 @@ public interface IWorldChatWindowView
 {
     event Action OnClose;
     event Action<string> OnOpenPrivateChat;
-    event Action<string> OnOpenPublicChannel;
-    event Action<string> OnUnfriend;
-    event Action<string> OnSearchChannelRequested;
+    event Action<string> OnOpenPublicChat;
+    event Action<string> OnSearchChatRequested;
     event Action OnRequireMorePrivateChats;
-    
+    event Action OnOpenChannelSearch;
+    event Action<string> OnLeaveChannel;
+    event Action OnCreateChannel;
+
     RectTransform Transform { get; }
     bool IsActive { get; }
     int PrivateChannelsCount { get; }
+    int PublicChannelsCount { get; }
 
-    void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService);
+    void Initialize(IChatController chatController);
     void Show();
     void Hide();
     void SetPrivateChat(PrivateChatModel model);
     void RemovePrivateChat(string userId);
-    void SetPublicChannel(PublicChatChannelModel model);
+    void SetPublicChat(PublicChatModel model);
+    void RemovePublicChat(string channelId);
+    void ShowChannelsLoading();
+    void HideChannelsLoading();
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);
@@ -28,6 +34,10 @@ public interface IWorldChatWindowView
     void ClearFilter();
     void HideMoreChatsToLoadHint();
     void ShowMoreChatsToLoadHint(int count);
-    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
+    void ShowMoreChatsLoading();
+    void HideMoreChatsLoading();
+    void ShowSearchLoading();
+    void HideSearchLoading();
+    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatModel> publicChannels);
     bool ContainsPrivateChannel(string userId);
 }

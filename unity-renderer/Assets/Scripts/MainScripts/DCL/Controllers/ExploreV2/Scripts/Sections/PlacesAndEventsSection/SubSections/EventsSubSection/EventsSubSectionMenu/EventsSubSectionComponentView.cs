@@ -359,7 +359,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
-    public void HideEventModal() { eventModal.Hide(); }
+    public void HideEventModal()
+    {
+        if (eventModal == null)
+            return;
+
+        eventModal.Hide();
+    }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 

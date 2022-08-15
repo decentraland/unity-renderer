@@ -18,7 +18,7 @@ public class FriendsNotificationPluginShould
     {
         playerPrefs = Substitute.For<IPlayerPrefs>();
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.friendCount.Returns(7);
+        friendsController.AllocatedFriendCount.Returns(7);
         pendingFriendRequests = ScriptableObject.CreateInstance<FloatVariable>();
         newApprovedFriends = ScriptableObject.CreateInstance<FloatVariable>();
         dataStore = new DataStore();
@@ -47,15 +47,12 @@ public class FriendsNotificationPluginShould
     }
     
     [Test]
-    public void MarkRequestsAsSeen()
+    public void UpdatePendingRequests()
     {
-        const string seenFriendsPrefsKey = "SeenFriendsCount";
-        const int seenRequestsCount = 3;
-        playerPrefs.GetInt(seenFriendsPrefsKey, Arg.Any<int>()).Returns(6);
+        const int pendingRequests = 3;
         
-        dataStore.friendNotifications.seenRequests.Set(seenRequestsCount);
+        dataStore.friendNotifications.pendingFriendRequestCount.Set(pendingRequests);
 
-        Assert.AreEqual(seenRequestsCount, pendingFriendRequests.Get());
-        Assert.AreEqual(1, newApprovedFriends.Get());
+        Assert.AreEqual(pendingRequests, pendingFriendRequests.Get());
     }
 }

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_LoadingSpinnerBackgroundBlack
+  m_Shader: {fileID: 4800000, guid: 537b3c029e4916749868ad462dca58c5, type: 3}
+  m_ShaderKeywords: ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - ENUM_173FCA8E617C4725B6502C6FBE756CEC: 1
+    - Vector1_0e56f9e08ecc4d168e49d8ff9881124e: 0
+    - Vector1_3862b5470ce94ed68d6ccd8d5aa57614: 0.25
+    - Vector1_3a75f153191c4583b7670773a5d97393: 0
+    - Vector1_6c58d64ea1cf4d6690244fdaf86bd615: 0
+    - Vector1_fe7b327104714621a2ac5ad8c6f92d7b: 0.781
+    - _ColorMask: 15
+    - _Stencil: 8
+    - _StencilComp: 0
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _fillHead: 1
+    - _fillTail: 0
+    - _fillTails: 0.5
+    m_Colors:
+    - Color_80b3604e6ba44946a43c678e0e7394af: {r: 1, g: 0, b: 0.26052088, a: 1}
+    - Color_989feb42c0074e3caa405393ba881f21: {r: 0.9529411, g: 0, b: 0.03656221,
+        a: 1}
+    - _BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
+    - _color01: {r: 0, g: 0, b: 0, a: 0.18039216}
+  m_BuildTextureStacks: []

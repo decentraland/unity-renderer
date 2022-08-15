@@ -31,6 +31,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
+    private bool isShowingPreview;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
 
@@ -40,12 +41,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override ChatEntryModel Model => model;
 
-    public event Action<string> OnPress;
-    public event Action<DefaultChatEntry> OnPressRightButton;
+    public event Action<DefaultChatEntry> OnPress;
     public event Action<DefaultChatEntry> OnTriggerHover;
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
+    public event Action OnHover;
 
     private void Awake()
     {
@@ -61,7 +62,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         model = chatEntryModel;
 
         chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
-        var userString = GetUserString(chatEntryModel);
+        var userString = GetUserString(chatEntryModel, false);
 
         // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
         // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
@@ -82,36 +83,81 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         (transform as RectTransform).ForceUpdateLayout();
 
         PlaySfx(chatEntryModel);
+        
+        if (showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+        {
+            OnHover += HighlightName;
+            OnCancelHover += RemoveHighlightName;
+        }
     }
 
-    private string GetUserString(ChatEntryModel chatEntryModel)
+    private string GetUserString(ChatEntryModel chatEntryModel, bool isHiglighted)
     {
-        var userString = GetDefaultSenderString(chatEntryModel.senderName);
-        switch (chatEntryModel.messageType) 
+        if (string.IsNullOrEmpty(model.senderName))
         {
-            case ChatMessage.Type.PUBLIC:
-                userString = chatEntryModel.subType switch
+            return "";
+        }
+        
+        string baseName = model.senderName;
+
+        if (chatEntryModel.subType == ChatEntryModel.SubType.SENT)
+        {
+            if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+            {
+                baseName = "You";
+            }
+
+            if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+            {
+                if (chatEntryModel.isChannelMessage)
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => userString,
-                    ChatEntryModel.SubType.SENT => $"<b>You:</b>",
-                    _ => userString
-                };
-                break;
-            case ChatMessage.Type.PRIVATE:
-                userString = chatEntryModel.subType switch
+                    baseName = "You";
+                }
+                else
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
-                    ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
-                    _ => userString
-                };
-                break;
+                    baseName = $"To {chatEntryModel.recipientName}";
+                }
+            }
         }
 
-        return userString;
-    }
+        if (chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED)
+        {
+            if (chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+            {
+                if (isHiglighted)
+                {
+                    baseName = $"<color=#438FFF><u>{baseName}</u></color>";
+                }
+            }
+            
+            if (chatEntryModel.messageType == ChatMessage.Type.PRIVATE)
+            {
+                if (chatEntryModel.isChannelMessage)
+                {
+                    if (isHiglighted)
+                    {
+                        baseName = $"<color=#438FFF><u>{baseName}</u></color>";
+                    }
+                }
+                else
+                {
+                    if (isHiglighted)
+                    {
+                        baseName = $"<color=#438FFF><u>From {baseName}</u></color>";
+                    }
+                    else
+                    {
+                        baseName = $"<color=#5EBD3D>From {baseName}</color>";
+                    }
+                }
+            }
+        }
 
+        baseName = $"<b>{baseName}:</b>";
+
+        return baseName;
+    }
+    
     private string GetCoordinatesLink(string body)
     {
         if (!CoordinateUtils.HasValidTextCoordinates(body))
@@ -186,25 +232,17 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
             if (linkIndex != -1)
             {
-                DataStore.i.HUDs.gotoPanelVisible.Set(true);
                 TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-                ParcelCoordinates parcelCoordinate =
-                    CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                if (!ChannelUtils.IsAChannel(linkInfo.GetLinkID()))
+                {
+                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                    ParcelCoordinates parcelCoordinate =
+                        CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                }
             }
 
-            if (Model.messageType != ChatMessage.Type.PRIVATE)
-                return;
-
-            OnPress?.Invoke(Model.otherUserId);
-        }
-        else if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            if ((Model.messageType != ChatMessage.Type.PUBLIC && Model.messageType != ChatMessage.Type.PRIVATE) ||
-                Model.senderId == UserProfile.GetOwnUserProfile().userId)
-                return;
-
-            OnPressRightButton?.Invoke(this);
+            OnPress?.Invoke(this);
         }
     }
 
@@ -214,6 +252,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = timeToHoverPanel;
+        
+        OnHover?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -235,7 +275,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void OnDisable() { OnPointerExit(null); }
 
-    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
+    private void OnDestroy()
+    {
+        populationTaskCancellationTokenSource.Cancel();
+        OnHover -= HighlightName;
+        OnCancelHover -= RemoveHighlightName;
+    }
 
     public override void SetFadeout(bool enabled)
     {
@@ -251,6 +296,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void DeactivatePreview()
     {
+        isShowingPreview = false;
+
         if (!gameObject.activeInHierarchy)
         {
             previewBackgroundImage.color = originalBackgroundColor;
@@ -285,6 +332,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void ActivatePreview()
     {
+        isShowingPreview = true;
+
         if (!gameObject.activeInHierarchy)
         {
             ActivatePreviewInstantly();
@@ -305,6 +354,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void ActivatePreviewInstantly()
     {
+        isShowingPreview = true;
+
         if (!gameObject.activeInHierarchy)
             return;
         
@@ -323,11 +374,14 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public override void DeactivatePreviewInstantly()
     {
+        isShowingPreview = false;
+
         if (previewInterpolationRoutine != null)
             StopCoroutine(previewInterpolationRoutine);
 
         previewBackgroundImage.color = originalBackgroundColor;
         body.color = originalFontColor;
+        
     }
 
     public void DockContextMenu(RectTransform panel)
@@ -361,9 +415,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
         isOverCoordinates = true;
         TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-        currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
-        hoverGotoPanelTimer = timeToHoverGotoPanel;
-        OnCancelHover?.Invoke();
+        if (!ChannelUtils.IsAChannel(linkInfo.GetLinkID()))
+        {
+            currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+            hoverGotoPanelTimer = timeToHoverGotoPanel;
+            OnCancelHover?.Invoke();
+        }
     }
 
     private void ProcessHoverPanelTimer()
@@ -434,5 +491,18 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         previewBackgroundImage.color = backgroundColor;
         body.color = fontColor;
     }
+    
+    private void HighlightName()
+    {
+        if (isShowingPreview)
+            return;
+        
+        body.text = $"{GetUserString(model, true)} {model.bodyText}";
+    }
 
+    private void RemoveHighlightName()
+    {
+        body.text = $"{GetUserString(model, false)} {model.bodyText}";
+    }
+    
 }

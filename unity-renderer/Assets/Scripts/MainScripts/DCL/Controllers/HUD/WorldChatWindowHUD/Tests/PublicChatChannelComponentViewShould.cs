@@ -5,12 +5,12 @@ using UnityEngine.TestTools;
 
 public class PublicChatChannelComponentViewShould
 {
-    private PublicChatChannelComponentView view;
+    private PublicChatWindowComponentView view;
     
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatChannelComponentView.Create();
+        view = PublicChatWindowComponentView.Create();
     }
 
     [TearDown]
@@ -38,9 +38,9 @@ public class PublicChatChannelComponentViewShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatChannelModel("nearby", "nearby", "any description"));
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", 0, true, 0));
         
-        Assert.AreEqual("#nearby", view.nameLabel.text);
+        Assert.AreEqual("~nearby", view.nameLabel.text);
         Assert.AreEqual("any description", view.descriptionLabel.text);
     }
 

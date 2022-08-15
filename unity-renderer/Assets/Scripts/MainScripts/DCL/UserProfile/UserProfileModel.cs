@@ -33,7 +33,7 @@ public class UserProfileModel
     public ParcelsWithAccess[] parcelsWithAccess;
     public ulong created_at;
     public ulong updated_at;
-    public string version;
+    public int version;
     public AvatarModel avatar;
     public string[] inventory;
     public Snapshots snapshots = new Snapshots();

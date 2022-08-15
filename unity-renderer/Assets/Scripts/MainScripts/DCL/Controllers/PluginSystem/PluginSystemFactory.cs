@@ -36,6 +36,7 @@ namespace DCL
             pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
             pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
+            pluginSystem.Register<JoinChannelModalPlugin>(() => new JoinChannelModalPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             

@@ -10,7 +10,7 @@ internal class UsersSearchFriendsHandler : IDisposable
     private readonly IFriendsController friendsController;
 
     private bool waitingFriendsInitialize;
-    private Promise<Dictionary<string, FriendsController.UserStatus>> friendListPromise;
+    private Promise<Dictionary<string, UserStatus>> friendListPromise;
 
     public UsersSearchFriendsHandler(IFriendsController friendsController)
     {
@@ -24,11 +24,11 @@ internal class UsersSearchFriendsHandler : IDisposable
         }
     }
 
-    public Promise<Dictionary<string, FriendsController.UserStatus>> GetFriendList()
+    public Promise<Dictionary<string, UserStatus>> GetFriendList()
     {
         if (friendListPromise == null)
         {
-            friendListPromise = new Promise<Dictionary<string, FriendsController.UserStatus>>();
+            friendListPromise = new Promise<Dictionary<string, UserStatus>>();
         }
 
         if (friendsController == null)
@@ -36,11 +36,11 @@ internal class UsersSearchFriendsHandler : IDisposable
             return friendListPromise;
         }
 
-        if (isFriendlistDirty && friendsController.isInitialized)
+        if (isFriendlistDirty && friendsController.IsInitialized)
         {
             isFriendlistDirty = false;
             waitingFriendsInitialize = false;
-            friendListPromise.Resolve(friendsController.GetFriends());
+            friendListPromise.Resolve(friendsController.GetAllocatedFriends());
         }
 
         if (waitingFriendsInitialize)
@@ -68,12 +68,12 @@ internal class UsersSearchFriendsHandler : IDisposable
     {
         friendsController.OnInitialized -= OnFriendsInitialized;
         isFriendlistDirty = false;
-        friendListPromise?.Resolve(friendsController.GetFriends());
+        friendListPromise?.Resolve(friendsController.GetAllocatedFriends());
     }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
-        if (!friendsController.isInitialized)
+        if (!friendsController.IsInitialized)
             return;
 
         if (friendshipAction == FriendshipAction.APPROVED)

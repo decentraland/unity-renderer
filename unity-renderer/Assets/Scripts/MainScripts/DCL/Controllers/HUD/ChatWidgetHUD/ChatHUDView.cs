@@ -27,7 +27,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] private Model model;
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
-    
+
     [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
 
     private readonly ChatMessage currentMessage = new ChatMessage();
@@ -67,7 +67,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
         remove
         {
-            if (!inputFieldSelectedListeners.ContainsKey(value)) return;
+            if (!inputFieldSelectedListeners.ContainsKey(value))
+                return;
             inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
             inputFieldSelectedListeners.Remove(value);
         }
@@ -83,7 +84,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
         remove
         {
-            if (!inputFieldUnselectedListeners.ContainsKey(value)) return;
+            if (!inputFieldUnselectedListeners.ContainsKey(value))
+                return;
             inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
             inputFieldUnselectedListeners.Remove(value);
         }
@@ -93,6 +95,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public event Action OnNextChatInHistory;
 
     public event Action<ChatMessage> OnSendMessage;
+
+    public event Action OnChatContainerResized;
+    public event Action OnChatEntriesSorted;
 
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
@@ -114,7 +119,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         ChatEntryFactory ??= defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
-    
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -137,11 +142,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (updateLayoutDelayedFrames > 0)
         {
             updateLayoutDelayedFrames--;
-            
+
             if (updateLayoutDelayedFrames <= 0)
+            {
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
+                OnChatContainerResized?.Invoke();
+            }
         }
-        
+
         if (isSortingDirty)
             SortEntriesImmediate();
         isSortingDirty = false;
@@ -188,17 +196,22 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void ActivatePreview()
     {
         model.isInPreviewMode = true;
-        
+
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
             entry.ActivatePreview();
         }
+
+        if (contextMenu == null)
+            return;
+        contextMenu.Hide();
+        confirmationDialog.Hide();
     }
     public void DeactivatePreview()
     {
         model.isInPreviewMode = false;
-        
+
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
@@ -243,16 +256,15 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         var chatEntry = ChatEntryFactory.Create(model);
         chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        if(this.model.enableFadeoutMode)
+        if (this.model.enableFadeoutMode)
             chatEntry.SetFadeout(true);
         else
             chatEntry.SetFadeout(false);
 
         chatEntry.Populate(model);
-        
-        if (model.messageType == ChatMessage.Type.PUBLIC
-            || model.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPressRightButton += OnOpenContextMenu;
+
+        if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+            chatEntry.OnPress += OnOpenContextMenu;
 
         chatEntry.OnTriggerHover += OnMessageTriggerHover;
         chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
@@ -260,7 +272,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
 
         entries.Add(chatEntry);
-        
+
         if (this.model.isInPreviewMode)
             chatEntry.ActivatePreviewInstantly();
 
@@ -273,15 +285,19 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public void RemoveFirstEntry()
     {
-        if (entries.Count <= 0) return;
+        if (entries.Count <= 0)
+            return;
         Destroy(entries[0].gameObject);
         entries.Remove(entries[0]);
+
+        UpdateLayout();
     }
 
     public override void Hide(bool instant = false)
     {
         base.Hide(instant);
-        if (contextMenu == null) return;
+        if (contextMenu == null)
+            return;
         contextMenu.Hide();
         confirmationDialog.Hide();
     }
@@ -297,6 +313,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         foreach (var entry in entries)
             Destroy(entry.gameObject);
         entries.Clear();
+
+        UpdateLayout();
     }
 
     private bool IsEntryVisible(ChatEntry entry)
@@ -328,20 +346,15 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         OnSendMessage?.Invoke(currentMessage);
     }
 
-    private void OnInputFieldSelect(string message)
-    {
-        AudioScriptableObjects.inputFieldFocus.Play(true);
-    }
+    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
 
-    private void OnInputFieldDeselect(string message)
-    {
-        AudioScriptableObjects.inputFieldUnfocus.Play(true);
-    }
+    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
 
     private void OnOpenContextMenu(DefaultChatEntry chatEntry)
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
-        contextMenu.transform.parent = transform;
+        contextMenu.transform.parent = transform.parent;
+        contextMenu.transform.SetAsLastSibling();
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
@@ -380,10 +393,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (entries[i].transform.GetSiblingIndex() != i)
                 entries[i].transform.SetSiblingIndex(i);
         }
+        OnChatEntriesSorted?.Invoke();
     }
-    
+
     private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
-    
+
     private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
 
     private void UpdateLayout()

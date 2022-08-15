@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class ChatHUDController : IDisposable
 {
@@ -62,12 +61,12 @@ public class ChatHUDController : IDisposable
         this.view.OnMessageUpdated += HandleMessageUpdated;
     }
 
-    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true)
+    public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
     {
-        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom, spamFiltering).Forget();
+        AddChatMessage(ChatMessageToChatEntry(message), setScrollPositionToBottom, spamFiltering, limitMaxEntries).Forget();
     }
 
-    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true)
+    public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
     {
         if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
         
@@ -88,7 +87,7 @@ public class ChatHUDController : IDisposable
 
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
-        if (view.EntryCount > MAX_CHAT_ENTRIES)
+        if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
             view.RemoveFirstEntry();
         
         if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
@@ -137,36 +136,26 @@ public class ChatHUDController : IDisposable
         model.messageType = message.messageType;
         model.bodyText = message.body;
         model.timestamp = message.timestamp;
+        model.isChannelMessage = message.isChannelMessage;
 
         if (message.recipient != null)
         {
             var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
-
+        
         if (message.sender != null)
         {
             var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
-
+        
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            if (message.recipient == ownProfile.userId)
-            {
-                model.subType = ChatEntryModel.SubType.RECEIVED;
-                model.otherUserId = message.sender;
-            }
-            else if (message.sender == ownProfile.userId)
-            {
-                model.subType = ChatEntryModel.SubType.SENT;
-                model.otherUserId = message.recipient;
-            }
-            else
-            {
-                model.subType = ChatEntryModel.SubType.NONE;
-            }
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {

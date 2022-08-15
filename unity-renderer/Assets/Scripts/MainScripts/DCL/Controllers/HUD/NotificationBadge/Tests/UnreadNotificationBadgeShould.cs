@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -12,24 +11,20 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME = "UnreadNotificationBadge";
     private const string TEST_USER_ID = "testFriend";
     private const string INVALID_TEST_USER_ID = "invalidTestFriend";
+    private const string TEST_CHANNEL_ID = "testChannel";
+    private const string INVALID_TEST_CHANNEL_ID = "invalidTestChannel";
 
-    private ChatController_Mock chatController;
+    private IChatController chatController;
     private UnreadNotificationBadge unreadNotificationBadge;
-    private ILastReadMessagesService lastReadMessagesService;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
-        chatController = new ChatController_Mock();
-
-        GameObject go = Object.Instantiate((GameObject) Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
+        var go = Object.Instantiate((GameObject) Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
         unreadNotificationBadge = go.GetComponent<UnreadNotificationBadge>();
-        lastReadMessagesService = Substitute.For<ILastReadMessagesService>();
-        lastReadMessagesService.GetUnreadCount(TEST_USER_ID).Returns(0);
-        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID, lastReadMessagesService);
-
-        CommonScriptableObjects.lastReadChatMessages.Remove(TEST_USER_ID);
-        CommonScriptableObjects.lastReadChatMessages.Remove(INVALID_TEST_USER_ID);
+        chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(0);
+        unreadNotificationBadge.Initialize(chatController, TEST_USER_ID);
 
         Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages,
             "There shouldn't be any unread notification after initialization");
@@ -42,23 +37,14 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         Object.Destroy(unreadNotificationBadge.gameObject);
-        CommonScriptableObjects.lastReadChatMessages.Remove(TEST_USER_ID);
-        CommonScriptableObjects.lastReadChatMessages.Remove(INVALID_TEST_USER_ID);
         yield break;
     }
 
     [Test]
     public void ReceiveOneUnreadNotification()
     {
-        lastReadMessagesService.GetUnreadCount(TEST_USER_ID).Returns(1);
-        chatController.RaiseAddMessage(new ChatMessage
-        {
-            messageType = ChatMessage.Type.PRIVATE,
-            sender = TEST_USER_ID,
-            body = "test body",
-            recipient = "test recipient",
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(1);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 1);
 
         Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be 1 unread notification");
         Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
@@ -70,57 +56,26 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     public void ReceiveSeveralUnreadNotifications()
     {
         const int unreadNotificationCount = 10;
-        lastReadMessagesService.GetUnreadCount(TEST_USER_ID).Returns(unreadNotificationCount);
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(unreadNotificationCount);
         unreadNotificationBadge.maxNumberToShow = 9;
-        for (int i = 0; i < unreadNotificationCount; i++)
-        {
-            chatController.RaiseAddMessage(new ChatMessage
-            {
-                messageType = ChatMessage.Type.PRIVATE,
-                sender = TEST_USER_ID,
-                body = $"test body {i + 1}",
-                recipient = "test recipient",
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-            });
-        }
+        
+        for (var i = 1; i <= unreadNotificationCount; i++)
+            chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, i);
 
         Assert.AreEqual(unreadNotificationCount, unreadNotificationBadge.CurrentUnreadMessages,
             "There should be [unreadNotificationBadge.maxNumberToShow + 1] unread notifications");
         Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
             "Notificaton container should be activated");
-        Assert.AreEqual(string.Format("+{0}", unreadNotificationBadge.maxNumberToShow),
+        Assert.AreEqual($"+{unreadNotificationBadge.maxNumberToShow}",
             unreadNotificationBadge.notificationText.text,
             "Notification text should be '+[unreadNotificationBadge.maxNumberToShow]'");
     }
 
     [Test]
-    public void NotReceiveUnreadNotificationsBecauseOfPublicMessage()
-    {
-        chatController.RaiseAddMessage(new ChatMessage
-        {
-            messageType = ChatMessage.Type.PUBLIC,
-            sender = TEST_USER_ID,
-            body = "test body",
-            recipient = "test recipient",
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
-
-        Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
-        Assert.AreEqual(false, unreadNotificationBadge.notificationContainer.activeSelf,
-            "Notificaton container should be deactivated");
-    }
-
-    [Test]
     public void NotReceiveUnreadNotificationsBecauseOfDifferentUser()
     {
-        chatController.RaiseAddMessage(new ChatMessage
-        {
-            messageType = ChatMessage.Type.PRIVATE,
-            sender = INVALID_TEST_USER_ID,
-            body = "test body",
-            recipient = "test recipient",
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
+        chatController.GetAllocatedUnseenMessages(INVALID_TEST_USER_ID).Returns(1);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_USER_ID, 1);
 
         Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
         Assert.AreEqual(false, unreadNotificationBadge.notificationContainer.activeSelf,
@@ -130,19 +85,13 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void CleanAllUnreadNotifications()
     {
-        lastReadMessagesService.GetUnreadCount(TEST_USER_ID).Returns(1);
-        chatController.RaiseAddMessage(new ChatMessage
-        {
-            messageType = ChatMessage.Type.PRIVATE,
-            sender = TEST_USER_ID,
-            body = "test body",
-            recipient = "test recipient",
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(1);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 1);
         
         Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be one notification");
         
-        ReadLastMessages(TEST_USER_ID);
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(0);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 0);
 
         Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
         Assert.AreEqual(false, unreadNotificationBadge.notificationContainer.activeSelf,
@@ -150,10 +99,13 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void NotCleanUnreadNotificationsBecauseOfFifferentUser()
+    public void NotCleanUnreadNotificationsBecauseOfDifferentUser()
     {
-        ReceiveOneUnreadNotification();
-        ReadLastMessages(INVALID_TEST_USER_ID);
+        chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(1);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_USER_ID, 1);
+        
+        chatController.GetAllocatedUnseenMessages(INVALID_TEST_USER_ID).Returns(0);
+        chatController.OnUserUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_USER_ID, 0);
 
         Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be 1 unread notification");
         Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
@@ -161,9 +113,81 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("1", unreadNotificationBadge.notificationText.text, "Notification text should be 1");
     }
 
-    private void ReadLastMessages(string userId)
+    [Test]
+    public void ReceiveOneUnreadChannelNotification()
     {
-        lastReadMessagesService.GetUnreadCount(userId).Returns(0);
-        lastReadMessagesService.OnUpdated += Raise.Event<Action<string>>(userId);
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
+
+        Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be 1 unread notification");
+        Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be activated");
+        Assert.AreEqual("1", unreadNotificationBadge.notificationText.text, "Notification text should be 1");
+    }
+
+    [Test]
+    public void ReceiveSeveralUnreadChannelNotifications()
+    {
+        const int unreadNotificationCount = 10;
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        chatController.GetAllocatedUnseenMessages(TEST_CHANNEL_ID).Returns(unreadNotificationCount);
+        unreadNotificationBadge.maxNumberToShow = 9;
+
+        for (var i = 1; i <= unreadNotificationCount; i++)
+            chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, i);
+
+        Assert.AreEqual(unreadNotificationCount, unreadNotificationBadge.CurrentUnreadMessages,
+            "There should be [unreadNotificationBadge.maxNumberToShow + 1] unread notifications");
+        Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be activated");
+        Assert.AreEqual($"+{unreadNotificationBadge.maxNumberToShow}",
+            unreadNotificationBadge.notificationText.text,
+            "Notification text should be '+[unreadNotificationBadge.maxNumberToShow]'");
+    }
+
+    [Test]
+    public void NotReceiveUnreadChannelNotificationsBecauseOfDifferentUser()
+    {
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        chatController.GetAllocatedUnseenChannelMessages(INVALID_TEST_CHANNEL_ID).Returns(1);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_CHANNEL_ID, 1);
+
+        Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
+        Assert.AreEqual(false, unreadNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be deactivated");
+    }
+
+    [Test]
+    public void CleanAllUnreadChannelNotifications()
+    {
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
+
+        Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be one notification");
+
+        chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(0);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 0);
+
+        Assert.AreEqual(0, unreadNotificationBadge.CurrentUnreadMessages, "There shouldn't be any unread notification");
+        Assert.AreEqual(false, unreadNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be deactivated");
+    }
+
+    [Test]
+    public void NotCleanUnreadChannelNotificationsBecauseOfDifferentUser()
+    {
+        unreadNotificationBadge.Initialize(chatController, TEST_CHANNEL_ID);
+        chatController.GetAllocatedUnseenChannelMessages(TEST_CHANNEL_ID).Returns(1);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(TEST_CHANNEL_ID, 1);
+
+        chatController.GetAllocatedUnseenChannelMessages(INVALID_TEST_CHANNEL_ID).Returns(0);
+        chatController.OnChannelUnseenMessagesUpdated += Raise.Event<Action<string, int>>(INVALID_TEST_CHANNEL_ID, 0);
+
+        Assert.AreEqual(1, unreadNotificationBadge.CurrentUnreadMessages, "There should be 1 unread notification");
+        Assert.AreEqual(true, unreadNotificationBadge.notificationContainer.activeSelf,
+            "Notificaton container should be activated");
+        Assert.AreEqual("1", unreadNotificationBadge.notificationText.text, "Notification text should be 1");
     }
 }
