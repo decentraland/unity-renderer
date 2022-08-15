@@ -53,8 +53,8 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
 
         Assert.AreEqual(newMessage.body, addedNotification.model.message);
         Assert.AreEqual(newMessage.body, addedNotification.notificationMessage.text);
-        Assert.AreEqual("UsernameTest", addedNotification.model.messageHeader);
-        Assert.AreEqual("UsernameTest", addedNotification.notificationHeader.text);
+        Assert.AreEqual("Private message", addedNotification.model.messageHeader);
+        Assert.AreEqual("Private message", addedNotification.notificationHeader.text);
         Assert.AreEqual("0x00000ba", addedNotification.model.notificationTargetId);
     }
 
@@ -68,8 +68,8 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
         Assert.IsTrue(view.poolableQueue.Count == 1);
         ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
 
-        Assert.AreEqual($"UsernameTest: {newMessage.body}", addedNotification.model.message);
-        Assert.AreEqual($"UsernameTest: {newMessage.body}", addedNotification.notificationMessage.text);
+        Assert.AreEqual($"{newMessage.body}", addedNotification.model.message);
+        Assert.AreEqual($"{newMessage.body}", addedNotification.notificationMessage.text);
         Assert.AreEqual("#nearby", addedNotification.model.messageHeader);
         Assert.AreEqual("#nearby", addedNotification.notificationHeader.text);
         Assert.AreEqual("#nearby", addedNotification.model.notificationTargetId);
