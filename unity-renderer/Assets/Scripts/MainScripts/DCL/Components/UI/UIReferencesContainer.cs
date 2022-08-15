@@ -43,19 +43,5 @@ namespace DCL.Components
                 WebInterface.ReportOnClickEvent(owner.scene.sceneData.id, ownerModel.onClick);
             }
         }
-
-#if UNITY_EDITOR
-        [Header("Debug")]
-        public bool forceRefresh;
-
-        public void LateUpdate()
-        {
-            if (forceRefresh)
-            {
-                owner.RefreshAll();
-                forceRefresh = false;
-            }
-        }
-#endif
     }
 }

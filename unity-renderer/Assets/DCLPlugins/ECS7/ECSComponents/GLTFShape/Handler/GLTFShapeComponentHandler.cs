@@ -48,9 +48,9 @@ namespace DCL.ECSComponents
             this.model = model;
         }
                 
-        public bool IsVisible() {  return model.Visible; }
+        public bool IsVisible() {  return model.GetVisible(); }
         
-        public bool HasCollisions() {  return model.WithCollisions; }
+        public bool HasCollisions() {  return model.GetWithCollisions(); }
 
         private bool ShouldLoadShape(PBGLTFShape model)
         {
@@ -82,7 +82,7 @@ namespace DCL.ECSComponents
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF
-                    if (!model.Visible)
+                    if (!model.GetVisible())
                     {
                         MaterialTransitionController[] materialTransitionControllers = entity.meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>();
 
@@ -113,13 +113,13 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBGLTFShape model)
         {
-            shapeRepresentation.UpdateModel(model.Visible, model.WithCollisions);
+            shapeRepresentation.UpdateModel(model.GetVisible(), model.GetWithCollisions());
             
             // Set visibility
-            meshesInfo.meshRootGameObject.SetActive(model.Visible);
+            meshesInfo.meshRootGameObject.SetActive(model.GetVisible());
             
             // Set collisions and pointer blocker
-            ECSComponentsUtils.UpdateMeshInfoColliders(model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+            ECSComponentsUtils.UpdateMeshInfoColliders(model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
         }
 
         internal void DisposeMesh(IParcelScene scene)

@@ -62,7 +62,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     {
         WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
-            action = WebInterface.FriendshipAction.CANCELLED,
+            action = WebInterface.FriendshipAction.REJECTED,
             userId = friendUserId
         });
     }

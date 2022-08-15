@@ -27,7 +27,7 @@ namespace DCL.ECSComponents
             this.infoRetriever = infoRetriever;
             this.assetRetriever = assetRetriever;
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -107,9 +107,9 @@ namespace DCL.ECSComponents
         
         internal void ApplyModel(PBNFTShape model)
         {
-            shapeFrame.SetVisibility(model.Visible);
-            shapeFrame.SetHasCollisions(model.WithCollisions);
-            shapeFrame.SetPointerBlocker(model.IsPointerBlocker);
+            shapeFrame.SetVisibility(model.GetVisible());
+            shapeFrame.SetHasCollisions(model.GetWithCollisions());
+            shapeFrame.SetPointerBlocker(model.GetIsPointerBlocker());
             UpdateBackgroundColor(model);
 
             this.model = model;

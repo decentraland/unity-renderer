@@ -26,38 +26,48 @@ namespace DCL.ECSComponents {
           string.Concat(
             "Cg5BbmltYXRvci5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJACgpQQkFuaW1h",
             "dG9yEjIKBnN0YXRlcxgBIAMoCzIiLmRlY2VudHJhbGFuZC5lY3MuUEJBbmlt",
-            "YXRpb25TdGF0ZSKCAQoQUEJBbmltYXRpb25TdGF0ZRIMCgRuYW1lGAEgASgJ",
-            "EgwKBGNsaXAYAiABKAkSDwoHcGxheWluZxgDIAEoCBIOCgZ3ZWlnaHQYBCAB",
-            "KAISDQoFc3BlZWQYBSABKAISDAoEbG9vcBgGIAEoCBIUCgxzaG91bGRfcmVz",
-            "ZXQYByABKAhCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "YXRpb25TdGF0ZSLWAQoQUEJBbmltYXRpb25TdGF0ZRIMCgRuYW1lGAEgASgJ",
+            "EgwKBGNsaXAYAiABKAkSFAoHcGxheWluZxgDIAEoCEgAiAEBEhMKBndlaWdo",
+            "dBgEIAEoAkgBiAEBEhIKBXNwZWVkGAUgASgCSAKIAQESEQoEbG9vcBgGIAEo",
+            "CEgDiAEBEhkKDHNob3VsZF9yZXNldBgHIAEoCEgEiAEBQgoKCF9wbGF5aW5n",
+            "QgkKB193ZWlnaHRCCAoGX3NwZWVkQgcKBV9sb29wQg8KDV9zaG91bGRfcmVz",
+            "ZXRCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimator), global::DCL.ECSComponents.PBAnimator.Parser, new[]{ "States" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimationState), global::DCL.ECSComponents.PBAnimationState.Parser, new[]{ "Name", "Clip", "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimationState), global::DCL.ECSComponents.PBAnimationState.Parser, new[]{ "Name", "Clip", "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, new[]{ "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBAnimator : pb::IMessage<PBAnimator> {
+  public sealed partial class PBAnimator : pb::IMessage<PBAnimator>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBAnimator> _parser = new pb::MessageParser<PBAnimator>(() => new PBAnimator());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAnimator> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AnimatorReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimator() {
       OnConstruction();
     }
@@ -65,12 +75,14 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimator(PBAnimator other) : this() {
       states_ = other.states_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimator Clone() {
       return new PBAnimator(this);
     }
@@ -81,16 +93,19 @@ namespace DCL.ECSComponents {
         = pb::FieldCodec.ForMessage(10, global::DCL.ECSComponents.PBAnimationState.Parser);
     private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState> states_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::DCL.ECSComponents.PBAnimationState> States {
       get { return states_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAnimator);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAnimator other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -103,6 +118,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= states_.GetHashCode();
@@ -113,19 +129,37 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       states_.WriteTo(output, _repeated_states_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      states_.WriteTo(ref output, _repeated_states_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       size += states_.CalculateSize(_repeated_states_codec);
@@ -136,6 +170,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAnimator other) {
       if (other == null) {
         return;
@@ -145,7 +180,11 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -158,27 +197,56 @@ namespace DCL.ECSComponents {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            states_.AddEntriesFrom(ref input, _repeated_states_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
-  public sealed partial class PBAnimationState : pb::IMessage<PBAnimationState> {
+  public sealed partial class PBAnimationState : pb::IMessage<PBAnimationState>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBAnimationState> _parser = new pb::MessageParser<PBAnimationState>(() => new PBAnimationState());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBAnimationState> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.AnimatorReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimationState() {
       OnConstruction();
     }
@@ -186,7 +254,9 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimationState(PBAnimationState other) : this() {
+      _hasBits0 = other._hasBits0;
       name_ = other.name_;
       clip_ = other.clip_;
       playing_ = other.playing_;
@@ -198,6 +268,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimationState Clone() {
       return new PBAnimationState(this);
     }
@@ -206,6 +277,7 @@ namespace DCL.ECSComponents {
     public const int NameFieldNumber = 1;
     private string name_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_; }
       set {
@@ -217,6 +289,7 @@ namespace DCL.ECSComponents {
     public const int ClipFieldNumber = 2;
     private string clip_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Clip {
       get { return clip_; }
       set {
@@ -228,63 +301,144 @@ namespace DCL.ECSComponents {
     public const int PlayingFieldNumber = 3;
     private bool playing_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Playing {
-      get { return playing_; }
+      get { if ((_hasBits0 & 1) != 0) { return playing_; } else { return false; } }
       set {
+        _hasBits0 |= 1;
         playing_ = value;
       }
+    }
+    /// <summary>Gets whether the "playing" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPlaying {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "playing" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPlaying() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "weight" field.</summary>
     public const int WeightFieldNumber = 4;
     private float weight_;
+    /// <summary>
+    /// default=1.0s
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Weight {
-      get { return weight_; }
+      get { if ((_hasBits0 & 2) != 0) { return weight_; } else { return 0F; } }
       set {
+        _hasBits0 |= 2;
         weight_ = value;
       }
+    }
+    /// <summary>Gets whether the "weight" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasWeight {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "weight" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearWeight() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "speed" field.</summary>
     public const int SpeedFieldNumber = 5;
     private float speed_;
+    /// <summary>
+    /// default=1.0
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Speed {
-      get { return speed_; }
+      get { if ((_hasBits0 & 4) != 0) { return speed_; } else { return 0F; } }
       set {
+        _hasBits0 |= 4;
         speed_ = value;
       }
+    }
+    /// <summary>Gets whether the "speed" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasSpeed {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "speed" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearSpeed() {
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "loop" field.</summary>
     public const int LoopFieldNumber = 6;
     private bool loop_;
+    /// <summary>
+    /// default=true
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Loop {
-      get { return loop_; }
+      get { if ((_hasBits0 & 8) != 0) { return loop_; } else { return false; } }
       set {
+        _hasBits0 |= 8;
         loop_ = value;
       }
+    }
+    /// <summary>Gets whether the "loop" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasLoop {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "loop" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearLoop() {
+      _hasBits0 &= ~8;
     }
 
     /// <summary>Field number for the "should_reset" field.</summary>
     public const int ShouldResetFieldNumber = 7;
     private bool shouldReset_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool ShouldReset {
-      get { return shouldReset_; }
+      get { if ((_hasBits0 & 16) != 0) { return shouldReset_; } else { return false; } }
       set {
+        _hasBits0 |= 16;
         shouldReset_ = value;
       }
     }
+    /// <summary>Gets whether the "should_reset" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasShouldReset {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "should_reset" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearShouldReset() {
+      _hasBits0 &= ~16;
+    }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBAnimationState);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBAnimationState other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -303,15 +457,16 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Clip.Length != 0) hash ^= Clip.GetHashCode();
-      if (Playing != false) hash ^= Playing.GetHashCode();
-      if (Weight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Weight);
-      if (Speed != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
-      if (Loop != false) hash ^= Loop.GetHashCode();
-      if (ShouldReset != false) hash ^= ShouldReset.GetHashCode();
+      if (HasPlaying) hash ^= Playing.GetHashCode();
+      if (HasWeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Weight);
+      if (HasSpeed) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
+      if (HasLoop) hash ^= Loop.GetHashCode();
+      if (HasShouldReset) hash ^= ShouldReset.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -319,12 +474,17 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (Name.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Name);
@@ -333,32 +493,72 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(18);
         output.WriteString(Clip);
       }
-      if (Playing != false) {
+      if (HasPlaying) {
         output.WriteRawTag(24);
         output.WriteBool(Playing);
       }
-      if (Weight != 0F) {
+      if (HasWeight) {
         output.WriteRawTag(37);
         output.WriteFloat(Weight);
       }
-      if (Speed != 0F) {
+      if (HasSpeed) {
         output.WriteRawTag(45);
         output.WriteFloat(Speed);
       }
-      if (Loop != false) {
+      if (HasLoop) {
         output.WriteRawTag(48);
         output.WriteBool(Loop);
       }
-      if (ShouldReset != false) {
+      if (HasShouldReset) {
         output.WriteRawTag(56);
         output.WriteBool(ShouldReset);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Name.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (Clip.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Clip);
+      }
+      if (HasPlaying) {
+        output.WriteRawTag(24);
+        output.WriteBool(Playing);
+      }
+      if (HasWeight) {
+        output.WriteRawTag(37);
+        output.WriteFloat(Weight);
+      }
+      if (HasSpeed) {
+        output.WriteRawTag(45);
+        output.WriteFloat(Speed);
+      }
+      if (HasLoop) {
+        output.WriteRawTag(48);
+        output.WriteBool(Loop);
+      }
+      if (HasShouldReset) {
+        output.WriteRawTag(56);
+        output.WriteBool(ShouldReset);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Name.Length != 0) {
@@ -367,19 +567,19 @@ namespace DCL.ECSComponents {
       if (Clip.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Clip);
       }
-      if (Playing != false) {
+      if (HasPlaying) {
         size += 1 + 1;
       }
-      if (Weight != 0F) {
+      if (HasWeight) {
         size += 1 + 4;
       }
-      if (Speed != 0F) {
+      if (HasSpeed) {
         size += 1 + 4;
       }
-      if (Loop != false) {
+      if (HasLoop) {
         size += 1 + 1;
       }
-      if (ShouldReset != false) {
+      if (HasShouldReset) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -389,6 +589,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBAnimationState other) {
       if (other == null) {
         return;
@@ -399,26 +600,30 @@ namespace DCL.ECSComponents {
       if (other.Clip.Length != 0) {
         Clip = other.Clip;
       }
-      if (other.Playing != false) {
+      if (other.HasPlaying) {
         Playing = other.Playing;
       }
-      if (other.Weight != 0F) {
+      if (other.HasWeight) {
         Weight = other.Weight;
       }
-      if (other.Speed != 0F) {
+      if (other.HasSpeed) {
         Speed = other.Speed;
       }
-      if (other.Loop != false) {
+      if (other.HasLoop) {
         Loop = other.Loop;
       }
-      if (other.ShouldReset != false) {
+      if (other.HasShouldReset) {
         ShouldReset = other.ShouldReset;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -455,7 +660,51 @@ namespace DCL.ECSComponents {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Clip = input.ReadString();
+            break;
+          }
+          case 24: {
+            Playing = input.ReadBool();
+            break;
+          }
+          case 37: {
+            Weight = input.ReadFloat();
+            break;
+          }
+          case 45: {
+            Speed = input.ReadFloat();
+            break;
+          }
+          case 48: {
+            Loop = input.ReadBool();
+            break;
+          }
+          case 56: {
+            ShouldReset = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

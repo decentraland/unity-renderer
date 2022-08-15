@@ -13,12 +13,12 @@ public class UIContainerStackVisualTests : UIVisualTestsBase
     [Explicit]
     [VisualTest]
     [Category("Explicit")]
-    public IEnumerator UIContainerStackVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIContainerStackTest1()); }
+    public IEnumerator UIContainerStackVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIContainerStackVisualTest()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
-    public IEnumerator UIContainerStackTest1()
+    public IEnumerator UIContainerStackVisualTest()
     {
         string mainContainerId = "herodes";
         yield return CreateUIComponent<UIContainerStack, UIContainerStack.Model>(CLASS_ID.UI_CONTAINER_STACK, new UIContainerStack.Model

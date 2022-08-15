@@ -158,7 +158,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnReportUserButtonPressed()
     {
         OnReport?.Invoke(userId);
-        WebInterface.SendReportPlayer(userId);
+        WebInterface.SendReportPlayer(userId, UserProfileController.userProfilesCatalog.Get(userId)?.userName);
         GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.ProfileContextMenu);
         Hide();
     }

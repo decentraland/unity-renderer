@@ -4,6 +4,17 @@ using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
+using Environment = DCL.Environment;
+
+public enum AvatarAnimation
+{
+    IDLE,
+    RUN,
+    WALK,
+    EMOTE,
+    JUMP,
+    FALL,
+}
 
 public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnimator
 {
@@ -74,8 +85,82 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private AvatarAnimationEventHandler animEventHandler;
     
     private float lastOnAirTime = 0;
+    
+    private string runAnimationName;
+    private string walkAnimationName;
+    private string idleAnimationName;
+    private string jumpAnimationName;
+    private string fallAnimationName;
+    private AvatarAnimation latestAnimation;
+    private AnimationState runAnimationState;
+    private AnimationState walkAnimationState;
+    
+    private Ray rayCache;
 
-    public void Start() { OnPoolGet(); }
+    public void Start()
+    {
+        OnPoolGet();
+    }
+    
+    // AvatarSystem entry points
+    public bool Prepare(string bodyshapeId, GameObject container)
+    {
+        if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
+        {
+            Debug.LogError($"Couldn't find Armature for AnimatorLegacy in path: {transform.GetHierarchyPath()}");
+            return false;
+        }
+        Transform armatureParent = armature.parent;
+        animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
+        armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
+
+        PrepareLocomotionAnims(bodyshapeId);
+        SetIdleFrame();
+        animation.Sample();
+        InitializeAvatarAudioAndParticleHandlers(animation);
+
+        if (isOwnPlayer)
+        {
+            DCLCharacterController.i.OnUpdateFinish += OnUpdateWithDeltaTime;
+        }
+        else
+        {
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
+        }
+
+        return true;
+    }
+
+    private void PrepareLocomotionAnims(string bodyshapeId)
+    {
+        if (bodyshapeId.Contains(WearableLiterals.BodyShapes.MALE))
+        {
+            currentLocomotions = maleLocomotions;
+        }
+        else if (bodyshapeId.Contains(WearableLiterals.BodyShapes.FEMALE))
+        {
+            currentLocomotions = femaleLocomotions;
+        }
+
+        EquipEmote(currentLocomotions.idle.name, currentLocomotions.idle);
+        EquipEmote(currentLocomotions.walk.name, currentLocomotions.walk);
+        EquipEmote(currentLocomotions.run.name, currentLocomotions.run);
+        EquipEmote(currentLocomotions.jump.name, currentLocomotions.jump);
+        EquipEmote(currentLocomotions.fall.name, currentLocomotions.fall);
+        
+        idleAnimationName = currentLocomotions.idle.name;
+        walkAnimationName = currentLocomotions.walk.name;
+        runAnimationName = currentLocomotions.run.name;
+        jumpAnimationName = currentLocomotions.jump.name;
+        fallAnimationName = currentLocomotions.fall.name;
+        
+        runAnimationState = animation[runAnimationName];
+        walkAnimationState = animation[walkAnimationName];
+    }
+    private void OnEventHandlerUpdate()
+    {
+        OnUpdateWithDeltaTime(Time.deltaTime);
+    }
 
     public void OnPoolGet()
     {
@@ -85,11 +170,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
             // NOTE: disable MonoBehaviour's update to use DCLCharacterController event instead
             this.enabled = !isOwnPlayer;
-
-            if (isOwnPlayer)
-            {
-                DCLCharacterController.i.OnUpdateFinish += Update;
-            }
         }
 
         currentState = State_Init;
@@ -99,17 +179,16 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         if (isOwnPlayer && DCLCharacterController.i)
         {
-            DCLCharacterController.i.OnUpdateFinish -= Update;
+            DCLCharacterController.i.OnUpdateFinish -= OnUpdateWithDeltaTime;
+        }
+        else
+        {
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
         }
     }
-
-    void Update() { Update(Time.deltaTime); }
-
-    void Update(float deltaTime)
+    
+    void OnUpdateWithDeltaTime(float deltaTime)
     {
-        if (target == null || animation == null)
-            return;
-
         blackboard.deltaTime = deltaTime;
         UpdateInterface();
         currentState?.Invoke(blackboard);
@@ -148,22 +227,26 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool isGroundedByVelocity = !isOwnPlayer && Time.time - lastOnAirTime > FORCE_GROUND_TIME;
 
         //NOTE(Kinerius): This additional check is both for the player and interpolated avatars, we cast an additional raycast per avatar to check ground state
-        bool isGroundedByRaycast = Physics.Raycast(target.transform.position + rayOffset,
-            Vector3.down,
-            RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
-            DCLCharacterController.i.groundLayers);
+        bool isGroundedByRaycast = false;
+        if (!isGroundedByCharacterController && !isGroundedByVelocity)
+        {
+            rayCache.origin = velocityTargetPosition + rayOffset;
+            rayCache.direction = Vector3.down;
+
+            isGroundedByRaycast = Physics.Raycast(rayCache,
+                RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
+                DCLCharacterController.i.groundLayers);
+
+        }
 
         blackboard.isGrounded = isGroundedByCharacterController || isGroundedByVelocity || isGroundedByRaycast;
-#if UNITY_EDITOR
-        Debug.DrawRay(target.transform.position + rayOffset, Vector3.down * (RAY_OFFSET_LENGTH - ELEVATION_OFFSET), blackboard.isGrounded ? Color.green : Color.red);
-#endif
 
         lastPosition = velocityTargetPosition;
     }
 
     void State_Init(BlackBoard bb)
     {
-        if (bb.isGrounded == true)
+        if (bb.isGrounded)
         {
             currentState = State_Ground;
         }
@@ -175,61 +258,66 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     void State_Ground(BlackBoard bb)
     {
-        if (bb.deltaTime <= 0)
-        {
-            Debug.LogError("deltaTime should be > 0", gameObject);
-            return;
-        }
-
-        animation[currentLocomotions.run.name].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.runSpeedFactor;
-        animation[currentLocomotions.walk.name].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.walkSpeedFactor;
+        if (bb.deltaTime <= 0) return;
 
         float movementSpeed = bb.movementSpeed / bb.deltaTime;
 
+        runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
+        walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
+        
         if (movementSpeed > runMinSpeed)
         {
-            animation.CrossFade(currentLocomotions.run.name, RUN_TRANSITION_TIME);
+            CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME);
         }
         else if (movementSpeed > walkMinSpeed)
         {
-            animation.CrossFade(currentLocomotions.walk.name, WALK_TRANSITION_TIME);
+            CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME);
         }
-        else
+        else 
         {
-            animation.CrossFade(currentLocomotions.idle.name, IDLE_TRANSITION_TIME);
+            CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, IDLE_TRANSITION_TIME);
         }
 
         if (!bb.isGrounded)
         {
             currentState = State_Air;
-            Update(bb.deltaTime);
+            OnUpdateWithDeltaTime(bb.deltaTime);
         }
+    }
+    private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName, float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
+    {
+        if (latestAnimation == avatarAnimation)
+            return;
+
+        animation.CrossFade(animationName, runTransitionTime, playMode);
+        latestAnimation = avatarAnimation;
     }
 
     void State_Air(BlackBoard bb)
     {
         if (bb.verticalSpeed > 0)
         {
-            animation.CrossFade(currentLocomotions.jump.name, JUMP_TRANSITION_TIME, PlayMode.StopAll);
+            CrossFadeTo(AvatarAnimation.JUMP, jumpAnimationName, JUMP_TRANSITION_TIME, PlayMode.StopAll);
         }
         else
         {
-            animation.CrossFade(currentLocomotions.fall.name, FALL_TRANSITION_TIME, PlayMode.StopAll);
+            CrossFadeTo(AvatarAnimation.FALL, fallAnimationName, FALL_TRANSITION_TIME, PlayMode.StopAll);
         }
 
         if (bb.isGrounded)
         {
-            animation.Blend(currentLocomotions.jump.name, 0, AIR_EXIT_TRANSITION_TIME);
-            animation.Blend(currentLocomotions.fall.name, 0, AIR_EXIT_TRANSITION_TIME);
+            animation.Blend(jumpAnimationName, 0, AIR_EXIT_TRANSITION_TIME);
+            animation.Blend(fallAnimationName, 0, AIR_EXIT_TRANSITION_TIME);
             currentState = State_Ground;
-            Update(bb.deltaTime);
+            OnUpdateWithDeltaTime(bb.deltaTime);
         }
     }
 
     internal void State_Expression(BlackBoard bb)
     {
         var animationInfo = animation[bb.expressionTriggerId];
-        animation.CrossFade(bb.expressionTriggerId, EXPRESSION_TRANSITION_TIME, PlayMode.StopAll);
+        latestAnimation = AvatarAnimation.IDLE;
+        CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_TRANSITION_TIME, PlayMode.StopAll);
         bool mustExit;
 
         //Introduced the isMoving variable that is true if there is user input, substituted the old Math.Abs(bb.movementSpeed) > Mathf.Epsilon that relies of too much precision
@@ -247,7 +335,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             else
                 currentState = State_Ground;
 
-            Update(bb.deltaTime);
+            OnUpdateWithDeltaTime(bb.deltaTime);
         }
         else
         {
@@ -277,7 +365,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 animation.Stop(expressionTriggerId);
             }
             currentState = State_Expression;
-            Update();
+            OnUpdateWithDeltaTime(Time.deltaTime);
         }
     }
 
@@ -291,43 +379,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     }
 
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
-
-    public void PrepareLocomotionAnims(string bodyshapeId)
-    {
-        if (bodyshapeId.Contains(WearableLiterals.BodyShapes.MALE))
-        {
-            currentLocomotions = maleLocomotions;
-        }
-        else if (bodyshapeId.Contains(WearableLiterals.BodyShapes.FEMALE))
-        {
-            currentLocomotions = femaleLocomotions;
-        }
-
-        EquipEmote(currentLocomotions.idle.name, currentLocomotions.idle);
-        EquipEmote(currentLocomotions.walk.name, currentLocomotions.walk);
-        EquipEmote(currentLocomotions.run.name, currentLocomotions.run);
-        EquipEmote(currentLocomotions.jump.name, currentLocomotions.jump);
-        EquipEmote(currentLocomotions.fall.name, currentLocomotions.fall);
-    }
-
-    // AvatarSystem entry points
-    public bool Prepare(string bodyshapeId, GameObject container)
-    {
-        if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
-        {
-            Debug.LogError($"Couldn't find Armature for AnimatorLegacy in path: {transform.GetHierarchyPath()}");
-            return false;
-        }
-        Transform armatureParent = armature.parent;
-        animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
-        armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
-
-        PrepareLocomotionAnims(bodyshapeId);
-        SetIdleFrame();
-        animation.Sample();
-        InitializeAvatarAudioAndParticleHandlers(animation);
-        return true;
-    }
 
     public void PlayEmote(string emoteId, long timestamps) { SetExpressionValues(emoteId, timestamps); }
 
