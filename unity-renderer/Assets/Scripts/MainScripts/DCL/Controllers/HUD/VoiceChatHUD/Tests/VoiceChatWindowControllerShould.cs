@@ -158,17 +158,13 @@ public class VoiceChatWindowControllerShould
 
         // Assert
         voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
+        voiceChatBarComponentView.Received().SetAsJoined(isJoined);
 
-        if (isJoined)
-        {
-            voiceChatBarComponentView.Received(1).Show();
-        }
-        else
+        if (!isJoined)
         {
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
-            voiceChatBarComponentView.Received(1).Hide();
         }
 
         Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);

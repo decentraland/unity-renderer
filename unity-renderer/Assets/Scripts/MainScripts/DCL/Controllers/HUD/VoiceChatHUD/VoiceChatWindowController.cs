@@ -77,8 +77,8 @@ public class VoiceChatWindowController : IHUD
         voiceChatWindowView.SetNumberOfPlayers(0);
 
         voiceChatBarView = CreateVoiceChatBatView();
-        voiceChatBarView.Hide(instant: true);
-        voiceChatBarView.OnLeaveVoiceChat += LeaveVoiceChat;
+        voiceChatBarView.SetAsJoined(false);
+        voiceChatBarView.OnJoinVoiceChat += JoinVoiceChat;
 
         dataStore.player.otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
@@ -149,7 +149,7 @@ public class VoiceChatWindowController : IHUD
         }
 
         if (voiceChatBarView != null)
-            voiceChatBarView.OnLeaveVoiceChat -= LeaveVoiceChat;
+            voiceChatBarView.OnJoinVoiceChat -= JoinVoiceChat;
 
         dataStore.player.otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
         dataStore.player.otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
@@ -164,17 +164,16 @@ public class VoiceChatWindowController : IHUD
     internal void JoinVoiceChat(bool isJoined)
     { 
         voiceChatWindowView.SetAsJoined(isJoined);
+        voiceChatBarView.SetAsJoined(isJoined);
 
         if (isJoined)
         {
-            voiceChatBarView.Show();
             SetWhichPlayerIsTalking();
         }
         else
         {
             dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
             isOwnPLayerTalking = false;
-            voiceChatBarView.Hide();
         }
 
         this.isJoined = isJoined;
@@ -192,8 +191,6 @@ public class VoiceChatWindowController : IHUD
 
         dataStore.voiceChat.isJoinedToVoiceChat.Set(isJoined);
     }
-
-    internal void LeaveVoiceChat() { JoinVoiceChat(false); }
 
     internal void GoToCrowd() { WebInterface.GoToCrowd(); }
 
