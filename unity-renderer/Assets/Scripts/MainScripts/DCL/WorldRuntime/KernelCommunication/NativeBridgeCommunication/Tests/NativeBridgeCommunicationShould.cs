@@ -166,7 +166,8 @@ public class NativeBridgeCommunicationShould
         NativeBridgeCommunication.Query(payload);
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
-        string json1base = @"{""method"":""Query"",""payload"":{""queryType"":null,""payload"":{""sceneId"":""test-scene-id"",""sceneNumber"":1,""id"":""66"",""raycastType"":1,""ray"":{""origin"":{""x"":0.0,""y"":0.0,""z"":0.0},""direction"":{""x"":1.0,""y"":0.0,""z"":0.0},""distance"":10.0}}},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""sceneNumber"":1,""message"":null,""isUnreliable"":false}";
+        // TODO: add sceneNumber to the body of the payload
+        string json1base = @"{""method"":""Query"",""payload"":{""queryType"":null,""payload"":{""sceneId"":""test-scene-id"",""id"":""66"",""raycastType"":1,""ray"":{""origin"":{""x"":0.0,""y"":0.0,""z"":0.0},""direction"":{""x"":1.0,""y"":0.0,""z"":0.0},""distance"":10.0}}},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""sceneNumber"":1,""message"":null,""isUnreliable"":false}";
         Assert.AreEqual(json1base, json1);
     }
 
