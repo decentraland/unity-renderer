@@ -313,7 +313,7 @@ public class NativeBridgeCommunication : IKernelCommunication
         }
 
         message.sceneId = currentSceneId;
-        message.sceneNumber = sceneNumber;
+        message.sceneNumber = currentSceneNumber;
         message.tag = currentTag;
         message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
 
