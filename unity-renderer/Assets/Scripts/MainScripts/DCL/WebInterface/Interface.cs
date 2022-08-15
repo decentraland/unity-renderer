@@ -1334,7 +1334,7 @@ namespace DCL.Interface
 
         public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
 
-        public static void DisconnectVoiceChat() { SendMessage("DisconnectVoiceChat"); }
+        public static void LeaveVoiceChat() { SendMessage("LeaveVoiceChat"); }
 
         public static void SendSetVoiceChatRecording(bool recording)
         {

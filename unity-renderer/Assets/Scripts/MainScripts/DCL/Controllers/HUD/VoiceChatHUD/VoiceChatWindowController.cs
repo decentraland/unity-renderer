@@ -180,7 +180,7 @@ public class VoiceChatWindowController : IHUD
 
         if (!isJoined)
         {
-            WebInterface.DisconnectVoiceChat();
+            WebInterface.LeaveVoiceChat();
             socialAnalytics.SendVoiceChannelDisconnection();
         }
         else
