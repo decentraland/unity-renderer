@@ -45,7 +45,8 @@ namespace DCL.Bots
 
             CatalogController.wearableCatalog.Clear();
 
-            yield return WearablesFetchingHelper.GetRandomCollections(20, true, randomizedCollections);
+            // yield return WearablesFetchingHelper.GetRandomCollections(20, true, randomizedCollections);
+            yield return WearablesFetchingHelper.GetRandomCollections(3, true, randomizedCollections);
 
             List<WearableItem> wearableItems = new List<WearableItem>();
             yield return WearablesFetchingHelper.GetWearableItems(BuildRandomizedCollectionsURL(), wearableItems);
@@ -56,9 +57,10 @@ namespace DCL.Bots
         string BuildRandomizedCollectionsURL()
         {
             if (randomizedCollections.Count == 0)
-                return null;
+                return null; 
 
-            string finalUrl = WearablesFetchingHelper.WEARABLES_FETCH_URL;
+            // string finalUrl = WearablesFetchingHelper.WEARABLES_FETCH_URL;
+            string finalUrl = $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WearablesFetchingHelper.WEARABLES_FETCH_URL}";
 
             finalUrl += "collectionId=" + randomizedCollections[0];
             for (int i = 1; i < randomizedCollections.Count; i++)
@@ -124,15 +126,18 @@ namespace DCL.Bots
             yield return EnsureGlobalSceneAndCatalog();
 
             PatchWorldPosInstantiationConfig(config);
+            // yield break;
 
             Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
 
             Vector3 randomizedAreaPosition = new Vector3();
-            for (int i = 0; i < config.amount; i++)
-            {
-                randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
-                InstantiateBot(randomizedAreaPosition);
-            }
+            // for (int i = 0; i < config.amount; i++)
+            // {
+            //     randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
+            //     InstantiateBot(randomizedAreaPosition);
+            // }
+            randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
+            InstantiateBot(randomizedAreaPosition);
 
             Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
 
@@ -222,10 +227,13 @@ namespace DCL.Bots
                 wearables = GetRandomizedWearablesSet()
             };
 
+            position = Vector3.zero;
+            Debug.Log("PRAVS - BOT POS: " + position);
+
             globalScene.CreateEntity(entityId);
             globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
-
+            
             instantiatedBots.Add(entityId);
         }
 
