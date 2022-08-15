@@ -17,6 +17,7 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     {
         directChatList.Filter(search);
         publicChannelList.Filter(search);
+        UpdateEmptyState();
     }
 
     public void Filter(Func<PrivateChatEntry, bool> privateComparision,
@@ -24,12 +25,14 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     {
         directChatList.Filter(privateComparision);
         publicChannelList.Filter(publicComparision);
+        UpdateEmptyState();
     }
 
     public override void Filter(Func<BaseComponentView, bool> comparision)
     {
         directChatList.Filter(comparision);
         publicChannelList.Filter(comparision);
+        UpdateEmptyState();
     }
 
     public override int Count()
@@ -41,12 +44,14 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     {
         directChatList.Clear(releaseEntriesFromPool);
         publicChannelList.Clear(releaseEntriesFromPool);
+        UpdateEmptyState();
     }
 
     public override void Clear()
     {
         directChatList.Clear();
         publicChannelList.Clear();
+        UpdateEmptyState();
     }
 
     public override BaseComponentView Get(string key)
@@ -63,10 +68,16 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
 
     public override BaseComponentView Remove(string key)
     {
-        return (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
+        var view = (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
+        UpdateEmptyState();
+        return view;
     }
 
-    public void Set(PrivateChatEntry.PrivateChatEntryModel model) => directChatList.Set(model.userId, model);
+    public void Set(PrivateChatEntry.PrivateChatEntryModel model)
+    {
+        directChatList.Set(model.userId, model);
+        UpdateEmptyState();
+    }
 
     public void Export(CollapsablePublicChannelListComponentView publicChannelList,
         CollapsableDirectChatListComponentView privateChatList)
@@ -89,5 +100,7 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
         
         privateChatList.Clear(false);
         publicChannelList.Clear(false);
+        
+        UpdateEmptyState();
     }
 }

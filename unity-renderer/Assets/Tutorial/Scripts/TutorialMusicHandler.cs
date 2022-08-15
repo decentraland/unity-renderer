@@ -1,63 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class TutorialMusicHandler : MonoBehaviour
 {
     [SerializeField] AudioEvent tutorialMusic, avatarEditorMusic;
 
-    bool rendererIsReady = false, tutorialHasBeenEnabled = false;
-
     Coroutine fadeOut;
 
     private void Awake()
     {
-        CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
-        CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         avatarEditorMusic.OnPlay += OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop += OnAvatarEditorMusicStop;
     }
 
     private void OnDestroy()
     {
-        CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
-        CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
         avatarEditorMusic.OnPlay -= OnAvatarEditorMusicPlay;
         avatarEditorMusic.OnStop -= OnAvatarEditorMusicStop;
-    }
 
-    void OnRendererStateChange(bool current, bool previous)
-    {
-        rendererIsReady = current;
-        TryPlayingMusic();
-    }
-
-    private void TutorialActive_OnChange(bool current, bool previous)
-    {
-        if (current)
+        if (fadeOut != null)
         {
-            tutorialHasBeenEnabled = true;
-            TryPlayingMusic();
-        }
-        else
-        {
-            if (tutorialMusic.source.isPlaying)
-                fadeOut = CoroutineStarter.Start(tutorialMusic.FadeOut(3f));
-            tutorialHasBeenEnabled = false;
+            CoroutineStarter.Stop(fadeOut);
+            fadeOut = null;
         }
     }
+    public void StopTutorialMusic()
+    {
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+        
+        if (fadeOut != null)
+        {
+            CoroutineStarter.Stop(fadeOut);
+            fadeOut = null;
+        }
+        
+        if (tutorialMusic.source.isPlaying)
+            fadeOut = CoroutineStarter.Start(tutorialMusic.FadeOut(3f));
+    }
 
-    void TryPlayingMusic()
+    public void TryPlayingMusic()
     {
         if (DCL.Tutorial.TutorialController.i.userAlreadyDidTheTutorial)
             return;
 
-        if (rendererIsReady && tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)
+        if (!tutorialMusic.source.isPlaying)
         {
             if (fadeOut != null)
             {
                 CoroutineStarter.Stop(fadeOut);
             }
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             tutorialMusic.Play();
         }
     }
