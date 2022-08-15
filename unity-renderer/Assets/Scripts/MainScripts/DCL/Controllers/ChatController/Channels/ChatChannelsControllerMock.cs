@@ -96,6 +96,8 @@ namespace DCL.Chat.Channels
 
         public void Send(ChatMessage message)
         {
+            message.timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            
             if (IsChannelMessage(message))
             {
                 // simulate a response since the real controller does not support channel messages yet

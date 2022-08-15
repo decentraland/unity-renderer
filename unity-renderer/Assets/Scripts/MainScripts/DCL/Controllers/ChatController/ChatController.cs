@@ -48,7 +48,7 @@ public class ChatController : MonoBehaviour, IChatController
     //TODO (channels) Remove before merging, it is only for testing purposes
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             FakeChannelMessage();
         }
