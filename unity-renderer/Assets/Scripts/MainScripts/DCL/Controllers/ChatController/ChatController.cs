@@ -21,7 +21,7 @@ public class ChatController : MonoBehaviour, IChatController
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
-    private bool chatAlreadyInitialized = false;
+    private bool chatAlreadyInitialized;
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
@@ -43,15 +43,6 @@ public class ChatController : MonoBehaviour, IChatController
         channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, 0, 0, true, false,
             NEARBY_CHANNEL_DESCRIPTION,
             0);
-    }
-
-    //TODO (channels) Remove before merging, it is only for testing purposes
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            FakeChannelMessage();
-        }
     }
 
     [UsedImplicitly]
@@ -267,7 +258,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => 
         !string.IsNullOrEmpty(channelId) 
-            ? (unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0)
+            ? unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0
             : 0;
 
     public void CreateChannel(string channelId) => WebInterface.CreateChannel(channelId);
@@ -361,57 +352,5 @@ public class ChatController : MonoBehaviour, IChatController
 
         AddMessageToChatWindow(JsonUtility.ToJson(msg));
         AddMessageToChatWindow(JsonUtility.ToJson(msg2));
-    }
-
-    [ContextMenu("Fake Channel Message")]
-    public void FakeChannelMessage()
-    {
-        List<string> currentJoinedChannels = channels.Where(x => x.Value.Joined).Select(x => x.Key).ToList();
-        string randomChannelId = currentJoinedChannels[UnityEngine.Random.Range(0, currentJoinedChannels.Count)];
-
-        var characters = new[] { 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
-        var userId = "FakeUser-";
-        for (var x = 0; x < 4; x++)
-            userId += characters[UnityEngine.Random.Range(0, characters.Length)];
-
-        var profile = new UserProfileModel
-        {
-            userId = userId,
-            name = userId,
-            snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/seed/{userId}/256" }
-        };
-
-        UserProfileController.i.AddUserProfileToCatalog(profile);
-
-        var messagePayload = new ChatMessage(ChatMessage.Type.PUBLIC, userId, $"fake message {UnityEngine.Random.Range(0, 16000)}")
-        {
-            recipient = randomChannelId == "nearby" ? null : randomChannelId,
-            timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            isChannelMessage = true
-        };
-        AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
-
-        if (!unseenMessagesByChannel.ContainsKey(randomChannelId))
-            return;
-
-        var totalUnseenMessagesByChannelPayload = new UpdateTotalUnseenMessagesByChannelPayload
-        {
-            unseenChannelMessages = new[]
-            {
-                new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage
-                {
-                    channelId = randomChannelId,
-                    count = unseenMessagesByChannel[randomChannelId] + 1
-                }
-            }
-        };
-        UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(totalUnseenMessagesByChannelPayload));
-
-        var totalUnseenMessagesPayload = new UpdateTotalUnseenMessagesPayload
-        {
-            total = TotalUnseenMessages + 1
-        };
-        UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
     }
 }
