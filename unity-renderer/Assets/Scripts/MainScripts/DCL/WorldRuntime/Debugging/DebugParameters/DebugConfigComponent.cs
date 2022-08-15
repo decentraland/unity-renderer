@@ -151,6 +151,12 @@ namespace DCL
             if (baseUrlMode.Equals(BaseUrl.CUSTOM))
             {
                 baseUrl = this.customURL;
+                if (string.IsNullOrEmpty(this.customURL))
+                {
+                    Debug.LogError("Custom url cannot be empty");
+                    QuitGame();
+                    return;
+                }
             }
             else if (baseUrlMode.Equals(BaseUrl.LOCAL_HOST))
             {
