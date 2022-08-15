@@ -15,7 +15,6 @@ namespace DCL.Chat.HUD
             publicChannelList.Initialize(chatController);
         }
 
-
         public void Filter(string search)
         {
             directChatList.Filter(search);
@@ -68,8 +67,7 @@ namespace DCL.Chat.HUD
             directChatList.Dispose();
             publicChannelList.Dispose();
         }
-
-
+        
         public override BaseComponentView Remove(string key)
         {
             var entry = (BaseComponentView) directChatList.Remove(key) ?? publicChannelList.Remove(key);
@@ -107,8 +105,7 @@ namespace DCL.Chat.HUD
                 directChatList.Add(pair.Key, pair.Value);
             foreach (var pair in publicChannelList.Entries)
                 this.publicChannelList.Add(pair.Key, pair.Value);
-        
-
+            
             privateChatList.Clear(false);
             publicChannelList.Clear(false);
             UpdateEmptyState();
