@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
-using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_PrimitiveMesh: AssetPromise<Asset_PrimitiveMesh>
+    public class AssetPromise_PrimitiveMesh : AssetPromise<Asset_PrimitiveMesh>
     {
         public PrimitiveMeshModel model;
 
@@ -15,12 +13,12 @@ namespace DCL
         {
             this.model = model;
         }
-        
-        protected override void OnAfterLoadOrReuse() {  }
+
+        protected override void OnAfterLoadOrReuse() { }
 
         protected override void OnBeforeLoadOrReuse() { }
 
-        protected override void OnCancelLoading() {  }
+        protected override void OnCancelLoading() { }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
@@ -30,12 +28,26 @@ namespace DCL
                 asset.mesh = currentMesh;
                 OnSuccess?.Invoke();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 OnFail?.Invoke(e);
             }
         }
 
-        public override object GetId() {  return model; }
+        protected override bool AddToLibrary()
+        {
+            if (!library.Add(asset))
+            {
+                return false;
+            }
+
+            asset = library.Get(asset.id);
+            return true;
+        }
+
+        public override object GetId()
+        {
+            return model;
+        }
     }
 }
