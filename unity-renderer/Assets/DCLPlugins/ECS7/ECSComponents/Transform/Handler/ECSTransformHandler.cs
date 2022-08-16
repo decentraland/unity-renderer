@@ -47,7 +47,6 @@ namespace DCL.ECSComponents
                 for (int i = childrenCount - 1; i >= 0; i--)
                 {
                     long childId = entity.childrenId[i];
-                    entity.childrenId.RemoveAt(i);
 
                     if (!scene.entities.TryGetValue(childId, out IDCLEntity child))
                         continue;
@@ -58,6 +57,7 @@ namespace DCL.ECSComponents
                     // add child as orphan
                     ECSTransformUtils.orphanEntities[child] = new ECSTransformUtils.OrphanEntity(scene, child, child.parentId);
                 }
+                entity.childrenId.Clear();
             }
         }
 
