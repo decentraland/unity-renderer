@@ -29,6 +29,7 @@ namespace DCL
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
+        public StickersController stickersControllers;
         [SerializeField] private Transform avatarRevealContainer;
         [SerializeField] private GameObject armatureContainer;
 
@@ -364,7 +365,7 @@ namespace DCL
             avatar.AddVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
             playerNameContainer.SetActive(false);
-
+            stickersControllers.ToggleHideArea(true);
         }
 
         public void RemoveHideModifier()
@@ -372,6 +373,7 @@ namespace DCL
             avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(true);
             playerNameContainer.SetActive(true);
+            stickersControllers.ToggleHideArea(false);
         }
 
         public override void Cleanup()

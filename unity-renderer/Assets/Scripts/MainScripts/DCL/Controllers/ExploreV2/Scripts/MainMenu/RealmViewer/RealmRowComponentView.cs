@@ -43,7 +43,7 @@ public interface IRealmRowComponentView
     void SetOnHoverColor(Color color);
 }
 
-public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, IComponentModelConfig
+public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, IComponentModelConfig<RealmRowComponentModel>
 {
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
@@ -80,9 +80,9 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         onHoverColor = backgroundImage.color;
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(RealmRowComponentModel newModel)
     {
-        model = (RealmRowComponentModel)newModel;
+        model = newModel;
 
         InitializeFriendsTracker();
 

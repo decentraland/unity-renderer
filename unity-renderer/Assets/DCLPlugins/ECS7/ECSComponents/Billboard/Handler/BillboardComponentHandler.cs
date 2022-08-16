@@ -9,6 +9,7 @@ namespace DCL.ECSComponents
     public class BillboardComponentHandler : IECSComponentHandler<PBBillboard>
     {
         private readonly IUpdateEventHandler updateEventHandler;
+        private readonly DataStore_Player playerDataStore;
         
         private Transform entityTransform;
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
@@ -18,8 +19,9 @@ namespace DCL.ECSComponents
         private IParcelScene scene;
         private PBBillboard model;
         
-        public BillboardComponentHandler(IUpdateEventHandler updateEventHandler)
+        public BillboardComponentHandler(DataStore_Player playerDataStore, IUpdateEventHandler updateEventHandler)
         {
+            this.playerDataStore = playerDataStore;
             this.updateEventHandler = updateEventHandler;
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
@@ -53,10 +55,13 @@ namespace DCL.ECSComponents
 
             if (entityTransform == null)
                 return;
-            if (entityTransform.position == lastPosition)
+       
+            UnityEngine.Vector3 playerPosition = playerDataStore.playerUnityPosition.Get();
+            
+            if (playerPosition == lastPosition)
                 return;
 
-            lastPosition = entityTransform.position;
+            lastPosition = playerPosition;
 
             ChangeOrientation();
         }
@@ -68,17 +73,17 @@ namespace DCL.ECSComponents
         private UnityEngine.Vector3 GetLookAtVector()
         {
             UnityEngine.Vector3 lookAtDir =(cameraPosition - entityTransform.position);
-            
+
             // Note (Zak): This check is here to avoid normalizing twice if not needed
-            if (!(model.X && model.Y && model.Z))
+            if (!(model.GetX() && model.GetY() && model.GetZ()))
             {
                 lookAtDir.Normalize();
 
                 // Note (Zak): Model x,y,z are axis that we want to enable/disable
                 // while lookAtDir x,y,z are the components of the look-at vector
-                if (!model.X || model.Z)
+                if (!model.GetX() || model.GetZ())
                     lookAtDir.y = entityTransform.forward.y;
-                if (!model.Y)
+                if (!model.GetY())
                     lookAtDir.x = entityTransform.forward.x;
             }
 

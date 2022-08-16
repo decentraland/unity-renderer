@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
     public class Asset_AB : Asset
     {
         const string METADATA_FILENAME = "metadata.json";
+        const string METRICS_FILENAME = "metrics.json";
 
         private AssetBundle assetBundle;
         private Dictionary<string, List<Object>> assetsByExtension;
+        public AssetBundleMetrics metrics { get; private set; } = new AssetBundleMetrics { meshesEstimatedSize = 0, animationsEstimatedSize = 0 };
 
         public Asset_AB()
         {
@@ -78,6 +82,13 @@ namespace DCL
         public void SetAssetBundle(AssetBundle ab)
         {
             assetBundle = ab;
+        }
+
+        public void LoadMetrics()
+        {
+            var metricsFile = assetBundle.LoadAsset<TextAsset>(METRICS_FILENAME);
+            if (metricsFile != null)
+                metrics = JsonUtility.FromJson<AssetBundleMetrics>(metricsFile.text);
         }
 
         public TextAsset GetMetadata()
