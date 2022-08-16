@@ -21,8 +21,8 @@ public class ChatController : MonoBehaviour, IChatController
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
-    private bool chatAlreadyInitialized = false;
-    private static System.Random random = new System.Random();
+    private bool chatAlreadyInitialized;
+    private static Random random = new Random();
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
@@ -35,7 +35,6 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
-    public int TotalJoinedChannelCount => throw new NotImplementedException();
     public int TotalUnseenMessages { get; private set; }
 
     public void Awake()
@@ -267,8 +266,10 @@ public class ChatController : MonoBehaviour, IChatController
     public int GetAllocatedUnseenMessages(string userId) =>
         unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
 
-    public int GetAllocatedUnseenChannelMessages(string channelId) =>
-        unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0;
+    public int GetAllocatedUnseenChannelMessages(string channelId) => 
+        !string.IsNullOrEmpty(channelId) 
+            ? unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0
+            : 0;
 
     public void CreateChannel(string channelId) => WebInterface.CreateChannel(channelId);
 

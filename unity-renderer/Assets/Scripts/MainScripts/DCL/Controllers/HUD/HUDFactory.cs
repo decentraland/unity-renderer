@@ -38,9 +38,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i,
-                        UserProfileController.i),
+                    FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
@@ -59,22 +57,20 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.FRIENDS:
                 hudElement = new FriendsHUDController(DataStore.i,
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     DataStore.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
@@ -82,9 +78,9 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
-                    new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
+                    FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -94,7 +90,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PUBLIC_CHAT:
                 hudElement = new PublicChatWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
@@ -106,24 +102,24 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    ChatChannelsControllerMock.i,
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 hudElement = new LeaveChannelConfirmationWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();

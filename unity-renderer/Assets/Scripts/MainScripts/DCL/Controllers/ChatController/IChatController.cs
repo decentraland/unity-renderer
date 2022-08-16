@@ -16,7 +16,6 @@ public interface IChatController
     event Action<string, int> OnUserUnseenMessagesUpdated;
     event Action<string, int> OnChannelUnseenMessagesUpdated;
 
-    int TotalJoinedChannelCount { get; }
     int TotalUnseenMessages { get; }
 
     List<ChatMessage> GetAllocatedEntries();
