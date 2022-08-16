@@ -79,6 +79,8 @@ enum YGEdge {
 }
 
 message PBUiTransform {
+  int64 parent = 79;
+  
   YGPositionType position_type = 1;
 
   YGAlign align_content = 2;
