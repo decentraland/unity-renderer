@@ -26,8 +26,7 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             // If we remove an UITransform from a entity, it should have the root entity as parent
-            if(entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
-                entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
+            entity.parentId = SpecialEntityId.SCENE_ROOT_ENTITY;
             uiDataContainer.RemoveUITransform(scene,entity);
         }
         
