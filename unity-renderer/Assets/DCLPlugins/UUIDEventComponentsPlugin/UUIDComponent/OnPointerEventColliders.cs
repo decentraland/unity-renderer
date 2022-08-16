@@ -176,8 +176,7 @@ namespace DCL.Components
                     continue;
                 
                 GameObject onPointerEventGameObjectCollider = new GameObject(COLLIDER_NAME);
-
-                onPointerEventGameObjectCollider.name = COLLIDER_NAME;
+                
                 onPointerEventGameObjectCollider.layer = PhysicsLayers.onPointerEventLayer; 
                 onPointerEventGameObjectCollider.transform.SetParent(renderers[i].transform, false);
                 
