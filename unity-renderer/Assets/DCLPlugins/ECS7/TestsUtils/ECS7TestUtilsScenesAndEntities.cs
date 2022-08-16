@@ -102,9 +102,6 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         entity.gameObject = go;
         entity.parentId = 0;
 
-        // entity.OnRemoved
-        // entity.parentId
-
         return entity;
     }
 
