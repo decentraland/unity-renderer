@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -52,9 +53,9 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
 
     public void RequestOwnedEmotes(string userId)
     {
-        WebInterface.RequestWearables(
+        WebInterface.RequestEmotes(
             ownedByUser: userId,
-            wearableIds: null,
+            emoteIds: null,
             collectionIds: null,
             context: $"{userId}"
         );
@@ -69,7 +70,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
             ownedByUser: null,
             emoteIds: emotesToRequestThisFrame.ToArray(),
             collectionIds: null,
-            context: string.Join(",", emotesToRequestThisFrame.ToArray())
+            context: null
         );
 
 

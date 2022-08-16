@@ -14,9 +14,12 @@ namespace DCL.EquippedEmotes
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         internal DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
+        internal UserProfile ownUserProfile;
 
         public EquippedEmotesInitializerPlugin()
         {
+            ownUserProfile = UserProfile.GetOwnUserProfile();
+            ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
             LoadDefaultEquippedEmotes();
 
             LoadEquippedEmotesFromLocalStorage();
@@ -24,6 +27,19 @@ namespace DCL.EquippedEmotes
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded += OnEquippedEmoteAddedOrRemoved;
             emotesCustomizationDataStore.equippedEmotes.OnRemoved += OnEquippedEmoteAddedOrRemoved;
+        }
+
+        private void OnOwnUserProfileUpdated(UserProfile userProfile)
+        {
+            if (userProfile == null || userProfile.avatar == null || !DataStore.i.emotes.newFlowEnabled.Get())
+                return;
+
+            var equippedEmotes = new List<string> { null, null, null, null, null, null, null, null, null, null };
+            foreach (AvatarModel.AvatarEmoteEntry avatarEmoteEntry in userProfile.avatar.emotes)
+            {
+                equippedEmotes[avatarEmoteEntry.slot] = avatarEmoteEntry.urn;
+            }
+            SetEquippedEmotes(equippedEmotes);
         }
 
         internal List<string> GetDefaultEmotes()

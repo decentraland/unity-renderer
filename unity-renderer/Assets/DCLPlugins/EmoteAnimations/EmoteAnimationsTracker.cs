@@ -16,6 +16,7 @@ namespace DCL.Emotes
         internal readonly DataStore_Emotes dataStore;
         internal readonly EmoteAnimationLoaderFactory emoteAnimationLoaderFactory;
         internal readonly IWearableItemResolver wearableItemResolver;
+        private readonly IEmotesCatalogService emotesCatalogService;
 
         internal Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader> loaders = new Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader>();
 
@@ -23,13 +24,15 @@ namespace DCL.Emotes
 
         internal GameObject animationsModelsContainer;
 
-        public EmoteAnimationsTracker(DataStore_Emotes dataStore, EmoteAnimationLoaderFactory emoteAnimationLoaderFactory, IWearableItemResolver wearableItemResolver)
+        // Alex: While we are supporting the old Emotes flow, we need the wearableItemResolver
+        public EmoteAnimationsTracker(DataStore_Emotes dataStore, EmoteAnimationLoaderFactory emoteAnimationLoaderFactory, IWearableItemResolver wearableItemResolver, IEmotesCatalogService emotesCatalogService)
         {
             animationsModelsContainer = new GameObject("_EmoteAnimationsHolder");
             animationsModelsContainer.transform.position = EnvironmentSettings.MORDOR;
             this.dataStore = dataStore;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
             this.wearableItemResolver = wearableItemResolver;
+            this.emotesCatalogService = emotesCatalogService;
             this.dataStore.animations.Clear();
 
             InitializeEmbeddedEmotes();
@@ -54,7 +57,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.maleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), int.MaxValue);
+                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), 5000);
                     dataStore.animations.Add((MALE, embeddedEmote.id), embeddedEmote.maleAnimation);
                     loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -64,12 +67,12 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.femaleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), int.MaxValue);
+                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), 5000);
                     dataStore.animations.Add((FEMALE, embeddedEmote.id), embeddedEmote.femaleAnimation);
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
             }
-            Environment.i.serviceLocator.Get<IEmotesCatalogService>().EmbedEmotes(embeddedEmotes.emotes);
+            CatalogController.i.EmbedWearables(embeddedEmotes.emotes);
         }
 
         private void OnRefCountUpdated((string bodyshapeId, string emoteId) value, int refCount)
@@ -97,7 +100,11 @@ namespace DCL.Emotes
 
             try
             {
-                WearableItem emote = await wearableItemResolver.Resolve(emoteId, ct);
+                WearableItem emote;
+                if (dataStore.newFlowEnabled.Get())
+                    emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct);
+                else
+                    emote = await wearableItemResolver.Resolve(emoteId, ct);
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);

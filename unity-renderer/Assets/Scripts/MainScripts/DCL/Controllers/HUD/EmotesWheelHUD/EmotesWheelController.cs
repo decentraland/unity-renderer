@@ -41,10 +41,11 @@ namespace DCL.EmotesWheel
         private InputAction_Trigger auxShortcut9InputAction;
         private UserProfile userProfile;
         private BaseDictionary<string, WearableItem> catalog;
+        private readonly IEmotesCatalogService emoteCatalog;
         private bool ownedWearablesAlreadyRequested = false;
         private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
 
-        public EmotesWheelController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog)
+        public EmotesWheelController(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, IEmotesCatalogService emoteCatalog)
         {
             closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindow.OnTriggered += OnCloseWindowPressed;
@@ -62,6 +63,7 @@ namespace DCL.EmotesWheel
 
             this.userProfile = userProfile;
             this.catalog = catalog;
+            this.emoteCatalog = emoteCatalog;
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
             emoteAnimations.OnAdded += OnAnimationAdded;
@@ -91,30 +93,24 @@ namespace DCL.EmotesWheel
 
         private void UpdateEmoteSlots()
         {
-            if (catalog == null)
-                return;
-
             List<EmotesWheelView.EmoteSlotData> emotesToSet = new List<EmotesWheelView.EmoteSlotData>();
             foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
             {
                 if (equippedEmoteData != null)
                 {
-                    catalog.TryGetValue(equippedEmoteData.id, out WearableItem emoteItem);
+                    WearableItem emoteItem;
+                    if (DataStore.i.emotes.newFlowEnabled.Get())
+                        emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out emoteItem);
+                    else
+                        catalog.TryGetValue(equippedEmoteData.id, out emoteItem);
 
                     if (emoteItem != null)
                     {
-                        if (!emoteItem.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(emoteItem.id) == 0)
+                        emotesToSet.Add(new EmotesWheelView.EmoteSlotData
                         {
-                            emotesToSet.Add(null);
-                        }
-                        else
-                        {
-                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
-                            {
-                                emoteItem = emoteItem,
-                                thumbnailSprite = emoteItem.thumbnailSprite != null ? emoteItem.thumbnailSprite : equippedEmoteData.cachedThumbnail
-                            });
-                        }
+                            emoteItem = emoteItem,
+                            thumbnailSprite = emoteItem.thumbnailSprite != null ? emoteItem.thumbnailSprite : equippedEmoteData.cachedThumbnail
+                        });
                     }
                     else
                     {

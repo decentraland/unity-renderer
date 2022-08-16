@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Rendering;
 using UnityEngine;
@@ -32,7 +33,7 @@ namespace DCL
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate()));
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

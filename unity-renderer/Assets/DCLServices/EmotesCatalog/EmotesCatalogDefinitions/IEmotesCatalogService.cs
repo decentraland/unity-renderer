@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -6,8 +7,7 @@ using DCL.Helpers;
 
 public interface IEmotesCatalogService : IService
 {
-    void EmbedEmote(WearableItem embeddedEmote);
-    void EmbedEmotes(WearableItem[] embeddedEmotes);
+    bool TryGetLoadedEmote(string id, out WearableItem emote);
 
     Promise<WearableItem[]> RequestOwnedEmotes(string userId);
     UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default);

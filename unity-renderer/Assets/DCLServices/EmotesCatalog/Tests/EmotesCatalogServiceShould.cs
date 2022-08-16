@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Emotes;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,7 +18,7 @@ public class EmotesCatalogServiceShould
     public void SetUp()
     {
         bridge = Substitute.For<IEmotesCatalogBridge>();
-        catalog = new EmotesCatalogService(bridge);
+        catalog = new EmotesCatalogService(bridge, Array.Empty<WearableItem>());
         catalog.Initialize();
     }
 

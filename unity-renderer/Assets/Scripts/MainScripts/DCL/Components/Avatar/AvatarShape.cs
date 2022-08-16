@@ -77,7 +77,7 @@ namespace DCL
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             return new Avatar(
-                new AvatarCurator(new WearableItemResolver()),
+                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
                 visibility,
@@ -95,7 +95,7 @@ namespace DCL
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             return new AvatarWithHologram(
                     baseAvatar,
-                    new AvatarCurator(new WearableItemResolver()),
+                    new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                     new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                     animator,
                     visibility,
@@ -166,8 +166,11 @@ namespace DCL
             wearableItems.Add(model.bodyShape);
 
             //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            if (!DataStore.i.emotes.newFlowEnabled.Get())
+            {
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            }
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
@@ -185,7 +188,7 @@ namespace DCL
                     playerName.SetName(model.name);
                     playerName.Show(true);
                 }
-                avatar.Load(wearableItems, new AvatarSettings
+                avatar.Load(wearableItems, model.emotes.Select(x => x.urn).ToList() , new AvatarSettings
                 {
                     playerName = model.name,
                     bodyshapeId = model.bodyShape,
