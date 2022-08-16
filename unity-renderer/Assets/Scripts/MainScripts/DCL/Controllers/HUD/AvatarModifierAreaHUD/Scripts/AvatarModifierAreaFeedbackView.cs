@@ -77,6 +77,7 @@ namespace DCL.AvatarModifierAreaFeedback
         {
             if (isVisible) return;
             isVisible = true;
+            ResetAllTriggers();
             
             if (currentState.Equals(AvatarModifierAreaFeedbackState.NEVER_SHOWN))
             {
@@ -159,6 +160,14 @@ namespace DCL.AvatarModifierAreaFeedback
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        private void ResetAllTriggers()
+        {
+            messageAnimator.ResetTrigger(msgOutAnimationTrigger);
+            messageAnimator.ResetTrigger(msgInAnimationTrigger);
+            messageAnimator.ResetTrigger(iconInAnimationTrigger);
+            messageAnimator.ResetTrigger(iconOutAnimationTrigger);
         }
 
         
