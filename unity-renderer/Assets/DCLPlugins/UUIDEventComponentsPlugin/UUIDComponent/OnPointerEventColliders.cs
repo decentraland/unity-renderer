@@ -81,8 +81,6 @@ namespace DCL.Components
         MeshCollider CreateCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
-
-            go.name = COLLIDER_NAME;
             go.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
 
             var meshCollider = go.AddComponent<MeshCollider>();
@@ -192,7 +190,6 @@ namespace DCL.Components
                 
                 DataStore.i.ecs7.AddOnPointerCollider(entity.entityId, onPointerEventGameObjectCollider);
             }
-
         }
     }
 }
