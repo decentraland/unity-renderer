@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace ECSSystems.MaterialSystem
 {
@@ -45,13 +46,14 @@ namespace ECSSystems.MaterialSystem
                 IList<Renderer> renderers = texturizableModel.renderers;
                 Material material = materialModel.material;
 
-                for (int j = 0; j < renderers.Count; i++)
+                for (int j = 0; j < renderers.Count; j++)
                 {
-                    var renderer = renderers[i];
+                    Renderer renderer = renderers[j];
                     if (renderer.sharedMaterial != material)
                     {
                         renderer.sharedMaterial = material;
                     }
+                    renderer.shadowCastingMode = materialModel.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                 }
 
                 materialModel.dirty = false;

@@ -12,6 +12,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalMaterial
     {
         public Material material = null;
+        public bool castShadows = true;
         public bool dirty = true;
     }
 }
