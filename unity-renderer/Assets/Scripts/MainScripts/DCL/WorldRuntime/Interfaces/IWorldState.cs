@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL
 {
@@ -9,6 +10,7 @@ namespace DCL
     {
         HashSet<string> readyScenes { get; set; }
         Dictionary<string, IParcelScene> loadedScenes { get; set; }
+        Dictionary<Vector2Int, string> loadedScenesByCoordinate { get; set; }
         List<IParcelScene> scenesSortedByDistance { get; set; }
         List<string> globalSceneIds { get; set; }
         string currentSceneId { get; set; }
