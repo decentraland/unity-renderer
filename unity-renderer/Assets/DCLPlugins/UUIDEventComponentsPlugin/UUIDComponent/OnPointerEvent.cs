@@ -31,6 +31,7 @@ namespace DCL.Components
         public void SetColliders(IDCLEntity entity)
         {
             this.entity = entity;
+            //TODO: We should removed this function with the removal of ECS6.
             eventColliders.DeprecatedInitialize(entity);
         }
 

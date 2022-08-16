@@ -31,6 +31,7 @@ namespace DCL.Components
         }
 
         // This function should be deleted when we delete the old ECS6
+        [Obsolete("DeprecatedInitialize is deprecated, please use Initialize instead.")]
         public void DeprecatedInitialize(IDCLEntity entity)
         {
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
