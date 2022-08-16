@@ -16,7 +16,6 @@ namespace DCL.ECS7
         public const int GLTF_SHAPE = 1041;
         public const int ANIMATOR = 1042;
         public const int UI_TRANSFORM = 1050;
-        public const int UI_TEXT = 1052;
         public const int ON_POINTER_DOWN = 1060;
         public const int ON_POINTER_UP = 1061;
         public const int ON_POINTER_UP_RESULT = 1065;
