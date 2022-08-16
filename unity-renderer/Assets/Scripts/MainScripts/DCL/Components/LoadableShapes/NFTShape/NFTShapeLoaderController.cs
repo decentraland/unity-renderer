@@ -8,7 +8,7 @@ using NFTShape_Internal;
 
 public interface INFTShapeLoaderController
 {
-    Collider nftCollider { get; }
+    BoxCollider nftCollider { get; }
     Transform transform { get; }
 }
 
@@ -61,7 +61,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     private string darURLProtocol;
     private string darURLRegistry;
     private string darURLAsset;
-    public Collider nftCollider => this.collider;
+    public BoxCollider nftCollider => this.collider;
 
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;

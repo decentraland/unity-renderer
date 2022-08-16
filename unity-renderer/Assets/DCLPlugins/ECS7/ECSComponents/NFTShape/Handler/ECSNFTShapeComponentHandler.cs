@@ -123,7 +123,7 @@ namespace DCL.ECSComponents
             shapeFrame.SetVisibility(model.GetVisible());
             
             int layer = ECSComponentsUtils.CalculateCollidersLayer(model.GetWithCollisions(), model.GetIsPointerBlocker());
-            shapeFrame.SetLayerMask(layer);
+            shapeFrame.SetLayer(layer);
             UpdateBackgroundColor(model);
 
             this.model = model;

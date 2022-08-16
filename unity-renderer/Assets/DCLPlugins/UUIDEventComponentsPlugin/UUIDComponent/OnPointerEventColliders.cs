@@ -157,7 +157,7 @@ namespace DCL.Components
                 Collider collider = colliders[i];
 
                 if (collider != null)
-                    UnityEngine.Object.Destroy(collider);
+                    UnityEngine.Object.Destroy(collider.gameObject);
             }
 
             colliders = null;
@@ -191,7 +191,11 @@ namespace DCL.Components
                 onPointerEventGameObjectCollider.transform.SetParent(renderers[i].transform, false);
                 
                 colliders[i] = CreateCollider(renderers[i], onPointerEventGameObjectCollider);
-                AddColliderName(colliders[i]);
+                
+                if (colliders[i] is MeshCollider meshCollider)
+                    colliderNames[colliders[i]] = meshCollider.sharedMesh.name;
+                else
+                    colliderNames[colliders[i]] = colliders[i].gameObject.name;
                 
                 DataStore.i.ecs7.AddOnPointerCollider(entity.entityId, onPointerEventGameObjectCollider);
             }

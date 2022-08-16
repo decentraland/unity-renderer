@@ -39,8 +39,8 @@ namespace DCL.ECSComponents
         /// <summary>
         /// This will set the layer mask of the collider
         /// </summary>
-        /// <param name="layerMask"></param>
-        void SetLayerMask(int layerMask);
+        /// <param name="layer"></param>
+        void SetLayer(int layer);
         
         /// <summary>
         /// This set the image and creates the HQ Texture handler
@@ -69,7 +69,7 @@ namespace DCL.ECSComponents
         /// <summary>
         /// This will return the Collider of the frame
         /// </summary>
-        Collider nftCollider { get; }
+        BoxCollider nftCollider { get; }
     }
     
     public class NFTShapeFrame : MonoBehaviour, IShape, INFTShapeLoaderController, INFTShapeFrame
@@ -113,7 +113,7 @@ namespace DCL.ECSComponents
 
         public bool HasCollisions() { return boxCollider.enabled; }
         
-        public Collider nftCollider  => boxCollider;
+        public BoxCollider nftCollider  => boxCollider;
         
         public IShape shape => this;
         
@@ -135,9 +135,9 @@ namespace DCL.ECSComponents
             boxCollider.enabled = isActive;
         }
 
-        public void SetLayerMask(int layerMask)
+        public void SetLayer(int layer)
         {
-            boxCollider.gameObject.layer = layerMask;
+            boxCollider.gameObject.layer = layer;
         }
 
         public void SetImage(string name, string url, INFTAsset nftAsset)
