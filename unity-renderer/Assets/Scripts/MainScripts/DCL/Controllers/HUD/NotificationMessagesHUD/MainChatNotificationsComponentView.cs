@@ -212,8 +212,11 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     {
         chatNotificationComponentView.SetIsPrivate(false);
         chatNotificationComponentView.SetMessage(message.body);
-        chatNotificationComponentView.SetNotificationTargetId("~nearby");
-        chatNotificationComponentView.SetNotificationHeader("~nearby");
+
+        var channel = string.IsNullOrEmpty(message.recipient) ? "~nearby" : $"#{message.recipient}";
+
+        chatNotificationComponentView.SetNotificationTargetId(channel);
+        chatNotificationComponentView.SetNotificationHeader(channel);
         chatNotificationComponentView.SetNotificationSender(username);
     }
 
