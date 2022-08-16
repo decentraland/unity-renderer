@@ -70,7 +70,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -112,7 +113,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
