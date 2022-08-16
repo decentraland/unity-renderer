@@ -129,5 +129,40 @@ namespace AssetPromiseKeeper_Material_Tests
 
             Assert.IsTrue(loadedAsset3.material == loadedAsset4.material);
         }
+        
+        [UnityTest]
+        public IEnumerator KeepRefCountCorrectly()
+        {
+            var model = new MaterialModel
+            {
+                albedoTexture = CreateTextureModel(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear),
+                metallic = 0,
+                roughness = 1,
+            };            
+            var prom = new AssetPromise_Material(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            var prom2 = new AssetPromise_Material(model);
+            keeper.Keep(prom2);
+            yield return prom2;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+
+            keeper.Forget(prom);
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            prom = new AssetPromise_Material(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+            keeper.Forget(prom);
+            keeper.Forget(prom2);
+
+            Assert.AreEqual(0, keeper.library.masterAssets.Count);
+        }        
     }
 }

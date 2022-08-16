@@ -59,6 +59,17 @@ namespace DCL
         }
         
         public override object GetId() { return model; }
+        
+        protected override bool AddToLibrary()
+        {
+            if (!library.Add(asset))
+            {
+                return false;
+            }
+
+            asset = library.Get(asset.id);
+            return true;
+        }        
 
         private IEnumerator CreateMaterial(MaterialModel model, Action OnSuccess, Action<Exception> OnFail)
         {
