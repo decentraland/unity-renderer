@@ -11,6 +11,7 @@ namespace DCL.CRDT
         private readonly ECSComponentsManager ecsManager;
 
         private bool sceneAdded = false;
+        private bool disposed = false;
         private readonly IList<IParcelScene> loadedScenes;
 
         public CRDTProtocol crdtProtocol { get; }
@@ -25,7 +26,17 @@ namespace DCL.CRDT
 
         public void Dispose()
         {
+            disposed = true;
             loadedScenes.Remove(ownerScene);
+            using (var entities = ownerScene.entities.Values.GetEnumerator())
+            {
+                while (entities.MoveNext())
+                {
+                    var entity = entities.Current;
+                    entity.OnRemoved -= OnEntityRemoved;
+                    ecsManager.RemoveAllComponents(ownerScene, entity);
+                }
+            }
         }
 
         public void Execute(CRDTMessage crdtMessage)
@@ -51,6 +62,9 @@ namespace DCL.CRDT
 
         public void ExecuteWithoutStoringState(long entityId, int componentId, object data)
         {
+            if (disposed)
+                return;
+
             // null data means to remove component, not null data means to update or create
             if (data != null)
             {
@@ -70,9 +84,7 @@ namespace DCL.CRDT
 
         private void RemoveComponent(IParcelScene scene, long entityId, int componentId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -89,12 +101,12 @@ namespace DCL.CRDT
 
         private IDCLEntity GetOrCreateEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity != null)
+            if (scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return entity;
             }
 
+            // CreateEntity internally adds entity to `scene.entities`
             entity = scene.CreateEntity(entityId);
             entity.OnRemoved += OnEntityRemoved;
             return entity;
@@ -102,8 +114,7 @@ namespace DCL.CRDT
 
         private void RemoveEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -116,6 +127,7 @@ namespace DCL.CRDT
 
         private void OnEntityRemoved(IDCLEntity entity)
         {
+            entity.OnRemoved -= OnEntityRemoved;
             ecsManager.RemoveAllComponents(ownerScene, entity);
         }
     }
