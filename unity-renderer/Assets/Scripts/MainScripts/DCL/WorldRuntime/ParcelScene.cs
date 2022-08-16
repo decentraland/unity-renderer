@@ -203,7 +203,6 @@ namespace DCL.Controllers
                 }
             }
             
-            crdtExecutor?.Dispose();
             isReleased = true;
         }
 
