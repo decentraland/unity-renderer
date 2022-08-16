@@ -230,6 +230,8 @@ namespace DCL
             
             globalSceneIds.Add(sceneId);
             globalScenes.Add(newScene);
+
+            AddScene(sceneId, newScene);
         }
 
         public void Dispose()
