@@ -107,9 +107,8 @@ namespace DCL.EmotesCustomization.Tests
             emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string>());
             string testId1 = "TestId1";
             string testId2 = "TestId2";
-
-            catalog.Add(
-                testId1, 
+            WearableItem[] emotes = new []
+            {
                 new WearableItem
                 {
                     id = testId1,
@@ -123,7 +122,8 @@ namespace DCL.EmotesCustomization.Tests
                     emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
                     data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
                     i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
-                });
+                }
+            };
 
             // Act
             emotesCustomizationComponentController.SetEmotes(emotes);
@@ -140,6 +140,7 @@ namespace DCL.EmotesCustomization.Tests
             // Arrange
             string emoteId = "TestId";
             EmoteCardComponentView testEmoteCard = new GameObject().AddComponent<EmoteCardComponentView>();
+            emotesCustomizationComponentController.SetEquippedBodyShape("bodyShapeId");
 
             emotesCustomizationComponentController.emotesDataStore.animations.Add(("bodyShapeId", emoteId), new AnimationClip());
             testEmoteCard.model = new EmoteCardComponentModel { isLoading = true };
@@ -193,8 +194,9 @@ namespace DCL.EmotesCustomization.Tests
             string testId1 = "TestId1";
             string testId2 = "TestId2";
 
-            catalog.Add(
-                testId1,
+            WearableItem[] emotes = new []
+            {
+            
                 new WearableItem
                 {
                     id = testId1,
@@ -208,7 +210,8 @@ namespace DCL.EmotesCustomization.Tests
                     emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
                     data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
                     i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
-                });
+                }
+            };
 
             emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string> { testId1, testId2 });
 

@@ -113,6 +113,8 @@ namespace DCL.EquippedEmotes
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded -= OnEquippedEmoteAddedOrRemoved;
             emotesCustomizationDataStore.equippedEmotes.OnRemoved -= OnEquippedEmoteAddedOrRemoved;
+            if (ownUserProfile != null)
+                ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
         }
     }
 }

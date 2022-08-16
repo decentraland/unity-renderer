@@ -325,4 +325,18 @@ public class EmotesCatalogServiceShould
         Assert.IsFalse(catalog.promises.ContainsKey("id1"));
         Assert.IsFalse(catalog.promises.ContainsKey("id2"));
     });
+
+    [Test]
+    public void EmbedEmotes()
+    {
+        WearableItem[] embededEmotes = new [] { new WearableItem { id = "id1" }, new WearableItem { id = "id2" }, new WearableItem { id = "id3" } };
+        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), embededEmotes);
+
+        Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
+        Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);
+        Assert.AreEqual(catalog.emotes["id3"], embededEmotes[2]);
+        Assert.AreEqual(catalog.emotesOnUse["id1"], int.MaxValue);
+        Assert.AreEqual(catalog.emotesOnUse["id2"], int.MaxValue);
+        Assert.AreEqual(catalog.emotesOnUse["id3"], int.MaxValue);
+    }
 }
