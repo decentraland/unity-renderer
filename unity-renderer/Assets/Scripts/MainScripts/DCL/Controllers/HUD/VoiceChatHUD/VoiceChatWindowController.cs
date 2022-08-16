@@ -166,11 +166,17 @@ public class VoiceChatWindowController : IHUD
     internal void CloseView() { SetVisibility(false); }
 
     internal void RequestJoinVoiceChat(bool isJoined)
-    { 
+    {
         if (isJoined)
+        {
             WebInterface.JoinVoiceChat();
+            socialAnalytics.SendVoiceChannelConnection(voiceChatWindowView.numberOfPlayers);
+        }
         else
+        {
             WebInterface.LeaveVoiceChat();
+            socialAnalytics.SendVoiceChannelDisconnection();
+        }
     }
 
     internal void OnVoiceChatStatusUpdated(bool isJoined, bool previous)
@@ -181,13 +187,11 @@ public class VoiceChatWindowController : IHUD
         if (isJoined)
         {
             SetWhichPlayerIsTalking();
-            socialAnalytics.SendVoiceChannelConnection(voiceChatWindowView.numberOfPlayers);
         }
         else
         {
             dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
             isOwnPLayerTalking = false;
-            socialAnalytics.SendVoiceChannelDisconnection();
         }
 
         this.isJoined = isJoined;
