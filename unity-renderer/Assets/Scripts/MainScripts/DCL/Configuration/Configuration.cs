@@ -222,12 +222,12 @@ namespace DCL.Configuration
 
         // Layers related to the Avatar
         public static readonly int characterLayer = LayerMask.NameToLayer("CharacterController");
-        public static readonly int collisionsWithoutPointerEvent = LayerMask.NameToLayer("CollisionsWithoutPointerEvent");
+        public static readonly int collisionsWithCharacterLayer = LayerMask.NameToLayer("CollisionWithCharacter");
         public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
 
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
                                                                        & ~(1 << characterLayer)
-                                                                       & ~(1 << collisionsWithoutPointerEvent);
+                                                                       & ~(1 << collisionsWithCharacterLayer);
 
         public static int friendsHUDPlayerMenu = LayerMask.NameToLayer("FriendsHUDPlayerMenu");
         public static int playerInfoCardMenu = LayerMask.NameToLayer("PlayerInfoCardMenu");

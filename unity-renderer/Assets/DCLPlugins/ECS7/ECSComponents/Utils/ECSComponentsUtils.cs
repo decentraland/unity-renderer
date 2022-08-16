@@ -175,7 +175,7 @@ public static class ECSComponentsUtils
         if (!withCollisions && isPointerBlocker)
             return PhysicsLayers.onPointerEventLayer;
         if (withCollisions && !isPointerBlocker)
-            return PhysicsLayers.collisionsWithoutPointerEvent;
+            return PhysicsLayers.collisionsWithCharacterLayer;
 
         return PhysicsLayers.defaultLayer;
     }
