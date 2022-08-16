@@ -60,6 +60,7 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig<Private
     {
         userNameLabel.text = model.userName;
         lastMessageLabel.text = model.lastMessage;
+        lastMessageLabel.gameObject.SetActive(!string.IsNullOrEmpty(model.lastMessage));
         SetBlockStatus(model.isBlocked);
         SetPresence(model.isOnline);
         unreadNotifications.Initialize(chatController, model.userId);
