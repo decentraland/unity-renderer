@@ -39,7 +39,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
         userProfileBridge.GetOwn().Returns(ownProfile);
 
-        controller = new TaskbarHUDController();
+        controller = new TaskbarHUDController(chatController);
         controller.Initialize(null);
         view = controller.view;
 

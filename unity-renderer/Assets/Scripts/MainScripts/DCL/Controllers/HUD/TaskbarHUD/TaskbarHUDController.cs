@@ -7,14 +7,14 @@ using UnityEngine.EventSystems;
 
 public class TaskbarHUDController : IHUD
 {
+    private readonly IChatController chatController;
+
     [Serializable]
     public struct Configuration
     {
         public bool enableVoiceChat;
         public bool enableQuestPanel;
     }
-
-    private const string NEARBY_NAME = "~nearby";
 
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
@@ -48,6 +48,11 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<Transform> notificationPanelTransform => DataStore.i.HUDs.notificationPanelTransform;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
+
+    public TaskbarHUDController(IChatController chatController)
+    {
+        this.chatController = chatController;
+    }
 
     protected virtual TaskbarHUDView CreateView()
     {
@@ -656,9 +661,13 @@ public class TaskbarHUDController : IHUD
     }
 
     private void OpenClickedChat(string chatId)
-    { 
-        if(chatId == NEARBY_NAME)
-            OpenPublicChat(NEARBY_NAME, true);
+    {
+        const string nearbyChannelId = "nearby";
+        
+        if (chatId == nearbyChannelId)
+            OpenPublicChat(nearbyChannelId, true);
+        else if (chatController.GetAllocatedChannel(chatId) != null)
+            OpenChannelChat(chatId);
         else
             OpenPrivateChat(chatId);
     }
