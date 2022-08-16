@@ -157,7 +157,7 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.OnVoiceChatStatusUpdated(isJoined, false);
 
         // Assert
-        voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
+        voiceChatWindowComponentView.Received().SetAsJoined(isJoined);
         voiceChatBarComponentView.Received().SetAsJoined(isJoined);
 
         if (isJoined)
@@ -169,7 +169,7 @@ public class VoiceChatWindowControllerShould
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
-            socialAnalytics.Received(1).SendVoiceChannelDisconnection();
+            socialAnalytics.Received().SendVoiceChannelDisconnection();
         }
 
         Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);
