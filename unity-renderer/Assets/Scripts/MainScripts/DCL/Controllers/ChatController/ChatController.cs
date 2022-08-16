@@ -177,15 +177,6 @@ public class ChatController : MonoBehaviour, IChatController
         OnAddMessage?.Invoke(message);
     }
 
-    public void Update()
-    {
-        //TODO remove before merging
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            FakePublicMessage();
-        }
-    }
-
     // called by kernel
     [UsedImplicitly]
     public void AddChatMessages(string jsonMessage)
