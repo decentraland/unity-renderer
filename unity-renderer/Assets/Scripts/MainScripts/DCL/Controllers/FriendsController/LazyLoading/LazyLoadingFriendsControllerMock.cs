@@ -8,10 +8,10 @@ using Random = UnityEngine.Random;
 
 public class LazyLoadingFriendsControllerMock : IFriendsController
 {
-    private const int MAX_AMOUNT_OF_FAKE_FRIENDS = 130;
-    private const int TOTAL_RECEIVED_REQUESTS = 14;
-    private const int TOTAL_SENT_REQUESTS = 18;
-    private const int TOTAL_FRIENDS = 46;
+    private const int MAX_AMOUNT_OF_FAKE_FRIENDS = 0;
+    private const int TOTAL_RECEIVED_REQUESTS = 0;
+    private const int TOTAL_SENT_REQUESTS = 0;
+    private const int TOTAL_FRIENDS = 0;
 
     private readonly FriendsController controller;
     private readonly UserProfileController userProfileController;

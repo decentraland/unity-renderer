@@ -18,7 +18,6 @@ public class ChatController_Mock : IChatController
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
-    public int TotalJoinedChannelCount { get; }
     public int TotalUnseenMessages { get; }
 
     public List<ChatMessage> GetAllocatedEntries() { return entries; }
