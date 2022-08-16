@@ -73,8 +73,8 @@ namespace DCL.Components
         
         public static void CapTransformGlobalValuesToMax(Transform transform)
         {
-            bool positionOutsideBoundaries = transform.position.magnitude > MAX_TRANSFORM_VALUE;
-            bool scaleOutsideBoundaries = transform.lossyScale.magnitude > MAX_TRANSFORM_VALUE;
+            bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
+            bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
             
             if (positionOutsideBoundaries || scaleOutsideBoundaries)
             {
@@ -104,7 +104,7 @@ namespace DCL.Components
                         newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
                 }
                 
-                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, true);
+                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
             }
         }
         
