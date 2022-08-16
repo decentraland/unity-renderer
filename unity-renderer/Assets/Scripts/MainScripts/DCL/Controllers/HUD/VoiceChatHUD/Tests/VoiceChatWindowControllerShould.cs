@@ -154,25 +154,25 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
-        voiceChatWindowController.JoinVoiceChat(isJoined);
+        voiceChatWindowController.OnVoiceChatStatusUpdated(isJoined, false);
 
         // Assert
         voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
         voiceChatBarComponentView.Received().SetAsJoined(isJoined);
 
-        if (!isJoined)
+        if (isJoined)
+        {
+            socialAnalytics.Received(1).SendVoiceChannelConnection(1);
+        }
+        else
         {
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
+            socialAnalytics.Received(1).SendVoiceChannelDisconnection();
         }
 
         Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);
-
-        if (!isJoined)
-            socialAnalytics.Received(1).SendVoiceChannelDisconnection();
-        else
-            socialAnalytics.Received(1).SendVoiceChannelConnection(1);
     }
 
     [Test]
