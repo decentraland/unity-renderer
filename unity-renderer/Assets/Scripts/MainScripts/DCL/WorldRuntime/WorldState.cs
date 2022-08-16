@@ -1,7 +1,6 @@
 using DCL.Controllers;
-using DCL.Helpers;
 using System.Collections.Generic;
-using DCL.Components;
+using DCL.Configuration;
 using DCL.Models;
 using UnityEngine;
 
@@ -9,22 +8,41 @@ namespace DCL
 {
     public class WorldState : IWorldState
     {
-        public HashSet<string> readyScenes { get; set; } = new HashSet<string>();
-        public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
-        public Dictionary<Vector2Int, string> loadedScenesByCoordinate { get; set; } = new Dictionary<Vector2Int, string>();
-        public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
-        public List<string> globalSceneIds { get; set; } = new List<string>();
-        public string currentSceneId { get; set; } = null;
+        private Dictionary<string, IParcelScene> loadedScenes { get; } = new Dictionary<string, IParcelScene>();
+        private Dictionary<Vector2Int, string> loadedScenesByCoordinate { get; } = new Dictionary<Vector2Int, string>();
+        private List<IParcelScene> scenesSortedByDistance { get; } = new List<IParcelScene>();
+        private List<string> globalSceneIds { get; } = new List<string>();
+        private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
+        private readonly List<IParcelScene> globalScenes = new List<IParcelScene>();
+        private string currentSceneId;
+        
+        public string GetCurrentSceneId() => currentSceneId;
+        
+        public IEnumerable<KeyValuePair<string, IParcelScene>> GetLoadedScenes() => loadedScenes;
 
-        public IParcelScene GetScene(string id)
+        public List<IParcelScene> GetGlobalScenes() => globalScenes;
+        
+        public List<IParcelScene> GetScenesSortedByDistance() => scenesSortedByDistance;
+        
+        public IParcelScene GetScene(Vector2Int coords)
         {
-            if (!Contains(id))
+            var id = GetSceneIdByCoords(coords);
+            
+            if (!ContainsScene(id))
                 return null;
 
             return loadedScenes[id];
         }
 
-        public bool Contains(string id)
+        public IParcelScene GetScene(string id)
+        {
+            if (!ContainsScene(id))
+                return null;
+
+            return loadedScenes[id];
+        }
+
+        public bool ContainsScene(string id)
         {
             if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
                 return false;
@@ -109,6 +127,109 @@ namespace DCL
                 return;
             
             attachedLoaders.Remove(entity.meshRootGameObject);
+        }
+        
+        public string GetSceneIdByCoords(Vector2Int coords)
+        {
+            if (loadedScenesByCoordinate.ContainsKey(coords))
+                return loadedScenesByCoordinate[coords];
+            
+            return null;
+        }
+        
+        public void SortScenesByDistance(Vector2Int position)
+        {
+            currentSceneId = null;
+            scenesSortedByDistance.Sort((sceneA, sceneB) =>
+            {
+                sortAuxiliaryVector = sceneA.sceneData.basePosition - position;
+                int dist1 = sortAuxiliaryVector.sqrMagnitude;
+
+                sortAuxiliaryVector = sceneB.sceneData.basePosition - position;
+                int dist2 = sortAuxiliaryVector.sqrMagnitude;
+
+                return dist1 - dist2;
+            });
+
+            using var iterator = scenesSortedByDistance.GetEnumerator();
+
+            while (iterator.MoveNext())
+            {
+                IParcelScene scene = iterator.Current;
+
+                if (scene == null)
+                    continue;
+
+                bool characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
+                bool isGlobalScene = globalSceneIds.Contains(scene.sceneData.id);
+
+                if (isGlobalScene || !characterIsInsideScene)
+                    continue;
+
+                currentSceneId = scene.sceneData.id;
+
+                break;
+            }
+
+        }
+        
+        public void AddScene(string id, IParcelScene newScene)
+        {
+            if (loadedScenes.ContainsKey(id))
+            {
+                Debug.LogWarning($"This scene already exists! {id}");
+                return;
+            }
+            
+            loadedScenes.Add(id, newScene);
+            
+            foreach (Vector2Int parcelPosition in newScene.parcels)
+            {
+                if (loadedScenesByCoordinate.ContainsKey(parcelPosition) && loadedScenesByCoordinate[parcelPosition] != id)
+                {
+                    Debug.LogWarning($"[{parcelPosition}] different id? original: {loadedScenesByCoordinate[parcelPosition]} new: {id}");
+                }
+                loadedScenesByCoordinate[parcelPosition] = id;
+            }
+                
+            scenesSortedByDistance.Add(newScene);
+
+            if (currentSceneId == null)
+            {
+                currentSceneId = id;
+            }
+        }
+        
+        public void RemoveScene(string id)
+        {
+            IParcelScene loadedScene = loadedScenes[id];
+
+            foreach (Vector2Int sceneParcel in loadedScene.parcels)
+            {
+                loadedScenesByCoordinate.Remove(sceneParcel);
+            }
+            
+            scenesSortedByDistance.Remove(loadedScene);
+            
+            loadedScenes.Remove(id);
+            globalSceneIds.Remove(id);
+
+            if (globalScenes.Contains(loadedScene))
+            {
+                globalScenes.Remove(loadedScene);
+            }
+        }
+        
+        public void AddGlobalScene(string sceneId, IParcelScene newScene)
+        {
+            if (globalSceneIds.Contains(sceneId))
+            {
+                Debug.LogWarning($"This GLOBAL scene already exists! {sceneId}");
+                return;
+            }
+            
+            globalSceneIds.Add(sceneId);
+            globalScenes.Add(newScene);
         }
 
         public void Dispose()

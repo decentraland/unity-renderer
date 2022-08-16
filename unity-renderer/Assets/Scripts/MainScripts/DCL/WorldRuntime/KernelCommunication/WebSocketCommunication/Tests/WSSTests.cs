@@ -91,9 +91,9 @@ namespace Tests
 
                 yield return null;
 
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID),
+                Assert.IsTrue(DCL.Environment.i.world.state.ContainsScene(loadedSceneID),
                     "Expected loadedScene not found!");
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes[loadedSceneID] != null,
+                Assert.IsTrue(DCL.Environment.i.world.state.GetScene(loadedSceneID) != null,
                     "Expected loadedScene found but was null!!!");
             }
 

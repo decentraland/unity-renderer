@@ -48,8 +48,6 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         uiComponentsPlugin = new UIComponentsPlugin();
         uiRefresherPlugin = new UIRefresherPlugin();
 
-        DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
-
         VisualTestUtils.snapshotIndex = 0;
 
         VisualTestUtils.SetTestingRenderSettings();

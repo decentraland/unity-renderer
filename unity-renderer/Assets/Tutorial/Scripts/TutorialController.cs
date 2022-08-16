@@ -218,7 +218,7 @@ namespace DCL.Tutorial
 
             if (Environment.i != null && Environment.i.world != null)
             {
-                WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "end");
+                WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneId(), "tutorial", "end");
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -601,7 +601,7 @@ namespace DCL.Tutorial
         {
             IWorldState worldState = Environment.i.world.state;
 
-            if (worldState == null || worldState.currentSceneId == null)
+            if (worldState == null || worldState.GetCurrentSceneId() == null)
                 return false;
 
             return true;
@@ -614,14 +614,12 @@ namespace DCL.Tutorial
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (worldState == null || worldState.currentSceneId == null)
+            if (worldState == null || worldState.GetCurrentSceneId() == null)
                 return false;
 
             Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
 
-            IParcelScene currentScene = null;
-            if (worldState.loadedScenes != null)
-                currentScene = worldState.loadedScenes[worldState.currentSceneId];
+            var currentScene = worldState.GetScene(worldState.GetCurrentSceneId());
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;

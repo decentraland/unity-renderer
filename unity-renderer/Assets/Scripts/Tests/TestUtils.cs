@@ -1298,15 +1298,6 @@ namespace DCL.Helpers
                 data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
             }
 
-            if (Environment.i.world.state.loadedScenes != null)
-            {
-                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
-                {
-                    Debug.LogWarning($"Scene {data.id} is already loaded.");
-                    return Environment.i.world.state.loadedScenes[data.id] as ParcelScene;
-                }
-            }
-
             var go = new GameObject();
             var newScene = go.AddComponent<ParcelScene>();
             newScene.isTestScene = true;
@@ -1315,10 +1306,7 @@ namespace DCL.Helpers
 
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
-
-            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
-            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
-
+            
             return newScene;
         }
 
