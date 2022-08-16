@@ -74,7 +74,8 @@ public class HUDFactory : IHUDFactory
                     // TODO (lazy loading): Pass FriendsController.i after kernel integration
                     new LazyLoadingFriendsControllerMock(FriendsController.i, UserProfileController.i),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i));
+                    new ChatChannelsControllerMock(ChatController.i, UserProfileController.i),
+                    DataStore.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(

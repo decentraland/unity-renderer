@@ -34,7 +34,6 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public string notificationTargetId;
     private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
     private float startingXPosition;
-    private CancellationTokenSource ct = new CancellationTokenSource();
 
     public void Configure(ChatNotificationMessageComponentModel newModel)
     {

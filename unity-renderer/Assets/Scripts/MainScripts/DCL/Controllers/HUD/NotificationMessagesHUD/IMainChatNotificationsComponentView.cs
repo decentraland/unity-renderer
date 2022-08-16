@@ -9,7 +9,7 @@ public interface IMainChatNotificationsComponentView
     event Action<bool> OnPanelFocus;
 
     Transform GetPanelTransform();
-    ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null);
+    void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null);
     void Show(bool instant = false);
     void Hide(bool instant = false);
     void ShowNotifications();

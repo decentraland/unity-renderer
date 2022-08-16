@@ -34,8 +34,8 @@ public class PublicChatWindowController : IHUD
     private string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
-    internal BaseVariable<Transform> notificationPanelTransform => DataStore.i.HUDs.notificationPanelTransform;
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    internal BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
 
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,

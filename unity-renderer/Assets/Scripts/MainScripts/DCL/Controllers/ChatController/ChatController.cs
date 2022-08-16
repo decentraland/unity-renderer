@@ -22,6 +22,7 @@ public class ChatController : MonoBehaviour, IChatController
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private readonly Random randomizer = new Random();
     private bool chatAlreadyInitialized = false;
+    private static System.Random random = new System.Random();
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
@@ -249,9 +250,6 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
-
-    //public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
-    private static System.Random random = new System.Random();
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
 

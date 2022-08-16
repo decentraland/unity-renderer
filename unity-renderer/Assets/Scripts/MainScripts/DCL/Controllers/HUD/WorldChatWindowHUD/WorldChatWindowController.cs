@@ -19,10 +19,11 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
+    private readonly DataStore dataStore; 
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private int hiddenDMs;
     private string currentSearch = "";
@@ -47,11 +48,13 @@ public class WorldChatWindowController : IHUD
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IChatController chatController)
+        IChatController chatController,
+        DataStore dataStore) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
+        this.dataStore = dataStore;
     }
 
     public void Initialize(IWorldChatWindowView view)

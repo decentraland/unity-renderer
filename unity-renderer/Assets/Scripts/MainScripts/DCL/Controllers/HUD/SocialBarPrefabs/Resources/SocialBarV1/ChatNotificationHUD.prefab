@@ -33,6 +33,7 @@ RectTransform:
   m_Children:
   - {fileID: 6327185566191944751}
   - {fileID: 8953925092199699313}
+  - {fileID: 7015902557440705875}
   m_Father: {fileID: 8461125913396281115}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -174,6 +175,7 @@ MonoBehaviour:
   scrollRectangle: {fileID: 7808591501641491551}
   notificationButton: {fileID: 6715319879785752075}
   panelAnimator: {fileID: 1549506075622473605}
+  scrollbarAnimator: {fileID: 6978855927224979334}
   areOtherPanelsOpen: 0
 --- !u!1 &492256692246249359
 GameObject:
@@ -188,6 +190,8 @@ GameObject:
   - component: {fileID: 2671059572199818111}
   - component: {fileID: 4726067683070074439}
   - component: {fileID: 3013135254997361945}
+  - component: {fileID: 7258387816903423085}
+  - component: {fileID: 6978855927224979334}
   m_Layer: 0
   m_Name: ScrollbarVertical
   m_TagString: Untagged
@@ -207,13 +211,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3559756217827799538}
-  m_Father: {fileID: 3174200461982980646}
-  m_RootOrder: 1
+  m_Father: {fileID: 6414706687824241970}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -10.731201, y: -54.37498}
-  m_SizeDelta: {x: 8, y: -62.992683}
+  m_AnchoredPosition: {x: -136, y: 3.6000671}
+  m_SizeDelta: {x: 8, y: -4.412697}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &9221558571529830218
 CanvasRenderer:
@@ -314,6 +318,41 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!95 &7258387816903423085
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 492256692246249359}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6978855927224979334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 492256692246249359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 1
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  visibleParam: visible
 --- !u!1 &1655881585668466427
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,7 +1043,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 216410992882933905}
-  - {fileID: 7015902557440705875}
   m_Father: {fileID: 8461125913396281115}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

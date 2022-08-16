@@ -14,6 +14,8 @@ public class TaskbarHUDController : IHUD
         public bool enableQuestPanel;
     }
 
+    private const string NEARBY_NAME = "~nearby";
+
     public TaskbarHUDView view;
     public WorldChatWindowController worldChatWindowHud;
     public PrivateChatWindowController privateChatWindow;
@@ -31,7 +33,6 @@ public class TaskbarHUDController : IHUD
     private IHUD chatToggleTargetWindow;
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
-    private const string NEARBY_NAME = "#nearby";
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;

@@ -10,6 +10,8 @@ using DCL;
 
 public class ChatNotificationController : IHUD
 {
+    private const int FADEOUT_DELAY = 8000;
+
     private DataStore dataStore;
     private IChatController chatController;
     private IMainChatNotificationsComponentView mainChatNotificationView;
@@ -17,8 +19,7 @@ public class ChatNotificationController : IHUD
     private IUserProfileBridge userProfileBridge;
     private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-    private const int FADEOUT_DELAY = 8000;
-    public CancellationTokenSource fadeOutCT = new CancellationTokenSource();
+    private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
     private UserProfile ownUserProfile;
 

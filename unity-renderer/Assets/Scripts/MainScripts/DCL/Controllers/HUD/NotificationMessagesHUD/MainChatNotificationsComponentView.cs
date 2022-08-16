@@ -17,6 +17,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     [SerializeField] private ScrollRect scrollRectangle;
     [SerializeField] private Button notificationButton;
     [SerializeField] private ShowHideAnimator panelAnimator;
+    [SerializeField] private ShowHideAnimator scrollbarAnimator;
 
     private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
     private const int MAX_NOTIFICATION_ENTRIES = 30;
@@ -35,7 +36,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     private int notificationCount = 1;
     private Vector2 notificationOffset = new Vector2(0, -56);
     private TMP_Text notificationMessage;
-    private CancellationTokenSource ct = new CancellationTokenSource();
+    private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
 
     public static MainChatNotificationsComponentView Create()
     {
@@ -48,7 +49,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         notificationMessage = notificationButton.GetComponentInChildren<TMP_Text>();
         notificationButton?.onClick.RemoveAllListeners();
         notificationButton?.onClick.AddListener(() => SetScrollToEnd());
-        scrollRectangle.onValueChanged.AddListener(CheckScrollValue);
+        scrollRectangle.onValueChanged.AddListener(ResetNotificationButtonFromScroll);
     }
 
     public override void Show(bool instant = false)
@@ -67,7 +68,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         return gameObject.transform;
     }
 
-    private void CheckScrollValue(Vector2 newValue)
+    private void ResetNotificationButtonFromScroll(Vector2 newValue)
     {
         if(newValue.y <= 0.0)
         {
@@ -78,11 +79,13 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     public void ShowPanel()
     {
         panelAnimator?.Show();
+        scrollbarAnimator?.Show();
     }
 
     public void HidePanel()
     {
         panelAnimator?.Hide();
+        scrollbarAnimator?.Hide();
     }
 
     public void ShowNotifications()
@@ -101,7 +104,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         }
     }
 
-    public ChatNotificationMessageComponentView AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
+    public void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
         entryPool = GetNotificationEntryPool();
         var newNotification = entryPool.Get();
@@ -112,7 +115,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
 
         entry.OnClickedNotification -= ClickedOnNotification;
         entry.onFocused -= FocusedOnNotification;
-        entry.showHideAnimator.OnWillFinishHide -= _ => SetScrollToEnd();
+        entry.showHideAnimator.OnWillFinishHide -= SetScrollToEnd;
 
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
@@ -128,7 +131,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         entry.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
         entry.OnClickedNotification += ClickedOnNotification;
         entry.onFocused += FocusedOnNotification;
-        entry.showHideAnimator.OnWillFinishHide += _ => SetScrollToEnd();
+        entry.showHideAnimator.OnWillFinishHide += SetScrollToEnd;
 
         chatEntriesContainer.anchoredPosition += notificationOffset;
         if (isOverPanel)
@@ -139,14 +142,13 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         else
         {
             ResetNotificationButton();
-            ct.Cancel();
-            ct = new CancellationTokenSource();
-            AnimateNewEntry(entry.gameObject.transform, ct.Token).Forget();
+            animationCancellationToken.Cancel();
+            animationCancellationToken = new CancellationTokenSource();
+            AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
         }
 
         OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
         CheckNotificationCountAndRelease();
-        return entry;
     }
 
     private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
@@ -189,7 +191,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
             notificationMessage.text = notificationCount <= 9 ? notificationCount.ToString() : "9+";
     }
 
-    private void SetScrollToEnd()
+    private void SetScrollToEnd(ShowHideAnimator animator = null)
     {
         scrollRectangle.normalizedPosition = new Vector2(0, 0);
         ResetNotificationButton();
@@ -210,8 +212,8 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
     {
         chatNotificationComponentView.SetIsPrivate(false);
         chatNotificationComponentView.SetMessage(message.body);
-        chatNotificationComponentView.SetNotificationTargetId("#nearby");
-        chatNotificationComponentView.SetNotificationHeader("#nearby");
+        chatNotificationComponentView.SetNotificationTargetId("~nearby");
+        chatNotificationComponentView.SetNotificationHeader("~nearby");
         chatNotificationComponentView.SetNotificationSender(username);
     }
 
