@@ -51,13 +51,13 @@ namespace DCL.Components
 
             if (visibilityDirty)
             {
-                ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+                ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneOuterBoundaries && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
                 visibilityDirty = false;
             }
 
             if (collisionsDirty)
             {
-                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity, CalculateCollidersLayer(model));
+                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions && entity.isInsideSceneOuterBoundaries && entity.isInsideSceneBoundaries, false, entity, CalculateCollidersLayer(model));
                 collisionsDirty = false;
             }
 

@@ -13,8 +13,7 @@ namespace DCL.Models
             
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] == null)
-                    continue;
+                if (renderers[i] == null) continue;
 
                 if (!initializedBounds)
                 {
@@ -29,6 +28,8 @@ namespace DCL.Models
 
             foreach (Collider collider in colliders)
             {
+                if (collider == null) continue;
+                
                 if (!initializedBounds)
                 {
                     initializedBounds = true;

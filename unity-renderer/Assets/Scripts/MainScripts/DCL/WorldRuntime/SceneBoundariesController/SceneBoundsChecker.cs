@@ -320,6 +320,8 @@ namespace DCL.Controllers
             
             foreach (Collider collider in meshesInfo.colliders)
             {
+                if (collider == null) continue;
+                
                 if (collider.enabled != isInsideBoundaries)
                     collider.enabled = isInsideBoundaries;
             }
