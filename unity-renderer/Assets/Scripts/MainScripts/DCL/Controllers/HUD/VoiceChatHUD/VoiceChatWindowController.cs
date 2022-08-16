@@ -35,7 +35,6 @@ public class VoiceChatWindowController : IHUD
     internal bool isOwnPLayerTalking = false;
     private Coroutine updateMuteStatusRoutine = null;
     internal bool isMuteAll = false;
-    internal bool isJoined = false;
 
     public VoiceChatWindowController() { }
 
@@ -193,8 +192,6 @@ public class VoiceChatWindowController : IHUD
             dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
             isOwnPLayerTalking = false;
         }
-
-        this.isJoined = isJoined;
     }
 
     internal void GoToCrowd() { WebInterface.GoToCrowd(); }
@@ -238,7 +235,7 @@ public class VoiceChatWindowController : IHUD
     {
         isMuteAll = isMute;
 
-        if (!isJoined)
+        if (!dataStore.voiceChat.isJoinedToVoiceChat.Get())
             return;
 
         MuteAll(isMute);

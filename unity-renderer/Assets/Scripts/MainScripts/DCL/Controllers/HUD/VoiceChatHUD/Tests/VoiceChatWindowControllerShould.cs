@@ -168,7 +168,6 @@ public class VoiceChatWindowControllerShould
         // Arrange
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
         voiceChatWindowController.isOwnPLayerTalking = true;
-        voiceChatWindowController.isJoined = !isJoined;
 
         // Act
         voiceChatWindowController.OnVoiceChatStatusUpdated(isJoined, false);
@@ -183,8 +182,6 @@ public class VoiceChatWindowControllerShould
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
         }
-
-        Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);
     }
 
     [Test]
