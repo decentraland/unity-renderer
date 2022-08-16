@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 6437668814227222751}
   - component: {fileID: 7588964123315412853}
   - component: {fileID: 6875321446196872620}
+  - component: {fileID: 1575576635257866780}
   m_Layer: 5
   m_Name: PreviousButton
   m_TagString: Untagged
@@ -251,7 +252,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2.5
 --- !u!114 &7588964123315412853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,9 +275,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -312,6 +313,21 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
+--- !u!114 &1575576635257866780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305958739276062367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRectTransform: {fileID: 2136973473263099510}
+  hoverScale: 1.05
+  normalScale: 1
 --- !u!1 &6402856298599806420
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,6 +418,7 @@ GameObject:
   - component: {fileID: 3358279922690953089}
   - component: {fileID: 804860302255169224}
   - component: {fileID: 5717413654242948352}
+  - component: {fileID: 916983453602902903}
   m_Layer: 5
   m_Name: NextButton
   m_TagString: Untagged
@@ -466,7 +483,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2.3
 --- !u!114 &804860302255169224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,6 +544,21 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
+--- !u!114 &916983453602902903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7498016722461344251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRectTransform: {fileID: 3587570585946778653}
+  hoverScale: 1.05
+  normalScale: 1
 --- !u!1 &8639271661172704807
 GameObject:
   m_ObjectHideFlags: 0

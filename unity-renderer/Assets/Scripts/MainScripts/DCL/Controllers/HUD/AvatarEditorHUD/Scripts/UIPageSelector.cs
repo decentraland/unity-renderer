@@ -69,6 +69,7 @@ public class UIPageSelector : MonoBehaviour
         EnsureButtons();
         UpdateButtonsStatus();
         
+        LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
     private void EnsureButtons()
