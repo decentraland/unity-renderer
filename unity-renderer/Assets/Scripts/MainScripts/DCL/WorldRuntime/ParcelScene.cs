@@ -199,9 +199,11 @@ namespace DCL.Controllers
                 {
                     Destroy(this.gameObject);
                     DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+
                 }
             }
-
+            
+            crdtExecutor?.Dispose();
             isReleased = true;
         }
 
