@@ -107,6 +107,7 @@ namespace DCL.ECSComponents
 
         private void LoadFailed()
         {
+            // If the shape has been destroyed we should ignore the LoadFailed callback
             if (shapeFrame == null)
                 return;
             

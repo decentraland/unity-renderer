@@ -163,15 +163,7 @@ namespace DCL.Components
 
             colliders = null;
         }
-        
-        private void AddColliderName(Collider collider)
-        {
-            if (collider is MeshCollider meshCollider)
-                colliderNames[collider] = meshCollider.sharedMesh.name;
-            else
-                colliderNames[collider] = collider.gameObject.name;
-        }
-        
+
         private void GenerateColliders(IDCLEntity entity)
         {
             var renderers = entity?.meshesInfo?.renderers;
