@@ -57,14 +57,9 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            TaskUtils.RunThrottledCoroutine(SetMaterialTransition(() => asset.Show(OnSuccess)), OnLoadFailure, throttlingCounter.EvaluateTimeBudget);
+            CoroutineStarter.Start(SetMaterialTransition(() => asset.Show(OnSuccess), false));
         }
-        
-        protected void OnLoadFailure(Exception exception)
-        {
-            Debug.Log("THROTTLING FAILED");
-        }
-
+     
         protected override void OnAfterLoadOrReuse()
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
@@ -225,7 +220,7 @@ namespace DCL
             featureFlags.OnChange -= OnFeatureFlagChange;
         }
 
-        IEnumerator SetMaterialTransition(Action OnSuccess = null)
+        IEnumerator SetMaterialTransition(Action OnSuccess = null, bool useHologram = true)
         {
             if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation)
             {
@@ -236,6 +231,7 @@ namespace DCL
                     MaterialTransitionController transition = assetRenderer.gameObject.GetOrCreateComponent<MaterialTransitionController>();
                     materialTransitionControllers[index] = transition;
                     transition.delay = 0;
+                    transition.useHologram = useHologram;
                     transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
                     index++;
                 }
