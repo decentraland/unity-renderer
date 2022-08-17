@@ -17,22 +17,9 @@ namespace DCL.Controllers
         List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
         void Start();
         void Stop();
-        void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false);
-
-        /// <summary>
-        /// Add an entity that will be consistently checked, until manually removed from the list.
-        /// </summary>
-        void AddPersistent(IDCLEntity entity);
-
-        void RemovePersistent(IDCLEntity entity);
-
-        /// <summary>
-        /// Returns whether an entity was added to be consistently checked
-        /// </summary>
-        ///
-        bool WasAddedAsPersistent(IDCLEntity entity);
-
-        void RemoveEntityToBeCheckedAndResetState(IDCLEntity entity);
+        void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false);
+        void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false);
+        bool EntityAddedAsPersistent(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck);
         bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity);

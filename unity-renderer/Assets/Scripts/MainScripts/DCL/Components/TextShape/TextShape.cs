@@ -86,7 +86,7 @@ namespace DCL.Components
             var opacity = cachedModel.visible ? cachedModel.opacity : 0;
             var totalSize = cachedModel.fontSize;
             var totalScale = text.transform.lossyScale.sqrMagnitude;
-            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0 && entity.isInsideSceneOuterBoundaries && entity.isInsideSceneBoundaries;
+            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0 && entity.isInsideSceneBoundaries;
             
             text.enabled = isVisible;
             meshRenderer.enabled = isVisible;

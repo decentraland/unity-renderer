@@ -93,11 +93,7 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            IDCLEntity entity = iterator.Current;
-                            if (!persistentEntities.Contains(entity))
-                            {
-                                entitiesToCheck.Remove(entity);
-                            }
+                            RemoveEntity(iterator.Current, removeIfPersistent: false);
                         }
                     }
                     
@@ -142,43 +138,45 @@ namespace DCL.Controllers
             Stop();
         }
 
-        public void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false)
+        public void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false)
         {
             if (!enabled)
                 return;
 
-            OnAddEntity(entity, runPreliminaryEvaluation);
+            if (runPreliminaryEvaluation)
+            {
+                // The outer bounds check is cheaper than the regular check
+                RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
+
+                // No need to add the entity to be checked later if we already found it outside its bounds.
+                // When the correct events are triggered again, the entity will be checked again.
+                if (!entity.isInsideSceneOuterBoundaries)
+                {
+                    return;
+                }
+            }
+    
+            if(isPersistent)
+                persistentEntities.Add(entity);
+            else
+                entitiesToCheck.Add(entity);
         }
 
-        /// <summary>
-        /// Add an entity that will be consistently checked, until manually removed from the list.
-        /// </summary>
-        public void AddPersistent(IDCLEntity entity)
+        public void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false)
         {
             if (!enabled)
                 return;
-
-            persistentEntities.Add(entity);
+            
+            bool removed = entitiesToCheck.Remove(entity);
+            
+            if(!removed && removeIfPersistent)
+                persistentEntities.Remove(entity);
+            
+            if(resetState)
+                SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
-        public void RemovePersistent(IDCLEntity entity)
-        {
-            persistentEntities.Remove(entity);
-        }
-
-        /// <summary>
-        /// Returns whether an entity was added to be consistently checked
-        /// </summary>
-        ///
-        public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
-
-        public void RemoveEntityToBeCheckedAndResetState(IDCLEntity entity)
-        {
-            if (!enabled)
-                return;
-
-            OnRemoveEntity(entity);
-        }
+        public bool EntityAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
 
         public void RunEntityEvaluation(IDCLEntity entity)
         {
@@ -338,30 +336,6 @@ namespace DCL.Controllers
             {
                 components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
             }
-        }
-
-        protected void OnAddEntity(IDCLEntity entity, bool runPreliminaryEvaluation = false)
-        {
-            if (runPreliminaryEvaluation)
-            {
-                // The outer bounds check is cheaper than the regular check
-                RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
-
-                // No need to add the entity to be checked later if we already found it outside its bounds.
-                // When the correct events are triggered again, the entity will be checked again.
-                if (!entity.isInsideSceneOuterBoundaries)
-                    return;
-            }
-            
-            entitiesToCheck.Add(entity);
-        }
-
-        protected void OnRemoveEntity(IDCLEntity entity)
-        {
-            entitiesToCheck.Remove(entity);
-            persistentEntities.Remove(entity);
-            
-            SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
     }
 }

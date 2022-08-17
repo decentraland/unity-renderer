@@ -356,27 +356,27 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Make sure that it doesn't have a parent
         Assert.IsNull(entity.parent);
-        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(entity));
 
         // Set player reference as parent
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent,
             DCLCharacterController.i.firstPersonCameraGameObject.transform);
-        Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+        Assert.IsTrue(Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(entity));
 
         // Set another entity as parent and ensure is not added as persistent
         TestUtils.SetEntityParent(scene, entityId, entityId2);
-        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE);
         Assert.AreEqual(entity.gameObject.transform.parent, DCLCharacterController.i.avatarGameObject.transform);
-        Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+        Assert.IsTrue(Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(entity));
 
         // Remove all parents
         TestUtils.SetEntityParent(scene, entityId, (long) SpecialEntityId.SCENE_ROOT_ENTITY);
         Assert.IsNull(entity.parent);
-        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
+        Assert.IsFalse(Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(entity));
     }
     
     [UnityTest]
