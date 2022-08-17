@@ -84,6 +84,14 @@ namespace DCL.ECSComponents
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
         {
+            //check for cyclic parenting
+            if (ECSTransformUtils.IsCircularParenting(scene, entity, parentId))
+            {
+                Debug.LogError($"cyclic parenting found for entity {entity.entityId} " +
+                               $"parenting to {parentId} at scene {scene.sceneData.id} ({scene.sceneData.basePosition})");
+                return;
+            }
+
             // remove as child of previous parent
             if (entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
             {
