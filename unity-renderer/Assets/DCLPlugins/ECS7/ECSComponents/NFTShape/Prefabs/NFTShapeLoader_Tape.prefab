@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &8752014689504675308
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8159066017024035153}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8221204945006187656
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 4330216697680924057}
+  boxCollider: {fileID: 8752014689504675308}
   meshRenderer: {fileID: 7567742120534998413}
   loadingSpinnerGameObject: {fileID: 8950923266751625392}
   materials:
@@ -236,11 +249,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tapper
       objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 8824ceacf505c42589ce2281788e1f9d,
-        type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8824ceacf505c42589ce2281788e1f9d, type: 3}
 --- !u!1 &8159066017024035153 stripped
@@ -261,16 +269,3 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 151783483715522648}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &4330216697680924057
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8159066017024035153}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.1891065, y: 1.2167139, z: 0.01679405}
-  m_Center: {x: -0.00008943677, y: 0.018403143, z: -0.0143932225}

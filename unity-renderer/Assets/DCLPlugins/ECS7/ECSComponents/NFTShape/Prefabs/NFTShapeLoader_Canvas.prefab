@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &6366450785313481341
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4663773843734964821}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6948170573398862786
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 2361208637642207742}
+  boxCollider: {fileID: 6366450785313481341}
   meshRenderer: {fileID: 6378745881596173961}
   loadingSpinnerGameObject: {fileID: 6948170573398862786}
   materials:
@@ -229,11 +242,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SimpleCanvas
       objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 8cca77e0547104393848cfd36d6d12e4,
-        type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8cca77e0547104393848cfd36d6d12e4, type: 3}
 --- !u!1 &4663773843734964821 stripped
@@ -254,16 +262,3 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 3717968399504765788}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &2361208637642207742
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663773843734964821}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 0.019954044}
-  m_Center: {x: 0, y: 0, z: -0.000938348}

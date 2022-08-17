@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bcba124cfe47b2bf385c410b6a88c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 6213895487873092016}
+  boxCollider: {fileID: 1767955522498508882}
   meshRenderer: {fileID: 9105622210764350761}
   loadingSpinnerGameObject: {fileID: 2930198238563535319}
   materials:
@@ -139,6 +139,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1767955522498508882
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7377315260431471093}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1531382421622704380
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -236,11 +249,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Metal_01
       objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 40dee20c3e155497e8b5633db68831da,
-        type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 40dee20c3e155497e8b5633db68831da, type: 3}
 --- !u!1 &7377315260431471093 stripped
@@ -261,16 +269,3 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 1531382421622704380}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &6213895487873092016
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7377315260431471093}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.0938531, y: 1.0938531, z: 0.045797735}
-  m_Center: {x: 0, y: 0, z: -0.006491866}
