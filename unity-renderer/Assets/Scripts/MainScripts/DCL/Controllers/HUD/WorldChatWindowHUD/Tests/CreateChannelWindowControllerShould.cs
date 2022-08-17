@@ -34,6 +34,7 @@ namespace DCL.Chat.HUD
             view.Received(1).Show();
             view.Received(1).ClearInputText();
             view.Received(1).DisableCreateButton();
+            view.Received(1).FocusInputField();
         }
         
         [Test]

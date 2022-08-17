@@ -34,6 +34,10 @@ namespace DCL.Chat.HUD
                 channelNameLengthLabel.text = $"{Mathf.Min(20, text.Length)}/20";
                 OnChannelNameUpdated?.Invoke(text);
             });
+            channelNameInput.onSubmit.AddListener(text =>
+            {
+                OnCreateSubmit?.Invoke();
+            });
             foreach (var button in closeButtons)
                 button.onClick.AddListener(() => OnClose?.Invoke());
             joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
@@ -77,5 +81,7 @@ namespace DCL.Chat.HUD
         public void EnableCreateButton() => createButton.interactable = true;
 
         public void ClearInputText() => channelNameInput.text = "";
+        
+        public void FocusInputField() => channelNameInput.Select();
     }
 }

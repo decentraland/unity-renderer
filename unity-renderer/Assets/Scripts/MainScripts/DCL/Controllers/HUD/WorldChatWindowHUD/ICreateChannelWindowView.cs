@@ -19,5 +19,6 @@ namespace DCL.Chat.HUD
         void EnableCreateButton();
         void ClearInputText();
         void Dispose();
+        void FocusInputField();
     }
 }
