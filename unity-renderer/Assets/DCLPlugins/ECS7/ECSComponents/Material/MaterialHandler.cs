@@ -8,7 +8,7 @@ namespace DCL.ECSComponents
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
         private PBMaterial lastModel = null;
-        private AssetPromise_Material promiseMaterial;
+        internal AssetPromise_Material promiseMaterial;
 
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
 
