@@ -9,6 +9,7 @@ public class MinimapHUDController : IHUD
     public MinimapHUDView view;
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
+    private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
@@ -97,8 +98,8 @@ public class MinimapHUDController : IHUD
 
     public void ReportScene()
     {
-        if (!string.IsNullOrEmpty(currentSceneId))
-            WebInterface.SendReportScene(currentSceneId);
+        var coords = playerCoords.Get();
+        WebInterface.SendReportScene($"{coords.x},{coords.y}");
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }

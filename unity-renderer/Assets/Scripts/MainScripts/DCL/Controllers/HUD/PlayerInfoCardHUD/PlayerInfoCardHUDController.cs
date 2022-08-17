@@ -234,7 +234,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void ReportPlayer()
     {
-        WebInterface.SendReportPlayer(currentPlayerId);
+        WebInterface.SendReportPlayer(currentPlayerId, currentUserProfile?.name);
         socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
     }
 
