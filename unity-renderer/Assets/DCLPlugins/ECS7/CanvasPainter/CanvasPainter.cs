@@ -348,7 +348,7 @@ namespace DCL.ECS7
 
             // This is for debugging purposes, we will change this to a proper approach so devs can debug the UI easily.
             if (randomColor)
-                element.style.backgroundColor = Random.ColorHSV();
+                element.style.backgroundColor =  Color.black;//Random.ColorHSV();
 
             return element;
         }

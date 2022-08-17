@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.UI;
 using DCL.ECSComponents;
@@ -7,13 +8,14 @@ using DCL.Models;
 using NUnit.Framework;
 using NSubstitute;
 using NSubstitute.Extensions;
-using UnityEditor.SearchService;
+using Tests;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace DCL.ECS7.Tests
 {
-    public class CanvasPainterShould
+    public class CanvasPainterShould : IntegrationTestSuite
     {
         private DataStore_ECS7 dataStoreEcs7;
         private RendererState rendererState;
@@ -21,7 +23,7 @@ namespace DCL.ECS7.Tests
         private ECSComponentsManager componentsManager;
         private ECS7ComponentsComposer componentsComposer;
         private IWorldState worldState;
-        
+
         [SetUp]
         public void Setup()
         {
