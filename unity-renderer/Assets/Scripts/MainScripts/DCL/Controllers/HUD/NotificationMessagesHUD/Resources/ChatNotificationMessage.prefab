@@ -635,7 +635,7 @@ MonoBehaviour:
   messageContainerTransform: {fileID: 5928874722021721243}
   model:
     maxHeaderCharacters: 30
-    maxContentCharacters: 35
+    maxContentCharacters: 32
     maxSenderCharacters: 10
     message: Test shorter
     time: 12:33
