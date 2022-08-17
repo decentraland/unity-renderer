@@ -111,7 +111,7 @@ namespace DCL
         {
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
-            currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
         }
 
         private void PlayerClicked()
@@ -132,7 +132,8 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
+            
             ApplyHidePassportModifier();
 
             var model = (AvatarModel) newModel;
