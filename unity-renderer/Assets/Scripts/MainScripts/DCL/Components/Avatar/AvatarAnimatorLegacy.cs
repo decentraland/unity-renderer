@@ -36,13 +36,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float RAY_OFFSET_LENGTH = 3.0f;
 
     const float MAX_VELOCITY = 6.25f;
-    
+
     // Time it takes to determine if a character is grounded when vertical velocity is 0
     const float FORCE_GROUND_TIME = 0.05f;
-    
+
     // Minimum vertical speed used to consider whether an avatar is on air
     const float MIN_VERTICAL_SPEED_AIR = 0.025f;
-
 
     [System.Serializable]
     public class AvatarLocomotion
@@ -83,9 +82,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     Vector3 lastPosition;
     bool isOwnPlayer = false;
     private AvatarAnimationEventHandler animEventHandler;
-    
+
     private float lastOnAirTime = 0;
-    
+
     private string runAnimationName;
     private string walkAnimationName;
     private string idleAnimationName;
@@ -94,22 +93,22 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private AvatarAnimation latestAnimation;
     private AnimationState runAnimationState;
     private AnimationState walkAnimationState;
-    
+    private bool isUpdateRegistered = false;
+
     private Ray rayCache;
 
-    public void Start()
-    {
-        OnPoolGet();
-    }
-    
+    public void Start() { OnPoolGet(); }
+
     // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
         if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
         {
             Debug.LogError($"Couldn't find Armature for AnimatorLegacy in path: {transform.GetHierarchyPath()}");
+
             return false;
         }
+
         Transform armatureParent = armature.parent;
         animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
         armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
@@ -119,13 +118,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.Sample();
         InitializeAvatarAudioAndParticleHandlers(animation);
 
-        if (isOwnPlayer)
+        // since the avatar can be updated when changing a wearable we shouldn't register to the update event twice
+        if (!isUpdateRegistered)
         {
-            DCLCharacterController.i.OnUpdateFinish += OnUpdateWithDeltaTime;
-        }
-        else
-        {
-            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
+            isUpdateRegistered = true;
+
+            if (isOwnPlayer)
+            {
+                DCLCharacterController.i.OnUpdateFinish += OnUpdateWithDeltaTime;
+            }
+            else
+            {
+                Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
+            }
+
         }
 
         return true;
@@ -147,20 +153,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         EquipEmote(currentLocomotions.run.name, currentLocomotions.run);
         EquipEmote(currentLocomotions.jump.name, currentLocomotions.jump);
         EquipEmote(currentLocomotions.fall.name, currentLocomotions.fall);
-        
+
         idleAnimationName = currentLocomotions.idle.name;
         walkAnimationName = currentLocomotions.walk.name;
         runAnimationName = currentLocomotions.run.name;
         jumpAnimationName = currentLocomotions.jump.name;
         fallAnimationName = currentLocomotions.fall.name;
-        
+
         runAnimationState = animation[runAnimationName];
         walkAnimationState = animation[walkAnimationName];
     }
-    private void OnEventHandlerUpdate()
-    {
-        OnUpdateWithDeltaTime(Time.deltaTime);
-    }
+    private void OnEventHandlerUpdate() { OnUpdateWithDeltaTime(Time.deltaTime); }
 
     public void OnPoolGet()
     {
@@ -177,16 +180,21 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void OnPoolRelease()
     {
-        if (isOwnPlayer && DCLCharacterController.i)
+        if (isUpdateRegistered)
         {
-            DCLCharacterController.i.OnUpdateFinish -= OnUpdateWithDeltaTime;
-        }
-        else
-        {
-            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
+            isUpdateRegistered = false;
+
+            if (isOwnPlayer && DCLCharacterController.i)
+            {
+                DCLCharacterController.i.OnUpdateFinish -= OnUpdateWithDeltaTime;
+            }
+            else
+            {
+                Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, OnEventHandlerUpdate);
+            }
         }
     }
-    
+
     void OnUpdateWithDeltaTime(float deltaTime)
     {
         blackboard.deltaTime = deltaTime;
@@ -207,7 +215,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             lastOnAirTime = Time.time;
         }
-        
+
         blackboard.verticalSpeed = verticalVelocity;
 
         flattenedVelocity.y = 0;
@@ -218,16 +226,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             blackboard.movementSpeed = flattenedVelocity.magnitude;
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
-        
+
         //NOTE(Kinerius): This check is just for the playing character, it uses a combination of collision flags and raycasts to determine the ground state, its precise
         bool isGroundedByCharacterController = isOwnPlayer && DCLCharacterController.i.isGrounded;
-        
+
         //NOTE(Kinerius): This check is for interpolated avatars (the other players) as we dont have a Character Controller, we determine their ground state by checking its vertical velocity
         //                this check is cheap and fast but not precise
         bool isGroundedByVelocity = !isOwnPlayer && Time.time - lastOnAirTime > FORCE_GROUND_TIME;
 
         //NOTE(Kinerius): This additional check is both for the player and interpolated avatars, we cast an additional raycast per avatar to check ground state
         bool isGroundedByRaycast = false;
+
         if (!isGroundedByCharacterController && !isGroundedByVelocity)
         {
             rayCache.origin = velocityTargetPosition + rayOffset;
@@ -258,13 +267,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     void State_Ground(BlackBoard bb)
     {
-        if (bb.deltaTime <= 0) return;
+        if (bb.deltaTime <= 0)
+            return;
 
         float movementSpeed = bb.movementSpeed / bb.deltaTime;
 
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
-        
+
         if (movementSpeed > runMinSpeed)
         {
             CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME);
@@ -273,7 +283,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME);
         }
-        else 
+        else
         {
             CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, IDLE_TRANSITION_TIME);
         }
@@ -321,7 +331,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool mustExit;
 
         //Introduced the isMoving variable that is true if there is user input, substituted the old Math.Abs(bb.movementSpeed) > Mathf.Epsilon that relies of too much precision
-        if (isOwnPlayer) 
+        if (isOwnPlayer)
             mustExit = DCLCharacterController.i.isMovingByUserInput || animationInfo.length - animationInfo.time < EXPRESSION_TRANSITION_TIME || !bb.isGrounded;
         else
             mustExit = Math.Abs(bb.movementSpeed) > 0.07f || animationInfo.length - animationInfo.time < EXPRESSION_TRANSITION_TIME || !bb.isGrounded;
@@ -330,6 +340,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_TRANSITION_TIME);
             bb.expressionTriggerId = null;
+
             if (!bb.isGrounded)
                 currentState = State_Air;
             else
@@ -364,6 +375,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             {
                 animation.Stop(expressionTriggerId);
             }
+
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }
@@ -389,6 +401,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (animation.GetClip(emoteId) != null)
             animation.RemoveClip(emoteId);
+
         animation.AddClip(clip, emoteId);
     }
 
@@ -399,6 +412,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (animation.GetClip(emoteId) == null)
             return;
+
         animation.RemoveClip(emoteId);
     }
 
@@ -407,12 +421,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
         AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.GetOrCreateComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
+
         if (audioContainer != null)
         {
             animationEventHandler.Init(audioContainer);
 
             //NOTE(Mordi): If this is a remote avatar, pass the animation component so we can keep track of whether it is culled (off-screen) or not
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
+
             if (audioHandlerRemote != null)
             {
                 audioHandlerRemote.Init(createdAnimation.gameObject);

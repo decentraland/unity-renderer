@@ -37,6 +37,7 @@ namespace DCL
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
             pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
             pluginSystem.Register<JoinChannelModalPlugin>(() => new JoinChannelModalPlugin());
+            pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");

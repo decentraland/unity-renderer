@@ -555,15 +555,15 @@ public class HUDController : IHUDController
         newModel.name = "FakePassport";
         newModel.description = "Fake Description for Testing";
         newModel.userId = "test-id";
-        newModel.inventory = new[]
+
+        UserProfileController.i.AddUserProfileToCatalog(newModel);
+        UserProfileController.GetProfileByUserId(newModel.userId).SetInventory(new[]
         {
             "dcl://halloween_2019/machete_headband_top_head",
             "dcl://halloween_2019/bee_suit_upper_body",
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
-        };
-
-        UserProfileController.i.AddUserProfileToCatalog(newModel);
+        });
         Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
     }
 #endif
