@@ -189,6 +189,8 @@ namespace DCL
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
+            var uploadToGPU = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+            
             foreach ( Mesh mesh in meshesList )
             {
                 if ( !mesh.isReadable )
@@ -196,6 +198,12 @@ namespace DCL
 
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
+                
+                if (uploadToGPU)
+                {
+                    Physics.BakeMesh(mesh.GetInstanceID(), false);
+                    mesh.UploadMeshData(true);
+                }
             }
         }
 

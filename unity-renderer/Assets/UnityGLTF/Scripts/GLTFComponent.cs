@@ -348,7 +348,8 @@ namespace UnityGLTF
             sceneImporter.initialVisibility = initialVisibility;
             sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
 
-            sceneImporter.forceGPUOnlyMesh = false;
+            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
+                                             && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
             sceneImporter.OnMeshCreated += meshCreatedCallback;
             sceneImporter.OnRendererCreated += rendererCreatedCallback;
