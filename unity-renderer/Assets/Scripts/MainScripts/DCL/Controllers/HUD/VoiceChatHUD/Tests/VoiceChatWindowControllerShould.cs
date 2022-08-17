@@ -149,7 +149,6 @@ public class VoiceChatWindowControllerShould
     {
         // Arrange
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
-        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
         voiceChatWindowController.RequestJoinVoiceChat(isJoined);
@@ -168,6 +167,7 @@ public class VoiceChatWindowControllerShould
     public void RaiseOnVoiceChatStatusUpdatedCorrectly(bool isJoined)
     {
         // Arrange
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
         voiceChatWindowController.isOwnPLayerTalking = true;
 
