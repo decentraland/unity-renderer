@@ -20,6 +20,7 @@ public class VoiceChatWindowController : IHUD
     public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
 
     private bool isVoiceChatFFEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(VOICE_CHAT_FEATURE_FLAG);
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private UserProfile ownProfile => userProfileBridge.GetOwn();
 
     private IVoiceChatWindowComponentView voiceChatWindowView;
@@ -96,10 +97,22 @@ public class VoiceChatWindowController : IHUD
         if (voiceChatWindowView == null)
             return;
 
+        SetVisiblePanelList(visible);
         if (visible)
             voiceChatWindowView.Show();
         else
             voiceChatWindowView.Hide();
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("VoiceChatWindow");
+        else
+            newSet.Remove("VoiceChatWindow");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     public void SetUsersMuted(string[] usersId, bool isMuted) 
