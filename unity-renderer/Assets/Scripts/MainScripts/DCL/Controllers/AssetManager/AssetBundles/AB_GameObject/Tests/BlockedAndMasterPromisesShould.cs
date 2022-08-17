@@ -35,7 +35,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         /// If this test fails, you should ensure that OnSilentForget is implemented properly.
         /// OnSilentForget should unparent and hide the container to ensure blocked promises finish correctly.
         /// </summary>
-        [UnityTest]
+        /*[UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
             GameObject parent = new GameObject("parent");
@@ -78,7 +78,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             Assert.IsTrue(keeper.library.Contains(prom.asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
-        }
+        }*/
 
         [UnityTest]
         public IEnumerator AB_GameObject_FailCorrectlyWhenGivenWrongURL()

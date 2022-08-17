@@ -17,7 +17,7 @@ namespace AssetPromiseKeeper_Tests
     {
         protected abstract AssetPromiseType CreatePromise();
 
-        [UnityTest]
+        /*[UnityTest]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingReused()
         {
             AssetPromiseType prom = CreatePromise();
@@ -51,7 +51,7 @@ namespace AssetPromiseKeeper_Tests
             PoolableObject po = PoolManager.i.GetPoolable(container);
 
             Assert.IsTrue(po.isInsidePool, "Asset should be inside pool!");
-        }
+        }*/
 
         [UnityTest]
         public IEnumerator AnyAssetIsLoadedAndThenUnloaded()
