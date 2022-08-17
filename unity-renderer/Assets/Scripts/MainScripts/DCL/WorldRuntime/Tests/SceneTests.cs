@@ -222,7 +222,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         Assert.AreEqual(12, Environment.i.world.state.GetLoadedScenes().Count());
 
-        var loadedScenes = Environment.i.world.state.GetLoadedScenes();
+        var loadedScenes = Environment.i.world.state.GetLoadedScenes().Select(kvp => kvp.Value);
         foreach (var reference in referenceCheck)
         {
             CollectionAssert.Contains(loadedScenes, reference, "References must be the same");
