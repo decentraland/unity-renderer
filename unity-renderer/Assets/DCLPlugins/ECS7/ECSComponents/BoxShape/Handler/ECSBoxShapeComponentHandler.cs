@@ -1,4 +1,6 @@
-﻿using DCL.Controllers;
+﻿using System.Collections.Generic;
+using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.ECSComponents;
@@ -15,10 +17,12 @@ namespace DCL.ECSComponents
         internal PBBoxShape lastModel;
 
         private readonly DataStore_ECS7 dataStore;
+        private readonly IInternalECSComponent<InternalTexturizable> texurizableInternalComponent;
         
-        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texurizableInternalComponent)
         {
             dataStore = dataStoreEcs7;
+            this.texurizableInternalComponent = texurizableInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -71,6 +75,7 @@ namespace DCL.ECSComponents
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker)
         {
             meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, isVisible, withCollisions, isPointerBlocker);
+            ECSRendererableComponentUtils.AddToTexturizableComponent(scene, entity, meshesInfo?.renderers, texurizableInternalComponent);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
@@ -80,6 +85,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
+                ECSRendererableComponentUtils.RemoveFromTexturizableComponent(scene, entity, meshesInfo?.renderers, texurizableInternalComponent);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }

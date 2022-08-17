@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -9,9 +10,9 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public BoxShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public BoxShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponent<InternalTexturizable> texurizableInternalComponent)
         {
-            factory.AddOrReplaceComponent(componentId, BoxShapeSerializer.Deserialize, () => new ECSBoxShapeComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, BoxShapeSerializer.Deserialize, () => new ECSBoxShapeComponentHandler(DataStore.i.ecs7, texurizableInternalComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBBoxShape>(componentId, BoxShapeSerializer.Serialize);
 
             this.factory = factory;
