@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -29,8 +30,6 @@ namespace DCL.Components
         public IParcelScene scene { get; private set; }
         public IDCLEntity entity { get; private set; }
         public Transform GetTransform() => null;
-        
-        private const int MAX_TRANSFORM_VALUE = 10000;
 
         public void Initialize(IParcelScene scene, IDCLEntity entity)
         {
@@ -57,8 +56,8 @@ namespace DCL.Components
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
-                
-                CapTransformGlobalValuesToMax(entity.gameObject.transform);
+
+                entity.gameObject.transform.CapGlobalValuesToMax();
             }
         }
 
@@ -71,60 +70,6 @@ namespace DCL.Components
         public int GetClassId() => (int) CLASS_ID_COMPONENT.TRANSFORM;
         public void UpdateOutOfBoundariesState(bool enable) { }
         
-        public static void CapTransformGlobalValuesToMax(Transform transform)
-        {
-            bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
-            bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
-            
-            if (positionOutsideBoundaries || scaleOutsideBoundaries)
-            {
-                Vector3 newPosition = transform.position;
-                if (positionOutsideBoundaries)
-                {
-                    if (Mathf.Abs(newPosition.x) > MAX_TRANSFORM_VALUE)
-                        newPosition.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.x);
-
-                    if (Mathf.Abs(newPosition.y) > MAX_TRANSFORM_VALUE)
-                        newPosition.y = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.y);
-
-                    if (Mathf.Abs(newPosition.z) > MAX_TRANSFORM_VALUE)
-                        newPosition.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.z);
-                }
-                
-                Vector3 newScale = transform.lossyScale;
-                if (scaleOutsideBoundaries)
-                {
-                    if (Mathf.Abs(newScale.x) > MAX_TRANSFORM_VALUE)
-                        newScale.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.x);
-
-                    if (Mathf.Abs(newScale.y) > MAX_TRANSFORM_VALUE)
-                        newScale.y = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.y);
-
-                    if (Mathf.Abs(newScale.z) > MAX_TRANSFORM_VALUE)
-                        newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
-                }
-                
-                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
-            }
-        }
         
-        public static void SetTransformGlobalValues(Transform transform, Vector3 newPos, Quaternion newRot, Vector3 newScale, bool setScale = true)
-        {
-            transform.position = newPos;
-            transform.rotation = newRot;
-
-            if (setScale)
-            {
-                transform.localScale = Vector3.one;
-                var m = transform.worldToLocalMatrix;
-
-                m.SetColumn(0, new Vector4(m.GetColumn(0).magnitude, 0f));
-                m.SetColumn(1, new Vector4(0f, m.GetColumn(1).magnitude));
-                m.SetColumn(2, new Vector4(0f, 0f, m.GetColumn(2).magnitude));
-                m.SetColumn(3, new Vector4(0f, 0f, 0f, 1f));
-
-                transform.localScale = m.MultiplyPoint(newScale);
-            }
-        }
     }
 }
