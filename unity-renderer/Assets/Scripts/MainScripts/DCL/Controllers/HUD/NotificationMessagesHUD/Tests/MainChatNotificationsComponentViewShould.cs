@@ -72,6 +72,6 @@ public class MainChatNotificationsComponentViewShould : MonoBehaviour
         Assert.AreEqual($"{newMessage.body}", addedNotification.notificationMessage.text);
         Assert.AreEqual("~nearby", addedNotification.model.messageHeader);
         Assert.AreEqual("~nearby", addedNotification.notificationHeader.text);
-        Assert.AreEqual("~nearby", addedNotification.model.notificationTargetId);
+        Assert.AreEqual("nearby", addedNotification.model.notificationTargetId);
     }
 }
