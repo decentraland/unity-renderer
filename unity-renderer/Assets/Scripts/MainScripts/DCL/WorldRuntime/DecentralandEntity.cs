@@ -34,6 +34,7 @@ namespace DCL.Models
         public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 
         public long parentId { get; set; }
+        public IList<long> childrenId { get; } = new List<long>(); 
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
