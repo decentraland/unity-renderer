@@ -155,13 +155,10 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.RequestJoinVoiceChat(isJoined);
 
         // Assert
-        if (isJoined)
-            socialAnalytics.Received(1).SendVoiceChannelConnection(1);
-        else
+        if (!isJoined)
         {
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
-            socialAnalytics.Received().SendVoiceChannelDisconnection();
         }
     }
 
@@ -181,8 +178,13 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowComponentView.Received().SetAsJoined(isJoined);
         voiceChatBarComponentView.Received().SetAsJoined(isJoined);
 
-        if (!isJoined)
+        if (isJoined)
         {
+            socialAnalytics.Received(1).SendVoiceChannelConnection(1);
+        }
+        else
+        {
+            socialAnalytics.Received().SendVoiceChannelDisconnection();
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);

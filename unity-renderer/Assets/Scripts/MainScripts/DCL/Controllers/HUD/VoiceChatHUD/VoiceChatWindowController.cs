@@ -169,7 +169,6 @@ public class VoiceChatWindowController : IHUD
         if (isJoined)
         {
             WebInterface.JoinVoiceChat();
-            socialAnalytics.SendVoiceChannelConnection(voiceChatWindowView.numberOfPlayers);
         }
         else
         {
@@ -177,7 +176,6 @@ public class VoiceChatWindowController : IHUD
                 dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
 
             WebInterface.LeaveVoiceChat();
-            socialAnalytics.SendVoiceChannelDisconnection();
         }
     }
 
@@ -188,14 +186,16 @@ public class VoiceChatWindowController : IHUD
 
         if (isJoined)
         {
+            socialAnalytics.SendVoiceChannelConnection(voiceChatWindowView.numberOfPlayers);
             SetWhichPlayerIsTalking();
         }
         else
         {
+            socialAnalytics.SendVoiceChannelDisconnection();
+            isOwnPLayerTalking = false;
+
             if (dataStore.voiceChat.isRecording.Get().Key)
                 dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false), true);
-
-            isOwnPLayerTalking = false;
         }
     }
 
