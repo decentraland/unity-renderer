@@ -9,6 +9,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
@@ -38,6 +41,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
+    private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
 
     protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
@@ -273,6 +277,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         entries.Add(chatEntry);
 
+        animationCancellationToken.Cancel();
+        animationCancellationToken = new CancellationTokenSource();
+        AnimateNewEntry(chatEntry.gameObject.transform, animationCancellationToken.Token).Forget();
+
         if (this.model.isInPreviewMode)
             chatEntry.ActivatePreviewInstantly();
 
@@ -281,6 +289,30 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
+    }
+
+    private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        Sequence mySequence = DOTween.Sequence().AppendInterval(0.2f).Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
+        try
+        {
+            Vector2 endPosition = new Vector2(0, 0);
+            Vector2 currentPosition = chatEntriesContainer.anchoredPosition;
+            notification.localScale = Vector3.zero;
+            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f).SetEase(Ease.OutCubic);
+            while (chatEntriesContainer.anchoredPosition.y < 0)
+            {
+                chatEntriesContainer.anchoredPosition = currentPosition;
+                await UniTask.NextFrame(cancellationToken);
+            }
+            mySequence.Play();
+        }
+        catch (OperationCanceledException ex)
+        {
+            if (!DOTween.IsTweening(notification))
+                notification.DOScale(1, 0.3f).SetEase(Ease.OutBack);
+        }
     }
 
     public void RemoveFirstEntry()
