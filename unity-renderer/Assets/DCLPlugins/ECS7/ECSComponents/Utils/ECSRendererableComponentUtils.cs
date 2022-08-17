@@ -26,7 +26,7 @@ public static class ECSRendererableComponentUtils
         if (renderers == null)
             return;
 
-        var model = texurizableInternalComponent.GetFor(scene, entity).model;
+        var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
         for (int i = 0; i < renderers.Count; i++)
         {
             model.renderers.Add(renderers[i]);

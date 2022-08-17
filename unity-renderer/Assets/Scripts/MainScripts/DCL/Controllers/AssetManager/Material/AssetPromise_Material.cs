@@ -27,17 +27,6 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            CleanPromises();
-        }
-
-        public override void Cleanup()
-        {
-            base.Cleanup();
-            CleanPromises();
-        }
-
-        private void CleanPromises()
-        {
             AssetPromiseKeeper_Texture.i.Forget(emissiveTexturePromise);
             AssetPromiseKeeper_Texture.i.Forget(alphaTexturetPromise);
             AssetPromiseKeeper_Texture.i.Forget(albedoTexturePromise);
@@ -115,7 +104,13 @@ namespace DCL
             }
 
             SRPBatchingHelper.OptimizeMaterial(material);
+
             asset.material = material;
+            asset.emissiveTexturePromise = emissiveTexturePromise;
+            asset.alphaTexturetPromise = alphaTexturetPromise;
+            asset.albedoTexturePromise = albedoTexturePromise;
+            asset.bumpTexturePormise = bumpTexturePormise;
+
             OnSuccess?.Invoke();
         }
 
