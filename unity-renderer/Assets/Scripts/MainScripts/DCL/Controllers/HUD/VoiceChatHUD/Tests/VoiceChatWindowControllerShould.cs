@@ -148,6 +148,7 @@ public class VoiceChatWindowControllerShould
     public void RequestJoinVoiceChatCorrectly(bool isJoined)
     {
         // Arrange
+        dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
         voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
@@ -157,7 +158,11 @@ public class VoiceChatWindowControllerShould
         if (isJoined)
             socialAnalytics.Received(1).SendVoiceChannelConnection(1);
         else
+        {
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
             socialAnalytics.Received().SendVoiceChannelDisconnection();
+        }
     }
 
     [Test]
