@@ -33,5 +33,6 @@ namespace DCL.Models
         Action<object> OnNameChange { get; set; }
         Action<object> OnTransformChange { get; set; }
         long parentId { get; set; }
+        IList<long> childrenId { get; }
     }
 }

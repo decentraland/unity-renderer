@@ -174,6 +174,12 @@ namespace DCL.Controllers
 
             componentsManagerLegacy.DisposeAllSceneComponents();
 
+            if (crdtExecutor != null)
+            {
+                crdtExecutor.Dispose();
+                crdtExecutor = null;
+            }
+
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
                 RemoveAllEntitiesImmediate();
@@ -193,9 +199,10 @@ namespace DCL.Controllers
                 {
                     Destroy(this.gameObject);
                     DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+
                 }
             }
-
+            
             isReleased = true;
         }
 
