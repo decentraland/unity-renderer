@@ -1,5 +1,5 @@
 public interface IHideAvatarAreaHandler
 {
-    void ApplyHideModifier();
-    void RemoveHideModifier();
+    void ApplyHideAvatarModifier();
+    void RemoveHideAvatarModifier();
 }
