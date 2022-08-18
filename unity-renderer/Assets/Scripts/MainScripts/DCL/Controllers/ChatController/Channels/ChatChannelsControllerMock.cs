@@ -91,7 +91,7 @@ namespace DCL.Chat.Channels
             this.controller = controller;
             this.userProfileController = userProfileController;
 
-            SimulateDelayedResponseFor_ChatInitialization().Forget();
+            SimulateDelayedResponseFor_ChatInitialization().ContinueWith(SendNearbyDescriptionMessage).Forget();
             AddFakeMessagesFromInput(CancellationToken.None).Forget();
         }
 
@@ -579,6 +579,19 @@ Invite others to join by quoting the channel name in other chats or include it a
                 };
                 controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
             }
+        }
+        
+        private void SendNearbyDescriptionMessage()
+        {
+            var messagePayload =
+                new ChatMessage(ChatMessage.Type.SYSTEM, "",
+                    "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.")
+                {
+                    timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                    isChannelMessage = true
+                };
+
+            controller.AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
         }
     }
 }

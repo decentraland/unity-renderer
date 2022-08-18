@@ -15,6 +15,10 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject channelExistsWithJoinOptionContainer;
         [SerializeField] internal TMP_Text genericErrorLabel;
         [SerializeField] internal TMP_Text channelNameLengthLabel;
+        [SerializeField] internal GameObject inputFieldErrorBevel;
+        [SerializeField] private Color errorColor;
+        
+        private Color lengthLabelOriginalColor;
 
         public event Action<string> OnChannelNameUpdated;
         public event Action OnCreateSubmit;
@@ -41,6 +45,7 @@ namespace DCL.Chat.HUD
             foreach (var button in closeButtons)
                 button.onClick.AddListener(() => OnClose?.Invoke());
             joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
+            lengthLabelOriginalColor = channelNameLengthLabel.color;
         }
 
         public override void RefreshControl()
@@ -59,6 +64,8 @@ namespace DCL.Chat.HUD
             channelExistsContainer.SetActive(false);
             channelExistsWithJoinOptionContainer.SetActive(false);
             genericErrorLabel.gameObject.SetActive(true);
+            inputFieldErrorBevel.SetActive(true);
+            channelNameLengthLabel.color = errorColor;
             genericErrorLabel.text = message;
         }
 
@@ -66,7 +73,9 @@ namespace DCL.Chat.HUD
         {
             channelExistsContainer.SetActive(!showJoinChannelOption);
             channelExistsWithJoinOptionContainer.SetActive(showJoinChannelOption);
+            inputFieldErrorBevel.SetActive(true);
             genericErrorLabel.gameObject.SetActive(false);
+            channelNameLengthLabel.color = errorColor;
         }
 
         public void ClearError()
@@ -74,6 +83,8 @@ namespace DCL.Chat.HUD
             channelExistsContainer.SetActive(false);
             channelExistsWithJoinOptionContainer.SetActive(false);
             genericErrorLabel.gameObject.SetActive(false);
+            inputFieldErrorBevel.SetActive(false);
+            channelNameLengthLabel.color = lengthLabelOriginalColor;
         }
 
         public void DisableCreateButton() => createButton.interactable = false;

@@ -19,7 +19,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
-    [SerializeField] private GameObject disclaimerContainer;
     [SerializeField] internal GameObject messagesLoading;
     [SerializeField] internal ScrollRect scroll;
     [SerializeField] internal GameObject oldMessagesLoadingContainer;
@@ -150,7 +149,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             return;
 
         messagesLoading.SetActive(isActive);
-        disclaimerContainer.SetActive(!isActive);
     }
 
     public void SetOldMessagesLoadingActive(bool isActive)
