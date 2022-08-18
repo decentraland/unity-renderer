@@ -109,7 +109,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     {
         const int TIMEOUT = 30;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
-        timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
+        var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         var promise = RequestOwnedEmotes(userId);
         try
         {
@@ -123,6 +123,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
         finally
         {
+            timeout?.Dispose();
             timeoutCTS?.Dispose();
         }
 
@@ -162,7 +163,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     {
         const int TIMEOUT = 30;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
-        timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
+        var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
         Promise<WearableItem> promise = RequestEmote(id);
         try
@@ -183,6 +184,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
         finally
         {
+            timeout?.Dispose();
             timeoutCTS?.Dispose();
         }
 

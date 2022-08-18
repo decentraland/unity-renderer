@@ -147,7 +147,6 @@ namespace DCL.EmotesCustomization
 
         internal void AddEmote(WearableItem emote)
         {
-            Debug.Log("Adding Emote");
             var emoteId = emote.id;
             if (!emote.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(emoteId))
                 return;
