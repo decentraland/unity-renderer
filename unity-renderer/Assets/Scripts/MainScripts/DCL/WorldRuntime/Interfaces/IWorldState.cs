@@ -25,5 +25,6 @@ namespace DCL
         void AddScene(string id, IParcelScene newScene);
         void RemoveScene(string id);
         void AddGlobalScene(string sceneId, IParcelScene newScene);
+        void ForceCurrentScene(string sceneDataID);
     }
 }

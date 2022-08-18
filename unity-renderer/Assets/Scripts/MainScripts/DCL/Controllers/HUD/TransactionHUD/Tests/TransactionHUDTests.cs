@@ -11,27 +11,22 @@ namespace Tests
     {
         private TransactionHUDController controller;
 
-        [SetUp]
-
         protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
             MainSceneFactory.CreateBridges();
 
             TestUtils.CreateTestScene();
             
             controller = new TransactionHUDController();
             controller.Initialize();
-            
-            return base.SetUp();
         }
-
-
-        [TearDown]
+        
         protected override IEnumerator TearDown()
         {
-            controller.Dispose();
+            yield return base.TearDown();
 
-            return base.TearDown();
+            controller.Dispose();
         }
 
         [Test]

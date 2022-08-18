@@ -1314,7 +1314,7 @@ namespace DCL.Helpers
 
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
-
+        
         public static ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
             if (data == null)
@@ -1347,7 +1347,7 @@ namespace DCL.Helpers
                 newScene.InitializeDebugPlane();
 
             Environment.i.world.state.AddScene(data.id, newScene);
-            Environment.i.world.state.SortScenesByDistance(Vector2Int.zero);
+            Environment.i.world.state.ForceCurrentScene(data.id);
 
             return newScene;
         }

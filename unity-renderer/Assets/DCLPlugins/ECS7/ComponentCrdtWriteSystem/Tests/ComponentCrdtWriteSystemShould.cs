@@ -26,7 +26,7 @@ namespace Tests
             crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
 
             scene.crdtExecutor.Returns(crdtExecutor);
-            scene.parcels.Returns(new HashSet<Vector2Int>());
+            scene.GetParcels().Returns(new HashSet<Vector2Int>());
             worldState.AddScene(SCENE_ID, scene);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,

@@ -20,7 +20,7 @@ namespace DCL.Controllers
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
-        public HashSet<Vector2Int> parcels { get; set; } = new HashSet<Vector2Int>();
+        public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
         public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
@@ -213,6 +213,7 @@ namespace DCL.Controllers
             return string.IsNullOrEmpty(sceneName) ? "Unnamed" : sceneName;
         }
 
+        public HashSet<Vector2Int> GetParcels() => parcels;
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
             if (isPersistent)

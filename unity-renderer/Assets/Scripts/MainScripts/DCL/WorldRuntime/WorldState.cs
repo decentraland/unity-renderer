@@ -172,6 +172,10 @@ namespace DCL
             }
 
         }
+        public void ForceCurrentScene(string id)
+        {
+            currentSceneId = id;
+        }
         
         public void AddScene(string id, IParcelScene newScene)
         {
@@ -183,12 +187,8 @@ namespace DCL
             
             loadedScenes.Add(id, newScene);
             
-            foreach (Vector2Int parcelPosition in newScene.parcels)
+            foreach (Vector2Int parcelPosition in newScene.GetParcels())
             {
-                if (loadedScenesByCoordinate.ContainsKey(parcelPosition) && loadedScenesByCoordinate[parcelPosition] != id)
-                {
-                    Debug.LogWarning($"[{parcelPosition}] different id? original: {loadedScenesByCoordinate[parcelPosition]} new: {id}");
-                }
                 loadedScenesByCoordinate[parcelPosition] = id;
             }
                 
@@ -204,7 +204,7 @@ namespace DCL
         {
             IParcelScene loadedScene = loadedScenes[id];
 
-            foreach (Vector2Int sceneParcel in loadedScene.parcels)
+            foreach (Vector2Int sceneParcel in loadedScene.GetParcels())
             {
                 loadedScenesByCoordinate.Remove(sceneParcel);
             }
@@ -236,6 +236,12 @@ namespace DCL
 
         public void Dispose()
         {
+            loadedScenes.Clear();
+            loadedScenesByCoordinate.Clear();
+            scenesSortedByDistance.Clear();
+            globalScenes.Clear();
+            globalScenes.Clear();
+            currentSceneId = null;
         }
 
         public void Initialize()
