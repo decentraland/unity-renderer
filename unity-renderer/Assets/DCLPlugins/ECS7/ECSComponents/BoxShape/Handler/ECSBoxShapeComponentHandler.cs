@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.ECSComponents;
-using Google.Protobuf.Collections;
 using UnityEngine;
 
 namespace DCL.ECSComponents

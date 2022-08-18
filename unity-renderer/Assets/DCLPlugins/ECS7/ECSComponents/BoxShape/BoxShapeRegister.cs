@@ -10,7 +10,8 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public BoxShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
+        public BoxShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
             factory.AddOrReplaceComponent(componentId, BoxShapeSerializer.Deserialize, () => new ECSBoxShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBBoxShape>(componentId, BoxShapeSerializer.Serialize);
