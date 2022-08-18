@@ -43,6 +43,7 @@ namespace DCL.Chat.HUD
             Assert.IsFalse(view.channelExistsContainer.activeSelf);
             Assert.IsFalse(view.channelExistsWithJoinOptionContainer.activeSelf);
             Assert.IsTrue(view.genericErrorLabel.gameObject.activeSelf);
+            Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
             Assert.AreEqual(message, view.genericErrorLabel.text);
         }
 
@@ -54,6 +55,7 @@ namespace DCL.Chat.HUD
             
             Assert.AreEqual(!withJoinOptionEnabled, view.channelExistsContainer.activeSelf);
             Assert.AreEqual(withJoinOptionEnabled, view.channelExistsWithJoinOptionContainer.activeSelf);
+            Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
             Assert.IsFalse(view.genericErrorLabel.gameObject.activeSelf);
         }
 
@@ -65,6 +67,7 @@ namespace DCL.Chat.HUD
             Assert.IsFalse(view.channelExistsContainer.activeSelf);
             Assert.IsFalse(view.channelExistsWithJoinOptionContainer.activeSelf);
             Assert.IsFalse(view.genericErrorLabel.gameObject.activeSelf);
+            Assert.IsFalse(view.inputFieldErrorBevel.activeSelf);
         }
 
         [Test]
