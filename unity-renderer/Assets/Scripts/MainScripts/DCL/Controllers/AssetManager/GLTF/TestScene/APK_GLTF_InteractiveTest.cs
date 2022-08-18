@@ -21,13 +21,16 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     private string[] urls = new string[]
     {
-        "/GLB/TrunkSeparatedTextures/Trunk.glb",
+        /*"/GLB/TrunkSeparatedTextures/Trunk.glb",
         "/GLB/Lantern/Lantern.glb",
         "/GLB/DamagedHelmet/DamagedHelmet.glb",
         "/GLB/Trevor/Trevor.glb",
         "/GLB/vertex-anim.glb",
         "/GLB/draco-compressor.glb",
-        "/GLB/cube_vertexcolor.glb",
+        "/GLB/cube_vertexcolor.glb",*/
+        
+        "/GLB/avatar-sitting/male/ch1_crowdV5.glb",
+        "/GLB/avatar-sitting/female/ch2_crowdV5.glb",
     };
     private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 

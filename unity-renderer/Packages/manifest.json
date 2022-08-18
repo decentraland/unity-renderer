@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.atteneder.draco": "https://github.com/atteneder/DracoUnity.git",
+    "com.atteneder.draco": "https://github.com/atteneder/DracoUnity.git#draco-unity-3",
     "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
     "com.brunomikoski.animationsequencer": "0.3.8",
     "com.coffee.ui-particle": "4.1.6",
