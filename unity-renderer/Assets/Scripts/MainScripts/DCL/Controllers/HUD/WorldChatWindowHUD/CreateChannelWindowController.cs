@@ -37,6 +37,7 @@ namespace DCL.Chat.HUD
             {
                 view.Show();
                 view.ClearInputText();
+                view.FocusInputField();
                 view.ClearError();
                 view.DisableCreateButton();
                 view.OnChannelNameUpdated += HandleChannelNameUpdated;

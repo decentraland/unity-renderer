@@ -41,7 +41,7 @@ namespace DCL
         public enum Network
         {
             MAINNET,
-            ROPSTEN,
+            GOERLI,
         }
 
         [Header("General Settings")] public bool OpenBrowserOnStart;
@@ -180,8 +180,8 @@ namespace DCL
          
             switch (network)
             {
-                case Network.ROPSTEN:
-                    debugString = "NETWORK=ropsten&";
+                case Network.GOERLI:
+                    debugString = "NETWORK=goerli&";
                     break;
                 case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";

@@ -125,52 +125,20 @@ namespace DCL.Chat.Channels
 
         private async UniTask SimulateDelayedResponseFor_JoinChatMessage(string chatMessage)
         {
-            await UniTask.Delay(Random.Range(500, 1000));
-
             var chatMessageToLower = chatMessage.ToLower();
 
             if (chatMessageToLower.StartsWith("/join "))
             {
-                string channelId = chatMessageToLower.Split(' ')[1].Replace("#", "");
+                var channelId = chatMessageToLower.Split(' ')[1].Replace("#", "");
 
                 if (!chatMessageToLower.Contains("error"))
-                {
-                    if (!joinedChannels.Contains(channelId))
-                        joinedChannels.Add(channelId);
-
-                    controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
-                }
+                    JoinOrCreateChannel(channelId);
                 else
+                {
+                    await UniTask.Delay(Random.Range(40, 1000));
                     controller.JoinChannelError(CreateMockedDataFor_JoinChannelErrorPayload(channelId));
+                }
             }
-        }
-
-        private string CreateMockedDataFor_ChannelInfoPayload(string channelId)
-        {
-            var mockedPayload = new ChannelInfoPayload
-            {
-                joined = true,
-                channelId = channelId,
-                muted = false,
-                memberCount = Random.Range(0, 16),
-                unseenMessages = Random.Range(0, 16),
-                description = Random.Range(0, 2) == 0
-                    ? ""
-                    : "This is a test description for the channel. This will be used to describe the main purpose of the channel."
-            };
-
-            return JsonUtility.ToJson(mockedPayload);
-        }
-
-        private string CreateMockedDataFor_JoinChannelErrorPayload(string joinMessage)
-        {
-            var mockedPayload = new JoinChannelErrorPayload
-            {
-                channelId = joinMessage.Split(' ')[1].Replace("#", ""),
-                message = "There was an error creating the channel."
-            };
-
-            return JsonUtility.ToJson(mockedPayload);
         }
 
         public void MarkMessagesAsSeen(string userId) => controller.MarkMessagesAsSeen(userId);
@@ -189,17 +157,9 @@ namespace DCL.Chat.Channels
         public void JoinOrCreateChannel(string channelId)
         {
             currentChannelId = channelId;
-            SimulateDelayedResponseFor_JoinOrCreateChannel(channelId).Forget();
-        }
-
-        private async UniTask SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
-        {
-            await UniTask.Delay(Random.Range(40, 1000));
-
-            if (!joinedChannels.Contains(channelId))
-                joinedChannels.Add(channelId);
-
-            controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
+            SimulateDelayedResponseFor_JoinOrCreateChannel(channelId)
+                .ContinueWith(() => SendWelcomeMessage(channelId).Forget())
+                .Forget();
         }
 
         public void LeaveChannel(string channelId)
@@ -207,22 +167,6 @@ namespace DCL.Chat.Channels
             if (channelId == currentChannelId)
                 currentChannelId = null;
             LeaveFakeChannel(channelId).Forget();
-        }
-
-        private async UniTask LeaveFakeChannel(string channelId)
-        {
-            await UniTask.Delay(Random.Range(40, 1000));
-
-            var msg = new ChannelInfoPayload
-            {
-                joined = false,
-                channelId = channelId,
-                muted = false,
-                memberCount = Random.Range(0, 16),
-                unseenMessages = 0
-            };
-            joinedChannels.Remove(channelId);
-            controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
         }
 
         public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
@@ -254,44 +198,6 @@ namespace DCL.Chat.Channels
 
         public void GetChannels(int limit, int skip) =>
             GetFakeChannels(limit, skip, "").Forget();
-
-        private async UniTask GetFakeChannels(int limit, int skip, string name)
-        {
-            await UniTask.Delay(Random.Range(40, 1000));
-
-            var ids = new[]
-            {
-                "help",
-                "global",
-                "argentina",
-                "spain",
-                "trade",
-                "ice-poker",
-                "dcl-sdk",
-                "btc",
-                "eth",
-                "nfts",
-                "lands",
-                "art-week",
-                "music-festival"
-            };
-
-            for (var i = skip; i < skip + limit && i < ids.Length; i++)
-            {
-                var channelId = ids[i];
-                if (!channelId.StartsWith(name) && !string.IsNullOrEmpty(name)) continue;
-
-                var msg = new ChannelInfoPayload
-                {
-                    joined = joinedChannels.Contains(channelId),
-                    channelId = channelId,
-                    muted = false,
-                    memberCount = Random.Range(0, 16),
-                    unseenMessages = 0
-                };
-                controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
-            }
-        }
 
         public void MuteChannel(string channelId) => MuteFakeChannel(channelId).Forget();
 
@@ -565,6 +471,114 @@ namespace DCL.Chat.Channels
                 total = TotalUnseenMessages + 1
             };
             controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
+        }
+
+        private async UniTask SendWelcomeMessage(string channelId)
+        {
+            await UniTask.Delay(500);
+            
+            var messagePayload =
+                new ChatMessage(ChatMessage.Type.SYSTEM, "", @$"This is the start of the channel #{channelId}.\n
+Invite others to join by quoting the channel name in other chats or include it as a part of your bio.")
+                {
+                    recipient = channelId,
+                    timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                    isChannelMessage = true
+                };
+
+            controller.AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
+        }
+        
+        private string CreateMockedDataFor_ChannelInfoPayload(string channelId)
+        {
+            var mockedPayload = new ChannelInfoPayload
+            {
+                joined = true,
+                channelId = channelId,
+                muted = false,
+                memberCount = Random.Range(0, 16),
+                unseenMessages = Random.Range(0, 16),
+                description = Random.Range(0, 2) == 0
+                    ? ""
+                    : "This is a test description for the channel. This will be used to describe the main purpose of the channel."
+            };
+
+            return JsonUtility.ToJson(mockedPayload);
+        }
+
+        private string CreateMockedDataFor_JoinChannelErrorPayload(string joinMessage)
+        {
+            var mockedPayload = new JoinChannelErrorPayload
+            {
+                channelId = joinMessage.Split(' ')[1].Replace("#", ""),
+                message = "There was an error creating the channel."
+            };
+
+            return JsonUtility.ToJson(mockedPayload);
+        }
+        
+        private async UniTask SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            if (!joinedChannels.Contains(channelId))
+                joinedChannels.Add(channelId);
+
+            controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
+        }
+        
+        private async UniTask LeaveFakeChannel(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            var msg = new ChannelInfoPayload
+            {
+                joined = false,
+                channelId = channelId,
+                muted = false,
+                memberCount = Random.Range(0, 16),
+                unseenMessages = 0
+            };
+            joinedChannels.Remove(channelId);
+            controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+        }
+        
+        private async UniTask GetFakeChannels(int limit, int skip, string name)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            var ids = new[]
+            {
+                "help",
+                "global",
+                "argentina",
+                "spain",
+                "trade",
+                "ice-poker",
+                "dcl-sdk",
+                "btc",
+                "eth",
+                "nfts",
+                "lands",
+                "art-week",
+                "music-festival"
+            };
+
+            for (var i = skip; i < skip + limit && i < ids.Length; i++)
+            {
+                var channelId = ids[i];
+                if (!channelId.StartsWith(name) && !string.IsNullOrEmpty(name)) continue;
+
+                var msg = new ChannelInfoPayload
+                {
+                    joined = joinedChannels.Contains(channelId),
+                    channelId = channelId,
+                    muted = false,
+                    memberCount = Random.Range(0, 16),
+                    unseenMessages = 0
+                };
+                controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+            }
         }
     }
 }

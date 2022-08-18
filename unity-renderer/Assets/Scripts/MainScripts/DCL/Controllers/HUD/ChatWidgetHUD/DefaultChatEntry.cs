@@ -181,9 +181,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (HUDAudioHandler.i == null)
             return;
 
-        // Check whether or not this message is new, and chat sounds are enabled in settings
-        if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
-            Settings.i.audioSettings.Data.chatSFXEnabled)
+        if (IsRecentMessage(chatEntryModel) && Settings.i.audioSettings.Data.chatSFXEnabled)
         {
             switch (chatEntryModel.messageType)
             {
@@ -217,6 +215,12 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         }
 
         HUDAudioHandler.i.RefreshChatLastCheckedTimestamp();
+    }
+
+    private bool IsRecentMessage(ChatEntryModel chatEntryModel)
+    {
+        return chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp
+               && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp)).TotalSeconds < 30;
     }
 
     private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
