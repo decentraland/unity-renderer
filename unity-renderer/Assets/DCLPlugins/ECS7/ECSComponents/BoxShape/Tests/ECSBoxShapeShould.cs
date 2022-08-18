@@ -21,7 +21,7 @@ namespace DCL.ECSComponents.Test
         private IParcelScene scene;
         private ECSBoxShapeComponentHandler boxShapeComponentHandler;
         private GameObject gameObject;
-        private IInternalECSComponent<InternalTexturizable> texurizableInternalComponent;
+        private IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
         [SetUp]
         protected void SetUp()
@@ -29,8 +29,8 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            texurizableInternalComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
-            boxShapeComponentHandler = new ECSBoxShapeComponentHandler(DataStore.i.ecs7, texurizableInternalComponent);
+            texturizableInternalComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
+            boxShapeComponentHandler = new ECSBoxShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -60,7 +60,7 @@ namespace DCL.ECSComponents.Test
             // Assert
             Assert.IsNotNull(boxShapeComponentHandler.meshesInfo);
             var meshesInfo = boxShapeComponentHandler.meshesInfo;
-            texurizableInternalComponent.Received(1).PutFor(scene, entity, 
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
                 Arg.Is<InternalTexturizable>(x => meshesInfo.renderers.All(r => x.renderers.Contains(r))));
         }
 
@@ -70,14 +70,14 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBBoxShape model = new PBBoxShape();
             boxShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
-            texurizableInternalComponent.ClearReceivedCalls();
+            texturizableInternalComponent.ClearReceivedCalls();
             
             // Act
             boxShapeComponentHandler.OnComponentRemoved(scene, entity);
 
             // Assert
             Assert.IsNull(boxShapeComponentHandler.meshesInfo);
-            texurizableInternalComponent.Received(1).PutFor(scene, entity, 
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
                 Arg.Is<InternalTexturizable>(x => x.renderers.Count == 0));
         }
         
