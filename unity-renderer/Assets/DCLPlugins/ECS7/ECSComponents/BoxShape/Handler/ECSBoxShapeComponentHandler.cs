@@ -17,12 +17,12 @@ namespace DCL.ECSComponents
         internal PBBoxShape lastModel;
 
         private readonly DataStore_ECS7 dataStore;
-        private readonly IInternalECSComponent<InternalTexturizable> texurizableInternalComponent;
+        private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
         
-        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texurizableInternalComponent)
+        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
             dataStore = dataStoreEcs7;
-            this.texurizableInternalComponent = texurizableInternalComponent;
+            this.texturizableInternalComponent = texturizableInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -75,7 +75,7 @@ namespace DCL.ECSComponents
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker)
         {
             meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, isVisible, withCollisions, isPointerBlocker);
-            ECSRendererableComponentUtils.AddToTexturizableComponent(scene, entity, meshesInfo?.renderers, texurizableInternalComponent);
+            texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
@@ -85,7 +85,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
-                ECSRendererableComponentUtils.RemoveFromTexturizableComponent(scene, entity, meshesInfo?.renderers, texurizableInternalComponent);
+                texturizableInternalComponent.RemoveRenderers(scene, entity, meshesInfo?.renderers);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }
