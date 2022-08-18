@@ -4,11 +4,11 @@ namespace DCL.ECSComponents
     {
         private static readonly Color3 colorWhite = new Color3()
         {
-            R = 0, G = 0, B = 0
+            R = 1, G = 1, B = 1
         };
         private static readonly Color3 colorBlack = new Color3()
         {
-            R = 1, G = 1, B = 1
+            R = 0, G = 0, B = 0
         };
 
         public static float GetAlphaTest(this PBMaterial self)
