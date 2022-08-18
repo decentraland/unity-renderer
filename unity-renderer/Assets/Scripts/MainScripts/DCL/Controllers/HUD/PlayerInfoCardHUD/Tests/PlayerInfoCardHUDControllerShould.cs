@@ -233,9 +233,9 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
                 userId = id,
                 name = $"name_{id}",
                 description = $"description_{id}",
-                email = $"email_{id}",
-                inventory = inventory
+                email = $"email_{id}"
             });
+        userProfile.SetInventory(inventory);
         return userProfile;
     }
 

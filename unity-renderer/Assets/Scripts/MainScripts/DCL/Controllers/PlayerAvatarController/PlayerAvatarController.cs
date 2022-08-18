@@ -14,7 +14,7 @@ using SocialFeaturesAnalytics;
 using UnityEngine;
 using Type = DCL.NotificationModel.Type;
 
-public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
+public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHidePassportAreaHandler
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
@@ -246,16 +246,28 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-    public void ApplyHideModifier()
+    public void ApplyHideAvatarModifier()
     {
         avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
         stickersControllers.ToggleHideArea(true);
     }
     
-    public void RemoveHideModifier()
+    public void RemoveHideAvatarModifier()
     {
         avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
         stickersControllers.ToggleHideArea(false);
+    }
+
+    public void ApplyHidePassportModifier()
+    {
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+    }
+    
+    public void RemoveHidePassportModifier()
+    {
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
     }
 
     private void OnDisable()
@@ -271,4 +283,5 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         avatarLoadingCts = null;
         avatar?.Dispose();
     }
+
 }
