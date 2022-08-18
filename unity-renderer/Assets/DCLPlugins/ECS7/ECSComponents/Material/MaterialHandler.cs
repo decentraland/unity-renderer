@@ -84,6 +84,9 @@ namespace DCL.ECSComponents
 
         private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(PBMaterial.Types.Texture textureModel, IParcelScene scene)
         {
+            if (textureModel == null)
+                return null;
+
             if (string.IsNullOrEmpty(textureModel.Src))
                 return null;
 

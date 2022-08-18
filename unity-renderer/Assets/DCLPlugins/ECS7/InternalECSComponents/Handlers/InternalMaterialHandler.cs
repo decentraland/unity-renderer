@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class InternalMaterialHandler : IECSComponentHandler<InternalMaterial>
 {
-    private IList<Renderer> renderers;
-    
+    internal IList<Renderer> renderers;
+
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
