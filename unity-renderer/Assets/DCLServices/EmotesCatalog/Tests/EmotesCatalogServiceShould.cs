@@ -335,8 +335,8 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);
         Assert.AreEqual(catalog.emotes["id3"], embededEmotes[2]);
-        Assert.AreEqual(catalog.emotesOnUse["id1"], int.MaxValue);
-        Assert.AreEqual(catalog.emotesOnUse["id2"], int.MaxValue);
-        Assert.AreEqual(catalog.emotesOnUse["id3"], int.MaxValue);
+        Assert.AreEqual(catalog.emotesOnUse["id1"], 5000);
+        Assert.AreEqual(catalog.emotesOnUse["id2"], 5000);
+        Assert.AreEqual(catalog.emotesOnUse["id3"], 5000);
     }
 }

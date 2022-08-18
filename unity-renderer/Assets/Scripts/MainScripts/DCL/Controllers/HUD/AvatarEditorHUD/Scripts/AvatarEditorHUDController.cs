@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Emotes;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -58,6 +59,7 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
+    private float lastTimeOwnedEmotesChecked = float.MinValue;
     internal bool collectionsAlreadyLoaded = false;
     private float prevRenderScale = 1.0f;
     private bool isAvatarPreviewReady;
@@ -102,7 +104,6 @@ public class AvatarEditorHUDController : IHUD
 
         SetCatalog(catalog);
 
-        LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
@@ -113,9 +114,11 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.emotes,
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
+        //Initialize with embedded emotes
+        emotesCustomizationComponentController.SetEmotes(Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes.ToArray());
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
-        
+
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
         emotesCustomizationDataStore.currentLoadedEmotes.OnAdded += OnNewEmoteAdded;
 
@@ -123,6 +126,8 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteEquipped += OnEmoteEquipped;
         emotesCustomizationComponentController.onEmoteUnequipped += OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell += OnRedirectToEmoteSelling;
+
+        LoadUserProfile(userProfile, true);
 
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
 
@@ -173,8 +178,10 @@ public class AvatarEditorHUDController : IHUD
                              LoadUserProfile(userProfile, true);
                              if (userProfile?.avatar != null && !DataStore.i.emotes.newFlowEnabled.Get())
                              {
-                                 var emotes = ownedWearables.Where(x => x.IsEmote()).ToArray();
-                                 emotesCustomizationComponentController.SetEmotes(emotes);
+                                 var emotes = ownedWearables.Where(x => x.IsEmote());
+                                 //Add embedded emotes
+                                 var allEmotes = emotes.Concat(Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes).ToArray();
+                                 emotesCustomizationComponentController.SetEmotes(allEmotes);
                              }
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
@@ -206,6 +213,11 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadOwnedEmotes()
     {
+        //Only check emotes once every 60 seconds
+        if (Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + 60)
+            return;
+
+        lastTimeOwnedEmotesChecked = Time.realtimeSinceStartup;
         //TODO only request OwnedEmotes once every minute
         loadEmotesCTS?.Cancel();
         loadEmotesCTS?.Dispose();
@@ -220,17 +232,15 @@ public class AvatarEditorHUDController : IHUD
 
     private async UniTaskVoid LoadOwnedEmotesTask(CancellationToken ct = default, int retries = LOADING_OWNED_WEARABLES_RETRIES)
     {
-        const int TIMEOUT = 60;
-        var timeout = TimeSpan.FromSeconds(TIMEOUT);
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
-        CancellationTokenSource timeoutCTS = new CancellationTokenSource();
-        timeoutCTS.CancelAfterSlim(timeout);
-        WearableItem[] emotes = null;
         try
         {
-            var finalCT = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-
-            emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, finalCT.Token);
+            var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
+            var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
+            if (emotes != null)
+                emotesCustomizationComponentController.SetEmotes(emotes.Concat(embeddedEmotes).ToArray());
+            else
+                emotesCustomizationComponentController.SetEmotes(embeddedEmotes.ToArray());
 
         }
         catch (Exception e)
@@ -258,15 +268,7 @@ public class AvatarEditorHUDController : IHUD
                 });
                 view.ShowCollectiblesLoadingRetry(true);
             }
-            return;
         }
-        finally
-        {
-            timeoutCTS?.Dispose();
-        }
-
-        if (emotes != null)
-            emotesCustomizationComponentController.SetEmotes(emotes);
     }
 
     private void QueryNftCollections(string userId)
@@ -780,6 +782,10 @@ public class AvatarEditorHUDController : IHUD
 
     public void Dispose()
     {
+        loadEmotesCTS?.Cancel();
+        loadEmotesCTS?.Dispose();
+        loadEmotesCTS = null;
+
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;

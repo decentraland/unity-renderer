@@ -64,17 +64,15 @@ namespace DCL.EmotesCustomization
 
         public void SetEmotes(WearableItem[] ownedEmotes)
         {
-            var currentEmotes = emotesCustomizationDataStore.currentLoadedEmotes.Get();
-            foreach (string emoteId in currentEmotes)
+            //Find loaded emotes that are not contained in emotesToSet
+            List<string> idsToRemove = emotesCustomizationDataStore.currentLoadedEmotes.Get().Where(x => ownedEmotes.All(y => x != y.id)).ToList();
+
+            foreach (string emoteId in idsToRemove)
             {
-                emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
-                emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
+                RemoveEmote(emoteId);
             }
 
-            emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string>());
-            view.CleanEmotes();
-            var allEmotes = ownedEmotes.Concat(Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes);
-            this.ownedEmotes = allEmotes.ToDictionary(x => x.id, x => x);
+            this.ownedEmotes = ownedEmotes.ToDictionary(x => x.id, x => x);
             foreach (WearableItem emote in this.ownedEmotes.Values)
             {
                 AddEmote(emote);
@@ -149,6 +147,7 @@ namespace DCL.EmotesCustomization
 
         internal void AddEmote(WearableItem emote)
         {
+            Debug.Log("Adding Emote");
             var emoteId = emote.id;
             if (!emote.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(emoteId))
                 return;
@@ -167,6 +166,16 @@ namespace DCL.EmotesCustomization
 
             RefreshEmoteLoadingState(emoteId);
         }
+
+        internal void RemoveEmote(string emoteId)
+        {
+            emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
+            emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
+            emotesCustomizationDataStore.currentLoadedEmotes.Remove(emoteId);
+            view.RemoveEmote(emoteId);
+            UpdateEmoteSlots();
+        }
+        
 
         internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { RefreshEmoteLoadingState(values.emoteId); }
 

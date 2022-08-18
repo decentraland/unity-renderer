@@ -213,6 +213,7 @@ namespace DCL.EmotesCustomization.Tests
                 }
             };
 
+            emotesCustomizationComponentController.ownedEmotes = emotes.ToDictionary(x => x.id, x => x);
             emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string> { testId1, testId2 });
 
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(new List<EquippedEmoteData>

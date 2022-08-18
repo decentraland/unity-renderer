@@ -107,15 +107,23 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
     {
-        ct.ThrowIfCancellationRequested();
+        const int TIMEOUT = 30;
+        CancellationTokenSource timeoutCTS = new CancellationTokenSource();
+        timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         var promise = RequestOwnedEmotes(userId);
         try
         {
-            await promise.WithCancellation(ct).AttachExternalCancellation(ct);
+            ct.ThrowIfCancellationRequested();
+            var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
+            await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
         }
         catch (OperationCanceledException e)
         {
             return null;
+        }
+        finally
+        {
+            timeoutCTS?.Dispose();
         }
 
         return promise.value;
@@ -152,11 +160,15 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default)
     {
+        const int TIMEOUT = 30;
+        CancellationTokenSource timeoutCTS = new CancellationTokenSource();
+        timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
         Promise<WearableItem> promise = RequestEmote(id);
         try
         {
-            await promise.WithCancellation(ct).AttachExternalCancellation(ct);
+            var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
+            await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
         }
         catch (OperationCanceledException e)
         {
@@ -168,6 +180,10 @@ public class EmotesCatalogService : IEmotesCatalogService
             }
 
             return null;
+        }
+        finally
+        {
+            timeoutCTS?.Dispose();
         }
 
         return promise.value;
