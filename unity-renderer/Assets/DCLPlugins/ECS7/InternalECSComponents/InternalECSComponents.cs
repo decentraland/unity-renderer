@@ -19,7 +19,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             InternalECSComponentsId.MATERIAL,
             componentsManager,
             componentsFactory,
-            null);
+            () => new InternalMaterialHandler());
     }
 
     public void Dispose()

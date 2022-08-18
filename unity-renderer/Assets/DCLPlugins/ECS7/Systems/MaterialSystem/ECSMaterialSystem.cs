@@ -45,6 +45,7 @@ namespace ECSSystems.MaterialSystem
 
                 IList<Renderer> renderers = texturizableModel.renderers;
                 Material material = materialModel.material;
+                materialModel.renderers = renderers;
 
                 for (int j = 0; j < renderers.Count; j++)
                 {

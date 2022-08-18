@@ -13,6 +13,7 @@ namespace DCL.ECS7.InternalComponents
     {
         public Material material = null;
         public bool castShadows = true;
+        public IList<Renderer> renderers = null;
         public bool dirty = true;
     }
 }

@@ -163,5 +163,56 @@ namespace Tests
             Object.DestroyImmediate(scene0Material);
             Object.DestroyImmediate(scene1Material);
         }
+
+        [Test]
+        public void PropoerlyRemoveSharedMaterialFromEntity()
+        {
+            var texturizableComponent = internalEcsComponents.texturizableComponent;
+            var materialComponent = internalEcsComponents.materialComponent;
+
+            ECS7TestEntity entity00 = scene0.CreateEntity(100);
+            ECS7TestEntity entity10 = scene1.CreateEntity(200);
+
+            Renderer renderer00 = entity00.gameObject.AddComponent<MeshRenderer>();
+            Renderer renderer10 = entity10.gameObject.AddComponent<MeshRenderer>();
+
+            Assert.IsNull(renderer00.sharedMaterial);
+            Assert.IsNull(renderer10.sharedMaterial);
+
+            // add texturizable component
+            texturizableComponent.PutFor(scene0, entity00, new InternalTexturizable()
+            {
+                renderers = new List<Renderer>() { renderer00 }
+            });
+            texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable()
+            {
+                renderers = new List<Renderer>() { renderer10 }
+            });
+
+            // add same material for both
+            Material scene0Material = new Material(materialResource);
+            materialComponent.PutFor(scene0, entity00, new InternalMaterial()
+            {
+                material = scene0Material,
+                castShadows = false
+            });
+            materialComponent.PutFor(scene1, entity10, new InternalMaterial()
+            {
+                material = scene0Material,
+                castShadows = false
+            });
+
+            // apply material
+            materialSystemUpdate();
+
+            // remove material for entity00
+            materialComponent.RemoveFor(scene0, entity00);
+
+            // apply changes
+            materialSystemUpdate();
+
+            // entity00 should have it material removed from it renderers
+            Assert.IsNull(renderer00.sharedMaterial);
+        }
     }
 }
