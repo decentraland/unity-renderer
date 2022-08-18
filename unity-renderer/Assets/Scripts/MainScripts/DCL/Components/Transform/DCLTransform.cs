@@ -58,6 +58,8 @@ namespace DCL.Components
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
                 entity.gameObject.transform.CapGlobalValuesToMax();
+                
+                Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, runPreliminaryEvaluation: true);
             }
         }
 

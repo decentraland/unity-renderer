@@ -148,7 +148,7 @@ namespace DCL.Controllers
                 // The outer bounds check is cheaper than the regular check
                 RunEntityEvaluation(entity, onlyOuterBoundsCheck: true);
 
-                // No need to add the entity to be checked later if we already found it outside its bounds.
+                // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
                 // When the correct events are triggered again, the entity will be checked again.
                 if (!entity.isInsideSceneOuterBoundaries)
                 {
