@@ -14,8 +14,6 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal TMP_Text nameLabel;
-        [SerializeField] internal GameObject descriptionContainer;
-        [SerializeField] internal TMP_Text descriptionLabel;
         [SerializeField] internal ChatHUDView chatView;
         [SerializeField] internal PublicChatModel model;
         [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -65,8 +63,6 @@ namespace DCL.Chat.HUD
         public override void RefreshControl()
         {
             nameLabel.text = $"#{model.name}";
-            descriptionLabel.text = model.description;
-            descriptionContainer.SetActive(!string.IsNullOrEmpty(model.description));
         }
 
         public void Hide() => gameObject.SetActive(false);

@@ -41,7 +41,6 @@ public class PublicChatChannelComponentViewShould
         view.Configure(new PublicChatModel("nearby", "nearby", "any description", 0, true, 0));
         
         Assert.AreEqual("~nearby", view.nameLabel.text);
-        Assert.AreEqual("any description", view.descriptionLabel.text);
     }
 
     [Test]

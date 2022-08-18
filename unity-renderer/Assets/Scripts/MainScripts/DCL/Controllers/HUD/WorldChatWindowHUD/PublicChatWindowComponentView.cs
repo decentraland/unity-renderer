@@ -10,7 +10,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button backButton;
     [SerializeField] internal TMP_Text nameLabel;
-    [SerializeField] internal TMP_Text descriptionLabel;
     [SerializeField] internal ChatHUDView chatView;
     [SerializeField] internal PublicChatModel model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -49,7 +48,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public override void RefreshControl()
     {
         nameLabel.text = $"~{model.name}";
-        descriptionLabel.text = model.description;
     }
 
     public void Hide() => gameObject.SetActive(false);
