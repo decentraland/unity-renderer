@@ -15,6 +15,7 @@ using UnityGLTF;
 using UnityGLTF.Cache;
 using GLTF;
 using GLTF.Schema;
+using Newtonsoft.Json;
 using UnityGLTF.Loader;
 
 namespace DCL.ABConverter
@@ -156,6 +157,14 @@ namespace DCL.ABConverter
                             
                             if (value.IsCompleted)
                             {
+                                FileInfo gltfFilePath = new FileInfo(key);
+                                AssetBundleMetrics metrics = new AssetBundleMetrics()
+                                {
+                                    meshesEstimatedSize = value.meshesEstimatedSize,
+                                    animationsEstimatedSize = value.animationsEstimatedSize
+                                };
+                                File.WriteAllText($"{gltfFilePath.Directory.FullName}/metrics.json", JsonUtility.ToJson(metrics, true));
+
                                 GLTFImporter.PreloadedGLTFObjects.Add(GetRelativePath(key), value.lastLoadedScene);
                                 
                                 env.assetDatabase.ImportAsset(key, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceUpdate);

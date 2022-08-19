@@ -124,7 +124,7 @@ public enum CarouselDirection
     Left
 }
 
-public class CarouselComponentView : BaseComponentView, ICarouselComponentView, IComponentModelConfig
+public class CarouselComponentView : BaseComponentView, ICarouselComponentView, IComponentModelConfig<CarouselComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal RectTransform itemsContainer;
@@ -163,9 +163,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
             StartCarousel();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(CarouselComponentModel newModel)
     {
-        model = (CarouselComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

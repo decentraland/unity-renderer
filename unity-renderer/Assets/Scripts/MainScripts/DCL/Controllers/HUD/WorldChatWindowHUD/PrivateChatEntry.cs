@@ -2,8 +2,9 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static PrivateChatEntry;
 
-public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
+public class PrivateChatEntry : BaseComponentView, IComponentModelConfig<PrivateChatEntryModel>
 {
     [SerializeField] internal Button openChatButton;
     [SerializeField] internal PrivateChatEntryModel model;
@@ -52,9 +53,9 @@ public class PrivateChatEntry : BaseComponentView, IComponentModelConfig
         userContextMenu.OnBlock += HandleUserBlocked;
     }
     
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(PrivateChatEntryModel newModel)
     {
-        model = (PrivateChatEntryModel) newModel;
+        model = newModel;
         RefreshControl();
     }
 

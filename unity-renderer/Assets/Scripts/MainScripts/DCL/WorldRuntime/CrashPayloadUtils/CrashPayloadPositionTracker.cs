@@ -12,17 +12,18 @@ namespace DCL.Helpers
         private float lastPositionUpdate;
         private float positionUpdateInterval = 30.0f;
         private int maxQueueSize = 50;
+        private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
         public CrashPayloadPositionTracker()
         {
-            CommonScriptableObjects.playerWorldPosition.OnChange += OnPositionChange;
-            DataStore.i.player.lastTeleportPosition.OnChange += OnTeleport;
+            dataStorePlayer.playerGridPosition.OnChange += OnPositionChange;
+            dataStorePlayer.lastTeleportPosition.OnChange += OnTeleport;
         }
 
         public void Dispose()
         {
-            CommonScriptableObjects.playerWorldPosition.OnChange -= OnPositionChange;
-            DataStore.i.player.lastTeleportPosition.OnChange -= OnTeleport;
+            dataStorePlayer.playerGridPosition.OnChange -= OnPositionChange;
+            dataStorePlayer.lastTeleportPosition.OnChange -= OnTeleport;
         }
 
         private void OnTeleport(Vector3 current, Vector3 previous)
@@ -33,11 +34,11 @@ namespace DCL.Helpers
                 teleportPositions.RemoveAt(0);
         }
 
-        private void OnPositionChange(Vector3 current, Vector3 previous)
+        private void OnPositionChange(Vector2Int current, Vector2Int previous)
         {
             if (lastPositionUpdate + positionUpdateInterval > Time.time)
             {
-                movePositions.Add(current);
+                movePositions.Add(dataStorePlayer.playerWorldPosition.Get());
                 lastPositionUpdate = Time.time;
 
                 if (movePositions.Count > maxQueueSize)

@@ -1,6 +1,6 @@
 using System;
-using DCL.ECSRuntime;
 using DCL.ECS7;
+using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
@@ -24,10 +24,16 @@ namespace DCL.ECSComponents
         private readonly CameraModeAreaRegister cameraModeAreaRegister;
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
+        
+        // UI components
+        private readonly UITransformRegister uiTransformRegister;
+        private readonly UITextRegister uiTextRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
         private readonly OnPointerDownResultRegister pointerDownResultRegister;
         private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly CameraModeRegister cameraModeRegister;
+        private readonly PointerLockRegister pointerLockRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
         {
@@ -49,9 +55,15 @@ namespace DCL.ECSComponents
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             
+            // UI components
+            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);
+            uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
+            
             // Components without a handler
             pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
             pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
+            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -74,9 +86,15 @@ namespace DCL.ECSComponents
             pointerUpRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             
+            // UI components
+            uiTransformRegister.Dispose();
+            uiTextRegister.Dispose();
+            
             // Components without a handler
             pointerDownResultRegister.Dispose();
             pointerUpResultRegister.Dispose();
+            cameraModeRegister.Dispose();
+            pointerLockRegister.Dispose();
         }
     }
 }

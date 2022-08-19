@@ -261,6 +261,16 @@ namespace DCL
                                     "\"areaDepth\":15 " +
                                     "}");
         }
+        
+        [ContextMenu("Instantiate 50 bots at player coordinates")]
+        public void DebugBotsInstantiation2()
+        {
+            InstantiateBotsAtCoords("{ " +
+                                    "\"amount\":50, " +
+                                    "\"areaWidth\":15, " +
+                                    "\"areaDepth\":15 " +
+                                    "}");
+        }
 #endif
     }
 }

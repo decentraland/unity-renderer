@@ -132,7 +132,7 @@ namespace DCL.ECSComponents
             
             UpdateAudioSourceVolume();
             audioSource.loop = model.Loop;
-            audioSource.pitch = model.Pitch;
+            audioSource.pitch = model.GetPitch();
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
 
@@ -198,7 +198,7 @@ namespace DCL.ECSComponents
             {
                 AudioSettings audioSettingsData =
                     settings != null ? settings.audioSettings.Data : new AudioSettings();
-                newVolume = model.Volume * Utils.ToVolumeCurve(
+                newVolume = model.GetVolume() * Utils.ToVolumeCurve(
                     dataStore.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
                     audioSettingsData.masterVolume);
             }
@@ -216,7 +216,7 @@ namespace DCL.ECSComponents
             float volume = 0;
 
             if (scene.isPersistent || scene.sceneData.id == currentSceneId)
-                volume = model.Volume;
+                volume = model.GetVolume();
             
             audioSource.volume = volume;
         }
