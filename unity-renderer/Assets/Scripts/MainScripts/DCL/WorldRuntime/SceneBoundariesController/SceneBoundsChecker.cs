@@ -150,15 +150,13 @@ namespace DCL.Controllers
 
                 // No need to add the entity to be checked later if we already found it outside scene outer boundaries.
                 // When the correct events are triggered again, the entity will be checked again.
-                if (!entity.isInsideSceneOuterBoundaries)
-                {
+                if (!isPersistent && !entity.isInsideSceneOuterBoundaries)
                     return;
-                }
             }
     
             entitiesToCheck.Add(entity);
             
-            if(isPersistent)
+            if (isPersistent)
                 persistentEntities.Add(entity);
         }
 
@@ -290,6 +288,16 @@ namespace DCL.Controllers
                     continue;
 
                 if (!entity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.GetSafeBounds(renderer.bounds, renderer.transform.position)))
+                    return false;
+            }
+            
+            // TODO: ADD TEST TO CHECK THIS
+            foreach (Collider collider in entity.meshesInfo.colliders)
+            {
+                if (collider == null)
+                    continue;
+
+                if (!entity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.GetSafeBounds(collider.bounds, collider.transform.position)))
                     return false;
             }
 
