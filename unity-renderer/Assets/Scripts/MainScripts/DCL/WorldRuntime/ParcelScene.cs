@@ -517,7 +517,7 @@ namespace DCL.Controllers
             if (me.gameObject.transform.parent == avatarTransform ||
                 me.gameObject.transform.parent == firstPersonCameraTransform)
             {
-                if (Environment.i.world.sceneBoundsChecker.EntityAddedAsPersistent(me))
+                if (Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(me))
                     Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true);
             }
 
