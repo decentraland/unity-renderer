@@ -13,7 +13,11 @@ namespace DCL.ECS7.InternalComponents
             if (renderers == null)
                 return;
 
-            var model = texurizableInternalComponent.GetFor(scene, entity).model;
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model;
+            
+            if (model == null)
+                return;
+            
             for (int i = 0; i < renderers.Count; i++)
             {
                 model.renderers.Remove(renderers[i]);
