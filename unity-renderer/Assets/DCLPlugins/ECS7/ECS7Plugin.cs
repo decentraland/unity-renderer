@@ -13,6 +13,7 @@ namespace DCL.ECS7
         private readonly ECSSystemsController systemsController;
         private readonly ECSComponentsFactory componentsFactory;
         private readonly ECSComponentsManager componentsManager;
+        private readonly CanvasPainter canvasPainter;
 
         private readonly ISceneController sceneController;
 
@@ -25,8 +26,10 @@ namespace DCL.ECS7
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
-
+            
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter);
+
+            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
             systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, componentWriter, crdtWriteSystem.LateUpdate);
 
             sceneController.OnNewSceneAdded += OnSceneAdded;
@@ -38,6 +41,7 @@ namespace DCL.ECS7
             crdtWriteSystem.Dispose();
             componentWriter.Dispose();
             systemsController.Dispose();
+            canvasPainter.Dispose();
             
             sceneController.OnNewSceneAdded -= OnSceneAdded;
         }
