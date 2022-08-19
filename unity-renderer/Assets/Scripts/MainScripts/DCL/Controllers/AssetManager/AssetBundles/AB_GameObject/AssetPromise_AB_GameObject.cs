@@ -17,7 +17,7 @@ namespace DCL
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
-        private bool doTransitionAnimation;
+        private bool doTransitionAnimationFlag;
         
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -25,7 +25,7 @@ namespace DCL
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
 
-        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimationFlag = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
@@ -54,9 +54,7 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
-                                doTransitionAnimation && asset != null;
-            CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(doTransition,asset.renderers,() => asset?.Show(OnSuccess), false));
+            CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(ShouldTransitionAnimationBeDone(),asset.renderers,() => asset?.Show(OnSuccess), false));
         }
      
         protected override void OnAfterLoadOrReuse()
@@ -185,9 +183,8 @@ namespace DCL
 
                 yield return null;
 
-                bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
-                                        doTransitionAnimation && asset != null;
-                yield return MaterialTransitionControllerUtils.SetMaterialTransition(doTransition,asset.renderers);
+               
+                yield return MaterialTransitionControllerUtils.SetMaterialTransition(ShouldTransitionAnimationBeDone(),asset.renderers);
             }
         }
 
@@ -219,6 +216,11 @@ namespace DCL
         {
             base.OnForget();
             featureFlags.OnChange -= OnFeatureFlagChange;
+        }
+
+        private bool ShouldTransitionAnimationBeDone()
+        {
+            return settings.doTransitionAnimation && doTransitionAnimationFlag && asset != null;
         }
 
     }

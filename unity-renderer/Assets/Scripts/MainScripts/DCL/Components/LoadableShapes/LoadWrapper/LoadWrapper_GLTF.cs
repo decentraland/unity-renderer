@@ -40,6 +40,7 @@ namespace DCL.Components
             if (initialVisibility == false)
             {
                 loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
+                loadHelper.settings.doTransitionAnimation = true;
             }
             else
             {
