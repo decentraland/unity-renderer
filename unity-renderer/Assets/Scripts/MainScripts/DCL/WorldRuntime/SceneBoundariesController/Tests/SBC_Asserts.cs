@@ -49,7 +49,7 @@ namespace SceneBoundariesCheckerTests
             var shapeEntity = boxShape.attachedEntities.First();
 
             yield return null;
-            AssertMeshIsValid(shapeEntity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(shapeEntity.meshesInfo);
          
             var newParentEntity = TestUtils.CreateSceneEntity(scene);
             TestUtils.SetEntityTransform(scene, newParentEntity, new DCLTransform.Model { position = new Vector3(100, 1, 100) });
@@ -58,7 +58,7 @@ namespace SceneBoundariesCheckerTests
             TestUtils.SetEntityParent(scene, shapeEntity, newParentEntity);
             
             yield return null;
-            AssertMeshIsInvalid(shapeEntity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(shapeEntity.meshesInfo);
         }
 
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -66,7 +66,7 @@ namespace SceneBoundariesCheckerTests
             var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(20, 2, 20));
             yield return null;
 
-            AssertMeshIsInvalid(boxShape.attachedEntities.First().meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(boxShape.attachedEntities.First().meshesInfo);
         }
 
         public static IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -84,7 +84,7 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -102,7 +102,28 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
+        }
+
+        public static IEnumerator GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries(ParcelScene scene)
+        {
+            var entity = TestUtils.CreateSceneEntity(scene);
+
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
+
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+                new
+                {
+                    src = TestAssetsUtils.GetPath() + "/GLB/gltfshape-asset-bundle-colliders-no-renderers.glb"
+                }));
+            LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return null;
+
+            // Force entity evaluation avoiding outer boundaries check
+            Environment.i.world.sceneBoundsChecker.RunEntityEvaluation(entity, onlyOuterBoundsCheck: false);
+            
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
         
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
@@ -114,7 +135,7 @@ namespace SceneBoundariesCheckerTests
             );
             
             yield return null;
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
         
         public static IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(ParcelScene scene)
@@ -130,7 +151,7 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             
             yield return null;
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
         
         public static IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
@@ -142,13 +163,13 @@ namespace SceneBoundariesCheckerTests
             );
             
             yield return null;
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
             
             yield return null;
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             
             yield return null;
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
         }
         
         public static IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(ParcelScene scene)
@@ -164,13 +185,13 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             
             yield return null;
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
             
             yield return null;
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             
             yield return null;
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
         }
         
         public static IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -194,7 +215,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator PShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
@@ -205,7 +226,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             var entity = boxShape.attachedEntities.First();
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
             var transformModel = new DCLTransform.Model { position = new Vector3(18, 1, 18) };
@@ -214,7 +235,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
@@ -231,7 +252,7 @@ namespace SceneBoundariesCheckerTests
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
@@ -239,7 +260,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
@@ -261,14 +282,14 @@ namespace SceneBoundariesCheckerTests
             LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator HeightIsEvaluated(ParcelScene scene)
@@ -278,7 +299,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
 
             // Move object to surpass the scene height boundaries
             var transformModel = new DCLTransform.Model { position = new Vector3(8, 30, 8) };
@@ -286,7 +307,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
         }
 
         public static IEnumerator ChildShapeIsEvaluated(ParcelScene scene)
@@ -296,7 +317,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-            AssertMeshIsValid(scene.entities[entityId].meshesInfo);
+            AssertMeshesAndCollidersAreValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
             long childEntityId = 20;
@@ -304,7 +325,7 @@ namespace SceneBoundariesCheckerTests
             
             yield return null;
             yield return null;
-            AssertMeshIsValid(scene.entities[childEntityId].meshesInfo);
+            AssertMeshesAndCollidersAreValid(scene.entities[childEntityId].meshesInfo);
 
             TestUtils.SetEntityParent(scene, childEntityId, entityId);
 
@@ -314,7 +335,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-            AssertMeshIsInvalid(scene.entities[childEntityId].meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(scene.entities[childEntityId].meshesInfo);
         }
 
         public static IEnumerator ChildShapeIsEvaluatedOnShapelessParent(ParcelScene scene)
@@ -325,7 +346,7 @@ namespace SceneBoundariesCheckerTests
             TestUtils.SetEntityTransform(scene, scene.entities[entityId], new Vector3(18, 1, 18), Quaternion.identity, Vector3.one);
             yield return null;
 
-            AssertMeshIsValid(scene.entities[entityId].meshesInfo);
+            AssertMeshesAndCollidersAreValid(scene.entities[entityId].meshesInfo);
 
             // Attach child
             long childEntityId = 20;
@@ -335,7 +356,7 @@ namespace SceneBoundariesCheckerTests
             TestUtils.SetEntityParent(scene, childEntityId, entityId);
             yield return null;
 
-            AssertMeshIsInvalid(scene.entities[childEntityId].meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(scene.entities[childEntityId].meshesInfo);
 
             // Move parent object to re-enter the scene boundaries
             TestUtils.SetEntityTransform(scene, scene.entities[entityId], new Vector3(8, 1, 8), Quaternion.identity, Vector3.one);
@@ -343,7 +364,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
-            AssertMeshIsValid(scene.entities[childEntityId].meshesInfo);
+            AssertMeshesAndCollidersAreValid(scene.entities[childEntityId].meshesInfo);
         }
 
         public static IEnumerator PShapeIsResetWhenReenteringBounds(ParcelScene scene)
@@ -354,7 +375,7 @@ namespace SceneBoundariesCheckerTests
             var entity = boxShape.attachedEntities.First();
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
 
             // Move object to re-enter the scene boundaries
             var transformModel = new DCLTransform.Model { position = new Vector3(8, 1, 8) };
@@ -363,7 +384,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
         }
 
         public static IEnumerator GLTFShapeIsResetWhenReenteringBounds(ParcelScene scene)
@@ -381,7 +402,7 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             yield return null;
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
@@ -389,7 +410,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
         }
 
         public static IEnumerator NFTShapeIsResetWhenReenteringBounds(ParcelScene scene)
@@ -411,17 +432,17 @@ namespace SceneBoundariesCheckerTests
             LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
 
-            AssertMeshIsInvalid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
 
-            AssertMeshIsValid(entity.meshesInfo);
+            AssertMeshesAndCollidersAreValid(entity.meshesInfo);
         }
 
-        public static void AssertMeshIsInvalid(MeshesInfo meshesInfo)
+        public static void AssertMeshesAndCollidersAreInvalid(MeshesInfo meshesInfo)
         {
             Assert.IsTrue(meshesInfo.meshRootGameObject != null, "MeshRootGameObject is null. The object is valid when it shouldn't.");
 
@@ -452,40 +473,49 @@ namespace SceneBoundariesCheckerTests
                     }
                 }
             }
-
-            if (meshesInfo.colliders.Count > 0)
+            else
             {
                 foreach (Collider collider in meshesInfo.colliders)
                 {
-                    Assert.IsFalse(collider.enabled);
+                    Assert.IsFalse(collider.enabled, $"Collider {collider.gameObject.name} is enabled when it shouldn't!");
                 }
             }
         }
 
-        public static void AssertMeshIsValid(MeshesInfo meshesInfo)
+        public static void AssertMeshesAndCollidersAreValid(MeshesInfo meshesInfo)
         {
             if (meshesInfo.meshRootGameObject == null)
                 return; // It's valid if there's no mesh
 
-            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
+            if (meshesInfo.renderers != null && meshesInfo.renderers.Length > 0)
             {
-                bool hasWireframe = false;
-
-                foreach (Transform t in meshesInfo.innerGameObject.transform)
+                if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedBox)
                 {
-                    if (t.name.Contains("Wireframe"))
-                        hasWireframe = true;
+                    bool hasWireframe = false;
+
+                    foreach (Transform t in meshesInfo.innerGameObject.transform)
+                    {
+                        if (t.name.Contains("Wireframe"))
+                            hasWireframe = true;
+                    }
+
+                    Assert.IsFalse(hasWireframe);
                 }
-                
-                Assert.IsFalse(hasWireframe);
+                else
+                {
+                    for (int i = 0; i < meshesInfo.renderers.Length; i++)
+                    {
+                        Assert.IsTrue(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is disabled when it should!");
+                    }
+
+                    foreach (Collider collider in meshesInfo.colliders)
+                    {
+                        Assert.IsTrue(collider.enabled, $"Collider {collider.gameObject.name} is disabled when it should!");
+                    }
+                }
             }
             else
             {
-                for (int i = 0; i < meshesInfo.renderers.Length; i++)
-                {
-                    Assert.IsTrue(meshesInfo.renderers[i].enabled, $"Renderer {meshesInfo.renderers[i].gameObject.name} is disabled when it should!");
-                }
-
                 foreach (Collider collider in meshesInfo.colliders)
                 {
                     Assert.IsTrue(collider.enabled, $"Collider {collider.gameObject.name} is disabled when it should!");

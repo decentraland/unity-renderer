@@ -270,10 +270,10 @@ namespace DCL.Controllers
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
 
-            // 2nd check (submeshes AABB)
+            // 2nd check (submeshes & colliders AABB)
             if (!isInsideBoundaries)
             {
-                isInsideBoundaries = AreSubmeshesInsideBoundaries(entity);
+                isInsideBoundaries = AreSubmeshesInsideBoundaries(entity) && AreCollidersInsideBoundaries(entity);
             }
 
             return isInsideBoundaries;
@@ -290,8 +290,12 @@ namespace DCL.Controllers
                 if (!entity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.GetSafeBounds(renderer.bounds, renderer.transform.position)))
                     return false;
             }
-            
-            // TODO: ADD TEST TO CHECK THIS
+
+            return true;
+        }
+
+        private bool AreCollidersInsideBoundaries(IDCLEntity entity)
+        {
             foreach (Collider collider in entity.meshesInfo.colliders)
             {
                 if (collider == null)

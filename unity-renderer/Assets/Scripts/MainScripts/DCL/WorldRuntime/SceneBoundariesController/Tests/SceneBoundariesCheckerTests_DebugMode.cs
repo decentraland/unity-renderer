@@ -54,13 +54,13 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
 
-            SBC_Asserts.AssertMeshIsValid(entity.meshesInfo);
+            SBC_Asserts.AssertMeshesAndCollidersAreValid(entity.meshesInfo);
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
-            SBC_Asserts.AssertMeshIsInvalid(entity.meshesInfo);
+            SBC_Asserts.AssertMeshesAndCollidersAreInvalid(entity.meshesInfo);
 
             TestUtils.RemoveSceneEntity(scene, entity.entityId);
 
@@ -82,7 +82,7 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded);
             yield return null;
 
-            SBC_Asserts.AssertMeshIsValid(entity2.meshesInfo);
+            SBC_Asserts.AssertMeshesAndCollidersAreValid(entity2.meshesInfo);
         }
 
         [UnityTest]
