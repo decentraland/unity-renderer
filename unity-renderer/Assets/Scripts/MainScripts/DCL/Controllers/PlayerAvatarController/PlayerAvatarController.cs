@@ -39,6 +39,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private Camera mainCamera;
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
+    private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
 
     internal ISocialAnalytics socialAnalytics;
 
@@ -69,6 +70,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 #endif
 
         mainCamera = Camera.main;
+        currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }
 
     private AvatarSystem.Avatar GetStandardAvatar()
@@ -248,26 +250,36 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     public void ApplyHideAvatarModifier()
     {
-        avatar.AddVisibilityConstrain(IN_HIDE_AREA);
-        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
-        stickersControllers.ToggleHideArea(true);
+        if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+        {
+            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            stickersControllers.ToggleHideArea(true);
+        }
+        currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
     }
     
     public void RemoveHideAvatarModifier()
     {
-        avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
-        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
-        stickersControllers.ToggleHideArea(false);
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+        {
+            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+            stickersControllers.ToggleHideArea(false);
+        }
     }
 
     public void ApplyHidePassportModifier()
     {
-        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
     }
     
     public void RemoveHidePassportModifier()
     {
-        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
     }
 
     private void OnDisable()
