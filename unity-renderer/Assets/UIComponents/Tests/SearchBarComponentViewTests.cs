@@ -147,32 +147,4 @@ public class SearchBarComponentViewTests
         Assert.IsFalse(searchBarComponent.clearSearchButton.gameObject.activeSelf);
         Assert.IsFalse(searchBarComponent.searchSpinner.activeSelf);
     }
-
-    [Test]
-    public void SelectInputCorrectly()
-    {
-        // Arrange
-        searchBarComponent.placeHolderText.gameObject.SetActive(true);
-
-        // Act
-        searchBarComponent.SelectInput("Test text");
-
-        // Assert
-        Assert.IsFalse(searchBarComponent.placeHolderText.gameObject.activeSelf);
-    }
-
-    [Test]
-    [TestCase("")]
-    [TestCase("Test text")]
-    public void DeselectInputCorrectly(string text)
-    {
-        // Arrange
-        searchBarComponent.placeHolderText.gameObject.SetActive(false);
-
-        // Act
-        searchBarComponent.DeselectInput(text);
-
-        // Assert
-        Assert.IsTrue(searchBarComponent.placeHolderText.gameObject.activeSelf);
-    }
 }

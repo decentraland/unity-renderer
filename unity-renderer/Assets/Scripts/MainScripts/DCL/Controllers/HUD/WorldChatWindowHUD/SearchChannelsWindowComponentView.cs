@@ -105,7 +105,11 @@ namespace DCL.Chat.HUD
             UpdateHeaders();
         }
 
-        public void Show() => gameObject.SetActive(true);
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            searchBar.SetFocus();
+        }
 
         public void Hide() => gameObject.SetActive(false);
 
