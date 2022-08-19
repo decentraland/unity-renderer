@@ -145,38 +145,50 @@ public class VoiceChatWindowControllerShould
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void JoinVoiceChatCorrectly(bool isJoined)
+    public void RequestJoinVoiceChatCorrectly(bool isJoined)
     {
         // Arrange
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
-        voiceChatWindowController.isOwnPLayerTalking = true;
-        voiceChatWindowController.isJoined = !isJoined;
-        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
-        voiceChatWindowController.JoinVoiceChat(isJoined);
+        voiceChatWindowController.RequestJoinVoiceChat(isJoined);
 
         // Assert
-        voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
-
-        if (isJoined)
-        {
-            voiceChatBarComponentView.Received(1).Show();
-        }
-        else
+        if (!isJoined)
         {
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
-            Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
-            voiceChatBarComponentView.Received(1).Hide();
         }
+    }
 
-        Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaiseOnVoiceChatStatusUpdatedCorrectly(bool isJoined)
+    {
+        // Arrange
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
+        dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
+        voiceChatWindowController.isOwnPLayerTalking = true;
 
-        if (!isJoined)
-            socialAnalytics.Received(1).SendVoiceChannelDisconnection();
-        else
+        // Act
+        voiceChatWindowController.OnVoiceChatStatusUpdated(isJoined, false);
+
+        // Assert
+        voiceChatWindowComponentView.Received().SetAsJoined(isJoined);
+        voiceChatBarComponentView.Received().SetAsJoined(isJoined);
+
+        if (isJoined)
+        {
             socialAnalytics.Received(1).SendVoiceChannelConnection(1);
+        }
+        else
+        {
+            socialAnalytics.Received().SendVoiceChannelDisconnection();
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
+            Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
+        }
     }
 
     [Test]
