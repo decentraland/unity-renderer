@@ -172,7 +172,7 @@ namespace DCL.Controllers
                 SetMeshesAndComponentsInsideBoundariesState(entity, true);
         }
 
-        public bool EntityAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
+        public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
 
         // TODO: When we remove the DCLBuilderEntity class we'll be able to remove this overload
         public void RunEntityEvaluation(IDCLEntity entity)

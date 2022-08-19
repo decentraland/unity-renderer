@@ -19,7 +19,7 @@ namespace DCL.Controllers
         void Stop();
         void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false);
         void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false);
-        bool EntityAddedAsPersistent(IDCLEntity entity);
+        bool WasAddedAsPersistent(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck);
         bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity);
