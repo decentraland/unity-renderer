@@ -52,7 +52,7 @@ namespace DCL.Chat.HUD
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
 
-            chatController.Received(1).GetChannels(30, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace DCL.Chat.HUD
             view.OnRequestMoreChannels += Raise.Event<Action>();
 
             view.Received(1).HideLoadingMore();
-            chatController.Received(1).GetChannels(30, 16);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 16);
         }
 
         [UnityTest]
@@ -113,7 +113,7 @@ namespace DCL.Chat.HUD
 
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
-            chatController.Received(1).GetChannels(30, 0, "bleh");
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0, "bleh");
         }
         
         [UnityTest]
@@ -131,7 +131,7 @@ namespace DCL.Chat.HUD
 
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
-            chatController.Received(1).GetChannels(30, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
         }
 
         [Test]

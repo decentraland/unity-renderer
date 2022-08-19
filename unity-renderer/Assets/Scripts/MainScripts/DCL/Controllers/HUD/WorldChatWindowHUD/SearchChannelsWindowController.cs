@@ -9,7 +9,7 @@ namespace DCL.Chat.HUD
     public class SearchChannelsWindowController : IHUD
     {
         private const int LOAD_TIMEOUT = 2;
-        private const int LOAD_PAGE_SIZE = 15;
+        internal const int LOAD_PAGE_SIZE = 15;
 
         private readonly IChatController chatController;
         private ISearchChannelsWindowView view;
