@@ -29,10 +29,10 @@ public class AvatarModifierArea : BaseComponent
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
+    
     internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
-
     public override string componentName => "avatarModifierArea";
 
     public AvatarModifierArea()
@@ -41,7 +41,7 @@ public class AvatarModifierArea : BaseComponent
         this.modifiers = new Dictionary<string, IAvatarModifier>()
         {
             { "HIDE_AVATARS", new HideAvatarsModifier() },
-            { "DISABLE_PASSPORTS", new DisablePassportModifier() }
+            { "DISABLE_PASSPORTS", new HidePassportModifier() }
         };
         model = new Model();
     }

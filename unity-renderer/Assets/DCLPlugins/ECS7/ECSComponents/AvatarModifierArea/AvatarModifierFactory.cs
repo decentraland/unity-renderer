@@ -5,7 +5,7 @@ namespace DCL.ECSComponents
     public class AvatarModifierFactory
     {
         private IAvatarModifier hideModifier;
-        private IAvatarModifier disablePassportModifier;
+        private IAvatarModifier hidePassportModifier;
         
         public IAvatarModifier GetOrCreateAvatarModifier(AvatarModifier modifier)
         {
@@ -17,9 +17,9 @@ namespace DCL.ECSComponents
                     return hideModifier;
                     break;
                 case AvatarModifier.DisablePassports:
-                    if (disablePassportModifier == null)
-                        disablePassportModifier = new DisablePassportModifier();
-                    return disablePassportModifier;
+                    if (hidePassportModifier == null)
+                        hidePassportModifier = new HidePassportModifier();
+                    return hidePassportModifier;
                 default:
                     return null;
             }
@@ -28,7 +28,7 @@ namespace DCL.ECSComponents
         public void Dispose()
         {
             hideModifier = null;
-            disablePassportModifier = null;
+            hidePassportModifier = null;
         }
     }
 }
