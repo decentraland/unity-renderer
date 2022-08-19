@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DCL.Configuration;
 using Google.Protobuf.Collections;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Helpers
 {
@@ -57,6 +59,37 @@ namespace DCL.Helpers
                     }
                 }
             }
+        }
+
+        public static ScriptableRendererFeature ToggleRenderFeature<T>(this UniversalRenderPipelineAsset asset, bool enable) where T : ScriptableRendererFeature
+        {
+            var type = asset.GetType();
+            var propertyInfo = type.GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (propertyInfo == null)
+            {
+                return null;
+            }
+
+            var scriptableRenderData = (ScriptableRendererData[])propertyInfo.GetValue(asset);
+
+            if (scriptableRenderData != null && scriptableRenderData.Length > 0)
+            {
+                foreach (var renderData in scriptableRenderData)
+                {
+                    foreach (var rendererFeature in renderData.rendererFeatures)
+                    {
+                        if (rendererFeature is T)
+                        {
+                            rendererFeature.SetActive(enable);
+
+                            return rendererFeature;
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static Vector2[] FloatArrayToV2List(RepeatedField<float> uvs)
