@@ -25,41 +25,41 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5NYXRlcmlhbC5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9uL0Nv",
-            "bG9yMy5wcm90byLECAoKUEJNYXRlcmlhbBI1Cgd0ZXh0dXJlGAEgASgLMiQu",
-            "ZGVjZW50cmFsYW5kLmVjcy5QQk1hdGVyaWFsLlRleHR1cmUSFgoJYWxwaGFU",
-            "ZXN0GAIgASgCSACIAQESGAoLY2FzdFNoYWRvd3MYAyABKAhIAYgBARI/Cgxh",
-            "bHBoYVRleHR1cmUYBCABKAsyJC5kZWNlbnRyYWxhbmQuZWNzLlBCTWF0ZXJp",
-            "YWwuVGV4dHVyZUgCiAEBEkIKD2VtaXNzaXZlVGV4dHVyZRgFIAEoCzIkLmRl",
-            "Y2VudHJhbGFuZC5lY3MuUEJNYXRlcmlhbC5UZXh0dXJlSAOIAQESPgoLYnVt",
-            "cFRleHR1cmUYBiABKAsyJC5kZWNlbnRyYWxhbmQuZWNzLlBCTWF0ZXJpYWwu",
-            "VGV4dHVyZUgEiAEBEiEKC2FsYmVkb0NvbG9yGAcgASgLMgcuQ29sb3IzSAWI",
-            "AQESIwoNZW1pc3NpdmVDb2xvchgIIAEoCzIHLkNvbG9yM0gGiAEBEicKEXJl",
-            "ZmxlY3Rpdml0eUNvbG9yGAkgASgLMgcuQ29sb3IzSAeIAQESQQoQdHJhbnNw",
-            "YXJlbmN5TW9kZRgKIAEoDjIiLmRlY2VudHJhbGFuZC5lY3MuVHJhbnNwYXJl",
-            "bmN5TW9kZUgIiAEBEhUKCG1ldGFsbGljGAsgASgCSAmIAQESFgoJcm91Z2hu",
-            "ZXNzGAwgASgCSAqIAQESFwoKZ2xvc3NpbmVzcxgNIAEoAkgLiAEBEh4KEXNw",
-            "ZWN1bGFySW50ZW5zaXR5GA4gASgCSAyIAQESHgoRZW1pc3NpdmVJbnRlbnNp",
-            "dHkYDyABKAJIDYgBARIcCg9kaXJlY3RJbnRlbnNpdHkYECABKAJIDogBARqj",
-            "AQoHVGV4dHVyZRILCgNzcmMYASABKAkSOAoId3JhcE1vZGUYAiABKA4yIS5k",
-            "ZWNlbnRyYWxhbmQuZWNzLlRleHR1cmVXcmFwTW9kZUgAiAEBEjUKCmZpbHRl",
-            "ck1vZGUYAyABKA4yHC5kZWNlbnRyYWxhbmQuZWNzLkZpbHRlck1vZGVIAYgB",
-            "AUILCglfd3JhcE1vZGVCDQoLX2ZpbHRlck1vZGVCDAoKX2FscGhhVGVzdEIO",
-            "CgxfY2FzdFNoYWRvd3NCDwoNX2FscGhhVGV4dHVyZUISChBfZW1pc3NpdmVU",
-            "ZXh0dXJlQg4KDF9idW1wVGV4dHVyZUIOCgxfYWxiZWRvQ29sb3JCEAoOX2Vt",
-            "aXNzaXZlQ29sb3JCFAoSX3JlZmxlY3Rpdml0eUNvbG9yQhMKEV90cmFuc3Bh",
-            "cmVuY3lNb2RlQgsKCV9tZXRhbGxpY0IMCgpfcm91Z2huZXNzQg0KC19nbG9z",
-            "c2luZXNzQhQKEl9zcGVjdWxhckludGVuc2l0eUIUChJfZW1pc3NpdmVJbnRl",
-            "bnNpdHlCEgoQX2RpcmVjdEludGVuc2l0eSpECg9UZXh0dXJlV3JhcE1vZGUS",
-            "CgoGUmVwZWF0EAASCQoFQ2xhbXAQARIKCgZNaXJyb3IQAhIOCgpNaXJyb3JP",
-            "bmNlEAMqNAoKRmlsdGVyTW9kZRIJCgVQb2ludBAAEgwKCEJpbGluZWFyEAES",
-            "DQoJVHJpbGluZWFyEAIqYwoQVHJhbnNwYXJlbmN5TW9kZRIKCgZPcGFxdWUQ",
-            "ABINCglBbHBoYVRlc3QQARIOCgpBbHBoYUJsZW5kEAISGgoWQWxwaGFUZXN0",
-            "QW5kQWxwaGFCbGVuZBADEggKBEF1dG8QBEIUqgIRRENMLkVDU0NvbXBvbmVu",
-            "dHNiBnByb3RvMw=="));
+            "bG9yMy5wcm90byLVCAoKUEJNYXRlcmlhbBI6Cgd0ZXh0dXJlGAEgASgLMiQu",
+            "ZGVjZW50cmFsYW5kLmVjcy5QQk1hdGVyaWFsLlRleHR1cmVIAIgBARIWCglh",
+            "bHBoYVRlc3QYAiABKAJIAYgBARIYCgtjYXN0U2hhZG93cxgDIAEoCEgCiAEB",
+            "Ej8KDGFscGhhVGV4dHVyZRgEIAEoCzIkLmRlY2VudHJhbGFuZC5lY3MuUEJN",
+            "YXRlcmlhbC5UZXh0dXJlSAOIAQESQgoPZW1pc3NpdmVUZXh0dXJlGAUgASgL",
+            "MiQuZGVjZW50cmFsYW5kLmVjcy5QQk1hdGVyaWFsLlRleHR1cmVIBIgBARI+",
+            "CgtidW1wVGV4dHVyZRgGIAEoCzIkLmRlY2VudHJhbGFuZC5lY3MuUEJNYXRl",
+            "cmlhbC5UZXh0dXJlSAWIAQESIQoLYWxiZWRvQ29sb3IYByABKAsyBy5Db2xv",
+            "cjNIBogBARIjCg1lbWlzc2l2ZUNvbG9yGAggASgLMgcuQ29sb3IzSAeIAQES",
+            "JwoRcmVmbGVjdGl2aXR5Q29sb3IYCSABKAsyBy5Db2xvcjNICIgBARJBChB0",
+            "cmFuc3BhcmVuY3lNb2RlGAogASgOMiIuZGVjZW50cmFsYW5kLmVjcy5UcmFu",
+            "c3BhcmVuY3lNb2RlSAmIAQESFQoIbWV0YWxsaWMYCyABKAJICogBARIWCgly",
+            "b3VnaG5lc3MYDCABKAJIC4gBARIXCgpnbG9zc2luZXNzGA0gASgCSAyIAQES",
+            "HgoRc3BlY3VsYXJJbnRlbnNpdHkYDiABKAJIDYgBARIeChFlbWlzc2l2ZUlu",
+            "dGVuc2l0eRgPIAEoAkgOiAEBEhwKD2RpcmVjdEludGVuc2l0eRgQIAEoAkgP",
+            "iAEBGqMBCgdUZXh0dXJlEgsKA3NyYxgBIAEoCRI4Cgh3cmFwTW9kZRgCIAEo",
+            "DjIhLmRlY2VudHJhbGFuZC5lY3MuVGV4dHVyZVdyYXBNb2RlSACIAQESNQoK",
+            "ZmlsdGVyTW9kZRgDIAEoDjIcLmRlY2VudHJhbGFuZC5lY3MuRmlsdGVyTW9k",
+            "ZUgBiAEBQgsKCV93cmFwTW9kZUINCgtfZmlsdGVyTW9kZUIKCghfdGV4dHVy",
+            "ZUIMCgpfYWxwaGFUZXN0Qg4KDF9jYXN0U2hhZG93c0IPCg1fYWxwaGFUZXh0",
+            "dXJlQhIKEF9lbWlzc2l2ZVRleHR1cmVCDgoMX2J1bXBUZXh0dXJlQg4KDF9h",
+            "bGJlZG9Db2xvckIQCg5fZW1pc3NpdmVDb2xvckIUChJfcmVmbGVjdGl2aXR5",
+            "Q29sb3JCEwoRX3RyYW5zcGFyZW5jeU1vZGVCCwoJX21ldGFsbGljQgwKCl9y",
+            "b3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NCFAoSX3NwZWN1bGFySW50ZW5zaXR5",
+            "QhQKEl9lbWlzc2l2ZUludGVuc2l0eUISChBfZGlyZWN0SW50ZW5zaXR5KkQK",
+            "D1RleHR1cmVXcmFwTW9kZRIKCgZSZXBlYXQQABIJCgVDbGFtcBABEgoKBk1p",
+            "cnJvchACEg4KCk1pcnJvck9uY2UQAyo0CgpGaWx0ZXJNb2RlEgkKBVBvaW50",
+            "EAASDAoIQmlsaW5lYXIQARINCglUcmlsaW5lYXIQAipjChBUcmFuc3BhcmVu",
+            "Y3lNb2RlEgoKBk9wYXF1ZRAAEg0KCUFscGhhVGVzdBABEg4KCkFscGhhQmxl",
+            "bmQQAhIaChZBbHBoYVRlc3RBbmRBbHBoYUJsZW5kEAMSCAoEQXV0bxAEQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.FilterMode), typeof(global::DCL.ECSComponents.TransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
           }));
     }
     #endregion
@@ -154,6 +154,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "texture" field.</summary>
     public const int TextureFieldNumber = 1;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture texture_;
+    /// <summary>
+    /// default = null
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.PBMaterial.Types.Texture Texture {
@@ -167,7 +170,7 @@ namespace DCL.ECSComponents {
     public const int AlphaTestFieldNumber = 2;
     private float alphaTest_;
     /// <summary>
-    /// range value: from 0 to 1
+    /// default = 0.5. range value: from 0 to 1
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -195,7 +198,7 @@ namespace DCL.ECSComponents {
     public const int CastShadowsFieldNumber = 3;
     private bool castShadows_;
     /// <summary>
-    ///default =  true
+    /// default =  true
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -223,7 +226,7 @@ namespace DCL.ECSComponents {
     public const int AlphaTextureFieldNumber = 4;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture alphaTexture_;
     /// <summary>
-    ///default = null
+    /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -238,7 +241,7 @@ namespace DCL.ECSComponents {
     public const int EmissiveTextureFieldNumber = 5;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture emissiveTexture_;
     /// <summary>
-    ///default = null
+    /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -253,7 +256,7 @@ namespace DCL.ECSComponents {
     public const int BumpTextureFieldNumber = 6;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture bumpTexture_;
     /// <summary>
-    ///default = null
+    /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -268,7 +271,7 @@ namespace DCL.ECSComponents {
     public const int AlbedoColorFieldNumber = 7;
     private global::Color3 albedoColor_;
     /// <summary>
-    ///default = white;
+    /// default = white;
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -283,7 +286,7 @@ namespace DCL.ECSComponents {
     public const int EmissiveColorFieldNumber = 8;
     private global::Color3 emissiveColor_;
     /// <summary>
-    ///default = black;
+    /// default = black;
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -298,7 +301,7 @@ namespace DCL.ECSComponents {
     public const int ReflectivityColorFieldNumber = 9;
     private global::Color3 reflectivityColor_;
     /// <summary>
-    ///default = white;
+    /// default = white;
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -313,7 +316,7 @@ namespace DCL.ECSComponents {
     public const int TransparencyModeFieldNumber = 10;
     private global::DCL.ECSComponents.TransparencyMode transparencyMode_;
     /// <summary>
-    ///default = TransparencyMode.Auto
+    /// default = TransparencyMode.Auto
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -341,7 +344,7 @@ namespace DCL.ECSComponents {
     public const int MetallicFieldNumber = 11;
     private float metallic_;
     /// <summary>
-    ///default = 0.5
+    /// default = 0.5
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -369,7 +372,7 @@ namespace DCL.ECSComponents {
     public const int RoughnessFieldNumber = 12;
     private float roughness_;
     /// <summary>
-    ///default = 0.5
+    /// default = 0.5
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -397,7 +400,7 @@ namespace DCL.ECSComponents {
     public const int GlossinessFieldNumber = 13;
     private float glossiness_;
     /// <summary>
-    ///default = 1
+    /// default = 1
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -425,7 +428,7 @@ namespace DCL.ECSComponents {
     public const int SpecularIntensityFieldNumber = 14;
     private float specularIntensity_;
     /// <summary>
-    ///default = 1
+    /// default = 1
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -453,7 +456,7 @@ namespace DCL.ECSComponents {
     public const int EmissiveIntensityFieldNumber = 15;
     private float emissiveIntensity_;
     /// <summary>
-    ///default = 2
+    /// default = 2
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -481,7 +484,7 @@ namespace DCL.ECSComponents {
     public const int DirectIntensityFieldNumber = 16;
     private float directIntensity_;
     /// <summary>
-    ///default = 1
+    /// default = 1
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1128,7 +1131,7 @@ namespace DCL.ECSComponents {
         public const int WrapModeFieldNumber = 2;
         private global::DCL.ECSComponents.TextureWrapMode wrapMode_;
         /// <summary>
-        ///default = TextureWrapMode.Clamp
+        /// default = TextureWrapMode.Clamp
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1156,7 +1159,7 @@ namespace DCL.ECSComponents {
         public const int FilterModeFieldNumber = 3;
         private global::DCL.ECSComponents.FilterMode filterMode_;
         /// <summary>
-        ///default = FilterMode.Bilinear
+        /// default = FilterMode.Bilinear
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
