@@ -524,6 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa10f693763fad42a54ff63ee4ba997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   backgroundButton: {fileID: 1613367712015038420}
   closeButton: {fileID: 9167425449944993872}
   cancelButton: {fileID: 7411480605119529000}
@@ -675,7 +676,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6067442b4b5ee49e68ff2720d1aedddd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
