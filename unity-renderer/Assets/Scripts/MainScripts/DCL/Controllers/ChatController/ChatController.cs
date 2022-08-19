@@ -145,9 +145,13 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
 
-    public int GetAllocatedUnseenMessages(string userId) =>
-        unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
-
+    public int GetAllocatedUnseenMessages(string userId)
+    {
+        if (userId == "nearby")
+            return nearbyUnseenMessages;
+        return unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
+    }
+    
     public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(entries);
 
     public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
