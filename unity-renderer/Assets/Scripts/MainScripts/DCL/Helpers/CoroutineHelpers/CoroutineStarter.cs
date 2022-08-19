@@ -33,7 +33,7 @@ public class CoroutineStarter : MonoBehaviour
         {
             if (stackedCoroutines.Count > 0)
             {
-                yield return stackedCoroutines.Pop();
+                StartCoroutine(stackedCoroutines.Pop());
             }
             yield return null;
         }

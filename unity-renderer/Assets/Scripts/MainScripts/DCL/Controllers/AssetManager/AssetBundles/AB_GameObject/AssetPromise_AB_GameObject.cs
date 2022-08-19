@@ -57,7 +57,7 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            CoroutineStarter.instance.StartStackedCoroutine(SetMaterialTransition(() => asset?.Show(OnSuccess), false));
+            CoroutineStarter.Start(SetMaterialTransition(() => asset?.Show(OnSuccess), false));
         }
      
         protected override void OnAfterLoadOrReuse()
@@ -223,11 +223,7 @@ namespace DCL
         
         IEnumerator SetMaterialTransition(Action OnSuccess = null, bool useHologram = true)
         {
-            if (asset == null)
-            {
-                yield break;
-            }
-            if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation)
+            if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation && asset != null)
             {
                 MaterialTransitionController[] materialTransitionControllers = new MaterialTransitionController[asset.renderers.Count];
                 int index = 0;
