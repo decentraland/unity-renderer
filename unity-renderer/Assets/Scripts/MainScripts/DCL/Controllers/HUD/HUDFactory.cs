@@ -70,7 +70,8 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    ChatChannelsControllerMock.i);
+                    ChatChannelsControllerMock.i,
+                    DataStore.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -121,7 +122,8 @@ public class HUDFactory : IHUDFactory
                     ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.TASKBAR:
-                hudElement = new TaskbarHUDController();
+                // TODO (channels): Pass ChatController.i after kernel integration
+                hudElement = new TaskbarHUDController(ChatChannelsControllerMock.i);
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();

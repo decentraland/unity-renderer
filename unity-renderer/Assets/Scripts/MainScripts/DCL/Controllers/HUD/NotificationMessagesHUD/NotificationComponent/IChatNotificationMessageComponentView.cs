@@ -23,10 +23,16 @@ public interface IChatNotificationMessageComponentView
     void SetTimestamp(string timestamp);
 
     /// <summary>
-    /// Set the notification header, can be a channel name or a user name.
+    /// Set the notification header, can be a private chat name or a channel name.
     /// </summary>
     /// <param name="header">New header.</param>
     void SetNotificationHeader(string header);
+
+    /// <summary>
+    /// Set the notification sender, a username.
+    /// </summary>
+    /// <param name="username">New username.</param>
+    void SetNotificationSender(string username);
 
     /// <summary>
     /// Set the notification type, can be a private or not.

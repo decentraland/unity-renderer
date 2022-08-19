@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +16,10 @@ public class PrivateChatWindowController : IHUD
     internal const float REQUEST_MESSAGES_TIME_OUT = 2;
 
     public IPrivateChatComponentView View { get; private set; }
+    
+    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE, PREVIEW_MODE }
+    private const int FADEOUT_DELAY = 30000;
 
-    private enum ChatWindowVisualState
-    {
-        NONE_VISIBLE,
-        INPUT_MODE,
-        PREVIEW_MODE
-    }
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -39,6 +37,8 @@ public class PrivateChatWindowController : IHUD
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
     internal string ConversationUserId { get; set; } = string.Empty;
 
     public event Action OnBack;
@@ -73,9 +73,17 @@ public class PrivateChatWindowController : IHUD
         view.OnClose += Hide;
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
-        view.OnFocused += HandleViewFocused;
+        
+        if (notificationPanelTransform.Get() == null)
+        {
+            view.OnFocused += HandleViewFocused;
+            view.OnClickOverWindow += HandleViewClicked;
+            if (mouseCatcher != null)
+                mouseCatcher.OnMouseLock += ActivatePreview;
+        }
+
         view.OnRequireMoreMessages += RequestOldConversations;
-        view.OnClickOverWindow += HandleViewClicked;
+
 
         chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
         chatHudController.Initialize(view.ChatHUD);
@@ -87,9 +95,6 @@ public class PrivateChatWindowController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
-
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += ActivatePreview;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
@@ -117,9 +122,10 @@ public class PrivateChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (View.IsActive == visible)
+        if (View.IsActive == visible && notificationPanelTransform.Get() == null)
             return;
 
+        SetVisiblePanelList(visible);
         if (visible)
         {
             View?.SetLoadingMessagesActive(false);
@@ -358,7 +364,9 @@ public class PrivateChatWindowController : IHUD
 
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(30000, cancellationToken: cancellationToken);
+        if (notificationPanelTransform.Get() == null)
+            await UniTask.Delay(FADEOUT_DELAY, cancellationToken: cancellationToken);
+
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
             return;
@@ -368,6 +376,7 @@ public class PrivateChatWindowController : IHUD
 
     public void ActivatePreview()
     {
+        SetVisiblePanelList(false);
         View.ActivatePreview();
         chatHudController.ActivatePreview();
         currentState = ChatWindowVisualState.PREVIEW_MODE;
@@ -377,6 +386,7 @@ public class PrivateChatWindowController : IHUD
 
     public void ActivatePreviewOnMessages()
     {
+        SetVisiblePanelList(false);
         chatHudController.ActivatePreview();
         currentState = ChatWindowVisualState.PREVIEW_MODE;
         OnPreviewModeChanged?.Invoke(true);
@@ -384,6 +394,7 @@ public class PrivateChatWindowController : IHUD
 
     public void DeactivatePreview()
     {
+        SetVisiblePanelList(true);
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
@@ -393,6 +404,17 @@ public class PrivateChatWindowController : IHUD
         chatHudController.DeactivatePreview();
         OnPreviewModeChanged?.Invoke(false);
         currentState = ChatWindowVisualState.INPUT_MODE;
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("PrivateChatChannel");
+        else
+            newSet.Remove("PrivateChatChannel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

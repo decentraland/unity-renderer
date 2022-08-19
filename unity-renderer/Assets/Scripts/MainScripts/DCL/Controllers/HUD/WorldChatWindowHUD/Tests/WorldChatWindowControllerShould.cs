@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL;
 using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
@@ -33,7 +34,8 @@ public class WorldChatWindowControllerShould
         friendsController.IsInitialized.Returns(true);
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
-            chatController);
+            chatController,
+            new DataStore());
         view = Substitute.For<IWorldChatWindowView>();
     }
 

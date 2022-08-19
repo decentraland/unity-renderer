@@ -304,6 +304,11 @@ namespace DCL.Chat.Channels
                 {
                     FakeCurrentChannelMessage();
                 }
+                
+                if (Input.GetKeyDown(KeyCode.K))
+                {
+                    FakePrivateMessage();
+                }
             }
         }
 
@@ -408,6 +413,58 @@ namespace DCL.Chat.Channels
                 }
             };
             controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(totalUnseenMessagesByChannelPayload));
+
+            var totalUnseenMessagesPayload = new UpdateTotalUnseenMessagesPayload
+            {
+                total = TotalUnseenMessages + 1
+            };
+            controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
+        }
+        
+        private void FakePrivateMessage()
+        {
+            var characters = new[]
+            {
+                'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+                '9'
+            };
+
+            var userId = "FakeUser-";
+            for (var x = 0; x < 4; x++)
+                userId += characters[Random.Range(0, characters.Length)];
+            
+            var profile = new UserProfileModel
+            {
+                userId = userId,
+                name = userId,
+                snapshots = new UserProfileModel.Snapshots {face256 = $"https://picsum.photos/seed/{userId}/256"}
+            };
+            
+            userProfileController.AddUserProfileToCatalog(profile);
+            
+            var msg = new ChatMessage
+            {
+                body = $"fake message {Random.Range(0, 16000)}",
+                sender = userId,
+                recipient = userProfileController.ownUserProfile.userId,
+                messageType = ChatMessage.Type.PRIVATE,
+                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            };
+            
+            controller.AddMessageToChatWindow(JsonUtility.ToJson(msg));
+            
+            var totalUnseenMessagesByChannelPayload = new UpdateTotalUnseenMessagesByUserPayload
+            {
+                unseenPrivateMessages = new[]
+                {
+                    new UpdateTotalUnseenMessagesByUserPayload.UnseenPrivateMessage
+                    {
+                        userId = userId,
+                        count = GetAllocatedUnseenMessages(userId) + 1
+                    }
+                }
+            };
+            controller.UpdateTotalUnseenMessagesByUser(JsonUtility.ToJson(totalUnseenMessagesByChannelPayload));
 
             var totalUnseenMessagesPayload = new UpdateTotalUnseenMessagesPayload
             {

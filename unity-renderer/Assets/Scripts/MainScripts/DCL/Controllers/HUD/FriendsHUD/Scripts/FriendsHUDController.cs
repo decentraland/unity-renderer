@@ -18,6 +18,7 @@ public class FriendsHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -88,6 +89,17 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("FriendsPanel");
+        else
+            newSet.Remove("FriendsPanel");
+
+        visibleTaskbarPanels.Set(newSet, true);
+    }
+
     public void Dispose()
     {
         if (friendsController != null)
@@ -130,6 +142,7 @@ public class FriendsHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             View.Show();

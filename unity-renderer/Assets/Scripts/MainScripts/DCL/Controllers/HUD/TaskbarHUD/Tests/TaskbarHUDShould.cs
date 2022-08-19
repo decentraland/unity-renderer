@@ -39,7 +39,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
         userProfileBridge.GetOwn().Returns(ownProfile);
 
-        controller = new TaskbarHUDController();
+        controller = new TaskbarHUDController(chatController);
         controller.Initialize(null);
         view = controller.view;
 
@@ -70,7 +70,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -112,7 +113,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 

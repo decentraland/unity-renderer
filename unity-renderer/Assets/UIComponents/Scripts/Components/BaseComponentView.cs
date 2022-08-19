@@ -91,7 +91,7 @@ public interface IComponentModelConfig<T> where T: BaseComponentModel
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     internal BaseComponentModel baseModel;
-    internal ShowHideAnimator showHideAnimator;
+    public ShowHideAnimator showHideAnimator;
 
     public virtual bool isVisible { get; private set; }
     private bool isDestroyed = false;

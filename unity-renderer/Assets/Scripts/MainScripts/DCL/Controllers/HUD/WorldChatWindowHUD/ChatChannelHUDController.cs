@@ -17,6 +17,8 @@ namespace DCL.Chat.HUD
         public IChatChannelWindowView View { get; private set; }
 
         private readonly DataStore dataStore;
+        internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+        internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
@@ -55,9 +57,13 @@ namespace DCL.Chat.HUD
             view.OnBack += HandlePressBack;
             view.OnClose -= Hide;
             view.OnClose += Hide;
-            view.OnFocused += HandleViewFocused;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
+
+            if (notificationPanelTransform.Get() == null)
+            {
+                view.OnFocused += HandleViewFocused;
+            }
 
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
             chatHudController.Initialize(view.ChatHUD);
@@ -77,6 +83,17 @@ namespace DCL.Chat.HUD
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
         }
 
+        private void SetVisiblePanelList(bool visible)
+        {
+            HashSet<string> newSet = visibleTaskbarPanels.Get();
+            if (visible)
+                newSet.Add("ChatChannel");
+            else
+                newSet.Remove("ChatChannel");
+
+            visibleTaskbarPanels.Set(newSet, true);
+        }
+
         public void Setup(string channelId)
         {
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
@@ -94,6 +111,7 @@ namespace DCL.Chat.HUD
         {
             if (View.IsActive == visible) return;
 
+            SetVisiblePanelList(visible);
             if (visible)
             {
                 View?.SetLoadingMessagesActive(false);

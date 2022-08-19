@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using DCL.Components.Interfaces;
 
 namespace DCL
@@ -21,7 +22,9 @@ namespace DCL
         public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
         public readonly BaseVariable<bool> gotoPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
+        public readonly BaseVariable<Transform> notificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseRefCounter<AvatarAreaWarningID> avatarAreaWarnings = new BaseRefCounter<AvatarAreaWarningID>();
         public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
         public readonly LoadingHUD loadingHUD = new LoadingHUD();

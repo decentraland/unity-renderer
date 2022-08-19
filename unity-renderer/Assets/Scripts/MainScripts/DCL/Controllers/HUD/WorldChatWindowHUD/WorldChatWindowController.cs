@@ -6,6 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Friends.WebApi;
 using DCL.Interface;
+using DCL;
 using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowController : IHUD
@@ -20,9 +21,12 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
+    private readonly DataStore dataStore; 
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
+    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+
     private int hiddenDMs;
     private string currentSearch = "";
     private DateTime channelsRequestTimestamp;
@@ -47,11 +51,13 @@ public class WorldChatWindowController : IHUD
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IChatController chatController)
+        IChatController chatController,
+        DataStore dataStore) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
+        this.dataStore = dataStore;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -125,6 +131,7 @@ public class WorldChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             view.Show();
@@ -149,6 +156,17 @@ public class WorldChatWindowController : IHUD
     }
     
     private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("WorldChatPanel");
+        else
+            newSet.Remove("WorldChatPanel");
+
+        visibleTaskbarPanels.Set(newSet, true);
+    }
 
     private void LeaveChannel(string channelId) => OnOpenChannelLeave?.Invoke(channelId);
 
