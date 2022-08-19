@@ -100,6 +100,9 @@ namespace UnityGLTF
         private Settings settings;
 
         private  CancellationTokenSource ctokenSource;
+        
+        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes";
+
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -348,8 +351,7 @@ namespace UnityGLTF
             sceneImporter.initialVisibility = initialVisibility;
             sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
 
-            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
-                                             && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(GPU_ONLY_MESHES);
 
             sceneImporter.OnMeshCreated += meshCreatedCallback;
             sceneImporter.OnRendererCreated += rendererCreatedCallback;

@@ -17,6 +17,7 @@ namespace DCL
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
+        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes";
         private bool doTransitionAnimation;
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
@@ -189,7 +190,7 @@ namespace DCL
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
-            var uploadToGPU = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+            var uploadToGPU = featureFlags.Get().IsFeatureEnabled(GPU_ONLY_MESHES);
             
             foreach ( Mesh mesh in meshesList )
             {
