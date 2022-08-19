@@ -93,7 +93,7 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            RemoveEntity(iterator.Current, removeIfPersistent: false);
+                            RemoveEntity(iterator.Current, removeIfPersistent: false, resetState: false);
                         }
                     }
                     
@@ -156,21 +156,19 @@ namespace DCL.Controllers
                 }
             }
     
+            entitiesToCheck.Add(entity);
+            
             if(isPersistent)
                 persistentEntities.Add(entity);
-            else
-                entitiesToCheck.Add(entity);
         }
 
         public void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false)
         {
-            if (!enabled)
+            if (!enabled || (!removeIfPersistent && persistentEntities.Contains(entity)))
                 return;
-            
-            bool removed = entitiesToCheck.Remove(entity);
-            
-            if(!removed && removeIfPersistent)
-                persistentEntities.Remove(entity);
+
+            entitiesToCheck.Remove(entity);
+            persistentEntities.Remove(entity);
             
             if(resetState)
                 SetMeshesAndComponentsInsideBoundariesState(entity, true);
