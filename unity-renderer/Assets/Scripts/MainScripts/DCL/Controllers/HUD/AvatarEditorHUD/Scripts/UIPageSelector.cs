@@ -48,12 +48,6 @@ public class UIPageSelector : MonoBehaviour
 
     public void Setup(int maxPages)
     {
-        if (this.maxPages == maxPages)
-        {
-            UpdateToggleStatus(); 
-            return;
-        }
-        
         currentPage = 0;
         this.maxPages = maxPages;
 
