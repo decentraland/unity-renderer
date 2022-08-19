@@ -107,7 +107,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem[]> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
     {
-        const int TIMEOUT = 30;
+        const int TIMEOUT = 60;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
         var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         var promise = RequestOwnedEmotes(userId);
@@ -161,7 +161,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default)
     {
-        const int TIMEOUT = 30;
+        const int TIMEOUT = 60;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
         var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
