@@ -278,25 +278,5 @@ public class MaterialTransitionController : MonoBehaviour
     {
         return targetRenderer.bounds.max.y + fadeThickness;
     }
-
-    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20,
-        float delay = 0)
-    {
-        Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
-
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Renderer r = renderers[i];
-
-            if (r.gameObject.GetComponent<MaterialTransitionController>() != null)
-                continue;
-
-            MaterialTransitionController transition = r.gameObject.AddComponent<MaterialTransitionController>();
-            Material finalMaterial = r.sharedMaterial;
-            transition.delay = delay;
-            transition.useHologram = useHologram;
-            transition.fadeThickness = fadeThickness;
-            transition.OnDidFinishLoading(finalMaterial);
-        }
-    }
+    
 }

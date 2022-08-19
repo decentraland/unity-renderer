@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -23,7 +24,11 @@ namespace DCL
 
         object id = null;
         private List<int> texIdsCache;
+        
+        private const string AB_LOAD_ANIMATION = "ab_load_animation";
+        private bool doTransitionAnimation;
 
+        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         public AssetPromise_GLTF(string url)
             : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest)
         {
@@ -53,7 +58,12 @@ namespace DCL
             // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
             // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
             assetDirectoryPath = URIHelper.GetDirectoryName(url);
+            
+            featureFlags.OnChange += OnFeatureFlagChange;
+            OnFeatureFlagChange(featureFlags.Get(), null);
         }
+        
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimation = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
 
         protected override void OnBeforeLoadOrReuse()
         {
@@ -155,9 +165,10 @@ namespace DCL
         {
             // Materials and textures are reused, so they are not extracted again
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-
-            //NOTE(Brian):  Show the asset using the simple gradient feedback.
-            asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
+            bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
+                                doTransitionAnimation && asset != null;
+            CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(doTransition, asset.renderers, 
+                ()=>asset?.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess), false));
         }
 
         protected override bool AddToLibrary()
@@ -215,5 +226,6 @@ namespace DCL
                 gltfComponent.SetPrioritized();
             }
         }
+        
     }
 }

@@ -19,9 +19,6 @@ namespace DCL
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
         private bool doTransitionAnimation;
         
-        private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter();
-
-
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
             featureFlags.OnChange += OnFeatureFlagChange;
@@ -57,7 +54,9 @@ namespace DCL
         protected override void OnReuse(Action OnSuccess)
         {
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            CoroutineStarter.Start(SetMaterialTransition(() => asset?.Show(OnSuccess), false));
+            bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
+                                doTransitionAnimation && asset != null;
+            CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(doTransition,asset.renderers,() => asset?.Show(OnSuccess), false));
         }
      
         protected override void OnAfterLoadOrReuse()
@@ -186,7 +185,9 @@ namespace DCL
 
                 yield return null;
 
-                yield return SetMaterialTransition();
+                bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && 
+                                        doTransitionAnimation && asset != null;
+                yield return MaterialTransitionControllerUtils.SetMaterialTransition(doTransition,asset.renderers);
             }
         }
 
@@ -218,44 +219,6 @@ namespace DCL
         {
             base.OnForget();
             featureFlags.OnChange -= OnFeatureFlagChange;
-        }
-
-        
-        IEnumerator SetMaterialTransition(Action OnSuccess = null, bool useHologram = true)
-        {
-            if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation && asset != null)
-            {
-                MaterialTransitionController[] materialTransitionControllers = new MaterialTransitionController[asset.renderers.Count];
-                int index = 0;
-                foreach (Renderer assetRenderer in asset.renderers)
-                {
-                    MaterialTransitionController transition = assetRenderer.gameObject.GetOrCreateComponent<MaterialTransitionController>();
-                    materialTransitionControllers[index] = transition;
-                    transition.delay = 0;
-                    transition.useHologram = useHologram;
-                    transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
-                    index++;
-                }
-                // Wait until MaterialTransitionController finishes its effect
-                yield return new WaitUntil(() => IsTransitionFinished(materialTransitionControllers));
-            }
-            OnSuccess?.Invoke();
-        }
-
-        private bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
-        {
-            bool finishedTransition = true;
-
-            for (int i = 0; i < matTransitions.Length; i++)
-            {
-                if (matTransitions[i] != null)
-                {
-                    finishedTransition = false;
-
-                    break;
-                }
-            }
-            return finishedTransition;
         }
 
     }

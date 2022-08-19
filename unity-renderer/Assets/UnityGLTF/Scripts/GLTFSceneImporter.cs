@@ -332,8 +332,7 @@ namespace UnityGLTF
                 if (matTransitions != null && matTransitions.Length > 0)
                 {
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions), cancellationToken: token);
-
+                    await UniTask.WaitUntil(() => MaterialTransitionControllerUtils.IsTransitionFinished(matTransitions), cancellationToken: token);
                 }
 
                 if (!importSkeleton)
@@ -378,22 +377,6 @@ namespace UnityGLTF
 
                 }
             }
-        }
-        private static bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
-        {
-            bool finishedTransition = true;
-
-            for (int i = 0; i < matTransitions.Length; i++)
-            {
-                if (matTransitions[i] != null)
-                {
-                    finishedTransition = false;
-
-                    break;
-                }
-            }
-
-            return finishedTransition;
         }
 
         /// <summary>
