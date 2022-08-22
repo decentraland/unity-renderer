@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DCL.Helpers;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -9,6 +11,10 @@ namespace DCL.ECS7.Tests
 {
     public class ECS7VisualUITesterHelper
     {
+        public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
+        public static string baselineImagesPath =
+            Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
+        
         private Color[] testsColor;
         private GameObject mainGameObject;
         private GameObject canvasGameObject;
@@ -83,9 +89,22 @@ namespace DCL.ECS7.Tests
             }
         }
 
-        public IEnumerator TakeSnapshotAndAssert(string textureName)
+        public IEnumerator TakeSnapshotAndAssert(string textureNameRaw)
         {
-            yield return VisualTestUtils.TakeSnapshot(textureName, camera);
+            string textureName = textureNameRaw + ".png";
+            int snapshotsWidth = 1280;
+            int snapshotsHeight = 720;
+            float ratio = 95f;
+
+            yield return VisualTestUtils.TakeSnapshot(testImagesPath, textureName, camera, snapshotsWidth, snapshotsHeight);
+            // yield return VisualTestUtils.TakeSnapshot(textureName, camera);
+            
+            float ratioResult =
+                VisualTestUtils.ComputeImageAffinityPercentage(baselineImagesPath + textureName, testImagesPath + textureName);
+            
+                Assert.IsTrue(ratioResult >= ratio,
+                    $"{Path.GetFileName(baselineImagesPath + textureName)} has {ratioResult}% affinity, the minimum is {ratio}%. A diff image has been generated. Check it out at {testImagesPath}");
+            
         }
 
         public void Dispose()
