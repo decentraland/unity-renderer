@@ -108,8 +108,8 @@ public class ChatNotificationController : IHUD
         else
         {
             mainChatNotificationView.Hide();
-            topNotificationView.ShowNotification();
             topNotificationView.Show();
+            topNotificationView.ShowNotification();
         }
     }
 
