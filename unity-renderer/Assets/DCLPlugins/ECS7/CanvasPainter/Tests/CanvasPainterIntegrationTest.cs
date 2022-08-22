@@ -68,7 +68,7 @@ namespace DCL.ECS7.Tests
         //     yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
         // }
 
-        [UnityTest, VisualTest]
+        [UnityTest]
         public IEnumerator DrawUITransformCorrectly()
         {
             string testSceneId = "testId";
