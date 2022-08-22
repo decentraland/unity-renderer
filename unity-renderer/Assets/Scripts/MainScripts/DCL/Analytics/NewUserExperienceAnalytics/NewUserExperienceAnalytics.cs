@@ -19,7 +19,7 @@ public static class NewUserExperienceAnalytics
     {
         data ??= new Dictionary<string, string>();
         
-        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
-        analytics.SendAnalytic(eventName, data);
+        IAnalytics analytics = DCL.Environment.i?.platform?.serviceProviders?.analytics;
+        analytics?.SendAnalytic(eventName, data);
     }
 }
