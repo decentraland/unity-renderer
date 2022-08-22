@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 namespace DCL.ECS7.Tests
@@ -28,7 +29,9 @@ namespace DCL.ECS7.Tests
         private ECS7ComponentsComposer componentsComposer;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private IWorldState worldState;
-        private GameObject gameObject;
+        private GameObject mainGameObject;
+        private GameObject canvasGameObject;
+        private GameObject childrenGameObject;
         private Camera camera;
         
         [UnitySetUp]
@@ -36,8 +39,10 @@ namespace DCL.ECS7.Tests
         {
             yield return base.SetUp();
 
-            gameObject = new GameObject();
-            camera = gameObject.AddComponent<Camera>();
+            mainGameObject = new GameObject();
+            
+            // Configure camera
+            camera = mainGameObject.AddComponent<Camera>();
             camera.backgroundColor = Color.white;
             camera.allowHDR = false;
             camera.clearFlags = CameraClearFlags.SolidColor;
@@ -54,21 +59,58 @@ namespace DCL.ECS7.Tests
             rendererState.Set(true);
             canvasPainter.rootNode.rootVisualElement.style.justifyContent = new StyleEnum<Justify>(Justify.Center);
             canvasPainter.rootNode.rootVisualElement.style.alignContent = new StyleEnum<Align>(Align.Center);
+            
+            // Configure canvas
+            canvasGameObject = new GameObject();
+            var canvas = canvasGameObject.AddComponent<Canvas>();
+            var canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.referenceResolution = new Vector2(1440, 900);
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var canvasRectTransform = canvasGameObject.GetComponent<RectTransform>();
+            canvasRectTransform.anchorMin = new Vector2(1, 0);
+            canvasRectTransform.anchorMax = new Vector2(0, 1);
+            canvasRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            canvasRectTransform.sizeDelta = new Vector2(1440, 900);
+            yield return null;
+            
+            // Create render texture
+            RenderTexture renderTexture = new RenderTexture(1440, 900, 16);
+            renderTexture.Create();
+            canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
+            
+            // Configure RawImage
+            childrenGameObject = new GameObject();
+            childrenGameObject.transform.SetParent(canvasGameObject.transform, false);
+            var rawImage = childrenGameObject.AddComponent<RawImage>();
+            var rawImageRectTransform = rawImage.GetComponent<RectTransform>();
+            rawImageRectTransform.anchorMin = new Vector2(0, 0);
+            rawImageRectTransform.anchorMax = new Vector2(1, 1);
+            rawImageRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rawImageRectTransform.sizeDelta = new Vector2(1440, 900);
+            rawImageRectTransform.offsetMax = Vector2.zero;
+            rawImageRectTransform.offsetMin = Vector2.zero;
+            
+            rawImage.texture = renderTexture;
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             yield return base.TearDown();
-            GameObject.Destroy(gameObject);
+            GameObject.Destroy(mainGameObject);
+            GameObject.Destroy(childrenGameObject);
             componentsComposer.Dispose();
             canvasPainter.Dispose();
             DataStore.i.ecs7.scenes.Clear();
             DataStore.i.ecs7.uiDataContainer = new UIDataContainer();
         }
-        
+
         [UnityTest]
-        public IEnumerator CastShadowFalseShouldWork_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly()); }
+        public IEnumerator CastShadowFalseShouldWork_Generate()
+        {
+            yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
+        }
 
         [UnityTest]
         public IEnumerator DrawUITransformCorrectly()
@@ -95,12 +137,10 @@ namespace DCL.ECS7.Tests
             canvasPainter.Update();
             
             // We wait 1 frame to draw the UI
-            yield return null;
-            string textureName =  "CanvasPainterTest.png";
-            ScreenCapture.CaptureScreenshot(testImagesPath + textureName);
-            float ratio = VisualTestUtils.ComputeImageAffinityPercentage(baselineImagesPath + textureName, testImagesPath + textureName);
-            Assert.IsTrue(ratio >= 95f);
-          }
+            //yield return new WaitForSeconds(1f);
+            string textureName =  "CanvasPainterTest";
+            yield return VisualTestUtils.TakeSnapshot(textureName, camera);
+        }
 
         private CRDTMessage CreateCRDTMessage(int entityId, int componentId, object data)
         {
