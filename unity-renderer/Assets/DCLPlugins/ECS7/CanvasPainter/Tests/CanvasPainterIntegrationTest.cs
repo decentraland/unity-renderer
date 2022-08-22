@@ -66,7 +66,9 @@ namespace DCL.ECS7.Tests
             var canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1440, 900);
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            
             var canvasRectTransform = canvasGameObject.GetComponent<RectTransform>();
             canvasRectTransform.anchorMin = new Vector2(1, 0);
             canvasRectTransform.anchorMax = new Vector2(0, 1);
@@ -137,7 +139,7 @@ namespace DCL.ECS7.Tests
             canvasPainter.Update();
             
             // We wait 1 frame to draw the UI
-            //yield return new WaitForSeconds(1f);
+            // yield return new WaitForSeconds(60f);
             string textureName =  "CanvasPainterTest";
             yield return VisualTestUtils.TakeSnapshot(textureName, camera);
         }
