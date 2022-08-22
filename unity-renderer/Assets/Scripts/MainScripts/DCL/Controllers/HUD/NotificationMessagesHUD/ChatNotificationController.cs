@@ -18,6 +18,7 @@ public class ChatNotificationController : IHUD
     private ITopNotificationsComponentView topNotificationView;
     private IUserProfileBridge userProfileBridge;
     private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
+    private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
 
@@ -35,6 +36,7 @@ public class ChatNotificationController : IHUD
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
         notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
+        topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
         visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
     }
 
@@ -53,10 +55,12 @@ public class ChatNotificationController : IHUD
             var profile = ExtractRecipient(message);
             if (profile == null) return;
             mainChatNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
+            topNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
         }
         else
         {
             mainChatNotificationView.AddNewChatNotification(message);
+            topNotificationView.AddNewChatNotification(message);
         }
     }
 
@@ -97,11 +101,15 @@ public class ChatNotificationController : IHUD
         if (visible)
         {
             mainChatNotificationView.Show();
+            topNotificationView.Hide();
+            topNotificationView.HideNotification();
             mainChatNotificationView.ShowNotifications();
         }
         else
         {
             mainChatNotificationView.Hide();
+            topNotificationView.ShowNotification();
+            topNotificationView.Show();
         }
     }
 

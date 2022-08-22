@@ -30,6 +30,7 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleWorldChatTrigger;
     private Transform experiencesViewerTransform;
     private Transform notificationViewerTransform;
+    private Transform topNotificationViewerTransform;
     private IHUD chatToggleTargetWindow;
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
@@ -46,6 +47,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> emoteJustTriggeredFromShortcut => DataStore.i.HUDs.emoteJustTriggeredFromShortcut;
     internal BaseVariable<Transform> isExperiencesViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
     internal BaseVariable<Transform> notificationPanelTransform => DataStore.i.HUDs.notificationPanelTransform;
+    internal BaseVariable<Transform> topNotificationPanelTransform => DataStore.i.HUDs.topNotificationPanelTransform;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
@@ -109,6 +111,9 @@ public class TaskbarHUDController : IHUD
 
         notificationPanelTransform.OnChange += InitializeNotificationPanel;
         InitializeNotificationPanel(notificationPanelTransform.Get(), null);
+
+        topNotificationPanelTransform.OnChange += InitializeTopNotificationPanel;
+        InitializeTopNotificationPanel(topNotificationPanelTransform.Get(), null);
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
@@ -325,6 +330,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
 
@@ -527,6 +533,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsLastSibling();
 
         privateChatWindow = controller;
 
@@ -547,6 +554,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsLastSibling();
 
         publicChatWindow = controller;
 
@@ -595,6 +603,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
         view.ShowFriendsButton();
@@ -658,6 +667,17 @@ public class TaskbarHUDController : IHUD
         notificationViewerTransform.SetParent(view.leftWindowContainer, false);
         notificationViewerTransform.SetAsLastSibling();
         notificationViewerTransform.GetComponent<MainChatNotificationsComponentView>().OnClickedNotification += OpenClickedChat;
+    }
+
+    private void InitializeTopNotificationPanel(Transform currentPanelTransform, Transform previousPanelTransform)
+    {
+        if (currentPanelTransform == null)
+            return;
+
+        topNotificationViewerTransform = currentPanelTransform;
+        topNotificationViewerTransform.SetParent(view.leftWindowContainer, false);
+        topNotificationViewerTransform.SetAsLastSibling();
+        topNotificationViewerTransform.GetComponent<TopNotificationComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
     private void OpenClickedChat(string chatId)
