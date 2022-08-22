@@ -15,6 +15,11 @@ namespace SignupHUD
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
+        public SignupHUDController()
+        {
+            
+        }
+
         public SignupHUDController(IAnalytics analytics)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
@@ -65,7 +70,7 @@ namespace SignupHUD
             WebInterface.SendPassport(name, email);
             DataStore.i.common.isSignUpFlow.Set(false);
             signupVisible.Set(false);
-            newUserExperienceAnalytics.SendTermsOfServiceAcceptedNux();
+            newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux();
         }
 
         internal void OnTermsOfServiceBack() { StartSignupProcess(); }
