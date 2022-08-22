@@ -1,19 +1,28 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace DCL.ECS7.Tests
 {
     public class ECS7VisualUITesterHelper
     {
+        private Color[] testsColor;
         private GameObject mainGameObject;
         private GameObject canvasGameObject;
         private GameObject childrenGameObject;
         private Camera camera;
 
+        public ECS7VisualUITesterHelper()
+        {
+            testsColor = new [] { Color.red, Color.gray, Color.blue, Color.black, Color.magenta, Color.yellow,  Color.cyan   };
+        }
+
         public void Setup(CanvasPainter canvasPainter)
         {
+            // We setup the background colors in order to ensure that the images will look always the same
             mainGameObject = new GameObject("Camera GameObject");
             
             // Configure camera
@@ -59,6 +68,19 @@ namespace DCL.ECS7.Tests
             rawImageRectTransform.offsetMin = Vector2.zero;
             
             rawImage.texture = renderTexture;
+        }
+
+        public void SetupBackgroundColorsInOrder(List<VisualElementRepresentation> visualElements)
+        {
+            if (visualElements.Count > testsColor.Length)
+            {
+                Debug.LogError("There are more elements than colors in this test! You need to add " + (visualElements.Count - testsColor.Length) + " colors to do this test");
+                return;
+            }
+            for (int i = 0; i < visualElements.Count; i++)
+            {
+                visualElements[i].visualElement.style.backgroundColor = testsColor[i];
+            }
         }
 
         public IEnumerator TakeSnapshotAndAssert(string textureName)

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using DCL.CRDT;
 using DCL.ECS7.UI;
 using DCL.ECSComponents;
@@ -61,9 +62,8 @@ namespace DCL.ECS7.Tests
             DataStore.i.ecs7.uiDataContainer = new UIDataContainer();
         }
 
-        [UnityTest]
-        [Explicit, Category("Explicit")]
-        public IEnumerator CastShadowFalseShouldWork_Generate()
+        [UnityTest, VisualTest]
+        public IEnumerator DrawUITransformCorrectly_Generate()
         {
             yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
         }
@@ -92,6 +92,8 @@ namespace DCL.ECS7.Tests
             canvasPainter.framesCounter = 9999;
             canvasPainter.Update();
             
+            ecs7VisualUITesterHelper.SetupBackgroundColorsInOrder(canvasPainter.visualElements.Values.ToList());
+
             string textureName =  "CanvasPainterTest";
             yield return ecs7VisualUITesterHelper.TakeSnapshotAndAssert(textureName);
         }
