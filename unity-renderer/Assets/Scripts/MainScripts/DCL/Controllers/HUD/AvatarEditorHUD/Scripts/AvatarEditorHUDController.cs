@@ -6,6 +6,7 @@ using DCL.NotificationModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -641,7 +642,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnAvatarEditorVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
-    public void SetVisibility_Internal(bool visible)
+    private void SetVisibility_Internal(bool visible)
     {
         if (!visible && view.isOpen)
         {
@@ -746,8 +747,12 @@ public class AvatarEditorHUDController : IHUD
 
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
+        
         if (DataStore.i.common.isSignUpFlow.Get())
+        {
             DataStore.i.HUDs.signupVisible.Set(true);
+            NewUserExperienceAnalytics.AvatarEditSuccessNux();
+        }
 
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
         avatarIsDirty = false;
