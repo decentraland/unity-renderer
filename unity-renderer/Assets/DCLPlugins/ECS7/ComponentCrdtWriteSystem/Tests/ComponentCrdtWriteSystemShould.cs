@@ -120,7 +120,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.EXECUTE_LOCALLY);
             crdtWriteSystem.LateUpdate();
 
-            crdtExecutor.Received(1).ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.Received(1).ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
             crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
 
             CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
@@ -138,7 +138,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.WRITE_STATE_LOCALLY);
             crdtWriteSystem.LateUpdate();
 
-            crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
             crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
 
             CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
