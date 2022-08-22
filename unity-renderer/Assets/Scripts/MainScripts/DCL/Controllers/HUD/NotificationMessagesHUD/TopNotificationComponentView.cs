@@ -93,7 +93,6 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     public void ShowNotification()
     {
         chatNotificationComponentView.Show();
-        chatNotificationComponentView.ForceUIRefresh();
     }
 
     public void HideNotification()

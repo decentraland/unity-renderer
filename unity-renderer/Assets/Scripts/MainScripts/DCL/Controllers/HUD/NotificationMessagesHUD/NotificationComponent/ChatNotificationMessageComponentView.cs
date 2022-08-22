@@ -190,7 +190,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         this.notificationTargetId = notificationTargetId;
     }
 
-    public void ForceUIRefresh()
+    private void ForceUIRefresh()
     {
         Utils.ForceRebuildLayoutImmediate(backgroundTransform);
     }
