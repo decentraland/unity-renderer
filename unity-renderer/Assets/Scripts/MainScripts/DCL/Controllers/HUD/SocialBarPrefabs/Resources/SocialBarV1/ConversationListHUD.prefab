@@ -301,10 +301,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 70}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205, y: -201}
+  m_SizeDelta: {x: 410, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &375401861995590642
 GameObject:
@@ -337,10 +337,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 70}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205, y: -75}
+  m_SizeDelta: {x: 410, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &682402044803570683
 GameObject:
@@ -730,10 +730,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 32}
+  m_SizeDelta: {x: 410, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6628819588464491298
 CanvasRenderer:
@@ -785,6 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 574840349233572012}
   toggleButtonIcon: {fileID: 8844625767096064120}
@@ -888,7 +889,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -44, y: 0}
+  m_AnchoredPosition: {x: -39, y: 0}
   m_SizeDelta: {x: 35, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9829191650889103
@@ -1374,10 +1375,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 32}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -126}
+  m_SizeDelta: {x: 410, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3309416832008042437
 CanvasRenderer:
@@ -1429,6 +1430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 7325515179595660874}
   toggleButtonIcon: {fileID: 7997220542110237988}
@@ -1737,10 +1739,10 @@ RectTransform:
   m_Father: {fileID: 4257313855285611501}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 70.28}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205, y: -35.14}
+  m_SizeDelta: {x: 374, y: 70.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3654037926120850385
 GameObject:
@@ -1912,10 +1914,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205, y: -244}
+  m_SizeDelta: {x: 410, y: 70.28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2525465837178415022
 MonoBehaviour:
@@ -1969,6 +1971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de65a3e40b99664b90d2c98b894d917, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 4257313855285611501}
   toggleButton: {fileID: 5289934199977216430}
   emptyStateContainer: {fileID: 3431523729489736390}
@@ -2219,6 +2222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de65a3e40b99664b90d2c98b894d917, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 6388838176684646702}
   toggleButton: {fileID: 4672298700284394759}
   emptyStateContainer: {fileID: 0}
@@ -2240,6 +2244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 512d200e5e7447ce96e742310a08ada9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 6388838176684646702}
   toggleButton: {fileID: 4672298700284394759}
   emptyStateContainer: {fileID: 8242457001220167832}
@@ -2260,6 +2265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 408e4efd0fe91974694a4a9033fd0ca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 6388838176684646702}
   toggleButton: {fileID: 4672298700284394759}
   emptyStateContainer: {fileID: 0}
@@ -2589,6 +2595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f20ebe0126fefa4c8c3377acca73aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   publicChannelList: {fileID: 9010997001220312801}
   directChatList: {fileID: 3333409431375489623}
   searchResultsList: {fileID: 1360690115544104431}
@@ -3705,6 +3712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 720063092071226695}
   toggleButtonIcon: {fileID: 8540575407798844873}
@@ -4026,10 +4034,10 @@ RectTransform:
   m_Father: {fileID: 6385060616518280574}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205, y: -118}
+  m_SizeDelta: {x: 410, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &3064829855575657985
 MonoBehaviour:
@@ -4083,6 +4091,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 408e4efd0fe91974694a4a9033fd0ca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 4382546108109034416}
   toggleButton: {fileID: 5289934199977216430}
   emptyStateContainer: {fileID: 4717315093682569324}
