@@ -15,7 +15,7 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECS7.Tests
 {
-    public class CanvasPainterShould : IntegrationTestSuite
+    public class CanvasPainterShould
     {
         private DataStore_ECS7 dataStoreEcs7;
         private RendererState rendererState;

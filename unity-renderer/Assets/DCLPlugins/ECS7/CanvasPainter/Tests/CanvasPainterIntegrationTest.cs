@@ -68,15 +68,40 @@ namespace DCL.ECS7.Tests
         //     yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
         // }
 
+        // [UnityTest]
+        // public IEnumerator DrawUITransformCorrectly()
+        // {
+        //     string testSceneId = "testId";
+        //     worldState.Configure().currentSceneId.Returns(testSceneId);
+        //     var testScene = testUtils.CreateScene(testSceneId);
+        //     testScene.CreateEntity(512);
+        //     testScene.CreateEntity(513);
+        //     DataStore.i.ecs7.scenes.Add(testScene);
+        //
+        //     var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+        //     parent.AlignItems = YGAlign.Center;
+        //     parent.JustifyContent = YGJustify.Center;
+        //     var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+        //     child.Width = 400;
+        //     child.Height = 400;
+        //     var message = CreateAndExecuteCRDTMessage(512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
+        //     var message2 = CreateAndExecuteCRDTMessage(513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
+        //     testScene.crdtExecutor.ExecuteWithoutStoringState(message);
+        //     testScene.crdtExecutor.ExecuteWithoutStoringState(message2);
+        //
+        //     canvasPainter.framesCounter = 9999;
+        //     canvasPainter.Update();
+        //     
+        //     ecs7VisualUITesterHelper.SetupBackgroundColorsInOrder(canvasPainter.visualElements.Values.ToList());
+        //
+        //     string textureName =  "CanvasPainterTest";
+        //     yield return ecs7VisualUITesterHelper.TakeSnapshotAndAssert(textureName);
+        // }
+        
         [UnityTest]
-        public IEnumerator DrawUITransformCorrectly()
+        public IEnumerator DrawParentAndChildrenCorrectly()
         {
-            string testSceneId = "testId";
-            worldState.Configure().currentSceneId.Returns(testSceneId);
-            var testScene = testUtils.CreateScene(testSceneId);
-            testScene.CreateEntity(512);
-            testScene.CreateEntity(513);
-            DataStore.i.ecs7.scenes.Add(testScene);
+            var testScene = CreateUITestScene();
 
             var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
             parent.AlignItems = YGAlign.Center;
@@ -84,11 +109,44 @@ namespace DCL.ECS7.Tests
             var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
             child.Width = 400;
             child.Height = 400;
-            var message = CreateCRDTMessage(512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
-            var message2 = CreateCRDTMessage(513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
-            testScene.crdtExecutor.ExecuteWithoutStoringState(message);
-            testScene.crdtExecutor.ExecuteWithoutStoringState(message2);
+            
+            CreateAndExecuteCRDTMessage(testScene,512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
+            CreateAndExecuteCRDTMessage(testScene, 513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
 
+            yield return AssertUISetup();
+        }
+        
+        [UnityTest]
+        public IEnumerator DrawListOfItemsCorrectly()
+        {
+            var testScene = CreateUITestScene();
+
+            var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parent.AlignItems = YGAlign.Center;
+            parent.JustifyContent = YGJustify.Center;
+            var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            child.Width = 400;
+            child.Height = 400;
+            
+            CreateAndExecuteCRDTMessage(testScene,512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
+            CreateAndExecuteCRDTMessage(testScene, 513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
+
+            yield return AssertUISetup();
+        }
+
+        private ECS7TestScene CreateUITestScene()
+        {
+            string testSceneId = "testId";
+            worldState.Configure().currentSceneId.Returns(testSceneId);
+            var testScene = testUtils.CreateScene(testSceneId);
+            testScene.CreateEntity(512);
+            testScene.CreateEntity(513);
+            DataStore.i.ecs7.scenes.Add(testScene);
+            return testScene;
+        }
+
+        private IEnumerator AssertUISetup()
+        {
             canvasPainter.framesCounter = 9999;
             canvasPainter.Update();
             
@@ -98,7 +156,7 @@ namespace DCL.ECS7.Tests
             yield return ecs7VisualUITesterHelper.TakeSnapshotAndAssert(textureName);
         }
 
-        private CRDTMessage CreateCRDTMessage(int entityId, int componentId, object data)
+        private void CreateAndExecuteCRDTMessage(ECS7TestScene testScene, int entityId, int componentId, object data)
         {
             CRDTMessage message = new CRDTMessage()
             {
@@ -107,7 +165,7 @@ namespace DCL.ECS7.Tests
                 data = data,
                 timestamp = 1
             };
-            return message;
+            testScene.crdtExecutor.ExecuteWithoutStoringState(message);
         }
     }
 }
