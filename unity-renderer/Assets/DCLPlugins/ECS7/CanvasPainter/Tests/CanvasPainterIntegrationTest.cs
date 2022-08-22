@@ -109,6 +109,7 @@ namespace DCL.ECS7.Tests
         }
 
         [UnityTest]
+        [Explicit, Category("Explicit")]
         public IEnumerator CastShadowFalseShouldWork_Generate()
         {
             yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
@@ -138,8 +139,6 @@ namespace DCL.ECS7.Tests
             canvasPainter.framesCounter = 9999;
             canvasPainter.Update();
             
-            // We wait 1 frame to draw the UI
-            // yield return new WaitForSeconds(60f);
             string textureName =  "CanvasPainterTest";
             yield return VisualTestUtils.TakeSnapshot(textureName, camera);
         }
