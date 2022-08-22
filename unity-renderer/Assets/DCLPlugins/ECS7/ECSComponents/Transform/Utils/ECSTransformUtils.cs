@@ -48,6 +48,33 @@ public static class ECSTransformUtils
         return false;
     }
 
+    public static bool IsCircularParenting(IParcelScene scene, IDCLEntity entity, long parentId)
+    {
+        if (parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
+        {
+            return false;
+        }
+
+        if (parentId == entity.entityId)
+        {
+            return true;
+        }
+
+        do
+        {
+            if (!scene.entities.TryGetValue(parentId, out IDCLEntity parent))
+                break;
+
+            if (entity.entityId == parentId)
+            {
+                return true;
+            }
+            parentId = parent.parentId;
+        } while (parentId != SpecialEntityId.SCENE_ROOT_ENTITY);
+
+        return false;
+    }
+
     public static Transform GetRootEntityTransform(IParcelScene scene)
     {
         return scene.GetSceneTransform();

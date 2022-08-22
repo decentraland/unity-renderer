@@ -11,12 +11,13 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
     [SerializeField] internal TMP_Text altText;
     [SerializeField] internal Animator someoneTalkingAnimator;
     [SerializeField] internal ButtonComponentView endCallButton;
+    [SerializeField] internal GameObject joinedPanel;
+    [SerializeField] internal ButtonComponentView startCallButton;
 
     [Header("Configuration")]
     [SerializeField] internal VoiceChatBarComponentModel model;
 
-    public event Action<bool> OnMuteVoiceChat;
-    public event Action OnLeaveVoiceChat;
+    public event Action<bool> OnJoinVoiceChat;
 
     public RectTransform Transform => (RectTransform)transform;
 
@@ -24,7 +25,8 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
     {
         base.Awake();
 
-        endCallButton.onClick.AddListener(() => OnLeaveVoiceChat?.Invoke());
+        endCallButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(false));
+        startCallButton.onClick.AddListener(() => OnJoinVoiceChat?.Invoke(true));
     }
 
     public void Configure(VoiceChatBarComponentModel newModel)
@@ -39,11 +41,8 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
             return;
 
         SetTalkingMessage(model.isSomeoneTalking, model.message);
+        SetAsJoined(model.isJoined);
     }
-
-    public override void Show(bool instant = false) { gameObject.SetActive(true); }
-
-    public override void Hide(bool instant = false) { gameObject.SetActive(false); }
 
     public void SetTalkingMessage(bool isSomeoneTalking, string message)
     {
@@ -73,6 +72,17 @@ public class VoiceChatBarComponentView : BaseComponentView, IVoiceChatBarCompone
     public void PlayVoiceChatRecordingAnimation(bool recording) { voiceChatButton.SetOnRecording(recording); }
 
     public void SetVoiceChatEnabledByScene(bool enabled) { voiceChatButton.SetEnabledByScene(enabled); }
+
+    public void SetAsJoined(bool isJoined)
+    {
+        model.isJoined = isJoined;
+
+        if (joinedPanel != null)
+            joinedPanel.SetActive(isJoined);
+
+        if (startCallButton != null)
+            startCallButton.gameObject.SetActive(!isJoined);
+    }
 
     public override void Dispose()
     {
