@@ -1,16 +1,23 @@
 using System.Collections.Generic;
 
-public static class NewUserExperienceAnalytics
+public class NewUserExperienceAnalytics : INewUserExperienceAnalytics
 {
     private const string AVATAR_EDIT_SUCCESS_NUX = "avatar_edit_success_nux";
     private const string TERMS_OF_SERVICE_SUCCESS_NUX = "terms_of_service_success_nux";
 
-    public static void AvatarEditSuccessNux()
+    private readonly IAnalytics analytics;
+    
+    public NewUserExperienceAnalytics(IAnalytics analytics)
+    {
+        this.analytics = analytics;
+    }
+
+    public void AvatarEditSuccessNux()
     {
         SendAnalytic(AVATAR_EDIT_SUCCESS_NUX);
     }
 
-    public static void SendTermsOfServiceAcceptedNux()
+    public void SendTermsOfServiceAcceptedNux()
     {
         SendAnalytic(TERMS_OF_SERVICE_SUCCESS_NUX);
     }

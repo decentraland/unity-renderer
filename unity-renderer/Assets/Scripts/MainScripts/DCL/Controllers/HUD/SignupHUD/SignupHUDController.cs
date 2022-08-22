@@ -11,8 +11,14 @@ namespace SignupHUD
         internal string email;
         internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
+        private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
+
+        public SignupHUDController(IAnalytics analytics)
+        {
+            newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
+        }
 
         public void Initialize(IHUD avatarEditorHUD)
         {
@@ -59,7 +65,7 @@ namespace SignupHUD
             WebInterface.SendPassport(name, email);
             DataStore.i.common.isSignUpFlow.Set(false);
             signupVisible.Set(false);
-            NewUserExperienceAnalytics.SendTermsOfServiceAcceptedNux();
+            newUserExperienceAnalytics.SendTermsOfServiceAcceptedNux();
         }
 
         internal void OnTermsOfServiceBack() { StartSignupProcess(); }

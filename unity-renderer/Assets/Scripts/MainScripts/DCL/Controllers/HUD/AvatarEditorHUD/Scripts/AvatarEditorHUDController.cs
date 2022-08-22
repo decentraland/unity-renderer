@@ -32,7 +32,8 @@ public class AvatarEditorHUDController : IHUD
     public bool bypassUpdateAvatarPreview = false;
 
     internal UserProfile userProfile;
-    internal IAnalytics analytics;
+    internal readonly IAnalytics analytics;
+    internal readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -75,9 +76,12 @@ public class AvatarEditorHUDController : IHUD
     {
         this.featureFlags = featureFlags;
         this.analytics = analytics;
+        this.newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
     }
 
-    public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
+    public void Initialize(UserProfile userProfile, 
+        BaseDictionary<string, WearableItem> catalog, 
+        bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
@@ -751,7 +755,7 @@ public class AvatarEditorHUDController : IHUD
         if (DataStore.i.common.isSignUpFlow.Get())
         {
             DataStore.i.HUDs.signupVisible.Set(true);
-            NewUserExperienceAnalytics.AvatarEditSuccessNux();
+            newUserExperienceAnalytics.AvatarEditSuccessNux();
         }
 
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
