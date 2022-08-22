@@ -12,13 +12,29 @@ using DG.Tweening;
 
 public class TopNotificationComponentView : BaseComponentView, ITopNotificationsComponentView
 {
+    private const float X_OFFSET = 32f;
+
     [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
+
+    //This structure is temporary for the first integration of the top notification, it will change when further defined
+    private float normalContentXPos = 111;
+    private float offsetContentXPos;
+    private float normalHeaderXPos = 70;
+    private float offsetHeaderXPos;
 
     public event Action<string> OnClickedNotification;
 
     public static TopNotificationComponentView Create()
     {
         return Instantiate(Resources.Load<TopNotificationComponentView>("SocialBarV1/TopNotificationHUD"));
+    }
+
+    public void Start()
+    {
+        chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
+        offsetContentXPos = normalContentXPos - X_OFFSET;
+        offsetHeaderXPos = normalHeaderXPos - X_OFFSET;
+        chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
     }
 
     public Transform GetPanelTransform()
@@ -31,10 +47,12 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             PopulatePrivateNotification(message, username, profilePicture);
+            chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
             PopulatePublicNotification(message, username);
+            chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
         }
     }
 
@@ -75,6 +93,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     public void ShowNotification()
     {
         chatNotificationComponentView.Show();
+        chatNotificationComponentView.ForceUIRefresh();
     }
 
     public void HideNotification()
@@ -85,6 +104,13 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     private void ClickedOnNotification(string targetId)
     {
         OnClickedNotification?.Invoke(targetId);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        chatNotificationComponentView.OnClickedNotification -= ClickedOnNotification;
     }
 
     public override void RefreshControl()

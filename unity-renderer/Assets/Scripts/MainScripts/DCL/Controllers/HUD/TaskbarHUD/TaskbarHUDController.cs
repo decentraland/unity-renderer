@@ -330,7 +330,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
-        topNotificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsFirstSibling();
 
         worldChatWindowHud = controller;
 
@@ -533,7 +533,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
-        topNotificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsFirstSibling();
 
         privateChatWindow = controller;
 
@@ -554,7 +554,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
-        topNotificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsFirstSibling();
 
         publicChatWindow = controller;
 
@@ -603,7 +603,7 @@ public class TaskbarHUDController : IHUD
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
-        topNotificationViewerTransform?.SetAsLastSibling();
+        topNotificationViewerTransform?.SetAsFirstSibling();
 
         friendsHud = controller;
         view.ShowFriendsButton();
@@ -676,7 +676,7 @@ public class TaskbarHUDController : IHUD
 
         topNotificationViewerTransform = currentPanelTransform;
         topNotificationViewerTransform.SetParent(view.leftWindowContainer, false);
-        topNotificationViewerTransform.SetAsLastSibling();
+        topNotificationViewerTransform.SetAsFirstSibling();
         topNotificationViewerTransform.GetComponent<TopNotificationComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
