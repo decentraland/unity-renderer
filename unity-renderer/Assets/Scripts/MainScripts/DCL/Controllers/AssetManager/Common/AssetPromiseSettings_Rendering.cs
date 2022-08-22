@@ -25,7 +25,6 @@ namespace DCL
 
         public bool forceNewInstance;
         public bool forceGPUOnlyMesh = false;
-        public bool doTransitionAnimation;
 
         public void ApplyBeforeLoad(Transform t)
         {

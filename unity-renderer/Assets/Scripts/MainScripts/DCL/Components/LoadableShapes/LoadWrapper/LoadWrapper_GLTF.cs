@@ -37,18 +37,10 @@ namespace DCL.Components
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
 
-            if (initialVisibility == false)
-            {
-                loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
-                loadHelper.settings.doTransitionAnimation = true;
-            }
+            if (useVisualFeedback)
+                loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
             else
-            {
-                if (useVisualFeedback)
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
-                else
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
-            }
+                loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
 
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             this.entity.OnCleanupEvent += OnEntityCleanup;

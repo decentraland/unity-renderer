@@ -220,7 +220,7 @@ namespace DCL
 
         private bool ShouldTransitionAnimationBeDone()
         {
-            return settings.doTransitionAnimation && doTransitionAnimationFlag && asset != null;
+            return settings.visibleFlags.Equals(AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION) && doTransitionAnimationFlag && asset != null;
         }
 
     }
