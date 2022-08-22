@@ -62,11 +62,11 @@ namespace DCL.ECS7.Tests
             DataStore.i.ecs7.uiDataContainer = new UIDataContainer();
         }
 
-        [UnityTest, VisualTest]
-        public IEnumerator DrawUITransformCorrectly_Generate()
-        {
-            yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
-        }
+        // [UnityTest, VisualTest]
+        // public IEnumerator DrawUITransformCorrectly_Generate()
+        // {
+        //     yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
+        // }
 
         [UnityTest, VisualTest]
         public IEnumerator DrawUITransformCorrectly()
