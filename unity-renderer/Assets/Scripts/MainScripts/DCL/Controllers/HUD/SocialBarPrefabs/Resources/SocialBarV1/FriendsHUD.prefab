@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 5592600324281357203}
   toggleButtonIcon: {fileID: 785311375320442670}
@@ -1086,6 +1087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 5965760825162736646}
   toggleButtonIcon: {fileID: 6133099415743954957}
@@ -1456,6 +1458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 2447796031126903298}
   toggleButtonIcon: {fileID: 8757459088797710354}
@@ -1945,6 +1948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 5388870294229674507}
   toggleButton: {fileID: 373866519491885297}
   emptyStateContainer: {fileID: 8537544344321641430}
@@ -2042,6 +2046,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 2685875329589298684}
   toggleButton: {fileID: 7937953728643343186}
   emptyStateContainer: {fileID: 2932016852410142984}
@@ -2715,6 +2720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 1520276654379897518}
   toggleButton: {fileID: 5903951418833045856}
   emptyStateContainer: {fileID: 7518954543782797184}
@@ -3570,6 +3576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 4895769189733774511}
   toggleButtonIcon: {fileID: 4912498087487786613}
@@ -3867,6 +3874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f6dc1daa2a4a9eba4965ec1f299c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   enabledHeader: {fileID: 8579114478575497482}
   disabledHeader: {fileID: 3898748473909555357}
   emptyStateContainer: {fileID: 5212587496370905453}
@@ -4573,6 +4581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 710f088536a64db2ae594d186c6b75d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   loadingSpinner: {fileID: 1933096059089960218}
   closeButton: {fileID: 4252606234690962432}
   friendsTabFocusButton: {fileID: 6399830310190429734}
@@ -5270,6 +5279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 7045797406674951202}
   toggleButton: {fileID: 7718659493326908491}
   emptyStateContainer: {fileID: 4449845025364482421}
@@ -5367,6 +5377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 2956868879258149217}
   toggleButton: {fileID: 4450009473169016410}
   emptyStateContainer: {fileID: 7434414195762192513}
@@ -5497,6 +5508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7becfd9f74a455aa4e9142b359f6a62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   enabledHeader: {fileID: 7840493675238110429}
   disabledHeader: {fileID: 1651495028025547457}
   emptyStateContainer: {fileID: 4488091510661529766}
@@ -6499,6 +6511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 1679038678423576560}
   toggleButtonIcon: {fileID: 4217389430651739752}
@@ -6946,6 +6959,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059b9387050d4b8ca2a2d26ac6678bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   toggleOnAwake: 0
   toggleButton: {fileID: 3229716358315704817}
   toggleButtonIcon: {fileID: 6005648469340967272}
@@ -7935,6 +7949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83977bfcaf8a4f9e8264ec66da4e9955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   container: {fileID: 1642083635416739197}
   toggleButton: {fileID: 2331136153996073199}
   emptyStateContainer: {fileID: 7465124535262851782}
@@ -11964,17 +11979,17 @@ PrefabInstance:
     - target: {fileID: 6459324867536094026, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.92941177
       objectReference: {fileID: 0}
     - target: {fileID: 6459324867536094026, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.92156863
       objectReference: {fileID: 0}
     - target: {fileID: 6459324867536094026, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.9254902
       objectReference: {fileID: 0}
     - target: {fileID: 6590195516862157886, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
