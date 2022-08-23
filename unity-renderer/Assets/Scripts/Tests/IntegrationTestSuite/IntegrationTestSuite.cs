@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DCL;
 using NSubstitute;
 using NSubstitute.ClearExtensions;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 namespace Tests
 {
@@ -16,7 +18,7 @@ namespace Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Debug.Log("Setting up");
+            Debug.Log($"Setting up {DateTime.Now}");
             CommonScriptableObjects.rendererState.Set(true);
             DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
             DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
