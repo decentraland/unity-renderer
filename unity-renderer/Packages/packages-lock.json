@@ -62,13 +62,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-        "version": "3.0.15",
-        "depth": 0,
-        "source": "registry",
-        "dependencies": {
+      "version": "3.0.15",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
         "com.unity.ext.nunit": "1.0.6"
-        },
-        "url": "https://packages.unity.com"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
       "version": "2.0.14",
@@ -272,6 +272,12 @@
       "source": "git",
       "dependencies": {},
       "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
+    },
+    "com.unity.modules.androidjni": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",

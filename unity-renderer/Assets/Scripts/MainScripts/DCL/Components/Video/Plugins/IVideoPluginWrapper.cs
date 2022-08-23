@@ -7,7 +7,7 @@ namespace DCL.Components.Video.Plugin
     {
         void Create(string id, string url, bool useHls);
         void Remove(string id);
-        void TextureUpdate(string id);
+        Texture2D TextureUpdate(string id);
         Texture2D PrepareTexture(string id);
         void Play(string id, float startTime);
         void Pause(string id);

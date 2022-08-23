@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
-    public class WebVideoPlayer : IDisposable
+    public class VideoPlayer : IDisposable
     {
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
@@ -23,7 +23,7 @@ namespace DCL.Components.Video.Plugin
 
         private string lastError = "";
 
-        public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
+        public VideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
@@ -61,9 +61,11 @@ namespace DCL.Components.Video.Plugin
 
                     break;
                 case VideoState.PLAYING:
-                    if (visible)
+#if UNITY_WEBGL
                         plugin.TextureUpdate(videoPlayerId);
-
+#else
+                        texture = plugin.TextureUpdate(videoPlayerId);
+#endif
                     break;
             }
         }
@@ -153,14 +155,8 @@ namespace DCL.Components.Video.Plugin
             return duration;
         }
 
-        public VideoState GetState()
-        {
-            return (VideoState)plugin.GetState(videoPlayerId);
-        }
+        public VideoState GetState() { return (VideoState)plugin.GetState(videoPlayerId); }
 
-        public void Dispose()
-        {
-            plugin.Remove(videoPlayerId);
-        }
+        public void Dispose() { plugin.Remove(videoPlayerId); }
     }
 }

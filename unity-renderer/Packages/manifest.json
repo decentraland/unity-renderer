@@ -26,6 +26,7 @@
     "com.unity.xr.legacyinputhelpers": "2.1.9",
     "net.tnrd.nsubstitute": "https://github.com/decentraland/Unity3D-NSubstitute.git",
     "ru.threedisevenzeror.unitygifdecoder": "https://github.com/3DI70R/Unity-GifDecoder.git",
+    "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
