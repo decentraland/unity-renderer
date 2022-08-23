@@ -31,7 +31,7 @@ public class EmotesCatalogServiceShould
         Assert.NotNull(promise);
         Assert.IsNull(promise.value);
         Assert.IsTrue(promise.keepWaiting);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -45,7 +45,7 @@ public class EmotesCatalogServiceShould
             Assert.IsNull(promise.value);
             Assert.IsTrue(promise.keepWaiting);
         }
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -60,7 +60,7 @@ public class EmotesCatalogServiceShould
         Assert.IsTrue(promise1.keepWaiting);
         Assert.IsNull(promise2.value);
         Assert.IsTrue(promise2.keepWaiting);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -70,7 +70,7 @@ public class EmotesCatalogServiceShould
 
         Assert.AreEqual(0, catalog.emotesOnUse.Count);
         Assert.AreEqual(1, catalog.promises["id1"].Count);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class EmotesCatalogServiceShould
 
         Assert.AreEqual(0, catalog.emotesOnUse.Count);
         Assert.AreEqual(3, catalog.promises["id1"].Count);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -93,7 +93,7 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(0, catalog.emotesOnUse.Count);
         Assert.AreEqual(1, catalog.promises["id1"].Count);
         Assert.AreEqual(1, catalog.promises["id2"].Count);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(0, catalog.emotesOnUse.Count);
         Assert.AreEqual(3, catalog.promises["id1"].Count);
         Assert.AreEqual(3, catalog.promises["id2"].Count);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -136,14 +136,14 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(wearable, promise2.value);
         Assert.AreEqual(wearable, promise2Sucess);
         Assert.IsFalse(catalog.promises.ContainsKey("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
     public void ForgetEmotesWithNoUsesGracefully()
     {
         Assert.DoesNotThrow(() => catalog.ForgetEmote("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -156,7 +156,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsTrue(catalog.emotes.ContainsKey("id1"));
         Assert.AreEqual(9, catalog.emotesOnUse["id1"]);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -169,7 +169,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsFalse(catalog.emotes.ContainsKey("id1"));
         Assert.IsFalse(catalog.emotesOnUse.ContainsKey("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -179,7 +179,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsFalse(catalog.emotes.ContainsKey("id1"));
         Assert.IsFalse(catalog.emotesOnUse.ContainsKey("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -191,7 +191,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsTrue(catalog.emotes.ContainsKey("id1"));
         Assert.IsTrue(catalog.emotesOnUse.ContainsKey("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [TestCase(1)]
@@ -208,7 +208,7 @@ public class EmotesCatalogServiceShould
         bridge.OnEmotesReceived += Raise.Event<IEmotesCatalogBridge.EmotesReceived>(new WearableItem[] { new WearableItem { id = "id1" } });
 
         Assert.AreEqual(promisesCount, catalog.emotesOnUse["id1"]);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -222,7 +222,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsFalse(promise.keepWaiting);
         Assert.AreEqual(emote, promise.value);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [Test]
@@ -241,7 +241,7 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(emote1, promises[0].value);
         Assert.IsFalse(promises[1].keepWaiting);
         Assert.AreEqual(emote2, promises[1].value);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 
     [UnityTest]
@@ -257,7 +257,7 @@ public class EmotesCatalogServiceShould
         var emoteReceived = await catalog.RequestEmoteAsync("id1");
 
         Assert.AreEqual(emote, emoteReceived);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [UnityTest]
@@ -278,7 +278,7 @@ public class EmotesCatalogServiceShould
 
         Assert.AreEqual(emotes["id1"], emotesReceived[0]);
         Assert.AreEqual(emotes["id2"], emotesReceived[1]);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [UnityTest]
@@ -297,7 +297,7 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(2, catalog.promises["id1"].Count);
 
         cts.Cancel();
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [UnityTest]
@@ -313,7 +313,7 @@ public class EmotesCatalogServiceShould
         await UniTask.NextFrame();
 
         Assert.IsFalse(catalog.promises.ContainsKey("id1"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [UnityTest]
@@ -333,7 +333,7 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(2, catalog.promises["id2"].Count);
 
         cts.Cancel();
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [UnityTest]
@@ -349,7 +349,7 @@ public class EmotesCatalogServiceShould
 
         Assert.IsFalse(catalog.promises.ContainsKey("id1"));
         Assert.IsFalse(catalog.promises.ContainsKey("id2"));
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     });
 
     [Test]
@@ -364,6 +364,6 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(catalog.emotesOnUse["id1"], 5000);
         Assert.AreEqual(catalog.emotesOnUse["id2"], 5000);
         Assert.AreEqual(catalog.emotesOnUse["id3"], 5000);
-        UnityEngine.Debug.Log("Adios");
+        UnityEngine.Debug.Log($"Adios {DateTime.Now}");
     }
 }
