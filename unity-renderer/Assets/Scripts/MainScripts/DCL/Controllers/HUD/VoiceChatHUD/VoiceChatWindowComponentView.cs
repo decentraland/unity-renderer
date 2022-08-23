@@ -56,13 +56,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         ConfigureAllowUsersFilter();
     }
 
-    public override void Start()
-    {
-        base.Start();
-        
-        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
-    }
-
     public void Configure(VoiceChatWindowComponentModel newModel)
     {
         model = newModel;
