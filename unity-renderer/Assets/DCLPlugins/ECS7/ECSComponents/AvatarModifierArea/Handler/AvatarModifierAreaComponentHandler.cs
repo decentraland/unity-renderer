@@ -150,6 +150,11 @@ namespace DCL.ECSComponents
                 {
                     var modifier = factory.GetOrCreateAvatarModifier(modifierKey);
                     
+                    // If we don't have a modifier area handler, we fail gracefully
+                    // this can be due to typescript counterpart having an UNRECOGNIZED enum from AvatarModifier of the ECS7 
+                    if(modifier == null)
+                        continue;
+                    
                     OnAvatarEnter += modifier.ApplyModifier;
                     OnAvatarExit += modifier.RemoveModifier;
                 }
