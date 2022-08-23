@@ -105,6 +105,7 @@ namespace DCL.ECS7.Tests
             int snapshotsHeight = 720;
             float ratio = 95f;
 
+			yield return new WaitForSeconds(10);
             yield return VisualTestUtils.TakeSnapshot(testImagesPath, textureName, camera, snapshotsWidth, snapshotsHeight);
             // yield return VisualTestUtils.TakeSnapshot(textureName, camera);
             
