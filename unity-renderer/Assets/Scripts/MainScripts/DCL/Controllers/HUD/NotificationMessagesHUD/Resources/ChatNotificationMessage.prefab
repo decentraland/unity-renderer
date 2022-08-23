@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9109050978261726346}
   - component: {fileID: 6103037438604363875}
   - component: {fileID: 608101669632989784}
+  - component: {fileID: 435358585724813086}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -91,6 +92,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!114 &435358585724813086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62235492067932950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &1384237347415166872
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,6 +647,8 @@ MonoBehaviour:
   isPrivate: 1
   backgroundTransform: {fileID: 4826730172210535619}
   messageContainerTransform: {fileID: 5928874722021721243}
+  header: {fileID: 0}
+  content: {fileID: 0}
   model:
     maxHeaderCharacters: 30
     maxContentCharacters: 32
