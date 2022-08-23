@@ -31,15 +31,16 @@ namespace Tests
         public void TearDown()
         {
             testUtils.Dispose();
+            AssetPromiseKeeper_PrimitiveMesh.i.Cleanup();
         }
 
         [UnityTest]
         public IEnumerator CreatePrimitiveMesh()
         {
-            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Box = new BoxMesh() });
-            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Plane = new PlaneMesh() });
-            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Cylinder = new CylinderMesh() });
-            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Sphere = new SphereMesh() });
+            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
+            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
+            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() });
+            yield return CreatePrimitiveMesh(new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() });
         }
 
         [UnityTest]
@@ -62,7 +63,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PutTexturizableComponent()
         {
-            PBMeshRenderer model = new PBMeshRenderer() { Box = new BoxMesh() };
+            PBMeshRenderer model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
 
             handler.OnComponentCreated(scene, entity);
             handler.OnComponentModelUpdated(scene, entity, model);
@@ -86,7 +87,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator ShareMeshes()
         {
-            PBMeshRenderer model = new PBMeshRenderer() { Box = new BoxMesh() };
+            PBMeshRenderer model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
 
             handler.OnComponentCreated(scene, entity);
             handler.OnComponentModelUpdated(scene, entity, model);
@@ -112,7 +113,7 @@ namespace Tests
             handler.OnComponentRemoved(scene, secondEntity);
             yield return null;
 
-            Assert.IsTrue(firstEntityMesh == null); //Assert.IsNull will fail as it compare with a different type of null
+            Assert.IsFalse(firstEntityMesh); //Assert.IsNull will fail
         }
 
         private IEnumerator CreatePrimitiveMesh(PBMeshRenderer model)

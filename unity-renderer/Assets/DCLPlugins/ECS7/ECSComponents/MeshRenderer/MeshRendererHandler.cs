@@ -43,8 +43,8 @@ namespace DCL.ECSComponents
             if (prevModel != null)
                 ecs7DataStore.RemovePendingResource(scene.sceneData.id, prevModel);
 
-            Object.Destroy(componentGameObject);
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
+            Object.Destroy(componentGameObject);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBMeshRenderer model)

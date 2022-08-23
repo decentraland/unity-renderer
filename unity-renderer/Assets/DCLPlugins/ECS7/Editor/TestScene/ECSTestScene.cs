@@ -34,10 +34,10 @@ public class ECSTestScene : MonoBehaviour
             new ECSTransform() { position = new UnityEngine.Vector3(1, 3, 1), scale = UnityEngine.Vector3.one });
 
         componentWriter.PutComponent(sceneId, 105, ComponentID.MESH_RENDERER, new PBMeshRenderer());
-        componentWriter.PutComponent(sceneId, 101, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Box = new BoxMesh() });
-        componentWriter.PutComponent(sceneId, 102, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Sphere = new SphereMesh() });
-        componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Cylinder = new CylinderMesh() { RadiusBottom = 1, RadiusTop = 1 } });
-        componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PlaneMesh() });
+        componentWriter.PutComponent(sceneId, 101, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
+        componentWriter.PutComponent(sceneId, 102, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() });
+        componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() { RadiusBottom = 1, RadiusTop = 1 } });
+        componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
 
         PBMaterial model = new PBMaterial()
         {
@@ -58,7 +58,7 @@ public class ECSTestScene : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PlaneMesh() });
+            componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
@@ -66,7 +66,7 @@ public class ECSTestScene : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PlaneMesh() });
+            componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
         }
         if (Input.GetKeyDown(KeyCode.Alpha7))
         {
