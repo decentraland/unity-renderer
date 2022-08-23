@@ -278,6 +278,7 @@ MonoBehaviour:
   teacherRawImage: {fileID: 6732306866191114328}
   teacher: {fileID: 977289631841785178}
   teacherCanvas: {fileID: 6650911990874416982}
+  tutorialMusicHandler: {fileID: 2404736944381587218}
   eagleEyeCamera: {fileID: 770616498577745558}
 --- !u!1 &4305190056773532184
 GameObject:

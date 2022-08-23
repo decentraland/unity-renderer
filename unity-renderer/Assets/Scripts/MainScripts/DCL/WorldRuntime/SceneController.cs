@@ -339,7 +339,7 @@ namespace DCL
                         {
                             if (msgPayload is CRDTMessage crdtMessage)
                             {
-                                scene.crdtExecutor.Execute(crdtMessage);
+                                scene.crdtExecutor?.Execute(crdtMessage);
                             }
                             break;
                         }
@@ -670,6 +670,12 @@ namespace DCL
                 }
 
                 worldState.loadedScenes.Add(sceneToLoad.id, newScene);
+
+                foreach (Vector2Int sceneParcel in newScene.parcels)
+                {
+                    worldState.loadedScenesByCoordinate.Add(sceneParcel, sceneToLoad.id);
+                }
+                
                 worldState.scenesSortedByDistance.Add(newScene);
 
                 sceneSortDirty = true;
@@ -747,6 +753,12 @@ namespace DCL
             
             worldState.loadedScenes.Remove(sceneId);
             worldState.globalSceneIds.Remove(sceneId);
+            
+            foreach (Vector2Int sceneParcel in scene.parcels)
+            {
+                worldState.loadedScenesByCoordinate.Remove(sceneParcel);
+            }
+            
             DataStore.i.world.portableExperienceIds.Remove(sceneId);
             
             // Remove the scene id from the msg. priorities list

@@ -1,0 +1,44 @@
+{
+    "name": "DCL.ECS7.CanvasPainter.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:7eb48a6a47db4795bdee44a726fa8338",
+        "GUID:2f65f91ec3d84150a37ed886555c85c6",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:a0758b47826540c6955e61e446724948",
+        "GUID:610b4fd1d03bef243a0502e0c0412f1b",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:0a17d39e1dc14c038aa3c6483a185df0",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:f8a3a0af3ed28474c885e04c605a7962",
+        "GUID:b8b9ca72325745a8a59d88b5f2db198c",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:5c497d137ccf6054880aae69dbaea398",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:023ac9b81facd43ebbb2a6f1c6252835",
+        "GUID:9cccce9925d3495d8a5e4fa5b25f54a5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

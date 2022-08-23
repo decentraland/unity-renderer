@@ -1,0 +1,20 @@
+{
+    "name": "UIBlur",
+    "rootNamespace": "",
+    "references": [
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:7240b5b323e5f4bde8392d35668ad0ae",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
