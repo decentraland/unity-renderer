@@ -63,9 +63,9 @@ public class PublicChatWindowController : IHUD
         {
             view.OnFocused += HandleViewFocused;
             View.OnClickOverWindow += HandleViewClicked;
-            if (mouseCatcher != null)
-                mouseCatcher.OnMouseLock += ActivatePreview;
         }
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock += ActivatePreview;
 
         chatHudController = new ChatHUDController(dataStore,
             userProfileBridge,
