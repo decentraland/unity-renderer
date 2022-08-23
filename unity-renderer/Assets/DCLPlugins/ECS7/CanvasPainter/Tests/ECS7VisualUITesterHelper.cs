@@ -37,7 +37,7 @@ namespace DCL.ECS7.Tests
             camera = mainGameObject.AddComponent<Camera>();
             camera.backgroundColor = Color.white;
             camera.allowHDR = false;
-            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.clearFlags = CameraClearFlags.Nothing;
                         
             // Configure canvas
             canvasGameObject = new GameObject("Canvas GameObject");
@@ -57,9 +57,9 @@ namespace DCL.ECS7.Tests
             canvasRectTransform.sizeDelta = new Vector2(1440, 900);
 
             // Create render texture
-            RenderTexture renderTexture = new RenderTexture(1440, 900, 16);
-            renderTexture.Create();
-            canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
+            // RenderTexture renderTexture = new RenderTexture(1440, 900, 16);
+            // renderTexture.Create();
+            // canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
             
             
             // Configure RawImage
@@ -76,7 +76,7 @@ namespace DCL.ECS7.Tests
             rawImageRectTransform.offsetMax = Vector2.zero;
             rawImageRectTransform.offsetMin = Vector2.zero;
             
-            rawImage.texture = renderTexture;
+            // rawImage.texture = renderTexture;
             rawImage.color = Color.blue;
             
             testGameObject = new GameObject("Image GameObject");
@@ -105,7 +105,7 @@ namespace DCL.ECS7.Tests
             int snapshotsWidth = 1440;
             int snapshotsHeight = 900;
             float ratio = 95f;
-            ScreenCapture.CaptureScreenshot(textureNameRaw+"_testpantalla.png");
+            ScreenCapture.CaptureScreenshot(testImagesPath+textureNameRaw+"_testpantalla.png");
 			yield return new WaitForSeconds(10);
             yield return VisualTestUtils.TakeSnapshot(testImagesPath, textureName, camera, snapshotsWidth, snapshotsHeight);
             // yield return VisualTestUtils.TakeSnapshot(textureName, camera);
