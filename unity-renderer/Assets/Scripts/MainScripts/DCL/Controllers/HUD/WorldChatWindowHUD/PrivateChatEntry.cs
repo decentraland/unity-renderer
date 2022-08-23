@@ -39,7 +39,15 @@ namespace DCL.Chat.HUD
                 userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
             });
-            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
+            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this)); 
+            onFocused += isFocused =>
+            {
+                if (optionsButton == null) return;
+                var isContextualMenuOpenWithThisUser = userContextMenu != null
+                                                       && userContextMenu.isVisible
+                                                       && userContextMenu.UserId == model.userId;
+                optionsButton.gameObject.SetActive(isFocused || isContextualMenuOpenWithThisUser);
+            };
         }
 
         public void Initialize(IChatController chatController,
@@ -47,6 +55,8 @@ namespace DCL.Chat.HUD
         {
             this.chatController = chatController;
             this.userContextMenu = userContextMenu;
+            userContextMenu.OnHide -= HandleContextMenuHidden;
+            userContextMenu.OnHide += HandleContextMenuHidden;
             userContextMenu.OnBlock -= HandleUserBlocked;
             userContextMenu.OnBlock += HandleUserBlocked;
         }
@@ -116,6 +126,11 @@ namespace DCL.Chat.HUD
             if (!model.imageFetchingEnabled) return;
             picture.SetImage((string) null);
             model.imageFetchingEnabled = false;
+        }
+        
+        private void HandleContextMenuHidden()
+        {
+            optionsButton.gameObject.SetActive(false);
         }
     }
 }
