@@ -35,14 +35,16 @@ namespace DCL.ECS7.Tests
             
             // Configure camera
             camera = mainGameObject.AddComponent<Camera>();
+            camera.transform.position = camera.transform.position + UnityEngine.Vector3.back * 17;
             camera.backgroundColor = Color.white;
             camera.allowHDR = false;
-            camera.clearFlags = CameraClearFlags.Nothing;
+            camera.clearFlags = CameraClearFlags.SolidColor;
                         
             // Configure canvas
             canvasGameObject = new GameObject("Canvas GameObject");
+
             var canvas = canvasGameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = camera;
             
             // Adding a canvas scaler for the canvas, this way we ensure that the image will maintain proportions 
@@ -55,11 +57,12 @@ namespace DCL.ECS7.Tests
             canvasRectTransform.anchorMax = new Vector2(0, 1);
             canvasRectTransform.pivot = new Vector2(0.5f, 0.5f);
             canvasRectTransform.sizeDelta = new Vector2(1440, 900);
+            canvasRectTransform.position += UnityEngine.Vector3.forward * 850;
 
             // Create render texture
-            // RenderTexture renderTexture = new RenderTexture(1440, 900, 16);
-            // renderTexture.Create();
-            // canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
+            RenderTexture renderTexture = new RenderTexture(1440, 900, 16);
+            renderTexture.Create();
+            canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
             
             
             // Configure RawImage
@@ -105,7 +108,7 @@ namespace DCL.ECS7.Tests
             int snapshotsWidth = 1440;
             int snapshotsHeight = 900;
             float ratio = 95f;
-            ScreenCapture.CaptureScreenshot(testImagesPath+textureNameRaw+"_testpantalla.png");
+    
 			yield return new WaitForSeconds(10);
             yield return VisualTestUtils.TakeSnapshot(testImagesPath, textureName, camera, snapshotsWidth, snapshotsHeight);
             // yield return VisualTestUtils.TakeSnapshot(textureName, camera);
