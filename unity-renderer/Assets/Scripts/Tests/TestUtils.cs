@@ -847,9 +847,9 @@ namespace DCL.Helpers
             // check every collider is enabled
             Assert.IsTrue(entity.meshesInfo.colliders.Count > 0);
 
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsTrue(collider.enabled);
             }
 
             // update collision property with 'false'
@@ -858,9 +858,9 @@ namespace DCL.Helpers
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsFalse(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsFalse(collider.enabled);
             }
 
             // update collision property with 'true' again
@@ -869,9 +869,9 @@ namespace DCL.Helpers
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsTrue(collider.enabled);
             }
         }
 
