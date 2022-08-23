@@ -77,6 +77,7 @@ namespace DCL.ECS7.Tests
             rawImageRectTransform.offsetMin = Vector2.zero;
             
             rawImage.texture = renderTexture;
+            rawImage.color = Color.blue;
             
             testGameObject = new GameObject("Image GameObject");
             testGameObject.transform.SetParent(canvasGameObject.transform, false);
@@ -101,8 +102,8 @@ namespace DCL.ECS7.Tests
         public IEnumerator TakeSnapshotAndAssert(string textureNameRaw)
         {
             string textureName = textureNameRaw + ".png";
-            int snapshotsWidth = 1280;
-            int snapshotsHeight = 720;
+            int snapshotsWidth = 1440;
+            int snapshotsHeight = 900;
             float ratio = 95f;
 
 			yield return new WaitForSeconds(10);
