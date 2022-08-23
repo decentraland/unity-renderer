@@ -7,6 +7,7 @@ using DCL.Components.Video.Plugin;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using RenderHeads.Media.AVProVideo;
 using UnityEngine.Assertions;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -52,6 +53,7 @@ namespace DCL.Components
         private string lastVideoClipID;
         private VideoState previousVideoState;
 
+        private MediaPlayer avProMediaPlayer;
         public DCLVideoTexture()
         {
             model = new Model();
@@ -106,7 +108,7 @@ namespace DCL.Components
             {
                 yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
 
-                if (texturePlayer.isError)
+                /*if (texturePlayer.isError)
                 {
                     if (texturePlayerUpdateRoutine != null)
                     {
@@ -115,9 +117,9 @@ namespace DCL.Components
                     }
 
                     yield break;
-                }
+                }*/
 
-                texture = texturePlayer.texture;
+                //texture = texturePlayer.texture;
                 SetPlayStateDirty();
             }
 
@@ -158,6 +160,12 @@ namespace DCL.Components
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
+
+            avProMediaPlayer = GameObject.Instantiate(Resources.Load<MediaPlayer>("AVProMediaPlayer"), null);
+            avProMediaPlayer.name = "AVPRO MEDIA PLAYER";
+            avProMediaPlayer.OpenMedia(MediaPathType.AbsolutePathOrURL, dclVideoClip.GetUrl(), true);
+            
+            
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -196,12 +204,39 @@ namespace DCL.Components
             {
                 currUpdateIntervalTime += Time.unscaledDeltaTime;
             }
+            if (avProMediaPlayer.TextureProducer.GetTexture(0) != null)
+            {
+                texture = (Texture2D)avProMediaPlayer.TextureProducer.GetTexture(0);
+            }
+            /*
             else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.Update();
-                texture = texturePlayer.texture;
-            }
+                //texturePlayer.Update();
+                //texture = texturePlayer.texture;
+                //texture = avProMediaPlayer.TextureProducer.GetTexture2D(0);
+                if (avProMediaPlayer.TextureProducer.GetTexture(0) != null)
+                {
+                    Debug.Log("ESTOY POR SETEAR LA TEXTURE");
+                    texture = TextureToTexture2D(avProMediaPlayer.TextureProducer.GetTexture(0));
+                }
+            }*/
+        }
+        
+        private Texture2D TextureToTexture2D(Texture texture)
+        {
+            Texture2D texture2D = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+            RenderTexture currentRT = RenderTexture.active;
+            RenderTexture renderTexture = RenderTexture.GetTemporary(texture.width, texture.height, 32);
+            Graphics.Blit(texture, renderTexture);
+
+            RenderTexture.active = renderTexture;
+            texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            texture2D.Apply();
+
+            RenderTexture.active = currentRT;
+            RenderTexture.ReleaseTemporary(renderTexture);
+            return texture2D;
         }
 
         private void UpdateProgressReport()

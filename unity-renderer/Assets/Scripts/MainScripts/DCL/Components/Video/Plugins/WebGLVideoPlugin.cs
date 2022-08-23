@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
@@ -43,7 +44,7 @@ namespace DCL.Components.Video.Plugin
         public static void WebVideoPlayerRemove(string id) { }
         public static void WebVideoPlayerTextureUpdate(string id) { }
         public static int WebVideoPlayerTextureGet(string id) { return -1; }
-        public static void WebVideoPlayerPlay(string id, float startTime) { }
+        public static void WebVideoPlayerPlay(string id, float startTime) { Debug.Log("ACA DEBERIA HACER PLAY DE " + id);}
         public static void WebVideoPlayerPause(string id) { }
         public static void WebVideoPlayerVolume(string id, float volume) { }
         public static int WebVideoPlayerGetHeight(string id) { return 0; }
