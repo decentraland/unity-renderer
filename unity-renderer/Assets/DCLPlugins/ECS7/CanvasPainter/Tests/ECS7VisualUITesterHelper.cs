@@ -6,6 +6,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace DCL.ECS7.Tests
 {
@@ -19,6 +20,7 @@ namespace DCL.ECS7.Tests
         private GameObject mainGameObject;
         private GameObject canvasGameObject;
         private GameObject childrenGameObject;
+        private GameObject testGameObject;
         private Camera camera;
 
         public ECS7VisualUITesterHelper()
@@ -59,6 +61,7 @@ namespace DCL.ECS7.Tests
             renderTexture.Create();
             canvasPainter.rootNode.panelSettings.targetTexture = renderTexture;
             
+            
             // Configure RawImage
             childrenGameObject = new GameObject("RawImage GameObject");
             childrenGameObject.transform.SetParent(canvasGameObject.transform, false);
@@ -74,6 +77,12 @@ namespace DCL.ECS7.Tests
             rawImageRectTransform.offsetMin = Vector2.zero;
             
             rawImage.texture = renderTexture;
+            
+            testGameObject = new GameObject("Image GameObject");
+            testGameObject.transform.SetParent(canvasGameObject.transform, false);
+
+            Image image = testGameObject.AddComponent<Image>();
+            image.color = Color.green;
         }
 
         public void SetupBackgroundColorsInOrder(List<VisualElementRepresentation> visualElements)
@@ -112,6 +121,7 @@ namespace DCL.ECS7.Tests
             GameObject.Destroy(mainGameObject);
             GameObject.Destroy(canvasGameObject);
             GameObject.Destroy(childrenGameObject);
+            GameObject.Destroy(testGameObject);
         }
     }
 }
