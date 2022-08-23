@@ -43,7 +43,7 @@ namespace DCL.Chat.HUD
                 view.OnChannelNameUpdated += HandleChannelNameUpdated;
                 view.OnCreateSubmit += CreateChannel;
                 view.OnClose += HandleViewClose;
-                view.OnOpenChannel += HandleOpenChannel;
+                view.OnJoinChannel += HandleJoinChannel;
                 chatController.OnJoinChannelError += HandleCreationError;
                 chatController.OnChannelJoined += HandleChannelJoined;
             }
@@ -54,7 +54,7 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private void HandleOpenChannel() => OnNavigateToChannelWindow?.Invoke(channelName);
+        private void HandleJoinChannel() => chatController.JoinOrCreateChannel(channelName);
 
         private void HandleViewClose() => SetVisibility(false);
 

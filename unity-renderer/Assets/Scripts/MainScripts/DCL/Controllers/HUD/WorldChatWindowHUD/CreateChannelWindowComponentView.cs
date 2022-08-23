@@ -23,7 +23,7 @@ namespace DCL.Chat.HUD
         public event Action<string> OnChannelNameUpdated;
         public event Action OnCreateSubmit;
         public event Action OnClose;
-        public event Action OnOpenChannel;
+        public event Action OnJoinChannel;
 
         public static CreateChannelWindowComponentView Create()
         {
@@ -44,7 +44,7 @@ namespace DCL.Chat.HUD
             });
             foreach (var button in closeButtons)
                 button.onClick.AddListener(() => OnClose?.Invoke());
-            joinButton.onClick.AddListener(() => OnOpenChannel?.Invoke());
+            joinButton.onClick.AddListener(() => OnJoinChannel?.Invoke());
             lengthLabelOriginalColor = channelNameLengthLabel.color;
         }
 
