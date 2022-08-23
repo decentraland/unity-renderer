@@ -232,7 +232,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public void Dispose()
     {
-        bridge.OnEmotesReceived += OnEmotesReceived;
-        bridge.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
+        bridge.OnEmotesReceived -= OnEmotesReceived;
+        bridge.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
     }
 }
