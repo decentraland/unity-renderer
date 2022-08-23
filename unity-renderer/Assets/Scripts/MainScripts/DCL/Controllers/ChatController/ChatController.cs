@@ -17,8 +17,6 @@ public class ChatController : MonoBehaviour, IChatController
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
     private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
-    private int nearbyUnseenMessages;
-    private int privateUnseenMessages;
 
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
@@ -36,7 +34,7 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     
-    public int TotalUnseenMessages => privateUnseenMessages + nearbyUnseenMessages;
+    public int TotalUnseenMessages { get; private set; }
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
     public void Awake()
@@ -162,7 +160,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
 
-        privateUnseenMessages = msg.totalUnseenMessages;
+        TotalUnseenMessages = msg.totalUnseenMessages;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
         chatAlreadyInitialized = true;
     }
@@ -174,22 +172,8 @@ public class ChatController : MonoBehaviour, IChatController
         var message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
         if (message == null) return;
 
-        var wasNearbyMessage = false;
-        if (message.messageType == ChatMessage.Type.PUBLIC
-            && string.IsNullOrEmpty(message.recipient))
-        {
-            nearbyUnseenMessages++;
-            wasNearbyMessage = true;
-        }
-
         messages.Add(message);
         OnAddMessage?.Invoke(message);
-
-        if (wasNearbyMessage)
-        {
-            OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
-        }
     }
 
     // called by kernel
@@ -200,26 +184,11 @@ public class ChatController : MonoBehaviour, IChatController
 
         if (messages == null) return;
 
-        var wasNearbyMessage = false;
-
         foreach (var message in messages.messages)
         {
             this.messages.Add(message);
 
-            if (message.messageType == ChatMessage.Type.PUBLIC
-                && string.IsNullOrEmpty(message.recipient))
-            {
-                nearbyUnseenMessages++;
-                wasNearbyMessage = true;
-            }
-
             OnAddMessage?.Invoke(message);
-        }
-
-        if (wasNearbyMessage)
-        {
-            OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
         }
     }
 
@@ -228,7 +197,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateTotalUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
-        privateUnseenMessages = msg.total;
+        TotalUnseenMessages = msg.total;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
     }
 
@@ -274,13 +243,6 @@ public class ChatController : MonoBehaviour, IChatController
     public void MarkMessagesAsSeen(string userId)
     {
         WebInterface.MarkMessagesAsSeen(userId);
-        
-        if (userId == "nearby")
-        {
-            nearbyUnseenMessages = 0;
-            OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
-        }
     }
 
     public void GetPrivateMessages(string userId, int limit, string fromMessageId) =>
