@@ -165,7 +165,7 @@ namespace DCL
         {
             // Materials and textures are reused, so they are not extracted again
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
-            bool doTransition = settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION && doTransitionAnimationFlag && asset != null;
+            bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimationFlag && asset != null;
             CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(doTransition, asset.renderers, 
                 ()=>asset?.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess), false));
         }

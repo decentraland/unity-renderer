@@ -229,7 +229,7 @@ namespace DCL
 
         private bool ShouldTransitionAnimationBeDone()
         {
-            return settings.visibleFlags.Equals(AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION) && doTransitionAnimationFlag && asset != null;
+            return settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimationFlag && asset != null;
         }
 
     }
