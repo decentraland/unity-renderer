@@ -25,7 +25,7 @@ namespace DCL
         object id = null;
         private List<int> texIdsCache;
         
-        private const string AB_LOAD_ANIMATION = "ab_load_animation";
+        private const string MATERIAL_TRANSITION_CONTROLLER_FLAG = "use_material_transition_controller";
         private bool doTransitionAnimationFlag;
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
@@ -63,7 +63,7 @@ namespace DCL
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
         
-        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimationFlag = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimationFlag = current.IsFeatureEnabled(MATERIAL_TRANSITION_CONTROLLER_FLAG); }
 
         protected override void OnBeforeLoadOrReuse()
         {

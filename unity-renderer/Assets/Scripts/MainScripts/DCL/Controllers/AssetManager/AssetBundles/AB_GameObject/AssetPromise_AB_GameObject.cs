@@ -16,7 +16,7 @@ namespace DCL
         Coroutine loadingCoroutine;
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
-        private const string AB_LOAD_ANIMATION = "ab_load_animation";
+        private const string MATERIAL_TRANSITION_CONTROLLER_FLAG = "use_material_transition_controller";
         private const string GPU_ONLY_MESHES = "use_gpu_only_meshes";
         private bool doTransitionAnimationFlag;
 
@@ -26,7 +26,7 @@ namespace DCL
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
 
-        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimationFlag = current.IsFeatureEnabled(AB_LOAD_ANIMATION); }
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous) { doTransitionAnimationFlag = current.IsFeatureEnabled(MATERIAL_TRANSITION_CONTROLLER_FLAG); }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
