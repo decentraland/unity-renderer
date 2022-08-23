@@ -1,9 +1,11 @@
+using System.Text.RegularExpressions;
 using DCL;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -149,6 +151,61 @@ namespace Tests
             Vector3 position = new Vector3(1000, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
             playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+        }
+
+        [Test]
+        public void CheckForCircularParentingCorreclty()
+        {
+            var e0 = scene.CreateEntity(10);
+            var e1 = scene.CreateEntity(11);
+            var e2 = scene.CreateEntity(12);
+            var e3 = scene.CreateEntity(13);
+
+            e1.parentId = e0.entityId;
+            e2.parentId = e1.entityId;
+            e3.parentId = e2.entityId;
+            //e3->e2->e1->e0
+
+            Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e0, e0.parentId));
+            Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e1, e1.parentId));
+            Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e2, e2.parentId));
+            Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e3, e3.parentId));
+
+            e3.parentId = e3.entityId;
+            //e3->!3e
+            Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e3, e3.parentId));
+
+            e3.parentId = e2.entityId;
+            e0.parentId = e3.entityId;
+            //e3->e2->e1->e0->!e3
+
+            Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e0, e0.parentId));
+            Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e1, e1.parentId));
+            Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e2, e2.parentId));
+            Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e3, e3.parentId));
+        }
+
+        [Test]
+        public void NotApplyParentingWhenCyclic()
+        {
+            const long CYCLIC_PARENT_ID = 12;
+
+            var e0 = scene.CreateEntity(10);
+            var e1 = scene.CreateEntity(11);
+
+            handler.OnComponentModelUpdated(scene, e1, new ECSTransform() { parentId = e0.entityId });
+            Assert.AreEqual(e0.entityId, e1.parentId);
+            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(e1));
+
+            handler.OnComponentModelUpdated(scene, e0, new ECSTransform() { parentId = CYCLIC_PARENT_ID });
+            Assert.AreEqual(CYCLIC_PARENT_ID, e0.parentId);
+            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(e0));
+
+            var cyclicParent = scene.CreateEntity(CYCLIC_PARENT_ID);
+            LogAssert.Expect(LogType.Error, new Regex(""));
+            handler.OnComponentModelUpdated(scene, cyclicParent, new ECSTransform() { parentId = e1.entityId });
+            Assert.AreNotEqual(e1.entityId, cyclicParent.parentId);
+            Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(cyclicParent));
         }
     }
 }

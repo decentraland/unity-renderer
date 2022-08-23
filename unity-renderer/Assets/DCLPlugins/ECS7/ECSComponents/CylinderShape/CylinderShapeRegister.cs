@@ -1,5 +1,5 @@
 ﻿using System;
-using DCL.ECSComponents;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -10,9 +10,10 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public CylinderShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public CylinderShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
-            factory.AddOrReplaceComponent(componentId, CylinderShapeSerializer.Deserialize, () => new ECSCylinderShapeComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, CylinderShapeSerializer.Deserialize, () => new ECSCylinderShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBCylinderShape>(componentId, CylinderShapeSerializer.Serialize);
 
             this.factory = factory;
