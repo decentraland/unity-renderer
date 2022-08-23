@@ -18,6 +18,7 @@ public class ECS7TestScene : IParcelScene
     public ECS7TestEntity CreateEntity(long id) => _entityCreator(id);
     public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true) => _entityRemover(id);
     public Transform GetSceneTransform() => _go.transform;
+    public ContentProvider contentProvider { get; } = new ContentProvider();
 
 // INTERNAL CONFIG FOR MOCKING    
     internal GameObject _go;
@@ -38,7 +39,6 @@ public class ECS7TestScene : IParcelScene
         return CreateEntity(id);
     }
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
-    ContentProvider IParcelScene.contentProvider => throw new NotImplementedException();
     bool IParcelScene.isPersistent => throw new NotImplementedException();
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
