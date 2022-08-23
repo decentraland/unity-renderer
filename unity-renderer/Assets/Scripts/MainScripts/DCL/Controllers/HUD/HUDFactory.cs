@@ -63,7 +63,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    ChatChannelsControllerMock.i);
+                    ChatChannelsControllerMock.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
@@ -71,7 +72,8 @@ public class HUDFactory : IHUDFactory
                     FriendsController.i,
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i,
-                    DataStore.i);
+                    DataStore.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -109,7 +111,8 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    ChatChannelsControllerMock.i);
+                    ChatChannelsControllerMock.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(
@@ -148,7 +151,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     DataStore.i,
-                    Settings.i);
+                    Settings.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

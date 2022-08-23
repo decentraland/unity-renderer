@@ -335,7 +335,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud = controller;
 
         view.ShowChatButton();
-        worldChatWindowHud.View.OnClose += OpenPublicChatOnPreviewMode;
+        worldChatWindowHud.OnCloseView += OpenPublicChatOnPreviewMode;
         worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
         worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
@@ -345,6 +345,7 @@ public class TaskbarHUDController : IHUD
         if (notificationPanelTransform.Get() != null)
         {
             publicChatWindow.SetVisibility(false, false);
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
             return;
         }
 
@@ -607,7 +608,7 @@ public class TaskbarHUDController : IHUD
 
         friendsHud = controller;
         view.ShowFriendsButton();
-        friendsHud.View.OnClose += () =>
+        friendsHud.OnViewClosed += () =>
         {
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
             OpenPublicChatOnPreviewMode();
@@ -629,7 +630,7 @@ public class TaskbarHUDController : IHUD
 
         voiceChatHud = controller;
         view.ShowVoiceChatButton();
-        voiceChatHud.VoiceChatWindowView.OnClose += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        voiceChatHud.OnCloseView += () => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
 
         if (controller?.VoiceChatBarView != null)
         {

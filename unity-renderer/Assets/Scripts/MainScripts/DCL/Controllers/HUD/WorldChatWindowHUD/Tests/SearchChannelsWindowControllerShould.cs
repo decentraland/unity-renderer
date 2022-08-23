@@ -13,13 +13,15 @@ namespace DCL.Chat.HUD
         private IChatController chatController;
         private SearchChannelsWindowController controller;
         private ISearchChannelsWindowView view;
+        private IMouseCatcher mouseCatcher;
 
         [SetUp]
         public void SetUp()
         {
             chatController = Substitute.For<IChatController>();
+            mouseCatcher = Substitute.For<IMouseCatcher>();
             view = Substitute.For<ISearchChannelsWindowView>();
-            controller = new SearchChannelsWindowController(chatController);
+            controller = new SearchChannelsWindowController(chatController, mouseCatcher);
             controller.Initialize(view);
         }
 

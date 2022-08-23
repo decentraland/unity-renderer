@@ -2,6 +2,7 @@ using DCL;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using SocialFeaturesAnalytics;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ public class VoiceChatWindowController : IHUD
     private IUserProfileBridge userProfileBridge;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private IMouseCatcher mouseCatcher;
     private DataStore dataStore;
     private Settings settings;
     internal HashSet<string> trackedUsersHashSet = new HashSet<string>();
@@ -37,6 +39,7 @@ public class VoiceChatWindowController : IHUD
     private Coroutine updateMuteStatusRoutine = null;
     internal bool isMuteAll = false;
     internal bool isJoined = false;
+    public event Action OnCloseView;
 
     public VoiceChatWindowController() { }
 
@@ -45,9 +48,10 @@ public class VoiceChatWindowController : IHUD
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
         DataStore dataStore,
-        Settings settings)
+        Settings settings,
+        IMouseCatcher mouseCatcher)
     {
-        Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, settings);
+        Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, settings, mouseCatcher);
     }
 
     public void Initialize(
@@ -55,16 +59,21 @@ public class VoiceChatWindowController : IHUD
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
         DataStore dataStore,
-        Settings settings)
+        Settings settings,
+        IMouseCatcher mouseCatcher)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
         this.settings = settings;
+        this.mouseCatcher = mouseCatcher;
 
         if (!isVoiceChatFFEnabled)
             return;
+
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock += CloseView;
 
         voiceChatWindowView = CreateVoiceChatWindowView();
         voiceChatWindowView.Hide(instant: true);
@@ -172,7 +181,11 @@ public class VoiceChatWindowController : IHUD
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
-    internal void CloseView() { SetVisibility(false); }
+    internal void CloseView()
+    {
+        OnCloseView?.Invoke();
+        SetVisibility(false);
+    }
 
     internal void JoinVoiceChat(bool isJoined)
     { 

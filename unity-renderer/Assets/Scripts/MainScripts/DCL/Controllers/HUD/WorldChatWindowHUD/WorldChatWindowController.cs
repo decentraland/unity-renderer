@@ -21,7 +21,8 @@ public class WorldChatWindowController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
     private readonly IChatController chatController;
-    private readonly DataStore dataStore; 
+    private readonly DataStore dataStore;
+    private readonly IMouseCatcher mouseCatcher;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
@@ -40,6 +41,7 @@ public class WorldChatWindowController : IHUD
 
     public IWorldChatWindowView View => view;
 
+    public event Action OnCloseView;
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChat;
     public event Action<string> OnOpenChannel;
@@ -52,18 +54,24 @@ public class WorldChatWindowController : IHUD
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
         IChatController chatController,
-        DataStore dataStore) 
+        DataStore dataStore,
+        IMouseCatcher mouseCatcher) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
         this.dataStore = dataStore;
+        this.mouseCatcher = mouseCatcher;
     }
 
     public void Initialize(IWorldChatWindowView view)
     {
         this.view = view;
         view.Initialize(chatController);
+
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock += HandleViewCloseRequest;
+
         view.OnClose += HandleViewCloseRequest;
         view.OnOpenPrivateChat += OpenPrivateChat;
         view.OnOpenPublicChat += OpenPublicChat;
@@ -215,8 +223,12 @@ public class WorldChatWindowController : IHUD
             OnOpenChannel?.Invoke(channelId);
     }
 
-    private void HandleViewCloseRequest() => SetVisibility(false);
-    
+    private void HandleViewCloseRequest()
+    {
+        OnCloseView?.Invoke();
+        SetVisibility(false);
+    }
+
     private void HandleUserStatusChanged(string userId, UserStatus status)
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;

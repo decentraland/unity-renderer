@@ -71,7 +71,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
             chatController,
-            new DataStore());
+            new DataStore(),
+            Substitute.For<IMouseCatcher>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -84,7 +85,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController);
+            socialAnalytics, chatController,
+            Substitute.For<IMouseCatcher>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
@@ -114,7 +116,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             userProfileBridge,
             Substitute.For<IFriendsController>(),
             chatController,
-            new DataStore());
+            new DataStore(),
+            Substitute.For<IMouseCatcher>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -129,11 +132,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, this.chatController);
+            socialAnalytics, this.chatController,
+            Substitute.For<IMouseCatcher>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
-        var channelSearchController = new SearchChannelsWindowController(this.chatController);
+        var channelSearchController = new SearchChannelsWindowController(this.chatController, Substitute.For<IMouseCatcher>());
         channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
         controller.AddChannelSearch(channelSearchController);
 
