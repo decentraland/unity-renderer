@@ -22,7 +22,14 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
     private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
     private bool isAlreadyDestroyed;
 
-    public static EmotesCatalogBridge GetOrCreate() { return SceneReferences.i.bridgeGameObject.GetOrCreateComponent<EmotesCatalogBridge>(); }
+    public static EmotesCatalogBridge GetOrCreate()
+    {
+        var brigeGO = SceneReferences.i?.bridgeGameObject;
+        if (SceneReferences.i?.bridgeGameObject == null)
+            return new GameObject("Bridge").AddComponent<EmotesCatalogBridge>();
+
+        return brigeGO.GetOrCreateComponent<EmotesCatalogBridge>();
+    }
 
     public void RequestEmote(string emoteId) { emotesToRequestThisFrame.Add(emoteId); }
 
