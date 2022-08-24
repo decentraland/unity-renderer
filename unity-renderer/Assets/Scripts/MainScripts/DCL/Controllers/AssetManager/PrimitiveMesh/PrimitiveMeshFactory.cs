@@ -1,40 +1,34 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using DCL;
 using DCL.Helpers;
 using UnityEngine;
 
-public interface IPrimitiveMeshFactory
+internal class PrimitiveMeshFactory
 {
-    Mesh CreateMesh(PrimitiveMeshModel meshModelModel);
-}
-
-public class PrimitiveMeshFactory : IPrimitiveMeshFactory
-{
-    public Mesh CreateMesh(PrimitiveMeshModel meshModelModel)
+    public static Mesh CreateMesh(AssetPromise_PrimitiveMesh_Model meshModelModel)
     {
         Mesh mesh = null;
         switch (meshModelModel.type)
         {
-            case PrimitiveMeshModel.Type.Box:
+            case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Box:
                 mesh = PrimitiveMeshBuilder.BuildCube(1f);
                 if (meshModelModel.uvs != null && meshModelModel.uvs.Count > 0)
                 {
                     mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
                 }
                 break;
-            case PrimitiveMeshModel.Type.Sphere:
+            case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Sphere:
                 mesh = PrimitiveMeshBuilder.BuildSphere(1f);
                 break;
-            case PrimitiveMeshModel.Type.Plane:
-                mesh = PrimitiveMeshBuilder.BuildPlane(1f);
+            case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Plane:
+                mesh = PrimitiveMeshBuilder.BuildPlaneV2(1f);
                 if (meshModelModel.uvs != null && meshModelModel.uvs.Count > 0)
                 {
                     mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
                 }
                 break;
-            case PrimitiveMeshModel.Type.Cylinder:
-                mesh = PrimitiveMeshBuilder.BuildCylinder(50, meshModelModel.radiusTop, meshModelModel.radiusBottom, 2f, 0f, true, false);
+            case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Cylinder:
+                mesh = PrimitiveMeshBuilder.BuildCylinder(50, meshModelModel.radiusTop, meshModelModel.radiusBottom,
+                    2f, 0f, true, false);
                 break;
         }
         return mesh;

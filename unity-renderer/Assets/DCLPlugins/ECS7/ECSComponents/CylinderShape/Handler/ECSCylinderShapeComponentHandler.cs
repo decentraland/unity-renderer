@@ -43,9 +43,7 @@ namespace DCL.ECSComponents
                 if (primitiveMeshPromisePrimitive != null)
                     AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
-                PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Cylinder);
-                primitiveMeshModelModel.radiusBottom = model.GetRadiusBottom();
-                primitiveMeshModelModel.radiusTop = model.GetRadiusTop();
+                AssetPromise_PrimitiveMesh_Model primitiveMeshModelModel = AssetPromise_PrimitiveMesh_Model.CreateCylinder(model.GetRadiusTop(), model.GetRadiusBottom());
 
                 primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
                 primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
