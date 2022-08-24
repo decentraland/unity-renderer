@@ -18,7 +18,7 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECS7.Tests
 {
-    public class CanvasPainterIntegrationTest 
+    public class CanvasPainterUITransformIntegrationTest 
     {
         private RendererState rendererState;
         private CanvasPainter canvasPainter;
@@ -26,12 +26,10 @@ namespace DCL.ECS7.Tests
         private ECS7ComponentsComposer componentsComposer;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private IWorldState worldState;
-        private ECS7VisualUITesterHelper ecs7VisualUITesterHelper;
         
         [SetUp]
         protected void SetUp()
         {
-            ecs7VisualUITesterHelper = new ECS7VisualUITesterHelper();
             worldState = Substitute.For<IWorldState>();
             
             rendererState = ScriptableObject.CreateInstance<RendererState>();
@@ -45,13 +43,11 @@ namespace DCL.ECS7.Tests
             canvasPainter.rootNode.rootVisualElement.style.justifyContent = new StyleEnum<Justify>(Justify.Center);
             canvasPainter.rootNode.rootVisualElement.style.alignContent = new StyleEnum<Align>(Align.Center);
             
-            ecs7VisualUITesterHelper.Setup(canvasPainter);
         }
 
         [TearDown]
         protected void TearDown()
         {
-            ecs7VisualUITesterHelper.Dispose();
             componentsComposer.Dispose();
             canvasPainter.Dispose();
             DataStore.i.ecs7.scenes.Clear();

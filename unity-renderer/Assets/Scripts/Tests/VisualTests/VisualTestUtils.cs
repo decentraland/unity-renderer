@@ -107,7 +107,7 @@ namespace DCL.Helpers
         /// <param name="camera">camera used to take the shot</param>
         /// <param name="width">Width of the final image</param>
         /// <param name="height">Height of the final image</param>
-        public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
+        private static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
             int height)
         {
             if (string.IsNullOrEmpty(snapshotName) || camera == null)
