@@ -126,18 +126,15 @@ namespace DCL.Bots
             yield return EnsureGlobalSceneAndCatalog();
 
             PatchWorldPosInstantiationConfig(config);
-            // yield break;
 
             Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
 
             Vector3 randomizedAreaPosition = new Vector3();
-            // for (int i = 0; i < config.amount; i++)
-            // {
-            //     randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
-            //     InstantiateBot(randomizedAreaPosition);
-            // }
-            randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
-            InstantiateBot(randomizedAreaPosition);
+            for (int i = 0; i < config.amount; i++)
+            {
+                randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
+                InstantiateBot(randomizedAreaPosition);
+            }
 
             Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
 
@@ -152,19 +149,19 @@ namespace DCL.Bots
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"X Position value wasn't provided... using player's current X Position.");
+                Log($"X Position value wasn't provided... using player's current unity X Position: {playerUnityPosition.x}");
                 config.xPos = playerUnityPosition.x;
             }
 
             if (config.yPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Y Position value wasn't provided... using player's current Y Position.");
+                Log($"Y Position value wasn't provided... using player's current unity Y Position: {playerUnityPosition.y}");
                 config.yPos = playerUnityPosition.y;
             }
 
             if (config.zPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Z Position value wasn't provided... using player's current Z Position.");
+                Log($"Z Position value wasn't provided... using player's current unity Z Position: {playerUnityPosition.z}");
                 config.zPos = playerUnityPosition.z;
             }
         }
@@ -197,14 +194,14 @@ namespace DCL.Bots
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
                 config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate: {config.xCoord}");
             }
 
             if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
                 config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate: {config.yCoord}");
             }
         }
 
@@ -227,13 +224,11 @@ namespace DCL.Bots
                 wearables = GetRandomizedWearablesSet()
             };
 
-            position = Vector3.zero;
-            Debug.Log("PRAVS - BOT POS: " + position);
-
-            globalScene.CreateEntity(entityId);
-            globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
-            UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
+            var entity = globalScene.CreateEntity(entityId);
+            entity.gameObject.transform.position = PositionUtils.WorldToUnityPosition(position);
             
+            globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
+
             instantiatedBots.Add(entityId);
         }
 
