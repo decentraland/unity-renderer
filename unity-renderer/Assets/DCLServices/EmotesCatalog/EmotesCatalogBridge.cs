@@ -16,8 +16,8 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         public string context;
     }
 
-    public event IEmotesCatalogBridge.EmotesReceived OnEmotesReceived;
-    public event IEmotesCatalogBridge.OwnedEmotesReceived OnOwnedEmotesReceived;
+    public event Action<WearableItem[]> OnEmotesReceived;
+    public event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
     private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
     private bool isAlreadyDestroyed;

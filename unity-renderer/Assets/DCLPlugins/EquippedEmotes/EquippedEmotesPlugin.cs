@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.EquippedEmotes
@@ -34,7 +35,7 @@ namespace DCL.EquippedEmotes
             if (userProfile == null || userProfile.avatar == null || !DataStore.i.emotes.newFlowEnabled.Get())
                 return;
 
-            var equippedEmotes = new List<string> { null, null, null, null, null, null, null, null, null, null };
+            List<string> equippedEmotes = new List<string> (Enumerable.Repeat((string) null, 10));
             foreach (AvatarModel.AvatarEmoteEntry avatarEmoteEntry in userProfile.avatar.emotes)
             {
                 equippedEmotes[avatarEmoteEntry.slot] = avatarEmoteEntry.urn;

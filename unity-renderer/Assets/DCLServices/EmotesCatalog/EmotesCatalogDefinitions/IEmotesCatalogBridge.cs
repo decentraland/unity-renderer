@@ -2,11 +2,8 @@
 
 public interface IEmotesCatalogBridge : IDisposable
 {
-    delegate void EmotesReceived(WearableItem[] emotes);
-    delegate void OwnedEmotesReceived(WearableItem[] emotes, string userId);
-
-    event EmotesReceived OnEmotesReceived;
-    event OwnedEmotesReceived OnOwnedEmotesReceived;
+    event Action<WearableItem[]> OnEmotesReceived;
+    event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
     void RequestOwnedEmotes(string userId);
     void RequestEmote(string emoteId) ;

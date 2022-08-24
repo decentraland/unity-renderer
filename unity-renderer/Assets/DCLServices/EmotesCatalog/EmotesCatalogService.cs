@@ -11,7 +11,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     internal readonly Dictionary<string, WearableItem> emotes = new Dictionary<string, WearableItem>();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new Dictionary<string, HashSet<Promise<WearableItem>>>();
     internal readonly Dictionary<string, int> emotesOnUse = new Dictionary<string, int>();
-    internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromises = new Dictionary<string, HashSet<Promise<WearableItem[]>>>();
+    internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new Dictionary<string, HashSet<Promise<WearableItem[]>>>();
 
     public EmotesCatalogService(IEmotesCatalogBridge bridge, WearableItem[] embeddedEmotes)
     {
@@ -29,56 +29,43 @@ public class EmotesCatalogService : IEmotesCatalogService
     {
         for (var i = 0; i < receivedEmotes.Length; i++)
         {
-            var emote = receivedEmotes[i];
-            //If we dont have promises waiting, this emote is not needed and can be ignored
-            if (!promises.TryGetValue(emote.id, out var emotePromises) || emotePromises.Count == 0)
-            {
-                emotesOnUse.Remove(emote.id);
+            WearableItem emote = receivedEmotes[i];
+
+            if (!emotesOnUse.ContainsKey(emote.id) || emotesOnUse[emote.id] <= 0)
                 continue;
-            }
 
             emotes[emote.id] = emote;
-            emotesOnUse[emote.id] = emotePromises.Count;
-            foreach (Promise<WearableItem> promise in emotePromises)
+            if (promises.TryGetValue(emote.id, out var emotePromises))
             {
-                promise.Resolve(emote);
+                foreach (Promise<WearableItem> promise in emotePromises)
+                {
+                    promise.Resolve(emote);
+                }
+                promises.Remove(emote.id);
             }
-            promises.Remove(emote.id);
         }
     }
 
     private void OnOwnedEmotesReceived(WearableItem[] receivedEmotes, string userId)
     {
-        if (!ownedEmotesPromises.TryGetValue(userId, out var ownedWearablePromises))
-            return;
+        if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<WearableItem[]>> ownedEmotesPromises) || ownedEmotesPromises == null)
+            ownedEmotesPromises = new HashSet<Promise<WearableItem[]>>();
 
-        if (ownedWearablePromises == null)
-            return;
-
-        ownedEmotesPromises.Remove(userId);
-        foreach (Promise<WearableItem[]> promise in ownedWearablePromises)
+        //Update emotes on use
+        for (var i = 0; i < receivedEmotes.Length; i++)
         {
-            for (int i = 0; i < receivedEmotes.Length; i++)
-            {
-                var emote = receivedEmotes[i];
-                string id = emote.id;
+            var emote = receivedEmotes[i];
+            if (!emotesOnUse.ContainsKey(emote.id))
+                emotesOnUse[emote.id] = 0;
+            emotesOnUse[emote.id] += ownedEmotesPromises.Count;
+        }
 
-                emotes[id] = emote;
-                if (!emotesOnUse.ContainsKey(id))
-                    emotesOnUse[id] = 0;
-                emotesOnUse[id]++;
+        OnEmotesReceived(receivedEmotes);
 
-                if (promises.TryGetValue(emote.id, out var emotePromises))
-                {
-                    //Resolve pending promises for this emote
-                    foreach (Promise<WearableItem> otherPromise in emotePromises)
-                    {
-                        otherPromise.Resolve(emote);
-                        emotesOnUse[id]++;
-                    }
-                    promises.Remove(emote.id);
-                }
-            }
+        //Resolve ownedEmotesPromise
+        ownedEmotesPromisesByUser.Remove(userId);
+        foreach (Promise<WearableItem[]> promise in ownedEmotesPromises)
+        {
             promise.Resolve(receivedEmotes);
         }
     }
@@ -97,9 +84,9 @@ public class EmotesCatalogService : IEmotesCatalogService
     public Promise<WearableItem[]> RequestOwnedEmotes(string userId)
     {
         var promise = new Promise<WearableItem[]>();
-        if (!ownedEmotesPromises.ContainsKey(userId) || ownedEmotesPromises[userId] == null)
-            ownedEmotesPromises[userId] = new HashSet<Promise<WearableItem[]>>();
-        ownedEmotesPromises[userId].Add(promise);
+        if (!ownedEmotesPromisesByUser.ContainsKey(userId) || ownedEmotesPromisesByUser[userId] == null)
+            ownedEmotesPromisesByUser[userId] = new HashSet<Promise<WearableItem[]>>();
+        ownedEmotesPromisesByUser[userId].Add(promise);
         bridge.RequestOwnedEmotes(userId);
 
         return promise;
@@ -133,6 +120,9 @@ public class EmotesCatalogService : IEmotesCatalogService
     public Promise<WearableItem> RequestEmote(string id)
     {
         var promise = new Promise<WearableItem>();
+        if (!emotesOnUse.ContainsKey(id))
+            emotesOnUse[id] = 0;
+        emotesOnUse[id]++;
         if (emotes.TryGetValue(id, out var emote))
         {
             promise.Resolve(emote);
