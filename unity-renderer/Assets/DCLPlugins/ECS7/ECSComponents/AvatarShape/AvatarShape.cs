@@ -218,9 +218,9 @@ namespace DCL.ECSComponents
                 {
                     playerName = model.Name,
                     bodyshapeId = model.BodyShape,
-                    eyesColor = ProtoConvertUtils.PBColorToUnityColor(model.EyeColor),
-                    skinColor = ProtoConvertUtils.PBColorToUnityColor(model.SkinColor),
-                    hairColor = ProtoConvertUtils.PBColorToUnityColor(model.HairColor),
+                    eyesColor = model.EyeColor.ToUnityColor(),
+                    skinColor = model.SkinColor.ToUnityColor(),
+                    hairColor = model.HairColor.ToUnityColor(),
                 }, loadingCts.Token);
             }
             catch (OperationCanceledException)
@@ -371,14 +371,14 @@ namespace DCL.ECSComponents
             SetPlayerNameReference();
         }
 
-        public void ApplyHideModifier()
+        public void ApplyHideAvatarModifier()
         {
             avatar.AddVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
             playerNameContainer.SetActive(false);
         }
 
-        public void RemoveHideModifier()
+        public void RemoveHideAvatarModifier()
         {
             avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(true);

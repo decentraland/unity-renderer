@@ -111,7 +111,7 @@ namespace DCL.ECSComponents.Tests
             avatarShape.ApplyModel(scene, entity, model);
             
             // Act
-            avatarShape.ApplyHideModifier();
+            avatarShape.ApplyHideAvatarModifier();
             
             // Assert
             avatar.Received(1).AddVisibilityConstrain(AvatarShape.IN_HIDE_AREA);
@@ -127,7 +127,7 @@ namespace DCL.ECSComponents.Tests
             avatarShape.ApplyModel(scene, entity, model);
             
             // Act
-            avatarShape.RemoveHideModifier();
+            avatarShape.RemoveHideAvatarModifier();
             
             // Assert
             avatar.Received(1).RemoveVisibilityConstrain(AvatarShape.IN_HIDE_AREA);
