@@ -56,15 +56,6 @@ public class CatalystSceneEntityMetadata
     }
 
     [Serializable]
-    public class Policy
-    {
-        public string contentRating;
-        public bool fly;
-        public bool voiceEnabled;
-        public string[] blacklist;
-    }
-
-    [Serializable]
     public class SpawnPoint
     {
         [Serializable]
@@ -87,26 +78,38 @@ public class CatalystSceneEntityMetadata
         [Serializable]
         public class Layout
         {
-            public string rows;
-            public string cols;
+            public int rows;
+            public int cols;
         }
 
         public int version;
         public string origin;
         public string projectId;
-        public Vector2Int point;
+        public Vector2IntRepresentantion point;
         public string rotation;
         public Layout layout;
         public bool isEmpty;
     }
 
+    public class Vector2IntRepresentantion
+    {
+        public int x;
+        public int y;
+
+        public Vector2IntRepresentantion(Vector2Int vector2Int)
+        {
+            x = vector2Int.x;
+            y = vector2Int.y;
+        }
+    }
+
     public Display display;
     public Contact contact;
     public Scene scene;
-    public Policy policy;
     public Source source;
     public SpawnPoint[] spawnPoints;
     public string owner;
+    public string main;
     public string[] tags;
     public string[] requiredPermissions;
 }

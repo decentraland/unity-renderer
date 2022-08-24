@@ -14,6 +14,10 @@ public class NewProjectFlowControllerShould
     public void SetUp()
     {
         newProjectFlowController = new NewProjectFlowController(Substitute.For<INewProjectFlowView>());
+        
+        //We set the ethAddress so the system doesn't recognize it as a guest
+        UserProfile ownProfile = UserProfile.GetOwnUserProfile();
+        ownProfile.model.ethAddress = "0x0";
     }
 
     [TearDown]

@@ -16,6 +16,10 @@ mergeInto(LibraryManager.library, {
   MessageFromEngine: function(type, message) {
     window.DCL.MessageFromEngine(Pointer_stringify(type), Pointer_stringify(message));
   },
+  BinaryMessageFromEngine: function(dataPtr, dataSize) {
+    var bytes = HEAPU8.subarray(dataPtr, dataPtr + dataSize)
+    window.DCL.BinaryMessageFromEngine(bytes);
+  },
   GetGraphicCard: function() {
     const glcontext = GL.currentContext.GLctx;
     const debugInfo = glcontext.getExtension('WEBGL_debug_renderer_info');
@@ -29,9 +33,6 @@ mergeInto(LibraryManager.library, {
   },
   ToggleFPSCap: function(useFPSCap) {
     window.capFPS = useFPSCap;
-  },
-  CheckURLParam: function(targetParam) {    
-    return window.DCL.queryString.has(Pointer_stringify(targetParam))
   }
 });
 

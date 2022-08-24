@@ -27,6 +27,6 @@ public class LoadingBar : MonoBehaviour
     {
         currentPercentage = newValue;
         percentageText.text = $"{percentagePreText}{newValue.ToString("0")}%";
-        loadingBar.sizeDelta = new Vector2(newValue * maxBarWidth / 100f, loadingBar.sizeDelta.y);
+        loadingBar.transform.localScale = new Vector3(newValue / 100f, 1, 1);
     }
 }

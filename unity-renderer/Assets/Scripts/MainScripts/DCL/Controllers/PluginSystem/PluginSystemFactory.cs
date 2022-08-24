@@ -1,9 +1,12 @@
-using AvatarSystem;
+using DCL.ECS7;
 using DCL.Emotes;
-using DCL.Tutorial;
-using DCL.Skybox;
-using EmotesCustomization;
+using DCL.EmotesWheel;
+using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Helpers;
+using DCL.Skybox;
+using DCL.Tutorial;
+using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
 {
@@ -13,22 +16,40 @@ namespace DCL
         {
             var pluginSystem = new PluginSystem();
 
-            pluginSystem.Register(() => new DebugPluginFeature());
-            pluginSystem.Register(() => new ShortcutsFeature());
-            pluginSystem.Register(() => new ExploreV2Feature());
-            pluginSystem.Register(() => new DebugShapesBoundingBoxDisplayer());
-            pluginSystem.Register(() => new TransactionFeature());
-            pluginSystem.Register(() => new PreviewMenuPlugin());
-            pluginSystem.Register(() => new SkyboxController());
-            pluginSystem.Register(() => new GotoPanelPlugin());
-            pluginSystem.Register(() => new ExperiencesViewerFeature());
-            pluginSystem.Register(() => new EmoteAnimationsPlugin(DataStore.i.emotes, new EmoteAnimationLoaderFactory(), new WearableItemResolver()));
-            pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
-            pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
-            pluginSystem.RegisterWithFlag(() => new PlacesAndEventsFeature(), "explorev2");
-            pluginSystem.RegisterWithFlag(() => new SkyboxController(), "procedural_skybox");
-            pluginSystem.RegisterWithFlag(() => new EmotesCustomizationFeature(), "emotes_customization");
-            pluginSystem.Register(() => new EmotesWheelFeature());
+            // Ideally the Plugin class itself should be a really small entry point with a parameterless constructor
+            // the heavy lifting should be done by another class (following the Humble Object Pattern)
+
+            pluginSystem.Register<DebugPluginFeature>(() => new DebugPluginFeature());
+            pluginSystem.Register<ShortcutsFeature>(() => new ShortcutsFeature());
+            pluginSystem.Register<ExploreV2Feature>(() => new ExploreV2Feature());
+            pluginSystem.Register<DebugShapesBoundingBoxDisplayer>(() => new DebugShapesBoundingBoxDisplayer());
+            pluginSystem.Register<TransactionFeature>(() => new TransactionFeature());
+            pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
+            pluginSystem.Register<SkyboxController>(() => new SkyboxController());
+            pluginSystem.Register<GotoPanelPlugin>(() => new GotoPanelPlugin());
+            pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
+            pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
+            pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
+            pluginSystem.Register<EmotesWheelUIPlugin>(() => new EmotesWheelUIPlugin());
+            pluginSystem.Register<NFTShapePlugin>(() => new NFTShapePlugin());
+            pluginSystem.Register<UUIDEventsPlugin>(() => new UUIDEventsPlugin());
+            pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
+            pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
+            pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
+            pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
+            pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
+            pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
+            
+            pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
+            pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
+            pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
+            pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
+            pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur");
+            pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
+                FriendsController.i,
+                NotificationScriptableObjects.pendingFriendRequests,
+                NotificationScriptableObjects.newApprovedFriends,
+                DataStore.i));
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

@@ -6,7 +6,13 @@ using UnityEngine;
 using DCL;
 using NFTShape_Internal;
 
-public class NFTShapeLoaderController : MonoBehaviour
+public interface INFTShapeLoaderController
+{
+    BoxCollider nftCollider { get; }
+    Transform transform { get; }
+}
+
+public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
 {
     internal const string COULD_NOT_FETCH_DAR_URL = "Couldn't fetch DAR url '{0}' for NFTShape.";
     internal const string ACCEPTED_URL_FORMAT = "The accepted format is 'ethereum://ContractAddress/TokenID'.";
@@ -25,7 +31,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         None
     }
 
-    public NFTShapeConfig config;
     public MeshRenderer meshRenderer;
     public new BoxCollider collider;
     public Color backgroundColor;
@@ -33,8 +38,8 @@ public class NFTShapeLoaderController : MonoBehaviour
     public GameObject errorFeedback;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
-    private INFTInfoLoadHelper nftInfoLoadHelper;
-    private INFTAssetLoadHelper nftAssetLoadHelper;
+    private INFTInfoRetriever nftInfoRetriever;
+    private INFTAssetRetriever nftAssetRetriever;
     private NFTShapeHQImageHandler hqTextureHandler = null;
     private Coroutine loadNftAssetCoroutine;
 
@@ -56,6 +61,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     private string darURLProtocol;
     private string darURLRegistry;
     private string darURLAsset;
+    public BoxCollider nftCollider => this.collider;
 
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;
@@ -63,27 +69,40 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     static readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     static readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
+
     void Awake()
     {
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
-
         InitializeMaterials();
-        
-        nftInfoLoadHelper = new NFTInfoLoadHelper();
-        nftAssetLoadHelper = new NFTAssetLoadHelper();
+    }
+
+    public void Initialize(INFTInfoRetriever nftInfoRetriever = null, INFTAssetRetriever nftAssetRetriever = null)
+    {
+        if (nftInfoRetriever == null)
+            nftInfoRetriever = new NFTInfoRetriever();
+
+        if (nftAssetRetriever == null)
+            nftAssetRetriever = new NFTAssetRetriever();
+
+        this.nftInfoRetriever = nftInfoRetriever;
+        this.nftAssetRetriever = nftAssetRetriever;
+
+        nftInfoRetriever.OnFetchInfoSuccess += FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail += FetchNFTInfoFail;
     }
 
     private void OnEnable()
     {
-        nftInfoLoadHelper.OnFetchInfoSuccess += FetchNFTInfoSuccess;
-        nftInfoLoadHelper.OnFetchInfoFail += FetchNFTInfoFail;
+        Initialize();
+        nftInfoRetriever.OnFetchInfoSuccess += FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail += FetchNFTInfoFail;
     }
 
     private void OnDisable()
     {
-        nftInfoLoadHelper.OnFetchInfoSuccess -= FetchNFTInfoSuccess;
-        nftInfoLoadHelper.OnFetchInfoFail -= FetchNFTInfoFail;
+        nftInfoRetriever.OnFetchInfoSuccess -= FetchNftInfoSuccess;
+        nftInfoRetriever.OnFetchInfoFail -= FetchNFTInfoFail;
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
@@ -148,10 +167,10 @@ public class NFTShapeLoaderController : MonoBehaviour
     private void FetchNFTContents()
     {
         ShowLoading(true);
-        nftInfoLoadHelper.FetchNFTInfo(darURLRegistry, darURLAsset);
+        nftInfoRetriever.FetchNFTInfo(darURLRegistry, darURLAsset);
     }
 
-    private void FetchNFTInfoSuccess(NFTInfo nftInfo)
+    private void FetchNftInfoSuccess(NFTInfo nftInfo)
     {   
         loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
@@ -164,12 +183,12 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     private void PrepareFrame(INFTAsset nftAsset, string nftName, string nftImageUrl)
     {
-        SetFrameImage(nftAsset.previewAsset.texture, resizeFrameMesh: true);
+        if (nftAsset.previewAsset != null)
+            SetFrameImage(nftAsset.previewAsset.texture, resizeFrameMesh: true);
 
         var hqImageHandlerConfig = new NFTShapeHQImageConfig()
         {
             controller = this,
-            nftShapeConfig = config,
             name = nftName,
             imageUrl = nftImageUrl,
             asset = nftAsset
@@ -181,10 +200,11 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     internal IEnumerator LoadNFTAssetCoroutine(NFTInfo nftInfo)
     {
+        var config = DataStore.i.Get<DataStore_NFTShape>();
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
         // We download the "preview" 256px image
-        yield return nftAssetLoadHelper.LoadNFTAsset(
+        yield return nftAssetRetriever.LoadNFTAsset(
             nftInfo.previewImageUrl,
             (result) =>
             {
@@ -322,5 +342,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         if (noiseIsFractal)
             frameMaterial.EnableKeyword("FRACTAL");
     }
+
 
 }

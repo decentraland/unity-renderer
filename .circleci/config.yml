@@ -12,7 +12,7 @@ references:
       at: *working_directory
 
   .image_kernel: &image_kernel
-    - image: circleci/node:14-browsers
+    - image: cimg/node:14.19.3-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
         #                          ~~~~~~~~~~~~~~ <- repo name
@@ -20,17 +20,20 @@ references:
 
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
+    - ./unity-renderer/benchmark-results
     - ./unity-renderer/editmode-logs.txt
     - ./unity-renderer/playmode-logs.txt
+    - ./unity-renderer/benchmark-logs.txt
     - ./unity-renderer/build-logs.txt
     - ./unity-renderer/ab-logs.txt
     - ./unity-renderer/playmode-results.xml
+    - ./unity-renderer/benchmark-results.xml
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
     - ./unity-renderer/Builds/
 
   .unity_image: &unity_image
-    - image: decentraland/renderer-build:2020.3.0
+    - image: unityci/editor:2020.3.34f1-webgl-1
       environment:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
@@ -49,7 +52,7 @@ jobs:
   checkout:
     <<: *working_directory_root
     docker:
-      - image: circleci/node:14-browsers
+      - image: cimg/node:14.19.3-browsers
         environment:
           # avoid automatic download of LFS files
           GIT_LFS_SKIP_SMUDGE: 1
@@ -61,8 +64,9 @@ jobs:
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            sudo apt-get update && sudo apt-get install -y git-lfs
             ssh git@github.com git-lfs-authenticate decentraland/unity-renderer.git download
+            git lfs --version
             git lfs install
       # checkout the actual code
       - checkout
@@ -193,6 +197,55 @@ jobs:
       - save_cache:
           name: Store test cache
           key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
+      - store_artifacts: *STORE_VISUAL_TESTS
+
+  benchmark:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Run benchmarks
+          command: |
+            if [[ -e ./unity-renderer/benchmark-logs.txt ]]; then
+                echo "Skipping benchmarks"
+                exit 0
+            else
+                bash ci-benchmark.sh
+                exit $?
+            fi;
+          no_output_timeout: 30m
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/benchmark-results/benchmark-results-junit.xml nunit-to-junit.xsl unity-renderer/benchmark-results.xml
+      - run: apt-get -y -qq install awscli      
+      - run:
+          name: upload benchmark report
+          command: |
+            bash ci-benchmark-upload-report.sh            
+      - store_test_results:
+          path: ./unity-renderer/benchmark-results
+      - store_artifacts:
+          name: Store benchmark logs
+          path: ./unity-renderer/benchmark-logs.txt
+      - store_artifacts:
+          name: Store benchmark results
+          path: ./unity-renderer/benchmark-results.xml
+      - save_cache:
+          name: Store benchmark cache
+          key: unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
           paths: *CACHED_PATHS
       - store_artifacts: *STORE_VISUAL_TESTS
 
@@ -369,10 +422,14 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - checkout
-      - asset-bundle-tests:
+      - benchmark:
           <<: *all_branches_and_tags
           requires:
             - checkout
+     # - asset-bundle-tests:
+     #     <<: *all_branches_and_tags
+     #     requires:
+     #       - checkout
      # - editmode-tests:
      #    <<: *all_branches_and_tags
      #     requires:

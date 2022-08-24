@@ -7,6 +7,7 @@ This repository contains the Unity part of [decentraland explorer](https://play.
 1. [Contribution Guidelines](.github/CONTRIBUTING.md)
 2. [Coding Guidelines](docs/style-guidelines.md)
 3. [Code Review Standards](docs/code-review-standards.md)
+4. [Architecture](https://github.com/decentraland/architecture)
 
 # Running the Explorer
 
@@ -97,24 +98,46 @@ When the steps are followed, you will be able to run the local Unity build by go
 
 1. Make sure you have the proper Unity version up and running
 2. Make sure you have [Kernel repository](https://github.com/decentraland/kernel) cloned.
-3. Make sure you are running kernel through `make watch` command in the cloned repo directory.
-4. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
-5. Make sure you have the local website up and running by executing `npm run start:linked` in the cloned repo directory.
-6. Produce a Unity wasm targeted build using the Build menu.
-7. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/unity-renderer`.
-8. Run the browser explorer through `localhost:3000`. Now, it should use your local Unity build.
-9. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process nor the website.
+3. Make sure you are running kernel through `make watch` command in the cloned repo directory (`npm i` first just in case).
+4. Produce a Unity wasm targeted build using the Build menu.
+5. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `kernel/node_modules/@dcl/unity-renderer`.
+6. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Kernel with the build.
+7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
+
+Alternatively you can go through these 2 steps after step 3 and load the build locally using `localhost:3000` 
+1. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
+2. Make sure you have the local website up and running by executing `npm run start:linked` in the cloned repo directory (`npm i` first just in case).
+3. When the WebGL build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/unity-renderer`.
+4. Access using using `localhost:3000`
+
+### Troubleshooting
+
+#### MacOS: Missing xcrun
+
+If you get the "missing xcrun" error when trying to run the `make watch` command, you should download the latest command line tools for macOS, either by downloading them from https://developer.apple.com/download/more/?=command%20line%20tools or by re-installing XCode
+
+#### MacOS: Build fails throwing `System.ComponentModel.Win32Exception (2): No such file or directory...`
+
+If the local WebGL build always fails with the error `System.ComponentModel.Win32Exception (2): No such file or directory...` it's because you are missing Python needed version (MacOS 12.3 onwards removes the previously-integrated python installation). So to solve this issue just install this [Python version](https://www.python.org/downloads/release/python-3105/).
+
+## Frameworks and Tools
+
+- [UI Components Library](docs/ui-components-library.md)
+- [Performance Meter Tool](docs/performance-meter-tool.md)
+- [Bots Tool](docs/bots-tool.md)
 
 ## Technical how-to guides and explainers
 
 - [How to use Unity visual tests](docs/how-to-use-unity-visual-tests.md)
 - [How to profile a local Unity build remotely](docs/how-to-profile-a-local-unity-build-remotely.md)
-
-For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
+- [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
+  - For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
+- [How to create new components for ECS7](docs/ecs7-component-creation.md)
 
 ## Setup CircleCI
 
 [Setup CircleCI](docs/setup-circleci.md)
+
 ## Copyright info
 
 This repository is protected with a standard Apache 2 license. See the terms and conditions in

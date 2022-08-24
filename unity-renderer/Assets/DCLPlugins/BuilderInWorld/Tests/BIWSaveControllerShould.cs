@@ -22,10 +22,11 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 
         biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
         context = BIWTestUtils.CreateContextWithGenericMocks(SceneReferences.i);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         biwSaveController = new BIWSaveController();
         biwSaveController.Initialize(context);
-        biwSaveController.EnterEditMode(scene);
+        biwSaveController.EnterEditMode(builderScene);
     }
 
     [Test]
@@ -35,7 +36,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
         biwSaveController.ResetSaveTime();
 
         //Act
-        biwBridge.RemoveEntityOnKernel("test", scene);
+        biwBridge.RemoveEntityOnKernel(1, scene);
 
         //Assert
         Assert.IsFalse(biwSaveController.CanSave());

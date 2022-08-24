@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1021;
+
+message PBAudioStream {  
+  optional bool playing = 1;
+  optional float volume = 2; // default=1.0f
+  string url = 3;
+}

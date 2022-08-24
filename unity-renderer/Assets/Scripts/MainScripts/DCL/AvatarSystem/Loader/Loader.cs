@@ -35,29 +35,40 @@ namespace AvatarSystem
 
         public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
+            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
+        }
+
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
+        {
             ct.ThrowIfCancellationRequested();
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
             try
             {
                 status = ILoader.Status.Loading;
-
                 await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
-
                 await LoadWearables(wearables, settings, toCleanUp, ct);
-
+                SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
                 if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
-                AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+
+                foreach (IWearableLoader wearableLoader in loaders.Values)
+                {
+                    wearableLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones);
+                }
+
+                if (bodyshapeLoader.rendereable != null)
+                {
+                    bodyshapeLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones);
+                }
+
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(settings.bodyshapeId, wearables);
 
-                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, ct);
-
+                combinedRenderer = await MergeAvatar(settings, wearables, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible, skinnedContainer, ct);
                 facialFeaturesRenderers = new List<Renderer>();
-                
                 if (headVisible)
                 {
                     if (eyes != null)
@@ -66,6 +77,11 @@ namespace AvatarSystem
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
                     if (mouth != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                }
+                else
+                {
+                    if(bodyshapeLoader != null)
+                        bodyshapeLoader.DisableFacialRenderers();
                 }
             }
             catch (OperationCanceledException)
@@ -100,7 +116,7 @@ namespace AvatarSystem
         private async UniTask LoadBodyshape(AvatarSettings settings, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<IWearableLoader> loadersToCleanUp, CancellationToken ct)
         {
             //We get a new loader if any of the subparts of the bodyshape changes
-            if (bodyshapeLoader == null || !bodyshapeLoader.IsValid(bodyshape, eyebrows, eyes, mouth))
+            if (!IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
             {
                 loadersToCleanUp.Add(bodyshapeLoader);
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
@@ -157,8 +173,13 @@ namespace AvatarSystem
 
         public Transform[] GetBones() { return bodyshapeLoader?.upperBodyRenderer?.bones; }
 
+        public bool IsValidForBodyShape(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
+        {
+            return bodyshapeLoader != null && bodyshapeLoader.IsValid(bodyshape, eyebrows, eyes, mouth);
+        }
+
         private async UniTask<SkinnedMeshRenderer> MergeAvatar(AvatarSettings settings, List<WearableItem> wearables,
-            bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible,
+            bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible, SkinnedMeshRenderer bonesContainer,
             CancellationToken ct)
         {
             var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
@@ -168,21 +189,17 @@ namespace AvatarSystem
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
             await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-
             var featureFlags = DataStore.i.featureFlags.flags.Get();
-            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
+            avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
-
-            bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, allRenderers.ToArray());
+            bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
-
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
-
             return avatarMeshCombiner.renderer;
         }
 

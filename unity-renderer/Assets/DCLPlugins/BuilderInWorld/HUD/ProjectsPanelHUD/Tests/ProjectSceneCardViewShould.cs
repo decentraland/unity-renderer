@@ -32,8 +32,8 @@ public class ProjectSceneCardViewShould
 
         //Assert
 
-        //should show editor buttons
-        Assert.IsTrue(cardView.outdatedGameObject.gameObject.activeSelf, "Editor button should be active");
+        //should hide outdate info
+        Assert.IsFalse(cardView.outdatedGameObject.gameObject.activeSelf, "Editor button should be active");
 
         //should show coords and title
         Assert.AreEqual(cardView.sceneNameTxt.text, "TestTitle");
@@ -52,7 +52,6 @@ public class ProjectSceneCardViewShould
         metadata.metadata.display.title = "TestTitle";
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
-        metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
         Scene scene = new Scene(metadata, "TestURL");
        
         scene.parcelsCoord = null;

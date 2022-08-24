@@ -1,11 +1,9 @@
 using System;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using System.Collections.Generic;
 
 namespace DCL.Components
 {
@@ -25,34 +23,8 @@ namespace DCL.Components
         public Action<LoadableShape> OnLoaded;
 
         protected Model previousModel = new Model();
-
-        protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
-
-        public static LoadWrapper GetLoaderForEntity(IDCLEntity entity)
-        {
-            if (entity.meshRootGameObject == null)
-            {
-                Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
-                return null;
-            }
-
-            attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result);
-            return result;
-        }
-
-        public static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
-            where T : LoadWrapper, new()
-        {
-            if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
-            {
-                result = new T();
-                attachedLoaders.Add(entity.meshRootGameObject, result);
-            }
-
-            return result as T;
-        }
-
-        public LoadableShape() { model = new Model(); }
+        
+        protected LoadableShape() { model = new Model(); }
 
         public override int GetClassId() { return -1; }
 
@@ -181,7 +153,8 @@ namespace DCL.Components
                 isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");
 
-                LoadWrapperType loadableShape = GetOrAddLoaderForEntity<LoadWrapperType>(entity);
+                LoadWrapperType loadableShape =
+                    Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapperType>(entity);
 
                 if (loadableShape is LoadWrapper_GLTF gltfLoadWrapper)
                     gltfLoadWrapper.customContentProvider = provider;
@@ -190,7 +163,7 @@ namespace DCL.Components
 
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadableShape.initialVisibility = model.visible;
+                loadableShape.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
@@ -204,15 +177,21 @@ namespace DCL.Components
 
         void ConfigureVisibility(IDCLEntity entity)
         {
-            var loadable = GetLoaderForEntity(entity);
+            var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
             if (loadable != null)
-                loadable.initialVisibility = model.visible;
+                loadable.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
 
-            ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
+            
+            if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
+                entity.meshesInfo.animation.enabled = model.visible && entity.isInsideSceneBoundaries;
         }
 
-        protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
+        protected virtual void ConfigureColliders(IDCLEntity entity)
+        {
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions && entity.isInsideSceneBoundaries, true, entity, CalculateCollidersLayer(model));
+        }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
         {
@@ -260,11 +239,9 @@ namespace DCL.Components
             isLoaded = true;
             OnLoaded?.Invoke(this);
 
-            entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
-
-            var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
-
-            ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
+            entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
+            
+            ConfigureVisibility(entity);
             ConfigureColliders(entity);
             RaiseOnShapeUpdated(entity);
             RaiseOnShapeLoaded(entity);
@@ -278,10 +255,9 @@ namespace DCL.Components
             if (entity == null || entity.meshRootGameObject == null)
                 return;
 
-            LoadWrapper loadWrapper = GetLoaderForEntity(entity);
-
+            LoadWrapper loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             loadWrapper?.Unload();
-
+            Environment.i.world.state.RemoveLoaderForEntity(entity);
             entity.meshesInfo.CleanReferences();
         }
 

@@ -25,7 +25,21 @@ public class FriendRequestEntry : FriendEntryBase
         cancelButton.onClick.AddListener(() => OnCancelled?.Invoke(this));
     }
 
-    public void SetReceived(bool value)
+    public void Populate(FriendRequestEntryModel model)
+    {
+        base.Populate(model);
+        SetReceived(model.isReceived);
+    }
+
+    public override void Populate(FriendEntryModel model)
+    {
+        base.Populate(model);
+
+        if (model is FriendRequestEntryModel requestModel)
+            SetReceived(requestModel.isReceived);
+    }
+
+    private void SetReceived(bool value)
     {
         isReceived = value;
 
@@ -35,7 +49,7 @@ public class FriendRequestEntry : FriendEntryBase
             PopulateSent();
     }
 
-    void PopulateReceived()
+    private void PopulateReceived()
     {
         isReceived = true;
         cancelButton.gameObject.SetActive(false);
@@ -43,7 +57,7 @@ public class FriendRequestEntry : FriendEntryBase
         rejectButton.gameObject.SetActive(true);
     }
 
-    void PopulateSent()
+    private void PopulateSent()
     {
         isReceived = false;
         cancelButton.gameObject.SetActive(true);

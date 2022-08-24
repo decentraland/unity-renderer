@@ -1,10 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using DCL.Camera;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class BIWFreeCameraShould : IntegrationTestSuite
 {
@@ -177,22 +175,6 @@ public class BIWFreeCameraShould : IntegrationTestSuite
         Assert.AreEqual(freeCameraMovement.originalCameraPosition, mockedGameObject.transform.position);
         Assert.AreEqual(freeCameraMovement.yaw, mockedGameObject.transform.eulerAngles.y);
         Assert.AreEqual(freeCameraMovement.pitch, mockedGameObject.transform.eulerAngles.x);
-    }
-
-    [UnityTest]
-    public IEnumerator TakeScreenshot()
-    {
-        //Arrange
-        var component =  mockedGameObject.AddComponent<Camera>();
-        freeCameraMovement.screenshotCamera = component;
-
-        //Assert
-        IFreeCameraMovement.OnSnapshotsReady onSucces = snapshot => Assert.IsNotNull(snapshot);
-
-        //Act
-        freeCameraMovement.TakeSceneScreenshot(onSucces);
-
-        yield return freeCameraMovement.takeScreenshotCoroutine;
     }
 
     [Test]

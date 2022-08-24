@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL;
 using UnityEngine;
 
 namespace NFTShape_Internal
@@ -7,8 +8,7 @@ namespace NFTShape_Internal
     {
         public string name;
         public string imageUrl;
-        public NFTShapeConfig nftShapeConfig;
-        public NFTShapeLoaderController controller;
+        public INFTShapeLoaderController controller;
         public INFTAsset asset;
     }
 
@@ -43,16 +43,18 @@ namespace NFTShape_Internal
 
         public void Update()
         {
-            if (hqImageConfig.controller.collider is null)
+            if (hqImageConfig.controller.nftCollider is null)
                 return;
 
             if (!isPlayerNear)
                 return;
 
+            var config = DataStore.i.Get<DataStore_NFTShape>();
+
             isCameraInFront = camera == null ||
                               Vector3.Dot(nftControllerT.forward,
                                   nftControllerT.position - camera.transform.position)
-                              > hqImageConfig.nftShapeConfig.hqImgInFrontDotProdMinValue;
+                              > config.hqImgInFrontDotProdMinValue;
 
             if (VERBOSE)
             {
@@ -67,7 +69,7 @@ namespace NFTShape_Internal
 
             isPlayerLooking = camera == null ||
                               Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
-                              hqImageConfig.nftShapeConfig.hqImgFacingDotProdMinValue;
+                              config.hqImgFacingDotProdMinValue;
 
             if (VERBOSE)
             {
@@ -100,12 +102,14 @@ namespace NFTShape_Internal
         {
             isPlayerNear = false;
 
-            if (hqImageConfig.controller == null || hqImageConfig.controller.collider == null)
+            if (hqImageConfig.controller == null || hqImageConfig.controller.nftCollider == null)
                 return;
 
-            isPlayerNear = ((current - hqImageConfig.controller.collider.ClosestPoint(current)).sqrMagnitude
-                            <= (hqImageConfig.nftShapeConfig.hqImgMinDistance *
-                                hqImageConfig.nftShapeConfig.hqImgMinDistance));
+            var config = DataStore.i.Get<DataStore_NFTShape>();
+
+            isPlayerNear = ((current - hqImageConfig.controller.nftCollider.ClosestPoint(current)).sqrMagnitude
+                            <= (config.hqImgMinDistance *
+                                config.hqImgMinDistance));
 
             if (!isPlayerNear)
             {

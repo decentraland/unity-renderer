@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 
 namespace UnityGLTF.Cache
@@ -14,6 +15,7 @@ namespace UnityGLTF.Cache
             this.id = id;
             this.Texture = texture;
             this.linear = linear;
+            PerformanceAnalytics.GLTFTextureTracker.Track();
         }
 
         protected override void OnDestroyCachedData()

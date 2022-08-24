@@ -1,10 +1,10 @@
-using System;
+using DCL;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] InputAction_Hold voiceChatAction;
     [SerializeField] Animator buttonAnimator;
     [SerializeField] private Animator disabledTooltipAnimator;
 
@@ -16,9 +16,9 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private bool isRecording = false;
     private bool isEnabledByScene = true;
 
-    public void OnPointerDown(PointerEventData eventData) { voiceChatAction.RaiseOnStarted(); }
+    public void OnPointerDown(PointerEventData eventData) { DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, false)); }
 
-    public void OnPointerUp(PointerEventData eventData) { voiceChatAction.RaiseOnFinished(); }
+    public void OnPointerUp(PointerEventData eventData) { DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, false)); }
 
     public void SetOnRecording(bool recording)
     {
@@ -39,12 +39,12 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             {
                 ShowDisabledTooltip();
             }
-            voiceChatAction.OnStarted -= OnVoiceChatInput;
-            voiceChatAction.OnStarted += OnVoiceChatInput;
+            DataStore.i.voiceChat.isRecording.OnChange -= OnVoiceChatInput;
+            DataStore.i.voiceChat.isRecording.OnChange += OnVoiceChatInput;
         }
         else
         {
-            voiceChatAction.OnStarted -= OnVoiceChatInput;
+            DataStore.i.voiceChat.isRecording.OnChange -= OnVoiceChatInput;
             disabledTooltipAnimator.SetTrigger(hideDisabledTooltipAnimation);
         }
 
@@ -52,9 +52,9 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         buttonAnimator.SetBool(disabledAnimation, !isEnabledByScene);
     }
 
-    private void OnVoiceChatInput(DCLAction_Hold action)
+    private void OnVoiceChatInput(KeyValuePair<bool, bool> current, KeyValuePair<bool, bool> previous)
     {
-        if (!isEnabledByScene)
+        if (current.Key && !isEnabledByScene)
         {
             ShowDisabledTooltip();
         }

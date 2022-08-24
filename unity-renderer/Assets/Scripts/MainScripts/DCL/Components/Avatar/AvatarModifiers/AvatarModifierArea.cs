@@ -29,17 +29,19 @@ public class AvatarModifierArea : BaseComponent
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
-    internal readonly Dictionary<string, AvatarModifier> modifiers;
+    
+    internal readonly Dictionary<string, IAvatarModifier> modifiers;
 
     private HashSet<Collider> excludedColliders;
+    public override string componentName => "avatarModifierArea";
 
     public AvatarModifierArea()
     {
         // Configure all available modifiers
-        this.modifiers = new Dictionary<string, AvatarModifier>()
+        this.modifiers = new Dictionary<string, IAvatarModifier>()
         {
             { "HIDE_AVATARS", new HideAvatarsModifier() },
-            { "DISABLE_PASSPORTS", new DisablePassportModifier() }
+            { "DISABLE_PASSPORTS", new HidePassportModifier() }
         };
         model = new Model();
     }
@@ -138,6 +140,7 @@ public class AvatarModifierArea : BaseComponent
     private void RemoveAllModifiers()
     {
         RemoveAllModifiers(DetectAllAvatarsInArea());
+        avatarsInArea = null;
     }
 
     private void RemoveAllModifiers(HashSet<GameObject> avatars)
@@ -167,7 +170,7 @@ public class AvatarModifierArea : BaseComponent
             // Add all listeners
             foreach (string modifierKey in cachedModel.modifiers)
             {
-                if (!modifiers.TryGetValue(modifierKey, out AvatarModifier modifier))
+                if (!modifiers.TryGetValue(modifierKey, out IAvatarModifier modifier))
                     continue;
 
                 OnAvatarEnter += modifier.ApplyModifier;
@@ -182,6 +185,10 @@ public class AvatarModifierArea : BaseComponent
                 DataStore.i.player.ownPlayer.OnChange += OwnPlayerOnOnChange;
                 DataStore.i.player.otherPlayers.OnAdded += OtherPlayersOnOnAdded;
             }
+            
+            // Force update due to after model update modifiers are removed and re-added
+            // leaving a frame with the avatar without the proper modifications
+            Update();
         }
     }
 

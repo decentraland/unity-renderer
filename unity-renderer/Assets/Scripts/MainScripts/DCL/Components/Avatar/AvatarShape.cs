@@ -17,20 +17,24 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
+        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private GameObject onloadParticlePrefab;
+        public StickersController stickersControllers;
+        [SerializeField] private Transform avatarRevealContainer;
+        [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal GameObject playerNameContainer;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -44,20 +48,37 @@ namespace DCL
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        private IAvatar avatar;
+        internal IAvatar avatar;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
+        private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
+
+        public override string componentName => "avatarShape";
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+
+            if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                avatar = GetAvatarWithHologram();
+            else
+                avatar = GetStandardAvatar();
+
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
+        }
+
+        private Avatar GetStandardAvatar()
+        {
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            avatar = new Avatar(
+            return new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
@@ -66,17 +87,31 @@ namespace DCL
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        }
 
-            if (avatarReporterController == null)
-            {
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            }
+        private AvatarWithHologram GetAvatarWithHologram()
+        {
+            Visibility visibility = new Visibility();
+            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
+            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
+            return new AvatarWithHologram(
+                    baseAvatar,
+                    new AvatarCurator(new WearableItemResolver()),
+                    new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+                    animator,
+                    visibility,
+                    avatarLOD,
+                    new SimpleGPUSkinning(),
+                    new GPUSkinningThrottler(),
+                    new EmoteAnimationEquipper(animator, DataStore.i.emotes));
         }
 
         private void Start()
         {
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
         }
 
         private void PlayerClicked()
@@ -97,8 +132,9 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-
-            DisablePassport();
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
+            
+            ApplyHidePassportModifier();
 
             var model = (AvatarModel) newModel;
 
@@ -118,13 +154,13 @@ namespace DCL
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
             // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            if (!initializedPosition && scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TRANSFORM))
             {
                 initializedPosition = true;
                 OnEntityTransformChanged(entity.gameObject.transform.localPosition,
                     entity.gameObject.transform.localRotation, true);
             }
-            
+
             // NOTE: we subscribe here to transform changes since we might "lose" the message
             // if we subscribe after a any yield
             entity.OnTransformChange -= OnEntityTransformChanged;
@@ -148,7 +184,11 @@ namespace DCL
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-
+                if (DataStore.i.avatarConfig.useHologramAvatar.Get())
+                {
+                    playerName.SetName(model.name);
+                    playerName.Show(true);
+                }
                 avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
@@ -160,9 +200,6 @@ namespace DCL
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
-
-                if (avatar.lodLevel <= 1)
-                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, onloadParticlePrefab);
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
@@ -175,7 +212,7 @@ namespace DCL
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
             UpdatePlayerStatus(model);
-            
+
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
                 {
@@ -184,14 +221,14 @@ namespace DCL
                     hoverText = "view profile"
                 },
                 entity, player
-            );            
+            );
 
             avatarCollider.gameObject.SetActive(true);
 
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            EnablePassport();
+            RemoveHidePassportModifier();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -229,6 +266,8 @@ namespace DCL
                 player = new Player();
             }
 
+            bool isNameDirty = player.name != model.name;
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
@@ -240,17 +279,20 @@ namespace DCL
             if (isNew)
             {
                 player.playerName = playerName;
-                player.playerName.SetName(player.name);
                 player.playerName.Show();
                 player.anchorPoints = anchorPoints;
                 if (isGlobalSceneAvatar)
                 {
+                    // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
+                    // we should investigate this 
+                    if (otherPlayers.ContainsKey(player.id))
+                        otherPlayers.Remove(player.id);
                     otherPlayers.Add(player.id, player);
                 }
                 avatarReporterController.ReportAvatarRemoved();
             }
 
-            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            avatarReporterController.SetUp(entity.scene.sceneData.id, player.id);
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
@@ -258,6 +300,8 @@ namespace DCL
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+            if (isNameDirty)
+                player.playerName.SetName(model.name);
         }
 
         private void Update()
@@ -270,28 +314,12 @@ namespace DCL
             }
         }
 
-        public void DisablePassport()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(false);
-        }
-
-        public void EnablePassport()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(true);
-        }
-
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
         }
-        
+
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
             if (isGlobalSceneAvatar)
@@ -314,6 +342,54 @@ namespace DCL
             initializedPosition = false;
             model = new AvatarModel();
             player = null;
+        }
+
+        public void ApplyHideAvatarModifier()
+        {
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(false);
+                playerNameContainer.SetActive(false);
+                stickersControllers.ToggleHideArea(true);
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        }
+
+        public void RemoveHideAvatarModifier()
+        {
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(true);
+                playerNameContainer.SetActive(true);
+                stickersControllers.ToggleHideArea(false);
+            }
+        }
+        
+        public void ApplyHidePassportModifier()
+        {
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                if (onPointerDown.collider == null)
+                    return;
+
+                onPointerDown.SetPassportEnabled(false);
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        }
+        
+        public void RemoveHidePassportModifier()
+        {
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                if (onPointerDown.collider == null)
+                    return;
+
+                onPointerDown.SetPassportEnabled(true);
+            }
         }
 
         public override void Cleanup()
@@ -355,5 +431,6 @@ namespace DCL
 
         [ContextMenu("Print current profile")]
         private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
+
     }
 }

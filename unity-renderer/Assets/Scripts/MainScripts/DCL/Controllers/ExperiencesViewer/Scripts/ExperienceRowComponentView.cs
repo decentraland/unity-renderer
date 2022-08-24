@@ -66,7 +66,7 @@ namespace DCL.ExperiencesViewer
         void SetAllowStartStop(bool isAllowed);
     }
 
-    public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig
+    public class ExperienceRowComponentView : BaseComponentView, IExperienceRowComponentView, IComponentModelConfig<ExperienceRowComponentModel>
     {
         [Header("Prefab References")]
         [SerializeField] internal ImageComponentView iconImage;
@@ -75,7 +75,7 @@ namespace DCL.ExperiencesViewer
         [SerializeField] internal ShowHideAnimator showHideUIButtonsContainerAnimator;
         [SerializeField] internal ButtonComponentView showPEXUIButton;
         [SerializeField] internal ButtonComponentView hidePEXUIButton;
-        [SerializeField] internal Toggle startStopPEXToggle;
+        [SerializeField] internal ToggleComponentView startStopPEXToggle;
         [SerializeField] internal ButtonComponentView stopPEXButton;
         [SerializeField] internal Image backgroundImage;
 
@@ -104,9 +104,9 @@ namespace DCL.ExperiencesViewer
             SetAsPlaying(model.isPlaying);
         }
 
-        public void Configure(BaseComponentModel newModel)
+        public void Configure(ExperienceRowComponentModel newModel)
         {
-            model = (ExperienceRowComponentModel)newModel;
+            model = newModel;
             RefreshControl();
         }
 
@@ -248,7 +248,6 @@ namespace DCL.ExperiencesViewer
 
             showPEXUIButton?.onClick.RemoveAllListeners();
             hidePEXUIButton?.onClick.RemoveAllListeners();
-            startStopPEXToggle?.onValueChanged.RemoveAllListeners();
             stopPEXButton?.onClick.RemoveAllListeners();
         }
 
@@ -266,11 +265,14 @@ namespace DCL.ExperiencesViewer
                 onShowPEXUI?.Invoke(model.id, false);
             });
 
-            startStopPEXToggle?.onValueChanged.AddListener((isOn) =>
+            if (startStopPEXToggle != null)
             {
-                SetAsPlaying(isOn);
-                onStartPEX?.Invoke(model.id, isOn);
-            });
+                startStopPEXToggle.OnSelectedChanged += (isOn, id, name) =>
+                {
+                    SetAsPlaying(isOn);
+                    onStartPEX?.Invoke(model.id, isOn);
+                };
+            }
 
             stopPEXButton?.onClick.AddListener(() =>
             {

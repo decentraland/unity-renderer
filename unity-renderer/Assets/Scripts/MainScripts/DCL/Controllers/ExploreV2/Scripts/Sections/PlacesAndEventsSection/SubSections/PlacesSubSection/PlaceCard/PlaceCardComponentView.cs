@@ -80,7 +80,7 @@ public interface IPlaceCardComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig
+public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig<PlaceCardComponentModel>
 {
     internal const int THMBL_MARKETPLACE_WIDTH = 196;
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
@@ -149,9 +149,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         CleanFriendHeadsItems();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(PlaceCardComponentModel newModel)
     {
-        model = (PlaceCardComponentModel)newModel;
+        model = newModel;
 
         InitializeFriendsTracker();
 
@@ -367,10 +367,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal void OnPlaceImageLoaded(Sprite sprite)
     {
         if (sprite != null)
-        {
-            SetPlacePicture(sprite);
-        }
-        else if (!thumbnailFromMarketPlaceRequested)
+            return;
+
+        if (!thumbnailFromMarketPlaceRequested)
         {
             thumbnailFromMarketPlaceRequested = true;
             SetPlacePicture(MapUtils.GetMarketPlaceThumbnailUrl(model.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR));

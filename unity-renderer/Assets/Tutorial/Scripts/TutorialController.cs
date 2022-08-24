@@ -164,7 +164,6 @@ namespace DCL.Tutorial
             }
 
             DataStore.i.common.isTutorialRunning.Set(true);
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -205,9 +204,15 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
+            if (teacherMovementCoroutine != null)
+            {
+                CoroutineStarter.Stop(teacherMovementCoroutine);
+                teacherMovementCoroutine = null;
+            }
+
             tutorialReset = false;
             DataStore.i.common.isTutorialRunning.Set(false);
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+            tutorialView.tutorialMusicHandler.StopTutorialMusic();
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
@@ -243,23 +248,25 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
+            yield return new WaitUntil(IsPlayerInScene);
+
+            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
+            
             switch (tutorialType)
             {
                 case TutorialType.Initial:
+                    if(playerIsInGenesisPlaza) tutorialView.tutorialMusicHandler.TryPlayingMusic();
                     if (userAlreadyDidTheTutorial)
                     {
                         yield return ExecuteSteps(TutorialPath.FromUserThatAlreadyDidTheTutorial, stepIndex);
                     }
-                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    else if (tutorialReset)
                     {
-                        if (tutorialReset)
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
-                        }
-                        else
-                        {
-                            yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-                        }
+                        yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
+                    }
+                    else if (playerIsInGenesisPlaza)
+                    {
+                        yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
                     }
                     else if (openedFromDeepLink)
                     {
@@ -270,7 +277,6 @@ namespace DCL.Tutorial
                         SetTutorialDisabled();
                         yield break;
                     }
-
                     break;
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
@@ -294,9 +300,9 @@ namespace DCL.Tutorial
         /// <summary>
         /// Move the tutorial teacher to a specific position.
         /// </summary>
-        /// <param name="position">Target position.</param>
+        /// <param name="destinationPosition">Target position.</param>
         /// <param name="animated">True for apply a smooth movement.</param>
-        public void SetTeacherPosition(Vector2 position, bool animated = true)
+        public void SetTeacherPosition(Vector3 destinationPosition, bool animated = true)
         {
             if (teacherMovementCoroutine != null)
                 CoroutineStarter.Stop(teacherMovementCoroutine);
@@ -304,9 +310,9 @@ namespace DCL.Tutorial
             if (configuration.teacherRawImage != null)
             {
                 if (animated)
-                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, position));
+                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(destinationPosition));
                 else
-                    configuration.teacherRawImage.rectTransform.position = position;
+                    configuration.teacherRawImage.rectTransform.position = new Vector3(destinationPosition.x, destinationPosition.y, configuration.teacherRawImage.rectTransform.position.z);
             }
         }
 
@@ -436,8 +442,6 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
-            playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
-
             if (configuration.debugRunTutorial)
                 currentStepIndex = configuration.debugStartingStepIndex >= 0 ? configuration.debugStartingStepIndex : 0;
             else
@@ -551,21 +555,22 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
 
-        internal IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
+        internal IEnumerator MoveTeacher(Vector3 toPosition)
         {
             if (configuration.teacherRawImage == null)
                 yield break;
 
             float t = 0f;
-
-            while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
+          
+            Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
+            
+            while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
-                    configuration.teacherRawImage.rectTransform.position = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
+                    configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
                     configuration.teacherRawImage.rectTransform.position = toPosition;
-
                 yield return null;
             }
         }
@@ -590,6 +595,16 @@ namespace DCL.Tutorial
                 fromDeepLink = false.ToString(),
                 enableNewTutorialCamera = false.ToString()
             }));
+        }
+
+        internal bool IsPlayerInScene()
+        {
+            IWorldState worldState = Environment.i.world.state;
+
+            if (worldState == null || worldState.currentSceneId == null)
+                return false;
+
+            return true;
         }
 
         internal static bool IsPlayerInsideGenesisPlaza()

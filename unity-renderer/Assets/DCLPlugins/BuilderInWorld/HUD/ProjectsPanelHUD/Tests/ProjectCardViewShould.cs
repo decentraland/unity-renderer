@@ -68,7 +68,7 @@ public class ProjectCardViewShould
 
         //Assert
         Assert.AreEqual(ProjectCardView.NOT_PUBLISHED,cardView.projectSyncTxt.text);
-        Assert.AreEqual(false,cardView.syncImage.enabled);
+        Assert.AreEqual(false,cardView.syncImage.gameObject.activeInHierarchy);
     }
 
     [Test]
@@ -166,7 +166,6 @@ public class ProjectCardViewShould
         metadata.metadata.display.navmapThumbnail = "";
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
-        metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
         Scene scene = new Scene(metadata, "TestURL");
         scene.parcelsCoord = null;
         scene.timestamp = BIWUtils.ConvertToMilisecondsTimestamp(DateTime.Now);

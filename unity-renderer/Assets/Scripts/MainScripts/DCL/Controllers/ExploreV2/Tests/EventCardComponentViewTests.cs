@@ -1,7 +1,9 @@
+using System.Collections;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class EventCardComponentViewTests
 {
@@ -124,15 +126,20 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    [TestCase(true, true)]
-    [TestCase(true, false)]
-    [TestCase(false, true)]
-    [TestCase(false, false)]
-    public void SetEventAsLiveCorrectly(bool isLive, bool isSubscribed)
+    [TestCase(true, true, true)]
+    [TestCase(true, false, true)]
+    [TestCase(false, true, true)]
+    [TestCase(false, false, true)]
+    [TestCase(true, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(false, false, false)]
+    public void SetEventAsLiveCorrectly(bool isLive, bool isSubscribed, bool isEventCardModal)
     {
         // Arrange
         eventCardComponent.model.isLive = !isLive;
         eventCardComponent.model.isSubscribed = isSubscribed;
+        eventCardComponent.isEventCardModal = isEventCardModal;
 
         // Act
         eventCardComponent.SetEventAsLive(isLive);
@@ -141,7 +148,8 @@ public class EventCardComponentViewTests
         Assert.AreEqual(isLive, eventCardComponent.model.isLive, "The event card isLive does not match in the model.");
         Assert.AreEqual(isLive, eventCardComponent.liveTag.gameObject.activeSelf);
         Assert.AreEqual(!isLive, eventCardComponent.eventDateText.gameObject.activeSelf);
-        Assert.AreEqual(isLive, eventCardComponent.jumpinButton.gameObject.activeSelf);
+        Assert.AreEqual(isEventCardModal || isLive, eventCardComponent.jumpinButton.gameObject.activeSelf);
+        Assert.AreEqual(!isEventCardModal && !isLive, eventCardComponent.jumpinButtonForNotLive.gameObject.activeSelf);
         Assert.AreEqual(!isLive && !isSubscribed, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(!isLive && isSubscribed, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(isLive, eventCardComponent.eventStartedInTitleForLive.gameObject.activeSelf);
@@ -324,17 +332,6 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void CallOnPlaceImageLoadedCorrectly()
-    {
-        // Act
-        eventCardComponent.OnEventImageLoaded(testSprite);
-
-        // Assert
-        Assert.AreEqual(testSprite, eventCardComponent.model.eventPictureSprite, "The event card picture sprite does not match in the model.");
-        Assert.AreEqual(testSprite, eventCardComponent.eventImage.image.sprite, "The event card image does not match.");
-    }
-
-    [Test]
     public void CloseModalCorrectly()
     {
         // Arrange
@@ -355,7 +352,7 @@ public class EventCardComponentViewTests
 
         // Act
         eventCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
-
+        
         // Assert
         Assert.IsFalse(eventCardModalComponent.isVisible);
     }

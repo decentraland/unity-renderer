@@ -22,11 +22,19 @@ namespace DCL.Components
         }
 
         private void Awake() { model = new Model(); }
+        
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
+        }
 
-        private bool isPlaying = false;
+        public bool isPlaying { get; private set; } = false;
         private float settingsVolume = 0;
         private bool isDestroyed = false;
         private Model prevModel = new Model();
+
+        public override string componentName => "AudioStream";
 
         new public Model GetModel() { return (Model) model; }
 
@@ -64,15 +72,7 @@ namespace DCL.Components
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
             StopStreaming();
-        }
-
-        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
-        {
-            if (scene == null)
-                return false;
-            if (string.IsNullOrEmpty(currentSceneId))
-                return false;
-            return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
         }
 
         private void UpdatePlayingState(bool forceStateUpdate)
@@ -82,8 +82,9 @@ namespace DCL.Components
                 return;
             }
 
-            bool canPlayStream = IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID) && CommonScriptableObjects.rendererState;
-
+            bool canPlayStream = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            canPlayStream &= CommonScriptableObjects.rendererState;
+            
             Model model = (Model) this.model;
             bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);
             bool shouldStartStream = !isPlaying && canPlayStream && model.playing;
@@ -147,12 +148,12 @@ namespace DCL.Components
             Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * settingsVolume);
         }
 
-        public void UpdateOutOfBoundariesState(bool enable)
+        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
             if (!isPlaying)
                 return;
 
-            if (enable)
+            if (isInsideBoundaries)
             {
                 StartStreaming();
             }

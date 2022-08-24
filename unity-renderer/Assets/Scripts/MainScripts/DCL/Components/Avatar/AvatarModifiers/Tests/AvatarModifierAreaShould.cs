@@ -2,10 +2,12 @@
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using NSubstitute;
+using NUnit.Framework;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
@@ -13,15 +15,17 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
 {
     private const string MOCK_MODIFIER_KEY = "MockModifier";
     private AvatarModifierArea avatarModifierArea;
-    private AvatarModifier mockAvatarModifier;
+    private IAvatarModifier mockAvatarModifier;
     public ParcelScene scene;
+    public CoreComponentsPlugin coreComponentsPlugin;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
-        var entity = TestUtils.CreateSceneEntity(scene);
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
         AvatarModifierArea.Model model = new AvatarModifierArea.Model
         {
@@ -31,11 +35,17 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         yield return avatarModifierArea.routine;
 
         model.modifiers = new[] { MOCK_MODIFIER_KEY };
-        mockAvatarModifier = Substitute.For<AvatarModifier>();
+        mockAvatarModifier = Substitute.For<IAvatarModifier>();
         avatarModifierArea.modifiers.Add(MOCK_MODIFIER_KEY, mockAvatarModifier);
 
         //now that the modifier has been added we trigger the Update again so it gets taken into account
         yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
@@ -136,12 +146,42 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         
         mockAvatarModifier.Received().ApplyModifier(player2.gameObject);
 
+        yield return null;
+        
+        DataStore.i.player.otherPlayers.Remove(player2.player.id);
+        DataStore.i.player.otherPlayers.Remove(player3.player.id);
+        DataStore.i.player.otherPlayers.Remove(player4.player.id);
+        
+        Object.Destroy(((PlayerName)player1.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player2.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player3.player.playerName).gameObject);
+        Object.Destroy(((PlayerName)player4.player.playerName).gameObject);
+
         Object.Destroy(player1.gameObject);
         Object.Destroy(player2.gameObject);
         Object.Destroy(player3.gameObject);
         Object.Destroy(player4.gameObject);
         Object.Destroy(avatarModifierArea.gameObject);
     }
+    
+    [UnityTest]
+    public IEnumerator NotRemoveModifierOnWhenModelChange()
+    {
+        var model = (AvatarModifierArea.Model)avatarModifierArea.GetModel();
+
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+        
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+        mockAvatarModifier.ClearReceivedCalls();
+
+        model.area = new BoxTriggerArea { box = new Vector3(11, 11, 11) };
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
+        mockAvatarModifier.Received(1).RemoveModifier(fakeObject);
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+    }    
 
     private GameObject PrepareGameObjectForModifierArea()
     {
@@ -165,7 +205,8 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         Player player = new Player()
         {
             id = playerId,
-            collider = gameObject.GetComponentInChildren<Collider>()
+            collider = gameObject.GetComponentInChildren<Collider>(),
+            playerName = GameObject.Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>()
         };
         return (player, gameObject);
     }

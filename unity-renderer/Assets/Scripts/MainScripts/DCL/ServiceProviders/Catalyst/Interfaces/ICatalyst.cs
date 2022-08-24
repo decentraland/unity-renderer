@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 
 /// <summary>
@@ -16,6 +17,13 @@ public interface ICatalyst : IDisposable
     /// </summary>
     public string lambdasUrl { get; }
     
+    /// <summary>
+    /// This will get the file from the specified hash
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    UniTask<string> GetContent(string hash);
+
     /// <summary>
     /// get scenes deployed in parcels
     /// </summary>

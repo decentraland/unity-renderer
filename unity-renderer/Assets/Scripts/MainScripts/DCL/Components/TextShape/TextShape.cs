@@ -5,7 +5,6 @@ using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -56,25 +55,41 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
+        public MeshRenderer meshRenderer;
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
         private Material cachedFontMaterial;
+        private Camera mainCamera;
+
+        public override string componentName => "text";
 
         private void Awake()
         {
             model = new Model();
+            mainCamera = Camera.main;
+
             cachedFontMaterial = new Material(text.fontSharedMaterial);
             text.fontSharedMaterial = cachedFontMaterial;
             text.text = string.Empty;
+            
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnUpdate);
         }
 
-        public void Update()
+        private void OnUpdate()
         {
-            if (cachedModel.billboard && Camera.main != null)
+            if (cachedModel.billboard && mainCamera != null)
             {
-                transform.forward = Camera.main.transform.forward;
+                transform.forward = mainCamera.transform.forward;
             }
+            
+            var opacity = cachedModel.visible ? cachedModel.opacity : 0;
+            var totalSize = cachedModel.fontSize;
+            var totalScale = text.transform.lossyScale.sqrMagnitude;
+            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0 && entity.isInsideSceneBoundaries;
+            
+            text.enabled = isVisible;
+            meshRenderer.enabled = isVisible;
         }
 
         new public Model GetModel() { return cachedModel; }
@@ -95,8 +110,9 @@ namespace DCL.Components
             }
 
             DCLFont.SetFontFromComponent(scene, model.font, text);
+            
             ApplyModelChanges(text, model);
-
+            
             if (entity.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = gameObject;
 
@@ -222,7 +238,7 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.TEXT_SHAPE; }
 
         public override void Cleanup()
         {
@@ -232,6 +248,8 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
+            Environment.i.platform.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, OnUpdate);
+
             base.Cleanup();
             Destroy(cachedFontMaterial);
         }

@@ -86,10 +86,11 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
-            bool isReadable = true)
+            bool isReadable = true,
+            Dictionary<string, string> headers = null)
         {
             textureWebRequest.isReadable = isReadable;
-            return SendWebRequest(textureWebRequest, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
+            return SendWebRequest(textureWebRequest, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted,headers);
         }
 
         public WebRequestAsyncOperation GetAudioClip(
@@ -143,7 +144,7 @@ namespace DCL
             resultOp.disposeOnCompleted = disposeOnCompleted;
             ongoingWebRequests.Add(resultOp);
 
-            UnityWebRequestAsyncOperation requestOp = resultOp.webRequest.SendWebRequest();
+            UnityWebRequestAsyncOperation requestOp = resultOp.SendWebRequest();
             requestOp.completed += (asyncOp) =>
             {
                 if (!resultOp.isDisposed)

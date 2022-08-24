@@ -11,9 +11,10 @@ public class NFTShapeHQImageHandlerShould
     private INFTAsset asset;
     private GameObject nftGO;
     private NFTShapeHQImageHandler imageHandler;
-    private NFTShapeConfig nftShapeConfig;
     private bool isHQAsset;
     private Camera camera;
+
+    private DataStore_NFTShape nftShapeConfig;
 
     [SetUp]
     protected void SetUp()
@@ -41,13 +42,12 @@ public class NFTShapeHQImageHandlerShould
         nftController.transform.ResetLocalTRS();
 
         nftGO.transform.position = new Vector3(10, 0, 10);
-        nftShapeConfig = nftController.config;
+        nftShapeConfig = new DataStore_NFTShape();
 
         var config = new NFTShapeHQImageConfig()
         {
             asset = asset,
             controller = nftController,
-            nftShapeConfig = nftShapeConfig
         };
         imageHandler = NFTShapeHQImageHandler.Create(config);
     }

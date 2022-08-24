@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Configuration
@@ -9,9 +10,23 @@ namespace DCL.Configuration
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
         public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
-        
+
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
 
+        //Useful links
+        public const string MARKETPLACE_URL = "https://market.decentraland.org/lands";
+        public const string GUEST_WALLET_INFO = "https://docs.decentraland.org/examples/get-a-wallet/";
+
+        //Deployment constants
+        public const string DEPLOYMENT_DEFINITION_FILE = "scene-state-definition.json";
+        public const string DEPLOYMENT_SCENE_FILE = "scene.json";
+        public const string DEPLOYMENT_MODELS_FOLDER = "models";
+        public const string DEPLOYMENT_BUNDLED_GAME_FILE = "bin/game.js";
+        public const string DEPLOYMENT_SCENE_THUMBNAIL = "thumbnail.png";
+        public const string DEPLOYMENT_ASSETS = "scene-assets.json";
+        public const string DEPLOYMENT_SOURCE_TYPE = "builder-in-world";
+
+        //Layers
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
         public static readonly LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");
         public static readonly LayerMask COLLIDER_SELECTION_LAYER_INDEX = LayerMask.NameToLayer("OnBuilderPointerClick");
@@ -20,9 +35,16 @@ namespace DCL.Configuration
         public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
+        public static readonly LayerMask FX_LAYER = LayerMask.GetMask("FX");
 
-        public const int PARCEL_SIZE_METERS = 16;
+        // Screenshot settings
+        public const int SCENE_SNAPSHOT_WIDTH_RES = 854;
+        public const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
+        public const int AERIAL_SCREENSHOT_WIDTH = 315;
+        public const int AERIAL_SCREENSHOT_HEIGHT = 253;
+
+        // Identifiers
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";
@@ -30,6 +52,17 @@ namespace DCL.Configuration
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
+
+        //NFT
+        public const string NFT_ETHEREUM_PROTOCOL = "ethereum://";
+
+        //Scene files
+        public const string BUILDER_SCENE_STATE_DEFINITION_FILE_NAME = "scene-state-definition.json";
+        public const string BUILDER_SCENE_ASSET_FILE_NAME = "scene-assets.json";
+
+        //Builder API
+        public const string PROJECT_NOT_FOUND = "Project doesn't exists";
+        public const int MANIFEST_VERSION = 10;
 
         //Inputs
         public static float MOUSE_THRESHOLD_FOR_DRAG = 15f;
@@ -48,13 +81,18 @@ namespace DCL.Configuration
         public const string FLOOR_ID = "c9b17021-765c-4d9a-9966-ce93a9c323d1";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
+        public const string FLOOR_ASSET_PACK_ID = "e6fa9601-3e47-4dff-9a84-e8e017add15a";
         public const string FLOOR_ASSET_PACK_NAME = "Genesis City";
+        public const string FLOOR_ASSET_THUMBNAIL = "https://builder-api.decentraland.io/v1/storage/contents/QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
         public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";
 
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
+        
+        public const string FLOOR_THUMBNAIL_KEY = "FloorBaseGrass_01/thumbnail.png";
+        public const string FLOOR_THUMBNAIL_VALUE = "QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
         //Collectables
         public const string ASSETS_COLLECTIBLES = "Collectibles";
@@ -68,15 +106,11 @@ namespace DCL.Configuration
         public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
 
         //Publish
-        public const string PUBLISH_MODAL_TITLE = "Publish Scene";
-        public const string PUBLISH_MODAL_SUBTITLE = "Are you sure you want to publish your scene to this Land?";
-        public const string PUBLISH_MODAL_CONFIRM_BUTTON = "PUBLISH";
-        public const string PUBLISH_MODAL_CANCEL_BUTTON = "CANCEL";
         public const string EXIT_MODAL_TITLE = "Exiting Builder mode";
-        public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
+        public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode? You can continue your work later";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
         public const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
-        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this project. But don't worry, next time you enter the editor you will be able to continue where you left off!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this scene. But don't worry, next time you enter the editor you will be able to continue where you left off!";
         public const string EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON = "GOT IT!";
         public const string EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON = "BACK";
 
@@ -85,6 +119,7 @@ namespace DCL.Configuration
         public const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
         public const string LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE = "Checking if you have permission to edit this land";
         public const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
+        public const string GUEST_CANT_USE_BUILDER = "In order to use the builder, you need to log-in connecting a wallet";
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
@@ -101,8 +136,8 @@ namespace DCL.Configuration
     {
         public static bool RUNNING_TESTS = false;
         public static bool DEBUG = true;
-        public static readonly Vector3 MORDOR = new Vector3(10000, 10000, 10000);
-        public static readonly int MORDOR_SCALAR = 10000;
+        public static readonly int MORDOR_SCALAR = 8000;
+        public static readonly Vector3 MORDOR = new Vector3(MORDOR_SCALAR, MORDOR_SCALAR, MORDOR_SCALAR);
         public const float UNINITIALIZED_FLOAT = 999999f;
         public static readonly string AVATAR_GLOBAL_SCENE_ID = "dcl-gs-avatars";
     }

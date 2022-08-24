@@ -5,10 +5,9 @@ using UnityEngine;
 
 public class FeatureFlag
 {
-    public const string GPU_ONLY_MESHES = "use-gpu-only-meshes";
-
     public readonly Dictionary<string, bool> flags  = new Dictionary<string, bool>();
     public readonly Dictionary<string, FeatureFlagVariant> variants  = new Dictionary<string, FeatureFlagVariant>();
+    
 
     public bool IsFeatureEnabled(string featureName)
     {

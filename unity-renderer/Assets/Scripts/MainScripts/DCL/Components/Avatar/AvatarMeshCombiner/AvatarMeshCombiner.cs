@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -42,9 +40,15 @@ namespace DCL
     public class FlattenedMaterialsData
     {
         public List<Material> materials = new List<Material>();
-        public Vector3[] texturePointers;
-        public Vector4[] colors;
-        public Vector4[] emissionColors;
+        public NativeArray<Vector3> texturePointers;
+        public NativeArray<Vector4> colors;
+        public NativeArray<Vector4> emissionColors;
+        public FlattenedMaterialsData(int vertexCount)
+        {
+            texturePointers = new NativeArray<Vector3>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            colors = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            emissionColors = new NativeArray<Vector4>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+        }
     }
 
     /// <summary>
@@ -81,9 +85,13 @@ namespace DCL
         /// <param name="renderers">Renderers to be combined.</param>
         /// <param name="materialAsset">Material asset to be used in the resulting Output object. This Material will be instantiated for each sub-mesh generated.</param>
         /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
-        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose = true)
         {
             Output result = new Output();
+            (Vector3 pos, Quaternion rot, Vector3 scale)[] bonesTransforms = null;
+
+            if(keepPose)
+                bonesTransforms = bones.Select(x => (x.position, x.rotation, x.localScale)).ToArray();
 
             //
             // Reset bones to put character in T pose. Renderers are going to be baked later.
@@ -124,17 +132,22 @@ namespace DCL
 
             finalMesh.bindposes = bindPoses;
 
-            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
-            finalMesh.boneWeights = boneWeights;
-
+            var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
+            var boneWeights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
+            finalMesh.SetBoneWeights(bonesPerVertex, boneWeights);
+            
+            bonesPerVertex.Dispose();
+            boneWeights.Dispose();
+            
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
+            finalMesh.SetColors(flattenedMaterialsData.colors);
 
-            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Length, Allocator.Temp);
-            tempArray.CopyFrom(flattenedMaterialsData.colors);
-            finalMesh.SetColors(tempArray);
-            tempArray.Dispose();
+            flattenedMaterialsData.emissionColors.Dispose();
+            flattenedMaterialsData.texturePointers.Dispose();
+            flattenedMaterialsData.colors.Dispose();
+
             // Each layer corresponds with a subMesh. This is to take advantage of the sharedMaterials array.
             //
             // When a renderer has many sub-meshes, each materials array element correspond to the sub-mesh of
@@ -152,6 +165,16 @@ namespace DCL
             result.mesh = finalMesh;
             result.materials = flattenedMaterialsData.materials.ToArray();
             result.isValid = true;
+
+            if (keepPose)
+            {
+                for (int i = 0; i < bones.Length; i++)
+                {
+                    bones[i].position = bonesTransforms[i].pos;
+                    bones[i].rotation = bonesTransforms[i].rot;
+                    bones[i].localScale = bonesTransforms[i].scale;
+                }
+            }
 
             return result;
         }

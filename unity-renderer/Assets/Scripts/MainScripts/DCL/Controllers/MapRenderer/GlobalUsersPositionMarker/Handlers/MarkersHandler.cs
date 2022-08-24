@@ -12,7 +12,7 @@ namespace DCL
     {
         internal readonly List<UserPositionMarker> availableMarkers;
         internal readonly List<UserPositionMarker> usedMarkers;
-        readonly Func<float, float, Vector3> coordToMapPosition;
+        readonly Func<Vector2Int, Vector2> coordToMapPosition;
 
         readonly ExclusionArea exclusionArea;
         readonly ScenesFilter scenesFilter;
@@ -26,7 +26,7 @@ namespace DCL
         /// <param name="overlayContainer">parent for markers</param>
         /// <param name="maxMarkers">max amount of markers (pool)</param>
         /// <param name="coordToMapPosFunc">function to transform coords to map position</param>
-        public MarkersHandler(UserMarkerObject markerPrefab, Transform overlayContainer, int maxMarkers, Func<float, float, Vector3> coordToMapPosFunc)
+        public MarkersHandler(UserMarkerObject markerPrefab, Transform overlayContainer, int maxMarkers, Func<Vector2Int, Vector2> coordToMapPosFunc)
         {
             this.maxMarkers = maxMarkers;
             this.coordToMapPosition = coordToMapPosFunc;
@@ -94,9 +94,8 @@ namespace DCL
         {
             marker.name = $"UsersPositionMarker({parcelData.coords.x},{parcelData.coords.y})";
 
-            marker.localPosition = coordToMapPosition(
-                parcelData.coords.x + Random.Range(-0.5f, 0.5f),
-                parcelData.coords.y + Random.Range(-0.5f, 0.5f));
+            var coords = new Vector2(parcelData.coords.x + Random.Range(-0.5f, 0.5f), parcelData.coords.y + Random.Range(-0.5f, 0.5f));
+            marker.localPosition = coordToMapPosition(Vector2Int.RoundToInt(coords));
 
             marker.coords = parcelData.coords;
             marker.realmServer = parcelData.realmServer;

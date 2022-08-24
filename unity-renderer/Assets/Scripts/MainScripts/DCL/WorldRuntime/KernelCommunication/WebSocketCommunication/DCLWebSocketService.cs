@@ -1,18 +1,25 @@
-using System;
-using DCL.Interface;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Threading;
+using System.IO;
+using System.Text;
 using DCL;
-using UnityEditor;
+using DCL.Interface;
+using Newtonsoft.Json;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using System;
+using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
 
 public class DCLWebSocketService : WebSocketBehavior
 {
     public static bool VERBOSE = false;
+    
+    public event Action OnCloseEvent;
+
+    public event Action<string> OnErrorEvent;
+
+    public event Action<byte[]> OnMessageEvent;
+
+    public event Action OnConnectEvent;    
 
     private void SendMessageToWeb(string type, string message)
     {
@@ -25,7 +32,9 @@ public class DCLWebSocketService : WebSocketBehavior
 
         if (ConnectionState == WebSocketState.Open)
         {
-            Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
+            var serializeObject = JsonConvert.SerializeObject(x);
+            
+            Send(serializeObject);
         
             if (VERBOSE)
             {
@@ -33,6 +42,11 @@ public class DCLWebSocketService : WebSocketBehavior
             }
         }
 #endif
+    }
+
+    public void SendBinary(byte[] data)
+    {
+        Send(data);
     }
 
     public class Message
@@ -46,7 +60,13 @@ public class DCLWebSocketService : WebSocketBehavior
     protected override void OnMessage(MessageEventArgs e)
     {
         base.OnMessage(e);
-
+        
+        if (e.IsBinary)
+        {
+            OnMessageEvent?.Invoke(e.RawData);
+            return;
+        }
+        
         lock (WebSocketCommunication.queuedMessages)
         {
             Message finalMessage = JsonUtility.FromJson<Message>(e.Data);
@@ -60,6 +80,7 @@ public class DCLWebSocketService : WebSocketBehavior
     {
         Debug.LogError(e.Message);
         base.OnError(e);
+        OnErrorEvent?.Invoke(e.Message);
     }
 
     protected override void OnClose(CloseEventArgs e)
@@ -67,6 +88,7 @@ public class DCLWebSocketService : WebSocketBehavior
         base.OnClose(e);
         WebInterface.OnMessageFromEngine -= SendMessageToWeb;
         DataStore.i.wsCommunication.communicationEstablished.Set(false);
+        OnCloseEvent?.Invoke();
     }
 
     protected override void OnOpen()
@@ -76,5 +98,6 @@ public class DCLWebSocketService : WebSocketBehavior
 
         WebInterface.OnMessageFromEngine += SendMessageToWeb;
         DataStore.i.wsCommunication.communicationEstablished.Set(true);
+        OnConnectEvent?.Invoke();
     }
 }

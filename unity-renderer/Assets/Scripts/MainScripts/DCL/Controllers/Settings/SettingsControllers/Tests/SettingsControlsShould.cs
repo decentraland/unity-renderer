@@ -50,7 +50,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         private void SetupReferences()
         {
             legacySystems.Add(MainSceneFactory.CreateEnvironment());
-            legacySystems.Add(MainSceneFactory.CreateSettingsController());
             legacySystems.AddRange(MainSceneFactory.CreatePlayerSystems());
 
             urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
@@ -247,21 +246,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "Invert input Y axis stored value mismatch");
             Assert.AreEqual(thirdPersonCamera.m_YAxis.m_InvertInput, !newValue, "Third person camera invert Y axis mismatch");
-        }
-
-        [Test]
-        public void ChangeFPSLimitCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<FPSLimitControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "fpsCap stored value mismatch");
         }
 
         [Test]

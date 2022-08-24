@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -68,7 +69,7 @@ namespace DCL.Components
 
         int IComponent.GetClassId() => (int)CLASS_ID_COMPONENT.CAMERA_MODE_AREA;
 
-        Transform IMonoBehaviour.GetTransform() => areaEntity?.gameObject.transform;
+        Transform IMonoBehaviour.GetTransform() => null;
 
         void ICleanable.Cleanup()
         {
@@ -96,7 +97,7 @@ namespace DCL.Components
 
             if (cameraModeChanged && isPlayerInside)
             {
-                areasController.ChangeAreaMode(this, areaModel.cameraMode);
+                areasController.ChangeAreaMode(this);
             }
         }
 

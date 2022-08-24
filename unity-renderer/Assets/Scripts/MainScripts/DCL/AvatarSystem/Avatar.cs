@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL.Emotes;
 using GPUSkinning;
 using UnityEngine;
 
 namespace AvatarSystem
 {
+    // [ADR 65 - https://github.com/decentraland/adr]
     public class Avatar : IAvatar
     {
         private const float RESCALING_BOUNDS_FACTOR = 100f;
@@ -57,7 +56,6 @@ namespace AvatarSystem
 
             try
             {
-                visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
@@ -66,16 +64,16 @@ namespace AvatarSystem
                 List<WearableItem> emotes = null;
 
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
-
+                if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+                {
+                    visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
+                }
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
-
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
-
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
@@ -90,6 +88,7 @@ namespace AvatarSystem
             catch (OperationCanceledException)
             {
                 Dispose();
+                throw;
             }
             catch (Exception e)
             {

@@ -18,7 +18,15 @@ namespace DCL.Components
 
         public override string componentName => "NFT Shape";
 
-        public NFTShape() { model = new Model(); }
+        private INFTInfoRetriever infoRetriever;
+        private INFTAssetRetriever assetRetriever;
+
+        public NFTShape(INFTInfoRetriever infoRetriever, INFTAssetRetriever assetRetriever)
+        {
+            model = new Model();
+            this.infoRetriever = infoRetriever;
+            this.assetRetriever = assetRetriever;
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.NFT_SHAPE; }
 
@@ -39,14 +47,19 @@ namespace DCL.Components
             entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
             entity.meshRootGameObject.transform.ResetLocalTRS();
 
+            var loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
+
+            if (loaderController)
+                loaderController.Initialize(infoRetriever, assetRetriever);    
+            
             entity.OnShapeUpdated += UpdateBackgroundColor;
 
-            var loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+            var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
-            loadableShape.initialVisibility = model.visible;
+            loadableShape.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
 
-            loadableShape.withCollisions = model.withCollisions;
+            loadableShape.withCollisions = model.withCollisions && entity.isInsideSceneBoundaries;
             loadableShape.backgroundColor = model.color;
 
             loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
@@ -69,7 +82,7 @@ namespace DCL.Components
             if (previousModel is NFTShape.Model && model.color == previousModel.color)
                 return;
 
-            var loadableShape = GetLoaderForEntity(entity) as LoadWrapper_NFT;
+            var loadableShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
             loadableShape?.loaderController.UpdateBackgroundColor(model.color);
         }
 

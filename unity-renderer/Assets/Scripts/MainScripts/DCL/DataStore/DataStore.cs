@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.ServerTime;
 
 namespace DCL
 {
@@ -35,6 +36,7 @@ namespace DCL
 
         public static void Clear() => instance = new DataStore();
 
+        public DataStore_World world => i.Get<DataStore_World>();
         public DataStore_Common common => i.Get<DataStore_Common>();
         public DataStore_Realm realm => i.Get<DataStore_Realm>();
         public DebugConfig debugConfig => i.Get<DebugConfig>();
@@ -52,10 +54,17 @@ namespace DCL
         public DataStore_Camera camera => i.Get<DataStore_Camera>();
         public DataStore_Settings settings => i.Get<DataStore_Settings>();
         public DataStore_SkyboxConfig skyboxConfig => i.Get<DataStore_SkyboxConfig>();
-        public ServerTime.WorldTimer worldTimer => i.Get<ServerTime.WorldTimer>();
+        public WorldTimer worldTimer => i.Get<WorldTimer>();
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
         public DataStore_ExperiencesViewer experiencesViewer => i.Get<DataStore_ExperiencesViewer>();
         public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
         public DataStore_EmotesCustomization emotesCustomization => i.Get<DataStore_EmotesCustomization>();
+        public DataStore_SceneBoundariesChecker sceneBoundariesChecker => i.Get<DataStore_SceneBoundariesChecker>();
+        public DataStore_ECS7 ecs7 => i.Get<DataStore_ECS7>();
+        public DataStore_VoiceChat voiceChat => i.Get<DataStore_VoiceChat>();
+        public DataStore_TextureConfig textureConfig => i.Get<DataStore_TextureConfig>();
+        public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
+        public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
+        public DataStore_RpcContext rpcContext => i.Get<DataStore_RpcContext>();
     }
 }

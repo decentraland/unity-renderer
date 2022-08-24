@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Rendering;
 using UnityEngine;
 
@@ -26,7 +27,6 @@ namespace DCL
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
             result.Register<ISceneController>(() => new SceneController());
             result.Register<IWorldState>(() => new WorldState());
-            result.Register<IPointerEventsController>(() => new PointerEventsController());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
@@ -36,6 +36,11 @@ namespace DCL
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
+            result.Register<ILastReadMessagesService>(() => new LastReadMessagesService(
+                CommonScriptableObjects.lastReadChatMessages,
+                ChatController.i,
+                new DefaultPlayerPrefs(),
+                new UserProfileWebInterfaceBridge()));
 
             return result;
         }

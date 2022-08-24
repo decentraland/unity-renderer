@@ -8,6 +8,9 @@ using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
 {
+    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
+    public static DCLWebSocketService service;
+
     WebSocketServer ws;
     private Coroutine updateCoroutine;
     private bool requestStop = false;
@@ -44,7 +47,8 @@ public class WebSocketCommunication : IKernelCommunication
                         ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
-                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 
                     },
                     KeepClean = false
                 };
@@ -55,7 +59,12 @@ public class WebSocketCommunication : IKernelCommunication
                 ws = new WebSocketServer(wssServerUrl);
             }
 
-            ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
+            ws.AddWebSocketService("/" + wssServiceId, () =>
+            {
+                service = new DCLWebSocketService();
+                OnWebSocketServiceAdded?.Invoke(service);
+                return service;
+            });
             ws.Start();
         }
         catch (InvalidOperationException e)
@@ -144,6 +153,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["ClearBots"] = "Main";
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
         messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
+        messageTypeToBridgeName["ToggleSceneSpawnPoints"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
@@ -183,6 +193,8 @@ public class WebSocketCommunication : IKernelCommunication
 
         messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
         messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+
+        messageTypeToBridgeName["VoiceChatStatus"] = "VoiceChatController";
     }
 
     IEnumerator ProcessMessages()

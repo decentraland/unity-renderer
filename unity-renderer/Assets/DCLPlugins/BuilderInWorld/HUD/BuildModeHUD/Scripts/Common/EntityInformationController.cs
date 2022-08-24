@@ -74,6 +74,9 @@ public class EntityInformationController : IEntityInformationController
 
     public void Dispose()
     {
+        if (entityInformationView == null)
+            return;
+        
         if (entityInformationView.position != null)
             entityInformationView.position.OnChanged -= PositionChanged;
 
@@ -209,7 +212,8 @@ public class EntityInformationController : IEntityInformationController
         if (entityInformationView.currentEntity == null)
             return;
 
-        if (entityInformationView.currentEntity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
+        var scene = entityInformationView.currentEntity.rootEntity.scene;
+        if (scene.componentsManagerLegacy.TryGetBaseComponent(entityInformationView.currentEntity.rootEntity, CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
         {
             SmartItemComponent smartItemComponent = (SmartItemComponent) component;
             OnSmartItemComponentUpdate?.Invoke(entityInformationView.currentEntity);

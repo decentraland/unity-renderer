@@ -57,6 +57,15 @@ void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(QueryPayload query) {\
 	cb_ ## NAME_PARAM(query);\
 }\
 
+#define EXTERNAL_CALLBACK_VII(NAME_PARAM)\
+callback_vii cb_ ## NAME_PARAM;\
+void SetCallback_ ## NAME_PARAM(callback_vii NAME_PARAM) {\
+cb_ ## NAME_PARAM = NAME_PARAM;\
+}\
+void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(int32_t a, int32_t b) {\
+	cb_ ## NAME_PARAM(a, b);\
+}\
+
 
 EXTERNAL_CALLBACK_V(CreateEntity)
 EXTERNAL_CALLBACK_V(RemoveEntity)
@@ -74,3 +83,4 @@ EXTERNAL_CALLBACK_VS(SharedComponentDispose)
 EXTERNAL_CALLBACK_VSSS(OpenNftDialog)
 EXTERNAL_CALLBACK_VS(OpenExternalUrl)
 EXTERNAL_CALLBACK_QUERY(Query)
+EXTERNAL_CALLBACK_VII(BinaryMessage)

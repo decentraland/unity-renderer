@@ -10,6 +10,12 @@ namespace DCL.Helpers
         private static BaseVariable<bool> multithreading => DataStore.i.performance.multithreading;
         public static async UniTask Run(Action action, CancellationToken cancellationToken = default, bool returnToMainThread = true)
         {
+            if (Configuration.EnvironmentSettings.RUNNING_TESTS)
+            {
+                action();
+                return;
+            }
+            
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
@@ -18,13 +24,18 @@ namespace DCL.Helpers
             }
             else
             {
-                await UniTask.Yield(cancellationToken);
                 action();
             }
         }
 
         public static async UniTask Run(Func<UniTask> action, CancellationToken cancellationToken = default, bool returnToMainThread = true)
         {
+            if (Configuration.EnvironmentSettings.RUNNING_TESTS)
+            {
+                action();
+                return;
+            }
+            
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
@@ -51,14 +62,17 @@ namespace DCL.Helpers
         
         public static async UniTask<T> Run<T>(Func<T> action, CancellationToken cancellationToken = default, bool returnToMainThread = true)
         {
+            if (Configuration.EnvironmentSettings.RUNNING_TESTS)
+            {
+                return action();
+            }
+            
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
             {
                 return await UniTask.RunOnThreadPool(action, returnToMainThread, cancellationToken);
             }
-
-            await UniTask.Yield(cancellationToken);
 
             return action();
         }

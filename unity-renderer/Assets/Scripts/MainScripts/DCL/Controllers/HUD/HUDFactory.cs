@@ -2,8 +2,11 @@ using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
+using DCL.Interface;
+using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class HUDFactory : IHUDFactory
@@ -25,7 +28,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new NotificationHUDController();
                 break;
             case HUDElementID.AVATAR_EDITOR:
-                hudElement = new AvatarEditorHUDController();
+                hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags, Environment.i.platform.serviceProviders.analytics);
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
@@ -35,8 +38,12 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
                     ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i);
+                    DataStore.i,
+                    CommonScriptableObjects.playerInfoCardVisibleState);
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
@@ -44,14 +51,47 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.TERMS_OF_SERVICE:
                 hudElement = new TermsOfServiceHUDController();
                 break;
-            case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowHUDController();
-                break;
             case HUDElementID.FRIENDS:
-                hudElement = new FriendsHUDController();
+                hudElement = new FriendsHUDController(DataStore.i, new WebInterfaceFriendsController(FriendsController.i),
+                    new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                break;
+            case HUDElementID.WORLD_CHAT_WINDOW:
+                hudElement = new WorldChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    new WebInterfaceFriendsController(FriendsController.i),
+                    ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowHUDController();
+                hudElement = new PrivateChatWindowController(
+                    DataStore.i,
+                    new UserProfileWebInterfaceBridge(),
+                    ChatController.i,
+                    new WebInterfaceFriendsController(FriendsController.i),
+                    Resources.Load<InputAction_Trigger>("CloseWindow"),
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    SceneReferences.i.mouseCatcher,
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                break;
+            case HUDElementID.PUBLIC_CHAT_CHANNEL:
+                hudElement = new PublicChatChannelController(ChatController.i,
+                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                    new UserProfileWebInterfaceBridge(),
+                    DataStore.i,
+                    ProfanityFilterSharedInstances.regexFilter,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    SceneReferences.i.mouseCatcher,
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.TASKBAR:
                 hudElement = new TaskbarHUDController();
@@ -72,7 +112,14 @@ public class HUDFactory : IHUDFactory
                 hudElement = new HelpAndSupportHUDController();
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new UsersAroundListHUDController();
+                hudElement = new VoiceChatWindowController(
+                    new UserProfileWebInterfaceBridge(),
+                    FriendsController.i,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i,
+                    Settings.i);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();
@@ -86,7 +133,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new QuestsTrackerHUDController();
                 break;
             case HUDElementID.SIGNUP:
-                hudElement = new SignupHUDController();
+                var analytics = Environment.i.platform.serviceProviders.analytics;
+                hudElement = new SignupHUDController(analytics);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;

@@ -39,6 +39,9 @@ public class BuildModeConfirmationModalController : IBuildModeConfirmationModalC
 
     public void Dispose()
     {
+        if (exitFromBiWModalView == null)
+            return;
+        
         exitFromBiWModalView.OnCancelExit -= CancelExit;
         exitFromBiWModalView.OnConfirmExit -= ConfirmExit;
     }

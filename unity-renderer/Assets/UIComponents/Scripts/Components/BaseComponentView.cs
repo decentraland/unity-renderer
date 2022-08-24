@@ -79,13 +79,13 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig
+public interface IComponentModelConfig<T> where T: BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
     /// </summary>
     /// <param name="newModel">Data to configure the component.</param>
-    void Configure(BaseComponentModel newModel);
+    void Configure(T newModel);
 }
 
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
@@ -93,7 +93,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    public bool isVisible { get; private set; }
+    public virtual bool isVisible { get; private set; }
     private bool isDestroyed = false;
 
     public event Action<bool> onFocused;
@@ -154,9 +154,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
             Destroy(gameObject);
     }
 
-    public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
+    public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
-    public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
+    public virtual void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
     private void OnDestroy()
     {
@@ -178,7 +178,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         OnScreenSizeChanged();
     }
 
-    internal static T Create<T>(string resourceName) where T : BaseComponentView
+    public static T Create<T>(string resourceName) where T : BaseComponentView
     {
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;

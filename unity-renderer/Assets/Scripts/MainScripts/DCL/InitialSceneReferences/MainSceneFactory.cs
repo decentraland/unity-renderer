@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -46,8 +47,6 @@ namespace DCL
 
         public static GameObject CreateNavMap() => LoadAndInstantiate("NavMap");
 
-        public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
-
         public static GameObject CreateEnvironment(string prefabPath = "Environment")
         {
             GameObject result = LoadAndInstantiate(prefabPath);
@@ -72,7 +71,6 @@ namespace DCL
 
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");
 
-        public static GameObject CreateInteractionHoverCanvas() => LoadAndInstantiate("InteractionHoverCanvas");
 
         public static BuilderInWorldBridge CreateBuilderInWorldBridge(GameObject gameObject = null)
         {

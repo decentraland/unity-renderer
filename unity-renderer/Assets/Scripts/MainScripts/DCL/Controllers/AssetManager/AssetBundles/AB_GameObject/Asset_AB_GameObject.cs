@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using DCL.Configuration;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using UnityEngine;
 
 namespace DCL
 {
     public class Asset_AB_GameObject : Asset_WithPoolableContainer
     {
+        private const string CONTAINER_GO_NAME = "AB Container";
+    
         internal AssetPromise_AB ownerPromise;
 
         public override GameObject container { get; set; }
@@ -21,7 +24,7 @@ namespace DCL
 
         public Asset_AB_GameObject()
         {
-            container = new GameObject("AB Container");
+            container = new GameObject(CONTAINER_GO_NAME);
             // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
             container.transform.position = EnvironmentSettings.MORDOR;
         }
@@ -38,7 +41,6 @@ namespace DCL
             return result;
         }
 
-
         public override void Cleanup()
         {
             AssetPromiseKeeper_AB.i.Forget(ownerPromise);
@@ -54,6 +56,15 @@ namespace DCL
         {
             container.transform.parent = null;
             container.transform.position = EnvironmentSettings.MORDOR;
+        }
+        public void SetTextures(HashSet<Texture> texturesHashSet)
+        {
+            textures = texturesHashSet;
+
+            for (int i = 0; i < textures.Count; i++)
+            {
+                PerformanceAnalytics.ABTextureTracker.Track();
+            }
         }
     }
 }

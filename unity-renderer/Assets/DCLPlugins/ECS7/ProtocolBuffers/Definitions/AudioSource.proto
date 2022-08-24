@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1020;
+
+message PBAudioSource {  
+  optional bool playing = 1;
+  optional float volume = 2; // default=1.0f
+  optional bool loop = 3;
+  optional float pitch = 4; // default=1.0f
+  string audio_clip_url = 5;
+}

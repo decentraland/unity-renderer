@@ -1,6 +1,5 @@
 using DCL.Helpers;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +14,7 @@ public interface IImageComponentView
     /// Set an image directly from a sprite.
     /// </summary>
     /// <param name="sprite">A sprite.</param>
-    void SetImage(Sprite sprite);
+    void SetImage(Sprite sprite, bool cleanLastLoadedUri = true);
 
     /// <summary>
     /// Set an image from a 2D texture,
@@ -48,7 +47,7 @@ public interface IImageComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig
+public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig<ImageComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Image image;
@@ -73,9 +72,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             SetFitParent(model.fitParent);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public virtual void Configure(ImageComponentModel newModel)
     {
-        model = (ImageComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
@@ -105,7 +104,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         Destroy(currentSprite);
     }
 
-    public void SetImage(Sprite sprite)
+    public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
     {
         model.sprite = sprite;
 
@@ -113,30 +112,31 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
 
         image.sprite = sprite;
-        lastLoadedUri = null;
+        
+        if (cleanLastLoadedUri)
+            lastLoadedUri = null;
+        
         SetFitParent(model.fitParent);
     }
 
     public void SetImage(Texture2D texture)
     {
-        if (model.texture != texture)
+        model.texture = texture;
+
+        if (!Application.isPlaying)
         {
-            model.texture = texture;
-
-            if (!Application.isPlaying)
-            {
-                OnImageObserverUpdated(texture);
-                return;
-            }
-
-            SetLoadingIndicatorVisible(true);
-            imageObserver.RefreshWithTexture(texture);
+            OnImageObserverUpdated(texture);
+            return;
         }
 
+        SetLoadingIndicatorVisible(true);
+        imageObserver.RefreshWithTexture(texture);
+
+        lastLoadedUri = null;
         SetFitParent(model.fitParent);
     }
 
-    public void SetImage(string uri)
+    public virtual void SetImage(string uri)
     {
         if (model.lastUriCached && uri == lastLoadedUri)
             return;
@@ -183,7 +183,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             DestroyImmediate(currentSprite);
 
         currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
-        SetImage(currentSprite);
+        SetImage(currentSprite, false);
         SetLoadingIndicatorVisible(false);
         lastLoadedUri = currentUriLoading;
         currentUriLoading = null;

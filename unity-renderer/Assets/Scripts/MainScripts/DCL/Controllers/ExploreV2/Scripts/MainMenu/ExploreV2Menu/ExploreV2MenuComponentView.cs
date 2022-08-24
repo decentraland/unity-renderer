@@ -170,6 +170,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     internal RectTransform profileCardRectTranform;
     internal RealmSelectorComponentView realmSelectorModal;
+    internal HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private DataStore_Camera cameraDataStore;
 
     public override void Awake()
     {
@@ -177,6 +179,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
         realmSelectorModal = ConfigureRealmSelectorModal();
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+    }
+
+    public void OnDestroy()
+    {
+        hudCanvasCameraModeController?.Dispose();
     }
 
     public override void Start()
@@ -256,6 +264,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void OnAfterShowAnimationCompleted()
     {
+        if(!DataStore.i.exploreV2.isOpen.Get())
+            return;
+
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
         OnAfterShowAnimation?.Invoke();
     }
@@ -416,9 +427,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (!DataStore.i.exploreV2.profileCardIsOpen.Get())
             return;
 
+        cameraDataStore ??= DataStore.i.camera;
+        
         if (Input.GetMouseButton(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, Camera.main) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, Camera.main))
+            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
         {
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
         }

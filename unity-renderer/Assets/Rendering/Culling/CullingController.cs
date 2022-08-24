@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,6 +16,8 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingController : ICullingController
     {
+        private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
+        private const bool DRAW_GIZMOS = false;
         internal List<CullingControllerProfile> profiles = null;
 
         private CullingControllerSettings settings;
@@ -34,6 +35,12 @@ namespace DCL.Rendering
         private bool objectPositionsDirty;
         private bool running = false;
 
+        // Cache to avoid allocations when getting names
+        private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
+        private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
+        
+        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -57,6 +64,14 @@ namespace DCL.Rendering
 
             this.urpAsset = urpAsset;
             this.settings = settings;
+            
+            featureFlags.OnChange += OnFeatureFlagChange;
+            OnFeatureFlagChange(featureFlags.Get(), null);
+        }
+
+        private void OnFeatureFlagChange(FeatureFlag current, FeatureFlag previous)
+        {
+            SetAnimationCulling(current.IsFeatureEnabled(ANIMATION_CULLING_STATUS_FEATURE_FLAG));
         }
 
         /// <summary>
@@ -103,7 +118,7 @@ namespace DCL.Rendering
             ResetObjects();
         }
 
-        public void StopInternal()
+        private void StopInternal()
         {
             if (updateCoroutine == null)
                 return;
@@ -150,38 +165,41 @@ namespace DCL.Rendering
                     continue;
                 }
 
-
                 float startTime = Time.realtimeSinceStartup;
 
                 //NOTE(Brian): Need to retrieve positions every frame to take into account
                 //             world repositioning.
                 Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
 
-                Bounds bounds = r.GetSafeBounds();
+                Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
 
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
-                bool boundsContainsPlayer = bounds.Contains(playerPosition);
                 float boundsSize = bounds.size.magnitude;
                 float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
 
-                bool isEmissive = IsEmissive(r);
-                bool isOpaque = IsOpaque(r);
-
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
-                bool shouldBeVisible = !settings.enableObjectCulling || TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
+                bool shouldBeVisible =
+                    // all objects are visible if culling is off
+                    !settings.enableObjectCulling
+                    // or if the player is inside the bounding box of the object
+                    || bounds.Contains(playerPosition)
+                    // or if the player distance is below the threshold
+                    || distance < profile.visibleDistanceThreshold
+                    // at last, we perform the expensive queries of emmisiveness and opaque conditions
+                    // these are the last conditions because IsEmissive and IsOpaque perform expensive lookups
+                    || viewportSize > profile.emissiveSizeThreshold && IsEmissive(r)
+                    || viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
+                ;
+
                 bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
                 {
                     Material mat = skr.sharedMaterial;
-                    bool isAvatarRenderer = false;
 
-                    if (mat != null && mat.shader != null)
-                        isAvatarRenderer = mat.shader.name == "DCL/Toon Shader";
-
-                    if (isAvatarRenderer)
+                    if (IsAvatarRenderer(mat))
                     {
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
                     }
@@ -200,10 +218,41 @@ namespace DCL.Rendering
 
                 SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
-                DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
+                if (DRAW_GIZMOS) DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
                 timeBudgetCount += Time.realtimeSinceStartup - startTime;
+
             }
+        }
+        
+        /// <summary>
+        /// Checks if the material is from an Avatar by checking if the shader is DCL/Toon Shader
+        /// This Method avoids the allocation of the name getter by storing the result on a HashSet
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        private bool IsAvatarRenderer(Material mat)
+        {
+            if (mat != null && mat.shader != null)
+            {
+                Shader matShader = mat.shader;
+
+                if (!avatarShaders.Contains(matShader) && !nonAvatarShaders.Contains(matShader))
+                {
+                    // This allocates memory on the GC
+                    bool isAvatar = matShader.name == "DCL/Toon Shader";
+
+                    if (isAvatar)
+                        avatarShaders.Add(matShader);
+                    else
+                        nonAvatarShaders.Add(matShader);
+                }
+
+                return avatarShaders.Contains(matShader);
+                
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -343,6 +392,7 @@ namespace DCL.Rendering
         {
             objectsTracker.Dispose();
             Stop();
+            featureFlags.OnChange -= OnFeatureFlagChange;
         }
 
         public void Initialize()

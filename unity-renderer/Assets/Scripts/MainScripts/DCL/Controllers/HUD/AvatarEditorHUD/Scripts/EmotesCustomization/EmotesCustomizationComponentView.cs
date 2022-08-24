@@ -1,10 +1,9 @@
-using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
     public class EmotesCustomizationComponentView : BaseComponentView, IEmotesCustomizationComponentView
     {
@@ -58,11 +57,13 @@ namespace EmotesCustomization
 
         public override void Dispose()
         {
-            base.Dispose();
+            CleanEmotes();
 
             emoteSlotSelector.onSlotSelected -= OnSlotSelected;
             emoteInfoPanel.closeButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
+
+            base.Dispose();
         }
 
         public void CleanEmotes()

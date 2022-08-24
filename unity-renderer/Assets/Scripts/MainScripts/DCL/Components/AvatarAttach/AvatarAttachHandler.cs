@@ -53,7 +53,7 @@ namespace DCL.Components
                 return;
             }
 
-            if (prevModel.avatarId != model.avatarId)
+            if (prevModel.avatarId != model.avatarId || prevModel.anchorPointId != model.anchorPointId)
             {
                 Detach();
 

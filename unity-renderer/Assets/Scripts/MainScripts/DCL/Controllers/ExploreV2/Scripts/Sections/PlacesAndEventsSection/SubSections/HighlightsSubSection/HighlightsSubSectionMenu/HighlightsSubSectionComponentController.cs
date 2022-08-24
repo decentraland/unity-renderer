@@ -50,7 +50,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
     internal const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
-
+    
     internal IHighlightsSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal IEventsAPIController eventsAPIApiController;
@@ -59,6 +59,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
     internal bool reloadHighlights = false;
     internal IExploreV2Analytics exploreV2Analytics;
+    internal float lastTimeAPIChecked = 0;
 
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
@@ -92,6 +93,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal void FirstLoading()
     {
         reloadHighlights = true;
+        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlacesAndEvents();
 
         view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
@@ -112,11 +114,16 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             return;
 
         view.RestartScrollViewPosition();
+
+        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
+            return;
+
         view.SetTrendingPlacesAndEventsAsLoading(true);
         view.SetFeaturedPlacesAsLoading(true);
         view.SetLiveAsLoading(true);
-        RequestAllPlacesAndEventsFromAPI();
+        
         reloadHighlights = false;
+        lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesAndEventsFromAPI();
@@ -175,7 +182,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         // Events
         List<EventCardComponentModel> events = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI
+            .Where(e => e.highlighted)
+            .Take(placesFiltered.Count)
+            .ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {

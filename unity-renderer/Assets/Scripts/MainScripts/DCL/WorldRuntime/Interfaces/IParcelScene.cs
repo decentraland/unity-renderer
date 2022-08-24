@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DCL.Components;
+using DCL.CRDT;
 using DCL.Models;
 using UnityEngine;
 
@@ -7,18 +9,15 @@ namespace DCL.Controllers
 {
     public interface IParcelScene
     {
-        event System.Action<float> OnLoadingStateUpdated;
-        event System.Action<IDCLEntity> OnEntityAdded;
-        event System.Action<IDCLEntity> OnEntityRemoved;
+        event Action<float> OnLoadingStateUpdated;
+        event Action<IDCLEntity> OnEntityAdded;
+        event Action<IDCLEntity> OnEntityRemoved;
 
-        IDCLEntity CreateEntity(string id);
+        IDCLEntity CreateEntity(long id);
+        IDCLEntity GetEntityById(long entityId);
         Transform GetSceneTransform();
-        Dictionary<string, IDCLEntity> entities { get; }
-        Dictionary<string, ISharedComponent> disposableComponents { get; }
-        T GetSharedComponent<T>() where T : class;
-        ISharedComponent GetSharedComponent(string id);
-        ISharedComponent SharedComponentCreate(string id, int classId);
-        void SharedComponentAttach(string entityId, string id);
+        Dictionary<long, IDCLEntity> entities { get; }
+        IECSComponentsManagerLegacy componentsManagerLegacy { get; }
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
@@ -26,11 +25,15 @@ namespace DCL.Controllers
         float loadingProgress { get; }
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
+        ICRDTExecutor crdtExecutor { get; set; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
+        bool IsInsideSceneOuterBoundaries(Bounds objectBounds);
+        bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
-        IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data);
+        void SetEntityParent(long entityId, long parentId);
+        void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
     }
 }

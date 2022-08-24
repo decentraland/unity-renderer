@@ -72,6 +72,7 @@ namespace DCL
             MapRenderer.OnParcelClicked += TriggerToast;
             MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreChange;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
@@ -201,6 +202,15 @@ namespace DCL
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
+        }
+
+        private void OnExploreChange(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            SetVisible(false);
         }
 
         internal void SetVisible(bool visible)
@@ -229,7 +239,6 @@ namespace DCL
 
         private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
         {
-
             if (!current)
                 return;
 
@@ -268,11 +277,8 @@ namespace DCL
 
                 scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
 
-                // Reparent the player icon parent to scroll everything together
-                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
-
                 // Center map
-                MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition));
+                MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
 
                 // Set shorter interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.FOREGROUND);
@@ -289,11 +295,7 @@ namespace DCL
                 MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
                 MapRenderer.i.atlas.UpdateCulling();
 
-                // Restore the player icon to its original parent
-                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
-                (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
-
-                MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
+                MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
 
                 // Set longer interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);

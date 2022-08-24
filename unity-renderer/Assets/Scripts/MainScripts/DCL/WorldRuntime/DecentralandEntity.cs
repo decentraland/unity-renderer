@@ -1,9 +1,7 @@
-using DCL.Components;
-using DCL.Controllers;
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Models
@@ -13,29 +11,33 @@ namespace DCL.Models
     {
         public IParcelScene scene { get; set; }
         public bool markedForCleanup { get; set; } = false;
-        public bool isInsideBoundaries { get; set; } = false;
 
-        public Dictionary<string, IDCLEntity> children { get; private set; } = new Dictionary<string, IDCLEntity>();
+        // We let the SceneBoundsChecker update these values later
+        public bool isInsideSceneOuterBoundaries { get; set; } = true;
+        public bool isInsideSceneBoundaries { get; set; } = true;
+
+        public Dictionary<long, IDCLEntity> children { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IDCLEntity parent { get; private set; }
-
-        public Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components { get; private set; } = new Dictionary<CLASS_ID_COMPONENT, IEntityComponent>();
-        public Dictionary<System.Type, ISharedComponent> sharedComponents { get; private set; } = new Dictionary<System.Type, ISharedComponent>();
-
         public GameObject gameObject { get; set; }
-        public string entityId { get; set; }
+        public long entityId { get; set; }
         public MeshesInfo meshesInfo { get; set; }
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;
 
-        public System.Action<IDCLEntity> OnShapeUpdated { get; set; }
-        public System.Action<IDCLEntity> OnShapeLoaded { get; set; }
-        public System.Action<object> OnNameChange { get; set; }
-        public System.Action<object> OnTransformChange { get; set; }
-        public System.Action<IDCLEntity> OnRemoved { get; set; }
-        public System.Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
-        public System.Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
+        
+        public Action<IDCLEntity> OnShapeUpdated { get; set; }
+        public Action<IDCLEntity> OnShapeLoaded { get; set; }
+        public Action<object> OnNameChange { get; set; }
+        public Action<object> OnTransformChange { get; set; }
+        public Action<IDCLEntity> OnRemoved { get; set; }
+        public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
+        public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
+        public Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
 
-        public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
+        public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
+
+        public long parentId { get; set; }
+        public IList<long> childrenId { get; } = new List<long>(); 
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
@@ -48,9 +50,7 @@ namespace DCL.Models
             meshesInfo.OnUpdated += () => OnMeshesInfoUpdated?.Invoke(this);
             meshesInfo.OnCleanup += () => OnMeshesInfoCleaned?.Invoke(this);
         }
-
-        public Dictionary<System.Type, ISharedComponent> GetSharedComponents() { return sharedComponents; }
-
+        
         public void AddChild(IDCLEntity entity)
         {
             if (!children.ContainsKey(entity.entityId))
@@ -76,6 +76,7 @@ namespace DCL.Models
 
             if (entity != null)
             {
+                parentId = entity.entityId;
                 entity.AddChild(this);
 
                 if (entity.gameObject && gameObject)
@@ -113,24 +114,7 @@ namespace DCL.Models
             // This will release the poolable objects of the mesh and the entity
             OnCleanupEvent?.Invoke(this);
 
-            foreach (var kvp in components)
-            {
-                if (kvp.Value == null)
-                    continue;
-
-                if (kvp.Value is ICleanable cleanableComponent)
-                    cleanableComponent.Cleanup();
-
-                if (!(kvp.Value is IPoolableObjectContainer poolableContainer))
-                    continue;
-
-                if (poolableContainer.poolableObject == null)
-                    continue;
-
-                poolableContainer.poolableObject.Release();
-            }
-
-            components.Clear();
+            scene.componentsManagerLegacy.CleanComponents(this);
 
             if (meshesInfo.meshRootGameObject)
             {
@@ -154,82 +138,6 @@ namespace DCL.Models
 
             OnTransformChange = null;
             isReleased = true;
-        }
-
-        public void AddSharedComponent(System.Type componentType, ISharedComponent component)
-        {
-            if (component == null)
-            {
-                return;
-            }
-
-            RemoveSharedComponent(componentType);
-
-            sharedComponents.Add(componentType, component);
-        }
-
-        public void RemoveSharedComponent(Type targetType, bool triggerDetaching = true)
-        {
-            if (sharedComponents.TryGetValue(targetType, out ISharedComponent component))
-            {
-                if (component == null)
-                    return;
-
-                sharedComponents.Remove(targetType);
-
-                if (triggerDetaching)
-                    component.DetachFrom(this, targetType);
-            }
-        }
-
-        /// <summary>
-        /// This function is designed to get interfaces implemented by diverse components.
-        ///
-        /// If you want to get the component itself please use TryGetBaseComponent or TryGetSharedComponent.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T TryGetComponent<T>() where T : class
-        {
-            //Note (Adrian): If you are going to call this function frequently, please refactor it to avoid using LinQ for perfomance reasons.
-            T component = components.Values.FirstOrDefault(x => x is T) as T;
-
-            if (component != null)
-                return component;
-
-            component = sharedComponents.Values.FirstOrDefault(x => x is T) as T;
-
-            if (component != null)
-                return component;
-
-            return null;
-        }
-
-        public bool TryGetBaseComponent(CLASS_ID_COMPONENT componentId, out IEntityComponent component) { return components.TryGetValue(componentId, out component); }
-
-        public bool TryGetSharedComponent(CLASS_ID componentId, out ISharedComponent component)
-        {
-            foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in sharedComponents)
-            {
-                if (keyValuePairBaseDisposable.Value.GetClassId() == (int) componentId)
-                {
-                    component = keyValuePairBaseDisposable.Value;
-                    return true;
-                }
-            }
-
-            component = null;
-            return false;
-        }
-
-        public ISharedComponent GetSharedComponent(System.Type targetType)
-        {
-            if (sharedComponents.TryGetValue(targetType, out ISharedComponent component))
-            {
-                return component;
-            }
-
-            return null;
         }
     }
 }

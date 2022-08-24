@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -15,31 +16,41 @@ public class MinimapHUDView : MonoBehaviour
     private TextMeshProUGUI sceneNameText;
 
     [SerializeField] private TextMeshProUGUI playerPositionText;
+    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    [SerializeField] private Button openNavmapButton;
 
     [Header("Options")] [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject optionsPanel;
-    [SerializeField] private Button addBookmarkButton;
-    [SerializeField] private Button reportSceneButton;
+    [SerializeField] internal GameObject sceneOptionsPanel;
+    [SerializeField] private ToggleComponentView toggleSceneUI;
+    [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
-    [SerializeField] private Button openNavmapButton;
 
     public static System.Action<MinimapHUDModel> OnUpdateData;
     public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
-    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    private IMouseCatcher mouseCatcher;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private MinimapHUDController controller;
+
+    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     public void Initialize(MinimapHUDController controller)
     {
+        this.controller = controller;
+        mouseCatcher = SceneReferences.i?.mouseCatcher;
         gameObject.name = VIEW_OBJECT_NAME;
-        optionsPanel.SetActive(false);
+        sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
-        addBookmarkButton.onClick.AddListener(controller.AddBookmark);
-        reportSceneButton.onClick.AddListener(controller.ReportScene);
+        toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
+        reportSceneButton.onClick.AddListener(ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
+
+        if (mouseCatcher != null)
+            mouseCatcher.OnMouseLock += OnMouseLocked;
 
         var renderer = MapRenderer.i;
 
@@ -50,6 +61,17 @@ public class MinimapHUDView : MonoBehaviour
             renderer.transform.SetAsFirstSibling();
         }
         usersAroundListHudButton.gameObject.SetActive(false);
+    }
+
+    private void ReportScene()
+    {
+        controller.ReportScene();
+        controller.ToggleOptions();
+    }
+    
+    internal void OnMouseLocked() 
+    {
+        sceneOptionsPanel.SetActive(false);
     }
 
     internal static MinimapHUDView Create(MinimapHUDController controller)
@@ -65,7 +87,7 @@ public class MinimapHUDView : MonoBehaviour
         playerPositionText.text = model.playerPosition;
     }
 
-    public void ToggleOptions() { optionsPanel.SetActive(!optionsPanel.activeSelf); }
+    public void ToggleOptions() { sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf); }
 
     public void SetVisibility(bool visible)
     {
@@ -73,5 +95,12 @@ public class MinimapHUDView : MonoBehaviour
             mainShowHideAnimator.Show();
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
+    }
+
+    private void OnDestroy()
+    {
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock -= OnMouseLocked;
+        hudCanvasCameraModeController?.Dispose();
     }
 }

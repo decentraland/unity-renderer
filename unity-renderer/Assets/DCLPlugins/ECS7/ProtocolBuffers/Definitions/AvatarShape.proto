@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1080;
+import "common/Color3.proto";
+
+message PBAvatarShape {
+  string id = 1;
+  optional string name = 2;
+  optional string body_shape = 3;
+  optional Color3 skin_color = 4;
+  optional Color3 hair_color = 5;
+  optional Color3 eye_color = 6;
+  repeated string wearables = 7;
+  optional string expression_trigger_id = 8;
+  optional int64 expression_trigger_timestamp = 9;
+  optional string sticker_trigger_id = 10;
+  optional int64 sticker_trigger_timestamp = 11;
+  optional bool talking = 12;
+}

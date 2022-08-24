@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
+using DCLPlugins.UIRefresherPlugin;
 using UnityEngine;
 
 namespace Tests
@@ -10,6 +11,9 @@ namespace Tests
     public class UITestsBase : IntegrationTestSuite_Legacy
     {
         protected ParcelScene scene;
+        private UIComponentsPlugin uiComponentsPlugin;
+        private CoreComponentsPlugin coreComponentsPlugin;
+        private UIRefresherPlugin uiRefresherPlugin;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -22,10 +26,22 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene();
+            uiComponentsPlugin = new UIComponentsPlugin();
+            coreComponentsPlugin = new CoreComponentsPlugin();
+            uiRefresherPlugin = new UIRefresherPlugin();
+            scene = TestUtils.CreateTestScene() as ParcelScene;
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
+            DataStore.i.camera.hudsCamera.Set(null, true);
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            uiComponentsPlugin.Dispose();
+            coreComponentsPlugin.Dispose();
+            uiRefresherPlugin.Dispose();
+            yield return base.TearDown();
         }
 
         protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")

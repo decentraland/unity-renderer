@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
@@ -141,6 +143,69 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             yield return prom;
 
             Assert.IsTrue(failed == true, "The broken paladin AssetBundle contains no GameObjects and should fail!");
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
+        }
+        
+        [UnityTest]
+        public IEnumerator TrackABLoadingCorrectly()
+        {
+            var prom = CreatePromise();
+
+            keeper.Keep(prom);
+
+            yield return null;
+            
+            Assert.AreEqual(1, PerformanceAnalytics.ABTracker.GetData().loading, "Loading AB");
+
+            yield return prom;
+
+            (int loading, int failed, int cancelled, int loaded) = PerformanceAnalytics.ABTracker.GetData();
+            
+            Assert.AreEqual(1, loaded, "Loaded AB");
+            Assert.AreEqual(0, loading, "Loading AB");
+            Assert.AreEqual(0, failed, "Failed AB");
+            Assert.AreEqual(0, cancelled, "Cancelled AB");
+        }
+        
+        [UnityTest]
+        public IEnumerator TrackABCancelledCorrectly()
+        {
+            var prom = CreatePromise();
+
+            keeper.Keep(prom);
+
+            yield return null;
+            
+            Assert.AreEqual(1, PerformanceAnalytics.ABTracker.GetData().loading, "Loading AB before forget");
+
+            keeper.Forget(prom);
+            
+            yield return prom;
+
+            (int loading, int failed, int cancelled, int loaded) = PerformanceAnalytics.ABTracker.GetData();
+            
+            Assert.AreEqual(0, loaded, "Loaded AB after forget");
+            Assert.AreEqual(0, loading, "Loading AB after forget");
+            Assert.AreEqual(0, failed, "Failed AB after forget");
+            Assert.AreEqual(1, cancelled, "Cancelled AB after forget");
+        }
+        
+        [UnityTest]
+        public IEnumerator TrackABFailedCorrectly()
+        {
+            var prom = CreatePromise("Broken_paladin_AB");
+
+            keeper.Keep(prom);
+
+            yield return prom;
+
+            (int loading, int failed, int cancelled, int loaded) = PerformanceAnalytics.ABTracker.GetData();
+            
+            Assert.AreEqual(0, loaded, "Loaded AB after failing");
+            Assert.AreEqual(0, loading, "Loading AB after failing");
+            Assert.AreEqual(1, failed, "Failed AB after failing");
+            Assert.AreEqual(0, cancelled, "Cancelled AB after failing");
+            LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
         }
     }
 }

@@ -1562,7 +1562,7 @@ PrefabInstance:
     - target: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 170.82
+      value: 170.87
       objectReference: {fileID: 0}
     - target: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -1602,12 +1602,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b53f82112c401e94eb453570ac440340, type: 3}
---- !u!224 &6732545316488417311 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
-    type: 3}
-  m_PrefabInstance: {fileID: 446439705543042886}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5307741102947407199 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5736161931655279129, guid: b53f82112c401e94eb453570ac440340,
@@ -1620,6 +1614,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6732545316488417311 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
+    type: 3}
+  m_PrefabInstance: {fileID: 446439705543042886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1138945542168168517
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1670,7 +1670,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2222,7 +2222,7 @@ PrefabInstance:
     - target: {fileID: 1193374580596543427, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 53.27
+      value: 53.28
       objectReference: {fileID: 0}
     - target: {fileID: 1193374580596543427, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
@@ -2340,6 +2340,11 @@ PrefabInstance:
     - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: model.fillParent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
+        type: 3}
+      propertyPath: model.lastUriCached
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5317768593788952491, guid: 7c46860097fdafb4abd62085d2045ad9,

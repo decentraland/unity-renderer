@@ -10,17 +10,24 @@ using UnityEngine.TestTools;
 public class BoxShapeShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
-
+    private CoreComponentsPlugin coreComponentsPlugin;
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        coreComponentsPlugin.Dispose();
+        yield return base.TearDown();
     }
 
     [UnityTest]
     public IEnumerator BeUpdatedCorrectly()
     {
-        string entityId = "3";
+        long entityId = 3;
         TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;

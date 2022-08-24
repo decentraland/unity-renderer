@@ -31,12 +31,20 @@ export type RendererOptions = {
   onError?: (error: any) => void
   /** Legacy messaging system */
   onMessageLegacy: (type: string, payload: string) => void
+  /** scene binary messaging system */
+  onBinaryMessage?: (data: Uint8Array) => void
   /** used to append a ?v={} to the URL. Useful to debug cache issues */
   versionQueryParam?: string
   /** baseUrl where all the assets are deployed */
   baseUrl: string
 
   enableBrotli?: boolean
+
+  /** Extra config passed on to unity module */
+  extraConfig?: any
+
+  /** Prevents the renderer on initialization from failing if it detects a mobile browser */
+  dontCheckMobile?: boolean
 }
 
 export type DecentralandRendererInstance = {
@@ -60,7 +68,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
 
   if (!isWebGLCompatible()) {
     throw new Error(
-      "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible"
+      "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible. This error may also happen when many tabs are open and the browser doesn't have enough resources available to start Decentraland, if that's the case, please try closing other tabs and specially other Decentraland instances."
     )
   }
 
@@ -73,8 +81,9 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   }
 
   const rendererVersion = options.versionQueryParam
-  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
-  const resolveWithBaseUrl = (file: string) => new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
+  const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
+  const resolveWithBaseUrl = (file: string) =>
+    new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
 
   const enableBrotli =
     typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https:"
@@ -89,6 +98,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     companyName: "Decentraland",
     productName: "Decentraland World Client",
     productVersion: "0.1",
+    ...(options.extraConfig || {}),
   }
 
   const engineStartedFuture = future<{}>()
@@ -104,6 +114,12 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     // This function is called from the unity renderer to send messages back to the scenes
     MessageFromEngine(type: string, jsonEncodedMessage: string) {
       onMessageLegacy(type, jsonEncodedMessage)
+    },
+
+    // This function is called from the unity renderer to send messages back to the scenes
+    BinaryMessageFromEngine(data: Uint8Array) {
+      if (!!onBinaryMessage)
+        onBinaryMessage(data)
     },
   }
 

@@ -1,5 +1,6 @@
 using DCL;
 using System.Collections;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -58,7 +59,6 @@ namespace AssetPromiseKeeper_Tests
             var prom = CreatePromise();
             AssetType loadedAsset = null;
 
-
             prom.OnSuccessEvent +=
                 (x) =>
                 {
@@ -111,6 +111,11 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom != null);
             Assert.IsTrue(prom.asset == null);
             Assert.IsTrue(calledFail);
+
+            if (prom is AssetPromise_AB_GameObject)
+            {
+                LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
+            }
         }
 
         [UnityTest]

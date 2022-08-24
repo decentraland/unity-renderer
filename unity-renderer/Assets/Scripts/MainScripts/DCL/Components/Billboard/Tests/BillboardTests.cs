@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using System.Collections;
+using DCL.CameraTool;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,14 +12,22 @@ namespace Tests
     public class BillboardTests : IntegrationTestSuite_Legacy
     {
         Billboard billboard;
-        string entityId = "e1";
+        long entityId = 1;
         private ParcelScene scene;
+        private CoreComponentsPlugin coreComponentsPlugin;
 
         protected override IEnumerator SetUp()
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             yield return base.SetUp();
+            coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            yield return base.TearDown();
+            coreComponentsPlugin.Dispose();
         }
 
         [UnityTest]

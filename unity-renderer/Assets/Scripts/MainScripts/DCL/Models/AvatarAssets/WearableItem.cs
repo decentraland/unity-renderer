@@ -8,6 +8,8 @@ using UnityEngine;
 [Serializable]
 public class WearableItem
 {
+    private const string THIRD_PARTY_COLLECTIONS_PATH = "collections-thirdparty";
+
     [Serializable]
     public class MappingPair
     {
@@ -44,6 +46,23 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+    
+    private string thirdPartyCollectionId;
+    public string ThirdPartyCollectionId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(thirdPartyCollectionId)) return thirdPartyCollectionId;
+            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH)) return "";
+            var paths = id.Split(':');
+            var thirdPartyIndex = Array.IndexOf(paths, THIRD_PARTY_COLLECTIONS_PATH);
+            thirdPartyCollectionId = string.Join(":", paths, 0, thirdPartyIndex + 2);
+            return thirdPartyCollectionId;
+        }
+    }
+
+    public bool IsFromThirdPartyCollection => !string.IsNullOrEmpty(ThirdPartyCollectionId);
+    
     public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
@@ -163,6 +182,20 @@ public class WearableItem
         }
 
         return hides;
+    }
+
+    public void SanitizeHidesLists()
+    {
+        //remove bodyshape from hides list 
+        if (data.hides != null)
+            data.hides = data.hides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
+        for (int i = 0; i < data.representations.Length; i++)
+        {
+            Representation representation = data.representations[i];
+            if (representation.overrideHides != null)
+                representation.overrideHides = representation.overrideHides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
+
+        }
     }
 
     public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);

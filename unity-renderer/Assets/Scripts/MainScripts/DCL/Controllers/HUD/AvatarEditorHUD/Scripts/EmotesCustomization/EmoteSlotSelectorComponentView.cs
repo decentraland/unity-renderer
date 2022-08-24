@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace EmotesCustomization
+namespace DCL.EmotesCustomization
 {
-    public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig
+    public class EmoteSlotSelectorComponentView : BaseComponentView, IEmoteSlotSelectorComponentView, IComponentModelConfig<EmoteSlotSelectorComponentModel>
     {
         [Header("Prefab References")]
         [SerializeField] internal GridContainerComponentView emotesSlots;
@@ -24,12 +24,12 @@ namespace EmotesCustomization
             ConfigureSlotButtons();
         }
 
-        public void Configure(BaseComponentModel newModel)
+        public void Configure(EmoteSlotSelectorComponentModel newModel)
         {
             if (model == newModel)
                 return;
 
-            model = (EmoteSlotSelectorComponentModel)newModel;
+            model = newModel;
             RefreshControl();
         }
 
