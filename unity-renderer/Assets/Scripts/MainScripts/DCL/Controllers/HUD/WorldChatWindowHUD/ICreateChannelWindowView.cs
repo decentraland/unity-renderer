@@ -8,7 +8,7 @@ namespace DCL.Chat.HUD
         event Action<string> OnChannelNameUpdated;
         event Action OnCreateSubmit;
         event Action OnClose;
-        event Action OnOpenChannel;
+        event Action OnJoinChannel;
         RectTransform Transform { get; }
         void Show();
         void Hide();

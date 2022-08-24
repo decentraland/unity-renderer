@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -32,6 +32,8 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
 
+    public bool IsInPreviewMode { get; private set; }
+
     public static PublicChatWindowComponentView Create()
     {
         return Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/GeneralChatChannelHUD"));
@@ -62,6 +64,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void ActivatePreview()
     {
+        IsInPreviewMode = true;
         const float alphaTarget = 0f;
         
         if (!gameObject.activeInHierarchy)
@@ -81,6 +84,8 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void ActivatePreviewInstantly()
     {
+        IsInPreviewMode = true;
+
         if (alphaRoutine != null)
             StopCoroutine(alphaRoutine);
         
@@ -93,6 +98,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void DeactivatePreview()
     {
+        IsInPreviewMode = false;
         const float alphaTarget = 1f;
         
         if (!gameObject.activeInHierarchy)
