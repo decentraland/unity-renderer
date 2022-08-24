@@ -50,6 +50,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     {
         animationCancellationToken.Cancel();
         animationCancellationToken = new CancellationTokenSource();
+        chatNotificationComponentView.gameObject.SetActive(true);
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             PopulatePrivateNotification(message, username, profilePicture);
@@ -114,11 +115,19 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     public override void Show(bool instant = false)
     {
+        if (gameObject.activeInHierarchy)
+            return;
+
+        chatNotificationComponentView.gameObject.SetActive(false);
         gameObject.SetActive(true);
     }
 
     public override void Hide(bool instant = false)
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
+        chatNotificationComponentView.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 

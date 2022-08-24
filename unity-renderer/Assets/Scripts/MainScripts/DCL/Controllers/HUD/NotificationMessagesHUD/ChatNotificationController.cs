@@ -55,12 +55,14 @@ public class ChatNotificationController : IHUD
             var profile = ExtractRecipient(message);
             if (profile == null) return;
             mainChatNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
-            topNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
+            if(topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewChatNotification(message, profile.userName, profile.face256SnapshotURL);
         }
         else
         {
             mainChatNotificationView.AddNewChatNotification(message);
-            topNotificationView.AddNewChatNotification(message);
+            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewChatNotification(message);
         }
     }
 
@@ -102,14 +104,12 @@ public class ChatNotificationController : IHUD
         {
             mainChatNotificationView.Show();
             topNotificationView.Hide();
-            topNotificationView.HideNotification();
             mainChatNotificationView.ShowNotifications();
         }
         else
         {
             mainChatNotificationView.Hide();
             topNotificationView.Show();
-            topNotificationView.ShowNotification();
         }
     }
 
