@@ -42,7 +42,6 @@ namespace DCL.ECS7.Tests
             rendererState.Set(true);
             canvasPainter.rootNode.rootVisualElement.style.justifyContent = new StyleEnum<Justify>(Justify.Center);
             canvasPainter.rootNode.rootVisualElement.style.alignContent = new StyleEnum<Align>(Align.Center);
-            
         }
 
         [TearDown]
