@@ -20,8 +20,9 @@ public interface IFriendsHUDComponentView
         ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics);
+
+    void Refresh();
     RectTransform Transform { get; }
-    bool ListByOnlineStatus { set; }
     int FriendCount { get; }
     int FriendRequestCount { get; }
 
