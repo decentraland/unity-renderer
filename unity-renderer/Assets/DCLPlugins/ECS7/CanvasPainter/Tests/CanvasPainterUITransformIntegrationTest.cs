@@ -81,11 +81,13 @@ namespace DCL.ECS7.Tests
             DrawUI();
             
             // Assert parent
-            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
+            VisualElementRepresentation visualElementRepresentation = canvasPainter.visualElements[parentId];
+            
+            Assert.IsTrue(visualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(visualElementRepresentation.visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
 
-            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
-            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertWidth(parentModel, visualElementRepresentation.visualElement);
+            AssertHeight(parentModel, visualElementRepresentation.visualElement);
             
             // Assert childrens
             for (int i = 0; i <= amountOfChildren; i++)
@@ -146,32 +148,33 @@ namespace DCL.ECS7.Tests
             
             // Assert
             VisualElement visualElement = canvasPainter.visualElements[parentId].visualElement;
+            IStyle style = visualElement.style;
             
             Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
             
             AssertWidth(parentModel, visualElement);
             AssertHeight(parentModel, visualElement);
             
-            AssertLenght(parentModel.MaxHeight, canvasPainter.GetUnit(parentModel.MaxHeightUnit), visualElement.style.maxHeight);
-            AssertLenght(parentModel.MaxWidth, canvasPainter.GetUnit(parentModel.MaxWidthUnit), visualElement.style.maxWidth);
+            AssertLenght(parentModel.MaxHeight, canvasPainter.GetUnit(parentModel.MaxHeightUnit), style.maxHeight);
+            AssertLenght(parentModel.MaxWidth, canvasPainter.GetUnit(parentModel.MaxWidthUnit), style.maxWidth);
                
-            AssertLenght(parentModel.MinHeight, canvasPainter.GetUnit(parentModel.MinHeightUnit), visualElement.style.minHeight);
-            AssertLenght(parentModel.MinWidth, canvasPainter.GetUnit(parentModel.MinWidthUnit), visualElement.style.minWidth);
+            AssertLenght(parentModel.MinHeight, canvasPainter.GetUnit(parentModel.MinHeightUnit), style.minHeight);
+            AssertLenght(parentModel.MinWidth, canvasPainter.GetUnit(parentModel.MinWidthUnit), style.minWidth);
             
-            AssertLenght(parentModel.PaddingBottom, canvasPainter.GetUnit(parentModel.PaddingBottomUnit), visualElement.style.paddingBottom);
-            AssertLenght(parentModel.PaddingTop, canvasPainter.GetUnit(parentModel.PaddingTopUnit), visualElement.style.paddingTop);
-            AssertLenght(parentModel.PaddingLeft, canvasPainter.GetUnit(parentModel.PaddingLeftUnit), visualElement.style.paddingLeft);
-            AssertLenght(parentModel.PaddingRight, canvasPainter.GetUnit(parentModel.PaddingRightUnit), visualElement.style.paddingRight);
+            AssertLenght(parentModel.PaddingBottom, canvasPainter.GetUnit(parentModel.PaddingBottomUnit), style.paddingBottom);
+            AssertLenght(parentModel.PaddingTop, canvasPainter.GetUnit(parentModel.PaddingTopUnit), style.paddingTop);
+            AssertLenght(parentModel.PaddingLeft, canvasPainter.GetUnit(parentModel.PaddingLeftUnit), style.paddingLeft);
+            AssertLenght(parentModel.PaddingRight, canvasPainter.GetUnit(parentModel.PaddingRightUnit), style.paddingRight);
           
-            AssertLenght(parentModel.MarginBottom, canvasPainter.GetUnit(parentModel.MarginBottomUnit), visualElement.style.marginBottom);
-            AssertLenght(parentModel.MarginTop, canvasPainter.GetUnit(parentModel.MarginTopUnit), visualElement.style.marginTop);
-            AssertLenght(parentModel.MarginLeft, canvasPainter.GetUnit(parentModel.MarginLeftUnit), visualElement.style.marginLeft);
-            AssertLenght(parentModel.MarginRight, canvasPainter.GetUnit(parentModel.MarginRightUnit), visualElement.style.marginRight);
+            AssertLenght(parentModel.MarginBottom, canvasPainter.GetUnit(parentModel.MarginBottomUnit), style.marginBottom);
+            AssertLenght(parentModel.MarginTop, canvasPainter.GetUnit(parentModel.MarginTopUnit), style.marginTop);
+            AssertLenght(parentModel.MarginLeft, canvasPainter.GetUnit(parentModel.MarginLeftUnit), style.marginLeft);
+            AssertLenght(parentModel.MarginRight, canvasPainter.GetUnit(parentModel.MarginRightUnit), style.marginRight);
 
-            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderBottomWidth.value, parentModel.BorderBottom));
-            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderTopWidth.value, parentModel.BorderTop));
-            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderLeftWidth.value, parentModel.BorderLeft));
-            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderRightWidth.value, parentModel.BorderRight));
+            Assert.IsTrue(Mathf.Approximately(style.borderBottomWidth.value, parentModel.BorderBottom));
+            Assert.IsTrue(Mathf.Approximately(style.borderTopWidth.value, parentModel.BorderTop));
+            Assert.IsTrue(Mathf.Approximately(style.borderLeftWidth.value, parentModel.BorderLeft));
+            Assert.IsTrue(Mathf.Approximately(style.borderRightWidth.value, parentModel.BorderRight));
         }
 
         [Test]
@@ -214,27 +217,32 @@ namespace DCL.ECS7.Tests
             DrawUI();
             
             // Assert parent
-            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.alignContent == canvasPainter.GetAlign(parentModel.AlignContent));
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexWrap == canvasPainter.GetWrap(parentModel.FlexWrap));
+            VisualElementRepresentation parentVisualElementRepresentation = canvasPainter.visualElements[parentId];
+            
+            Assert.IsTrue(parentVisualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(parentVisualElementRepresentation.visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
+            Assert.IsTrue(parentVisualElementRepresentation.visualElement.style.alignContent == canvasPainter.GetAlign(parentModel.AlignContent));
+            Assert.IsTrue(parentVisualElementRepresentation.visualElement.style.flexWrap == canvasPainter.GetWrap(parentModel.FlexWrap));
 
-            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
-            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertWidth(parentModel, parentVisualElementRepresentation.visualElement);
+            AssertHeight(parentModel, parentVisualElementRepresentation.visualElement);
             
             // Assert childrens
             for (int i = 0; i <= amountOfChildren; i++)
             {
                 int childId = childIdStartIndex + i;
-                Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
-                Assert.IsTrue(canvasPainter.visualElements[childId].visualElement.style.alignSelf == canvasPainter.GetAlign(childModel.AlignSelf));
+                VisualElementRepresentation childVisualElementRepresentation = canvasPainter.visualElements[childId];
+                IStyle childStyle = childVisualElementRepresentation.visualElement.style;
+                
+                Assert.IsTrue(childVisualElementRepresentation.parentId == parentId);
+                Assert.IsTrue(childStyle.alignSelf == canvasPainter.GetAlign(childModel.AlignSelf));
 
-                Assert.IsTrue(Mathf.Approximately(canvasPainter.visualElements[childId].visualElement.style.flexGrow.value ,childModel.FlexGrow));
-                Assert.IsTrue(Mathf.Approximately(canvasPainter.visualElements[childId].visualElement.style.flexShrink.value ,childModel.FlexShrink));
+                Assert.IsTrue(Mathf.Approximately(childStyle.flexGrow.value ,childModel.FlexGrow));
+                Assert.IsTrue(Mathf.Approximately(childStyle.flexShrink.value ,childModel.FlexShrink));
 
                 AssertLenght(childModel.FlexBasis, canvasPainter.GetUnit(childModel.FlexBasisUnit), canvasPainter.visualElements[childId].visualElement.style.flexBasis);
-                AssertWidth(childModel, canvasPainter.visualElements[childId].visualElement);
-                AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+                AssertWidth(childModel, childVisualElementRepresentation.visualElement);
+                AssertHeight(childModel, childVisualElementRepresentation.visualElement);
             }
         }
 
@@ -259,17 +267,23 @@ namespace DCL.ECS7.Tests
             DrawUI();
             
             // Assert parent
-            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.justifyContent == canvasPainter.GetJustify(parentModel.JustifyContent));
-            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.alignItems == canvasPainter.GetAlign(parentModel.AlignItems));
+            VisualElementRepresentation parentVisualElementRepresentation = canvasPainter.visualElements[parentId];
+            IStyle parentStyle = parentVisualElementRepresentation.visualElement.style;
+            
+            Assert.IsTrue(parentVisualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(parentStyle.justifyContent == canvasPainter.GetJustify(parentModel.JustifyContent));
+            Assert.IsTrue(parentStyle.alignItems == canvasPainter.GetAlign(parentModel.AlignItems));
 
-            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
-            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertWidth(parentModel, parentVisualElementRepresentation.visualElement);
+            AssertHeight(parentModel, parentVisualElementRepresentation.visualElement);
             
             // Assert children
-            Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
-            AssertWidth(childModel, canvasPainter.visualElements[childId].visualElement);
-            AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+            VisualElementRepresentation childVisualElementRepresentation = canvasPainter.visualElements[childId];
+            
+            Assert.IsTrue(childVisualElementRepresentation.parentId == parentId);
+            
+            AssertWidth(childModel, childVisualElementRepresentation.visualElement);
+            AssertHeight(childModel, childVisualElementRepresentation.visualElement);
         }
 
         private void AssertHeight(PBUiTransform model, VisualElement visualElement)
