@@ -102,12 +102,6 @@ public class FriendsTabComponentView : BaseComponentView
         loadMoreEntriesButton.onClick.RemoveListener(RequestMoreFriendEntries);
     }
 
-    //TODO ANTON clarify before removing completely
-    // public void Expand()
-    // {
-    //     allFriendsList.list.Expand();
-    // }
-
     public void Show()
     {
         gameObject.SetActive(true);

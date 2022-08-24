@@ -110,8 +110,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             Hide();
         });
 
-        //TODO ANTON clarify before removing completely
-        //friendsTab.Expand();
         friendRequestsTab.Expand();
     }
 
