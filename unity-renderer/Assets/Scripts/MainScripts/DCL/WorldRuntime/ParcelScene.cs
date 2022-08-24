@@ -346,13 +346,15 @@ namespace DCL.Controllers
             DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Add(id);
 
             OnEntityAdded?.Invoke(newEntity);
+            
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(newEntity, runPreliminaryEvaluation: true);
 
             return newEntity;
         }
 
         void OnEntityShapeUpdated(IDCLEntity entity)
         {
-            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, true);
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, runPreliminaryEvaluation: true);
         }
 
         public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
@@ -386,7 +388,6 @@ namespace DCL.Controllers
 
         void CleanUpEntityRecursively(IDCLEntity entity, bool removeImmediatelyFromEntitiesList)
         {
-            // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
             {
                 while (iterator.MoveNext())
@@ -400,7 +401,7 @@ namespace DCL.Controllers
             if (Environment.i.world.sceneBoundsChecker.enabled)
             {
                 entity.OnShapeUpdated -= OnEntityShapeUpdated;
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(entity);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(entity, removeIfPersistent: true, resetState: true);
             }
 
             if (removeImmediatelyFromEntitiesList)
@@ -488,8 +489,8 @@ namespace DCL.Controllers
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true, resetState: true);
+                Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(me, isPersistent: true, runPreliminaryEvaluation: true);
                 return;
             }
 
@@ -507,8 +508,8 @@ namespace DCL.Controllers
                 // It will simply rotate with the avatar, regardless of where the camera is pointing
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(avatarTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true, resetState: true);
+                Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(me, isPersistent: true, runPreliminaryEvaluation: true);
                 return;
             }
 
@@ -517,7 +518,7 @@ namespace DCL.Controllers
                 me.gameObject.transform.parent == firstPersonCameraTransform)
             {
                 if (Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(me))
-                    Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
+                    Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true);
             }
 
             if (parentId == (long) SpecialEntityId.SCENE_ROOT_ENTITY)
@@ -537,7 +538,7 @@ namespace DCL.Controllers
             }
             
             // After reparenting the Entity may end up outside the scene boundaries
-            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me);
+            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me, runPreliminaryEvaluation: true);
         }
 
         protected virtual void SendMetricsEvent()
@@ -606,7 +607,7 @@ namespace DCL.Controllers
                     break;
 
                 default:
-                    Debug.Log("This scene is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
+                    Debug.Log($"The scene {sceneData.id} is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
         }

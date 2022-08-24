@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
@@ -13,10 +14,12 @@ namespace DCL.ECSComponents
         internal PBCylinderShape lastModel;
         
         private readonly DataStore_ECS7 dataStore;
+        private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
         
-        public ECSCylinderShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        public ECSCylinderShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
             dataStore = dataStoreEcs7;
+            this.texturizableInternalComponent = texturizableInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -68,6 +71,7 @@ namespace DCL.ECSComponents
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker)
         {
             meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, isVisible, withCollisions, isPointerBlocker);
+            texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
@@ -77,6 +81,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
+                texturizableInternalComponent.RemoveRenderers(scene, entity, meshesInfo?.renderers);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }
