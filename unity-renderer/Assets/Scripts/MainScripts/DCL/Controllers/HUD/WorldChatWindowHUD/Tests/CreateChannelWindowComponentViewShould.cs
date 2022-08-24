@@ -111,7 +111,7 @@ namespace DCL.Chat.HUD
         public void TriggerChannelNavigationWhenJoinButtonClicks()
         {
             var called = false;
-            view.OnOpenChannel += () => called = true;
+            view.OnJoinChannel += () => called = true;
             
             view.joinButton.onClick.Invoke();
             

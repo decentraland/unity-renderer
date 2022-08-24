@@ -87,6 +87,7 @@ namespace DCL.Chat.HUD
         {
             loadingContainer.SetActive(true);
             channelList.gameObject.SetActive(false);
+            resultsHeaderLabel.gameObject.SetActive(false);
         }
 
         public void Set(Channel channel)
@@ -119,6 +120,7 @@ namespace DCL.Chat.HUD
         {
             loadingContainer.SetActive(false);
             channelList.gameObject.SetActive(true);
+            resultsHeaderLabel.gameObject.SetActive(true);
         }
 
         public void ShowLoadingMore() => loadMoreContainer.SetActive(true);

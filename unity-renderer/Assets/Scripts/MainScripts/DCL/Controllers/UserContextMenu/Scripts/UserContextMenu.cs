@@ -63,6 +63,7 @@ public class UserContextMenu : MonoBehaviour
     public static event System.Action<string> OnOpenPrivateChatRequest;
 
     public bool isVisible => gameObject.activeSelf;
+    public string UserId => userId;
 
     public event System.Action OnShowMenu;
     public event System.Action<string> OnPassport;
@@ -72,6 +73,7 @@ public class UserContextMenu : MonoBehaviour
     public event System.Action<string> OnAddFriend;
     public event System.Action<string> OnCancelFriend;
     public event System.Action<string> OnMessage;
+    public event System.Action OnHide;
 
     private static StringVariable currentPlayerId = null;
     private RectTransform rectTransform;
@@ -114,7 +116,11 @@ public class UserContextMenu : MonoBehaviour
     /// <summary>
     /// Hides the context menu.
     /// </summary>
-    public void Hide() { gameObject.SetActive(false); }
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+        OnHide?.Invoke();
+    }
 
     private void Awake()
     {

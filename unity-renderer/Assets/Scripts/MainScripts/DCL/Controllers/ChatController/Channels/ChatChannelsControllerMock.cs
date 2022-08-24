@@ -89,6 +89,7 @@ namespace DCL.Chat.Channels
             UserProfileController userProfileController)
         {
             this.controller = controller;
+            controller.OnAddMessage += UpdateNearbyUnseenMessages;
             this.userProfileController = userProfileController;
 
             SimulateDelayedResponseFor_ChatInitialization().ContinueWith(SendNearbyDescriptionMessage).Forget();
@@ -346,6 +347,9 @@ namespace DCL.Chat.Channels
 
             controller.AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
 
+            // skip nearby, the unseen messages are getting updated by triggering the add message event
+            if (randomChannelId == "nearby") return;
+            
             var totalUnseenMessagesByChannelPayload = new UpdateTotalUnseenMessagesByChannelPayload
             {
                 unseenChannelMessages = new[]
@@ -400,6 +404,9 @@ namespace DCL.Chat.Channels
                 };
 
             controller.AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
+            
+            // skip nearby, the unseen messages are getting updated by triggering the add message event
+            if (channelId == "nearby") return;
 
             var totalUnseenMessagesByChannelPayload = new UpdateTotalUnseenMessagesByChannelPayload
             {
@@ -592,6 +599,35 @@ Invite others to join by quoting the channel name in other chats or include it a
                 };
 
             controller.AddMessageToChatWindow(JsonUtility.ToJson(messagePayload));
+        }
+        
+        private void UpdateNearbyUnseenMessages(ChatMessage message)
+        {
+            const string nearbyChannelId = "nearby";
+            
+            if (message.messageType == ChatMessage.Type.PUBLIC
+                && string.IsNullOrEmpty(message.recipient)
+                || message.recipient == nearbyChannelId)
+            {
+                var totalUnseenMessagesByChannelPayload = new UpdateTotalUnseenMessagesByChannelPayload
+                {
+                    unseenChannelMessages = new[]
+                    {
+                        new UpdateTotalUnseenMessagesByChannelPayload.UnseenChannelMessage
+                        {
+                            channelId = nearbyChannelId,
+                            count = GetAllocatedUnseenChannelMessages(nearbyChannelId) + 1
+                        }
+                    }
+                };
+                controller.UpdateTotalUnseenMessagesByChannel(JsonUtility.ToJson(totalUnseenMessagesByChannelPayload));
+
+                var totalUnseenMessagesPayload = new UpdateTotalUnseenMessagesPayload
+                {
+                    total = TotalUnseenMessages + 1
+                };
+                controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
+            }
         }
     }
 }
