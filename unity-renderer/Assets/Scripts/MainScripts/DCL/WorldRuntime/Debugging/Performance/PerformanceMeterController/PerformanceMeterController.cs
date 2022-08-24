@@ -114,23 +114,20 @@ namespace DCL
         /// <param name="durationInSeconds">The target duration for the running of the tool, after which a report will be printed in the console</param>
         public void StartSampling(float durationInSeconds)
         {
-            Debug.Log("A");
             Log("Start running... target duration: " + durationInSeconds + " seconds");
-            Debug.Log("B");
 
             ResetDataValues();
-            Debug.Log("C");
 
             targetDurationInSeconds = durationInSeconds;
-            Debug.Log("D");
 
             justStarted = true;
-            Debug.Log("E");
 
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
             Debug.Log("F " + (gcAllocatedInFrameRecorder.ToString()));
 
             metricsData.OnChange += OnMetricsChange;
+            
+            Debug.Log(metricsData);
         }
 
         /// <summary>
@@ -168,31 +165,24 @@ namespace DCL
                 justStarted = false;
                 return;
             }
-            Debug.Log("H");
 
             float secondsConsumed = 0;
-            Debug.Log("I");
 
             if (lastSavedSample != null)
             {
-                Debug.Log("J");
 
                 if (lastSavedSample.frameNumber == Time.frameCount)
                 {
-                    Debug.Log("K");
 
                     Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
 
                     return;
                 }
-                Debug.Log("L");
 
                 secondsConsumed = Time.timeSinceLevelLoad - lastSavedSample.currentTime;
             }
-            Debug.Log("M");
 
             float frameTimeMs = Time.deltaTime * 1000f;
-            Debug.Log("N");
 
             SampleData newSample = new SampleData
             {
@@ -202,26 +192,20 @@ namespace DCL
                 currentTime = Time.timeSinceLevelLoad,
                 isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS
             };
-            Debug.Log("O");
 
             samples.Add(newSample);
-            Debug.Log("P");
 
             lastSavedSample = newSample;
-            Debug.Log("Q");
 
             if (newSample.isHiccup)
             {
                 totalHiccupFrames++;
                 totalHiccupsTimeInSeconds += secondsConsumed;
             }
-            Debug.Log("R");
 
             UpdateAllocations();
-            Debug.Log("S");
 
             totalFrames++;
-            Debug.Log("T");
 
             currentDurationInSeconds += Time.deltaTime;
             Debug.Log("U " + currentDurationInSeconds);
@@ -231,7 +215,6 @@ namespace DCL
                 totalFramesTimeInSeconds = currentDurationInSeconds;
                 StopSampling();
             }
-            Debug.Log("V ");
 
         }
 
