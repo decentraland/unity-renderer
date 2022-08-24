@@ -11,6 +11,7 @@ public class MinimapHUDController : IHUD
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
+    private Vector2Int currentCoords;
     private Vector2Int homeCoords;
     private MinimapMetadataController metadataController;
 
@@ -25,6 +26,7 @@ public class MinimapHUDController : IHUD
         minimapZoom.Set(1f);
         UpdateData(model);
         metadataController = MinimapMetadataController.i;
+        metadataController.OnHomeChanged += SetNewHome;
     }
 
     protected internal virtual MinimapHUDView CreateView() { return MinimapHUDView.Create(this); }
@@ -47,10 +49,11 @@ public class MinimapHUDController : IHUD
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
     {
-        UpdatePlayerPosition(current);
-        UpdateSetHome(current);
+        currentCoords = current;
+        UpdatePlayerPosition(currentCoords);
+        UpdateSetHomePanel();
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
-        MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
+        MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(currentCoords.x, currentCoords.y);
         UpdateSceneName(sceneInfo?.name);
 
         // NOTE: in some cases playerCoords OnChange is triggered before kernel's message with the scene info arrives.
@@ -59,6 +62,12 @@ public class MinimapHUDController : IHUD
         {
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += OnOnSceneInfoUpdated;
         }
+    }
+
+    private void SetNewHome(Vector2Int newHomeCoordinates)
+    {
+        homeCoords = newHomeCoordinates;
+        UpdateSetHomePanel();
     }
 
     public void UpdateData(MinimapHUDModel model)
@@ -79,9 +88,9 @@ public class MinimapHUDController : IHUD
         UpdatePlayerPosition(string.Format(format, position.x, position.y));
     }
 
-    public void UpdateSetHome(Vector2Int position)
+    public void UpdateSetHomePanel()
     {
-        view?.UpdateSetHomeText(position == metadataController.homeCoords);
+        view?.UpdateSetHomeText(currentCoords == homeCoords);
     }
 
     public void UpdatePlayerPosition(string position)

@@ -92,7 +92,6 @@ public class MinimapHUDView : MonoBehaviour
 
     internal void UpdateSetHomeText(bool isHome)
     {
-        Debug.Log($"is home {isHome}");
         setHomeSceneText.text = isHome ? "HOME" : "SET AS HOME";
         setHomeScene.interactable = !isHome;
     }
