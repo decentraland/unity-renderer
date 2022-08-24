@@ -258,6 +258,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 changeTextColorOnSelect = true
             }
         });
+
+        allowUsersDropdown.SetTitle(ALLOW_USERS_TITLE_ALL);
     }
 
     internal void AllowUsersOptionChanged(bool isOn, string optionId, string optionName)
