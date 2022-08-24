@@ -244,14 +244,26 @@ public class TaskbarHUDController : IHUD
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
     {
         if (mouseCatcher.isLocked) return;
-        worldChatWindowHud.SetVisibility(false);
+
+        if ((publicChatWindow.View.IsFocused && !publicChatWindow.View.IsInPreviewMode) ||
+            channelChatWindow.View.IsActive ||
+            privateChatWindow.View.IsActive)
+        {
+            publicChatWindow.SetVisibility(false);
+            worldChatWindowHud.SetVisibility(true);
+        }
+        else
+        {
+            worldChatWindowHud.SetVisibility(false);
+            OpenPublicChatOnPreviewMode();
+        }
+
         privateChatWindow.SetVisibility(false);
         channelChatWindow.SetVisibility(false);
         friendsHud?.SetVisibility(false);
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
         voiceChatHud?.SetVisibility(false);
-        OpenPublicChatOnPreviewMode();
     }
 
     private void HandleChatToggle(bool show)
