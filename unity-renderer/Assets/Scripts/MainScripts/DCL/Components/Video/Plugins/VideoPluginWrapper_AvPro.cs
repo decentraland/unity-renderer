@@ -55,7 +55,6 @@ public class VideoPluginWrapper_AvPro : IVideoPluginWrapper
         switch (newState)
         {
             case MediaPlayerEvent.EventType.ReadyToPlay:
-                Debug.Log("VOY AL READY TO PLAY");
                 currentState = VideoState.READY;
                 break;
             case MediaPlayerEvent.EventType.Started:
