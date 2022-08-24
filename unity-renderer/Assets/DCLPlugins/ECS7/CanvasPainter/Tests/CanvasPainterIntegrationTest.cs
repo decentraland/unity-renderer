@@ -5,6 +5,7 @@ using DCL.ECS7.UI;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
+using DCL.Models;
 using DCLPlugins.ECS7.TestsUtils;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -19,11 +20,6 @@ namespace DCL.ECS7.Tests
 {
     public class CanvasPainterIntegrationTest 
     {
-        public static string baselineImagesPath =
-            Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
-        public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
-
-        
         private RendererState rendererState;
         private CanvasPainter canvasPainter;
         private ECSComponentsManager componentsManager;
@@ -62,76 +58,238 @@ namespace DCL.ECS7.Tests
             DataStore.i.ecs7.uiDataContainer = new UIDataContainer();
         }
 
-        // [UnityTest, VisualTest]
-        // public IEnumerator DrawUITransformCorrectly_Generate()
-        // {
-        //     yield return VisualTestUtils.GenerateBaselineForTest(DrawUITransformCorrectly());
-        // }
-
-        // [UnityTest]
-        // public IEnumerator DrawUITransformCorrectly()
-        // {
-        //     string testSceneId = "testId";
-        //     worldState.Configure().currentSceneId.Returns(testSceneId);
-        //     var testScene = testUtils.CreateScene(testSceneId);
-        //     testScene.CreateEntity(512);
-        //     testScene.CreateEntity(513);
-        //     DataStore.i.ecs7.scenes.Add(testScene);
-        //
-        //     var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-        //     parent.AlignItems = YGAlign.Center;
-        //     parent.JustifyContent = YGJustify.Center;
-        //     var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-        //     child.Width = 400;
-        //     child.Height = 400;
-        //     var message = CreateAndExecuteCRDTMessage(512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
-        //     var message2 = CreateAndExecuteCRDTMessage(513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
-        //     testScene.crdtExecutor.ExecuteWithoutStoringState(message);
-        //     testScene.crdtExecutor.ExecuteWithoutStoringState(message2);
-        //
-        //     canvasPainter.framesCounter = 9999;
-        //     canvasPainter.Update();
-        //     
-        //     ecs7VisualUITesterHelper.SetupBackgroundColorsInOrder(canvasPainter.visualElements.Values.ToList());
-        //
-        //     string textureName =  "CanvasPainterTest";
-        //     yield return ecs7VisualUITesterHelper.TakeSnapshotAndAssert(textureName);
-        // }
-        
-        [UnityTest]
-        public IEnumerator DrawParentAndChildrenCorrectly()
+        [Test]
+        public void DrawListOfItemCorrectly()
         {
+            int parentId = 512;
+            int childIdStartIndex = 513;
+            int amountOfChildren = 7;
             var testScene = CreateUITestScene();
 
-            var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-            parent.AlignItems = YGAlign.Center;
-            parent.JustifyContent = YGJustify.Center;
-            var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-            child.Width = 400;
-            child.Height = 400;
-            
-            CreateAndExecuteCRDTMessage(testScene,512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
-            CreateAndExecuteCRDTMessage(testScene, 513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
+            var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parentModel.Width = 300;
+            parentModel.Height = 700;
+            parentModel.FlexDirection = YGFlexDirection.Column;
+            CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
 
-            yield return AssertUISetup();
+            PBUiTransform childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            for (int i = 0; i <= amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                childModel.Parent = parentId;
+                childModel.Height = 20;
+            
+                CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
+            }
+
+            DrawUI();
+            
+            // Assert parent
+            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
+
+            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            
+            // Assert childrens
+            for (int i = 0; i <= amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
+                
+                AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+            }
         }
-        
-        [UnityTest]
-        public IEnumerator DrawListOfItemsCorrectly()
+
+        [Test]
+        public void DrawLayoutCorrectly()
         {
+            int parentId = 512;
             var testScene = CreateUITestScene();
 
-            var parent = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-            parent.AlignItems = YGAlign.Center;
-            parent.JustifyContent = YGJustify.Center;
-            var child = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-            child.Width = 400;
-            child.Height = 400;
+            var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parentModel.Width = 300;
+            parentModel.Height = 700;
             
-            CreateAndExecuteCRDTMessage(testScene,512, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parent));
-            CreateAndExecuteCRDTMessage(testScene, 513, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(child));
+            parentModel.MaxWidth = 300;
+            parentModel.MaxWidthUnit = YGUnit.Percent;
+            parentModel.MaxHeight = 700;
+            parentModel.MaxHeightUnit = YGUnit.Percent;
+            
+            parentModel.MinWidth = 100;
+            parentModel.MinWidthUnit = YGUnit.Percent;
+            parentModel.MinHeight = 100;
+            parentModel.MinHeightUnit = YGUnit.Percent;
 
-            yield return AssertUISetup();
+            parentModel.PaddingBottom = 20;
+            parentModel.PaddingBottomUnit = YGUnit.Percent;
+            parentModel.PaddingTop = 20;
+            parentModel.PaddingTopUnit = YGUnit.Percent;
+            parentModel.PaddingLeft = 20;
+            parentModel.PaddingLeftUnit = YGUnit.Percent;
+            parentModel.PaddingRight = 20;
+            parentModel.PaddingRightUnit = YGUnit.Percent;
+            
+            parentModel.MarginBottom = 20;
+            parentModel.MarginBottomUnit = YGUnit.Percent;
+            parentModel.MarginTop = 20;
+            parentModel.MarginTopUnit = YGUnit.Percent;
+            parentModel.MarginLeft = 20;
+            parentModel.MarginLeftUnit = YGUnit.Percent;
+            parentModel.MarginRight = 20;
+            parentModel.MarginRightUnit = YGUnit.Percent;    
+            
+            parentModel.BorderBottom = 20;
+            parentModel.BorderTop = 20;
+            parentModel.BorderLeft = 20;
+            parentModel.BorderRight = 20;
+            
+            CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
+            
+            DrawUI();
+            
+            // Assert
+            VisualElement visualElement = canvasPainter.visualElements[parentId].visualElement;
+            
+            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            
+            AssertWidth(parentModel, visualElement);
+            AssertHeight(parentModel, visualElement);
+            
+            AssertLenght(parentModel.MaxHeight, canvasPainter.GetUnit(parentModel.MaxHeightUnit), visualElement.style.maxHeight);
+            AssertLenght(parentModel.MaxWidth, canvasPainter.GetUnit(parentModel.MaxWidthUnit), visualElement.style.maxWidth);
+               
+            AssertLenght(parentModel.MinHeight, canvasPainter.GetUnit(parentModel.MinHeightUnit), visualElement.style.minHeight);
+            AssertLenght(parentModel.MinWidth, canvasPainter.GetUnit(parentModel.MinWidthUnit), visualElement.style.minWidth);
+            
+            AssertLenght(parentModel.PaddingBottom, canvasPainter.GetUnit(parentModel.PaddingBottomUnit), visualElement.style.paddingBottom);
+            AssertLenght(parentModel.PaddingTop, canvasPainter.GetUnit(parentModel.PaddingTopUnit), visualElement.style.paddingTop);
+            AssertLenght(parentModel.PaddingLeft, canvasPainter.GetUnit(parentModel.PaddingLeftUnit), visualElement.style.paddingLeft);
+            AssertLenght(parentModel.PaddingRight, canvasPainter.GetUnit(parentModel.PaddingRightUnit), visualElement.style.paddingRight);
+          
+            AssertLenght(parentModel.MarginBottom, canvasPainter.GetUnit(parentModel.MarginBottomUnit), visualElement.style.marginBottom);
+            AssertLenght(parentModel.MarginTop, canvasPainter.GetUnit(parentModel.MarginTopUnit), visualElement.style.marginTop);
+            AssertLenght(parentModel.MarginLeft, canvasPainter.GetUnit(parentModel.MarginLeftUnit), visualElement.style.marginLeft);
+            AssertLenght(parentModel.MarginRight, canvasPainter.GetUnit(parentModel.MarginRightUnit), visualElement.style.marginRight);
+
+            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderBottomWidth.value, parentModel.BorderBottom));
+            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderTopWidth.value, parentModel.BorderTop));
+            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderLeftWidth.value, parentModel.BorderLeft));
+            Assert.IsTrue(Mathf.Approximately(visualElement.style.borderRightWidth.value, parentModel.BorderRight));
+        }
+
+        [Test]
+        public void DrawPercentPositionCorrectly()
+        {
+            int parentId = 512;
+            int childIdStartIndex = 513;
+            int amountOfChildren = 3;
+            var testScene = CreateUITestScene();
+
+            var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parentModel.Width = 300;
+            parentModel.Height = 700;
+            parentModel.FlexDirection = YGFlexDirection.RowReverse;
+            parentModel.AlignContent = YGAlign.Center;
+            parentModel.FlexWrap = YGWrap.WrapReverse;
+            CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
+
+            PBUiTransform childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            for (int i = 0; i <= amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                childModel.Parent = parentId;
+                childModel.FlexGrow = 1;
+                childModel.FlexShrink = 0;
+                childModel.FlexBasis = 200;
+                childModel.FlexBasisUnit = YGUnit.Percent;
+                
+                childModel.Height = 20;
+                childModel.HeightUnit = YGUnit.Percent;
+                
+                childModel.Width = 30;
+                childModel.WidthUnit = YGUnit.Percent;
+                
+                childModel.AlignSelf = YGAlign.Center;
+            
+                CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
+            }
+
+            DrawUI();
+            
+            // Assert parent
+            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.alignContent == canvasPainter.GetAlign(parentModel.AlignContent));
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.flexWrap == canvasPainter.GetWrap(parentModel.FlexWrap));
+
+            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            
+            // Assert childrens
+            for (int i = 0; i <= amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
+                Assert.IsTrue(canvasPainter.visualElements[childId].visualElement.style.alignSelf == canvasPainter.GetAlign(childModel.AlignSelf));
+
+                Assert.IsTrue(Mathf.Approximately(canvasPainter.visualElements[childId].visualElement.style.flexGrow.value ,childModel.FlexGrow));
+                Assert.IsTrue(Mathf.Approximately(canvasPainter.visualElements[childId].visualElement.style.flexShrink.value ,childModel.FlexShrink));
+
+                AssertLenght(childModel.FlexBasis, canvasPainter.GetUnit(childModel.FlexBasisUnit), canvasPainter.visualElements[childId].visualElement.style.flexBasis);
+                AssertWidth(childModel, canvasPainter.visualElements[childId].visualElement);
+                AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+            }
+        }
+
+        [Test]
+        public void DrawParentAndChildrenCorrectly()
+        {
+            int parentId = 512;
+            int childId = 513;
+            var testScene = CreateUITestScene();
+
+            var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parentModel.AlignItems = YGAlign.Center;
+            parentModel.JustifyContent = YGJustify.Center;
+            var childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            childModel.Parent = parentId;
+            childModel.Width = 400;
+            childModel.Height = 400;
+            
+            CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
+            CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
+
+            DrawUI();
+            
+            // Assert parent
+            Assert.IsTrue(canvasPainter.visualElements[parentId].parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.justifyContent == canvasPainter.GetJustify(parentModel.JustifyContent));
+            Assert.IsTrue(canvasPainter.visualElements[parentId].visualElement.style.alignItems == canvasPainter.GetAlign(parentModel.AlignItems));
+
+            AssertWidth(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            AssertHeight(parentModel, canvasPainter.visualElements[parentId].visualElement);
+            
+            // Assert children
+            Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
+            AssertWidth(childModel, canvasPainter.visualElements[childId].visualElement);
+            AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+        }
+
+        private void AssertHeight(PBUiTransform model, VisualElement visualElement)
+        {
+            AssertLenght(model.Height, canvasPainter.GetUnit(model.HeightUnit), visualElement.style.height);
+        }
+
+        private void AssertWidth(PBUiTransform model, VisualElement visualElement)
+        {
+            AssertLenght(model.Width, canvasPainter.GetUnit(model.WidthUnit), visualElement.style.width);
+        }
+
+        private void AssertLenght(float value, LengthUnit unit, StyleLength length )
+        {
+            Assert.IsTrue(Mathf.Approximately(length.value.value, value));
+            Assert.IsTrue(unit == length.value.unit);
         }
 
         private ECS7TestScene CreateUITestScene()
@@ -145,15 +303,10 @@ namespace DCL.ECS7.Tests
             return testScene;
         }
 
-        private IEnumerator AssertUISetup()
-        {
+        private void DrawUI()
+        {           
             canvasPainter.framesCounter = 9999;
             canvasPainter.Update();
-            
-            ecs7VisualUITesterHelper.SetupBackgroundColorsInOrder(canvasPainter.visualElements.Values.ToList());
-
-            string textureName =  "CanvasPainterTest";
-            yield return ecs7VisualUITesterHelper.TakeSnapshotAndAssert(textureName);
         }
 
         private void CreateAndExecuteCRDTMessage(ECS7TestScene testScene, int entityId, int componentId, object data)

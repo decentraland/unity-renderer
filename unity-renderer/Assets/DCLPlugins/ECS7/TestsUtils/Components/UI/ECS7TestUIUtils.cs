@@ -5,11 +5,6 @@ namespace DCLPlugins.ECS7.TestsUtils
 {
     public static class ECS7TestUIUtils
     {
-        public static byte[] SerializePBUiTransformDefaultModel()
-        {
-            return UITransformSerializer.Serialize(CreatePBUiTransformDefaultModel());
-        }
-        
         public static PBUiTransform CreatePBUiTransformDefaultModel()
         {
             var model = new PBUiTransform();
