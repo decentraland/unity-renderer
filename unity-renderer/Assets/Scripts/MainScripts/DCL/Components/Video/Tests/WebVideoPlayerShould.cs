@@ -32,6 +32,7 @@ namespace Tests
             plugin.DidNotReceive().Play(ID, -1);
         }
 
+/*
         [Test]
         public void PlayVideoIfSetBeforeIsReadyWhenIsReady()
         {
@@ -70,7 +71,7 @@ namespace Tests
 
             plugin.Received(1).Play(ID, 100);
         }
-
+*/
         [Test]
         public void ReturnProperValueForGetTime()
         {
@@ -91,7 +92,7 @@ namespace Tests
             plugin.Received(1).Pause(ID);
             Assert.IsFalse(dclVideoPlayer.playing);
         }
-
+/*
         [Test]
         public void ResumeVideoAtCorrectTimeAfterPaused()
         {
@@ -107,7 +108,7 @@ namespace Tests
             plugin.Received(1).Play(ID, -1);
             plugin.Received(1).Play(ID, 80);
         }
-
+*/
         [Test]
         public void SetVolume()
         {
