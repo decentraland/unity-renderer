@@ -44,7 +44,7 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        internal VideoPlayer texturePlayer;
+        internal DCLVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
         private float baseVolume;
         private float distanceVolumeModifier = 1f;
@@ -111,8 +111,7 @@ namespace DCL.Components
 
             if (texture == null)
             {
-                yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.isReady) || texturePlayer.isError));
-
+                yield return new WaitUntil(() => texturePlayer == null || (texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError);
                 if (texturePlayer.isError)
                 {
                     if (texturePlayerUpdateRoutine != null)
@@ -164,7 +163,7 @@ namespace DCL.Components
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = new VideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
+            texturePlayer = new DCLVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;

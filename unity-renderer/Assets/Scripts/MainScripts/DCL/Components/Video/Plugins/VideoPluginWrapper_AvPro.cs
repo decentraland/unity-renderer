@@ -22,8 +22,11 @@ public class VideoPluginWrapper_AvPro : IVideoPluginWrapper
         avProMediaPlayer.Events.AddListener(AvProStateUpdater);
     }
     public void Remove(string id) { GameObject.Destroy(avProMediaPlayer.gameObject); }
-    public Texture2D TextureUpdate(string id) { return (Texture2D)avProMediaPlayer.TextureProducer.GetTexture(0); }
-    public Texture2D PrepareTexture(string id) { return (Texture2D)avProMediaPlayer.TextureProducer.GetTexture(0); }
+    public void TextureUpdate(string id) {  }
+    public Texture2D PrepareTexture(string id)
+    {
+        return (Texture2D)avProMediaPlayer.TextureProducer.GetTexture(0);
+    }
     public void Play(string id, float startTime)
     {
         currentState = VideoState.PLAYING;

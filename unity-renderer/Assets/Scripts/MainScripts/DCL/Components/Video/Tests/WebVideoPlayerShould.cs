@@ -11,14 +11,14 @@ namespace Tests
     {
         private const string ID = "id";
         private const string ERROR_MESSAGE = "Error Message";
-        private VideoPlayer videoPlayer;
+        private DCLVideoPlayer dclVideoPlayer;
         private IVideoPluginWrapper plugin;
 
         [SetUp]
         public void Setup()
         {
             plugin = Substitute.For<IVideoPluginWrapper>();
-            videoPlayer = new VideoPlayer(ID, "url", true, plugin);
+            dclVideoPlayer = new DCLVideoPlayer(ID, "url", true, plugin);
             plugin.GetError(ID).Returns(ERROR_MESSAGE);
         }
 
@@ -27,7 +27,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.LOADING);
 
-            videoPlayer.Play();
+            dclVideoPlayer.Play();
 
             plugin.DidNotReceive().Play(ID, -1);
         }
@@ -37,13 +37,13 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.LOADING);
 
-            videoPlayer.Play();
+            dclVideoPlayer.Play();
 
             plugin.DidNotReceive().Play(ID, -1);
 
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            videoPlayer.Update();
+            dclVideoPlayer.Update();
 
             plugin.Received(1).Play(ID, -1);
         }
@@ -53,8 +53,8 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            videoPlayer.Update();
-            videoPlayer.Play();
+            dclVideoPlayer.Update();
+            dclVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, -1);
         }
@@ -64,9 +64,9 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            videoPlayer.Update();
-            videoPlayer.SetTime(100);
-            videoPlayer.Play();
+            dclVideoPlayer.Update();
+            dclVideoPlayer.SetTime(100);
+            dclVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, 100);
         }
@@ -76,7 +76,7 @@ namespace Tests
         {
             plugin.GetTime(ID).Returns(7);
 
-            var time = videoPlayer.GetTime();
+            var time = dclVideoPlayer.GetTime();
 
             plugin.Received(1).GetTime(ID);
             Assert.AreEqual(7, time);
@@ -85,11 +85,11 @@ namespace Tests
         [Test]
         public void PauseVideo()
         {
-            videoPlayer.Play();
-            videoPlayer.Pause();
+            dclVideoPlayer.Play();
+            dclVideoPlayer.Pause();
 
             plugin.Received(1).Pause(ID);
-            Assert.IsFalse(videoPlayer.playing);
+            Assert.IsFalse(dclVideoPlayer.playing);
         }
 
         [Test]
@@ -98,11 +98,11 @@ namespace Tests
             plugin.GetTime(ID).Returns(80);
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            videoPlayer.Update();
+            dclVideoPlayer.Update();
 
-            videoPlayer.Play();
-            videoPlayer.Pause();
-            videoPlayer.Play();
+            dclVideoPlayer.Play();
+            dclVideoPlayer.Pause();
+            dclVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, -1);
             plugin.Received(1).Play(ID, 80);
@@ -111,7 +111,7 @@ namespace Tests
         [Test]
         public void SetVolume()
         {
-            videoPlayer.SetVolume(77);
+            dclVideoPlayer.SetVolume(77);
 
             plugin.Received(1).SetVolume(ID, 77);
         }
@@ -119,8 +119,8 @@ namespace Tests
         [Test]
         public void SetVideoLoop()
         {
-            videoPlayer.SetLoop(true);
-            videoPlayer.SetLoop(false);
+            dclVideoPlayer.SetLoop(true);
+            dclVideoPlayer.SetLoop(false);
 
             plugin.Received(1).SetLoop(ID, true);
             plugin.Received(1).SetLoop(ID, false);
@@ -129,7 +129,7 @@ namespace Tests
         [Test]
         public void SetPlaybackRate()
         {
-            videoPlayer.SetPlaybackRate(55);
+            dclVideoPlayer.SetPlaybackRate(55);
 
             plugin.Received(1).SetPlaybackRate(ID, 55);
         }
@@ -139,7 +139,7 @@ namespace Tests
         {
             plugin.GetDuration(ID).Returns(200);
 
-            var duration = videoPlayer.GetDuration();
+            var duration = dclVideoPlayer.GetDuration();
 
             Assert.AreEqual(200, duration);
         }
@@ -147,7 +147,7 @@ namespace Tests
         [Test]
         public void DisposeVideo()
         {
-            videoPlayer.Dispose();
+            dclVideoPlayer.Dispose();
 
             plugin.Received(1).Remove(ID);
         }
@@ -157,10 +157,10 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
-            videoPlayer.Update();
+            dclVideoPlayer.Update();
 
             plugin.Received(1).GetError(ID);
-            Assert.IsTrue(videoPlayer.isError);
+            Assert.IsTrue(dclVideoPlayer.isError);
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
         }
 
@@ -169,15 +169,15 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
-            videoPlayer.Update();
-            videoPlayer.Play();
-            videoPlayer.Pause();
-            videoPlayer.SetVolume(10);
-            videoPlayer.SetTime(99);
-            videoPlayer.SetLoop(false);
-            videoPlayer.SetPlaybackRate(8);
-            videoPlayer.GetTime();
-            videoPlayer.GetDuration();
+            dclVideoPlayer.Update();
+            dclVideoPlayer.Play();
+            dclVideoPlayer.Pause();
+            dclVideoPlayer.SetVolume(10);
+            dclVideoPlayer.SetTime(99);
+            dclVideoPlayer.SetLoop(false);
+            dclVideoPlayer.SetPlaybackRate(8);
+            dclVideoPlayer.GetTime();
+            dclVideoPlayer.GetDuration();
 
             plugin.Received(0).Play(ID, Arg.Any<float>());
             plugin.Received(0).Pause(ID);
@@ -195,7 +195,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            VideoState state = videoPlayer.GetState();
+            VideoState state = dclVideoPlayer.GetState();
 
             Assert.AreEqual(VideoState.READY, state);
         }
@@ -205,7 +205,7 @@ namespace Tests
         {
             plugin.GetDuration(ID).Returns(float.NaN);
 
-            var duration = videoPlayer.GetDuration();
+            var duration = dclVideoPlayer.GetDuration();
 
             Assert.AreEqual(-1, duration);
         }

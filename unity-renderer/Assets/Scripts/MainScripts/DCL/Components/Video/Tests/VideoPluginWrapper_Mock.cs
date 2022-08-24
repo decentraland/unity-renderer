@@ -62,10 +62,9 @@ namespace Tests
             wasRemoved = true;
         }
 
-        public Texture2D TextureUpdate(string id)
+        public void TextureUpdate(string id)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
-            return null;
         }
         public Texture2D PrepareTexture(string id)
         {

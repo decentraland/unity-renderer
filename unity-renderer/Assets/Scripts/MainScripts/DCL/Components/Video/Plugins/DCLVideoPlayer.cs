@@ -1,9 +1,10 @@
 ﻿using System;
+using ICSharpCode.NRefactory.Ast;
 using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
-    public class VideoPlayer : IDisposable
+    public class DCLVideoPlayer : IDisposable
     {
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
@@ -23,7 +24,7 @@ namespace DCL.Components.Video.Plugin
 
         private string lastError = "";
 
-        public VideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
+        public DCLVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
@@ -46,6 +47,11 @@ namespace DCL.Components.Video.Plugin
 
                     break;
                 case VideoState.READY:
+#if !UNITY_WEBGL
+                    if (plugin.PrepareTexture(videoPlayerId) == null)
+                        return;
+#endif
+
                     if (!isReady)
                     {
                         isReady = true;
@@ -61,11 +67,8 @@ namespace DCL.Components.Video.Plugin
 
                     break;
                 case VideoState.PLAYING:
-#if UNITY_WEBGL
+                    if (visible)
                         plugin.TextureUpdate(videoPlayerId);
-#else
-                        texture = plugin.TextureUpdate(videoPlayerId);
-#endif
                     break;
             }
         }
