@@ -149,7 +149,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         var msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
 
         TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
-        
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         OnInitialized?.Invoke();
     }
 
