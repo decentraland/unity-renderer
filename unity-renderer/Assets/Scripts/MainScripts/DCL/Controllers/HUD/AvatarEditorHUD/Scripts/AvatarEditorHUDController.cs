@@ -834,14 +834,10 @@ public class AvatarEditorHUDController : IHUD
 
         //Add emotes to wearables if Old flow
         if (!DataStore.i.emotes.newFlowEnabled.Get())
-        {
             avatarModel.wearables.AddRange(emotesCustomizationDataStore.unsavedEquippedEmotes.Get()
                                                                        .Where(x => x != null)
                                                                        .Select(x => x.id));
-            avatarModel.emotes = null;
-        }
-        else
-            avatarModel.emotes = emoteEntries; 
+        avatarModel.emotes = emoteEntries; 
 
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
