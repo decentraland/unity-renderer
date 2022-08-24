@@ -114,13 +114,22 @@ namespace DCL
         /// <param name="durationInSeconds">The target duration for the running of the tool, after which a report will be printed in the console</param>
         public void StartSampling(float durationInSeconds)
         {
+            Debug.Log("A");
             Log("Start running... target duration: " + durationInSeconds + " seconds");
+            Debug.Log("B");
 
             ResetDataValues();
+            Debug.Log("C");
 
             targetDurationInSeconds = durationInSeconds;
+            Debug.Log("D");
+
             justStarted = true;
+            Debug.Log("E");
+
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+            Debug.Log("F");
+
             metricsData.OnChange += OnMetricsChange;
         }
 

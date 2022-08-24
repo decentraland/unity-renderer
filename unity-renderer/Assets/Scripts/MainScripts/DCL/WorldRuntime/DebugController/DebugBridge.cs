@@ -169,6 +169,7 @@ namespace DCL
 
         public void RunPerformanceMeterTool(float durationInSeconds)
         {
+            Debug.Log("ES EL DEBUG CONTROLLER NULL? " + (debugController != null));
             debugController.RunPerformanceMeterTool(durationInSeconds);
         }
 

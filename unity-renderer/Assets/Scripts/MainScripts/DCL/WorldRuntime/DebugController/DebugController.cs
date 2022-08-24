@@ -123,6 +123,7 @@ namespace DCL
 
         public void RunPerformanceMeterTool(float durationInSeconds)
         {
+            Debug.Log("ES EL DEBUG performanceMeterController NULL? " + (performanceMeterController != null));
             performanceMeterController.StartSampling(durationInSeconds);
         }
 
