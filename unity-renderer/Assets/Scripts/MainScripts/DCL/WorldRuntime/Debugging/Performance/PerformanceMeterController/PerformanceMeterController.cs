@@ -123,11 +123,9 @@ namespace DCL
             justStarted = true;
 
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
-            Debug.Log("F " + (gcAllocatedInFrameRecorder.ToString()));
 
             metricsData.OnChange += OnMetricsChange;
             
-            Debug.Log(metricsData);
         }
 
         /// <summary>
@@ -159,7 +157,9 @@ namespace DCL
         private void OnMetricsChange(PerformanceMetricsData newData, PerformanceMetricsData oldData)
         {
             // we avoid the first frame as when we are in editor, the context menu pauses everything and the next frame is chaotic
-            Debug.Log("G");
+            Debug.Log("G " + newData);
+            Debug.Log("H " + oldData);
+
             if (justStarted)
             {
                 justStarted = false;
