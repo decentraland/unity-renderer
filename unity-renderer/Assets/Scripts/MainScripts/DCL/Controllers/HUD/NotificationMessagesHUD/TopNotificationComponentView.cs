@@ -14,6 +14,8 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 {
     private const float X_OFFSET = 32f;
 
+    public event Action<string> OnClickedNotification;
+
     [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
 
     //This structure is temporary for the first integration of the top notification, it will change when further defined
@@ -22,7 +24,8 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     private float normalHeaderXPos = 70;
     private float offsetHeaderXPos;
 
-    public event Action<string> OnClickedNotification;
+    private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
+    private RectTransform notificationRect;
 
     public static TopNotificationComponentView Create()
     {
@@ -35,6 +38,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         offsetContentXPos = normalContentXPos - X_OFFSET;
         offsetHeaderXPos = normalHeaderXPos - X_OFFSET;
         chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
+        notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
     }
 
     public Transform GetPanelTransform()
@@ -44,15 +48,43 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     public void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
+        animationCancellationToken.Cancel();
+        animationCancellationToken = new CancellationTokenSource();
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             PopulatePrivateNotification(message, username, profilePicture);
             chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
+            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
             PopulatePublicNotification(message, username);
             chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
+            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+        }
+    }
+
+    private async UniTaskVoid AnimateNewEntry(RectTransform notification, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        Sequence mySequence = DOTween.Sequence().AppendInterval(0.2f).Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
+        try
+        {
+            Vector2 endPosition = new Vector2(0, 0);
+            Vector2 currentPosition = notification.anchoredPosition;
+            notification.localScale = Vector3.zero;
+            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f).SetEase(Ease.OutCubic);
+            while (notification.anchoredPosition.y < 0)
+            {
+                notification.anchoredPosition = currentPosition;
+                await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken); ;
+            }
+            mySequence.Play();
+        }
+        catch (OperationCanceledException ex)
+        {
+            if (!DOTween.IsTweening(notification))
+                notification.DOScale(1, 0.3f).SetEase(Ease.OutBack);
         }
     }
 
