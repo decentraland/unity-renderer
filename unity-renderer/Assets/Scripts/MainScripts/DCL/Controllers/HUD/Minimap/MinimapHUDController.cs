@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Interface;
 using UnityEngine;
+using System;
 
 public class MinimapHUDController : IHUD
 {
@@ -10,6 +11,7 @@ public class MinimapHUDController : IHUD
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
+    private Vector2Int homeCoords;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
@@ -44,7 +46,7 @@ public class MinimapHUDController : IHUD
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
     {
         UpdatePlayerPosition(current);
-
+        UpdateSetHome(current);
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
         MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
         UpdateSceneName(sceneInfo?.name);
@@ -75,6 +77,11 @@ public class MinimapHUDController : IHUD
         UpdatePlayerPosition(string.Format(format, position.x, position.y));
     }
 
+    public void UpdateSetHome(Vector2Int position)
+    {
+        view?.UpdateSetHomeText(position == homeCoords);
+    }
+
     public void UpdatePlayerPosition(string position)
     {
         model.playerPosition = position;
@@ -100,6 +107,20 @@ public class MinimapHUDController : IHUD
     {
         var coords = playerCoords.Get();
         WebInterface.SendReportScene($"{coords.x},{coords.y}");
+    }
+
+    public void SetHomeScene()
+    {
+        var coords = playerCoords.Get();
+        WebInterface.SetHomeScene($"{coords.x},{coords.y}");
+    }
+
+    public void UpdateHomeScene(string sceneCoordinates)
+    {
+        if (sceneCoordinates == null)
+            return;
+
+        homeCoords = new Vector2Int(Int32.Parse(sceneCoordinates.Split(',')[0]), Int32.Parse(sceneCoordinates.Split(',')[1]));
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
