@@ -12,6 +12,7 @@ namespace DCL.Chat.HUD
         internal const int LOAD_PAGE_SIZE = 15;
 
         private readonly IChatController chatController;
+        private readonly IMouseCatcher mouseCatcher;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -24,9 +25,10 @@ namespace DCL.Chat.HUD
         public event Action OnOpenChannelCreation;
         public event Action<string> OnOpenChannelLeave;
 
-        public SearchChannelsWindowController(IChatController chatController)
+        public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher)
         {
             this.chatController = chatController;
+            this.mouseCatcher = mouseCatcher;
         }
 
         public void Initialize(ISearchChannelsWindowView view = null)
@@ -66,6 +68,10 @@ namespace DCL.Chat.HUD
                 view.OnSearchUpdated += SearchChannels;
                 view.OnRequestMoreChannels += LoadMoreChannels;
                 view.OnBack += HandleViewBacked;
+
+                if (mouseCatcher != null)
+                    mouseCatcher.OnMouseLock += HandleViewClosed;
+
                 view.OnClose += HandleViewClosed;
                 view.OnJoinChannel += HandleJoinChannel;
                 view.OnLeaveChannel += HandleLeaveChannel;

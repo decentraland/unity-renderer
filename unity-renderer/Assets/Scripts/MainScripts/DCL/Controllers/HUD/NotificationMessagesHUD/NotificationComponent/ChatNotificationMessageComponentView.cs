@@ -24,6 +24,8 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal bool isPrivate;
     [SerializeField] internal RectTransform backgroundTransform;
     [SerializeField] internal RectTransform messageContainerTransform;
+    [SerializeField] internal RectTransform header;
+    [SerializeField] internal RectTransform content;
 
     [Header("Configuration")]
     [SerializeField] internal ChatNotificationMessageComponentModel model;
@@ -44,7 +46,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public override void Awake()
     {
         base.Awake();
-        button?.onClick.AddListener(()=>OnClickedNotification.Invoke(notificationTargetId));
+        button?.onClick.AddListener(()=>OnClickedNotification?.Invoke(notificationTargetId));
         startingXPosition = messageContainerTransform.anchoredPosition.x;
         RefreshControl();
     }
@@ -53,6 +55,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {
         showHideAnimator.animSpeedFactor = 0.7f;
         base.Show(instant);
+        ForceUIRefresh();
     }
 
     public override void OnFocus()
@@ -151,6 +154,16 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
         model.imageUri = uri;
         image.SetImage(uri);
+    }
+
+    public void SetPositionOffset(float xPosHeader, float xPosContent)
+    {
+        if(header != null)
+            header.anchoredPosition = new Vector2(xPosHeader, header.anchoredPosition.y);
+        if(content != null)
+            content.anchoredPosition = new Vector2(xPosContent, content.anchoredPosition.y);
+
+        ForceUIRefresh();
     }
 
     public void SetMaxContentCharacters(int maxContentCharacters)

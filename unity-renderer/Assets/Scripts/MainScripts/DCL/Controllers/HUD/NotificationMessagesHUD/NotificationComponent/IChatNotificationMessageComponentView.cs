@@ -59,6 +59,13 @@ public interface IChatNotificationMessageComponentView
     void SetMaxHeaderCharacters(int maxHeaderCharacters);
 
     /// <summary>
+    /// Set an offset to header and content
+    /// </summary>
+    /// <param name="xPosHeader">x position of the header</param>
+    /// <param name="xPosContent">x position of the content</param>
+    void SetPositionOffset(float xPosHeader, float xPosContent);
+
+    /// <summary>
     /// Set the notification target id (either a channel or a user id)
     /// </summary>
     /// <param name="notificationTargetId">New target id.</param>

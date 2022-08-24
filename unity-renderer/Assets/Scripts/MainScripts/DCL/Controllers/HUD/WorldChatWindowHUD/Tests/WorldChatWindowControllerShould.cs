@@ -18,6 +18,7 @@ public class WorldChatWindowControllerShould
     private IWorldChatWindowView view;
     private IChatController chatController;
     private IFriendsController friendsController;
+    private IMouseCatcher mouseCatcher;
     private UserProfile ownUserProfile;
 
     [SetUp]
@@ -28,6 +29,7 @@ public class WorldChatWindowControllerShould
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         chatController = Substitute.For<IChatController>();
+        mouseCatcher = Substitute.For<IMouseCatcher>();
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, "", 0));
         friendsController = Substitute.For<IFriendsController>();
@@ -35,7 +37,8 @@ public class WorldChatWindowControllerShould
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
-            new DataStore());
+            new DataStore(),
+            mouseCatcher);
         view = Substitute.For<IWorldChatWindowView>();
     }
 
