@@ -79,6 +79,12 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
         UpdateEmptyState();
     }
 
+    public void Set(PublicChannelEntry.PublicChannelEntryModel model)
+    {
+        publicChannelList.Set(model.channelId, model);
+        UpdateEmptyState();
+    }
+
     public void Export(CollapsablePublicChannelListComponentView publicChannelList,
         CollapsableDirectChatListComponentView privateChatList)
     {

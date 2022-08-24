@@ -34,9 +34,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private readonly Dictionary<string, PrivateChatModel> creationQueue = new Dictionary<string, PrivateChatModel>();
     private bool isSortingDirty;
     private bool isLayoutDirty;
-    private Dictionary<string, PrivateChatModel> filteredPrivateChats;
     private int currentAvatarSnapshotIndex;
     private bool isLoadingPrivateChannels;
+    private bool isSearchMode;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -120,14 +120,26 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void RemovePrivateChat(string userId)
     {
         directChatList.Remove(userId);
+        searchResultsList.Remove(userId);
         UpdateHeaders();
         UpdateLayout();
     }
 
     public void SetPublicChannel(PublicChatChannelModel model)
     {
-        publicChannelList.Set(model.channelId,
-            new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name));
+        var entryModel = new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name);
+
+        if (isSearchMode)
+        {
+            searchResultsList.Set(entryModel);
+            publicChannelList.Remove(model.channelId);
+        }
+        else
+        {
+            searchResultsList.Remove(model.channelId);
+            publicChannelList.Set(model.channelId, entryModel);
+        }
+            
         UpdateLayout();
     }
 
@@ -183,7 +195,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public void ClearFilter()
     {
-        filteredPrivateChats = null;
+        isSearchMode = false;
         searchResultsList.Export(publicChannelList, directChatList);
         searchResultsList.Hide();
         publicChannelList.Show();
@@ -207,7 +219,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public void Filter(Dictionary<string, PrivateChatModel> privateChats,
         Dictionary<string, PublicChatChannelModel> publicChannels)
     {
-        filteredPrivateChats = privateChats;
+        isSearchMode = true;
 
         searchResultsList.Import(publicChannelList, directChatList);
         searchResultsList.Show();
@@ -252,13 +264,16 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             model.isOnline,
             model.recentMessage.timestamp);
 
-        if (filteredPrivateChats?.ContainsKey(userId) ?? false)
+        if (isSearchMode)
         {
             directChatList.Remove(userId);
             searchResultsList.Set(entry);
         }
         else
+        {
             directChatList.Set(userId, entry);
+            searchResultsList.Remove(userId);
+        }
 
         UpdateHeaders();
         UpdateLayout();
