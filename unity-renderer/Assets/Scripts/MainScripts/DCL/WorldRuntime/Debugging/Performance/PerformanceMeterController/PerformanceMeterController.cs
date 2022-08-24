@@ -128,7 +128,7 @@ namespace DCL
             Debug.Log("E");
 
             gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
-            Debug.Log("F");
+            Debug.Log("F " + (gcAllocatedInFrameRecorder.ToString()));
 
             metricsData.OnChange += OnMetricsChange;
         }
@@ -162,27 +162,37 @@ namespace DCL
         private void OnMetricsChange(PerformanceMetricsData newData, PerformanceMetricsData oldData)
         {
             // we avoid the first frame as when we are in editor, the context menu pauses everything and the next frame is chaotic
+            Debug.Log("G");
             if (justStarted)
             {
                 justStarted = false;
                 return;
             }
-            
+            Debug.Log("H");
+
             float secondsConsumed = 0;
+            Debug.Log("I");
 
             if (lastSavedSample != null)
             {
+                Debug.Log("J");
+
                 if (lastSavedSample.frameNumber == Time.frameCount)
                 {
+                    Debug.Log("K");
+
                     Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
 
                     return;
                 }
+                Debug.Log("L");
 
                 secondsConsumed = Time.timeSinceLevelLoad - lastSavedSample.currentTime;
             }
+            Debug.Log("M");
 
             float frameTimeMs = Time.deltaTime * 1000f;
+            Debug.Log("N");
 
             SampleData newSample = new SampleData
             {
@@ -192,27 +202,37 @@ namespace DCL
                 currentTime = Time.timeSinceLevelLoad,
                 isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS
             };
+            Debug.Log("O");
 
             samples.Add(newSample);
+            Debug.Log("P");
+
             lastSavedSample = newSample;
+            Debug.Log("Q");
 
             if (newSample.isHiccup)
             {
                 totalHiccupFrames++;
                 totalHiccupsTimeInSeconds += secondsConsumed;
             }
+            Debug.Log("R");
 
             UpdateAllocations();
+            Debug.Log("S");
 
             totalFrames++;
+            Debug.Log("T");
 
             currentDurationInSeconds += Time.deltaTime;
+            Debug.Log("U " + currentDurationInSeconds);
 
             if (currentDurationInSeconds > targetDurationInSeconds)
             {
                 totalFramesTimeInSeconds = currentDurationInSeconds;
                 StopSampling();
             }
+            Debug.Log("V ");
+
         }
 
         private void UpdateAllocations()
