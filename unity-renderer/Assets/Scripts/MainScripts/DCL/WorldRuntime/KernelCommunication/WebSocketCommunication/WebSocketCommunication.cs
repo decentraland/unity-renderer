@@ -8,6 +8,9 @@ using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
 {
+    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
+    public static DCLWebSocketService service;
+
     WebSocketServer ws;
     private Coroutine updateCoroutine;
     private bool requestStop = false;
@@ -56,7 +59,12 @@ public class WebSocketCommunication : IKernelCommunication
                 ws = new WebSocketServer(wssServerUrl);
             }
 
-            ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
+            ws.AddWebSocketService("/" + wssServiceId, () =>
+            {
+                service = new DCLWebSocketService();
+                OnWebSocketServiceAdded?.Invoke(service);
+                return service;
+            });
             ws.Start();
         }
         catch (InvalidOperationException e)
@@ -185,6 +193,8 @@ public class WebSocketCommunication : IKernelCommunication
 
         messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
         messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+
+        messageTypeToBridgeName["VoiceChatStatus"] = "VoiceChatController";
     }
 
     IEnumerator ProcessMessages()

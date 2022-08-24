@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DCL.Components;
-using UnityEditor;
 using UnityEngine;
 
 namespace DCL
@@ -16,6 +15,7 @@ namespace DCL
             {
                 if (sharedInstance == null)
                     sharedInstance = FindObjectOfType<DebugConfigComponent>();
+
                 return sharedInstance;
             }
             private set => sharedInstance = value;
@@ -32,23 +32,19 @@ namespace DCL
 
         public enum BaseUrl
         {
+            ZONE,
+            ORG,
             LOCAL_HOST,
             CUSTOM,
         }
 
-        public enum Environment
+        public enum Network
         {
-            USE_DEFAULT_FROM_URL,
-            LOCAL,
-            ZONE,
-            TODAY,
-            ORG
+            MAINNET,
+            GOERLI,
         }
 
-        private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
-        private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
-
-        [Header("General Settings")] public bool openBrowserWhenStart;
+        [Header("General Settings")] public bool OpenBrowserOnStart;
         public bool webSocketSSL = false;
 
         [Header("Kernel General Settings")] public string kernelVersion;
@@ -56,11 +52,11 @@ namespace DCL
 
         public string customContentServerUrl = "http://localhost:1338/";
 
-        [Space(10)] public BaseUrl baseUrlMode;
+        [Space(10)] public BaseUrl baseUrlMode = BaseUrl.ZONE;
+        [DrawIf("baseUrlMode", BaseUrl.CUSTOM)]
+        public string customURL = "https://play.decentraland.zone/?";
 
-        public string baseUrlCustom;
-
-        [Space(10)] public Environment environment;
+        [Space(10)] public Network network;
 
         [Tooltip(
             "Set this field to force the realm (server). On the latin-american zone, recommended realms are fenrir-amber, baldr-amber and thor. Other realms can give problems to debug from Unity editor due to request certificate issues.\n\nFor auto selection leave this field blank.\n\nCheck out all the realms at https://catalyst-monitor.vercel.app/?includeDevServers")]
@@ -70,13 +66,19 @@ namespace DCL
 
         [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
 
-        public bool allWearables = false;
-        public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
         public bool soloScene = true;
-        public bool multithreaded = false;
+        public bool disableAssetBundles = false;
+        public bool enableDebugMode = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
+
+        
+        [Header("Performance")]
+        public bool disableGLTFDownloadThrottle = false;
+        public bool multithreaded = false;
+        public bool runPerformanceMeterToolDuringLoading = false;
+        private PerformanceMeterController performanceMeterController;
 
         private void Awake()
         {
@@ -88,6 +90,7 @@ namespace DCL
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
             DataStore.i.performance.multithreading.Set(multithreaded);
+            if (disableGLTFDownloadThrottle) DataStore.i.performance.maxDownloads.Set(999);
             Texture.allowThreadedTextureCreation = multithreaded;
         }
 
@@ -122,8 +125,21 @@ namespace DCL
                 RendereableAssetLoadHelper.customContentServerUrl = customContentServerUrl;
             }
 
-            if (openBrowserWhenStart)
+            if (OpenBrowserOnStart)
                 OpenWebBrowser();
+
+            if (runPerformanceMeterToolDuringLoading)
+            {
+                CommonScriptableObjects.forcePerformanceMeter.Set(true);
+                performanceMeterController = new PerformanceMeterController();
+                performanceMeterController.StartSampling(999);
+                CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+            }
+        }
+        private void OnRendererStateChanged(bool current, bool previous)
+        {
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+            performanceMeterController.StopSampling();
         }
 
         private void OpenWebBrowser()
@@ -132,27 +148,44 @@ namespace DCL
             string baseUrl = "";
             string debugString = "";
 
-            if (baseUrlMode == BaseUrl.CUSTOM)
-                baseUrl = baseUrlCustom;
-            else
-                baseUrl = "http://localhost:3000/?";
-
-            switch (environment)
+            if (baseUrlMode.Equals(BaseUrl.CUSTOM))
             {
-                case Environment.USE_DEFAULT_FROM_URL:
+                baseUrl = this.customURL;
+                if (string.IsNullOrEmpty(this.customURL))
+                {
+                    Debug.LogError("Custom url cannot be empty");
+                    QuitGame();
+                    return;
+                }
+            }
+            else if (baseUrlMode.Equals(BaseUrl.LOCAL_HOST))
+            {
+                baseUrl = "http://localhost:3000/?";
+            }
+            else if (baseUrlMode.Equals(BaseUrl.ORG))
+            {
+                baseUrl = "http://play.decentraland.org/?";
+                if (!webSocketSSL)
+                {
+                    Debug.LogError(
+                        "play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
+                    QuitGame();
+                    return;
+                }
+            }
+            else
+            {
+                baseUrl = "http://play.decentraland.zone/?";
+            }
+         
+            switch (network)
+            {
+                case Network.GOERLI:
+                    debugString = "NETWORK=goerli&";
                     break;
-                case Environment.LOCAL:
-                    debugString = "DEBUG_MODE&";
-                    break;
-                case Environment.ZONE:
-                    debugString = "NETWORK=ropsten&";
-                    break;
-                case Environment.TODAY:
+                case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";
-                    break;
-                case Environment.ORG:
-                    debugString = "NETWORK=mainnet&";
-                    break;
+                    break; 
             }
 
             if (!string.IsNullOrEmpty(kernelVersion))
@@ -163,16 +196,6 @@ namespace DCL
             if (forceLocalComms)
             {
                 debugString += "LOCAL_COMMS&";
-            }
-
-            if (allWearables)
-            {
-                debugString += "ALL_WEARABLES&";
-            }
-
-            if (testWearables)
-            {
-                debugString += "TEST_WEARABLES&";
             }
 
             if (enableTutorial)
@@ -190,6 +213,16 @@ namespace DCL
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
             }
 
+            if (disableAssetBundles)
+            {
+                debugString += "DISABLE_ASSET_BUNDLES&DISABLE_WEARABLE_ASSET_BUNDLES&";
+            }
+
+            if (enableDebugMode)
+            {
+                debugString += "DEBUG_MODE&";
+            }
+            
             if (!string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
@@ -199,24 +232,14 @@ namespace DCL
 
             if (debugPanelMode == DebugPanel.Engine)
             {
-                debugPanelString = ENGINE_DEBUG_PANEL + "&";
+                debugPanelString = "ENGINE_DEBUG_PANEL&";
             }
             else if (debugPanelMode == DebugPanel.Scene)
             {
-                debugPanelString = SCENE_DEBUG_PANEL + "&";
+                debugPanelString = "SCENE_DEBUG_PANEL&";
             }
 
-            if (!webSocketSSL)
-            {
-                if (baseUrl.Contains("play.decentraland.org"))
-                {
-                    Debug.LogError(
-                        "play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
-                    QuitGame();
-                    return;
-                }
-            }
-            else
+            if (webSocketSSL)
             {
                 Debug.Log(
                     "[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified (or enabling the following option: chrome://flags/#allow-insecure-localhost). In Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS` to true, then use the ws:// rather than the wss:// address.");
@@ -227,11 +250,8 @@ namespace DCL
 #endif
         }
 
-        private void OnDestroy()
-        {
-            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
-        }
-
+        private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
+       
         private void QuitGame()
         {
 #if UNITY_EDITOR

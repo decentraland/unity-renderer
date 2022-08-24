@@ -24,37 +24,47 @@ namespace DCL.ECSComponents {
     static SphereShapeReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFTcGhlcmVTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyJVCg1QQlNw",
-            "aGVyZVNoYXBlEhcKD3dpdGhfY29sbGlzaW9ucxgBIAEoCBIaChJpc19wb2lu",
-            "dGVyX2Jsb2NrZXIYAiABKAgSDwoHdmlzaWJsZRgDIAEoCEIUqgIRRENMLkVD",
-            "U0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ChFTcGhlcmVTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKbAQoNUEJT",
+            "cGhlcmVTaGFwZRIcCg93aXRoX2NvbGxpc2lvbnMYASABKAhIAIgBARIfChJp",
+            "c19wb2ludGVyX2Jsb2NrZXIYAiABKAhIAYgBARIUCgd2aXNpYmxlGAMgASgI",
+            "SAKIAQFCEgoQX3dpdGhfY29sbGlzaW9uc0IVChNfaXNfcG9pbnRlcl9ibG9j",
+            "a2VyQgoKCF92aXNpYmxlQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBSphereShape), global::DCL.ECSComponents.PBSphereShape.Parser, new[]{ "WithCollisions", "IsPointerBlocker", "Visible" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBSphereShape), global::DCL.ECSComponents.PBSphereShape.Parser, new[]{ "WithCollisions", "IsPointerBlocker", "Visible" }, new[]{ "WithCollisions", "IsPointerBlocker", "Visible" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class PBSphereShape : pb::IMessage<PBSphereShape> {
+  public sealed partial class PBSphereShape : pb::IMessage<PBSphereShape>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<PBSphereShape> _parser = new pb::MessageParser<PBSphereShape>(() => new PBSphereShape());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBSphereShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::DCL.ECSComponents.SphereShapeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBSphereShape() {
       OnConstruction();
     }
@@ -62,7 +72,9 @@ namespace DCL.ECSComponents {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBSphereShape(PBSphereShape other) : this() {
+      _hasBits0 = other._hasBits0;
       withCollisions_ = other.withCollisions_;
       isPointerBlocker_ = other.isPointerBlocker_;
       visible_ = other.visible_;
@@ -70,6 +82,7 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBSphereShape Clone() {
       return new PBSphereShape(this);
     }
@@ -77,42 +90,95 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "with_collisions" field.</summary>
     public const int WithCollisionsFieldNumber = 1;
     private bool withCollisions_;
+    /// <summary>
+    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool WithCollisions {
-      get { return withCollisions_; }
+      get { if ((_hasBits0 & 1) != 0) { return withCollisions_; } else { return false; } }
       set {
+        _hasBits0 |= 1;
         withCollisions_ = value;
       }
+    }
+    /// <summary>Gets whether the "with_collisions" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasWithCollisions {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "with_collisions" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearWithCollisions() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "is_pointer_blocker" field.</summary>
     public const int IsPointerBlockerFieldNumber = 2;
     private bool isPointerBlocker_;
+    /// <summary>
+    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool IsPointerBlocker {
-      get { return isPointerBlocker_; }
+      get { if ((_hasBits0 & 2) != 0) { return isPointerBlocker_; } else { return false; } }
       set {
+        _hasBits0 |= 2;
         isPointerBlocker_ = value;
       }
+    }
+    /// <summary>Gets whether the "is_pointer_blocker" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasIsPointerBlocker {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "is_pointer_blocker" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearIsPointerBlocker() {
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "visible" field.</summary>
     public const int VisibleFieldNumber = 3;
     private bool visible_;
+    /// <summary>
+    /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Visible {
-      get { return visible_; }
+      get { if ((_hasBits0 & 4) != 0) { return visible_; } else { return false; } }
       set {
+        _hasBits0 |= 4;
         visible_ = value;
       }
     }
+    /// <summary>Gets whether the "visible" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasVisible {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "visible" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearVisible() {
+      _hasBits0 &= ~4;
+    }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PBSphereShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PBSphereShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -127,11 +193,12 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (WithCollisions != false) hash ^= WithCollisions.GetHashCode();
-      if (IsPointerBlocker != false) hash ^= IsPointerBlocker.GetHashCode();
-      if (Visible != false) hash ^= Visible.GetHashCode();
+      if (HasWithCollisions) hash ^= WithCollisions.GetHashCode();
+      if (HasIsPointerBlocker) hash ^= IsPointerBlocker.GetHashCode();
+      if (HasVisible) hash ^= Visible.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -139,39 +206,68 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (WithCollisions != false) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasWithCollisions) {
         output.WriteRawTag(8);
         output.WriteBool(WithCollisions);
       }
-      if (IsPointerBlocker != false) {
+      if (HasIsPointerBlocker) {
         output.WriteRawTag(16);
         output.WriteBool(IsPointerBlocker);
       }
-      if (Visible != false) {
+      if (HasVisible) {
         output.WriteRawTag(24);
         output.WriteBool(Visible);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasWithCollisions) {
+        output.WriteRawTag(8);
+        output.WriteBool(WithCollisions);
+      }
+      if (HasIsPointerBlocker) {
+        output.WriteRawTag(16);
+        output.WriteBool(IsPointerBlocker);
+      }
+      if (HasVisible) {
+        output.WriteRawTag(24);
+        output.WriteBool(Visible);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (WithCollisions != false) {
+      if (HasWithCollisions) {
         size += 1 + 1;
       }
-      if (IsPointerBlocker != false) {
+      if (HasIsPointerBlocker) {
         size += 1 + 1;
       }
-      if (Visible != false) {
+      if (HasVisible) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -181,24 +277,29 @@ namespace DCL.ECSComponents {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PBSphereShape other) {
       if (other == null) {
         return;
       }
-      if (other.WithCollisions != false) {
+      if (other.HasWithCollisions) {
         WithCollisions = other.WithCollisions;
       }
-      if (other.IsPointerBlocker != false) {
+      if (other.HasIsPointerBlocker) {
         IsPointerBlocker = other.IsPointerBlocker;
       }
-      if (other.Visible != false) {
+      if (other.HasVisible) {
         Visible = other.Visible;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -219,7 +320,35 @@ namespace DCL.ECSComponents {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            WithCollisions = input.ReadBool();
+            break;
+          }
+          case 16: {
+            IsPointerBlocker = input.ReadBool();
+            break;
+          }
+          case 24: {
+            Visible = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

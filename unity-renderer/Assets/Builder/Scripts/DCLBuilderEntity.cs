@@ -76,7 +76,7 @@ namespace Builder
 
             //builder evaluate boundaries by itself
             if (Environment.i.world.sceneBoundsChecker.enabled)
-                entity.OnShapeUpdated -= Environment.i.world.sceneBoundsChecker.EvaluateEntityPosition;
+                entity.OnShapeUpdated -= Environment.i.world.sceneBoundsChecker.RunEntityEvaluation;
 
             gameObject.transform.localScale = Vector3.zero;
 
@@ -97,7 +97,7 @@ namespace Builder
         {
             if (rootEntity != null && rootEntity.meshesInfo.renderers != null)
             {
-                return rootEntity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.BuildMergedBounds(rootEntity.meshesInfo.renderers));
+                return rootEntity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.BuildMergedBounds(rootEntity.meshesInfo.renderers, rootEntity.meshesInfo.colliders));
             }
 
             return true;

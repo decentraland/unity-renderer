@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -19,10 +20,9 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button openNavmapButton;
 
     [Header("Options")] [SerializeField] private Button optionsButton;
-    [SerializeField] private GameObject sceneOptionsPanel;
+    [SerializeField] internal GameObject sceneOptionsPanel;
     [SerializeField] private ToggleComponentView toggleSceneUI;
-    [SerializeField] private Button addBookmarkButton;
-    [SerializeField] private Button reportSceneButton;
+    [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
@@ -32,17 +32,21 @@ public class MinimapHUDView : MonoBehaviour
     public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
     private IMouseCatcher mouseCatcher;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
+    private MinimapHUDController controller;
+
+    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
 
     public void Initialize(MinimapHUDController controller)
     {
+        this.controller = controller;
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         gameObject.name = VIEW_OBJECT_NAME;
         sceneOptionsPanel.SetActive(false);
 
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
-        addBookmarkButton.onClick.AddListener(controller.AddBookmark);
-        reportSceneButton.onClick.AddListener(controller.ReportScene);
+        reportSceneButton.onClick.AddListener(ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
 
         if (mouseCatcher != null)
@@ -59,6 +63,12 @@ public class MinimapHUDView : MonoBehaviour
         usersAroundListHudButton.gameObject.SetActive(false);
     }
 
+    private void ReportScene()
+    {
+        controller.ReportScene();
+        controller.ToggleOptions();
+    }
+    
     internal void OnMouseLocked() 
     {
         sceneOptionsPanel.SetActive(false);
@@ -91,5 +101,6 @@ public class MinimapHUDView : MonoBehaviour
     {
         if(mouseCatcher != null)
             mouseCatcher.OnMouseLock -= OnMouseLocked;
+        hudCanvasCameraModeController?.Dispose();
     }
 }

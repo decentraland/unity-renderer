@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -8,7 +7,7 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerUpResult GetPointerUpResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerUpResult result = new PBOnPointerUpResult();
             result.Button = buttonId;
@@ -25,7 +24,7 @@ namespace DCL.ECSComponents
             return result;
         }
         
-        public static PBOnPointerDownResult GetPointerDownResultModel(int buttonId, string meshName, Ray ray, HitInfo hit)
+        public static PBOnPointerDownResult GetPointerDownResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
         {
             PBOnPointerDownResult result = new PBOnPointerDownResult();
             result.Button = buttonId;
@@ -60,22 +59,34 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static CameraMode.ModeId PBCameraEnumToUnityEnum(PBCameraModeArea.Types.CameraMode mode)
+        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
         {
             switch (mode)
             {
-                case PBCameraModeArea.Types.CameraMode.FirstPerson:
+                case CameraModeValue.FirstPerson:
                     return CameraMode.ModeId.FirstPerson;
-                case PBCameraModeArea.Types.CameraMode.ThirdPerson:
+                case CameraModeValue.ThirdPerson:
                     return CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }
         }
-        
-        public static Color PBColorToUnityColor(Color3 original)
+
+        public static CameraModeValue UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
         {
-            return new UnityEngine.Color(original.R, original.G, original.B, 1);
+            switch (mode)
+            {
+                case CameraMode.ModeId.FirstPerson:
+                    return CameraModeValue.FirstPerson;
+                case CameraMode.ModeId.ThirdPerson:
+                default:
+                    return CameraModeValue.ThirdPerson;
+            }
+        }
+
+        public static Color ToUnityColor(this Color3 color)
+        {
+            return new Color(color.R, color.G, color.B);
         }
     }
 }

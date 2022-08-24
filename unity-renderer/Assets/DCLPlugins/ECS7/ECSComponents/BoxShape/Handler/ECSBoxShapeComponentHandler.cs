@@ -1,7 +1,7 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCL.ECSComponents;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -14,10 +14,12 @@ namespace DCL.ECSComponents
         internal PBBoxShape lastModel;
 
         private readonly DataStore_ECS7 dataStore;
+        private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
         
-        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        public ECSBoxShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
             dataStore = dataStoreEcs7;
+            this.texturizableInternalComponent = texturizableInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -35,7 +37,7 @@ namespace DCL.ECSComponents
         {
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
             }
             else
             {
@@ -51,7 +53,7 @@ namespace DCL.ECSComponents
                 {
                     DisposeMesh(entity,scene);
                     generatedMesh = shape.mesh;
-                    GenerateRenderer(generatedMesh, scene, entity, model);
+                    GenerateRenderer(generatedMesh, scene, entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.id, model);
                 };
@@ -67,9 +69,10 @@ namespace DCL.ECSComponents
             lastModel = model;
         }
 
-        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBBoxShape model)
+        private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, bool isVisible, bool withCollisions, bool isPointerBlocker)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, isVisible, withCollisions, isPointerBlocker);
+            texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
@@ -79,6 +82,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
+                texturizableInternalComponent.RemoveRenderers(scene, entity, meshesInfo?.renderers);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }

@@ -16,7 +16,6 @@ namespace DCL.ECSComponents
         internal AudioSource audioSource;
         internal AssetPromise_AudioClip promiseAudioClip;
         
-        private long playedAtTimestamp = 0;
         private bool isOutOfBoundaries = false;
         private bool isAudioClipReady = false;
         
@@ -133,7 +132,7 @@ namespace DCL.ECSComponents
             
             UpdateAudioSourceVolume();
             audioSource.loop = model.Loop;
-            audioSource.pitch = model.Pitch;
+            audioSource.pitch = model.GetPitch();
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
 
@@ -156,13 +155,10 @@ namespace DCL.ECSComponents
             if (audioSource.clip != clip)
                 audioSource.clip = clip;
             
-            bool shouldPlay = playedAtTimestamp != model.PlayedAtTimestamp ||
-                              (model.Playing && !audioSource.isPlaying);
+            bool shouldPlay = model.Playing && !audioSource.isPlaying;
             
             if (audioSource.enabled && model.Playing && shouldPlay)
                 audioSource.Play();
-            
-            playedAtTimestamp = model.PlayedAtTimestamp;
         }
 
         private void OnAudioClipLoadComplete(Asset_AudioClip assetAudioClip)
@@ -202,7 +198,7 @@ namespace DCL.ECSComponents
             {
                 AudioSettings audioSettingsData =
                     settings != null ? settings.audioSettings.Data : new AudioSettings();
-                newVolume = model.Volume * Utils.ToVolumeCurve(
+                newVolume = model.GetVolume() * Utils.ToVolumeCurve(
                     dataStore.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
                     audioSettingsData.masterVolume);
             }
@@ -220,7 +216,7 @@ namespace DCL.ECSComponents
             float volume = 0;
 
             if (scene.isPersistent || scene.sceneData.id == currentSceneId)
-                volume = model.Volume;
+                volume = model.GetVolume();
             
             audioSource.volume = volume;
         }

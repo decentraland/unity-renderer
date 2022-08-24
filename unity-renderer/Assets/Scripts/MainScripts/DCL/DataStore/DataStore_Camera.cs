@@ -9,6 +9,6 @@ namespace DCL
         public readonly BaseVariable<bool> panning = new BaseVariable<bool>();
         public readonly BaseVariable<RenderTexture> outputTexture = new BaseVariable<RenderTexture>(null);
         public readonly BaseVariable<bool> invertYAxis = new BaseVariable<bool>();
-        public readonly BaseVariable<bool> mainCamEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<Camera> hudsCamera = new BaseVariable<Camera>();
     }
 }

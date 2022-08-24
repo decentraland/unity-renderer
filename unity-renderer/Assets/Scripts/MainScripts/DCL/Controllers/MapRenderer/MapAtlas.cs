@@ -8,7 +8,7 @@ namespace DCL
     {
         public RectTransform viewport;
         public GameObject container;
-        public GameObject chunksParent;
+        public RectTransform chunksParent;
         public GameObject overlayLayerGameobject;
 
         Dictionary<Vector2Int, MapChunk> chunks = new Dictionary<Vector2Int, MapChunk>();
@@ -107,6 +107,7 @@ namespace DCL
                 xTile++;
                 yTile = 0;
             }
+            overlayLayerGameobject.transform.SetAsLastSibling();
         }
     }
 }

@@ -226,8 +226,26 @@ namespace DCL
 
             DataStore.i.debugConfig.showSceneSpawnPoints.AddOrSet(data.sceneId, data);
         }
+        
+        [ContextMenu("Enable Animation Culling")]
+        public void EnableAnimationCulling()
+        {
+            debugController.SetAnimationCulling(true);
+        }
+        
+        [ContextMenu("Disable Animation Culling")]
+        public void DisableAnimationCulling()
+        {
+            debugController.SetAnimationCulling(false);
+        }
 
 #if UNITY_EDITOR
+        [ContextMenu("Run Performance Meter Tool for 2 seconds")]
+        public void ShortDebugPerformanceMeter()
+        {
+            RunPerformanceMeterTool(2);
+        }
+
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
         public void DebugPerformanceMeter()
         {
@@ -239,6 +257,16 @@ namespace DCL
         {
             InstantiateBotsAtCoords("{ " +
                                     "\"amount\":3, " +
+                                    "\"areaWidth\":15, " +
+                                    "\"areaDepth\":15 " +
+                                    "}");
+        }
+        
+        [ContextMenu("Instantiate 50 bots at player coordinates")]
+        public void DebugBotsInstantiation2()
+        {
+            InstantiateBotsAtCoords("{ " +
+                                    "\"amount\":50, " +
                                     "\"areaWidth\":15, " +
                                     "\"areaDepth\":15 " +
                                     "}");

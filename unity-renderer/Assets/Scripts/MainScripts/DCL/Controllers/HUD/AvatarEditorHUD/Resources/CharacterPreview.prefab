@@ -261,7 +261,6 @@ MonoBehaviour:
   bodySnapshotTemplate: {fileID: 4122678849617202556}
   avatarContainer: {fileID: 6856622359626919856}
   avatarRevealContainer: {fileID: 6693538414670061813}
-  armatureContainer: {fileID: 6856622359626919856}
 --- !u!1 &5657874010593393711
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,7 +451,7 @@ Camera:
   field of view: 40
   orthographic: 0
   orthographic size: 5
-  m_Depth: 0
+  m_Depth: -100
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 49152

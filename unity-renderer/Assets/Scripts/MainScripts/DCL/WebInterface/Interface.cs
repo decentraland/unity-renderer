@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -409,6 +410,19 @@ namespace DCL.Interface
         {
             public string userId;
         }
+        
+        [Serializable]
+        private class SendReportPlayerPayload
+        {
+            public string userId;
+            public string name;
+        }
+        
+        [Serializable]
+        private class SendReportScenePayload
+        {
+            public string sceneId;
+        }
 
         [System.Serializable]
         public class SendUnblockPlayerPayload
@@ -463,6 +477,9 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
+            
+            // TODO: remove useBinaryTransform after ECS7 is fully in prod
+            public bool useBinaryTransform = true;
         }
 
         [System.Serializable]
@@ -680,8 +697,6 @@ namespace DCL.Interface
             public float time;
         }
 
-        public static event Action<string, byte[]> OnBinaryMessageFromEngine;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -756,16 +771,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-
-        public static void SendBinaryMessage(string sceneId, byte[] bytes)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            BinaryMessageFromEngine(sceneId, bytes, bytes.Length);
-#else
-            OnBinaryMessageFromEngine?.Invoke(sceneId, bytes);
-#endif
-        }        
-
+        
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages
@@ -1276,9 +1282,22 @@ namespace DCL.Interface
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
 
-        public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
+        public static void SendReportScene(string sceneID)
+        {
+            SendMessage("ReportScene", new SendReportScenePayload
+            {
+                sceneId = sceneID
+            });
+        }
 
-        public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
+        public static void SendReportPlayer(string playerId, string playerName)
+        {
+            SendMessage("ReportPlayer", new SendReportPlayerPayload
+            {
+                userId = playerId,
+                name = playerName
+            });
+        }
 
         public static void SendBlockPlayer(string userId)
         {
@@ -1312,6 +1331,10 @@ namespace DCL.Interface
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
         }
+
+        public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
+
+        public static void LeaveVoiceChat() { SendMessage("LeaveVoiceChat"); }
 
         public static void SendSetVoiceChatRecording(bool recording)
         {

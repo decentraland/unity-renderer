@@ -17,7 +17,7 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
@@ -29,6 +29,7 @@ namespace DCL
         public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
+        public StickersController stickersControllers;
         [SerializeField] private Transform avatarRevealContainer;
         [SerializeField] private GameObject armatureContainer;
 
@@ -52,6 +53,7 @@ namespace DCL
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
+        private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
 
         public override string componentName => "avatarShape";
 
@@ -109,6 +111,7 @@ namespace DCL
         {
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
         }
 
         private void PlayerClicked()
@@ -129,8 +132,9 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-
-            DisablePassport();
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
+            
+            ApplyHidePassportModifier();
 
             var model = (AvatarModel) newModel;
 
@@ -224,7 +228,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            EnablePassport();
+            RemoveHidePassportModifier();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -310,22 +314,6 @@ namespace DCL
             }
         }
 
-        public void DisablePassport()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(false);
-        }
-
-        public void EnablePassport()
-        {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(true);
-        }
-
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
@@ -356,19 +344,52 @@ namespace DCL
             player = null;
         }
 
-        public void ApplyHideModifier()
+        public void ApplyHideAvatarModifier()
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
-            onPointerDown.gameObject.SetActive(false);
-            playerNameContainer.SetActive(false);
-
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(false);
+                playerNameContainer.SetActive(false);
+                stickersControllers.ToggleHideArea(true);
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
         }
 
-        public void RemoveHideModifier()
+        public void RemoveHideAvatarModifier()
         {
-            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
-            onPointerDown.gameObject.SetActive(true);
-            playerNameContainer.SetActive(true);
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(true);
+                playerNameContainer.SetActive(true);
+                stickersControllers.ToggleHideArea(false);
+            }
+        }
+        
+        public void ApplyHidePassportModifier()
+        {
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                if (onPointerDown.collider == null)
+                    return;
+
+                onPointerDown.SetPassportEnabled(false);
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        }
+        
+        public void RemoveHidePassportModifier()
+        {
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                if (onPointerDown.collider == null)
+                    return;
+
+                onPointerDown.SetPassportEnabled(true);
+            }
         }
 
         public override void Cleanup()
@@ -410,5 +431,6 @@ namespace DCL
 
         [ContextMenu("Print current profile")]
         private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
+
     }
 }

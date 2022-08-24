@@ -10,6 +10,11 @@ using UnityEngine;
 
 public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 {
+    private static readonly int underlayColor = Shader.PropertyToID("_UnderlayColor");
+    private static readonly int offsetX = Shader.PropertyToID("_UnderlayOffsetX");
+    private static readonly int offsetY = Shader.PropertyToID("_UnderlayOffsetY");
+    private static readonly int underlaySoftness = Shader.PropertyToID("_UnderlaySoftness");
+    
     private const string BOTTOM = "bottom";
     private const string TOP = "top";
     private const string LEFT = "left";
@@ -25,6 +30,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private PBTextShape currentModel;
     private readonly DataStore_ECS7 dataStore;
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+    
+    private string lastFontUsed;
 
     public ECSTextShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, AssetPromiseKeeper_Font fontPromiseKeeper)
     {
@@ -38,7 +45,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
-        textGameObject.transform.SetParent(entity.gameObject.transform);
+        textGameObject.transform.SetParent(entity.gameObject.transform,false);
         dataStore.AddShapeReady(entity.entityId,textGameObject);
         textComponent.text = string.Empty;
         
@@ -59,27 +66,40 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         rectTransform = null;
         currentModel = null;
     }
-
+    
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {
-        this.currentModel = model;
+        if (model.Equals(currentModel))
+            return;
+        
+        currentModel = model;
 
         PrepareRectTransform(model);
-        dataStore.AddPendingResource(scene.sceneData.id, model);
-        promise = new AssetPromise_Font(model.Font);
-        promise.OnSuccessEvent += assetFont =>
+        
+        // If we use the same font than the last time, we just update the model, if not, we download it and apply the changes after the download
+        if (lastFontUsed != null && lastFontUsed == model.Font)
         {
-            textComponent.font = assetFont.font;
-            ApplyModelChanges(model);
-            entity.OnShapeUpdated?.Invoke(entity);
-            RemoveModelFromPending(scene);
-        };
-        promise.OnFailEvent += ( mesh,  exception) =>
+            ApplyModelChanges(entity, model);
+        }
+        else
         {
-            RemoveModelFromPending(scene);
-        };
+            lastFontUsed = model.Font;
+            dataStore.AddPendingResource(scene.sceneData.id, model);
+            promise = new AssetPromise_Font(model.Font);
+            promise.OnSuccessEvent += assetFont =>
+            {
+                textComponent.font = assetFont.font;
+                ApplyModelChanges(entity, model);
 
-        fontPromiseKeeper.Keep(promise);
+                RemoveModelFromPending(scene);
+            };
+            promise.OnFailEvent += ( mesh,  exception) =>
+            {
+                RemoveModelFromPending(scene);
+            };
+
+            fontPromiseKeeper.Keep(promise);
+        }
     }
 
     private void RemoveModelFromPending(IParcelScene scene)
@@ -104,7 +124,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         // we only set it if textWrapping is enabled.
         if (model.TextWrapping)
         {
-            rectTransform.sizeDelta = new Vector2(model.Width, model.Height);
+            rectTransform.sizeDelta = new Vector2(model.GetWidth(), model.GetHeight());
         }
         else
         {
@@ -112,14 +132,14 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
     }
     
-    internal void ApplyModelChanges(PBTextShape model)
+    internal void ApplyModelChanges(IDCLEntity entity, PBTextShape model)
     {
         textComponent.text = model.Text;
 
         if (model.TextColor != null)
             textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
 
-        textComponent.fontSize = model.FontSize;
+        textComponent.fontSize = model.GetFontSize();
         textComponent.richText = true;
         textComponent.overflowMode = TextOverflowModes.Overflow;
         textComponent.enableAutoSizing = model.FontAutoSize;
@@ -133,7 +153,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 model.PaddingBottom
             );
 
-        textComponent.alignment = GetAlignment(model.VTextAlign, model.HTextAlign);
+        textComponent.alignment = GetAlignment(model.GetVTextAlign(), model.GetHTextAlign());
         textComponent.lineSpacing = model.LineSpacing;
 
         if (model.LineCount != 0)
@@ -146,13 +166,13 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
 
         textComponent.enableWordWrapping = model.TextWrapping && !textComponent.enableAutoSizing;
-
+        
         // Shadows
         bool underlayKeywordEnabled = false;
         if (!Mathf.Approximately(model.ShadowBlur,0))
         {
             textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
-            textComponent.fontSharedMaterial.SetFloat("_UnderlaySoftness", model.ShadowBlur);
+            textComponent.fontSharedMaterial.SetFloat(underlaySoftness, model.ShadowBlur);
             underlayKeywordEnabled = true;
         }
         
@@ -163,8 +183,10 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
                 underlayKeywordEnabled = true;
             }
-            var shadowColor  = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
-            textComponent.fontSharedMaterial.SetColor("_UnderlayColor", shadowColor);
+            var shadowColor = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
+            textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
+            textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
+            textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
         }
         
         if (!underlayKeywordEnabled && textComponent.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
@@ -188,7 +210,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
             textComponent.fontSharedMaterial.DisableKeyword("OUTLINE_ON");
         }
 
-        textGameObject.SetActive(model.Visible);
+        textGameObject.SetActive(model.GetVisible());
+        entity.OnShapeUpdated?.Invoke(entity);
     }
 
     internal TextAlignmentOptions GetAlignment(string vTextAlign, string hTextAlign)

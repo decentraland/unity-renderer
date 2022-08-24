@@ -57,7 +57,7 @@ public interface IToggleComponentView
     void SetChangeTextColorOnSelect(bool changeTextColorOnSelect);
 }
 
-public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
+public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig<ToggleComponentModel>
 {
     [Header("Prefab References")]
     [SerializeField] internal Toggle toggle;
@@ -121,9 +121,9 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         OnSelectedChanged?.Invoke(isOn, model.id, model.text);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(ToggleComponentModel newModel)
     {
-        model = (ToggleComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

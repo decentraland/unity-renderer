@@ -10,7 +10,7 @@ public interface IBaseAvatarRevealer
 {
     void InjectLodSystem(ILOD lod);
     void AddTarget(MeshRenderer newTarget);
-    UniTask StartAvatarRevealAnimation(bool instant, CancellationToken token);
+    UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken token);
     SkinnedMeshRenderer GetMainRenderer();
     void Reset();
 }

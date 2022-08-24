@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.SettingsCommon;
+using RPC;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -55,11 +56,6 @@ namespace DCL
             InitializeDataStore();
             SetupPlugins();
             InitializeCommunication();
-
-            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
-            // We should re-enable this later as produces a performance regression.
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-                Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
         protected virtual void InitializeDataStore()
@@ -84,6 +80,7 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
+            RPCServerBuilder.BuildDefaultServer();
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)

@@ -5,14 +5,16 @@ using Cinemachine;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL;
+using DCL.CameraTool;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Camera
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField]
-        internal new UnityEngine.Camera camera;
+        [SerializeField] internal new UnityEngine.Camera camera;
+        [SerializeField] internal UnityEngine.Camera hudsCamera;
 
         private Transform cameraTransform;
 
@@ -60,6 +62,8 @@ namespace DCL.Camera
         private void Awake()
         {
             cameraTransform = this.camera.transform;
+            DataStore.i.camera.hudsCamera.Set(hudsCamera);
+            DataStore.i.camera.transform.Set(cameraTransform);
 
             CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             OnRenderingStateChanged(CommonScriptableObjects.rendererState.Get(), false);
@@ -183,7 +187,6 @@ namespace DCL.Camera
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
-            DataStore.i.camera.transform.Set(cameraTransform);
             cameraPosition.Set(cameraTransform.position);
             cameraIsBlending.Set(cameraBrain.IsBlending);
 
@@ -229,7 +232,6 @@ namespace DCL.Camera
         private void SetCameraEnabledState(bool enabled)
         {
             camera.enabled = enabled;
-            DataStore.i.camera.mainCamEnabled.Set(enabled);
         }
 
         private void OnDestroy()

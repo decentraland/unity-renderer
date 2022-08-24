@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using NSubstitute;
@@ -18,6 +20,7 @@ namespace DCL.ECSComponents.Test
         private IParcelScene scene;
         private GameObject gameObject;
         private ECSSphereShapeComponentHandler sphereShapeComponentHandler;
+        private IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
         [SetUp]
         protected void SetUp()
@@ -25,7 +28,8 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            sphereShapeComponentHandler = new ECSSphereShapeComponentHandler(DataStore.i.ecs7);
+            texturizableInternalComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
+            sphereShapeComponentHandler = new ECSSphereShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -51,6 +55,9 @@ namespace DCL.ECSComponents.Test
 
             // Act
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            var meshesInfo = sphereShapeComponentHandler.meshesInfo;
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
+                Arg.Is<InternalTexturizable>(x => meshesInfo.renderers.All(r => x.renderers.Contains(r))));            
 
             // Assert
             Assert.IsNotNull(sphereShapeComponentHandler.meshesInfo);
@@ -62,12 +69,15 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBSphereShape model = new PBSphereShape();
             sphereShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            texturizableInternalComponent.ClearReceivedCalls();
 
             // Act
             sphereShapeComponentHandler.OnComponentRemoved(scene, entity);
 
             // Assert
             Assert.IsNull(sphereShapeComponentHandler.meshesInfo);
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
+                Arg.Is<InternalTexturizable>(x => x.renderers.Count == 0));
         }
         
         [Test]

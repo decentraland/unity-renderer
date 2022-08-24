@@ -39,7 +39,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.RECEIVED
         };
 
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
     });
@@ -58,7 +60,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
     });
@@ -77,7 +81,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>You:</b> test message", entry.body.text);
     });
@@ -96,7 +102,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
     });
@@ -115,7 +123,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
     });
@@ -134,7 +144,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("test message", entry.body.text);
     });
@@ -153,7 +165,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.RECEIVED
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("test message", entry.body.text);
     });
@@ -174,7 +188,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual($"<b>To receiver-test:</b> {bodyWithoutCoordinates}</noparse><link={coordinates}><color=#4886E3><u>{coordinates}</u></color></link><noparse>", entry.body.text);
     });
@@ -193,7 +209,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
         
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>To receiver-test:</b> perhaps </noparse><link=73,94><color=#4886E3><u>73,94</u></color></link><noparse> then </noparse><link=-5,42><color=#4886E3><u>-5,42</u></color></link><noparse> and after </noparse><link=-36,72><color=#4886E3><u>-36,72</u></color></link><noparse>", entry.body.text);
     });
@@ -213,7 +231,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.RECEIVED
         };
 
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("test message", entry.body.text);
     });
@@ -233,7 +253,9 @@ public class DefaultChatEntryShould
             subType = ChatEntryModel.SubType.SENT
         };
 
-        await entry.PopulateTask(message, entry.populationTaskCancellationTokenSource.Token);
+        entry.Populate(message);
+        
+        await UniTask.DelayFrame(4);
 
         Assert.AreEqual("<b>To receiver-test:</b> test message", entry.body.text);
     });
