@@ -67,6 +67,9 @@ public class ChatController : MonoBehaviour, IChatController
             OnChannelLeft?.Invoke(channelId);
 
         OnChannelUpdated?.Invoke(channel);
+
+        if (!msg.joined)
+            AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     // called by kernel
@@ -85,6 +88,8 @@ public class ChatController : MonoBehaviour, IChatController
         
         OnChannelJoined?.Invoke(channel);
         OnChannelUpdated?.Invoke(channel);
+
+        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     // called by kernel
