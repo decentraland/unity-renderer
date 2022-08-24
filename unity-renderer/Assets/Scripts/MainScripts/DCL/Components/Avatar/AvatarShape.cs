@@ -172,7 +172,7 @@ namespace DCL
             //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             if (!DataStore.i.emotes.newFlowEnabled.Get())
             {
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                var embeddedEmotesSo = EmbeddedEmotesSO.Provide();
                 wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             }
 

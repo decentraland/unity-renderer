@@ -115,7 +115,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
         //Initialize with embedded emotes
-        emotesCustomizationComponentController.SetEmotes(Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes.ToArray());
+        emotesCustomizationComponentController.SetEmotes(EmbeddedEmotesSO.Provide().emotes.ToArray());
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
@@ -180,7 +180,7 @@ public class AvatarEditorHUDController : IHUD
                              {
                                  var emotes = ownedWearables.Where(x => x.IsEmote());
                                  //Add embedded emotes
-                                 var allEmotes = emotes.Concat(Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes).ToArray();
+                                 var allEmotes = emotes.Concat(EmbeddedEmotesSO.Provide().emotes).ToArray();
                                  emotesCustomizationComponentController.SetEmotes(allEmotes);
                              }
                              view.ShowCollectiblesLoadingSpinner(false);

@@ -53,9 +53,9 @@ namespace AvatarSystem
                 {
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
                     if (moreEmotes != null)
-                        emotes.AddRange(moreEmotes);
+                        emotes.AddRange(moreEmotes.Where(x => x != null));
                 }
-                
+
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
                 for (int i = 0; i < wearableItems.Count; i++)
                 {
