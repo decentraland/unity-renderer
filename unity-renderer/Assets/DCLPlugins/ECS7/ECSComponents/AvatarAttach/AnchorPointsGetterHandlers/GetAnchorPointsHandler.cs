@@ -7,6 +7,7 @@ namespace DCL.Components
         public event Action OnAvatarRemoved;
 
         private Action<IAvatarAnchorPoints> onAvatarFound;
+        private bool cleaned = false;
 
         private UserProfile ownPlayerProfile => UserProfile.GetOwnUserProfile();
 
@@ -22,6 +23,7 @@ namespace DCL.Components
         public void SearchAnchorPoints(string avatarId, Action<IAvatarAnchorPoints> onSuccess)
         {
             CleanUp();
+            cleaned = false;
 
             if (string.IsNullOrEmpty(avatarId))
                 return;
@@ -35,7 +37,7 @@ namespace DCL.Components
                 ownPlayerProfile.OnUpdate -= GetOwnProfileUpdated;
                 ownUserId = profile.userId;
 
-                if (onAvatarFound == null)
+                if (cleaned)
                 {
                     return;
                 }
@@ -74,6 +76,7 @@ namespace DCL.Components
         private void CleanUp()
         {
             onAvatarFound = null;
+            cleaned = true;
 
             if (currentAnchorPointsGetterHandler != null)
             {
