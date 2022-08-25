@@ -49,7 +49,7 @@ public class FriendsHUDController : IHUD
         View = view;
 
         view.Initialize(chatController, friendsController, socialAnalytics);
-        view.ListByOnlineStatus = dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_by_online_status");
+        view.RefreshFriendsTab();
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
         view.OnRejectConfirmation += HandleRequestRejected;
