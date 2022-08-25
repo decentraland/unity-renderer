@@ -10,14 +10,13 @@ namespace DCL.Helpers
 {
     public static class WearablesFetchingHelper
     {
-        public const string WEARABLES_FETCH_URL = "collections/wearables?";
-        public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
-        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
-
         // TODO: change fetching logic to allow for auto-pagination
         // The https://nft-api.decentraland.org/v1/ endpoint doesn't fetch L1 wearables right now, if those need to be re-converted we should use that old endpoint again and change the WearablesAPIData structure again for that response.
-        // public const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections"; 
-        public const string COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.zone/v1/collections?sortBy=newest&first=1000"; 
+        public const string BASE_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
+        public const string COLLECTIONS_FETCH_PARAMS = "?sortBy=newest&first=1000"; 
+        public const string WEARABLES_FETCH_PARAMS = "/wearables?";
+        public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
         private static Collection[] collections;
 
         private static IEnumerator EnsureCollectionsData()
@@ -26,7 +25,7 @@ namespace DCL.Helpers
                 yield break;
 
             yield return Environment.i.platform.webRequest.Get(
-                url: COLLECTIONS_FETCH_URL,
+                url: GetCollectionsFetchURL(),
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 5000,
                 disposeOnCompleted: false,
@@ -39,6 +38,16 @@ namespace DCL.Helpers
                     var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
                     collections = collectionsApiData.data;
                 });
+        }
+
+        public static string GetCollectionsFetchURL()
+        {
+            return $"{BASE_FETCH_URL}{COLLECTIONS_FETCH_PARAMS}";
+        }
+        
+        public static string GetWearablesFetchURL()
+        {
+            return $"{BASE_FETCH_URL}{WEARABLES_FETCH_PARAMS}";
         }
 
         /// <summary>
@@ -110,7 +119,7 @@ namespace DCL.Helpers
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
                 yield return GetWearableItems(
-                    $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WEARABLES_FETCH_URL}{nextPageParams}", 
+                    GetWearablesFetchURL() + $"{nextPageParams}", 
                     finalWearableItemsList);
             }
         }

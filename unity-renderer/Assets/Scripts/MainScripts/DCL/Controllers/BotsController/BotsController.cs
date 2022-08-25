@@ -53,24 +53,23 @@ namespace DCL.Bots
             yield return WearablesFetchingHelper.GetBaseCollections(selectedCollections);
 
             List<WearableItem> wearableItems = new List<WearableItem>();
-            yield return WearablesFetchingHelper.GetWearableItems(BuildRandomizedCollectionsURL(), wearableItems);
+            yield return WearablesFetchingHelper.GetWearableItems(BuildCollectionsURL(), wearableItems);
 
             PopulateCatalog(wearableItems);
         }
 
-        string BuildRandomizedCollectionsURL()
+        string BuildCollectionsURL()
         {
             if (selectedCollections.Count == 0)
                 return null; 
-
-            string finalUrl = $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WearablesFetchingHelper.WEARABLES_FETCH_URL}";
-
+            
+            string finalUrl = WearablesFetchingHelper.GetWearablesFetchURL();
             finalUrl += "collectionId=" + selectedCollections[0];
             for (int i = 1; i < selectedCollections.Count; i++)
             {
                 finalUrl += "&collectionId=" + selectedCollections[i];
             }
-
+            
             return finalUrl;
         }
 
@@ -228,7 +227,6 @@ namespace DCL.Bots
             };
 
             var entity = globalScene.CreateEntity(entityId);
-            
             entity.gameObject.transform.position = PositionUtils.WorldToUnityPosition(position);
             
             globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
