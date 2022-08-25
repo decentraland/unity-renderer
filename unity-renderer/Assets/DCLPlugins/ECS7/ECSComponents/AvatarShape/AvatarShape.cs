@@ -43,6 +43,7 @@ namespace DCL.ECSComponents
     
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
     {
+        private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
@@ -108,7 +109,8 @@ namespace DCL.ECSComponents
 
         public void Init()
         {
-            transform.position = new UnityEngine.Vector3(transform.position.x, -0.72f, transform.position.z);
+            // The avatars have an offset in the Y axis, so we set teh offset after the avatar has been restored from the pool
+            transform.position = new UnityEngine.Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
             SetPlayerNameReference();
         }
 
