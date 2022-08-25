@@ -72,7 +72,14 @@ namespace DCL.EmotesCustomization
                 RemoveEmote(emoteId);
             }
 
-            this.ownedEmotes = ownedEmotes.ToDictionary(x => x.id, x => x);
+            this.ownedEmotes.Clear();
+            for (int i = 0; i < ownedEmotes.Length; i++)
+            {
+                WearableItem emote = ownedEmotes[i];
+                //emotes owned multiple times will be received as separated entities, overriding by emote.id removes that information
+                //if we want to show the amount of ocurrences we can modify this
+                this.ownedEmotes[emote.id] = emote;
+            }
             foreach (WearableItem emote in this.ownedEmotes.Values)
             {
                 AddEmote(emote);
