@@ -54,6 +54,9 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            //Necessary check for premature unloading
+            if (asset.container == null)
+                return;
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             CoroutineStarter.Start(MaterialTransitionControllerUtils.SetMaterialTransition(ShouldTransitionAnimationBeDone(),asset.renderers,() => asset?.Show(OnSuccess), false));
         }
@@ -64,7 +67,13 @@ namespace DCL
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
-        protected override void OnBeforeLoadOrReuse() { settings.ApplyBeforeLoad(asset.container.transform); }
+        protected override void OnBeforeLoadOrReuse()
+        {
+            //Necessary check for premature unloading
+            if (asset.container == null)
+                return;
+            settings.ApplyBeforeLoad(asset.container.transform);
+        }
 
         protected override void OnCancelLoading()
         {

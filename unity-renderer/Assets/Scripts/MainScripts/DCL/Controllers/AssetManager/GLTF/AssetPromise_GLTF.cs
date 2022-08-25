@@ -67,6 +67,9 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse()
         {
+            //Necessary check for premature unloading
+            if (asset.container == null)
+                return;
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
@@ -163,6 +166,9 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            //Necessary check for premature unloading
+            if (asset.container == null)
+                return;
             // Materials and textures are reused, so they are not extracted again
             asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(asset.container);
             bool doTransition = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimationFlag && asset != null;
