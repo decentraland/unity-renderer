@@ -78,7 +78,7 @@ namespace DCL.ECSComponents
 
                 loadWrapper.entity = entity;
                 loadWrapper.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadWrapper.initialVisibility = entity.isInsideBoundaries;
+                loadWrapper.initialVisibility = model.GetVisible(); // TODO: check if entity is inside scene's boundaries
                 loadWrapper.Load(model.Src, (wrapper) =>
                 {
                     // We remove the transition from the GLTF

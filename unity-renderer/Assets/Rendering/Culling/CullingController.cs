@@ -171,7 +171,7 @@ namespace DCL.Rendering
                 //             world repositioning.
                 Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
 
-                Bounds bounds = r.GetSafeBounds();
+                Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
 
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
