@@ -23,7 +23,7 @@ namespace DCL.ECSComponents
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            avatar.transform.SetParent(entity.gameObject.transform);
+            avatar.transform.SetParent(entity.gameObject.transform, false);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -38,6 +38,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarShape model)
         {
+            avatar.Init();
             avatar.ApplyModel(scene,entity,model);
         }
     }

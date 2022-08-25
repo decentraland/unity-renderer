@@ -32,7 +32,9 @@ namespace DCL.ECSComponents
         /// <param name="newModel"></param>
         void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel);
 
-        /// <summary>
+        void Init();
+
+            /// <summary>
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
@@ -43,10 +45,7 @@ namespace DCL.ECSComponents
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
-
-        // NOTE: Don't use the reference, use the avatarMovementController
-        // Unity can't serialize interfaces, so we assign the reference on the prefab and assign it in the Awake method so we can avoid 1 GetComponent call
-        [SerializeField] private AvatarMovementController avatarMovementControllerReference;
+        
         internal IAvatarMovementController avatarMovementController;
         
         [SerializeField] private GameObject avatarContainer;
@@ -78,8 +77,7 @@ namespace DCL.ECSComponents
         
         private void Awake()
         {
-            // NOTE: Unity can't serialize interfaces, so we assign the reference and assign it there so we can avoid 1 GetComponent call
-            avatarMovementController = avatarMovementControllerReference;
+            avatarMovementController = GetComponent<IAvatarMovementController>();
             
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
@@ -107,8 +105,9 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
         }
 
-        private void Start()
+        public void Init()
         {
+            transform.position = new UnityEngine.Vector3(transform.position.x, -0.72f, transform.position.z);
             SetPlayerNameReference();
         }
 
@@ -311,7 +310,7 @@ namespace DCL.ECSComponents
 
         private void Update()
         {
-            if (player == null)
+            if (player == null || entity == null)
                 return;
 
             player.worldPosition = entity.gameObject.transform.position;
