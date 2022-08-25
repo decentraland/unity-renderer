@@ -130,7 +130,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new QuestsTrackerHUDController();
                 break;
             case HUDElementID.SIGNUP:
-                hudElement = new SignupHUDController();
+                var analytics = Environment.i.platform.serviceProviders.analytics;
+                hudElement = new SignupHUDController(analytics);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;

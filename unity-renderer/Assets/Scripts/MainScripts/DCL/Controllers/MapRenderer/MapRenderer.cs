@@ -480,7 +480,7 @@ namespace DCL
             Quaternion playerAngle = Quaternion.Euler(0, 0, Mathf.Atan2(-f.x, f.z) * Mathf.Rad2Deg);
 
             var gridPosition = playerGridPosition;
-            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPosition(gridPosition);
+            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPositionWithOffset(gridPosition);
             playerPositionIcon.rotation = playerAngle;
         }
 
