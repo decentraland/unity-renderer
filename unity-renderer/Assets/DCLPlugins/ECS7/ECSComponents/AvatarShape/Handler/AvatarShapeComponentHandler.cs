@@ -14,6 +14,8 @@ namespace DCL.ECSComponents
         private readonly Pool pool;
         private readonly PoolableObject poolableObject;
 
+        private bool isAvatarInitialized = false;
+
         public AvatarShapeComponentHandler(Pool pool)
         {
             this.pool = pool;
@@ -34,11 +36,16 @@ namespace DCL.ECSComponents
             avatar.Cleanup();
             pool.Release(poolableObject);
             avatar = null;
+            isAvatarInitialized = false;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAvatarShape model)
         {
-            avatar.Init();
+            if (!isAvatarInitialized)
+            {
+                avatar.Init();
+                isAvatarInitialized = true;
+            }
             avatar.ApplyModel(scene,entity,model);
         }
     }

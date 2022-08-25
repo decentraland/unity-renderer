@@ -21,6 +21,11 @@ namespace DCL.ECSComponents
     public interface IAvatarShape
     {
         /// <summary>
+        /// This will initialize the AvatarShape and set 
+        /// </summary>
+        void Init();
+        
+        /// <summary>
         /// Clean up the avatar shape so we can reutilizate it using the pool
         /// </summary>
         void Cleanup();
@@ -33,9 +38,7 @@ namespace DCL.ECSComponents
         /// <param name="newModel"></param>
         void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel);
 
-        void Init();
-
-            /// <summary>
+        /// <summary>
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
@@ -44,12 +47,10 @@ namespace DCL.ECSComponents
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
     {
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
-        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
+        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
-        
-        internal IAvatarMovementController avatarMovementController;
-        
+
         [SerializeField] private GameObject avatarContainer;
         [SerializeField] internal Collider avatarCollider;
         [SerializeField] private Transform avatarRevealContainer;
@@ -57,6 +58,8 @@ namespace DCL.ECSComponents
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         [SerializeField] internal GameObject playerNameContainer;
+        
+        internal IAvatarMovementController avatarMovementController;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -85,6 +88,8 @@ namespace DCL.ECSComponents
             Visibility visibility = new Visibility();
             avatarMovementController.SetAvatarTransform(transform);
             
+            // Right now the avatars that are not part of the global scene of avatar are not using LOD since
+            // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
@@ -109,7 +114,7 @@ namespace DCL.ECSComponents
 
         public void Init()
         {
-            // The avatars have an offset in the Y axis, so we set teh offset after the avatar has been restored from the pool
+            // The avatars have an offset in the Y axis, so we set the offset after the avatar has been restored from the pool
             transform.position = new UnityEngine.Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
             SetPlayerNameReference();
         }
