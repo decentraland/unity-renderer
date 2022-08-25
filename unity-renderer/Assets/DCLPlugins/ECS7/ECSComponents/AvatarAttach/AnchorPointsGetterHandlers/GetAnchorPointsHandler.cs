@@ -8,7 +8,7 @@ namespace DCL.Components
 
         private Action<IAvatarAnchorPoints> onAvatarFound;
 
-        private string ownPlayerId => UserProfile.GetOwnUserProfile().userId;
+        private UserProfile ownPlayerProfile => UserProfile.GetOwnUserProfile();
 
         private IAnchorPointsGetterHandler ownPlayerAnchorPointsGetterHandler => new OwnPlayerGetAnchorPointsHandler();
         private IAnchorPointsGetterHandler otherPlayerAnchorPointsGetterHandler => new OtherPlayerGetAnchorPointsHandler();
@@ -26,12 +26,34 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(avatarId))
                 return;
 
+            string ownUserId = ownPlayerProfile.userId;
+
             onAvatarFound = onSuccess;
 
-            currentAnchorPointsGetterHandler = GetHandler(avatarId);
-            currentAnchorPointsGetterHandler.OnAvatarFound += OnAvatarFoundEvent;
-            currentAnchorPointsGetterHandler.OnAvatarRemoved += OnAvatarRemovedEvent;
-            currentAnchorPointsGetterHandler.GetAnchorPoints(avatarId);
+            void GetOwnProfileUpdated(UserProfile profile)
+            {
+                ownPlayerProfile.OnUpdate -= GetOwnProfileUpdated;
+                ownUserId = profile.userId;
+
+                if (onAvatarFound == null)
+                {
+                    return;
+                }
+
+                currentAnchorPointsGetterHandler = GetHandler(avatarId, ownUserId);
+                currentAnchorPointsGetterHandler.OnAvatarFound += OnAvatarFoundEvent;
+                currentAnchorPointsGetterHandler.OnAvatarRemoved += OnAvatarRemovedEvent;
+                currentAnchorPointsGetterHandler.GetAnchorPoints(avatarId);
+            }
+
+            if (string.IsNullOrEmpty(ownUserId))
+            {
+                ownPlayerProfile.OnUpdate += GetOwnProfileUpdated;
+            }
+            else
+            {
+                GetOwnProfileUpdated(ownPlayerProfile);
+            }
         }
 
         /// <summary>
@@ -61,7 +83,7 @@ namespace DCL.Components
             }
         }
 
-        private IAnchorPointsGetterHandler GetHandler(string id)
+        private IAnchorPointsGetterHandler GetHandler(string id, string ownPlayerId)
         {
             return id == ownPlayerId ? ownPlayerAnchorPointsGetterHandler : otherPlayerAnchorPointsGetterHandler;
         }
