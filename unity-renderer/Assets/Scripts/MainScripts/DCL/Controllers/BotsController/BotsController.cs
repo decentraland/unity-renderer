@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
@@ -180,7 +181,7 @@ namespace DCL.Bots
             {
                 amount = config.amount,
                 xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
-                yPos = playerUnityPosition.y - CHARACTER_HEIGHT,
+                yPos = playerUnityPosition.y - CHARACTER_HEIGHT / 2,
                 zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth
@@ -227,7 +228,7 @@ namespace DCL.Bots
             };
 
             var entity = globalScene.CreateEntity(entityId);
-            entity.gameObject.transform.position = PositionUtils.WorldToUnityPosition(position);
+            UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
             
             globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
 
@@ -417,31 +418,11 @@ namespace DCL.Bots
 
         void UpdateEntityTransform(IParcelScene scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
-                System.Convert.ToBase64String(pB_Transform.ToByteArray())
+                DCLTransformUtils.EncodeTransform(position, rotation, scale)
             );
-        }
-
-        public PB_Transform GetPBTransform(Vector3 position, Quaternion rotation, Vector3 scale)
-        {
-            PB_Transform pbTranf = new PB_Transform();
-            pbTranf.Position = new PB_Vector3();
-            pbTranf.Position.X = position.x;
-            pbTranf.Position.Y = position.y;
-            pbTranf.Position.Z = position.z;
-            pbTranf.Rotation = new PB_Quaternion();
-            pbTranf.Rotation.X = rotation.x;
-            pbTranf.Rotation.Y = rotation.y;
-            pbTranf.Rotation.Z = rotation.z;
-            pbTranf.Rotation.W = rotation.w;
-            pbTranf.Scale = new PB_Vector3();
-            pbTranf.Scale.X = scale.x;
-            pbTranf.Scale.Y = scale.y;
-            pbTranf.Scale.Z = scale.z;
-            return pbTranf;
         }
 
         /// <summary>
