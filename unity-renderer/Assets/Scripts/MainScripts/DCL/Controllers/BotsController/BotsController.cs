@@ -181,7 +181,7 @@ namespace DCL.Bots
             {
                 amount = config.amount,
                 xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
-                yPos = playerUnityPosition.y - CHARACTER_HEIGHT / 2,
+                yPos = playerUnityPosition.y - CHARACTER_HEIGHT,
                 zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth
@@ -228,6 +228,7 @@ namespace DCL.Bots
             };
 
             var entity = globalScene.CreateEntity(entityId);
+            
             entity.gameObject.transform.position = PositionUtils.WorldToUnityPosition(position);
             
             globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
