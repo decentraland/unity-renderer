@@ -22,6 +22,7 @@ public class FriendsTabComponentView : BaseComponentView
     [SerializeField] private FriendEntry entryPrefab;
     [SerializeField] private FriendListComponents onlineFriendsList;
     [SerializeField] private FriendListComponents offlineFriendsList;
+    [SerializeField] private FriendListComponents allFriendsList;
     [SerializeField] private FriendListComponents searchResultsFriendList;
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] private UserContextMenu contextMenuPanel;
@@ -90,6 +91,10 @@ public class FriendsTabComponentView : BaseComponentView
         searchResultsFriendList.list.SortingMethod = SortByAlphabeticalOrder;
         UpdateLayout();
         UpdateEmptyOrFilledState();
+        
+        //TODO temporary, remove this and allFriendsList gameobjects later
+        allFriendsList.list.gameObject.SetActive(false);
+        allFriendsList.headerContainer.gameObject.SetActive(false);
     }
 
     public override void OnDisable()
