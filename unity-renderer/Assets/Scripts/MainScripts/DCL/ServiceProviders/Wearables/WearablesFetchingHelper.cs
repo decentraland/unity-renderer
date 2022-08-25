@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -41,10 +42,17 @@ namespace DCL.Helpers
         }
 
         /// <summary>
-        /// Fetches all the existent collection ids and triggers a randomized selection to be loaded
+        /// Fetches base collection ids and adds them to the provided ids list
         /// </summary>
-        /// <param name="finalCollectionIdsList">A strings list that will be filled with the randomized collection ids</param>
-        public static IEnumerator GetRandomCollections(int amount, bool ensureBaseWearables, List<string> finalCollectionIdsList)
+        /// <param name="finalCollectionIdsList">A strings list that will be filled with the base collection ids</param>
+        public static IEnumerator GetBaseCollections(List<string> finalCollectionIdsList)
+        {
+            yield return EnsureCollectionsData();
+
+            finalCollectionIdsList.Add( BASE_WEARABLES_COLLECTION_ID );
+        }
+        
+        public static IEnumerator GetRandomCollections(int amount, List<string> finalCollectionIdsList)
         {
             yield return EnsureCollectionsData();
 
@@ -55,22 +63,18 @@ namespace DCL.Helpers
             for (int i = 0; i < amount; i++)
             {
                 randomIndex = Random.Range(0, collections.Length);
-
+            
                 while (randomizedIndices.Contains(randomIndex))
                 {
                     randomIndex = Random.Range(0, collections.Length);
                 }
-
+            
                 if (collections[randomIndex].urn == BASE_WEARABLES_COLLECTION_ID)
                     addedBaseWearablesCollection = true;
-
+            
                 finalCollectionIdsList.Add(collections[randomIndex].urn);
                 randomizedIndices.Add(randomIndex);
             }
-
-            // We add the base wearables collection to make sure we have at least 1 of each avatar body-part
-            if (!addedBaseWearablesCollection && ensureBaseWearables)
-                finalCollectionIdsList.Add( BASE_WEARABLES_COLLECTION_ID );
         }
 
         /// <summary>
@@ -82,10 +86,7 @@ namespace DCL.Helpers
         public static IEnumerator GetWearableItems(string url, List<WearableItem> finalWearableItemsList)
         {
             string nextPageParams = null;
-
-            Debug.Log("URL USED: " + url);
             
-            // ...this fails
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
@@ -97,21 +98,21 @@ namespace DCL.Helpers
                 },
                 OnSuccess: (webRequest) =>
                 {
-                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
+                    var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
                     var wearableItemsList = wearablesApiData.GetWearableItems();
                     finalWearableItemsList.AddRange(wearableItemsList);
 
                     nextPageParams = wearablesApiData.pagination.next;
                 });
 
-            // if (!string.IsNullOrEmpty(nextPageParams))
-            // {
-            //     // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
-            //     // batches sequentially
-            //     yield return GetWearableItems(
-            //         $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WEARABLES_FETCH_URL}{nextPageParams}", 
-            //         finalWearableItemsList);
-            // }
+            if (!string.IsNullOrEmpty(nextPageParams))
+            {
+                // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
+                // batches sequentially
+                yield return GetWearableItems(
+                    $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WEARABLES_FETCH_URL}{nextPageParams}", 
+                    finalWearableItemsList);
+            }
         }
 
         public static Promise<Collection[]> GetThirdPartyCollections()

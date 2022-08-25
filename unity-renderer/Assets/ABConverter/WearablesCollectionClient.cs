@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -375,7 +376,7 @@ namespace DCL.ABConverter
                 return null;
             }
 
-            var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
+            var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(w.downloadHandler.text);
             var resultList = wearablesApiData.GetWearableItems();
 
             // Since the wearables deployments response returns only a batch of elements, we need to fetch all the

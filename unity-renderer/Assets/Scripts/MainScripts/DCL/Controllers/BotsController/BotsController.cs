@@ -19,7 +19,7 @@ namespace DCL.Bots
     public class BotsController : IBotsController
     {
         private IParcelScene globalScene;
-        private List<string> randomizedCollections = new List<string>();
+        private List<string> selectedCollections = new List<string>();
         private List<long> instantiatedBots = new List<long>();
         private List<string> eyesWearableIds = new List<string>();
         private List<string> eyebrowsWearableIds = new List<string>();
@@ -36,7 +36,7 @@ namespace DCL.Bots
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
         /// </summary>
-        private IEnumerator EnsureGlobalSceneAndCatalog()
+        private IEnumerator EnsureGlobalSceneAndCatalog(bool randomCollections = false)
         {
             if (globalScene != null)
                 yield break;
@@ -45,8 +45,12 @@ namespace DCL.Bots
 
             CatalogController.wearableCatalog.Clear();
 
-            // yield return WearablesFetchingHelper.GetRandomCollections(20, true, randomizedCollections);
-            yield return WearablesFetchingHelper.GetRandomCollections(3, true, randomizedCollections);
+            // We stopped using random collections by default because the wearables API changes frequently and is very inconsistent...
+            if(randomCollections)
+                yield return WearablesFetchingHelper.GetRandomCollections(50, selectedCollections);
+            
+            // We add the base wearables collection to make sure we have at least 1 of each avatar body-part
+            yield return WearablesFetchingHelper.GetBaseCollections(selectedCollections);
 
             List<WearableItem> wearableItems = new List<WearableItem>();
             yield return WearablesFetchingHelper.GetWearableItems(BuildRandomizedCollectionsURL(), wearableItems);
@@ -56,16 +60,15 @@ namespace DCL.Bots
 
         string BuildRandomizedCollectionsURL()
         {
-            if (randomizedCollections.Count == 0)
+            if (selectedCollections.Count == 0)
                 return null; 
 
-            // string finalUrl = WearablesFetchingHelper.WEARABLES_FETCH_URL;
             string finalUrl = $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WearablesFetchingHelper.WEARABLES_FETCH_URL}";
 
-            finalUrl += "collectionId=" + randomizedCollections[0];
-            for (int i = 1; i < randomizedCollections.Count; i++)
+            finalUrl += "collectionId=" + selectedCollections[0];
+            for (int i = 1; i < selectedCollections.Count; i++)
             {
-                finalUrl += "&collectionId=" + randomizedCollections[i];
+                finalUrl += "&collectionId=" + selectedCollections[i];
             }
 
             return finalUrl;
