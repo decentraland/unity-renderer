@@ -1,3 +1,8 @@
+---
+title: "How to create new components for ECS7"
+slug: "/contributor/unity-renderer/components/how-to-create-components"
+---
+
 # How to create new components for ECS7
 
 In order to create new components, we need to do a couple of things before start coding them in the renderer
