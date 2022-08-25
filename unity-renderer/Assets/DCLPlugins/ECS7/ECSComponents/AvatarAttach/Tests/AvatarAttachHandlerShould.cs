@@ -7,6 +7,7 @@ using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.ECSComponents.Test
@@ -17,6 +18,7 @@ namespace DCL.ECSComponents.Test
         private IParcelScene scene;
         private IDCLEntity entity;
         private GameObject entityGo;
+        private UserProfile userProfile;
 
         [SetUp]
         public void Setup()
@@ -31,11 +33,18 @@ namespace DCL.ECSComponents.Test
 
             entity = Substitute.For<IDCLEntity>();
             entity.Configure().gameObject.Returns(entityGo);
+            
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.UpdateData(new UserProfileModel() { userId = "ownUserId" });
         }
         
         [TearDown]
         public void TearDown()
         {
+            if (userProfile != null && AssetDatabase.Contains(userProfile))
+            {
+                Resources.UnloadAsset(userProfile);
+            }            
             handler.Dispose();
             DataStore.Clear();
             Object.Destroy(entityGo);
