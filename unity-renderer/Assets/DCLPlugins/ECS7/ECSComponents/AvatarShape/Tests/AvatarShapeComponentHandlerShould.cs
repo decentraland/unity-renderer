@@ -26,8 +26,9 @@ namespace DCL.ECSComponents.Tests
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>("NewAvatarShape");
-            ConfigurePool(avatarShapePrefab.gameObject);
+
+            GameObject poolGameObject = new GameObject();
+            ConfigurePool(poolGameObject);
             componentHandler = new AvatarShapeComponentHandler(pool);
             avatarShape = Substitute.For<IAvatarShape>();
             avatarShape.Configure().transform.Returns(gameObject.transform);

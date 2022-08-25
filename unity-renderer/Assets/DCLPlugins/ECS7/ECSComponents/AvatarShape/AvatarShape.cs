@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
@@ -175,8 +176,15 @@ namespace DCL.ECSComponents
                 loadingCts?.Cancel();
                 loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
-                
-                await LoadAvatar(wearableItems);
+                try
+                {
+                    await LoadAvatar(wearableItems);
+                }
+                catch (Exception e)
+                {
+                    // If the load of the avatar fails, we do it silently so the scene continue to operate. 
+                    // The LoadAvatar function will show the error in console already so in order to avoid noise, we just capture the exception
+                }
             }
             
             avatar.PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
@@ -231,6 +239,10 @@ namespace DCL.ECSComponents
             {
                 Cleanup();
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearableItems)}] for bodyshape:{model.BodyShape} and player {model.Name}");
+                if (e.InnerException != null)
+                    ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+                else
+                    throw;
             }
             finally
             {
