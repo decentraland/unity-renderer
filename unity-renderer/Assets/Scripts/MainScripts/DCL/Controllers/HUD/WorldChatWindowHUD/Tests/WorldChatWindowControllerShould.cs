@@ -114,8 +114,10 @@ public class WorldChatWindowControllerShould
         });
     }
 
-    [Test]
-    public void RemovePrivateChatWhenFriendIsRemoved()
+    [TestCase(FriendshipStatus.REQUESTED_TO)]
+    [TestCase(FriendshipStatus.REQUESTED_FROM)]
+    [TestCase(FriendshipStatus.NOT_FRIEND)]
+    public void RemovePrivateChatWhenUserIsUpdatedAsNonFriend(FriendshipStatus status)
     {
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
@@ -130,9 +132,26 @@ public class WorldChatWindowControllerShould
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
-                friendshipStatus = FriendshipStatus.NOT_FRIEND
+                friendshipStatus = status
             });
 
+        view.Received(1).RemovePrivateChat(FRIEND_ID);
+    }
+
+    [TestCase(FriendshipAction.NONE)]
+    [TestCase(FriendshipAction.DELETED)]
+    [TestCase(FriendshipAction.REJECTED)]
+    [TestCase(FriendshipAction.CANCELLED)]
+    [TestCase(FriendshipAction.REQUESTED_TO)]
+    [TestCase(FriendshipAction.REQUESTED_FROM)]
+    public void RemovePrivateChatWhenFriendshipUpdatesAsNonFriend(FriendshipAction action)
+    {
+        GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
+        
+        controller.Initialize(view);
+
+        friendsController.OnUpdateFriendship += Raise.Event<Action<string, FriendshipAction>>(FRIEND_ID, action);
+        
         view.Received(1).RemovePrivateChat(FRIEND_ID);
     }
 

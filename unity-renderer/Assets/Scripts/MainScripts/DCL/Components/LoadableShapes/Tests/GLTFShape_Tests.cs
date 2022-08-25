@@ -255,6 +255,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     {
         // GLTFShape without DCLAnimator should toggle its animation on visibility changes
         var entity = TestUtils.CreateSceneEntity(scene);
+        TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
 
         Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
             "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");

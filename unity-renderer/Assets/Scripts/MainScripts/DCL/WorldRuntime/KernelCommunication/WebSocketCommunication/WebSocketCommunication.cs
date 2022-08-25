@@ -203,6 +203,8 @@ public class WebSocketCommunication : IKernelCommunication
 
         messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
         messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+
+        messageTypeToBridgeName["VoiceChatStatus"] = "VoiceChatController";
     }
 
     IEnumerator ProcessMessages()

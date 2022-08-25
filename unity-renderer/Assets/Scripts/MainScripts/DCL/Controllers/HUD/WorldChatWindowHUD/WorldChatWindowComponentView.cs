@@ -153,6 +153,7 @@ namespace DCL.Chat.HUD
         public void RemovePrivateChat(string userId)
         {
             directChatList.Remove(userId);
+            searchResultsList.Remove(userId);
             UpdateHeaders();
             UpdateLayout();
         }
@@ -305,7 +306,10 @@ namespace DCL.Chat.HUD
                 searchResultsList.Set(entry);
             }
             else
+            {
                 directChatList.Set(userId, entry);
+                searchResultsList.Remove(userId);
+            }
 
             UpdateHeaders();
             UpdateLayout();
@@ -327,6 +331,7 @@ namespace DCL.Chat.HUD
             else
             {
                 publicChannelList.Set(channelId, entryModel);
+                searchResultsList.Remove(channelId);
                 entry = publicChannelList.Get(channelId);
             }
 
