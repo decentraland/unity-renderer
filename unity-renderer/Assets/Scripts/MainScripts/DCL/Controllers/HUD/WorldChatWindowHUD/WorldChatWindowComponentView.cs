@@ -161,6 +161,7 @@ namespace DCL.Chat.HUD
 
         public void RemovePublicChat(string channelId)
         {
+            publicChatsCreationQueue.Remove(channelId);
             publicChannelList.Remove(channelId);
             UpdateHeaders();
             UpdateLayout();
