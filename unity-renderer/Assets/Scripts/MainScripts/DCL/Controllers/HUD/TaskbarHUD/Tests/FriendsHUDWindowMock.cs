@@ -21,7 +21,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void Refresh() { }
+    public void RefreshFriendsTab() { }
 
     public RectTransform Transform => (RectTransform) transform;
     public int FriendCount { get; }

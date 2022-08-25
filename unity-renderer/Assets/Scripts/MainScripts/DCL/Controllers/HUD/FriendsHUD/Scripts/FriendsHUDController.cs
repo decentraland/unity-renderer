@@ -52,7 +52,7 @@ public class FriendsHUDController : IHUD
         View = view;
 
         view.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
-        view.Refresh();
+        view.RefreshFriendsTab();
         view.OnFriendRequestApproved += HandleRequestAccepted;
         view.OnCancelConfirmation += HandleRequestCancelled;
         view.OnRejectConfirmation += HandleRequestRejected;

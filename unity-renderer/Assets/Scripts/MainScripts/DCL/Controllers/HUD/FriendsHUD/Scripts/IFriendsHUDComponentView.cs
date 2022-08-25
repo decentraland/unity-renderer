@@ -21,7 +21,7 @@ public interface IFriendsHUDComponentView
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics);
 
-    void Refresh();
+    void RefreshFriendsTab();
     RectTransform Transform { get; }
     int FriendCount { get; }
     int FriendRequestCount { get; }

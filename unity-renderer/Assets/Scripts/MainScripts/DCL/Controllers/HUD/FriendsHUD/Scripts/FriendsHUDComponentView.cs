@@ -93,7 +93,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
     }
 
-    public void Refresh()
+    public void RefreshFriendsTab()
     {
         friendsTab.RefreshControl();
     }
