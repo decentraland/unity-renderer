@@ -12,28 +12,14 @@ namespace DCL.Controllers
         float timeBetweenChecks { get; set; }
         bool enabled { get; }
         int entitiesToCheckCount { get; }
-        int highPrioEntitiesToCheckCount { get; }
         void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle);
         ISceneBoundsFeedbackStyle GetFeedbackStyle();
         List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
         void Start();
         void Stop();
-        void AddEntityToBeChecked(IDCLEntity entity, bool runPreliminaryEvaluation = false);
-
-        /// <summary>
-        /// Add an entity that will be consistently checked, until manually removed from the list.
-        /// </summary>
-        void AddPersistent(IDCLEntity entity);
-
-        void RemovePersistent(IDCLEntity entity);
-
-        /// <summary>
-        /// Returns whether an entity was added to be consistently checked
-        /// </summary>
-        ///
+        void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false);
+        void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false);
         bool WasAddedAsPersistent(IDCLEntity entity);
-
-        void RemoveEntityToBeCheckedAndResetState(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity);
         void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck);
         bool IsEntityMeshInsideSceneBoundaries(IDCLEntity entity);

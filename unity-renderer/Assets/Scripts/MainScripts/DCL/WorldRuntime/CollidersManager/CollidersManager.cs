@@ -123,7 +123,7 @@ namespace DCL
                 colliderLayer = DCL.Configuration.PhysicsLayers.defaultLayer;
 
             Collider collider;
-            int onClickLayer = PhysicsLayers.onPointerEventLayer; // meshes can have a child collider for the OnClick that should be ignored
+            int onClickLayer = PhysicsLayers.onPointerEventLayer; // meshes can have an OnPointerEvent child collider that should be ignored
             MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>(true);
 
             for (int i = 0; i < meshFilters.Length; i++)

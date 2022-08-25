@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
@@ -13,10 +14,12 @@ namespace DCL.ECSComponents
         internal PBSphereShape lastModel;
         
         private readonly DataStore_ECS7 dataStore;
+        private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
         
-        public ECSSphereShapeComponentHandler(DataStore_ECS7 dataStoreEcs7)
+        public ECSSphereShapeComponentHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
             dataStore = dataStoreEcs7;
+            this.texturizableInternalComponent = texturizableInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -65,7 +68,8 @@ namespace DCL.ECSComponents
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBSphereShape model)
         {
             meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
-
+            texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
+            
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
@@ -74,6 +78,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
+                texturizableInternalComponent.RemoveRenderers(scene, entity, meshesInfo?.renderers);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }
