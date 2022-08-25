@@ -432,15 +432,10 @@ public class PrivateChatWindowController : IHUD
 
         var currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
 
-        if (currentPrivateMessages.Count <= 0) return;
-
         var oldestMessageId = currentPrivateMessages
             .OrderBy(x => x.timestamp)
             .Select(x => x.messageId)
             .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(oldestMessageId))
-            return;
 
         chatController.GetPrivateMessages(
             ConversationUserId,
