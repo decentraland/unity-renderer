@@ -20,7 +20,9 @@ namespace Tests
             if (MapRenderer.i == null)
                 Object.Instantiate(Resources.Load("Map Renderer"));
 
-            MapRenderer.i.atlas.mapChunkPrefab = (GameObject) Resources.Load("Map Chunk Mock");
+            Assert.IsTrue(false);
+
+            //MapRenderer.i.atlas.mapChunkPrefab = (GameObject) Resources.Load("Map Chunk Mock");
             viewport = new GameObject("Viewport");
             var rt = viewport.AddComponent<RectTransform>();
             rt.sizeDelta = Vector2.one * 100;
