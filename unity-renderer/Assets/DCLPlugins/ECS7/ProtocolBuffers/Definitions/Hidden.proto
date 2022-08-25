@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+option (ecs_component_id) = 1081;
+
+message PBHidden { }

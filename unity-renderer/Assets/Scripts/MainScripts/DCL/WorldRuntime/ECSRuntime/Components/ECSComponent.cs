@@ -30,7 +30,7 @@ namespace DCL.ECSRuntime
             var entityId = entity.entityId;
 
             if (ComponentDataContainsEntity(componentData, scene, entity))
-            {
+            { 
                 Debug.LogError($"entity {entityId} already contains component {typeof(ModelType)}", entity.gameObject);
                 return;
             }

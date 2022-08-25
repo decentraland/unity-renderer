@@ -25,6 +25,7 @@ namespace DCL.ECSComponents
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
         private readonly MaterialRegister materialRegister;
+        private readonly HiddenRegister hiddenRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -56,6 +57,7 @@ namespace DCL.ECSComponents
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
+            hiddenRegister = new HiddenRegister(ComponentID.HIDDEN, componentsFactory, componentsWriter);
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);
