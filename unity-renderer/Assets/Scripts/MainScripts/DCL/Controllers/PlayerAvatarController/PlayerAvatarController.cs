@@ -203,15 +203,20 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
 
-                if (!DataStore.i.emotes.newFlowEnabled.Get())
+                HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                if (DataStore.i.emotes.newFlowEnabled.Get())
+                {
+                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
+                else
                 {
                     //TODO remove this when new flow is the default and we can los retrocompatibility
                     //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
                     wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
                 }
 
-                await avatar.Load(wearableItems, currentAvatar.emotes.Select(x => x.urn).ToList(), new AvatarSettings
+                await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     bodyshapeId = profile.avatar.bodyShape,
                     eyesColor = profile.avatar.eyeColor,
