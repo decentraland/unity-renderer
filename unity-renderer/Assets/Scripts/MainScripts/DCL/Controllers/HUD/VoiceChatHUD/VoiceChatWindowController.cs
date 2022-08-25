@@ -88,6 +88,7 @@ public class VoiceChatWindowController : IHUD
         friendsController.OnUpdateFriendship += OnUpdateFriendship;
 
         settings.generalSettings.OnChanged += OnSettingsChanged;
+        SetAllowUsersOption(settings.generalSettings.Data.voiceChatAllow);
 
         CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
         RendererState_OnChange(CommonScriptableObjects.rendererState.Get(), false);
@@ -326,7 +327,13 @@ public class VoiceChatWindowController : IHUD
 
     internal void OnSettingsChanged(GeneralSettings settings)
     {
-        switch (settings.voiceChatAllow)
+        SetAllowUsersOption(settings.voiceChatAllow);
+        socialAnalytics.SendVoiceChatPreferencesChanged(settings.voiceChatAllow);
+    }
+
+    private void SetAllowUsersOption(VoiceChatAllow option)
+    {
+        switch (option)
         {
             case VoiceChatAllow.ALL_USERS:
                 voiceChatWindowView.SelectAllowUsersOption(0);
@@ -338,8 +345,6 @@ public class VoiceChatWindowController : IHUD
                 voiceChatWindowView.SelectAllowUsersOption(2);
                 break;
         }
-
-        socialAnalytics.SendVoiceChatPreferencesChanged(settings.voiceChatAllow);
     }
 
     internal void RendererState_OnChange(bool current, bool previous)
