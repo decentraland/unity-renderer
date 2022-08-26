@@ -313,9 +313,10 @@ namespace DCL
             {
                 if (parcelHighlightImage.gameObject.activeSelf)
                     parcelHighlightImage.gameObject.SetActive(false);
-
+                atlas.SetHighlightedScene(null);
                 return;
             }
+            atlas.SetHighlightedScene(cursorMapCoords);
 
             if (!parcelHighlightImage.gameObject.activeSelf)
                 parcelHighlightImage.gameObject.SetActive(true);
