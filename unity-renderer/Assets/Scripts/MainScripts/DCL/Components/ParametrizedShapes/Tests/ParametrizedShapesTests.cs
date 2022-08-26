@@ -436,9 +436,9 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         // Assert:
         foreach (IDCLEntity entity in entities)
         {
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.AreEqual(withCollision, entity.meshesInfo.colliders[i].enabled);
+                Assert.AreEqual(withCollision, collider.enabled);
             }
         }
     }
