@@ -26,7 +26,7 @@ public class MinimapHUDController : IHUD
         minimapZoom.Set(1f);
         UpdateData(model);
         metadataController = MinimapMetadataController.i;
-        metadataController.OnHomeChanged += SetNewHome;
+        metadataController?.OnHomeChanged += SetNewHome;
     }
 
     protected internal virtual MinimapHUDView CreateView() { return MinimapHUDView.Create(this); }
@@ -45,6 +45,7 @@ public class MinimapHUDController : IHUD
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
+        metadataController?.OnHomeChanged -= SetNewHome;
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
