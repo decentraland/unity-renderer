@@ -9,7 +9,7 @@ namespace DCL.ECSComponents
 {
     public class MeshColliderHandler : IECSComponentHandler<PBMeshCollider>
     {
-        private GameObject colliderGameObject;
+        internal GameObject colliderGameObject;
         private Collider collider;
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
         private PBMeshCollider prevModel;
