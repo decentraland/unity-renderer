@@ -34,6 +34,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
         {
             dataStore.RemovePointerEvent(entity.entityId, representantion);
             representantion?.Dispose();
+            
             isAdded = false;
         }
 
