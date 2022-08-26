@@ -153,9 +153,6 @@ namespace DCL.ECSComponents
             bool needsLoading = !AvatarUtils.HaveSameWearablesAndColors(model,newModel);
             model = newModel;
 
-            // if (string.IsNullOrEmpty(model.GetBodyShape()) || model.Wearables.Count == 0)
-            //     return;
-            
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.GetName()}";
 #endif
