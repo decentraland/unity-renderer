@@ -51,5 +51,15 @@
   },
   "testables": [
     "com.unity.test-framework.performance"
+  ],
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com/",
+      "scopes": [
+        "com.brunomikoski",
+        "com.demigiant"
+      ]
+    }
   ]
 }
