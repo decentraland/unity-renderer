@@ -30,6 +30,7 @@ namespace DCL.Tutorial_Tests
             yield return base.SetUp();
             Environment.i.world.state.loadedScenes = new Dictionary<string, IParcelScene>();
             genesisPlazaSimulator = TestUtils.CreateTestScene();
+            genesisPlazaSimulator.isPersistent = false;
             Environment.i.world.state.currentSceneId = genesisPlazaSimulator.sceneData.id;
             genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
             CreateAndConfigureTutorial();

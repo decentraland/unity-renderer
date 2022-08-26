@@ -27,6 +27,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        scene.isPersistent = false;
         coreComponentsPlugin = new CoreComponentsPlugin();
         uuidComponentsPlugin = new UUIDEventsPlugin();
 
