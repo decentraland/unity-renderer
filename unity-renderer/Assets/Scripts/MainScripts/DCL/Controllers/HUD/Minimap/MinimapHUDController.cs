@@ -94,7 +94,7 @@ public class MinimapHUDController : IHUD
 
     public void UpdateSetHomePanel()
     {
-        view?.UpdateSetHomeText(currentCoords == homeCoords);
+        view?.UpdateSetHomePanel(currentCoords == homeCoords);
     }
 
     public void UpdatePlayerPosition(string position)
@@ -124,10 +124,19 @@ public class MinimapHUDController : IHUD
         WebInterface.SendReportScene($"{coords.x},{coords.y}");
     }
 
-    public void SetHomeScene()
+    public void SetHomeScene(bool isOn)
     {
         var coords = playerCoords.Get();
-        WebInterface.SetHomeScene($"{coords.x},{coords.y}");
+        if (playerCoords == homeCoords)
+        {
+            if (!isOn)
+                WebInterface.SetHomeScene($"0,0");
+        }
+        else
+        { 
+            if(isOn)
+                WebInterface.SetHomeScene($"{coords.x},{coords.y}");
+        }
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }

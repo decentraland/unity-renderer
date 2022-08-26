@@ -24,9 +24,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
-    [SerializeField] internal Button setHomeScene;
-    [SerializeField] internal TextMeshProUGUI setHomeSceneText;
-
+    [SerializeField] internal ToggleComponentView setHomeScene;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
@@ -50,7 +48,7 @@ public class MinimapHUDView : MonoBehaviour
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
         reportSceneButton.onClick.AddListener(ReportScene);
-        setHomeScene.onClick.AddListener(SetHomeScene);
+        setHomeScene.OnSelectedChanged += (isOn, id, name) => SetHomeScene(isOn);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
 
         if (mouseCatcher != null)
@@ -73,9 +71,9 @@ public class MinimapHUDView : MonoBehaviour
         controller.ToggleOptions();
     }
 
-    private void SetHomeScene()
+    private void SetHomeScene(bool isOn)
     {
-        controller.SetHomeScene();
+        controller.SetHomeScene(isOn);
     }
 
     internal void OnMouseLocked() 
@@ -90,10 +88,9 @@ public class MinimapHUDView : MonoBehaviour
         return view;
     }
 
-    internal void UpdateSetHomeText(bool isHome)
+    internal void UpdateSetHomePanel(bool isHome)
     {
-        setHomeSceneText.text = isHome ? "HOME" : "SET AS HOME";
-        setHomeScene.interactable = !isHome;
+        setHomeScene.SetIsOnWithoutNotify(isHome);
     }
 
     internal void UpdateData(MinimapHUDModel model)
