@@ -36,6 +36,7 @@ public class PrivateChatWindowController : IHUD
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
 
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
@@ -252,8 +253,11 @@ public class PrivateChatWindowController : IHUD
 
         if (View.IsActive)
         {
-            // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
-            MarkUserChatMessagesAsRead();
+            markMessagesAsSeenCancellationToken.Cancel();
+            markMessagesAsSeenCancellationToken = new CancellationTokenSource();
+            // since there could be many messages coming in a row, avoid making the call instantly for each message
+            // instead make just one call after the iteration finishes
+            MarkMessagesAsSeenDelayed(markMessagesAsSeenCancellationToken.Token).Forget();
         }
 
         View?.SetLoadingMessagesActive(false);
@@ -264,13 +268,14 @@ public class PrivateChatWindowController : IHUD
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
-        if (currentState.Equals(ChatWindowVisualState.NONE_VISIBLE))
+        switch (currentState)
         {
-            ActivatePreview();
-        }
-        else if (currentState.Equals(ChatWindowVisualState.PREVIEW_MODE))
-        {
-            WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
+            case ChatWindowVisualState.NONE_VISIBLE:
+                ActivatePreview();
+                break;
+            case ChatWindowVisualState.PREVIEW_MODE:
+                WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
+                break;
         }
     }
 
@@ -296,6 +301,13 @@ public class PrivateChatWindowController : IHUD
 
     private void MarkUserChatMessagesAsRead() =>
         chatController.MarkMessagesAsSeen(ConversationUserId);
+    
+    private async UniTask MarkMessagesAsSeenDelayed(CancellationToken cancellationToken)
+    {
+        await UniTask.NextFrame(cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        MarkUserChatMessagesAsRead();
+    }
 
     private void HandleInputFieldSelected()
     {
@@ -446,15 +458,10 @@ public class PrivateChatWindowController : IHUD
 
         var currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
 
-        if (currentPrivateMessages.Count <= 0) return;
-
         var oldestMessageId = currentPrivateMessages
             .OrderBy(x => x.timestamp)
             .Select(x => x.messageId)
             .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(oldestMessageId))
-            return;
 
         chatController.GetPrivateMessages(
             ConversationUserId,

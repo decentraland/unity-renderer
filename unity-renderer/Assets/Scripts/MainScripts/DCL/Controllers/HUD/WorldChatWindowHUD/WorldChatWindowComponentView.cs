@@ -294,11 +294,11 @@ namespace DCL.Chat.HUD
             var entry = new PrivateChatEntryModel(
                 user.userId,
                 user.userName,
-                model.recentMessage.body,
+                model.recentMessage != null ? model.recentMessage.body : string.Empty,
                 user.face256SnapshotURL,
                 model.isBlocked,
                 model.isOnline,
-                model.recentMessage.timestamp);
+                model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
             if (isSearchMode)
             {

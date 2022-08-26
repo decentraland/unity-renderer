@@ -140,7 +140,7 @@ namespace DCL.Controllers
 
         public void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false)
         {
-            if (!enabled)
+            if (!enabled || (entity.scene != null && entity.scene.isPersistent))
                 return;
 
             if (runPreliminaryEvaluation)
@@ -182,7 +182,7 @@ namespace DCL.Controllers
 
         public void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck)
         {
-            if (entity == null || entity.scene == null || entity.gameObject == null)
+            if (entity == null || entity.gameObject == null || entity.scene == null || entity.scene.isPersistent)
                 return;
 
             // Recursively evaluate entity children as well, we need to check this up front because this entity may not have meshes of its own, but the children may.
