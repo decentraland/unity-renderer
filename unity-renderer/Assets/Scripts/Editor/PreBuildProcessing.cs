@@ -20,7 +20,7 @@ public class PreBuildProcessing : IPreprocessBuildWithReport
 #endif
         
 #if UNITY_WEBGL
-        PlayerSettings.WebGL.emscriptenArgs += "-s ALLOW_MEMORY_GROWTH -s MAXIMUM_MEMORY=4GB ";
+        PlayerSettings.WebGL.emscriptenArgs += "-s ALLOW_MEMORY_GROWTH=1 -s MAXIMUM_MEMORY=4GB --memoryprofiler ";
 #endif
     }
 }
