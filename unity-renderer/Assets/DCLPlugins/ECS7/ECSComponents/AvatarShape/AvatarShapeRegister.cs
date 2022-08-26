@@ -6,7 +6,7 @@ namespace DCL.ECSComponents
 {
     public class AvatarShapeRegister : IDisposable
     {
-        private const string AVATAR_POOL_NAME = "AvatarShapeECS";
+        private const string AVATAR_POOL_NAME = "AvatarShapeECS7";
         private const string AVATAR_PREFAB_PATH = "NewAvatarShape";
         
         private readonly ECSComponentsFactory factory;
@@ -35,19 +35,19 @@ namespace DCL.ECSComponents
             PoolManager.i.RemovePool(AVATAR_POOL_NAME);
             pool.ReleaseAll();
         }
-        
+
         internal void ConfigurePool(GameObject prefab)
         {
             pool = PoolManager.i.GetPool(AVATAR_POOL_NAME);
-            if (pool == null)
-            {
-                pool = PoolManager.i.AddPool(
-                    AVATAR_POOL_NAME,
-                    GameObject.Instantiate(prefab).gameObject,
-                    isPersistent: true);
+            if (pool != null)
+                return;
 
-                pool.ForcePrewarm();
-            }
+            pool = PoolManager.i.AddPool(
+                AVATAR_POOL_NAME,
+                GameObject.Instantiate(prefab).gameObject,
+                isPersistent: true);
+
+            pool.ForcePrewarm();
         }
     }
 }

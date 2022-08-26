@@ -172,7 +172,7 @@ namespace DCL.ECSComponents
             var wearableItems = model.GetWereables().ToList();
             wearableItems.Add(model.GetBodyShape());
 
-            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+            // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 
