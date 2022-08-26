@@ -178,9 +178,10 @@ public class AvatarEditorHUDController : IHUD
                              LoadUserProfile(userProfile, true);
                              if (userProfile?.avatar != null && !DataStore.i.emotes.newFlowEnabled.Get())
                              {
-                                 var emotes = ownedWearables.Where(x => x.IsEmote());
+                                 var emotes = ownedWearables.Where(x => x.IsEmote()).ToArray();
                                  //Add embedded emotes
                                  var allEmotes = emotes.Concat(EmbeddedEmotesSO.Provide().emotes).ToArray();
+                                 emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotes);
                                  emotesCustomizationComponentController.SetEmotes(allEmotes);
                              }
                              view.ShowCollectiblesLoadingSpinner(false);
@@ -237,6 +238,7 @@ public class AvatarEditorHUDController : IHUD
         {
             var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
+            emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotes);
             if (emotes != null)
                 emotesCustomizationComponentController.SetEmotes(emotes.Concat(embeddedEmotes).ToArray());
             else
@@ -834,9 +836,12 @@ public class AvatarEditorHUDController : IHUD
 
         //Add emotes to wearables if Old flow
         if (!DataStore.i.emotes.newFlowEnabled.Get())
+        {
+            //Filter out embedded emotes
             avatarModel.wearables.AddRange(emotesCustomizationDataStore.unsavedEquippedEmotes.Get()
-                                                                       .Where(x => x != null)
+                                                                       .Where(x => x != null && x.id.StartsWith("urn:"))
                                                                        .Select(x => x.id));
+        }
         avatarModel.emotes = emoteEntries; 
 
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
