@@ -1,5 +1,4 @@
 using DCL.Helpers;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +13,8 @@ namespace DCL
         public RectTransform chunksParent;
         public GameObject overlayLayerGameobject;
         [SerializeField] private Image mapRenderer;
+
+        private void Awake() { SetHighlightedScene(null); }
 
         public void Cleanup() { }
 
