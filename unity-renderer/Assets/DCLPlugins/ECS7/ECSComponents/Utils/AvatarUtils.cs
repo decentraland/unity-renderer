@@ -12,9 +12,9 @@ namespace DCL.ECSComponents
             bool wearablesAreEqual = avatar.GetWereables().All(otheravatar.GetWereables().Contains) && avatar.GetWereables().Count == otheravatar.GetWereables().Count;
 
             return avatar.GetBodyShape().Equals(otheravatar.GetBodyShape()) &&
-                   avatar.SkinColor.Equals(otheravatar.SkinColor) &&
-                   avatar.HairColor.Equals(otheravatar.HairColor) &&
-                   avatar.EyeColor.Equals(otheravatar.EyeColor) &&
+                   avatar.GetSkinColor().Equals(otheravatar.GetSkinColor()) &&
+                   avatar.GetHairColor().Equals(otheravatar.GetHairColor()) &&
+                   avatar.GetEyeColor().Equals(otheravatar.GetEyeColor()) &&
                    wearablesAreEqual;
         }
     }

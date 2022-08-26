@@ -116,6 +116,7 @@ namespace DCL.ECSComponents.Tests
             avatarShape.Name = "TestName#2354";
             avatarShape.BodyShape = "urn:decentraland:off-chain:base-avatars:BaseFemale";
             avatarShape.ExpressionTriggerId = "Idle";
+            avatarShape.ExpressionTriggerTimestamp = 0;
 
             avatarShape.EyeColor = new Color3();
             avatarShape.EyeColor.R = 0.223f;

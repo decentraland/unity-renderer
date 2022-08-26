@@ -157,7 +157,7 @@ namespace DCL.ECSComponents
             //     return;
             
 #if UNITY_EDITOR
-            gameObject.name = $"Avatar Shape {model.Name}";
+            gameObject.name = $"Avatar Shape {model.GetName()}";
 #endif
 
             // To deal with the cases in which the entity transform was configured before the AvatarShape
@@ -195,7 +195,8 @@ namespace DCL.ECSComponents
                 }
             }
             
-            avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+            if(model.HasExpressionTriggerId)
+                avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity,model);
 
@@ -227,15 +228,15 @@ namespace DCL.ECSComponents
                 avatarCollider.gameObject.SetActive(false);
 
                 SetImpostor(model.Id);
-                playerName.SetName(model.Name);
+                playerName.SetName(model.GetName());
                 playerName.Show(true);
                 await avatar.Load(wearableItems, new AvatarSettings
                 {
-                    playerName = model.Name,
-                    bodyshapeId = model.BodyShape,
-                    eyesColor = model.EyeColor.ToUnityColor(),
-                    skinColor = model.SkinColor.ToUnityColor(),
-                    hairColor = model.HairColor.ToUnityColor(),
+                    playerName = model.GetName(),
+                    bodyshapeId = model.GetBodyShape(),
+                    eyesColor = model.GetEyeColor().ToUnityColor(),
+                    skinColor = model.GetSkinColor().ToUnityColor(),
+                    hairColor = model.GetHairColor().ToUnityColor(),
                 }, loadingCts.Token);
             }
             catch (OperationCanceledException)
@@ -277,23 +278,23 @@ namespace DCL.ECSComponents
         
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
-        internal void UpdatePlayerStatus(IDCLEntity entity,PBAvatarShape model)
+        internal void UpdatePlayerStatus(IDCLEntity entity, PBAvatarShape model)
         {
             // Remove the player status if the userId changes
-            if (player != null && (player.id != model.Id || player.name != model.Name))
+            if (player != null && (player.id != model.Id || player.name != model.GetName()))
                 otherPlayers.Remove(player.id);
 
-            if (isGlobalSceneAvatar && string.IsNullOrEmpty(model?.Id))
+            if (isGlobalSceneAvatar && string.IsNullOrEmpty(model?.GetName()))
                 return;
 
             bool isNew = player == null;
             if (isNew)
                 player = new Player();
             
-            bool isNameDirty = player.name != model.Name;
+            bool isNameDirty = player.name != model.GetName();
 
             player.id = model.Id;
-            player.name = model.Name;
+            player.name = model.GetName();
             player.isTalking = model.Talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.avatar = avatar;
@@ -325,7 +326,7 @@ namespace DCL.ECSComponents
             player.playerName.SetIsTalking(model.Talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
             if (isNameDirty)
-                player.playerName.SetName(model.Name);
+                player.playerName.SetName(model.GetName());
         }
 
         private void Update()

@@ -20,10 +20,20 @@ namespace DCL.ECSComponents
             return self.HasBodyShape ? self.BodyShape : "urn:decentraland:off-chain:base-avatars:BaseMale";
         }
 
-        // public static Color3 GetEyeColor(this PBAvatarShape self)
-        // {
-        //     self.HasName
-        // }
+        public static Color3 GetEyeColor(this PBAvatarShape self)
+        {
+            return self.EyeColor ?? new Color3(colorWhite);
+        }
+        
+        public static Color3 GetHairColor(this PBAvatarShape self)
+        {
+            return self.EyeColor ?? new Color3(colorWhite);
+        }
+        
+        public static Color3 GetSkinColor(this PBAvatarShape self)
+        {
+            return self.EyeColor ?? new Color3(colorWhite);
+        }
         
         public static string GetName(this PBAvatarShape self)
         {
