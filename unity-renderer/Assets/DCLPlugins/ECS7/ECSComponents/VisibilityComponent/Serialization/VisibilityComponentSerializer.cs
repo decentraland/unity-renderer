@@ -2,9 +2,9 @@
 
 namespace DCL.ECSComponents
 {
-    public static class HiddenSerializer
+    public static class VisibilityComponentSerializer
     {
-        public static byte[] Serialize(PBHidden model)
+        public static byte[] Serialize(PBVisibilityComponent model)
         {
             int size = model.CalculateSize();
             byte[] buffer = new byte[size];
@@ -13,9 +13,9 @@ namespace DCL.ECSComponents
             return buffer;
         }
 
-        public static PBHidden Deserialize(object data)
+        public static PBVisibilityComponent Deserialize(object data)
         {
-            return PBHidden.Parser.ParseFrom((byte[])data);
+            return PBVisibilityComponent.Parser.ParseFrom((byte[])data);
         }
     }
 }

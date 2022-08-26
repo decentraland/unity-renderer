@@ -4,16 +4,16 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class HiddenRegister : IDisposable
+    public class VisibilityComponentRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public HiddenRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, HiddenSerializer.Deserialize, () => new ECSHiddenComponentHandler());
-            componentWriter.AddOrReplaceComponentSerializer<PBHidden>(componentId, HiddenSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, VisibilityComponentSerializer.Deserialize, () => new ECSVisibilityComponentHandler());
+            componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, VisibilityComponentSerializer.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

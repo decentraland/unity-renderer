@@ -15,11 +15,11 @@ using UnityEngine.TestTools;
 
 namespace DCL.ECSComponents.Test
 {
-    public class ECSHiddenShould
+    public class ECSVisibilityComponentShould
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private ECSHiddenComponentHandler hiddenComponentHandler;
+        private ECSVisibilityComponentHandler hiddenComponentHandler;
         private GameObject gameObject;
         private IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
@@ -29,7 +29,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            hiddenComponentHandler = new ECSHiddenComponentHandler();
+            hiddenComponentHandler = new ECSVisibilityComponentHandler();
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
