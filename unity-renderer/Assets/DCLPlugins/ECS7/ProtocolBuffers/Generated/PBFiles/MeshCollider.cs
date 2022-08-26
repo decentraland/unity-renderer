@@ -24,25 +24,25 @@ namespace DCL.ECSComponents {
     static MeshColliderReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChJNZXNoQ29sbGlkZXIucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MiyAQKDlBC",
-            "TWVzaENvbGxpZGVyEksKDmNvbGxpc2lvbl9tYXNrGAEgASgOMi4uZGVjZW50",
-            "cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5Db2xsaXNpb25NYXNrSAGIAQES",
-            "NwoDYm94GAIgASgLMiguZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRl",
-            "ci5Cb3hNZXNoSAASPQoGc3BoZXJlGAMgASgLMisuZGVjZW50cmFsYW5kLmVj",
-            "cy5QQk1lc2hDb2xsaWRlci5TcGhlcmVNZXNoSAASQQoIY3lsaW5kZXIYBCAB",
-            "KAsyLS5kZWNlbnRyYWxhbmQuZWNzLlBCTWVzaENvbGxpZGVyLkN5bGluZGVy",
-            "TWVzaEgAEjsKBXBsYW5lGAUgASgLMiouZGVjZW50cmFsYW5kLmVjcy5QQk1l",
-            "c2hDb2xsaWRlci5QbGFuZU1lc2hIABoJCgdCb3hNZXNoGmQKDEN5bGluZGVy",
-            "TWVzaBIXCgpyYWRpdXNfdG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRv",
-            "bRgCIAEoAkgBiAEBQg0KC19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9t",
-            "GgsKCVBsYW5lTWVzaBoMCgpTcGhlcmVNZXNoIkoKDUNvbGxpc2lvbk1hc2sS",
-            "CAoETm9uZRAAEgsKB1BvaW50ZXIQARILCgdQaHlzaWNzEAISFQoRUGh5c2lj",
-            "c0FuZFBvaW50ZXIQA0IGCgRtZXNoQhEKD19jb2xsaXNpb25fbWFza0IUqgIR",
-            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ChJNZXNoQ29sbGlkZXIucHJvdG8SEGRlY2VudHJhbGFuZC5lY3Mi7QMKDlBC",
+            "TWVzaENvbGxpZGVyEjwKDmNvbGxpc2lvbl9tYXNrGAEgASgOMh8uZGVjZW50",
+            "cmFsYW5kLmVjcy5Db2xsaWRlckxheWVySAGIAQESNwoDYm94GAIgASgLMigu",
+            "ZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5Cb3hNZXNoSAASPQoG",
+            "c3BoZXJlGAMgASgLMisuZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRl",
+            "ci5TcGhlcmVNZXNoSAASQQoIY3lsaW5kZXIYBCABKAsyLS5kZWNlbnRyYWxh",
+            "bmQuZWNzLlBCTWVzaENvbGxpZGVyLkN5bGluZGVyTWVzaEgAEjsKBXBsYW5l",
+            "GAUgASgLMiouZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5QbGFu",
+            "ZU1lc2hIABoJCgdCb3hNZXNoGmQKDEN5bGluZGVyTWVzaBIXCgpyYWRpdXNf",
+            "dG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgCIAEoAkgBiAEBQg0K",
+            "C19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsKCVBsYW5lTWVzaBoM",
+            "CgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lvbl9tYXNrKkoKDUNv",
+            "bGxpZGVyTGF5ZXISCAoETm9uZRAAEgsKB1BvaW50ZXIQARILCgdQaHlzaWNz",
+            "EAISFQoRUGh5c2ljc0FuZFBvaW50ZXIQA0IUqgIRRENMLkVDU0NvbXBvbmVu",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider), global::DCL.ECSComponents.PBMeshCollider.Parser, new[]{ "CollisionMask", "Box", "Sphere", "Cylinder", "Plane" }, new[]{ "Mesh", "CollisionMask" }, new[]{ typeof(global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask) }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider.Types.BoxMesh), global::DCL.ECSComponents.PBMeshCollider.Types.BoxMesh.Parser, null, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.ColliderLayer), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider), global::DCL.ECSComponents.PBMeshCollider.Parser, new[]{ "CollisionMask", "Box", "Sphere", "Cylinder", "Plane" }, new[]{ "Mesh", "CollisionMask" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider.Types.BoxMesh), global::DCL.ECSComponents.PBMeshCollider.Types.BoxMesh.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider.Types.CylinderMesh), global::DCL.ECSComponents.PBMeshCollider.Types.CylinderMesh.Parser, new[]{ "RadiusTop", "RadiusBottom" }, new[]{ "RadiusTop", "RadiusBottom" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider.Types.PlaneMesh), global::DCL.ECSComponents.PBMeshCollider.Types.PlaneMesh.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMeshCollider.Types.SphereMesh), global::DCL.ECSComponents.PBMeshCollider.Types.SphereMesh.Parser, null, null, null, null, null)})
@@ -51,6 +51,19 @@ namespace DCL.ECSComponents {
     #endregion
 
   }
+  #region Enums
+  public enum ColliderLayer {
+    [pbr::OriginalName("None")] None = 0,
+    [pbr::OriginalName("Pointer")] Pointer = 1,
+    [pbr::OriginalName("Physics")] Physics = 2,
+    /// <summary>
+    /// Physics | Pointer;
+    /// </summary>
+    [pbr::OriginalName("PhysicsAndPointer")] PhysicsAndPointer = 3,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBMeshCollider : pb::IMessage<PBMeshCollider>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -115,14 +128,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "collision_mask" field.</summary>
     public const int CollisionMaskFieldNumber = 1;
-    private global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask collisionMask_;
+    private global::DCL.ECSComponents.ColliderLayer collisionMask_;
     /// <summary>
-    /// default = CollisionMask.PhysicsAndPointer
+    /// default = ColliderLayer.PhysicsAndPointer
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask CollisionMask {
-      get { if ((_hasBits0 & 1) != 0) { return collisionMask_; } else { return global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask.None; } }
+    public global::DCL.ECSComponents.ColliderLayer CollisionMask {
+      get { if ((_hasBits0 & 1) != 0) { return collisionMask_; } else { return global::DCL.ECSComponents.ColliderLayer.None; } }
       set {
         _hasBits0 |= 1;
         collisionMask_ = value;
@@ -397,7 +410,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            CollisionMask = (global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask) input.ReadEnum();
+            CollisionMask = (global::DCL.ECSComponents.ColliderLayer) input.ReadEnum();
             break;
           }
           case 18: {
@@ -452,7 +465,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            CollisionMask = (global::DCL.ECSComponents.PBMeshCollider.Types.CollisionMask) input.ReadEnum();
+            CollisionMask = (global::DCL.ECSComponents.ColliderLayer) input.ReadEnum();
             break;
           }
           case 18: {
@@ -501,13 +514,6 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
-      public enum CollisionMask {
-        [pbr::OriginalName("None")] None = 0,
-        [pbr::OriginalName("Pointer")] Pointer = 1,
-        [pbr::OriginalName("Physics")] Physics = 2,
-        [pbr::OriginalName("PhysicsAndPointer")] PhysicsAndPointer = 3,
-      }
-
       public sealed partial class BoxMesh : pb::IMessage<BoxMesh>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage

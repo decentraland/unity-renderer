@@ -3,14 +3,14 @@ syntax = "proto3";
 import "common/id.proto";
 option (ecs_component_id) = 1019;
 
-message PBMeshCollider {
-    enum CollisionMask {
-        None = 0;
-        Pointer = 1;
-        Physics = 2;
-        PhysicsAndPointer = 3;
-    }
-    
+enum ColliderLayer {
+    None = 0;
+    Pointer = 1;
+    Physics = 2;
+    PhysicsAndPointer = 3; // Physics | Pointer;
+}
+
+message PBMeshCollider {    
     message BoxMesh {
     }
 
@@ -25,7 +25,7 @@ message PBMeshCollider {
     message SphereMesh {
     }
 
-    optional CollisionMask collision_mask = 1; // default = CollisionMask.PhysicsAndPointer
+    optional ColliderLayer collision_mask = 1; // default = ColliderLayer.PhysicsAndPointer
     
     oneof mesh {
         BoxMesh box = 2;

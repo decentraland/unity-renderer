@@ -89,21 +89,21 @@ namespace DCL.ECSComponents
                 colliderGameObject.SetActive(true);
             }
 
-            PBMeshCollider.Types.CollisionMask collisionMask = model.GetCollisionMask();
+            ColliderLayer colliderLayer = model.GetColliderLayer();
 
-            if (collisionMask == PBMeshCollider.Types.CollisionMask.PhysicsAndPointer)
+            if (colliderLayer == ColliderLayer.PhysicsAndPointer)
             {
                 colliderGameObject.layer = PhysicsLayers.defaultLayer;
             }
-            else if (collisionMask == PBMeshCollider.Types.CollisionMask.Physics)
+            else if (colliderLayer == ColliderLayer.Physics)
             {
                 colliderGameObject.layer = PhysicsLayers.characterOnlyLayer;
             }
-            else if (collisionMask == PBMeshCollider.Types.CollisionMask.Pointer)
+            else if (colliderLayer == ColliderLayer.Pointer)
             {
                 colliderGameObject.layer = PhysicsLayers.onPointerEventLayer;
             }
-            else if (collisionMask == PBMeshCollider.Types.CollisionMask.None && collider != null)
+            else if (colliderLayer == ColliderLayer.None && collider != null)
             {
                 colliderGameObject.SetActive(false);
             }
