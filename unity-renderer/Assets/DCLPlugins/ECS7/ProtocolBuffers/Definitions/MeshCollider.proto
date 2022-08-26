@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1019;
+
+message PBMeshCollider {
+    enum CollisionMask {
+        None = 0;
+        Pointer = 1;
+        Physics = 2;
+        PhysicsAndPointer = 3;
+    }
+    
+    message BoxMesh {
+    }
+
+    message CylinderMesh {
+        optional float radius_top = 1; // default=1.0
+        optional float radius_bottom = 2; // default=1.0
+    }
+
+    message PlaneMesh {
+    }
+
+    message SphereMesh {
+    }
+
+    optional CollisionMask collision_mask = 1; // default = CollisionMask.PhysicsAndPointer
+    
+    oneof mesh {
+        BoxMesh box = 2;
+        SphereMesh sphere = 3;
+        CylinderMesh cylinder = 4;
+        PlaneMesh plane = 5;
+    }
+}
