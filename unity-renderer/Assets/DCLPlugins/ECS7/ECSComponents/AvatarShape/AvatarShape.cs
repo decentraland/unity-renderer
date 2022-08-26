@@ -153,8 +153,9 @@ namespace DCL.ECSComponents
             bool needsLoading = !AvatarUtils.HaveSameWearablesAndColors(model,newModel);
             model = newModel;
 
-            if (string.IsNullOrEmpty(model.BodyShape) || model.Wearables.Count == 0)
-                return;
+            // if (string.IsNullOrEmpty(model.GetBodyShape()) || model.Wearables.Count == 0)
+            //     return;
+            
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.Name}";
 #endif
@@ -171,8 +172,8 @@ namespace DCL.ECSComponents
             entity.OnTransformChange -= OnEntityTransformChanged;
             entity.OnTransformChange += OnEntityTransformChanged;
 
-            var wearableItems = model.Wearables.ToList();
-            wearableItems.Add(model.BodyShape);
+            var wearableItems = model.GetWereables().ToList();
+            wearableItems.Add(model.GetBodyShape());
 
             //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
@@ -194,7 +195,7 @@ namespace DCL.ECSComponents
                 }
             }
             
-            avatar.PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
+            avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity,model);
 

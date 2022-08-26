@@ -9,20 +9,13 @@ namespace DCL.ECSComponents
             if (otheravatar == null || avatar == null)
                 return false;
 
-            bool wearablesAreEqual = avatar.Wearables.All(otheravatar.Wearables.Contains) && avatar.Wearables.Count == otheravatar.Wearables.Count;
+            bool wearablesAreEqual = avatar.GetWereables().All(otheravatar.GetWereables().Contains) && avatar.GetWereables().Count == otheravatar.GetWereables().Count;
 
-            return avatar.BodyShape.Equals(otheravatar.BodyShape) &&
+            return avatar.GetBodyShape().Equals(otheravatar.GetBodyShape()) &&
                    avatar.SkinColor.Equals(otheravatar.SkinColor) &&
                    avatar.HairColor.Equals(otheravatar.HairColor) &&
                    avatar.EyeColor.Equals(otheravatar.EyeColor) &&
                    wearablesAreEqual;
-        }
-
-        public static bool HaveSameExpressions(PBAvatarShape avatar, PBAvatarShape otheravatar)
-        {
-            return avatar.ExpressionTriggerId == otheravatar.ExpressionTriggerId &&
-                   avatar.ExpressionTriggerTimestamp == otheravatar.ExpressionTriggerTimestamp &&
-                   avatar.StickerTriggerTimestamp == otheravatar.StickerTriggerTimestamp;
         }
     }
 }
