@@ -12,7 +12,7 @@ namespace DCL.Helpers
 {
     public static class CrashPayloadUtils
     {
-        public static CrashPayload ComputePayload(Dictionary<string, IParcelScene> allScenes,
+        public static CrashPayload ComputePayload(IEnumerable<KeyValuePair<string, IParcelScene>> allScenes,
             List<Vector3> trackedMovements,
             List<Vector3> trackedTeleports)
         {
@@ -187,7 +187,7 @@ namespace DCL.Helpers
             public int quantity;
         }
 
-        public static void Dump(Dictionary<string, IParcelScene> allScenes, AssetLibrary_Texture library,
+        public static void Dump(IEnumerable<KeyValuePair<string, IParcelScene>> allScenes, AssetLibrary_Texture library,
             Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
         {
             var componentsDump = new List<ComponentsDump>();

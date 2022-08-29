@@ -86,12 +86,12 @@ namespace DCL
         public static IParcelScene GetCurrentScene()
         {
             var worldState = Environment.i.world.state;
-            string currentSceneId = worldState.currentSceneId;
+            string currentSceneId = worldState.GetCurrentSceneId();
 
             if (string.IsNullOrEmpty(currentSceneId))
                 return null;
 
-            bool foundCurrentScene = worldState.loadedScenes.TryGetValue(currentSceneId, out IParcelScene scene);
+            bool foundCurrentScene = worldState.TryGetScene(currentSceneId, out IParcelScene scene);
 
             if (!foundCurrentScene)
                 return null;

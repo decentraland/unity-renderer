@@ -53,8 +53,8 @@ namespace Tests
             });
 
             var worldState = Substitute.For<IWorldState>();
-            worldState.currentSceneId.Returns("temptation");
-            worldState.loadedScenes.Returns(new Dictionary<string, IParcelScene>() { { "temptation", scene } });
+            worldState.GetCurrentSceneId().Returns("temptation");
+            worldState.GetLoadedScenes().Returns(new Dictionary<string, IParcelScene>() { { "temptation", scene } });
 
             var serviceLocator = new ServiceLocator();
             serviceLocator.Register<IWorldState>(() => worldState);

@@ -31,8 +31,9 @@ public class PreviewSceneLimitsWarningShould
         sceneMetrics.maxCount.Returns(limit);
 
         scene.metricsCounter.Returns(sceneMetrics);
-        worldState.loadedScenes.Returns(scenes);
-
+        worldState.GetLoadedScenes().Returns(scenes);
+        worldState.TryGetScene(SCENE_ID, out Arg.Any<IParcelScene>()).Returns(param => param[1] = scene);
+        
         kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
     }
 

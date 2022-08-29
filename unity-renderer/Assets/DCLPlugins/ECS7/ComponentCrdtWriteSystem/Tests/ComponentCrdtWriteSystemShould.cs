@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests
 {
@@ -24,7 +26,8 @@ namespace Tests
             crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
 
             scene.crdtExecutor.Returns(crdtExecutor);
-            worldState.loadedScenes.Add(SCENE_ID, scene);
+            scene.GetParcels().Returns(new HashSet<Vector2Int>());
+            worldState.AddScene(SCENE_ID, scene);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
                 Substitute.For<ISceneController>(), DataStore.i.rpcContext.context);

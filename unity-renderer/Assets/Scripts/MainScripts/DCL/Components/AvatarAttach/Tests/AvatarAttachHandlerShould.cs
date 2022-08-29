@@ -5,16 +5,30 @@ using DCL.Controllers;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace AvatarAttach_Tests
 {
     public class AvatarAttachHandlerShould
     {
+        private UserProfile userProfile;
+
+        [SetUp]
+        public void SetUp()
+        {
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.UpdateData(new UserProfileModel() { userId = "ownUserId" });
+        }
+
         [TearDown]
         public void TearDown()
         {
             DataStore.Clear();
+            if (userProfile != null && AssetDatabase.Contains(userProfile))
+            {
+                Resources.UnloadAsset(userProfile);
+            }
         }
 
         [Test]
