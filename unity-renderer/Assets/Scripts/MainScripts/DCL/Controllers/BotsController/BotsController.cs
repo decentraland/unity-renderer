@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Components;
+using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
@@ -42,7 +43,7 @@ namespace DCL.Bots
             if (globalScene != null)
                 yield break;
 
-            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]];
+            globalScene = Environment.i.world.state.GetGlobalScenes().First();
 
             CatalogController.wearableCatalog.Clear();
 
