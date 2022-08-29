@@ -12,9 +12,9 @@ namespace DCL.ECSComponents
             return self.HasRadiusBottom ? self.RadiusBottom : 1;
         }
 
-        public static ColliderLayer GetColliderLayer(this PBMeshCollider self)
+        public static int GetColliderLayer(this PBMeshCollider self)
         {
-            return self.HasCollisionMask ? self.CollisionMask : ColliderLayer.PhysicsAndPointer;
+            return self.HasCollisionMask ? self.CollisionMask : ((int)ColliderLayer.Physics | (int)ColliderLayer.Pointer);
         }
     }
 }

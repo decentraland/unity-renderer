@@ -148,7 +148,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = ColliderLayer.Physics
+                CollisionMask = (int)ColliderLayer.Physics
             });
 
             // physics layer
@@ -158,7 +158,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = ColliderLayer.Pointer
+                CollisionMask = (int)ColliderLayer.Pointer
             });
 
             // pointer layer
@@ -168,7 +168,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = ColliderLayer.None
+                CollisionMask = (int)ColliderLayer.None
             });
 
             // "none" layer
@@ -178,7 +178,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = ColliderLayer.PhysicsAndPointer
+                CollisionMask = (int)ColliderLayer.Pointer | (int)ColliderLayer.Physics
             });
 
             // physics and pointer layer

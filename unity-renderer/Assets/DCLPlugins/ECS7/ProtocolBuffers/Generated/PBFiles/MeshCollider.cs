@@ -24,21 +24,19 @@ namespace DCL.ECSComponents {
     static MeshColliderReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChJNZXNoQ29sbGlkZXIucHJvdG8SEGRlY2VudHJhbGFuZC5lY3Mi7QMKDlBC",
-            "TWVzaENvbGxpZGVyEjwKDmNvbGxpc2lvbl9tYXNrGAEgASgOMh8uZGVjZW50",
-            "cmFsYW5kLmVjcy5Db2xsaWRlckxheWVySAGIAQESNwoDYm94GAIgASgLMigu",
-            "ZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5Cb3hNZXNoSAASPQoG",
-            "c3BoZXJlGAMgASgLMisuZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRl",
-            "ci5TcGhlcmVNZXNoSAASQQoIY3lsaW5kZXIYBCABKAsyLS5kZWNlbnRyYWxh",
-            "bmQuZWNzLlBCTWVzaENvbGxpZGVyLkN5bGluZGVyTWVzaEgAEjsKBXBsYW5l",
-            "GAUgASgLMiouZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5QbGFu",
-            "ZU1lc2hIABoJCgdCb3hNZXNoGmQKDEN5bGluZGVyTWVzaBIXCgpyYWRpdXNf",
-            "dG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgCIAEoAkgBiAEBQg0K",
-            "C19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsKCVBsYW5lTWVzaBoM",
-            "CgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lvbl9tYXNrKkoKDUNv",
-            "bGxpZGVyTGF5ZXISCAoETm9uZRAAEgsKB1BvaW50ZXIQARILCgdQaHlzaWNz",
-            "EAISFQoRUGh5c2ljc0FuZFBvaW50ZXIQA0IUqgIRRENMLkVDU0NvbXBvbmVu",
-            "dHNiBnByb3RvMw=="));
+            "ChJNZXNoQ29sbGlkZXIucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MizAMKDlBC",
+            "TWVzaENvbGxpZGVyEhsKDmNvbGxpc2lvbl9tYXNrGAEgASgFSAGIAQESNwoD",
+            "Ym94GAIgASgLMiguZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hDb2xsaWRlci5C",
+            "b3hNZXNoSAASPQoGc3BoZXJlGAMgASgLMisuZGVjZW50cmFsYW5kLmVjcy5Q",
+            "Qk1lc2hDb2xsaWRlci5TcGhlcmVNZXNoSAASQQoIY3lsaW5kZXIYBCABKAsy",
+            "LS5kZWNlbnRyYWxhbmQuZWNzLlBCTWVzaENvbGxpZGVyLkN5bGluZGVyTWVz",
+            "aEgAEjsKBXBsYW5lGAUgASgLMiouZGVjZW50cmFsYW5kLmVjcy5QQk1lc2hD",
+            "b2xsaWRlci5QbGFuZU1lc2hIABoJCgdCb3hNZXNoGmQKDEN5bGluZGVyTWVz",
+            "aBIXCgpyYWRpdXNfdG9wGAEgASgCSACIAQESGgoNcmFkaXVzX2JvdHRvbRgC",
+            "IAEoAkgBiAEBQg0KC19yYWRpdXNfdG9wQhAKDl9yYWRpdXNfYm90dG9tGgsK",
+            "CVBsYW5lTWVzaBoMCgpTcGhlcmVNZXNoQgYKBG1lc2hCEQoPX2NvbGxpc2lv",
+            "bl9tYXNrKjMKDUNvbGxpZGVyTGF5ZXISCAoETm9uZRAAEgsKB1BvaW50ZXIQ",
+            "ARILCgdQaHlzaWNzEAJCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.ColliderLayer), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -56,10 +54,6 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("None")] None = 0,
     [pbr::OriginalName("Pointer")] Pointer = 1,
     [pbr::OriginalName("Physics")] Physics = 2,
-    /// <summary>
-    /// Physics | Pointer;
-    /// </summary>
-    [pbr::OriginalName("PhysicsAndPointer")] PhysicsAndPointer = 3,
   }
 
   #endregion
@@ -128,14 +122,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "collision_mask" field.</summary>
     public const int CollisionMaskFieldNumber = 1;
-    private global::DCL.ECSComponents.ColliderLayer collisionMask_;
+    private int collisionMask_;
     /// <summary>
-    /// default = ColliderLayer.PhysicsAndPointer
+    /// default = ColliderLayer.Physics | ColliderLayer.Pointer
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.ColliderLayer CollisionMask {
-      get { if ((_hasBits0 & 1) != 0) { return collisionMask_; } else { return global::DCL.ECSComponents.ColliderLayer.None; } }
+    public int CollisionMask {
+      get { if ((_hasBits0 & 1) != 0) { return collisionMask_; } else { return 0; } }
       set {
         _hasBits0 |= 1;
         collisionMask_ = value;
@@ -279,7 +273,7 @@ namespace DCL.ECSComponents {
     #else
       if (HasCollisionMask) {
         output.WriteRawTag(8);
-        output.WriteEnum((int) CollisionMask);
+        output.WriteInt32(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         output.WriteRawTag(18);
@@ -309,7 +303,7 @@ namespace DCL.ECSComponents {
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (HasCollisionMask) {
         output.WriteRawTag(8);
-        output.WriteEnum((int) CollisionMask);
+        output.WriteInt32(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         output.WriteRawTag(18);
@@ -338,7 +332,7 @@ namespace DCL.ECSComponents {
     public int CalculateSize() {
       int size = 0;
       if (HasCollisionMask) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) CollisionMask);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CollisionMask);
       }
       if (meshCase_ == MeshOneofCase.Box) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Box);
@@ -410,7 +404,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            CollisionMask = (global::DCL.ECSComponents.ColliderLayer) input.ReadEnum();
+            CollisionMask = input.ReadInt32();
             break;
           }
           case 18: {
@@ -465,7 +459,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            CollisionMask = (global::DCL.ECSComponents.ColliderLayer) input.ReadEnum();
+            CollisionMask = input.ReadInt32();
             break;
           }
           case 18: {

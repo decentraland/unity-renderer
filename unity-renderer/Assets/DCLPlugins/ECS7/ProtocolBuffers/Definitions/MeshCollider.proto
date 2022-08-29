@@ -7,7 +7,6 @@ enum ColliderLayer {
     None = 0;
     Pointer = 1;
     Physics = 2;
-    PhysicsAndPointer = 3; // Physics | Pointer;
 }
 
 message PBMeshCollider {    
@@ -25,7 +24,7 @@ message PBMeshCollider {
     message SphereMesh {
     }
 
-    optional ColliderLayer collision_mask = 1; // default = ColliderLayer.PhysicsAndPointer
+    optional int32 collision_mask = 1; // default = ColliderLayer.Physics | ColliderLayer.Pointer
     
     oneof mesh {
         BoxMesh box = 2;
