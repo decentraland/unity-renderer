@@ -127,6 +127,12 @@ namespace DCL.Configuration
         public const float LAND_CHECK_MESSAGE_TIMER = 5f;
     }
 
+    public static class TextureCompressionSettings
+    {
+        public const int GLTF_TEX_MAX_SIZE_WEB = 512;
+        public const int GENERAL_TEX_MAX_SIZE_WEB = 2048;
+    }
+
     public static class ApplicationSettings
     {
         public static string version = "1.0";

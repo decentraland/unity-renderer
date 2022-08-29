@@ -33,6 +33,7 @@ public class IntegrationTestSuite_Legacy
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
         //              like this.
+        CommonScriptableObjects.allUIHidden.Set(false);
         CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         CommonScriptableObjects.rendererState.Set(true);
 
@@ -54,6 +55,7 @@ public class IntegrationTestSuite_Legacy
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
         result.Register<ILastReadMessagesService>(() => Substitute.For<ILastReadMessagesService>());
+        result.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
 
         result.Register<IServiceProviders>(
             () =>

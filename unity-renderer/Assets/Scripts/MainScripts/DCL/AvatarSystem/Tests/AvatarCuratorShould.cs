@@ -19,6 +19,7 @@ namespace Test.AvatarSystem
         private AvatarCurator curator;
         private IWearableItemResolver resolver;
         private Dictionary<string, WearableItem> catalog;
+        private IEmotesCatalogService emotesCatalogService;
 
         [SetUp]
         public void SetUp()
@@ -49,7 +50,8 @@ namespace Test.AvatarSystem
                         WearableItem wearable = GetWearableFromID(x.ArgAt<string>(0));
                         return new UniTask<WearableItem>(wearable);
                     });
-            curator = new AvatarCurator(resolver);
+            emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+            curator = new AvatarCurator(resolver, emotesCatalogService);
         }
 
         [TearDown]
@@ -66,7 +68,7 @@ namespace Test.AvatarSystem
                     List<WearableItem> emotes)
                 = await curator.Curate(
                     new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE },
-                    new [] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id" });
+                    new [] { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id" }, new string[] { });
 
             Assert.NotNull(bodyshape);
             Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyshape);
@@ -93,7 +95,7 @@ namespace Test.AvatarSystem
                 WearableItem eyebrows,
                 WearableItem mouth,
                 List<WearableItem> wearables,
-                List<WearableItem> emotes) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" });
+                List<WearableItem> emotes) = await curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, new [] { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" }, new string[] { });
 
             Assert.NotNull(bodyshape);
             Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyshape);
@@ -119,7 +121,7 @@ namespace Test.AvatarSystem
             cts.Cancel();
 
             //Assert
-            TestUtils.ThrowsAsync<OperationCanceledException>(curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, null, cts.Token));
+            TestUtils.ThrowsAsync<OperationCanceledException>(curator.Curate(new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.FEMALE }, null, null, cts.Token));
         });
 
         [Test]
