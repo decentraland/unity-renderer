@@ -20,7 +20,7 @@ namespace DCL
 
         public void FilterOutNotOwnedEquippedEmotes(IEnumerable<WearableItem> emotes)
         {
-            var filtered = equippedEmotes.Get().Where(x => emotes.Any(y => x.id == y.id) );
+            var filtered = equippedEmotes.Get().Where(x => emotes.Any(y => x.id == y.id) ).ToArray();
             equippedEmotes.Set(filtered);
         }
     }

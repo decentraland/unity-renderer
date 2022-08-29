@@ -127,10 +127,11 @@ namespace DCL.EmotesWheel
             foreach (EmoteWheelSlot slot in updatedWheelSlots)
             {
                 slot.SetAsLoading(false);
-                slotsInLoadingState.Remove(slot.emoteId);
-
                 if (string.IsNullOrEmpty(slot.emoteId))
                     continue;
+
+                slotsInLoadingState.Remove(slot.emoteId);
+
 
                 slot.SetAsLoading(true);
                 slotsInLoadingState.Add(slot.emoteId, slot);

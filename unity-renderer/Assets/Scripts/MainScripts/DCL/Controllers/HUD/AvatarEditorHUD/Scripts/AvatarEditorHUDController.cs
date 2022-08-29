@@ -181,7 +181,7 @@ public class AvatarEditorHUDController : IHUD
                                  var emotes = ownedWearables.Where(x => x.IsEmote()).ToArray();
                                  //Add embedded emotes
                                  var allEmotes = emotes.Concat(EmbeddedEmotesSO.Provide().emotes).ToArray();
-                                 emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotes);
+                                 emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(allEmotes);
                                  emotesCustomizationComponentController.SetEmotes(allEmotes);
                              }
                              view.ShowCollectiblesLoadingSpinner(false);
@@ -238,11 +238,17 @@ public class AvatarEditorHUDController : IHUD
         {
             var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
-            emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotes);
             if (emotes != null)
-                emotesCustomizationComponentController.SetEmotes(emotes.Concat(embeddedEmotes).ToArray());
+            {
+                var allEmotes = emotes.Concat(embeddedEmotes).ToArray();
+                emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(allEmotes);
+                emotesCustomizationComponentController.SetEmotes(allEmotes);
+            }
             else
-                emotesCustomizationComponentController.SetEmotes(embeddedEmotes.ToArray());
+            {
+                emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(embeddedEmotes);
+                emotesCustomizationComponentController.SetEmotes(embeddedEmotes);
+            }
 
         }
         catch (Exception e)

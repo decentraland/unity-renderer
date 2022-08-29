@@ -81,9 +81,17 @@ namespace DCL.EquippedEmotes
             SetEquippedEmotes(storedEquippedEmotes);
         }
 
-        internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes) { SaveEquippedEmotesInLocalStorage(); }
+        internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes)
+        {
+            if (!DataStore.i.emotes.newFlowEnabled.Get())
+                SaveEquippedEmotesInLocalStorage();
+        }
 
-        internal void OnEquippedEmoteAddedOrRemoved(EquippedEmoteData equippedEmote) { SaveEquippedEmotesInLocalStorage(); }
+        internal void OnEquippedEmoteAddedOrRemoved(EquippedEmoteData equippedEmote)
+        {
+            if (!DataStore.i.emotes.newFlowEnabled.Get())
+                SaveEquippedEmotesInLocalStorage();
+        }
 
         internal void SaveEquippedEmotesInLocalStorage()
         {
