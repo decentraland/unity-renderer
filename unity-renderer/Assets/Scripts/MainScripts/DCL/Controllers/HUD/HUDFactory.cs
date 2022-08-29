@@ -116,7 +116,10 @@ public class HUDFactory : IHUDFactory
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i,
                     SceneReferences.i.mouseCatcher,
-                    DataStore.i);
+                    DataStore.i,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(

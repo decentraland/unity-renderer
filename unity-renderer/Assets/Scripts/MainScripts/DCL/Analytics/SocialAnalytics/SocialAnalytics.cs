@@ -30,6 +30,7 @@ namespace SocialFeaturesAnalytics
         private const string EMPTY_CHANNEL_CREATED = "chat_channel_created";
         private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
         private const string CHANNEL_LEAVE = "player_leaves_channel";
+        private const string CHANNEL_SEARCH = "player_search_channel";
 
         private IAnalytics analytics;
         private IUserProfileBridge userProfileBridge;
@@ -290,6 +291,15 @@ namespace SocialFeaturesAnalytics
                 ["channel"] = channelId
             };
             analytics.SendAnalytic(CHANNEL_LEAVE, data);
+        }
+
+        public void SendChannelSearch(string text)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["search"] = text
+            };
+            analytics.SendAnalytic(CHANNEL_SEARCH, data);
         }
 
         private PlayerType? GetPlayerTypeByUserId(string userId)

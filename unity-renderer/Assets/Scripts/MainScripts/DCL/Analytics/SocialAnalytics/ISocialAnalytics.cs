@@ -27,5 +27,6 @@ namespace SocialFeaturesAnalytics
         void SendEmptyChannelCreated(string channelId, ChannelJoinedSource source);
         void SendPopulatedChannelJoined(string channelId, ChannelJoinedSource source);
         void SendLeaveChannel(string channelId, ChannelLeaveSource source);
+        void SendChannelSearch(string text);
     }
 }

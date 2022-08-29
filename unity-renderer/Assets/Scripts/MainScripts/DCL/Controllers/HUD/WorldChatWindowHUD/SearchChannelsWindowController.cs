@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Channel = DCL.Chat.Channels.Channel;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 
 namespace DCL.Chat.HUD
 {
@@ -14,6 +15,7 @@ namespace DCL.Chat.HUD
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
+        private readonly ISocialAnalytics socialAnalytics;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -27,11 +29,13 @@ namespace DCL.Chat.HUD
         public event Action<string> OnOpenChannelLeave;
 
         public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher,
-            DataStore dataStore)
+            DataStore dataStore,
+            ISocialAnalytics socialAnalytics)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.dataStore = dataStore;
+            this.socialAnalytics = socialAnalytics;
         }
 
         public void Initialize(ISearchChannelsWindowView view = null)
@@ -115,8 +119,11 @@ namespace DCL.Chat.HUD
             if (string.IsNullOrEmpty(searchText))
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0);
             else
+            {
                 chatController.GetChannels(LOAD_PAGE_SIZE, 0, searchText);
-            
+                socialAnalytics.SendChannelSearch(searchText);
+            }
+
             loadingCancellationToken.Cancel();
             loadingCancellationToken = new CancellationTokenSource();
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
