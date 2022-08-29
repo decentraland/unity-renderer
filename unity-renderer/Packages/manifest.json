@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.atteneder.draco": "https://github.com/atteneder/DracoUnity.git#draco-unity-3",
-    "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
+    "com.atteneder.draco": "3.3.2",
+    "com.atteneder.gltfast": "4.8.4",
     "com.brunomikoski.animationsequencer": "0.3.8",
     "com.coffee.ui-particle": "4.1.6",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
@@ -63,6 +63,8 @@
         "com.brunomikoski",
         "com.demigiant",
         "com.coffee.ui-particle",
+        "com.atteneder.gltfast",
+        "com.atteneder.draco",
         "com.madsbangh.easybuttons"
       ]
     }

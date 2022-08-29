@@ -1,7 +1,5 @@
 ﻿using System;
 using GLTFast;
-using GLTFast.Logging;
-using GLTFast.Materials;
 using UnityEngine;
 
 namespace DCL

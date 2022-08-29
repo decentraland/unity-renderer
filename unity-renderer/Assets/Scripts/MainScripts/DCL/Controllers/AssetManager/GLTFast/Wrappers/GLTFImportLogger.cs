@@ -1,4 +1,4 @@
-﻿using GLTFast.Logging;
+﻿using GLTFast;
 using UnityEngine;
 
 namespace DCL
