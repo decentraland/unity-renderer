@@ -42,7 +42,7 @@ public static class ECSComponentsUtils
         }
     }
 
-    public static MeshesInfo GeneratePrimitive(IDCLEntity entity, Mesh mesh, GameObject gameObject, bool visible, bool withCollisions, bool isPointerBlocker)
+    public static MeshesInfo GeneratePrimitive(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
     {
         // We create the unity components needed to generate the primitive
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
@@ -72,16 +72,19 @@ public static class ECSComponentsUtils
         return meshesInfo;
     }
     
-    public static void UpdateRenderer(IDCLEntity entity, GameObject meshGameObject, Renderer[] renderers, bool visible, bool withCollisions, bool isPointerBlocker)
+    public static void UpdateRenderer(IDCLEntity entity, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
     {
-        ConfigurePrimitiveShapeVisibility(meshGameObject, visible, renderers);
+        ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
         
         // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
         CollidersManager.i.ConfigureColliders(entity.meshRootGameObject,withCollisions, false, entity,CalculateCollidersLayer(withCollisions,isPointerBlocker));
     }
     
-    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers)
+    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
     {
+        if (meshGameObject == null)
+            return;
+
         Collider onPointerEventCollider;
 
         for (var i = 0; i < meshRenderers.Length; i++)
