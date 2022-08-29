@@ -4,6 +4,7 @@ using DCL;
 using ECSSystems.CameraSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
+using ECSSystems.PointerInputSystem;
 using ECS7System = System.Action;
 
 public class ECSSystemsController : IDisposable
@@ -30,6 +31,7 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
+            ECSPointerInputSystem.CreateSystem(context.componentGroups.pointerDownGroup, context.componentGroups.pointerUpGroup, DataStore.i.ecs7),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };

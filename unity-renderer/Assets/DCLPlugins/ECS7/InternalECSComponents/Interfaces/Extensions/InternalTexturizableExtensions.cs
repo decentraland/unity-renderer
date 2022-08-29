@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.ECS7.InternalComponents
 {
-    public static class InternalECSComponentsExtensions
+    public static class InternalTexturizableExtensions
     {
         public static void RemoveRenderers(this IInternalECSComponent<InternalTexturizable> texurizableInternalComponent,
             IParcelScene scene, IDCLEntity entity, IList<Renderer> renderers)

@@ -1,7 +1,9 @@
 using System.Collections;
 using DCL;
 using DCL.Configuration;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,7 +20,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            handler = new MeshColliderHandler();
+            handler = new MeshColliderHandler(Substitute.For<IInternalECSComponent<InternalColliders>>(),
+                Substitute.For<IInternalECSComponent<InternalColliders>>());
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1101);

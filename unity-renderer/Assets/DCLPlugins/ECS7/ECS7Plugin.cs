@@ -20,6 +20,8 @@ namespace DCL.ECS7
 
         public ECS7Plugin()
         {
+            DataStore.i.ecs7.isEcs7Enable = true;
+            
             sceneController = Environment.i.world.sceneController;
 
             componentsFactory = new ECSComponentsFactory();

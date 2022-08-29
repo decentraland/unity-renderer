@@ -16,4 +16,9 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers = null;
         public bool dirty = true;
     }
+
+    public class InternalColliders
+    {
+        public IList<Collider> colliders = new List<Collider>();
+    }
 }
