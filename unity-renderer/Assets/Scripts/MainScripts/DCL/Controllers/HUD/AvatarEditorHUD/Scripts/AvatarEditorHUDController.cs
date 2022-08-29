@@ -34,7 +34,8 @@ public class AvatarEditorHUDController : IHUD
     public bool bypassUpdateAvatarPreview = false;
 
     internal UserProfile userProfile;
-    internal IAnalytics analytics;
+    internal readonly IAnalytics analytics;
+    internal readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -79,9 +80,12 @@ public class AvatarEditorHUDController : IHUD
     {
         this.featureFlags = featureFlags;
         this.analytics = analytics;
+        this.newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
     }
 
-    public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
+    public void Initialize(UserProfile userProfile, 
+        BaseDictionary<string, WearableItem> catalog, 
+        bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
@@ -721,7 +725,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnAvatarEditorVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
-    public void SetVisibility_Internal(bool visible)
+    private void SetVisibility_Internal(bool visible)
     {
         bool isSignUpFlow = DataStore.i.common.isSignUpFlow.Get();
         if (!visible && view.isOpen)
@@ -858,8 +862,12 @@ public class AvatarEditorHUDController : IHUD
 
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
+        
         if (DataStore.i.common.isSignUpFlow.Get())
+        {
             DataStore.i.HUDs.signupVisible.Set(true);
+            newUserExperienceAnalytics.AvatarEditSuccessNux();
+        }
 
         
         avatarIsDirty = false;
