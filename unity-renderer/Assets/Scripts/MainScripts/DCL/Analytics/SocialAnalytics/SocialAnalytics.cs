@@ -26,6 +26,8 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_REPORT = "player_report";
         private const string PLAYER_JOIN = "player_join";
         private const string PLAY_EMOTE = "used_emote";
+        private const string EMPTY_CHANNEL_CREATED = "chat_channel_created";
+        private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
 
         private IAnalytics analytics;
         private IUserProfileBridge userProfileBridge;
@@ -240,6 +242,26 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
+        public void SendEmptyChannelCreated(string channelChannelId)
+        {
+            var data = new Dictionary<string, string>
+            {
+                // TODO: solve source
+                ["source"] = "create_chat"
+            };
+            analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
+        }
+
+        public void SendPopulatedChannelJoined(string channelChannelId)
+        {
+            var data = new Dictionary<string, string>
+            {
+                // TODO: solve source
+                ["source"] = "search"
+            };
+            analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
+        }
+
         private PlayerType? GetPlayerTypeByUserId(string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -249,8 +271,7 @@ namespace SocialFeaturesAnalytics
 
             if (userProfile == null)
                 return null;
-            else
-                return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
+            return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
         }
     }
 }

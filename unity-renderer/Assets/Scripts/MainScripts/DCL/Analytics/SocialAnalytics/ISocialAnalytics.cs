@@ -23,5 +23,7 @@ namespace SocialFeaturesAnalytics
         void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source);
         void SendPlayerJoin(PlayerActionSource source);
         void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation);
+        void SendEmptyChannelCreated(string channelId);
+        void SendPopulatedChannelJoined(string channelId);
     }
 }

@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using DCL;
+using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowController : IHUD
@@ -23,6 +24,7 @@ public class WorldChatWindowController : IHUD
     private readonly IChatController chatController;
     private readonly DataStore dataStore;
     private readonly IMouseCatcher mouseCatcher;
+    private readonly ISocialAnalytics socialAnalytics;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
@@ -55,13 +57,15 @@ public class WorldChatWindowController : IHUD
         IFriendsController friendsController,
         IChatController chatController,
         DataStore dataStore,
-        IMouseCatcher mouseCatcher) 
+        IMouseCatcher mouseCatcher,
+        ISocialAnalytics socialAnalytics) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
         this.chatController = chatController;
         this.dataStore = dataStore;
         this.mouseCatcher = mouseCatcher;
+        this.socialAnalytics = socialAnalytics;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -473,7 +477,15 @@ public class WorldChatWindowController : IHUD
         view.HideChannelsLoading();
     }
 
-    private void HandleChannelJoined(Channel channel) => OpenPublicChat(channel.ChannelId);
+    private void HandleChannelJoined(Channel channel)
+    {
+        if (channel.MemberCount <= 1)
+            socialAnalytics.SendEmptyChannelCreated(channel.ChannelId);
+        else
+            socialAnalytics.SendPopulatedChannelJoined(channel.ChannelId);
+        
+        OpenPublicChat(channel.ChannelId);
+    }
 
     private void HandleJoinChannelError(string channelId, string message)
     {
