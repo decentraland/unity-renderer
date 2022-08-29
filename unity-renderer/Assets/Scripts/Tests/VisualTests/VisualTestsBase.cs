@@ -48,8 +48,6 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         uiComponentsPlugin = new UIComponentsPlugin();
         uiRefresherPlugin = new UIRefresherPlugin();
 
-        DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
-
         VisualTestUtils.snapshotIndex = 0;
 
         VisualTestUtils.SetTestingRenderSettings();
@@ -67,6 +65,8 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         UnityEngine.RenderSettings.fogStartDistance = 100;
         UnityEngine.RenderSettings.fogEndDistance = 110;
 
+        DCL.Environment.i.world.state.ForceCurrentScene( scene.sceneData.id);
+        
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
 
