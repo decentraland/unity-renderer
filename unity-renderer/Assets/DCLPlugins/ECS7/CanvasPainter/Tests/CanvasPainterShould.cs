@@ -7,7 +7,6 @@ using DCL.Models;
 using NUnit.Framework;
 using NSubstitute;
 using NSubstitute.Extensions;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,7 +20,7 @@ namespace DCL.ECS7.Tests
         private ECSComponentsManager componentsManager;
         private ECS7ComponentsComposer componentsComposer;
         private IWorldState worldState;
-        
+
         [SetUp]
         public void Setup()
         {
