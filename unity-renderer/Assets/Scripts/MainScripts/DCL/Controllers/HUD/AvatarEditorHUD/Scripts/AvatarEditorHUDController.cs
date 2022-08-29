@@ -723,16 +723,17 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetVisibility_Internal(bool visible)
     {
+        bool isSignUpFlow = DataStore.i.common.isSignUpFlow.Get();
         if (!visible && view.isOpen)
         {
             view.ResetPreviewEmote();
 
-            if (DataStore.i.common.isSignUpFlow.Get())
+            if (isSignUpFlow)
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
             Environment.i.messaging.manager.paused = false;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
-            if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
+            if (prevMouseLockState && isSignUpFlow)
             {
                 Utils.LockCursor();
             }
@@ -741,7 +742,7 @@ public class AvatarEditorHUDController : IHUD
             var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
             asset.renderScale = prevRenderScale;
 
-            if (DataStore.i.common.isSignUpFlow.Get())
+            if (isSignUpFlow)
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
 
             DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
@@ -750,7 +751,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
-            if (DataStore.i.common.isSignUpFlow.Get())
+            if (isSignUpFlow)
             {
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
                 view.sectionSelector.Hide(true);
@@ -761,15 +762,16 @@ public class AvatarEditorHUDController : IHUD
             }
 
             LoadOwnedWereables(userProfile);
-            LoadOwnedEmotes();
+            if (!isSignUpFlow)
+                LoadOwnedEmotes();
 
             LoadCollections();
-            Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
+            Environment.i.messaging.manager.paused = isSignUpFlow;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
 
             prevMouseLockState = Utils.IsCursorLocked;
 
-            if (DataStore.i.common.isSignUpFlow.Get() || !DataStore.i.exploreV2.isInitialized.Get())
+            if (isSignUpFlow || !DataStore.i.exploreV2.isInitialized.Get())
                 Utils.UnlockCursor();
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
@@ -777,7 +779,7 @@ public class AvatarEditorHUDController : IHUD
             prevRenderScale = asset.renderScale;
             asset.renderScale = 1.0f;
 
-            if (DataStore.i.common.isSignUpFlow.Get())
+            if (isSignUpFlow)
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
             DataStore.i.common.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;

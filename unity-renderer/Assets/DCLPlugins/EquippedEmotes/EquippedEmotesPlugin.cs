@@ -14,6 +14,7 @@ namespace DCL.EquippedEmotes
         internal const string PLAYER_PREFS_EQUIPPED_EMOTES_KEY = "EquippedNFTEmotes";
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+        internal DataStore_Common commonDataStore => DataStore.i.common;
         internal DataStore_FeatureFlag featureFlagsDataStore => DataStore.i.featureFlags;
         internal UserProfile ownUserProfile;
 
@@ -28,6 +29,13 @@ namespace DCL.EquippedEmotes
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded += OnEquippedEmoteAddedOrRemoved;
             emotesCustomizationDataStore.equippedEmotes.OnRemoved += OnEquippedEmoteAddedOrRemoved;
+            commonDataStore.isSignUpFlow.OnChange += OnSignupFlowChanged;
+        }
+
+        private void OnSignupFlowChanged(bool current, bool previous)
+        {
+            if (current)
+                LoadDefaultEquippedEmotes();
         }
 
         private void OnOwnUserProfileUpdated(UserProfile userProfile)
@@ -122,6 +130,7 @@ namespace DCL.EquippedEmotes
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             emotesCustomizationDataStore.equippedEmotes.OnAdded -= OnEquippedEmoteAddedOrRemoved;
             emotesCustomizationDataStore.equippedEmotes.OnRemoved -= OnEquippedEmoteAddedOrRemoved;
+            commonDataStore.isSignUpFlow.OnChange -= OnSignupFlowChanged;
             if (ownUserProfile != null)
                 ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
         }
