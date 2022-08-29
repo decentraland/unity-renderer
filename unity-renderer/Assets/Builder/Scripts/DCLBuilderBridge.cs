@@ -335,19 +335,8 @@ namespace Builder
 
         private static ParcelScene GetLoadedScene()
         {
-            ParcelScene loadedScene = null;
             IWorldState worldState = Environment.i.world.state;
-
-            if (worldState != null && worldState.loadedScenes.Count > 0)
-            {
-                using (var iterator = worldState.loadedScenes.GetEnumerator())
-                {
-                    iterator.MoveNext();
-                    loadedScene = iterator.Current.Value as ParcelScene;
-                }
-            }
-
-            return loadedScene;
+            return worldState.GetScene(worldState.GetCurrentSceneId()) as ParcelScene;
         }
 
         private void Awake()
