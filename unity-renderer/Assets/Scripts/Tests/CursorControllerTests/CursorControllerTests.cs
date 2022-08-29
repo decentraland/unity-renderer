@@ -70,10 +70,6 @@ namespace Tests
             mainCamera.tag = "MainCamera";
             mainCamera.transform.position = Vector3.zero;
             mainCamera.transform.forward = Vector3.forward;
-
-            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
-
-
         }
 
         protected override IEnumerator TearDown()

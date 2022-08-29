@@ -10,25 +10,40 @@ internal class PrimitiveMeshFactory
         switch (meshModelModel.type)
         {
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Box:
-                mesh = PrimitiveMeshBuilder.BuildCube(1f);
-                if (meshModelModel.uvs != null && meshModelModel.uvs.Count > 0)
                 {
-                    mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
+                    if (meshModelModel.properties is PropertyUvs modelWithUvs)
+                    {
+                        mesh = PrimitiveMeshBuilder.BuildCube(1f);
+                        if (modelWithUvs.uvs != null && modelWithUvs.uvs.Count > 0)
+                        {
+                            mesh.uv = Utils.FloatArrayToV2List(modelWithUvs.uvs);
+                        }
+                    }
                 }
                 break;
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Sphere:
                 mesh = PrimitiveMeshBuilder.BuildSphere(1f);
                 break;
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Plane:
-                mesh = PrimitiveMeshBuilder.BuildPlaneV2(1f);
-                if (meshModelModel.uvs != null && meshModelModel.uvs.Count > 0)
                 {
-                    mesh.uv = Utils.FloatArrayToV2List(meshModelModel.uvs);
+                    if (meshModelModel.properties is PropertyUvs modelWithUvs)
+                    {
+                        mesh = PrimitiveMeshBuilder.BuildPlaneV2(1f);
+                        if (modelWithUvs.uvs != null && modelWithUvs.uvs.Count > 0)
+                        {
+                            mesh.uv = Utils.FloatArrayToV2List(modelWithUvs.uvs);
+                        }
+                    }
                 }
                 break;
             case AssetPromise_PrimitiveMesh_Model.PrimitiveType.Cylinder:
-                mesh = PrimitiveMeshBuilder.BuildCylinder(50, meshModelModel.radiusTop, meshModelModel.radiusBottom,
-                    2f, 0f, true, false);
+                {
+                    if (meshModelModel.properties is PropertyCylinder cylinder)
+                    {
+                        mesh = PrimitiveMeshBuilder.BuildCylinder(50, cylinder.radiusTop, cylinder.radiusBottom,
+                            2f, 0f, true, false);
+                    }
+                }
                 break;
         }
         return mesh;

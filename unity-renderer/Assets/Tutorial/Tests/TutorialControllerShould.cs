@@ -7,6 +7,7 @@ using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using NSubstitute;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -28,10 +29,11 @@ namespace DCL.Tutorial_Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.world.state.loadedScenes = new Dictionary<string, IParcelScene>();
-            genesisPlazaSimulator = TestUtils.CreateTestScene();
-            Environment.i.world.state.currentSceneId = genesisPlazaSimulator.sceneData.id;
-            genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
+            genesisPlazaSimulator = TestUtils.CreateTestScene(new LoadParcelScenesMessage.UnityParcelScene() {basePosition = genesisPlazaLocation});
+            genesisPlazaSimulator.isPersistent = false;
+            IWorldState worldState = Environment.i.world.state;
+            worldState.TryGetScene(Arg.Any<string>(), out Arg.Any<IParcelScene>()).Returns(param => param[1] = genesisPlazaSimulator);
+            
             CreateAndConfigureTutorial();
         }
 

@@ -13,36 +13,62 @@ namespace DCL
         }
 
         public readonly PrimitiveType type;
-        public readonly float radiusTop;
-        public readonly float radiusBottom;
-        public readonly IList<float> uvs;
+        public readonly object properties;
 
-        public AssetPromise_PrimitiveMesh_Model(PrimitiveType type, IList<float> uvs, float radiusTop, float radiusBottom)
+        // Do not use constructor directly, use `Create` method instead
+        private AssetPromise_PrimitiveMesh_Model(PrimitiveType type, object meshProperties)
         {
             this.type = type;
-            this.uvs = uvs;
-            this.radiusTop = radiusTop;
-            this.radiusBottom = radiusBottom;
+            this.properties = meshProperties;
+        }
+
+        private static AssetPromise_PrimitiveMesh_Model Create<T>(PrimitiveType type, T properties) where T : struct
+        {
+            return new AssetPromise_PrimitiveMesh_Model(type, properties);
         }
 
         public static AssetPromise_PrimitiveMesh_Model CreateBox(IList<float> uvs)
         {
-            return new AssetPromise_PrimitiveMesh_Model(PrimitiveType.Box, uvs, 0, 0);
+            return Create(PrimitiveType.Box, new PropertyUvs(uvs));
         }
 
         public static AssetPromise_PrimitiveMesh_Model CreatePlane(IList<float> uvs)
         {
-            return new AssetPromise_PrimitiveMesh_Model(PrimitiveType.Plane, uvs, 0, 0);
+            return Create(PrimitiveType.Plane, new PropertyUvs(uvs));
         }
 
         public static AssetPromise_PrimitiveMesh_Model CreateSphere()
         {
-            return new AssetPromise_PrimitiveMesh_Model(PrimitiveType.Sphere, null, 0, 0);
+            return Create(PrimitiveType.Sphere, new PropertyEmpty());
         }
 
         public static AssetPromise_PrimitiveMesh_Model CreateCylinder(float radiusTop, float radiusBottom)
         {
-            return new AssetPromise_PrimitiveMesh_Model(PrimitiveType.Cylinder, null, radiusTop, radiusBottom);
+            return Create(PrimitiveType.Cylinder, new PropertyCylinder(radiusTop, radiusBottom));
+        }
+    }
+
+    internal readonly struct PropertyEmpty { }
+
+    internal readonly struct PropertyUvs
+    {
+        public readonly IList<float> uvs;
+
+        public PropertyUvs(IList<float> uvs)
+        {
+            this.uvs = uvs;
+        }
+    }
+
+    internal readonly struct PropertyCylinder
+    {
+        public readonly float radiusTop;
+        public readonly float radiusBottom;
+
+        public PropertyCylinder(float radiusTop, float radiusBottom)
+        {
+            this.radiusTop = radiusTop;
+            this.radiusBottom = radiusBottom;
         }
     }
 }
