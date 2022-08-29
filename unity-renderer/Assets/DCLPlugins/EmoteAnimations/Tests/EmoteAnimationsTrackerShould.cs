@@ -38,8 +38,8 @@ namespace DCL.Emotes
             EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
             foreach (EmbeddedEmote emote in embeddedEmotes.emotes)
             {
-                Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)], emote.femaleAnimation);
-                Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)], emote.maleAnimation);
+                Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.Clip, emote.femaleAnimation);
+                Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.Clip, emote.maleAnimation);
                 Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
                 Assert.AreEqual(CatalogController.wearableCatalog[emote.id], emote);
             }
@@ -82,7 +82,7 @@ namespace DCL.Emotes
         {
             string bodyshapeId = WearableLiterals.BodyShapes.FEMALE;
             var tikAnim = Resources.Load<AnimationClip>("tik");
-            dataStore.animations.Add((bodyshapeId, "emote0"), tikAnim);
+            dataStore.animations.Add((bodyshapeId, "emote0"), new EmoteClipData(tikAnim));
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
             tracker.loaders.Add((bodyshapeId, "emote0"), loader);
 

@@ -183,7 +183,8 @@ namespace DCL.EmotesCustomization
         }
         
 
-        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { RefreshEmoteLoadingState(values.emoteId); }
+        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) 
+        { RefreshEmoteLoadingState(values.emoteId); }
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {

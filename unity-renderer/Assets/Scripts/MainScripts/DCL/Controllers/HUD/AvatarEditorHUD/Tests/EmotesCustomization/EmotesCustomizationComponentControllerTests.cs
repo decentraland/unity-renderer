@@ -3,6 +3,7 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Emotes;
 using UnityEngine;
 
 namespace DCL.EmotesCustomization.Tests
@@ -142,7 +143,9 @@ namespace DCL.EmotesCustomization.Tests
             EmoteCardComponentView testEmoteCard = new GameObject().AddComponent<EmoteCardComponentView>();
             emotesCustomizationComponentController.SetEquippedBodyShape("bodyShapeId");
 
-            emotesCustomizationComponentController.emotesDataStore.animations.Add(("bodyShapeId", emoteId), new AnimationClip());
+            emotesCustomizationComponentController.emotesDataStore.animations
+                .Add(("bodyShapeId", emoteId), new EmoteClipData(new AnimationClip()));
+            
             testEmoteCard.model = new EmoteCardComponentModel { isLoading = true };
             emotesCustomizationComponentController.emotesInLoadingState.Add(emoteId, testEmoteCard);
 
