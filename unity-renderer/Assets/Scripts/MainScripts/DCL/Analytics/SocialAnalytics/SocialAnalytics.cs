@@ -268,6 +268,7 @@ namespace SocialFeaturesAnalytics
                     ChannelJoinedSource.Command => "command",
                     ChannelJoinedSource.Link => "link",
                     ChannelJoinedSource.Search => "search",
+                    ChannelJoinedSource.ConversationList => "conversation_list",
                     _ => ""
                 }
             };

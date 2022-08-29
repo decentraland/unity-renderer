@@ -379,8 +379,8 @@ namespace DCL.Chat.HUD
 
         private void LeaveChannelFromCommand()
         {
-            chatController.LeaveChannel(channelId);
             dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
+            chatController.LeaveChannel(channelId);
         }
 
         private void HandleChannelLeft(string channelId)

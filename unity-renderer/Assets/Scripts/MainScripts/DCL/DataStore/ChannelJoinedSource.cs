@@ -5,6 +5,7 @@ namespace DCL
         Unknown,
         Command,
         Link,
-        Search
+        Search,
+        ConversationList
     }
 }

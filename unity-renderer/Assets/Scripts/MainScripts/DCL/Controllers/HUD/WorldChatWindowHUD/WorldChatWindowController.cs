@@ -169,7 +169,11 @@ public class WorldChatWindowController : IHUD
             view.Hide();
     }
     
-    private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
+    private void OpenChannelCreationWindow()
+    {
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.ConversationList);
+        OnOpenChannelCreation?.Invoke();
+    }
 
     private void SetVisiblePanelList(bool visible)
     {

@@ -331,6 +331,14 @@ public class ChatHUDControllerShould
         view.Received(1).ClearAllEntries();
     }
 
+    [Test]
+    public void SetChannelJoinSourceWhenJoinCommandIsWritten()
+    {
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "/join my-channel"));
+        
+        Assert.AreEqual(ChannelJoinedSource.Command, dataStore.channels.channelJoinedSource.Get());
+    }
+
     private RegexProfanityFilter GivenProfanityFilter()
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();
