@@ -102,11 +102,11 @@ namespace ECSSystems.PointerInputSystem
                 if (!componentGroup[i].componentData1.model.colliders.Contains(pointerEvent.rayResult.hitInfo.hit.collider))
                     continue;
 
-                PBOnPointerUp pointerDown = componentGroup[i].componentData2.model;
-                if (pointerEvent.rayResult.hitInfo.hit.distance > pointerDown.GetMaxDistance())
+                PBOnPointerUp pointerUp = componentGroup[i].componentData2.model;
+                if (pointerEvent.rayResult.hitInfo.hit.distance > pointerUp.GetMaxDistance())
                     continue;
 
-                var expectedButton = pointerDown.GetButton();
+                var expectedButton = pointerUp.GetButton();
                 if (expectedButton == ActionButton.Any || (int)expectedButton == pointerEvent.buttonId)
                 {
                     entityPressed = componentGroup[i].entity.entityId;
