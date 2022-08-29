@@ -97,18 +97,7 @@ namespace DCL
             float distance = Vector3.Distance(targetPosition, currentWorldPosition);
 
             //NOTE(Brian): More distance to goal = faster movement.
-            if (distance >= 50)
-            {
-                this.movementSpeed = float.MaxValue;
-            }
-            else if (distance >= 3)
-            {
-                this.movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
-            }
-            else
-            {
-                this.movementSpeed = SPEED_SLOW;
-            }
+            this.movementSpeed = float.MaxValue;
         }
 
         void UpdateLerp(float deltaTime)
