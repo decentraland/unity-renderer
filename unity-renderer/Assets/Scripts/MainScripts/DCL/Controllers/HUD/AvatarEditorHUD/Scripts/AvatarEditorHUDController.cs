@@ -299,7 +299,6 @@ public class AvatarEditorHUDController : IHUD
                     timer = 10f,
                     destroyOnFinish = true
                 });
-                view.ShowCollectiblesLoadingRetry(true);
             }
         }
     }
