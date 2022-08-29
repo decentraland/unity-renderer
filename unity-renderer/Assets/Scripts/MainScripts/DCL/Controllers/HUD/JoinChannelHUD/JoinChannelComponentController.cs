@@ -3,9 +3,9 @@ using System;
 
 public class JoinChannelComponentController : IDisposable
 {
-    internal IJoinChannelComponentView joinChannelView;
-    internal IChatController chatController;
-    internal DataStore_Channels channelsDataStore;
+    internal readonly IJoinChannelComponentView joinChannelView;
+    internal readonly IChatController chatController;
+    internal readonly DataStore_Channels channelsDataStore;
 
     public JoinChannelComponentController(
         IJoinChannelComponentView joinChannelView,

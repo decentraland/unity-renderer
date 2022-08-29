@@ -4,7 +4,6 @@ using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
-using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -18,7 +17,6 @@ namespace DCL.Chat.HUD
         private IChatHUDComponentView chatView;
         private IChatController chatController;
         private DataStore dataStore;
-        private ISocialAnalytics socialAnalytics;
 
         [SetUp]
         public void SetUp()
@@ -38,13 +36,11 @@ namespace DCL.Chat.HUD
             chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
             dataStore = new DataStore();
-            socialAnalytics = Substitute.For<ISocialAnalytics>();
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
-                ScriptableObject.CreateInstance<InputAction_Trigger>(),
-                socialAnalytics);
+                ScriptableObject.CreateInstance<InputAction_Trigger>());
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
@@ -68,7 +64,6 @@ namespace DCL.Chat.HUD
             });
 
             Assert.AreEqual(ChannelLeaveSource.Command, dataStore.channels.channelLeaveSource.Get());
-            socialAnalytics.Received(1).SendLeaveChannel(CHANNEL_ID, ChannelLeaveSource.Search);
             chatController.Received(1).LeaveChannel(CHANNEL_ID);
         }
 

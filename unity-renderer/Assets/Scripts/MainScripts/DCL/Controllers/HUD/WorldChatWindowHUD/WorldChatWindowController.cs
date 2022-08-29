@@ -499,6 +499,7 @@ public class WorldChatWindowController : IHUD
     {
         publicChannels.Remove(channelId);
         view.RemovePublicChat(channelId);
+        socialAnalytics.SendLeaveChannel(channelId, dataStore.channels.channelLeaveSource.Get());
     }
     
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();

@@ -468,6 +468,19 @@ public class WorldChatWindowControllerShould
         socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId", ChannelJoinedSource.Link);
     }
 
+    [Test]
+    public void RemoveChannelWhenLeaveIsConfirmed()
+    {
+        controller.Initialize(view);
+        
+        dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
+
+        chatController.OnChannelLeft += Raise.Event<Action<string>>("channelId");
+        
+        socialAnalytics.Received(1).SendLeaveChannel("channelId", ChannelLeaveSource.Command);
+        view.Received(1).RemovePublicChat("channelId");
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();

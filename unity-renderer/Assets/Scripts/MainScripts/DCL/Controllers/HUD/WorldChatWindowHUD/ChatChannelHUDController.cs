@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
-using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -18,13 +17,12 @@ namespace DCL.Chat.HUD
         public IChatChannelWindowView View { get; private set; }
 
         private readonly DataStore dataStore;
-        internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        internal BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
+        private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+        private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
-        private readonly ISocialAnalytics socialAnalytics;
         private readonly List<string> directMessagesAlreadyRequested = new List<string>();
         private ChatHUDController chatHudController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
@@ -42,15 +40,13 @@ namespace DCL.Chat.HUD
             IUserProfileBridge userProfileBridge,
             IChatController chatController,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger,
-            ISocialAnalytics socialAnalytics)
+            InputAction_Trigger toggleChatTrigger)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.toggleChatTrigger = toggleChatTrigger;
-            this.socialAnalytics = socialAnalytics;
         }
 
         public void Initialize(IChatChannelWindowView view = null)
@@ -384,7 +380,6 @@ namespace DCL.Chat.HUD
         private void LeaveChannelFromCommand()
         {
             chatController.LeaveChannel(channelId);
-            socialAnalytics.SendLeaveChannel(channelId, ChannelLeaveSource.Command);
             dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
         }
 

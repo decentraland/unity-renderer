@@ -63,7 +63,10 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
 
             if (ChannelUtils.IsAChannel(clickedLink))
+            {
+                DataStore.i.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
                 DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
+            }
         }
     }
 

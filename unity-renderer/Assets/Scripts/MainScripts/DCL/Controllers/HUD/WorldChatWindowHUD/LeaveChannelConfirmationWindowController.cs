@@ -1,13 +1,9 @@
-using System;
-
 namespace DCL.Chat.HUD
 {
     public class LeaveChannelConfirmationWindowController : IHUD
     {
         internal ILeaveChannelConfirmationWindowComponentView joinChannelView;
-        internal IChatController chatController;
-
-        public event Action<string> OnLeaveChannel;
+        internal readonly IChatController chatController;
 
         public LeaveChannelConfirmationWindowController(IChatController chatController)
         {
@@ -58,7 +54,6 @@ namespace DCL.Chat.HUD
 
         private void HandleChannelLeft(string channelId)
         {
-            OnLeaveChannel?.Invoke(channelId);
             joinChannelView.Hide();
         }
     }

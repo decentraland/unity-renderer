@@ -283,8 +283,10 @@ namespace SocialFeaturesAnalytics
                     ChannelLeaveSource.Chat => "chat",
                     ChannelLeaveSource.Command => "command",
                     ChannelLeaveSource.Search => "search",
+                    ChannelLeaveSource.ConversationList => "conversation_list",
                     _ => ""
-                }
+                },
+                ["channel"] = channelId
             };
             analytics.SendAnalytic(CHANNEL_LEAVE, data);
         }
