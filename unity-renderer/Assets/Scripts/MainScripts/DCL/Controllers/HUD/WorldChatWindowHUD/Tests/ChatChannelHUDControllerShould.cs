@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -16,6 +17,8 @@ namespace DCL.Chat.HUD
         private IChatChannelWindowView view;
         private IChatHUDComponentView chatView;
         private IChatController chatController;
+        private DataStore dataStore;
+        private ISocialAnalytics socialAnalytics;
 
         [SetUp]
         public void SetUp()
@@ -33,12 +36,15 @@ namespace DCL.Chat.HUD
             chatController.GetAllocatedChannel(CHANNEL_ID)
                 .Returns(new Channel(CHANNEL_ID, 4, 12, true, false, "desc", 0));
             chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
-            
-            controller = new ChatChannelHUDController(new DataStore(),
+
+            dataStore = new DataStore();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
+            controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
-                ScriptableObject.CreateInstance<InputAction_Trigger>());
+                ScriptableObject.CreateInstance<InputAction_Trigger>(),
+                socialAnalytics);
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
@@ -61,6 +67,8 @@ namespace DCL.Chat.HUD
                 messageType = ChatMessage.Type.PUBLIC
             });
 
+            Assert.AreEqual(ChannelLeaveSource.Command, dataStore.channels.channelLeaveSource.Get());
+            socialAnalytics.Received(1).SendLeaveChannel(CHANNEL_ID, ChannelLeaveSource.Search);
             chatController.Received(1).LeaveChannel(CHANNEL_ID);
         }
 
@@ -85,6 +93,7 @@ namespace DCL.Chat.HUD
             };
             view.OnLeaveChannel += Raise.Event<Action>();
 
+            Assert.AreEqual(ChannelLeaveSource.Chat, dataStore.channels.channelLeaveSource.Get());
             Assert.AreEqual(channelToLeave, CHANNEL_ID);
         }
     }

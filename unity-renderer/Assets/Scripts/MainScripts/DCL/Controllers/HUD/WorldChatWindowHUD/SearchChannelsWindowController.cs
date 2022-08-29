@@ -13,10 +13,11 @@ namespace DCL.Chat.HUD
 
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
+        private readonly DataStore dataStore;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
-        internal BaseVariable<HashSet<string>> visibleTaskbarPanels => DataStore.i.HUDs.visibleTaskbarPanels;
+        private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
         public ISearchChannelsWindowView View => view;
 
@@ -25,10 +26,12 @@ namespace DCL.Chat.HUD
         public event Action OnOpenChannelCreation;
         public event Action<string> OnOpenChannelLeave;
 
-        public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher)
+        public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher,
+            DataStore dataStore)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
+            this.dataStore = dataStore;
         }
 
         public void Initialize(ISearchChannelsWindowView view = null)
@@ -96,7 +99,11 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private void OpenChannelCreationWindow() => OnOpenChannelCreation?.Invoke();
+        private void OpenChannelCreationWindow()
+        {
+            dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
+            OnOpenChannelCreation?.Invoke();
+        }
 
         private void SearchChannels(string searchText)
         {
@@ -158,11 +165,13 @@ namespace DCL.Chat.HUD
         
         private void HandleJoinChannel(string channelId)
         {
+            dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
             chatController.JoinOrCreateChannel(channelId);
         }
         
         private void HandleLeaveChannel(string channelId)
         {
+            dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Search);
             OnOpenChannelLeave?.Invoke(channelId);
         }
     }

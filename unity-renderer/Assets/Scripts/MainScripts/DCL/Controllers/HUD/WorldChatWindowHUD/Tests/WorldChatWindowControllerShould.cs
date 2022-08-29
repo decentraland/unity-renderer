@@ -22,6 +22,7 @@ public class WorldChatWindowControllerShould
     private IMouseCatcher mouseCatcher;
     private UserProfile ownUserProfile;
     private ISocialAnalytics socialAnalytics;
+    private DataStore dataStore;
 
     [SetUp]
     public void SetUp()
@@ -37,10 +38,11 @@ public class WorldChatWindowControllerShould
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
+        dataStore = new DataStore();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
-            new DataStore(),
+            dataStore,
             mouseCatcher,
             socialAnalytics);
         view = Substitute.For<IWorldChatWindowView>();
@@ -447,10 +449,11 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view);
 
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", 0, 1, true, false, "", 0));
         
-        socialAnalytics.Received(1).SendEmptyChannelCreated("channelId");
+        socialAnalytics.Received(1).SendEmptyChannelCreated("channelId", ChannelJoinedSource.Search);
     }
     
     [Test]
@@ -458,10 +461,11 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view);
 
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", 0, 2, true, false, "", 0));
         
-        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId");
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId", ChannelJoinedSource.Link);
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)

@@ -54,7 +54,10 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private void HandleJoinChannel() => chatController.JoinOrCreateChannel(channelName);
+        private void HandleJoinChannel()
+        {
+            chatController.JoinOrCreateChannel(channelName);
+        }
 
         private void HandleViewClose() => SetVisibility(false);
 

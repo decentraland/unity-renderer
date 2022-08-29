@@ -14,6 +14,7 @@ namespace DCL.Chat.HUD
         private SearchChannelsWindowController controller;
         private ISearchChannelsWindowView view;
         private IMouseCatcher mouseCatcher;
+        private DataStore dataStore;
 
         [SetUp]
         public void SetUp()
@@ -21,7 +22,8 @@ namespace DCL.Chat.HUD
             chatController = Substitute.For<IChatController>();
             mouseCatcher = Substitute.For<IMouseCatcher>();
             view = Substitute.For<ISearchChannelsWindowView>();
-            controller = new SearchChannelsWindowController(chatController, mouseCatcher);
+            dataStore = new DataStore();
+            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore);
             controller.Initialize(view);
         }
 
@@ -144,6 +146,7 @@ namespace DCL.Chat.HUD
             view.OnJoinChannel += Raise.Event<Action<string>>("channelId");
             
             chatController.Received(1).JoinOrCreateChannel("channelId");
+            Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
         
         [Test]
@@ -160,6 +163,20 @@ namespace DCL.Chat.HUD
             view.OnLeaveChannel += Raise.Event<Action<string>>(testChannelId);
             
             Assert.AreEqual(channelToLeave, testChannelId);
+            Assert.AreEqual(ChannelLeaveSource.Search, dataStore.channels.channelLeaveSource.Get());
+        }
+
+        [Test]
+        public void OpenChannelCreation()
+        {
+            controller.SetVisibility(true);
+            var called = false;
+            controller.OnOpenChannelCreation += () => called = true;
+
+            view.OnCreateChannel += Raise.Event<Action>();
+            
+            Assert.IsTrue(called);
+            Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
     }
 }

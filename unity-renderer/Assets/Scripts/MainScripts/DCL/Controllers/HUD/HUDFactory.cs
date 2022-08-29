@@ -109,13 +109,17 @@ public class HUDFactory : IHUDFactory
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i,
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i,
-                    SceneReferences.i.mouseCatcher);
+                    SceneReferences.i.mouseCatcher,
+                    DataStore.i);
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(

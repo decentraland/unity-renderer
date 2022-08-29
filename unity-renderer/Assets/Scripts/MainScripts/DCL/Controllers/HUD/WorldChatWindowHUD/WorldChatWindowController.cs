@@ -182,7 +182,11 @@ public class WorldChatWindowController : IHUD
         visibleTaskbarPanels.Set(newSet, true);
     }
 
-    private void LeaveChannel(string channelId) => OnOpenChannelLeave?.Invoke(channelId);
+    private void LeaveChannel(string channelId)
+    {
+        dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.ConversationList);
+        OnOpenChannelLeave?.Invoke(channelId);
+    }
 
     private void RequestJoinedChannels()
     {
@@ -480,9 +484,9 @@ public class WorldChatWindowController : IHUD
     private void HandleChannelJoined(Channel channel)
     {
         if (channel.MemberCount <= 1)
-            socialAnalytics.SendEmptyChannelCreated(channel.ChannelId);
+            socialAnalytics.SendEmptyChannelCreated(channel.ChannelId, dataStore.channels.channelJoinedSource.Get());
         else
-            socialAnalytics.SendPopulatedChannelJoined(channel.ChannelId);
+            socialAnalytics.SendPopulatedChannelJoined(channel.ChannelId, dataStore.channels.channelJoinedSource.Get());
         
         OpenPublicChat(channel.ChannelId);
     }

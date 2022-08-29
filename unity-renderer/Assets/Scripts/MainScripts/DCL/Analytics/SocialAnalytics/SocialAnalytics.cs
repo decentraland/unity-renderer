@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -28,6 +29,7 @@ namespace SocialFeaturesAnalytics
         private const string PLAY_EMOTE = "used_emote";
         private const string EMPTY_CHANNEL_CREATED = "chat_channel_created";
         private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
+        private const string CHANNEL_LEAVE = "player_leaves_channel";
 
         private IAnalytics analytics;
         private IUserProfileBridge userProfileBridge;
@@ -242,24 +244,49 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
-        public void SendEmptyChannelCreated(string channelChannelId)
+        public void SendEmptyChannelCreated(string channelChannelId, ChannelJoinedSource source)
         {
             var data = new Dictionary<string, string>
             {
-                // TODO: solve source
-                ["source"] = "create_chat"
+                ["source"] = source switch
+                {
+                    ChannelJoinedSource.Command => "command",
+                    ChannelJoinedSource.Link => "link",
+                    ChannelJoinedSource.Search => "create_search",
+                    _ => ""
+                }
             };
             analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
         }
 
-        public void SendPopulatedChannelJoined(string channelChannelId)
+        public void SendPopulatedChannelJoined(string channelChannelId, ChannelJoinedSource source)
         {
             var data = new Dictionary<string, string>
             {
-                // TODO: solve source
-                ["source"] = "search"
+                ["source"] = source switch
+                {
+                    ChannelJoinedSource.Command => "command",
+                    ChannelJoinedSource.Link => "link",
+                    ChannelJoinedSource.Search => "search",
+                    _ => ""
+                }
             };
             analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
+        }
+
+        public void SendLeaveChannel(string channelId, ChannelLeaveSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelLeaveSource.Chat => "chat",
+                    ChannelLeaveSource.Command => "command",
+                    ChannelLeaveSource.Search => "search",
+                    _ => ""
+                }
+            };
+            analytics.SendAnalytic(CHANNEL_LEAVE, data);
         }
 
         private PlayerType? GetPlayerTypeByUserId(string userId)
