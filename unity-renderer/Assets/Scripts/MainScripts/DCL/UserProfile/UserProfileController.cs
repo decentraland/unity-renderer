@@ -67,7 +67,7 @@ public class UserProfileController : MonoBehaviour
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
         model.userId = model.userId.ToLower();
-        model.ethAddress = model.ethAddress.ToLower();
+        model.ethAddress = model.ethAddress?.ToLower();
         
         if (!userProfilesCatalog.TryGetValue(model.userId, out UserProfile userProfile))
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
