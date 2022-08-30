@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using DCL.Helpers;
 using DG.Tweening;
 using System.Threading;
@@ -31,6 +32,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal ChatNotificationMessageComponentModel model;
     [SerializeField] private Color privateColor;
     [SerializeField] private Color publicColor;
+    [SerializeField] private Color[] channelColors;
 
     public event Action<string> OnClickedNotification;
     public string notificationTargetId;
@@ -113,6 +115,9 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
     public void SetNotificationHeader(string header)
     {
+        if (!isPrivate)
+            SetRandomColorForChannel(header);
+            
         model.messageHeader = header;
         if(header.Length <= maxHeaderCharacters)
             notificationHeader.text = header;
@@ -122,8 +127,20 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         ForceUIRefresh();
     }
 
-    public void SetNotificationSender(string sender)
+    private void SetRandomColorForChannel(string header)
     {
+        int seed = 0;
+        byte[] ASCIIvalues = Encoding.ASCII.GetBytes(header);
+        foreach (var value in ASCIIvalues)
+        {
+            seed += (int)value;
+        }
+        System.Random rand1 = new System.Random(seed);
+        notificationHeader.color = channelColors[rand1.Next(0, channelColors.Length)];
+    }
+
+    public void SetNotificationSender(string sender)
+    {   
         model.messageSender = sender;
         if (sender.Length <= maxSenderCharacters)
             notificationSender.text = $"{sender}:";
