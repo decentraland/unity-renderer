@@ -97,8 +97,8 @@ namespace DCL.ECS7.Tests
             canvasPainter.SetScene(initialParcelScene);
             canvasPainter.framesCounter = 9999;
 
-            worldState.Configure().loadedScenes.Returns(loadedScenes);
-            worldState.Configure().currentSceneId.Returns("Newscene");
+            worldState.Configure().GetLoadedScenes().Returns(loadedScenes);
+            worldState.Configure().GetCurrentSceneId().Returns("Newscene");
             
             // Act
             canvasPainter.Update();

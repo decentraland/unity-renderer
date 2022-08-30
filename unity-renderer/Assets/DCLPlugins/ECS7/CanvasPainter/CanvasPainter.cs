@@ -115,7 +115,7 @@ namespace DCL.ECS7
             bool sceneFound = false;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if(loadedScenes[i].sceneData.id != worldState.currentSceneId)
+                if(loadedScenes[i].sceneData.id != worldState.GetCurrentSceneId())
                     continue;
                 sceneFound = true;
                 DrawUI(loadedScenes[i]);

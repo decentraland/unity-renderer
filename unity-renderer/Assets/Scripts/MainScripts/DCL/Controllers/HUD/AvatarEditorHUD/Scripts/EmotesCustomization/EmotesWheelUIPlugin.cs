@@ -7,7 +7,7 @@ namespace DCL.EmotesWheel
     {
         public EmotesWheelController emotesWheelController;
 
-        public EmotesWheelUIPlugin() { emotesWheelController = new EmotesWheelController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog); }
+        public EmotesWheelUIPlugin() { emotesWheelController = new EmotesWheelController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog, Environment.i.serviceLocator.Get<IEmotesCatalogService>()); }
 
         public void Dispose() { }
     }
