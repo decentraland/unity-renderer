@@ -61,7 +61,7 @@ namespace DCL.ECSComponents
             uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
 
             // Components without a handler
-            pointerResultRegister = new OnPointerResultRegister(ComponentID.ON_POINTER_RESULT, componentsFactory, componentsWriter);
+            pointerResultRegister = new OnPointerResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }

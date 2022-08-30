@@ -1,7 +1,7 @@
 ﻿syntax = "proto3";
 
 import "common/id.proto";
-import "RaycastHit.proto";
+import "RaycastResult.proto";
 option (ecs_component_id) = 1065;
 import "common/ActionButton.proto";
 

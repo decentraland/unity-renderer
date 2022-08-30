@@ -32,7 +32,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.DOWN, componentWriter, context.systemsContext.pendingResolvePointerEvents);
+            representantion = new PointerInputRepresentantion(entity, dataStore, PointerEventType.Down, componentWriter, context.systemsContext.pendingResolvePointerEvents);
             isAdded = false;
         }
 

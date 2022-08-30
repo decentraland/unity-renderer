@@ -28,7 +28,7 @@ namespace DCL.ECSComponents.OnPointerUp
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter, context.systemsContext.pendingResolvePointerEvents);
+            representantion = new PointerInputRepresentantion(entity, dataStore, PointerEventType.Up, componentWriter, context.systemsContext.pendingResolvePointerEvents);
             isAdded = false;
         }
 
