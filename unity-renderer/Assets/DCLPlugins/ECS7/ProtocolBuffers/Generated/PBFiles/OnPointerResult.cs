@@ -37,7 +37,7 @@ namespace DCL.ECSComponents {
             "EhkKFVN0YXRlRW51bV9IT1ZFUl9FTlRFUhADEhkKFVN0YXRlRW51bV9IT1ZF",
             "Ul9MRUFWRRAEQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastResultReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::RaycastHitReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.StateEnum), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));
@@ -314,10 +314,10 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "hit" field.</summary>
         public const int HitFieldNumber = 2;
-        private global::DCL.ECSComponents.RaycastHit hit_;
+        private global::RaycastHit hit_;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::DCL.ECSComponents.RaycastHit Hit {
+        public global::RaycastHit Hit {
           get { return hit_; }
           set {
             hit_ = value;
@@ -521,7 +521,7 @@ namespace DCL.ECSComponents {
           }
           if (other.hit_ != null) {
             if (hit_ == null) {
-              Hit = new global::DCL.ECSComponents.RaycastHit();
+              Hit = new global::RaycastHit();
             }
             Hit.MergeFrom(other.Hit);
           }
@@ -555,7 +555,7 @@ namespace DCL.ECSComponents {
               }
               case 18: {
                 if (hit_ == null) {
-                  Hit = new global::DCL.ECSComponents.RaycastHit();
+                  Hit = new global::RaycastHit();
                 }
                 input.ReadMessage(Hit);
                 break;
