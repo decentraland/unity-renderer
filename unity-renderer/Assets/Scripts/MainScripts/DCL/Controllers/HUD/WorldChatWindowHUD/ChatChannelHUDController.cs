@@ -76,6 +76,7 @@ namespace DCL.Chat.HUD
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
             chatController.OnChannelLeft += HandleChannelLeft;
+            chatController.OnChannelUpdated += HandleChannelUpdated;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
@@ -159,6 +160,7 @@ namespace DCL.Chat.HUD
             {
                 chatController.OnAddMessage -= HandleMessageReceived;
                 chatController.OnChannelLeft -= HandleChannelLeft;
+                chatController.OnChannelUpdated -= HandleChannelUpdated;
             }
 
             if (mouseCatcher != null)
@@ -379,6 +381,15 @@ namespace DCL.Chat.HUD
         {
             if (channelId != this.channelId) return;
             OnPressBack?.Invoke();
+        }
+
+        private void HandleChannelUpdated(Channels.Channel updatedChannel)
+        {
+            if (updatedChannel.ChannelId != channelId)
+                return;
+
+            var channel = chatController.GetAllocatedChannel(channelId);
+            View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, updatedChannel.MemberCount));
         }
     }
 }
