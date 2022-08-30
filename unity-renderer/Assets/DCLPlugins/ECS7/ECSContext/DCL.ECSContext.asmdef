@@ -1,11 +1,15 @@
 {
-    "name": "ECS7Plugin.Systems.Context",
+    "name": "DCL.ECSContext",
     "rootNamespace": "",
     "references": [
+        "GUID:98a8779abbeb4bebbab501e19143246c",
+        "GUID:b3c9f26299e0467ba46343e4a44dd152",
+        "GUID:bf449696eeb8a48adb5d063bf6fb0d91",
         "GUID:7eb48a6a47db4795bdee44a726fa8338",
         "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
-        "GUID:9239602a072d4e52b5f1cae20ab2b459",
-        "GUID:b3c9f26299e0467ba46343e4a44dd152"
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:f62194f4058c46f38d95fae970600589",
+        "GUID:9239602a072d4e52b5f1cae20ab2b459"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

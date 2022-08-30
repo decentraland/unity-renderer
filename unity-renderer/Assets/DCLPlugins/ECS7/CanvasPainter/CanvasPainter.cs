@@ -153,7 +153,7 @@ namespace DCL.ECS7
             rootNode.rootVisualElement.visible = true;
             
             // This should be the way to go when we implement the UI events
-            // visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
+            //visualElement.RegisterCallback<ClickEvent>(ev => Debug.Log("Clicked"));
 
             // It can happen that we received or processed the child before the parent, that make some elements orphan
             // If we have some orphan elements, we try to search and assign the parent here, if we don't found it, we will try next time 

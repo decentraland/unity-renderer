@@ -7,7 +7,6 @@ using DCL.Models;
 using NUnit.Framework;
 using NSubstitute;
 using NSubstitute.Extensions;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -31,7 +30,7 @@ namespace DCL.ECS7.Tests
             
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             var componentFactory = new ECSComponentsFactory();
-            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>());
+            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>(), Substitute.For<IECSContext>());
             componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
             
             canvasPainter = new CanvasPainter(dataStoreEcs7, rendererState,Substitute.For<IUpdateEventHandler>(), componentsManager, worldState);

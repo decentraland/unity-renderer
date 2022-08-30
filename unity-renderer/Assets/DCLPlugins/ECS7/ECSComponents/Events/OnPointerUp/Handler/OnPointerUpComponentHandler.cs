@@ -1,9 +1,8 @@
-﻿using DCL;
-using DCL.Controllers;
-using DCL.ECSComponents;
+﻿using DCL.Controllers;
+using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCL.Models;
-using DCLPlugins.ECSComponents;
+using DCLPlugins.ECSComponents.Events;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 
 namespace DCL.ECSComponents.OnPointerUp
@@ -13,13 +12,15 @@ namespace DCL.ECSComponents.OnPointerUp
         private PointerInputRepresentantion representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
+        private IECSContext context;
         
         private bool isAdded = false;
 
-        public OnPointerUpComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore)
+        public OnPointerUpComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore, IECSContext context)
         {
             this.dataStore = dataStore;
             this.componentWriter = componentWriter;
+            this.context = context;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -27,7 +28,7 @@ namespace DCL.ECSComponents.OnPointerUp
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter);
+            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter, context.systemsContext.pendingResolvePointerEvents);
             isAdded = false;
         }
 

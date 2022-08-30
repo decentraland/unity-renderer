@@ -1,7 +1,7 @@
 ﻿using DCL.ECSComponents;
 using Google.Protobuf;
 
-namespace DCLPlugins.ECS7.ECSComponents.Events.OnPointerDown.OnPointerUp.Serializer
+namespace DCL.ECSComponents
 {
     public class OnPointerUpSerializer
     {

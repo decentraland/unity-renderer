@@ -1,0 +1,29 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+import "common/RaycastHit.proto";
+option (ecs_component_id) = 1165;
+import "common/ActionButton.proto";
+
+enum StateEnum {
+  StateEnum_UP = 0;
+  StateEnum_DOWN = 1;
+  StateEnum_ANALOG = 2;
+  StateEnum_HOVER_ENTER = 3;
+  StateEnum_HOVER_LEAVE = 4;
+}
+
+// the renderer will set this component to the entity after every pointer event
+message PBPointerEventsResult {
+  // a list of the last N pointer commands (from the engine)
+  repeated PointerCommand commands = 1;
+
+  // this message represents a raycast, used both for UP and DOWN actions
+  message PointerCommand {
+    ActionButton button = 1; // identifier of the input
+    RaycastHit hit = 2;
+    StateEnum state = 4;
+    int32 timestamp = 5; // could be a Lamport timestamp
+    optional float analog = 6; // if the input is analog then we store it here
+  }
+}

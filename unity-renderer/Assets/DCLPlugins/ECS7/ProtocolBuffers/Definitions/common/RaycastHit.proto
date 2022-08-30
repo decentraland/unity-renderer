@@ -1,0 +1,13 @@
+﻿syntax = "proto3";
+import "Vector3.proto";
+
+// Position will be relative to the scene  
+message RaycastHit {
+  Vector3 position = 1;
+  Vector3 origin = 2;
+  Vector3 direction = 3;
+  Vector3 normal_hit = 4;
+  float length = 5;
+  optional string mesh_name = 6;
+  optional int64 entity_id = 7;
+}

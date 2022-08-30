@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -12,7 +13,7 @@ using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 
-namespace DCLPlugins.ECSComponents
+namespace DCLPlugins.ECSComponents.Events
 {
     public class PointerInputRepresentantion : IPointerInputEvent
     {
@@ -29,13 +30,15 @@ namespace DCLPlugins.ECSComponents
         private ActionButton button;
         private string hoverText;
         private float distance;
+        private Queue<PointerEvent> pendingResolvingPointerEvents;
 
-        public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter)
+        public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter, Queue<PointerEvent> pendingResolvingPointerEvents)
         {
             this.dataStore = dataStore;
             this.type = type;
             this.componentWriter = componentWriter;
             pointerEventHandler = new OnPointerEventHandler();
+            this.pendingResolvingPointerEvents = pendingResolvingPointerEvents;
             
             Initializate(entity);
         }
@@ -94,28 +97,15 @@ namespace DCLPlugins.ECSComponents
             {
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 long entityId = eventEntity.entityId;
-                int componentId;
+
+                PointerEvent pointerEvent = new PointerEvent();
+                pointerEvent.sceneId = scene.sceneData.id;
+                pointerEvent.button = (ActionButton)buttonId;
+                pointerEvent.hit = ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit);
+                pointerEvent.state = (StateEnum)type;
+                pointerEvent.timestamp = GetLamportTimestamp();
                 
-                // We have to differentiate between OnPointerDown and OnPointerUp
-                switch (type)
-                {
-                    case PointerInputEventType.DOWN:
-                        componentId = ComponentID.ON_POINTER_DOWN_RESULT;
-                        
-                        PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel(button, meshName, ray, hit);
-                        downPayload.Timestamp = GetLamportTimestamp();
-                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
-                            downPayload);
-                        break;
-                    case PointerInputEventType.UP:
-                        componentId = ComponentID.ON_POINTER_UP_RESULT;
-                        
-                        PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel(button, meshName, ray, hit);
-                        payload.Timestamp = GetLamportTimestamp();
-                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
-                            payload);
-                        break;
-                }
+                pendingResolvingPointerEvents.Enqueue(pointerEvent);
             }
         }
         

@@ -40,7 +40,21 @@ namespace DCL.ECSComponents
             result.MeshName = meshName;
             return result;
         }
-        
+
+        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray, HitInfo hit)
+        {
+            var rawHit = new RaycastHit();
+            rawHit.Length = hit.distance;
+            rawHit.Origin = UnityVectorToPBVector(ray.origin);
+            rawHit.EntityId = (int)entityId;
+            rawHit.MeshName = meshName;
+            rawHit.WorldPosition = UnityVectorToPBVector(hit.point);
+            rawHit.WorldNormalHit = UnityVectorToPBVector(hit.normal);
+            // ray.direction
+            
+            return rawHit;
+        }
+
         public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original)
         {
             Vector3 vector = new Vector3();
