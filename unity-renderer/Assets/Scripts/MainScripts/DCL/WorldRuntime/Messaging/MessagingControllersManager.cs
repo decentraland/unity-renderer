@@ -85,8 +85,8 @@ namespace DCL
             lock (busesToProcess)
             {
                 IWorldState worldState = Environment.i.world.state;
-                string currentSceneId = worldState.currentSceneId;
-                List<IParcelScene> scenesSortedByDistance = worldState.scenesSortedByDistance;
+                string currentSceneId = worldState.GetCurrentSceneId();
+                var scenesSortedByDistance = worldState.GetScenesSortedByDistance();
 
                 int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
                 // may change after a yield return

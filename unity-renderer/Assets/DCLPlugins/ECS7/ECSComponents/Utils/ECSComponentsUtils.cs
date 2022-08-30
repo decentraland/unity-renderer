@@ -35,6 +35,8 @@ public static class ECSComponentsUtils
         
         foreach (Collider collider in meshesInfo.colliders)
         {
+            if (collider == null) continue;
+            
             collider.enabled = withCollisions;
             collider.gameObject.layer = colliderLayer;
         }
@@ -142,6 +144,8 @@ public static class ECSComponentsUtils
         // Dispose collider
         foreach (Collider collider in meshesInfo.colliders)
         {
+            if (collider == null) continue;
+            
             GameObject.Destroy(collider);
         }
         

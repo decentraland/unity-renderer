@@ -8,7 +8,7 @@ using NSubstitute;
 
 public class UserContextMenuShould
 {
-    const string TEST_USER_ID = "TEST_USER_ID";
+    const string TEST_USER_ID = "test_user_id";
 
     private UserContextMenu contextMenu;
     private FriendsController friendsController;
