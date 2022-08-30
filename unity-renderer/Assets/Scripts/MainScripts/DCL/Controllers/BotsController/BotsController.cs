@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Components;
 using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
@@ -20,7 +21,7 @@ namespace DCL.Bots
     public class BotsController : IBotsController
     {
         private IParcelScene globalScene;
-        private List<string> randomizedCollections = new List<string>();
+        private List<string> selectedCollections = new List<string>();
         private List<long> instantiatedBots = new List<long>();
         private List<string> eyesWearableIds = new List<string>();
         private List<string> eyebrowsWearableIds = new List<string>();
@@ -37,7 +38,7 @@ namespace DCL.Bots
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
         /// </summary>
-        private IEnumerator EnsureGlobalSceneAndCatalog()
+        private IEnumerator EnsureGlobalSceneAndCatalog(bool randomCollections = false)
         {
             if (globalScene != null)
                 yield break;
@@ -46,27 +47,31 @@ namespace DCL.Bots
 
             CatalogController.wearableCatalog.Clear();
 
-            yield return WearablesFetchingHelper.GetRandomCollections(20, true, randomizedCollections);
+            // We stopped using random collections by default because the wearables API changes frequently and is very inconsistent...
+            if(randomCollections)
+                yield return WearablesFetchingHelper.GetRandomCollections(50, selectedCollections);
+            
+            // We add the base wearables collection to make sure we have at least 1 of each avatar body-part
+            yield return WearablesFetchingHelper.GetBaseCollections(selectedCollections);
 
             List<WearableItem> wearableItems = new List<WearableItem>();
-            yield return WearablesFetchingHelper.GetWearableItems(BuildRandomizedCollectionsURL(), wearableItems);
+            yield return WearablesFetchingHelper.GetWearableItems(BuildCollectionsURL(), wearableItems);
 
             PopulateCatalog(wearableItems);
         }
 
-        string BuildRandomizedCollectionsURL()
+        string BuildCollectionsURL()
         {
-            if (randomizedCollections.Count == 0)
-                return null;
-
-            string finalUrl = WearablesFetchingHelper.WEARABLES_FETCH_URL;
-
-            finalUrl += "collectionId=" + randomizedCollections[0];
-            for (int i = 1; i < randomizedCollections.Count; i++)
+            if (selectedCollections.Count == 0)
+                return null; 
+            
+            string finalUrl = WearablesFetchingHelper.GetWearablesFetchURL();
+            finalUrl += "collectionId=" + selectedCollections[0];
+            for (int i = 1; i < selectedCollections.Count; i++)
             {
-                finalUrl += "&collectionId=" + randomizedCollections[i];
+                finalUrl += "&collectionId=" + selectedCollections[i];
             }
-
+            
             return finalUrl;
         }
 
@@ -148,19 +153,19 @@ namespace DCL.Bots
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"X Position value wasn't provided... using player's current X Position.");
+                Log($"X Position value wasn't provided... using player's current unity X Position: {playerUnityPosition.x}");
                 config.xPos = playerUnityPosition.x;
             }
 
             if (config.yPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Y Position value wasn't provided... using player's current Y Position.");
+                Log($"Y Position value wasn't provided... using player's current unity Y Position: {playerUnityPosition.y}");
                 config.yPos = playerUnityPosition.y;
             }
 
             if (config.zPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Z Position value wasn't provided... using player's current Z Position.");
+                Log($"Z Position value wasn't provided... using player's current unity Z Position: {playerUnityPosition.z}");
                 config.zPos = playerUnityPosition.z;
             }
         }
@@ -193,14 +198,14 @@ namespace DCL.Bots
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
                 config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate: {config.xCoord}");
             }
 
             if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
                 config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate: {config.yCoord}");
             }
         }
 
@@ -223,9 +228,10 @@ namespace DCL.Bots
                 wearables = GetRandomizedWearablesSet()
             };
 
-            globalScene.CreateEntity(entityId);
-            globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
+            var entity = globalScene.CreateEntity(entityId);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
+            
+            globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
 
             instantiatedBots.Add(entityId);
         }
@@ -413,31 +419,11 @@ namespace DCL.Bots
 
         void UpdateEntityTransform(IParcelScene scene, long entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
-                System.Convert.ToBase64String(pB_Transform.ToByteArray())
+                DCLTransformUtils.EncodeTransform(position, rotation, scale)
             );
-        }
-
-        public PB_Transform GetPBTransform(Vector3 position, Quaternion rotation, Vector3 scale)
-        {
-            PB_Transform pbTranf = new PB_Transform();
-            pbTranf.Position = new PB_Vector3();
-            pbTranf.Position.X = position.x;
-            pbTranf.Position.Y = position.y;
-            pbTranf.Position.Z = position.z;
-            pbTranf.Rotation = new PB_Quaternion();
-            pbTranf.Rotation.X = rotation.x;
-            pbTranf.Rotation.Y = rotation.y;
-            pbTranf.Rotation.Z = rotation.z;
-            pbTranf.Rotation.W = rotation.w;
-            pbTranf.Scale = new PB_Vector3();
-            pbTranf.Scale.X = scale.x;
-            pbTranf.Scale.Y = scale.y;
-            pbTranf.Scale.Z = scale.z;
-            return pbTranf;
         }
 
         /// <summary>
