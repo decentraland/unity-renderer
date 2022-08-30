@@ -19,7 +19,7 @@ namespace DCL.ECSComponents.Test
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private ECSVisibilityComponentHandler hiddenComponentHandler;
+        private ECSVisibilityComponentHandler visibilityComponentHandler;
         private GameObject gameObject;
         private IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
@@ -29,7 +29,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            hiddenComponentHandler = new ECSVisibilityComponentHandler();
+            visibilityComponentHandler = new ECSVisibilityComponentHandler();
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -37,13 +37,13 @@ namespace DCL.ECSComponents.Test
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
             
-            hiddenComponentHandler.OnComponentCreated(scene, entity);
+            visibilityComponentHandler.OnComponentCreated(scene, entity);
         }
 
         [TearDown]
         protected void TearDown()
         {
-            hiddenComponentHandler.OnComponentRemoved(scene, entity);
+            visibilityComponentHandler.OnComponentRemoved(scene, entity);
             GameObject.Destroy(gameObject);
         }
 
