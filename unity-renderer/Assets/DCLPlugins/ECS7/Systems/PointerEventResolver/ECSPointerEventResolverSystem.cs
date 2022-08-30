@@ -15,6 +15,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
         {
             public Queue<PointerEvent> pointerEventsQueue;
             public IECSComponentWriter componentsWriter;
+            public readonly Dictionary<string, PBPointerEventsResult> scenesDict = new Dictionary<string, PBPointerEventsResult>();
         }
 
         public static Action CreateSystem(IECSComponentWriter componentsWriter, Queue<PointerEvent> pointerEventsQueue)
@@ -29,23 +30,34 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
 
         private static void LateUpdate(State state)
         {
-            Dictionary<string, PBPointerEventsResult> scenesDict = new Dictionary<string, PBPointerEventsResult>();
-            
+            // We iterate over the pending event results and group them by scene
             int queueCount = state.pointerEventsQueue.Count;
+            
+            // If there is no pending events, we skip
+            if (queueCount == 0)
+                return;
+            
             for(int i = 0; i <= queueCount; i++)
             {
                 var rawPointerevent = state.pointerEventsQueue.Dequeue();
-                if(!scenesDict.TryGetValue(rawPointerevent.sceneId, out PBPointerEventsResult eventsResult))
+                // If the scene hasn't been added, we create it
+                if(!state.scenesDict.TryGetValue(rawPointerevent.sceneId, out PBPointerEventsResult eventsResult))
                     eventsResult = new PBPointerEventsResult();
                 
+                // We add the pending event to the list
                 eventsResult.Commands.Add(ConverToProto(rawPointerevent));
-                scenesDict[rawPointerevent.sceneId] = eventsResult;
+                state.scenesDict[rawPointerevent.sceneId] = eventsResult;
             }
 
-            foreach (KeyValuePair<string, PBPointerEventsResult> entry in scenesDict)
+            // We send the pointer events to each scene
+            foreach (KeyValuePair<string, PBPointerEventsResult> entry in state.scenesDict)
             {
                 state.componentsWriter.PutComponent(entry.Key, SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.ON_POINTER_UP_RESULT, entry.Value);
             }
+            
+            // We clear everything for the next frame
+            state.pointerEventsQueue.Clear();
+            state.scenesDict.Clear();
         }
         
         private static PointerCommand ConverToProto(PointerEvent pointerEvent)

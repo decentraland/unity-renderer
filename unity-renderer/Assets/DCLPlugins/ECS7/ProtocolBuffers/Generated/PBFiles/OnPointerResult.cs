@@ -24,20 +24,20 @@ namespace DCL.ECSComponents {
     static OnPointerResultReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChVPblBvaW50ZXJSZXN1bHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaE1Jh",
-            "eWNhc3RSZXN1bHQucHJvdG8aGWNvbW1vbi9BY3Rpb25CdXR0b24ucHJvdG8i",
-            "nQIKFVBCUG9pbnRlckV2ZW50c1Jlc3VsdBJICghjb21tYW5kcxgBIAMoCzI2",
-            "LmRlY2VudHJhbGFuZC5lY3MuUEJQb2ludGVyRXZlbnRzUmVzdWx0LlBvaW50",
-            "ZXJDb21tYW5kGrkBCg5Qb2ludGVyQ29tbWFuZBIdCgZidXR0b24YASABKA4y",
-            "DS5BY3Rpb25CdXR0b24SKQoDaGl0GAIgASgLMhwuZGVjZW50cmFsYW5kLmVj",
-            "cy5SYXljYXN0SGl0EioKBXN0YXRlGAQgASgOMhsuZGVjZW50cmFsYW5kLmVj",
-            "cy5TdGF0ZUVudW0SEQoJdGltZXN0YW1wGAUgASgFEhMKBmFuYWxvZxgGIAEo",
-            "AkgAiAEBQgkKB19hbmFsb2cqfQoJU3RhdGVFbnVtEhAKDFN0YXRlRW51bV9V",
-            "UBAAEhIKDlN0YXRlRW51bV9ET1dOEAESFAoQU3RhdGVFbnVtX0FOQUxPRxAC",
-            "EhkKFVN0YXRlRW51bV9IT1ZFUl9FTlRFUhADEhkKFVN0YXRlRW51bV9IT1ZF",
-            "Ul9MRUFWRRAEQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "ChVPblBvaW50ZXJSZXN1bHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaEFJh",
+            "eWNhc3RIaXQucHJvdG8aGWNvbW1vbi9BY3Rpb25CdXR0b24ucHJvdG8inQIK",
+            "FVBCUG9pbnRlckV2ZW50c1Jlc3VsdBJICghjb21tYW5kcxgBIAMoCzI2LmRl",
+            "Y2VudHJhbGFuZC5lY3MuUEJQb2ludGVyRXZlbnRzUmVzdWx0LlBvaW50ZXJD",
+            "b21tYW5kGrkBCg5Qb2ludGVyQ29tbWFuZBIdCgZidXR0b24YASABKA4yDS5B",
+            "Y3Rpb25CdXR0b24SKQoDaGl0GAIgASgLMhwuZGVjZW50cmFsYW5kLmVjcy5S",
+            "YXljYXN0SGl0EioKBXN0YXRlGAQgASgOMhsuZGVjZW50cmFsYW5kLmVjcy5T",
+            "dGF0ZUVudW0SEQoJdGltZXN0YW1wGAUgASgFEhMKBmFuYWxvZxgGIAEoAkgA",
+            "iAEBQgkKB19hbmFsb2cqfQoJU3RhdGVFbnVtEhAKDFN0YXRlRW51bV9VUBAA",
+            "EhIKDlN0YXRlRW51bV9ET1dOEAESFAoQU3RhdGVFbnVtX0FOQUxPRxACEhkK",
+            "FVN0YXRlRW51bV9IT1ZFUl9FTlRFUhADEhkKFVN0YXRlRW51bV9IT1ZFUl9M",
+            "RUFWRRAEQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::RaycastHitReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastHitReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.StateEnum), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));
@@ -314,10 +314,10 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "hit" field.</summary>
         public const int HitFieldNumber = 2;
-        private global::RaycastHit hit_;
+        private global::DCL.ECSComponents.RaycastHit hit_;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::RaycastHit Hit {
+        public global::DCL.ECSComponents.RaycastHit Hit {
           get { return hit_; }
           set {
             hit_ = value;
@@ -521,7 +521,7 @@ namespace DCL.ECSComponents {
           }
           if (other.hit_ != null) {
             if (hit_ == null) {
-              Hit = new global::RaycastHit();
+              Hit = new global::DCL.ECSComponents.RaycastHit();
             }
             Hit.MergeFrom(other.Hit);
           }
@@ -555,7 +555,7 @@ namespace DCL.ECSComponents {
               }
               case 18: {
                 if (hit_ == null) {
-                  Hit = new global::RaycastHit();
+                  Hit = new global::DCL.ECSComponents.RaycastHit();
                 }
                 input.ReadMessage(Hit);
                 break;

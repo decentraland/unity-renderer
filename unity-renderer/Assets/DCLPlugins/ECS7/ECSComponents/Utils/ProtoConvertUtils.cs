@@ -7,52 +7,18 @@ namespace DCL.ECSComponents
 {
     public static class ProtoConvertUtils 
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
+        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray, HitInfo rawHit)
         {
-            PBOnPointerUpResult result = new PBOnPointerUpResult();
-            result.Button = buttonId;
-            result.Direction = UnityVectorToPBVector(ray.direction);
-            result.Distance = hit.distance;
-            result.Normal = UnityVectorToPBVector(hit.normal);
-            result.Origin = UnityVectorToPBVector(ray.origin);
-            result.Point = UnityVectorToPBVector(hit.point);
-            
-            // This null check will disappear when we introduce optionals to the proto
-            if(meshName == null)
-                meshName = String.Empty;
-            result.MeshName = meshName;
-            return result;
-        }
-        
-        public static PBOnPointerDownResult GetPointerDownResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
-        {
-            PBOnPointerDownResult result = new PBOnPointerDownResult();
-            result.Button = buttonId;
-            result.Direction = UnityVectorToPBVector(ray.direction);
-            result.Distance = hit.distance;
-            result.Normal = UnityVectorToPBVector(hit.normal);
-            result.Origin = UnityVectorToPBVector(ray.origin);
-            result.Point = UnityVectorToPBVector(hit.point);
-            
-            // This null check will disappear when we introduce optionals to the proto
-            if(meshName == null)
-                meshName = String.Empty;
-            result.MeshName = meshName;
-            return result;
-        }
+            var hit = new RaycastHit();
+            hit.Length = rawHit.distance;
+            hit.Origin = UnityVectorToPBVector(ray.origin);
+            hit.EntityId = (int)entityId;
+            hit.MeshName = meshName;
+            hit.Position = UnityVectorToPBVector(rawHit.point);
+            hit.NormalHit = UnityVectorToPBVector(rawHit.normal);
+            hit.Direction = UnityVectorToPBVector(ray.direction);
 
-        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray, HitInfo hit)
-        {
-            var rawHit = new RaycastHit();
-            rawHit.Length = hit.distance;
-            rawHit.Origin = UnityVectorToPBVector(ray.origin);
-            rawHit.EntityId = (int)entityId;
-            rawHit.MeshName = meshName;
-            rawHit.WorldPosition = UnityVectorToPBVector(hit.point);
-            rawHit.WorldNormalHit = UnityVectorToPBVector(hit.normal);
-            // ray.direction
-            
-            return rawHit;
+            return hit;
         }
 
         public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original)

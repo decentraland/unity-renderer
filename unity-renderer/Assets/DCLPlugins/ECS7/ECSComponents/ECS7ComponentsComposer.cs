@@ -31,8 +31,7 @@ namespace DCL.ECSComponents
         private readonly UITextRegister uiTextRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
-        private readonly OnPointerDownResultRegister pointerDownResultRegister;
-        private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly OnPointerResultRegister pointerResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
 
@@ -62,8 +61,7 @@ namespace DCL.ECSComponents
             uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
 
             // Components without a handler
-            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
-            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            pointerResultRegister = new OnPointerResultRegister(ComponentID.ON_POINTER_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
@@ -94,8 +92,7 @@ namespace DCL.ECSComponents
             uiTextRegister.Dispose();
 
             // Components without a handler
-            pointerDownResultRegister.Dispose();
-            pointerUpResultRegister.Dispose();
+            pointerResultRegister.Dispose();
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
         }

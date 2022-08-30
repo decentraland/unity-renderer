@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-import "Vector3.proto";
+import "common/Vector3.proto";
 
 // Position will be relative to the scene  
 message RaycastHit {

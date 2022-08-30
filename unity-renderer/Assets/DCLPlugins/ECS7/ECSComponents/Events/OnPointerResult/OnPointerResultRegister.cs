@@ -4,16 +4,16 @@ using DCL.ECSRuntime;
 
 namespace DCLPlugins.ECSComponents
 {
-    public class OnPointerDownResultRegister
+    public class OnPointerResultRegister
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
         
-        public OnPointerDownResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public OnPointerResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerResultSerializer.DeserializeDown, null);
-            componentWriter.AddOrReplaceComponentSerializer<PBOnPointerDownResult>(componentId, OnPointerResultSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBPointerEventsResult>, null);
+            componentWriter.AddOrReplaceComponentSerializer<PBPointerEventsResult>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
