@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -14,6 +14,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal TMP_Text nameLabel;
+        [SerializeField] internal TMP_Text memberCountLabel;
         [SerializeField] internal ChatHUDView chatView;
         [SerializeField] internal PublicChatModel model;
         [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -63,6 +64,7 @@ namespace DCL.Chat.HUD
         public override void RefreshControl()
         {
             nameLabel.text = $"#{model.name}";
+            memberCountLabel.text = model.memberCount.ToString();
         }
 
         public void Hide() => gameObject.SetActive(false);
