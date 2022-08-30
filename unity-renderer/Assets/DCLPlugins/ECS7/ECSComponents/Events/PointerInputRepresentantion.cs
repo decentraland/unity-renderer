@@ -21,7 +21,8 @@ namespace DCLPlugins.ECSComponents.Events
         private IDCLEntity eventEntity;
         private IParcelScene scene;
         private readonly OnPointerEventHandler pointerEventHandler;
-        private readonly PointerInputEventType type;
+        private readonly PointerEventType pointerEventType;
+        private readonly PointerInputEventType inputEventType;
         private readonly IECSComponentWriter componentWriter;
         private readonly DataStore_ECS7 dataStore;
 
@@ -32,13 +33,27 @@ namespace DCLPlugins.ECSComponents.Events
         private float distance;
         private Queue<PointerEvent> pendingResolvingPointerEvents;
 
-        public PointerInputRepresentantion(IDCLEntity entity,DataStore_ECS7 dataStore,PointerInputEventType type, IECSComponentWriter componentWriter, Queue<PointerEvent> pendingResolvingPointerEvents)
+        public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, Queue<PointerEvent> pendingResolvingPointerEvents)
         {
             this.dataStore = dataStore;
-            this.type = type;
+            this.pointerEventType = pointerEventType;
             this.componentWriter = componentWriter;
             pointerEventHandler = new OnPointerEventHandler();
             this.pendingResolvingPointerEvents = pendingResolvingPointerEvents;
+
+            // We set the equivalent enum of the proto 
+            switch (pointerEventType)
+            {
+                case PointerEventType.Up:
+                    inputEventType = PointerInputEventType.UP;
+                    break;
+                case PointerEventType.Down:
+                    inputEventType = PointerInputEventType.DOWN;
+                    break;
+                default:
+                    inputEventType = PointerInputEventType.NONE;
+                    break;
+            }
             
             Initializate(entity);
         }
@@ -102,14 +117,14 @@ namespace DCLPlugins.ECSComponents.Events
                 pointerEvent.sceneId = scene.sceneData.id;
                 pointerEvent.button = (ActionButton)buttonId;
                 pointerEvent.hit = ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit);
-                pointerEvent.state = (StateEnum)type;
+                pointerEvent.type = pointerEventType;
                 pointerEvent.timestamp = GetLamportTimestamp();
                 
                 pendingResolvingPointerEvents.Enqueue(pointerEvent);
             }
         }
         
-        PointerInputEventType IPointerInputEvent.GetEventType() => type; 
+        PointerInputEventType IPointerInputEvent.GetEventType() => inputEventType; 
         
         WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton() => (WebInterface.ACTION_BUTTON) button;
 

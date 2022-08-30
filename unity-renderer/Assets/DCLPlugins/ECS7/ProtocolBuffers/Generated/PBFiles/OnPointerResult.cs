@@ -25,20 +25,19 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChVPblBvaW50ZXJSZXN1bHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaEFJh",
-            "eWNhc3RIaXQucHJvdG8aGWNvbW1vbi9BY3Rpb25CdXR0b24ucHJvdG8inQIK",
+            "eWNhc3RIaXQucHJvdG8aGWNvbW1vbi9BY3Rpb25CdXR0b24ucHJvdG8ipAIK",
             "FVBCUG9pbnRlckV2ZW50c1Jlc3VsdBJICghjb21tYW5kcxgBIAMoCzI2LmRl",
             "Y2VudHJhbGFuZC5lY3MuUEJQb2ludGVyRXZlbnRzUmVzdWx0LlBvaW50ZXJD",
-            "b21tYW5kGrkBCg5Qb2ludGVyQ29tbWFuZBIdCgZidXR0b24YASABKA4yDS5B",
+            "b21tYW5kGsABCg5Qb2ludGVyQ29tbWFuZBIdCgZidXR0b24YASABKA4yDS5B",
             "Y3Rpb25CdXR0b24SKQoDaGl0GAIgASgLMhwuZGVjZW50cmFsYW5kLmVjcy5S",
-            "YXljYXN0SGl0EioKBXN0YXRlGAQgASgOMhsuZGVjZW50cmFsYW5kLmVjcy5T",
-            "dGF0ZUVudW0SEQoJdGltZXN0YW1wGAUgASgFEhMKBmFuYWxvZxgGIAEoAkgA",
-            "iAEBQgkKB19hbmFsb2cqfQoJU3RhdGVFbnVtEhAKDFN0YXRlRW51bV9VUBAA",
-            "EhIKDlN0YXRlRW51bV9ET1dOEAESFAoQU3RhdGVFbnVtX0FOQUxPRxACEhkK",
-            "FVN0YXRlRW51bV9IT1ZFUl9FTlRFUhADEhkKFVN0YXRlRW51bV9IT1ZFUl9M",
-            "RUFWRRAEQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "YXljYXN0SGl0EjEKBXN0YXRlGAQgASgOMiIuZGVjZW50cmFsYW5kLmVjcy5Q",
+            "b2ludGVyRXZlbnRUeXBlEhEKCXRpbWVzdGFtcBgFIAEoBRITCgZhbmFsb2cY",
+            "BiABKAJIAIgBAUIJCgdfYW5hbG9nKkYKEFBvaW50ZXJFdmVudFR5cGUSBgoC",
+            "VVAQABIICgRET1dOEAESDwoLSE9WRVJfRU5URVIQAhIPCgtIT1ZFUl9MRUFW",
+            "RRADQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastHitReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.StateEnum), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PointerEventType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));
     }
@@ -46,19 +45,18 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
-  public enum StateEnum {
-    [pbr::OriginalName("StateEnum_UP")] Up = 0,
-    [pbr::OriginalName("StateEnum_DOWN")] Down = 1,
-    [pbr::OriginalName("StateEnum_ANALOG")] Analog = 2,
-    [pbr::OriginalName("StateEnum_HOVER_ENTER")] HoverEnter = 3,
-    [pbr::OriginalName("StateEnum_HOVER_LEAVE")] HoverLeave = 4,
+  public enum PointerEventType {
+    [pbr::OriginalName("UP")] Up = 0,
+    [pbr::OriginalName("DOWN")] Down = 1,
+    [pbr::OriginalName("HOVER_ENTER")] HoverEnter = 2,
+    [pbr::OriginalName("HOVER_LEAVE")] HoverLeave = 3,
   }
 
   #endregion
 
   #region Messages
   /// <summary>
-  /// the renderer will set this component to the entity after every pointer event
+  /// the renderer will set this component to the root entity once per frame with all the events
   /// </summary>
   public sealed partial class PBPointerEventsResult : pb::IMessage<PBPointerEventsResult>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -245,7 +243,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       /// <summary>
-      /// this message represents a raycast, used both for UP and DOWN actions
+      /// this message represents a pointer event, used both for UP and DOWN actions
       /// </summary>
       public sealed partial class PointerCommand : pb::IMessage<PointerCommand>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -326,10 +324,10 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "state" field.</summary>
         public const int StateFieldNumber = 4;
-        private global::DCL.ECSComponents.StateEnum state_ = global::DCL.ECSComponents.StateEnum.Up;
+        private global::DCL.ECSComponents.PointerEventType state_ = global::DCL.ECSComponents.PointerEventType.Up;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::DCL.ECSComponents.StateEnum State {
+        public global::DCL.ECSComponents.PointerEventType State {
           get { return state_; }
           set {
             state_ = value;
@@ -408,7 +406,7 @@ namespace DCL.ECSComponents {
           int hash = 1;
           if (Button != global::ActionButton.Pointer) hash ^= Button.GetHashCode();
           if (hit_ != null) hash ^= Hit.GetHashCode();
-          if (State != global::DCL.ECSComponents.StateEnum.Up) hash ^= State.GetHashCode();
+          if (State != global::DCL.ECSComponents.PointerEventType.Up) hash ^= State.GetHashCode();
           if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
           if (HasAnalog) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Analog);
           if (_unknownFields != null) {
@@ -437,7 +435,7 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(18);
             output.WriteMessage(Hit);
           }
-          if (State != global::DCL.ECSComponents.StateEnum.Up) {
+          if (State != global::DCL.ECSComponents.PointerEventType.Up) {
             output.WriteRawTag(32);
             output.WriteEnum((int) State);
           }
@@ -467,7 +465,7 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(18);
             output.WriteMessage(Hit);
           }
-          if (State != global::DCL.ECSComponents.StateEnum.Up) {
+          if (State != global::DCL.ECSComponents.PointerEventType.Up) {
             output.WriteRawTag(32);
             output.WriteEnum((int) State);
           }
@@ -495,7 +493,7 @@ namespace DCL.ECSComponents {
           if (hit_ != null) {
             size += 1 + pb::CodedOutputStream.ComputeMessageSize(Hit);
           }
-          if (State != global::DCL.ECSComponents.StateEnum.Up) {
+          if (State != global::DCL.ECSComponents.PointerEventType.Up) {
             size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
           }
           if (Timestamp != 0) {
@@ -525,7 +523,7 @@ namespace DCL.ECSComponents {
             }
             Hit.MergeFrom(other.Hit);
           }
-          if (other.State != global::DCL.ECSComponents.StateEnum.Up) {
+          if (other.State != global::DCL.ECSComponents.PointerEventType.Up) {
             State = other.State;
           }
           if (other.Timestamp != 0) {
@@ -561,7 +559,7 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 32: {
-                State = (global::DCL.ECSComponents.StateEnum) input.ReadEnum();
+                State = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
                 break;
               }
               case 40: {
@@ -599,7 +597,7 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 32: {
-                State = (global::DCL.ECSComponents.StateEnum) input.ReadEnum();
+                State = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
                 break;
               }
               case 40: {

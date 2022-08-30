@@ -52,7 +52,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             // We send the pointer events to each scene
             foreach (KeyValuePair<string, PBPointerEventsResult> entry in state.scenesDict)
             {
-                state.componentsWriter.PutComponent(entry.Key, SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.ON_POINTER_UP_RESULT, entry.Value);
+                state.componentsWriter.PutComponent(entry.Key, SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.ON_POINTER_RESULT, entry.Value);
             }
             
             // We clear everything for the next frame
@@ -66,7 +66,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             eventsResult.Button = pointerEvent.button;
             eventsResult.Analog = pointerEvent.analog;
             eventsResult.Hit = pointerEvent.hit;
-            eventsResult.State = pointerEvent.state;
+            eventsResult.State = pointerEvent.type;
             eventsResult.Timestamp = pointerEvent.timestamp;
             return eventsResult;
         }

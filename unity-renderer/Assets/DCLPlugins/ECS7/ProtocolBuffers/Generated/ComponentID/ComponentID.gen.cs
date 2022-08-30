@@ -22,8 +22,7 @@ namespace DCL.ECS7
         public const int UI_TEXT = 1052;
         public const int ON_POINTER_DOWN = 1060;
         public const int ON_POINTER_UP = 1061;
-        public const int ON_POINTER_UP_RESULT = 1065;
-        public const int ON_POINTER_DOWN_RESULT = 1066;
+        public const int ON_POINTER_RESULT = 1065;
         public const int AVATAR_MODIFIER_AREA = 1070;
         public const int CAMERA_MODE_AREA = 1071;
         public const int CAMERA_MODE = 1072;
@@ -32,6 +31,6 @@ namespace DCL.ECS7
         public const int AVATAR_SHAPE = 1080;
         public const int VISIBILITY_COMPONENT = 1081;
         public const int BILLBOARD = 1090;
-        public const int ON_POINTER_RESULT = 1165;
+        public const int RAYCAST_RESULT = 1162;
     }
 }

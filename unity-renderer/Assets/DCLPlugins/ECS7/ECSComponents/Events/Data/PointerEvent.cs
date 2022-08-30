@@ -7,7 +7,7 @@ namespace DCLPlugins.ECSComponents.Events
         public string sceneId;
         public ActionButton button;
         public RaycastHit hit;
-        public StateEnum state;
+        public PointerEventType type;
         public int timestamp;
         public float analog;
     }
