@@ -118,8 +118,6 @@ public class PrivateChatWindowController : IHUD
         View.Setup(newConversationUserProfile,
             userStatus.presence == PresenceStatus.ONLINE,
             userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
-
-        ReloadAllChats().Forget();
     }
 
     public void SetVisibility(bool visible)
@@ -190,23 +188,6 @@ public class PrivateChatWindowController : IHUD
             View.OnRequireMoreMessages -= RequestOldConversations;
             View.OnClickOverWindow -= HandleViewClicked;
             View.Dispose();
-        }
-    }
-
-    private async UniTaskVoid ReloadAllChats()
-    {
-        chatHudController.ClearAllEntries();
-
-        const int entriesPerFrame = 10;
-        var list = chatController.GetAllocatedEntries();
-        if (list.Count == 0) return;
-
-        for (var i = list.Count - 1; i >= 0; i--)
-        {
-            var message = list[i];
-            if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
-            if (!IsMessageFomCurrentConversation(message)) continue;
-            chatHudController.AddChatMessage(message, spamFiltering: false, limitMaxEntries: false);
         }
     }
 
