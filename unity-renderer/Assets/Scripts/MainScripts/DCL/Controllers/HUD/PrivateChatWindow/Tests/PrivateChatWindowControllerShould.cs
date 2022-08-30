@@ -134,6 +134,7 @@ public class PrivateChatWindowControllerShould
     public void SetupViewCorrectly()
     {
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
 
         view.Received(1).Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
     }
@@ -142,6 +143,7 @@ public class PrivateChatWindowControllerShould
     public void SetUpViewAsBlocked()
     {
         WhenControllerInitializes(BLOCKED_FRIEND_ID);
+        controller.SetVisibility(true);
 
         view.Received(1).Setup(Arg.Is<UserProfile>(u => u.userId == BLOCKED_FRIEND_ID), false, true);
     }
@@ -150,9 +152,12 @@ public class PrivateChatWindowControllerShould
     public void AvoidReloadingChatsWhenIsTheSameUser()
     {
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
+        controller.SetVisibility(false);
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
         
-        view.ReceivedWithAnyArgs(1).Setup(default, default, default);
+        chatController.ReceivedWithAnyArgs(1).GetPrivateMessages(default, default, default);
     }
 
     [Test]
