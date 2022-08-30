@@ -63,42 +63,11 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ProcessCurrentMessagesWhenInitialize()
-    {
-        GivenPrivateMessages(FRIEND_ID, 3);
-
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
-    }
-
-    [Test]
     public void ClearAllMessagesWhenInitialize()
     {
         WhenControllerInitializes(FRIEND_ID);
         
         internalChatView.Received(1).ClearAllEntries();
-    }
-
-    [UnityTest]
-    public IEnumerator ThrottleMessagesWhenThereAreTooMany()
-    {
-        GivenPrivateMessages(FRIEND_ID, 16);
-        
-        WhenControllerInitializes(FRIEND_ID);
-        controller.SetVisibility(true);
-        
-        internalChatView.Received(5).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
-
-        yield return null;
-        
-        internalChatView.Received(16).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
     }
 
     [Test]
