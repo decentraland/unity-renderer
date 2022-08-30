@@ -76,8 +76,6 @@ namespace AvatarSystem
         }
         private bool CheckGLTFastFeature()
         {
-            // TODO: use feature flag after the wearable material bug is fixed
-            return false;
             return DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
         }
 
