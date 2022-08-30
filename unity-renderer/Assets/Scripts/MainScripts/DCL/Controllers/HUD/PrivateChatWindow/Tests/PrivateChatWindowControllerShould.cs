@@ -301,13 +301,11 @@ public class PrivateChatWindowControllerShould
         string userId = "testId";
         int limit = 30;
         string testMessageId = "testId";
-        controller.directMessagesAlreadyRequested.Clear();
 
         controller.RequestPrivateMessages(userId, limit, testMessageId);
 
         view.Received(1).SetLoadingMessagesActive(true);
         chatController.Received(1).GetPrivateMessages(userId, limit, testMessageId);
-        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
     }
 
     [Test]

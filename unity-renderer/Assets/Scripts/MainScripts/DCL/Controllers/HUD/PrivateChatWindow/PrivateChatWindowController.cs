@@ -31,7 +31,6 @@ public class PrivateChatWindowController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
-    internal readonly List<string> directMessagesAlreadyRequested = new List<string>();
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
@@ -40,6 +39,7 @@ public class PrivateChatWindowController : IHUD
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
+    private bool shouldRequestMessages;
 
     internal string ConversationUserId { get; set; } = string.Empty;
 
@@ -112,12 +112,8 @@ public class PrivateChatWindowController : IHUD
 
         ConversationUserId = newConversationUserId;
         conversationProfile = newConversationUserProfile;
-
-        var userStatus = friendsController.GetUserStatus(ConversationUserId);
-
-        View.Setup(newConversationUserProfile,
-            userStatus.presence == PresenceStatus.ONLINE,
-            userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
+        chatHudController.ClearAllEntries();
+        shouldRequestMessages = true;
     }
 
     public void SetVisibility(bool visible)
@@ -137,12 +133,14 @@ public class PrivateChatWindowController : IHUD
                     userStatus.presence == PresenceStatus.ONLINE,
                     userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
 
-                if (!directMessagesAlreadyRequested.Contains(ConversationUserId))
+                if (shouldRequestMessages)
                 {
                     RequestPrivateMessages(
                         ConversationUserId,
                         USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
                         null);
+                    
+                    shouldRequestMessages = false;
                 }
             }
 
@@ -415,7 +413,6 @@ public class PrivateChatWindowController : IHUD
     {
         View?.SetLoadingMessagesActive(true);
         chatController.GetPrivateMessages(userId, limit, fromMessageId);
-        directMessagesAlreadyRequested.Add(userId);
         WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
     }
 

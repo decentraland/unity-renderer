@@ -221,25 +221,34 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        var chatEntry = ChatEntryFactory.Create(model);
-        chatEntry.transform.SetParent(chatEntriesContainer, false);
+        if (entries.ContainsKey(model.messageId))
+        {
+            var chatEntry = entries[model.messageId];
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
+        }
+        else
+        {
+            var chatEntry = ChatEntryFactory.Create(model);
+            chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        chatEntry.SetFadeout(this.model.enableFadeoutMode);
-        chatEntry.Populate(model);
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
 
-        if (model.messageType == ChatMessage.Type.PUBLIC
-            || model.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPressRightButton += OnOpenContextMenu;
+            if (model.messageType == ChatMessage.Type.PUBLIC
+                || model.messageType == ChatMessage.Type.PRIVATE)
+                chatEntry.OnPressRightButton += OnOpenContextMenu;
 
-        chatEntry.OnTriggerHover += OnMessageTriggerHover;
-        chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
-        chatEntry.OnCancelHover += OnMessageCancelHover;
-        chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
-
-        entries[model.messageId] = chatEntry;
+            chatEntry.OnTriggerHover += OnMessageTriggerHover;
+            chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
+            chatEntry.OnCancelHover += OnMessageCancelHover;
+            chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+            
+            entries[model.messageId] = chatEntry;
+        }
 
         if (this.model.isInPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
+            entries[model.messageId].ActivatePreviewInstantly();
 
         SortEntries();
         UpdateLayout();
