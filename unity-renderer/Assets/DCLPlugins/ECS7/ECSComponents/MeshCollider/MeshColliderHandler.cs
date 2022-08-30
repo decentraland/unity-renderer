@@ -34,8 +34,8 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            pointerColliderComponent.RemoveFor(scene, entity);
-            physicColliderComponent.RemoveFor(scene, entity);
+            pointerColliderComponent.RemoveCollider(scene, entity, collider);
+            physicColliderComponent.RemoveCollider(scene, entity, collider);
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
             Object.Destroy(colliderGameObject);
         }

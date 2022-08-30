@@ -42,12 +42,16 @@ namespace DCL.ECS7.InternalComponents
                 return false;
 
             var compData = colliderInternalComponent.GetFor(scene, entity);
-            if (compData != null)
+            if (compData == null)
+                return false;
+
+            bool ret = compData.model.colliders.Remove(collider);
+            if (compData.model.colliders.Count == 0)
             {
-                return compData.model.colliders.Remove(collider);
+                colliderInternalComponent.RemoveFor(scene, entity);
             }
 
-            return false;
+            return ret;
         }
     }
 }
