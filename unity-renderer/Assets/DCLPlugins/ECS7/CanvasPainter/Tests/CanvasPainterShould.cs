@@ -7,7 +7,6 @@ using DCL.Models;
 using NUnit.Framework;
 using NSubstitute;
 using NSubstitute.Extensions;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,7 +20,7 @@ namespace DCL.ECS7.Tests
         private ECSComponentsManager componentsManager;
         private ECS7ComponentsComposer componentsComposer;
         private IWorldState worldState;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -31,7 +30,7 @@ namespace DCL.ECS7.Tests
             
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             var componentFactory = new ECSComponentsFactory();
-            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>());
+            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>());
             componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
             
             canvasPainter = new CanvasPainter(dataStoreEcs7, rendererState,Substitute.For<IUpdateEventHandler>(), componentsManager, worldState);
@@ -98,8 +97,8 @@ namespace DCL.ECS7.Tests
             canvasPainter.SetScene(initialParcelScene);
             canvasPainter.framesCounter = 9999;
 
-            worldState.Configure().loadedScenes.Returns(loadedScenes);
-            worldState.Configure().currentSceneId.Returns("Newscene");
+            worldState.Configure().GetLoadedScenes().Returns(loadedScenes);
+            worldState.Configure().GetCurrentSceneId().Returns("Newscene");
             
             // Act
             canvasPainter.Update();

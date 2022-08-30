@@ -45,6 +45,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
             pluginSystem.RegisterWithFlag<ChatNotificationsFeature>(() => new ChatNotificationsFeature(), "notification_chat");
+            pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur");
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,
                 NotificationScriptableObjects.pendingFriendRequests,

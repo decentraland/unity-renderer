@@ -12,7 +12,7 @@ namespace Tests.AvatarModifierAreaFeedback
     {
     
         private AvatarModifierAreaFeedbackView hudView;
-        private BaseRefCounter<AvatarAreaWarningID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
+        private BaseRefCounter<AvatarModifierAreaID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
 
         [SetUp]
         public void SetUp()
@@ -25,7 +25,7 @@ namespace Tests.AvatarModifierAreaFeedback
         public void ShowsProperly()
         {
             warningMessageList.Clear();
-            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             Assert.True(hudView.isVisible);
         }
         
@@ -33,14 +33,14 @@ namespace Tests.AvatarModifierAreaFeedback
         public void HidesProperly()
         {
             warningMessageList.Clear();
-            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
-            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
-            warningMessageList.AddRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
             Assert.True(hudView.isVisible);
-            warningMessageList.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
-            warningMessageList.RemoveRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            warningMessageList.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             Assert.True(hudView.isVisible);
-            warningMessageList.RemoveRefCount(AvatarAreaWarningID.DISABLE_PASSPORT);
+            warningMessageList.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
             Assert.False(hudView.isVisible);
         }
         
@@ -50,7 +50,7 @@ namespace Tests.AvatarModifierAreaFeedback
         {
             warningMessageList.Clear();
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.NEVER_SHOWN, hudView.currentState);
-            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             hudView.OnPointerEnter(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.WARNING_MESSAGE_VISIBLE,hudView.currentState);
         }
@@ -59,7 +59,7 @@ namespace Tests.AvatarModifierAreaFeedback
         public void CheckPointerExit()
         {
             warningMessageList.Clear();
-            warningMessageList.AddRefCount(AvatarAreaWarningID.HIDE_AVATAR);
+            warningMessageList.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             hudView.OnPointerExit(null);
             Assert.AreEqual(AvatarModifierAreaFeedbackView.AvatarModifierAreaFeedbackState.ICON_VISIBLE, hudView.currentState);
         }

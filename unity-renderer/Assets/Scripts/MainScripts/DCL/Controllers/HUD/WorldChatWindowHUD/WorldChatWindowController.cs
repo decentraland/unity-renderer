@@ -96,11 +96,11 @@ public class WorldChatWindowController : IHUD
 
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
-        
+
         if (!friendsController.IsInitialized)
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
-        
+
         chatController.OnAddMessage += HandleMessageAdded;
         chatController.OnChannelUpdated += HandleChannelUpdated;
         chatController.OnChannelJoined += HandleChannelJoined;
@@ -108,6 +108,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
+        friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
     }
 
@@ -128,6 +129,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
+        friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
 
         if (ownUserProfile != null)
@@ -213,7 +215,10 @@ public class WorldChatWindowController : IHUD
             view.HidePrivateChatsLoading();
     }
 
-    private void OpenPrivateChat(string userId) { OnOpenPrivateChat?.Invoke(userId); }
+    private void OpenPrivateChat(string userId)
+    {
+        OnOpenPrivateChat?.Invoke(userId);
+    }
 
     private void OpenPublicChat(string channelId)
     {
@@ -229,27 +234,46 @@ public class WorldChatWindowController : IHUD
         SetVisibility(false);
     }
 
+    private void HandleFriendshipUpdated(string userId, FriendshipAction friendship)
+    {
+        if (friendship == FriendshipAction.APPROVED)
+        {
+            var profile = userProfileBridge.Get(userId);
+            if (profile == null) return;
+
+            view.SetPrivateChat(new PrivateChatModel
+            {
+                user = profile,
+                isBlocked = ownUserProfile.IsBlocked(userId),
+                isOnline = friendsController.GetUserStatus(userId) is {presence: PresenceStatus.ONLINE},
+                recentMessage = lastPrivateMessages.ContainsKey(userId) ? lastPrivateMessages[userId] : null
+            });
+        }
+        else
+        {
+            // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
+            view.RemovePrivateChat(userId);
+        }
+    }
+
     private void HandleUserStatusChanged(string userId, UserStatus status)
     {
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
-        
+
         if (status.friendshipStatus == FriendshipStatus.FRIEND)
         {
             var profile = recipientsFromPrivateChats[userId];
-            
-            if (ShouldDisplayPrivateChat(profile.userId))
+
+            view.SetPrivateChat(new PrivateChatModel
             {
-                view.SetPrivateChat(new PrivateChatModel
-                {
-                    user = profile,
-                    recentMessage = lastPrivateMessages[userId],
-                    isBlocked = ownUserProfile.IsBlocked(userId),
-                    isOnline = status.presence == PresenceStatus.ONLINE
-                });
-            }
+                user = profile,
+                recentMessage = lastPrivateMessages[userId],
+                isBlocked = ownUserProfile.IsBlocked(userId),
+                isOnline = status.presence == PresenceStatus.ONLINE
+            });
         }
-        else if (status.friendshipStatus == FriendshipStatus.NOT_FRIEND)
+        else
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
@@ -259,21 +283,20 @@ public class WorldChatWindowController : IHUD
     private void HandleMessageAdded(ChatMessage message)
     {
         if (message.messageType != ChatMessage.Type.PRIVATE) return;
-        var profile = ExtractRecipient(message);
-        if (profile == null) return;
         
-        if (friendsController.IsInitialized)
-            if (!friendsController.IsFriend(profile.userId))
-                return;
-
-        if (lastPrivateMessages.ContainsKey(profile.userId))
+        var userId = ExtractRecipientId(message);
+        
+        if (lastPrivateMessages.ContainsKey(userId))
         {
-            if (message.timestamp > lastPrivateMessages[profile.userId].timestamp)
-                lastPrivateMessages[profile.userId] = message;
+            if (message.timestamp > lastPrivateMessages[userId].timestamp)
+                lastPrivateMessages[userId] = message;
         }
         else
-            lastPrivateMessages[profile.userId] = message;
-        
+            lastPrivateMessages[userId] = message;
+
+        var profile = userProfileBridge.Get(userId);
+        if (profile == null) return;
+
         recipientsFromPrivateChats[profile.userId] = profile;
 
         view.SetPrivateChat(CreatePrivateChatModel(message, profile));
@@ -281,18 +304,19 @@ public class WorldChatWindowController : IHUD
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
     {
-        for (int i = 0; i < usersWithDM.Count; i++)
+        for (var i = 0; i < usersWithDM.Count; i++)
         {
-            if (recipientsFromPrivateChats.ContainsKey(usersWithDM[i].userId))
-                continue;
+            if (recipientsFromPrivateChats.ContainsKey(usersWithDM[i].userId)) continue;
 
             var profile = userProfileBridge.Get(usersWithDM[i].userId);
             if (profile == null) continue;
 
-            ChatMessage lastMessage = new ChatMessage();
-            lastMessage.messageType = ChatMessage.Type.PRIVATE;
-            lastMessage.body = usersWithDM[i].lastMessageBody;
-            lastMessage.timestamp = (ulong)usersWithDM[i].lastMessageTimestamp;
+            var lastMessage = new ChatMessage
+            {
+                messageType = ChatMessage.Type.PRIVATE,
+                body = usersWithDM[i].lastMessageBody,
+                timestamp = (ulong) usersWithDM[i].lastMessageTimestamp
+            };
 
             if (lastPrivateMessages.ContainsKey(profile.userId))
             {
@@ -318,14 +342,6 @@ public class WorldChatWindowController : IHUD
         isRequestingDMs = false;
     }
 
-    private bool ShouldDisplayPrivateChat(string userId)
-    {
-        if (!friendsController.IsInitialized) return false;
-        if (view.PrivateChannelsCount < USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD) return true;
-        if (view.ContainsPrivateChannel(userId)) return true;
-        return false;
-    }
-
     private PrivateChatModel CreatePrivateChatModel(ChatMessage recentMessage, UserProfile profile)
     {
         return new PrivateChatModel
@@ -337,13 +353,15 @@ public class WorldChatWindowController : IHUD
         };
     }
 
-    private UserProfile ExtractRecipient(ChatMessage message) =>
-        userProfileBridge.Get(message.sender != ownUserProfile.userId ? message.sender : message.recipient);
+    private string ExtractRecipientId(ChatMessage message)
+    {
+        return message.sender != ownUserProfile.userId ? message.sender : message.recipient;
+    }
 
     private void OnUserProfileUpdate(UserProfile profile)
     {
         view.RefreshBlockedDirectMessages(profile.blocked);
-        
+
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
     }
@@ -371,9 +389,10 @@ public class WorldChatWindowController : IHUD
             var regex = new Regex(search, RegexOptions.IgnoreCase);
 
             return recipientsFromPrivateChats.Values.Where(profile =>
-                !string.IsNullOrEmpty(profile.userName) && regex.IsMatch(profile.userName))
+                    !string.IsNullOrEmpty(profile.userName) && regex.IsMatch(profile.userName))
                 .Take(MAX_SEARCHED_CHANNELS)
-                .ToDictionary(model => model.userId, profile => CreatePrivateChatModel(lastPrivateMessages[profile.userId], profile));
+                .ToDictionary(model => model.userId,
+                    profile => CreatePrivateChatModel(lastPrivateMessages[profile.userId], profile));
         }
 
         Dictionary<string, PublicChatModel> FilterPublicChannelsByName(string search)
@@ -405,7 +424,7 @@ public class WorldChatWindowController : IHUD
     {
         hiddenDMs = friendsController.TotalFriendsWithDirectMessagesCount - view.PrivateChannelsCount;
 
-        if (hiddenDMs == 0 || !string.IsNullOrEmpty(currentSearch))
+        if (hiddenDMs <= 0 || !string.IsNullOrEmpty(currentSearch))
             View.HideMoreChatsToLoadHint();
         else
             View.ShowMoreChatsToLoadHint(hiddenDMs);

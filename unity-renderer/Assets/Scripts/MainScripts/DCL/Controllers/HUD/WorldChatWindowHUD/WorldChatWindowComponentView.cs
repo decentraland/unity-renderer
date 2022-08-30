@@ -153,6 +153,7 @@ namespace DCL.Chat.HUD
         public void RemovePrivateChat(string userId)
         {
             directChatList.Remove(userId);
+            searchResultsList.Remove(userId);
             UpdateHeaders();
             UpdateLayout();
         }
@@ -293,11 +294,11 @@ namespace DCL.Chat.HUD
             var entry = new PrivateChatEntryModel(
                 user.userId,
                 user.userName,
-                model.recentMessage.body,
+                model.recentMessage != null ? model.recentMessage.body : string.Empty,
                 user.face256SnapshotURL,
                 model.isBlocked,
                 model.isOnline,
-                model.recentMessage.timestamp);
+                model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
             if (isSearchMode)
             {
@@ -305,7 +306,10 @@ namespace DCL.Chat.HUD
                 searchResultsList.Set(entry);
             }
             else
+            {
                 directChatList.Set(userId, entry);
+                searchResultsList.Remove(userId);
+            }
 
             UpdateHeaders();
             UpdateLayout();
@@ -327,6 +331,7 @@ namespace DCL.Chat.HUD
             else
             {
                 publicChannelList.Set(channelId, entryModel);
+                searchResultsList.Remove(channelId);
                 entry = publicChannelList.Get(channelId);
             }
 

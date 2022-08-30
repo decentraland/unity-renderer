@@ -56,7 +56,6 @@ namespace Tests
             mainCamera.transform.forward = Vector3.forward;
 
             EntityIdHelper idHelper = new EntityIdHelper();
-            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
             DCL.Environment.i.world.sceneController.Configure().entityIdHelper.Returns(idHelper);
 
             uuidEventsPlugin = new UUIDEventsPlugin();
@@ -1768,7 +1767,6 @@ namespace Tests
         public IEnumerator PointerEventNotTriggeredByParent()
         {
             EntityIdHelper idHelper = new EntityIdHelper();
-            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
             DCL.Environment.i.world.sceneController.Configure().entityIdHelper.Returns(idHelper);
             
             // Create parent entity
