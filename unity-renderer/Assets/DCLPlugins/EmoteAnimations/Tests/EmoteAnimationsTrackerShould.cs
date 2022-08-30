@@ -62,7 +62,9 @@ namespace DCL.Emotes
             loaderFactory.Received().Get();
             resolver.Received().Resolve("emote0", Arg.Any<CancellationToken>());
             loader.Received().LoadEmote(tracker.animationsModelsContainer, emote, bodyShapeId, Arg.Any<CancellationToken>());
-            Assert.AreEqual(tikAnim, dataStore.animations[(bodyShapeId, "emote0")]?.Clip);
+            var animKey = (bodyShapeId, "emote0");
+            var animClip = dataStore.animations[animKey]?.Clip;
+            Assert.AreEqual(tikAnim, animClip);
         }
 
         [Test]

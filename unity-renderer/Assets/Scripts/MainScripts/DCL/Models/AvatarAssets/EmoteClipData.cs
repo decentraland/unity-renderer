@@ -15,7 +15,7 @@ namespace DCL.Emotes
         public EmoteClipData(AnimationClip clip, EmoteDataV0 emoteDataV0)
         {
             Clip = clip;
-            Loop = emoteDataV0.loop;
+            Loop = emoteDataV0?.loop ?? false;
         }
     }
 }
