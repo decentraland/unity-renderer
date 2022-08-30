@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

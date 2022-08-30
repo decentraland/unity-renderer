@@ -13,8 +13,6 @@ namespace SocialFeaturesAnalytics
         private const string VOICE_CHANNEL_CONNECTION = "voice_channel_connection";
         private const string VOICE_CHANNEL_DISCONNECTION = "voice_channel_disconnection";
         private const string VOICE_CHAT_PREFERENCES_CHANGED = "voice_chat_preferences_changed";
-        private const string CHANNEL_MESSAGE_SENT = "send_chat_message";
-        private const string DIRECT_MESSAGE_SENT = "send_direct_message";
         private const string FRIEND_REQUEST_SENT = "friend_request_sent";
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
@@ -31,14 +29,17 @@ namespace SocialFeaturesAnalytics
         private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
+        
+        public static SocialAnalytics i { get; private set; }
 
-        private IAnalytics analytics;
-        private IUserProfileBridge userProfileBridge;
+        private readonly IAnalytics analytics;
+        private readonly IUserProfileBridge userProfileBridge;
 
         public SocialAnalytics(IAnalytics analytics, IUserProfileBridge userProfileBridge)
         {
             this.analytics = analytics;
             this.userProfileBridge = userProfileBridge;
+            i ??= this;
         }
 
         public void SendPlayerMuted(string toUserId)
