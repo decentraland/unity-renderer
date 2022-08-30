@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "DCL.ECS7Plugin.Systems.PointerEventResolver",
     "rootNamespace": "",
     "references": [
@@ -6,7 +6,8 @@
         "GUID:4bd423f6dceb67540b5c246ca8cf789b",
         "GUID:9239602a072d4e52b5f1cae20ab2b459",
         "GUID:2f65f91ec3d84150a37ed886555c85c6",
-        "GUID:b3c9f26299e0467ba46343e4a44dd152"
+        "GUID:b3c9f26299e0467ba46343e4a44dd152",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
