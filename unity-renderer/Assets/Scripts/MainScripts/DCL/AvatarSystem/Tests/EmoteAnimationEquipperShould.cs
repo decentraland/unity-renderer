@@ -70,7 +70,7 @@ namespace Test.AvatarSystem
                 new WearableItem { id = "emote2" },
             });
 
-            animator.DidNotReceive().EquipEmote(Arg.Any<string>(), new EmoteClipData(Arg.Any<AnimationClip>()));
+            animator.DidNotReceive().EquipEmote(Arg.Any<string>(), Arg.Any<EmoteClipData>());
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace Test.AvatarSystem
 
             animator.Received().EquipEmote("emote0", tikEmoteData);
             animator.Received().EquipEmote("emote1", discoEmoteData);
-            animator.DidNotReceive().EquipEmote("emote2", new EmoteClipData(Arg.Any<AnimationClip>()));
+            animator.DidNotReceive().EquipEmote("emote2", Arg.Any<EmoteClipData>());
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace Test.AvatarSystem
 
             dataStore.animations.Add(("male", "old0"), emoteClipData);
 
-            animator.DidNotReceive().EquipEmote(Arg.Any<string>(), new EmoteClipData(Arg.Any<AnimationClip>()));
+            animator.DidNotReceive().EquipEmote(Arg.Any<string>(), Arg.Any<EmoteClipData>());
         }
     }
 }
