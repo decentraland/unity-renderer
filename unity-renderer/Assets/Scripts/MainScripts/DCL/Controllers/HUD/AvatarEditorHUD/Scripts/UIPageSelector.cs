@@ -20,6 +20,9 @@ public class UIPageSelector : MonoBehaviour
     {
         previousButton.onClick.AddListener(OnPreviousButtonDown);
         nextButton.onClick.AddListener(OnNextButtonDown);
+        
+        gameObject.SetActive(false);
+
     }
     private void OnNextButtonDown()
     {
