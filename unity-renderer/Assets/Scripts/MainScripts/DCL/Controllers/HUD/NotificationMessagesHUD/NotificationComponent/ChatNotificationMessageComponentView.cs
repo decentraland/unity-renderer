@@ -136,7 +136,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
             seed += (int)value;
         }
         System.Random rand1 = new System.Random(seed);
-        notificationHeader.color = channelColors[rand1.Next(0, 9)];
+        notificationHeader.color = channelColors[rand1.Next(0, channelColors.Length)];
     }
 
     public void SetNotificationSender(string sender)
