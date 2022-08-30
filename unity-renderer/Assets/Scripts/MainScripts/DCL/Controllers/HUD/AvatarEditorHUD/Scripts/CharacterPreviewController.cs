@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using GPUSkinning;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class CharacterPreviewController : MonoBehaviour
 {
@@ -57,7 +58,7 @@ public class CharacterPreviewController : MonoBehaviour
         };
         IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
         avatar = new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
@@ -98,7 +99,7 @@ public class CharacterPreviewController : MonoBehaviour
             ct.ThrowIfCancellationRequested();
             List<string> wearables = new List<string>(newModel.wearables);
             wearables.Add(newModel.bodyShape);
-            await avatar.Load(wearables, new AvatarSettings
+            await avatar.Load(wearables, newModel.emotes.Select(x => x.urn).ToList(), new AvatarSettings
             {
                 bodyshapeId = newModel.bodyShape,
                 eyesColor = newModel.eyeColor,

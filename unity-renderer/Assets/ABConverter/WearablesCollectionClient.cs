@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -32,14 +33,14 @@ namespace DCL.ABConverter
             if (wearableCollections != null && wearableCollections.Length > 0)
                 return wearableCollections;
 
-            UnityWebRequest w = UnityWebRequest.Get(WearablesFetchingHelper.COLLECTIONS_FETCH_URL);
+            UnityWebRequest w = UnityWebRequest.Get(WearablesFetchingHelper.GetCollectionsFetchURL());
             w.SendWebRequest();
 
             while (!w.isDone) { }
 
             if (!w.WebRequestSucceded())
             {
-                log.Error($"Request error! Wearable collections at '{WearablesFetchingHelper.COLLECTIONS_FETCH_URL}' couldn't be fetched! -- {w.error}");
+                log.Error($"Request error! Wearable collections at '{WearablesFetchingHelper.GetCollectionsFetchURL()}' couldn't be fetched! -- {w.error}");
                 return null;
             }
 
@@ -50,7 +51,7 @@ namespace DCL.ABConverter
 
         public static string BuildWearableCollectionFetchingURL(string targetCollectionId)
         {
-            return WearablesFetchingHelper.WEARABLES_FETCH_URL + "collectionId=" + targetCollectionId;
+            return WearablesFetchingHelper.GetWearablesFetchURL() + "collectionId=" + targetCollectionId;
         }
         
         /// <summary>
@@ -375,14 +376,14 @@ namespace DCL.ABConverter
                 return null;
             }
 
-            var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
+            var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(w.downloadHandler.text);
             var resultList = wearablesApiData.GetWearableItems();
 
             // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
             // batches sequentially
             if (!string.IsNullOrEmpty(wearablesApiData.pagination.next))
             {
-                var nextPageResults = GetWearableItems(WearablesFetchingHelper.WEARABLES_FETCH_URL + wearablesApiData.pagination.next);
+                var nextPageResults = GetWearableItems(WearablesFetchingHelper.GetWearablesFetchURL() + wearablesApiData.pagination.next);
                 resultList.AddRange(nextPageResults);
             }
 
