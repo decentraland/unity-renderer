@@ -19,7 +19,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
-    public event Action<Dictionary<string, int>> OnInventorySet;
 
     public string userId => model.userId;
     public string ethAddress => model.ethAddress;
@@ -114,7 +113,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         inventory.Clear();
         inventory = inventoryIds.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-        OnInventorySet?.Invoke(inventory);
     }
 
     public void AddToInventory(string wearableId)

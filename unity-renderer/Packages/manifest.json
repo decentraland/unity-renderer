@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.brunomikoski.animationsequencer": "0.3.8",
-    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#3.3.0",
+    "com.coffee.ui-particle": "4.1.6",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.decentraland.rpc-csharp": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
     "com.unity.2d.sprite": "1.0.0",
@@ -55,10 +55,11 @@
   "scopedRegistries": [
     {
       "name": "OpenUPM",
-      "url": "https://package.openupm.com/",
+      "url": "https://package.openupm.com",
       "scopes": [
         "com.brunomikoski",
-        "com.demigiant"
+        "com.demigiant",
+        "com.coffee.ui-particle"
       ]
     }
   ]
