@@ -648,9 +648,25 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class EmotesRequestFiltersPayload
+        {
+            public string ownedByUser;
+            public string[] emoteIds;
+            public string[] collectionIds;
+            public string thirdPartyId;
+        }
+
+        [System.Serializable]
         public class RequestWearablesPayload
         {
             public WearablesRequestFiltersPayload filters;
+            public string context;
+        }
+
+        [System.Serializable]
+        public class RequestEmotesPayload
+        {
+            public EmotesRequestFiltersPayload filters;
             public string context;
         }
 
@@ -898,6 +914,7 @@ namespace DCL.Interface
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
         private static SetDisabledPortableExperiencesPayload setDisabledPortableExperiencesPayload = new SetDisabledPortableExperiencesPayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
+        private static RequestEmotesPayload requestEmotesPayload = new RequestEmotesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
@@ -1555,6 +1572,25 @@ namespace DCL.Interface
             requestWearablesPayload.context = context;
 
             SendMessage("RequestWearables", requestWearablesPayload);
+        }
+
+        public static void RequestEmotes(
+            string ownedByUser,
+            string[] emoteIds,
+            string[] collectionIds,
+            string context)
+        {
+            requestEmotesPayload.filters = new EmotesRequestFiltersPayload()
+            {
+                ownedByUser = ownedByUser,
+                emoteIds = emoteIds,
+                collectionIds = collectionIds,
+                thirdPartyId = null
+            };
+
+            requestEmotesPayload.context = context;
+
+            SendMessage("RequestEmotes", requestEmotesPayload);
         }
 
         public static void SearchENSOwner(string name, int maxResults)

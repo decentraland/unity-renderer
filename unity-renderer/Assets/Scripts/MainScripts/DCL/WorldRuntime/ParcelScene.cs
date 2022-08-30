@@ -213,6 +213,7 @@ namespace DCL.Controllers
             return string.IsNullOrEmpty(sceneName) ? "Unnamed" : sceneName;
         }
 
+        public HashSet<Vector2Int> GetParcels() => parcels;
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
             if (isPersistent)

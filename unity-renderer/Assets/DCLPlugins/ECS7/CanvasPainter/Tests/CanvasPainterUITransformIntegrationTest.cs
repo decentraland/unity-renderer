@@ -304,7 +304,7 @@ namespace DCL.ECS7.Tests
         private ECS7TestScene CreateUITestScene()
         {
             string testSceneId = "testId";
-            worldState.Configure().currentSceneId.Returns(testSceneId);
+            worldState.Configure().GetCurrentSceneId().Returns(testSceneId);
             var testScene = testUtils.CreateScene(testSceneId);
             testScene.CreateEntity(512);
             testScene.CreateEntity(513);
