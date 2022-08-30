@@ -5,11 +5,9 @@ namespace DCL
 {
     public class AssetPromise_PrimitiveMesh : AssetPromise<Asset_PrimitiveMesh>
     {
-        public PrimitiveMeshModel model;
+        private readonly AssetPromise_PrimitiveMesh_Model model;
 
-        private static readonly IPrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
-
-        public AssetPromise_PrimitiveMesh(PrimitiveMeshModel model)
+        public AssetPromise_PrimitiveMesh(AssetPromise_PrimitiveMesh_Model model)
         {
             this.model = model;
         }
@@ -24,7 +22,7 @@ namespace DCL
         {
             try
             {
-                Mesh currentMesh = primitiveMeshFactory.CreateMesh(model);
+                Mesh currentMesh = PrimitiveMeshFactory.CreateMesh(model);
                 asset.mesh = currentMesh;
                 OnSuccess?.Invoke();
             }

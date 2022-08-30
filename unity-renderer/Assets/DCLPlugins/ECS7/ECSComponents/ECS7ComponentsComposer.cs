@@ -25,6 +25,7 @@ namespace DCL.ECSComponents
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
         private readonly MaterialRegister materialRegister;
+        private readonly MeshRendererRegister meshRendererRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
 
         // UI components
@@ -57,6 +58,7 @@ namespace DCL.ECSComponents
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
+            meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter);
 
             // UI components
@@ -90,6 +92,8 @@ namespace DCL.ECSComponents
             pointerUpRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             materialRegister.Dispose();
+            meshRendererRegister.Dispose();
+            visibilityComponentRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();
