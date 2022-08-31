@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
-public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig
+public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowComponentView, IComponentModelConfig<VoiceChatWindowComponentModel>
 {
     private const string ALLOW_USERS_TITLE_ALL = "All";
     private const string ALLOW_USERS_TITLE_REGISTERED = "Verified Users";
@@ -56,16 +56,9 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         ConfigureAllowUsersFilter();
     }
 
-    public override void Start()
+    public void Configure(VoiceChatWindowComponentModel newModel)
     {
-        base.Start();
-        
-        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
-    }
-
-    public void Configure(BaseComponentModel newModel)
-    {
-        model = (VoiceChatWindowComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 
@@ -265,6 +258,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 changeTextColorOnSelect = true
             }
         });
+
+        allowUsersDropdown.SetTitle(ALLOW_USERS_TITLE_ALL);
     }
 
     internal void AllowUsersOptionChanged(bool isOn, string optionId, string optionName)

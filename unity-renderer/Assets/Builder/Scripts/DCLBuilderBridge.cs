@@ -335,19 +335,8 @@ namespace Builder
 
         private static ParcelScene GetLoadedScene()
         {
-            ParcelScene loadedScene = null;
             IWorldState worldState = Environment.i.world.state;
-
-            if (worldState != null && worldState.loadedScenes.Count > 0)
-            {
-                using (var iterator = worldState.loadedScenes.GetEnumerator())
-                {
-                    iterator.MoveNext();
-                    loadedScene = iterator.Current.Value as ParcelScene;
-                }
-            }
-
-            return loadedScene;
+            return worldState.GetScene(worldState.GetCurrentSceneId()) as ParcelScene;
         }
 
         private void Awake()
@@ -635,7 +624,7 @@ namespace Builder
                 outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
             }
 
-            Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(entity.rootEntity);
+            Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(entity.rootEntity);
         }
 
         private void SendOutOfBoundariesEntities() { builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.id); }
@@ -646,7 +635,7 @@ namespace Builder
             {
                 for (int i = 0; i < selectedEntities.Count; i++)
                 {
-                    Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
+                    Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(selectedEntities[i].rootEntity);
                 }
             }
         }

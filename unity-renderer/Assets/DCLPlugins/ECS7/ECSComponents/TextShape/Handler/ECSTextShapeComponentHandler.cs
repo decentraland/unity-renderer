@@ -66,7 +66,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         rectTransform = null;
         currentModel = null;
     }
-
+    
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
     {
         if (model.Equals(currentModel))
@@ -124,7 +124,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         // we only set it if textWrapping is enabled.
         if (model.TextWrapping)
         {
-            rectTransform.sizeDelta = new Vector2(model.Width, model.Height);
+            rectTransform.sizeDelta = new Vector2(model.GetWidth(), model.GetHeight());
         }
         else
         {
@@ -139,7 +139,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         if (model.TextColor != null)
             textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
 
-        textComponent.fontSize = model.FontSize;
+        textComponent.fontSize = model.GetFontSize();
         textComponent.richText = true;
         textComponent.overflowMode = TextOverflowModes.Overflow;
         textComponent.enableAutoSizing = model.FontAutoSize;
@@ -153,7 +153,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 model.PaddingBottom
             );
 
-        textComponent.alignment = GetAlignment(model.VTextAlign, model.HTextAlign);
+        textComponent.alignment = GetAlignment(model.GetVTextAlign(), model.GetHTextAlign());
         textComponent.lineSpacing = model.LineSpacing;
 
         if (model.LineCount != 0)
@@ -183,7 +183,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 textComponent.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
                 underlayKeywordEnabled = true;
             }
-            var shadowColor  = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
+            var shadowColor = new UnityEngine.Color(model.ShadowColor.R, model.ShadowColor.G, model.ShadowColor.B, model.Opacity);
             textComponent.fontSharedMaterial.SetColor(underlayColor, shadowColor);
             textComponent.fontSharedMaterial.SetFloat(offsetX, model.ShadowOffsetX);
             textComponent.fontSharedMaterial.SetFloat(offsetY, model.ShadowOffsetY);
@@ -210,7 +210,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
             textComponent.fontSharedMaterial.DisableKeyword("OUTLINE_ON");
         }
 
-        textGameObject.SetActive(model.Visible);
+        textGameObject.SetActive(model.GetVisible());
         entity.OnShapeUpdated?.Invoke(entity);
     }
 

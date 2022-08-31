@@ -215,25 +215,26 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
-  openBrowserWhenStart: 1
+  OpenBrowserOnStart: 1
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 1
-  baseUrlCustom: https://play.decentraland.zone/?
-  environment: 4
+  baseUrlMode: 3
+  customURL: https://play.decentraland.zone/?
+  network: 0
   realm: loki
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
-  allWearables: 0
-  testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
   soloScene: 0
+  disableAssetBundles: 0
+  enableDebugMode: 0
   debugPanelMode: 0
+  disableGLTFDownloadThrottle: 0
   multithreaded: 0
-  runPerformanceMeterToolDuringLoading: 1
+  runPerformanceMeterToolDuringLoading: 0
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0

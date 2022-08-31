@@ -6,6 +6,7 @@ using DCL.ExperiencesViewer;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;
+using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
 {
@@ -35,12 +36,15 @@ namespace DCL
             pluginSystem.Register<UIComponentsPlugin>(() => new UIComponentsPlugin());
             pluginSystem.Register<CoreComponentsPlugin>(() => new CoreComponentsPlugin());
             pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
-
+            pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
+            pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
+            
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
+            pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur");
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,
                 NotificationScriptableObjects.pendingFriendRequests,

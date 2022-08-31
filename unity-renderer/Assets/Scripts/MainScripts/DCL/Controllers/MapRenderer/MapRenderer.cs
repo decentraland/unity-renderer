@@ -33,7 +33,6 @@ namespace DCL
         [SerializeField] private Image parcelHighlighWithContentImagePrefab;
         [SerializeField] private Image selectParcelHighlighImagePrefab;
 
-        private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
         private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
         private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
@@ -92,6 +91,8 @@ namespace DCL
         private List<Vector2Int> ownedLandsWithContent = new List<Vector2Int>();
         private List<Vector2Int> ownedEmptyLands = new List<Vector2Int>();
         private Vector2Int lastSelectedLand;
+        private Vector3 lastPlayerPosition = new Vector3(float.NegativeInfinity, 0, float.NegativeInfinity);
+        private BaseVariable<Vector3> playerWorldPosition = DataStore.i.player.playerWorldPosition;
 
         private bool isInitialized = false;
 
@@ -120,7 +121,6 @@ namespace DCL
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
-            playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
 
             highlight.SetScale(parcelHightlightScale);
@@ -189,7 +189,6 @@ namespace DCL
 
             scenesOfInterestMarkers.Clear();
 
-            playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded -= OnOtherPlayersAdded;
@@ -277,6 +276,12 @@ namespace DCL
 
         void Update()
         {
+            if ((playerWorldPosition.Get() - lastPlayerPosition).sqrMagnitude >= 0.1f * 0.1f)
+            {
+                lastPlayerPosition = playerWorldPosition.Get();
+                UpdateRendering(Utils.WorldToGridPositionUnclamped(lastPlayerPosition));
+            }
+
             if (!parcelHighlightEnabled)
                 return;
 
@@ -444,17 +449,6 @@ namespace DCL
             iconGO.transform.localPosition = MapUtils.CoordsToPosition(Vector2Int.RoundToInt(gridPosition));
         }
 
-        private void OnCharacterMove(Vector3 current, Vector3 previous)
-        {
-            current.y = 0;
-            previous.y = 0;
-
-            if (Vector3.Distance(current, previous) < 0.1f)
-                return;
-
-            UpdateRendering(Utils.WorldToGridPositionUnclamped(current));
-        }
-
         private void OnCharacterRotate(Vector3 current, Vector3 previous) { UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get())); }
 
         public void OnCharacterSetPosition(Vector2Int newCoords, Vector2Int oldCoords)
@@ -486,7 +480,7 @@ namespace DCL
             Quaternion playerAngle = Quaternion.Euler(0, 0, Mathf.Atan2(-f.x, f.z) * Mathf.Rad2Deg);
 
             var gridPosition = playerGridPosition;
-            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPosition(gridPosition);
+            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPositionWithOffset(gridPosition);
             playerPositionIcon.rotation = playerAngle;
         }
 

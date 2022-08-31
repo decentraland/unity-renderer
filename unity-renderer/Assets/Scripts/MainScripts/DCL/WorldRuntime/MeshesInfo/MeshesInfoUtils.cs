@@ -6,40 +6,63 @@ namespace DCL.Models
 {
     public static class MeshesInfoUtils
     {
-        public static Bounds BuildMergedBounds(Renderer[] renderers)
+        public static Bounds BuildMergedBounds(Renderer[] renderers, HashSet<Collider> colliders)
         {
             Bounds bounds = new Bounds();
-
+            bool initializedBounds = false;
+            
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] == null)
-                    continue;
+                if (renderers[i] == null) continue;
 
-                if (i == 0)
-                    bounds = renderers[i].GetSafeBounds();
+                if (!initializedBounds)
+                {
+                    initializedBounds = true;
+                    bounds = GetSafeBounds(renderers[i].bounds, renderers[i].transform.position);
+                }
                 else
-                    bounds.Encapsulate(renderers[i].GetSafeBounds());
+                {
+                    bounds.Encapsulate(GetSafeBounds(renderers[i].bounds, renderers[i].transform.position));
+                }
+            }
+
+            foreach (Collider collider in colliders)
+            {
+                if (collider == null) continue;
+                
+                if (!initializedBounds)
+                {
+                    initializedBounds = true;
+                    bounds = GetSafeBounds(collider.bounds, collider.transform.position);
+                }
+                else
+                {
+                    bounds.Encapsulate(GetSafeBounds(collider.bounds, collider.transform.position));
+                }   
             }
 
             return bounds;
         }
 
         /// <summary>
-        /// This get the renderer bounds with a check to ensure the renderer is at a safe position.
-        /// If the renderer is too far away from 0,0,0, wasm target ensures a crash.
+        /// This get the object bounds with a check to ensure the renderer is at a safe position.
+        /// If the object is too far away from 0,0,0, wasm target ensures a crash.
+        /// NOTE: If returning a mocked bounds object becomes problematic (e.g. for getting real bounds size),
+        /// we should find a solution using meshFilter.mesh.bounds instead as those bounds are local.
         /// </summary>
-        /// <param name="renderer"></param>
+        /// <param name="bounds"></param>
+        /// <param name="objectPosition"></param>
         /// <returns>The bounds value if the value is correct, or a mocked bounds object with clamped values if its too far away.</returns>
-        public static Bounds GetSafeBounds(this Renderer renderer)
+        public static Bounds GetSafeBounds(Bounds bounds, Vector3 objectPosition)
         {
             // World extents are of 4800 world mts, so this limit far exceeds the world size.
             const float POSITION_OVERFLOW_LIMIT = 10000;
             const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
 
-            if (renderer.transform.position.sqrMagnitude > POSITION_OVERFLOW_LIMIT_SQR)
+            if (objectPosition.sqrMagnitude > POSITION_OVERFLOW_LIMIT_SQR)
                 return new Bounds(Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f);
 
-            return renderer.bounds;
+            return bounds;
         }
 
         public static int ComputeTotalTriangles(IEnumerable<Renderer> renderers,

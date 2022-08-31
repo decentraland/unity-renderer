@@ -7,9 +7,12 @@ public class NativeBridgeCommunication : IKernelCommunication
 {
     private static string currentEntityId;
     private static string currentSceneId;
+    private static int currentSceneNumber;
     private static string currentTag;
 
     private static IMessageQueueHandler queueHandler;
+
+    delegate void JS_Delegate_VI(int a);
 
     delegate void JS_Delegate_VIS(int a, string b);
 
@@ -33,6 +36,7 @@ public class NativeBridgeCommunication : IKernelCommunication
 
         SetCallback_SetEntityId(SetEntityId);
         SetCallback_SetSceneId(SetSceneId);
+        SetCallback_SetSceneNumber(SetSceneNumber);
         SetCallback_SetTag(SetTag);
 
         SetCallback_SetEntityParent(SetEntityParent);
@@ -252,6 +256,9 @@ public class NativeBridgeCommunication : IKernelCommunication
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SetSceneId(string id) { currentSceneId = id; }
 
+    [MonoPInvokeCallback(typeof(JS_Delegate_VI))]
+    internal static void SetSceneNumber(int sceneNumber) { currentSceneNumber = sceneNumber; }
+
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SetTag(string id) { currentTag = id; }
 
@@ -308,6 +315,7 @@ public class NativeBridgeCommunication : IKernelCommunication
         }
 
         message.sceneId = currentSceneId;
+        message.sceneNumber = currentSceneNumber;
         message.tag = currentTag;
         message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
 
@@ -328,6 +336,9 @@ public class NativeBridgeCommunication : IKernelCommunication
 
     [DllImport("__Internal")]
     private static extern void SetCallback_SetSceneId(JS_Delegate_VS callback);
+
+    [DllImport("__Internal")]
+    private static extern void SetCallback_SetSceneNumber(JS_Delegate_VI callback);
 
     [DllImport("__Internal")]
     private static extern void SetCallback_SetEntityParent(JS_Delegate_VS callback);

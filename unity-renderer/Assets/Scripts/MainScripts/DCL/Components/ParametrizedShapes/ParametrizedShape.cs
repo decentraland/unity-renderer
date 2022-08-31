@@ -1,10 +1,8 @@
-﻿using DCL.Controllers;
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Components
@@ -53,13 +51,13 @@ namespace DCL.Components
 
             if (visibilityDirty)
             {
-                ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+                ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
                 visibilityDirty = false;
             }
 
             if (collisionsDirty)
             {
-                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity, CalculateCollidersLayer(model));
+                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions && entity.isInsideSceneBoundaries, false, entity, CalculateCollidersLayer(model));
                 collisionsDirty = false;
             }
 
@@ -67,6 +65,8 @@ namespace DCL.Components
             {
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
+         
+            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
@@ -115,9 +115,14 @@ namespace DCL.Components
             AddRendereableToDataStore(entity);
         }
 
-        void OnShapeFinishedLoading(IDCLEntity entity)
+
+        async UniTaskVoid OnShapeFinishedLoading(IDCLEntity entity)
         {
+            // We need to wait for a frame so that MaterialTransitionController has been destroyed.
+            await UniTask.Yield();
+            
             entity.OnShapeUpdated?.Invoke(entity);
+            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         void OnShapeDetached(IDCLEntity entity)

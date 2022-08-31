@@ -14,6 +14,8 @@ namespace AvatarSystem
         void Initialize();
         SkinnedMeshRenderer GetMainRenderer();
         GameObject GetArmatureContainer();
-        UniTask FadeOut(MeshRenderer targetRenderer, bool playParticles, CancellationToken cancellationToken);
+        UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);
+
+        void CancelTransition();
     }
 }

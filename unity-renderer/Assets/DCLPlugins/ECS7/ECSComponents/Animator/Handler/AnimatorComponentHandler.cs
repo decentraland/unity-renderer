@@ -70,7 +70,7 @@ namespace DCL.ECSComponents
                 return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
-            animComponent = entity.gameObject.transform.parent.GetComponentInChildren<Animation>(true);
+            animComponent = entity.gameObject.GetComponentInChildren<Animation>(true);
 
             if (animComponent == null)
                 return;
@@ -94,7 +94,7 @@ namespace DCL.ECSComponents
                 layerIndex++;
             }
         }
-        
+
         internal void UpdateAnimationState(PBAnimator model)
         {
             if (clipNameToClip.Count == 0 || animComponent == null)
@@ -108,10 +108,12 @@ namespace DCL.ECSComponents
                 if (clipNameToClip.ContainsKey(model.States[i].Clip))
                 {
                     AnimationState unityState = animComponent[model.States[i].Clip];
-                    unityState.weight = model.States[i].Weight;
-                    unityState.wrapMode = model.States[i].Loop ? WrapMode.Loop : WrapMode.Default;
+                    unityState.weight = model.States[i].GetWeight();
+
+                    unityState.wrapMode = model.States[i].GetLoop() ? WrapMode.Loop : WrapMode.Default;
+
                     unityState.clip.wrapMode = unityState.wrapMode;
-                    unityState.speed = model.States[i].Speed;
+                    unityState.speed = model.States[i].GetSpeed();
                     unityState.enabled = model.States[i].Playing;
 
                     if (model.States[i].ShouldReset)

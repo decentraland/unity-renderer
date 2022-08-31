@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DCL;
-using DCL.Controllers;
+﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -17,8 +14,13 @@ namespace DCL.ECSComponents
         internal PBPlaneShape lastModel;
         
         private readonly DataStore_ECS7 dataStore;
+        private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
-        public ECSPlaneShapeComponentHandler(DataStore_ECS7 dataStore) { this.dataStore = dataStore;}
+        public ECSPlaneShapeComponentHandler(DataStore_ECS7 dataStore, IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
+        {
+            this.dataStore = dataStore;
+            this.texturizableInternalComponent = texturizableInternalComponent;
+        }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
@@ -33,7 +35,7 @@ namespace DCL.ECSComponents
         {
             if (lastModel != null && lastModel.Uvs.Equals(model.Uvs))
             {
-                ECSComponentsUtils.UpdateMeshInfo(model.Visible, model.WithCollisions, model.IsPointerBlocker, meshesInfo);
+                ECSComponentsUtils.UpdateMeshInfo(model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker(), meshesInfo);
             }
             else
             {
@@ -41,8 +43,7 @@ namespace DCL.ECSComponents
                 if (primitiveMeshPromisePrimitive != null)
                     AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromisePrimitive);
 
-                PrimitiveMeshModel primitiveMeshModelModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Plane);
-                primitiveMeshModelModel.uvs = model.Uvs;
+                AssetPromise_PrimitiveMesh_Model primitiveMeshModelModel = AssetPromise_PrimitiveMesh_Model.CreatePlane(model.Uvs);
 
                 primitiveMeshPromisePrimitive = new AssetPromise_PrimitiveMesh(primitiveMeshModelModel);
                 primitiveMeshPromisePrimitive.OnSuccessEvent += shape =>
@@ -67,8 +68,9 @@ namespace DCL.ECSComponents
 
         private void GenerateRenderer(Mesh mesh, IParcelScene scene, IDCLEntity entity, PBPlaneShape model)
         {
-            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.Visible, model.WithCollisions, model.IsPointerBlocker);
-
+            meshesInfo = ECSComponentsUtils.GeneratePrimitive(entity, mesh, entity.gameObject, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
+            texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
+            
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
             rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
@@ -77,6 +79,7 @@ namespace DCL.ECSComponents
         {
             if (meshesInfo != null)
             {
+                texturizableInternalComponent.RemoveRenderers(scene, entity, meshesInfo?.renderers);
                 dataStore.RemoveShapeReady(entity.entityId);
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }

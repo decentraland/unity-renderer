@@ -282,9 +282,7 @@ namespace DCL.Builder
 
         private void OnPlayerTeleportedToEditScene(Vector2Int coords)
         {
-            var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            StartFlowFromLandWithPermission(targetScene, SOURCE_BUILDER_PANEl);
+            StartFlowFromLandWithPermission(Environment.i.world.state.GetScene(coords), SOURCE_BUILDER_PANEl);
         }
 
         public void StartFlowFromProject(Manifest.Manifest manifest)
@@ -352,7 +350,7 @@ namespace DCL.Builder
 
         public IParcelScene FindSceneToEdit()
         {
-            foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
             {
                 if (WorldStateUtils.IsCharacterInsideScene(scene))
                     return scene;
@@ -646,7 +644,7 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            ILand land = BIWUtils.CreateILandFromManifest(sceneToEdit.manifest, DataStore.i.player.playerWorldPosition.Get());
+            ILand land = BIWUtils.CreateILandFromManifest(sceneToEdit.manifest, DataStore.i.player.playerGridPosition.Get());
 
             builderInWorldBridge.StartIsolatedMode(land);
         }

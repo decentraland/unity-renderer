@@ -47,7 +47,7 @@ namespace AvatarSystem
         /// <param name="wearablesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
-        public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
         {
             disposeCts ??= new CancellationTokenSource();
 
@@ -67,7 +67,7 @@ namespace AvatarSystem
 
                 baseAvatar.Initialize();
                 animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -76,7 +76,7 @@ namespace AvatarSystem
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
-                
+
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
@@ -87,10 +87,8 @@ namespace AvatarSystem
                 lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
 
-                status = IAvatar.Status.Loaded; 
-                
-                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), lodLevel <= 1, linkedCt);
-                
+                status = IAvatar.Status.Loaded;
+                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
             }
             catch (OperationCanceledException)
             {
@@ -113,9 +111,16 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+        public void AddVisibilityConstrain(string key)
+        {
+            visibility.AddGlobalConstrain(key);
+            baseAvatar.CancelTransition();
+        }
 
-        public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
+        public void RemoveVisibilityConstrain(string key)
+        {
+            visibility.RemoveGlobalConstrain(key);
+        }
 
         public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
 

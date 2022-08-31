@@ -21,8 +21,9 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
+    public void RefreshFriendsTab() { }
+
     public RectTransform Transform => (RectTransform) transform;
-    public bool ListByOnlineStatus { get; set; }
     public int FriendCount { get; }
     public int FriendRequestCount { get; }
 
@@ -65,16 +66,16 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public void Show() => gameObject.SetActive(true);
 
     public void Hide() => gameObject.SetActive(false);
-
-    public void Set(string userId, FriendshipAction friendshipAction, FriendEntryModel friendEntryModel)
+    
+    public void Set(string userId, FriendEntryModel model)
     {
     }
 
-    public void Set(string userId, FriendshipStatus friendshipStatus, FriendEntryModel model)
+    public void Set(string userId, FriendRequestEntryModel model)
     {
     }
 
-    public void Populate(string userId, FriendEntryModel model)
+    public void Remove(string userId)
     {
     }
 
@@ -113,6 +114,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void ClearFriendFilter()
+    {
+    }
+
+    public void UpdateBlockStatus(string userId, bool blocked)
     {
     }
 }

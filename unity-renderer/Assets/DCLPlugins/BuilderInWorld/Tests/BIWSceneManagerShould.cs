@@ -115,7 +115,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Arrange
         scene.CreateEntity(1);
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
-        CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
+        DataStore.i.player.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
         // Act
         var sceneFound = mainController.FindSceneToEdit();

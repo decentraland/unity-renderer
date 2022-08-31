@@ -31,7 +31,7 @@ namespace DCL.Models
         public IShape currentShape;
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
-        public List<Collider> colliders = new List<Collider>();
+        public HashSet<Collider> colliders = new HashSet<Collider>();
         public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;
@@ -43,15 +43,22 @@ namespace DCL.Models
         {
             get
             {
-                if (meshRootGameObject.transform.position != lastBoundsCalculationPosition)
-                {
-                    mergedBoundsValue.center += meshRootGameObject.transform.position - lastBoundsCalculationPosition;
-                    lastBoundsCalculationPosition = meshRootGameObject.transform.position;
+                if (meshRootGameObject == null)
+                { 
+                    RecalculateBounds();   
                 }
+                else
+                {
+                    if (meshRootGameObject.transform.position != lastBoundsCalculationPosition)
+                    {
+                        mergedBoundsValue.center += meshRootGameObject.transform.position - lastBoundsCalculationPosition;
+                        lastBoundsCalculationPosition = meshRootGameObject.transform.position;
+                    }
 
-                if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale ||
-                    meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
-                    RecalculateBounds();
+                    if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale ||
+                        meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
+                        RecalculateBounds();   
+                }
 
                 return mergedBoundsValue;
             }
@@ -74,35 +81,38 @@ namespace DCL.Models
 
         public void UpdateRenderersCollection()
         {
-            if (meshRootGameObjectValue != null)
+            if (meshRootGameObjectValue == null)
+                return;
+            
+            renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
+            meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
+            animation = meshRootGameObjectValue.GetComponentInChildren<Animation>();
+
+            TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
+            if (tmpros.Length > 0)
             {
-                renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
-                meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
-                animation = meshRootGameObjectValue.GetComponentInChildren<Animation>();
-
-                TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
-                if (tmpros.Length > 0)
-                {
-                    renderers = renderers.Union(tmpros.Select(x => x.renderer)).ToArray();
-                    meshFilters = meshFilters.Union(tmpros.Select(x => x.meshFilter)).ToArray();
-                }
-
-                RecalculateBounds();
-                OnAnyUpdated?.Invoke();
-                OnUpdated?.Invoke();
+                renderers = renderers.Union(tmpros.Select(x => x.renderer)).ToArray();
+                meshFilters = meshFilters.Union(tmpros.Select(x => x.meshFilter)).ToArray();
             }
+
+            RecalculateBounds();
+            OnAnyUpdated?.Invoke();
+            OnUpdated?.Invoke();
         }
 
         public void RecalculateBounds()
-        {
-            if (renderers == null || renderers.Length == 0)
+        {   
+            if ((renderers == null || renderers.Length == 0) && colliders.Count == 0)
+            {
+                mergedBoundsValue = new Bounds();
                 return;
+            }
 
-            lastBoundsCalculationPosition = meshRootGameObject.transform.position;
-            lastBoundsCalculationScale = meshRootGameObject.transform.lossyScale;
-            lastBoundsCalculationRotation = meshRootGameObject.transform.rotation;
+            lastBoundsCalculationPosition = meshRootGameObjectValue.transform.position;
+            lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
+            lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
 
-            mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers);
+            mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers, colliders);
         }
 
         public void CleanReferences()

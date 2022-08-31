@@ -4855,9 +4855,11 @@ MonoBehaviour:
   m_IsTrail: 0
   m_IgnoreCanvasScaler: 0
   m_Scale: 1.3
+  m_Scale3D: {x: 0.015, y: 0.015, z: 0.015}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 3180384404302081309}
+  m_ShrinkByMaterial: 0
 --- !u!1 &837641968554233588
 GameObject:
   m_ObjectHideFlags: 0
@@ -9713,9 +9715,11 @@ MonoBehaviour:
   m_IsTrail: 0
   m_IgnoreCanvasScaler: 0
   m_Scale: 1.3
+  m_Scale3D: {x: 0.015, y: 0.015, z: 0.015}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 6799834594962767192}
+  m_ShrinkByMaterial: 0
 --- !u!1 &1036035276998138845
 GameObject:
   m_ObjectHideFlags: 0
@@ -10136,7 +10140,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -10145,6 +10149,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -10388,7 +10393,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -10397,6 +10402,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0

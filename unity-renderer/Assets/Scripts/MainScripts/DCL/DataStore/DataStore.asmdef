@@ -2,7 +2,6 @@
     "name": "DataStore",
     "rootNamespace": "",
     "references": [
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:4623a7b5e6ee6e24c833abc6c810140f",
         "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
         "GUID:81a6b1347b86bfe4aa02ed089ff533c1",
@@ -19,13 +18,14 @@
         "GUID:7d89318ea12bffe448b0b23980e4cd10",
         "GUID:97d8897529779cb49bebd400c7f402a6",
         "GUID:d076a2c146613441bb926f5b49a88a9f",
-        "GUID:f8a3a0af3ed28474c885e04c605a7962",
-        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
         "GUID:5289a39f46259954ca74010d7c9ded16",
         "GUID:1dd0780aa6be12b428c8005d0bee46b8",
         "GUID:37d2c04574c1d480d8c817e2a7c578e7",
         "GUID:1c69d8bb67ff1244b8de3b17766ccbef",
-        "GUID:fd239a454d9a4039b164f90867ea3216"
+        "GUID:fd239a454d9a4039b164f90867ea3216",
+        "GUID:b8b9ca72325745a8a59d88b5f2db198c",
+        "GUID:0b167d3fa6c88454ea3eb69cbabe4eb7",
+        "GUID:bf7bc5cfaf25db643b5b7e691a83390c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

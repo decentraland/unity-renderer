@@ -12,9 +12,10 @@ using DCL.NotificationModel;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using Environment = DCL.Environment;
 using Type = DCL.NotificationModel.Type;
 
-public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
+public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHidePassportAreaHandler
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string IN_HIDE_AREA = "IN_HIDE_AREA";
@@ -25,6 +26,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
     public GameObject avatarContainer;
     public GameObject armatureContainer;
     public Transform loadingAvatarContainer;
+    public StickersController stickersControllers;
     private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
@@ -38,6 +40,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
     private Camera mainCamera;
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
+    private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
 
     internal ISocialAnalytics socialAnalytics;
 
@@ -68,6 +71,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
 #endif
 
         mainCamera = Camera.main;
+        currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }
 
     private AvatarSystem.Avatar GetStandardAvatar()
@@ -75,7 +79,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         AvatarSystem.NoLODs noLod = new NoLODs();
         return new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
@@ -92,7 +96,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         return new AvatarSystem.AvatarWithHologram(
             baseAvatar,
-            new AvatarCurator(new WearableItemResolver()),
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
@@ -199,11 +203,20 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
 
-                //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                if (DataStore.i.emotes.newFlowEnabled.Get())
+                {
+                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
+                else
+                {
+                    //TODO remove this when new flow is the default and we can los retrocompatibility
+                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                    wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
 
-                await avatar.Load(wearableItems, new AvatarSettings
+                await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     bodyshapeId = profile.avatar.bodyShape,
                     eyesColor = profile.avatar.eyeColor,
@@ -245,8 +258,39 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
     }
 
-    public void ApplyHideModifier() { avatar.AddVisibilityConstrain(IN_HIDE_AREA); }
-    public void RemoveHideModifier() { avatar.RemoveVisibilityConstrain(IN_HIDE_AREA); }
+    public void ApplyHideAvatarModifier()
+    {
+        if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+        {
+            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            stickersControllers.ToggleHideArea(true);
+        }
+        currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+    }
+    
+    public void RemoveHideAvatarModifier()
+    {
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+        if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+        {
+            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+            stickersControllers.ToggleHideArea(false);
+        }
+    }
+
+    public void ApplyHidePassportModifier()
+    {
+        DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+    }
+    
+    public void RemoveHidePassportModifier()
+    {
+        DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+        currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+    }
 
     private void OnDisable()
     {
@@ -261,4 +305,5 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler
         avatarLoadingCts = null;
         avatar?.Dispose();
     }
+
 }

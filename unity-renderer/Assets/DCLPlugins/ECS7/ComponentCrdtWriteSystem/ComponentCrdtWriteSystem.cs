@@ -14,6 +14,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         public long entityId;
         public int componentId;
         public byte[] data;
+        public long minTimeStamp;
         public ECSComponentWriteType writeType;
     }
 
@@ -39,7 +40,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         sceneController.OnSceneRemoved -= OnSceneRemoved;
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, ECSComponentWriteType writeType)
+    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, long minTimeStamp, ECSComponentWriteType writeType)
     {
         MessageData messageData = messagesPool.Count > 0 ? messagesPool.Dequeue() : new MessageData();
 
@@ -48,6 +49,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         messageData.componentId = componentId;
         messageData.data = data;
         messageData.writeType = writeType;
+        messageData.minTimeStamp = minTimeStamp;
 
         queuedMessages.Enqueue(messageData);
     }
@@ -70,14 +72,22 @@ public class ComponentCrdtWriteSystem : IDisposable
                 continue;
 
             CRDTMessage crdt = scene.crdtExecutor.crdtProtocol.Create((int)message.entityId, message.componentId, message.data);
+            if (message.minTimeStamp >= 0 && message.minTimeStamp > crdt.timestamp)
+            {
+                crdt.timestamp = message.minTimeStamp;
+            }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_LOCAL))
             {
                 scene.crdtExecutor.Execute(crdt);
             }
-            else
+            else if (message.writeType.HasFlag(ECSComponentWriteType.WRITE_STATE_LOCALLY))
             {
                 scene.crdtExecutor.crdtProtocol.ProcessMessage(crdt);
+            }
+            else if (message.writeType.HasFlag(ECSComponentWriteType.EXECUTE_LOCALLY))
+            {
+                scene.crdtExecutor.ExecuteWithoutStoringState(crdt.key1, crdt.key2, crdt.data);
             }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
