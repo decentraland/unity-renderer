@@ -27,8 +27,10 @@ namespace Tests
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
-            var componentGroups = new ComponentGroups(componentsManager);
-            materialSystemUpdate = ECSMaterialSystem.CreateSystem(componentGroups.texturizableGroup,
+            var texturizableGroup = componentsManager.CreateComponentGroup<InternalMaterial, InternalTexturizable>
+                ((int)InternalECSComponentsId.MATERIAL, (int)InternalECSComponentsId.TEXTURIZABLE);
+
+            materialSystemUpdate = ECSMaterialSystem.CreateSystem(texturizableGroup,
                 internalEcsComponents.texturizableComponent,
                 internalEcsComponents.materialComponent);
 
