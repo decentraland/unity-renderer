@@ -93,8 +93,6 @@ namespace ECSSystems.PointerInputSystem
                 state.lastPointerHoverResult = PointerHoverResult.empty;
             }
 
-            ForceFeedbackUpdate(state.dataStoreCursor, state.lastPointerHoverResult);
-
             state.dataStoreEcs7.lastPointerInputEvent = null;
             state.dataStoreEcs7.lastPointerRayHit = null;
             state.isPointerDown = isPointerDown;
@@ -128,33 +126,6 @@ namespace ECSSystems.PointerInputSystem
         {
             cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
             cursor.hoverFeedbackHoverState.Set(false);
-        }
-
-        private static void ForceFeedbackUpdate(DataStore_Cursor cursor, PointerHoverResult hoverResult)
-        {
-            if (!hoverResult.hasValue)
-            {
-                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
-                cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
-                cursor.hoverFeedbackHoverState.Set(true);
-                cursor.hoverFeedbackHoverState.Set(false);
-                return;
-            }
-
-
-            if (hoverResult.hasFeedback)
-            {
-                cursor.hoverFeedbackEnabled.Set(false);
-                cursor.hoverFeedbackEnabled.Set(true);
-                cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
-                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
-                cursor.hoverFeedbackButton.Set(null);
-                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.GetName());
-                cursor.hoverFeedbackText.Set(null);
-                cursor.hoverFeedbackText.Set(hoverResult.text);
-                cursor.hoverFeedbackHoverState.Set(false);
-                cursor.hoverFeedbackHoverState.Set(true);
-            }
         }
     }
 }
