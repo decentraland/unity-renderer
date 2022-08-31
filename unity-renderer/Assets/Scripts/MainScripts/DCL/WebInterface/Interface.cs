@@ -1028,6 +1028,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }
 
+        // TODO: Add sceneNumber to this response
         private static void ReportRaycastResult<T, P>(string sceneId, string queryId, string queryType, P payload) where T : RaycastResponse<P>, new() where P : RaycastHitInfo
         {
             T response = new T();

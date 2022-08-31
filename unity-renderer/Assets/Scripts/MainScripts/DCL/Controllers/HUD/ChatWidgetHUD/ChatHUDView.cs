@@ -31,11 +31,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
 
-    [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
-
+    protected readonly Dictionary<string, ChatEntry> entries = new Dictionary<string, ChatEntry>();
     private readonly ChatMessage currentMessage = new ChatMessage();
+
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
         new Dictionary<Action, UnityAction<string>>();
+
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
@@ -97,9 +98,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public event Action OnPreviousChatInHistory;
     public event Action OnNextChatInHistory;
-
     public event Action<ChatMessage> OnSendMessage;
-
     public event Action OnChatContainerResized;
     public event Action OnChatEntriesSorted;
 
@@ -201,88 +200,73 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         model.isInPreviewMode = true;
 
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
+        foreach (var entry in entries.Values)
             entry.ActivatePreview();
-        }
 
         if (contextMenu == null)
             return;
         contextMenu.Hide();
         confirmationDialog.Hide();
     }
+
     public void DeactivatePreview()
     {
         model.isInPreviewMode = false;
 
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
+        foreach (var entry in entries.Values)
             entry.DeactivatePreview();
-        }
     }
+
     public void FadeOutMessages()
     {
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
+        foreach (var entry in entries.Values)
             entry.FadeOut();
-        }
     }
 
     private void SetFadeoutMode(bool enabled)
     {
         model.enableFadeoutMode = enabled;
 
-        for (int i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-
-            if (enabled)
-            {
-                entry.SetFadeout(IsEntryVisible(entry));
-            }
-            else
-            {
-                entry.SetFadeout(false);
-            }
-        }
+        foreach (var entry in entries.Values)
+            entry.SetFadeout(enabled && IsEntryVisible(entry));
 
         if (enabled)
-        {
             confirmationDialog.Hide();
-        }
     }
 
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        var chatEntry = ChatEntryFactory.Create(model);
-        chatEntry.transform.SetParent(chatEntriesContainer, false);
-
-        if (this.model.enableFadeoutMode)
-            chatEntry.SetFadeout(true);
+        if (entries.ContainsKey(model.messageId))
+        {
+            var chatEntry = entries[model.messageId];
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
+        }
         else
-            chatEntry.SetFadeout(false);
+        {
+            var chatEntry = ChatEntryFactory.Create(model);
+            chatEntry.transform.SetParent(chatEntriesContainer, false);
 
-        chatEntry.Populate(model);
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
 
-        if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
-            chatEntry.OnPress += OnOpenContextMenu;
+            if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+                chatEntry.OnPress += OnOpenContextMenu;
 
-        chatEntry.OnTriggerHover += OnMessageTriggerHover;
-        chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
-        chatEntry.OnCancelHover += OnMessageCancelHover;
-        chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
-
-        entries.Add(chatEntry);
-
+            chatEntry.OnTriggerHover += OnMessageTriggerHover;
+            chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
+            chatEntry.OnCancelHover += OnMessageCancelHover;
+            chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+            
+            entries[model.messageId] = chatEntry;
+        }
+        
         animationCancellationToken.Cancel();
         animationCancellationToken = new CancellationTokenSource();
-        AnimateNewEntry(chatEntry.gameObject.transform, animationCancellationToken.Token).Forget();
+        AnimateNewEntry(entries[model.messageId].gameObject.transform, animationCancellationToken.Token).Forget();
 
         if (this.model.isInPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
+            entries[model.messageId].ActivatePreviewInstantly();
 
         SortEntries();
         UpdateLayout();
@@ -294,13 +278,16 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        Sequence mySequence = DOTween.Sequence().AppendInterval(0.2f).Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
+        var mySequence = DOTween.Sequence()
+            .AppendInterval(0.2f)
+            .Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
         try
         {
-            Vector2 endPosition = new Vector2(0, 0);
-            Vector2 currentPosition = chatEntriesContainer.anchoredPosition;
+            var endPosition = new Vector2(0, 0);
+            var currentPosition = chatEntriesContainer.anchoredPosition;
             notification.localScale = Vector3.zero;
-            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f).SetEase(Ease.OutCubic);
+            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f)
+                .SetEase(Ease.OutCubic);
             while (chatEntriesContainer.anchoredPosition.y < 0)
             {
                 chatEntriesContainer.anchoredPosition = currentPosition;
@@ -308,7 +295,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             }
             mySequence.Play();
         }
-        catch (OperationCanceledException ex)
+        catch (OperationCanceledException)
         {
             if (!DOTween.IsTweening(notification))
                 notification.DOScale(1, 0.3f).SetEase(Ease.OutBack);
@@ -317,11 +304,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public void RemoveFirstEntry()
     {
-        if (entries.Count <= 0)
-            return;
-        Destroy(entries[0].gameObject);
-        entries.Remove(entries[0]);
-
+        if (entries.Count <= 0) return;
+        var firstEntry = GetFirstEntry();
+        if (firstEntry == null) return;
+        Destroy(firstEntry.gameObject);
+        entries.Remove(firstEntry.Model.messageId);
         UpdateLayout();
     }
 
@@ -342,10 +329,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public virtual void ClearAllEntries()
     {
-        foreach (var entry in entries)
+        foreach (var entry in entries.Values)
             Destroy(entry.gameObject);
         entries.Clear();
-
         UpdateLayout();
     }
 
@@ -417,14 +403,16 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void SortEntriesImmediate()
     {
-        entries = entries.OrderBy(x => x.Model.timestamp).ToList();
+        if (this.entries.Count <= 0) return;
 
-        int count = entries.Count;
-        for (int i = 0; i < count; i++)
+        var entries = this.entries.Values.OrderBy(x => x.Model.timestamp).ToList();
+
+        for (var i = 0; i < entries.Count; i++)
         {
             if (entries[i].transform.GetSiblingIndex() != i)
                 entries[i].transform.SetSiblingIndex(i);
         }
+        
         OnChatEntriesSorted?.Invoke();
     }
 
@@ -439,6 +427,22 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         // we gotta force the layout updating after that
         // TODO: simplify this change to a bool when we update to a working TextMeshPro version
         updateLayoutDelayedFrames = 4;
+    }
+    
+    private ChatEntry GetFirstEntry()
+    {
+        ChatEntry firstEntry = null;
+
+        for (var i = 0; i < chatEntriesContainer.childCount; i++)
+        {
+            var firstChildTransform = chatEntriesContainer.GetChild(i);
+            var entry = firstChildTransform.GetComponent<ChatEntry>();
+            if (entry == null) continue;
+            firstEntry = entry;
+            break;
+        }
+
+        return firstEntry;
     }
 
     [Serializable]
