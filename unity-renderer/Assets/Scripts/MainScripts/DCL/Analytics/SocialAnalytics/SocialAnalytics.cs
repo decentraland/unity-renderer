@@ -29,6 +29,7 @@ namespace SocialFeaturesAnalytics
         private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
+        private const string MESSAGE_SENT_TO_CHANNEL = "send_chat_message";
         
         public static SocialAnalytics i { get; private set; }
 
@@ -301,6 +302,17 @@ namespace SocialFeaturesAnalytics
                 ["search"] = text
             };
             analytics.SendAnalytic(CHANNEL_SEARCH, data);
+        }
+
+        public void SendMessageSentToChannel(string channelName, int bodyLength, string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source,
+                ["channel"] = channelName,
+                ["length"] = bodyLength.ToString()
+            };
+            analytics.SendAnalytic(MESSAGE_SENT_TO_CHANNEL, data);
         }
 
         private PlayerType? GetPlayerTypeByUserId(string userId)

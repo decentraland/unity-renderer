@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -17,6 +18,7 @@ namespace DCL.Chat.HUD
         private IChatHUDComponentView chatView;
         private IChatController chatController;
         private DataStore dataStore;
+        private ISocialAnalytics socialAnalytics;
 
         [SetUp]
         public void SetUp()
@@ -36,11 +38,13 @@ namespace DCL.Chat.HUD
             chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
             dataStore = new DataStore();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
-                ScriptableObject.CreateInstance<InputAction_Trigger>());
+                ScriptableObject.CreateInstance<InputAction_Trigger>(),
+                socialAnalytics);
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
@@ -90,6 +94,18 @@ namespace DCL.Chat.HUD
 
             Assert.AreEqual(ChannelLeaveSource.Chat, dataStore.channels.channelLeaveSource.Get());
             Assert.AreEqual(channelToLeave, CHANNEL_ID);
+        }
+
+        [Test]
+        public void TrackMessageSentEvent()
+        {
+            chatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
+            {
+                body = "hey",
+                messageType = ChatMessage.Type.PUBLIC
+            });
+            
+            socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_ID, 3, "chat");
         }
     }
 }

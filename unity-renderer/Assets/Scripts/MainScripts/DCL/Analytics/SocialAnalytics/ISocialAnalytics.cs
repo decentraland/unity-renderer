@@ -28,5 +28,6 @@ namespace SocialFeaturesAnalytics
         void SendPopulatedChannelJoined(string channelId, ChannelJoinedSource source);
         void SendLeaveChannel(string channelId, ChannelLeaveSource source);
         void SendChannelSearch(string text);
+        void SendMessageSentToChannel(string channelName, int bodyLength, string source);
     }
 }
