@@ -17,7 +17,7 @@ namespace DCL
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
-        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes";
+        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant";
         private bool doTransitionAnimation;
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
