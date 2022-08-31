@@ -10,11 +10,12 @@ namespace DCL.Chat.HUD
     public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowView, IComponentModelConfig<PublicChatModel>,
         IPointerDownHandler
     {
+        private const int MEMBERS_SECTION_WIDTH = 280;
+
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal TMP_Text nameLabel;
-        [SerializeField] internal TMP_Text memberCountLabel;
         [SerializeField] internal ChatHUDView chatView;
         [SerializeField] internal PublicChatModel model;
         [SerializeField] internal CanvasGroup[] previewCanvasGroup;
@@ -23,19 +24,30 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal GameObject oldMessagesLoadingContainer;
         [SerializeField] internal ChannelContextualMenu contextualMenu;
+        [SerializeField] internal TMP_Text memberCountLabel;
+        [SerializeField] internal RectTransform collapsableArea;
+        [SerializeField] internal Button membersIconButton;
+        [SerializeField] internal ButtonComponentView expandMembersListButton;
+        [SerializeField] internal ButtonComponentView collapseMembersListButton;
+        [SerializeField] internal ChannelMembersComponentView membersList;
 
         private Coroutine alphaRoutine;
         private Vector2 originalSize;
         private bool isPreviewActivated;
+        private bool isMembersSectionOpen;
+        private float collapsableAreaOriginalWidth;
 
         public event Action OnClose;
         public event Action<bool> OnFocused;
         public event Action OnBack;
         public event Action OnRequireMoreMessages;
         public event Action OnLeaveChannel;
+        public event Action OnShowMembersList;
+        public event Action OnHideMembersList;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
+        public IChannelMembersComponentView ChannelMembersHUD => membersList;
         public RectTransform Transform => (RectTransform) transform;
         public bool IsFocused => isFocused;
 
@@ -59,6 +71,11 @@ namespace DCL.Chat.HUD
                 if (scrollPos.y > 0.995f)
                     OnRequireMoreMessages?.Invoke();
             });
+
+            collapsableAreaOriginalWidth = collapsableArea.sizeDelta.x;
+            membersIconButton.onClick.AddListener(ToggleMembersSection);
+            expandMembersListButton.onClick.AddListener(ToggleMembersSection);
+            collapseMembersListButton.onClick.AddListener(ToggleMembersSection);
         }
 
         public override void RefreshControl()
@@ -162,6 +179,25 @@ namespace DCL.Chat.HUD
         {
             contextualMenu.SetHeaderTitle($"#{model.channelId}");
             contextualMenu.Show();
+        }
+
+        private void ToggleMembersSection()
+        {
+            isMembersSectionOpen = !isMembersSectionOpen;
+
+            expandMembersListButton.gameObject.SetActive(!isMembersSectionOpen);
+            collapseMembersListButton.gameObject.SetActive(isMembersSectionOpen);
+
+            collapsableArea.sizeDelta = new Vector2(
+                isMembersSectionOpen ? 
+                    collapsableAreaOriginalWidth + MEMBERS_SECTION_WIDTH :
+                    collapsableAreaOriginalWidth,
+                collapsableArea.sizeDelta.y);
+
+            if (isMembersSectionOpen)
+                OnShowMembersList?.Invoke();
+            else
+                OnHideMembersList?.Invoke();
         }
     }
 }

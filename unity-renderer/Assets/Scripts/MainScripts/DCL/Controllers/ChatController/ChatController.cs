@@ -143,6 +143,16 @@ public class ChatController : MonoBehaviour, IChatController
         throw new NotImplementedException();
     }
 
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip)
+    {
+        throw new NotImplementedException();
+    }
+
     public void MuteChannel(string channelId)
     {
         throw new NotImplementedException();

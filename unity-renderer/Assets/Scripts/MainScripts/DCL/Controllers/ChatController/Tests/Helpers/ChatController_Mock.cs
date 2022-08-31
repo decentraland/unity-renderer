@@ -103,4 +103,12 @@ public class ChatController_Mock : IChatController
     public void CreateChannel(string channelId)
     {
     }
+
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip)
+    {
+    }
 }

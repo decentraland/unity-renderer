@@ -629,5 +629,15 @@ Invite others to join by quoting the channel name in other chats or include it a
                 controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
             }
         }
+
+        public void GetChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetChannelMembers(string channelId, int limit, int skip)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

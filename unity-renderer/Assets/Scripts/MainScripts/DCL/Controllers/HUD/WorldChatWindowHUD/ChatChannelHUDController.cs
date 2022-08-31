@@ -25,6 +25,7 @@ namespace DCL.Chat.HUD
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly List<string> directMessagesAlreadyRequested = new List<string>();
         private ChatHUDController chatHudController;
+        private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
@@ -59,6 +60,8 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
+            view.OnShowMembersList += ShowMembersList;
+            view.OnHideMembersList += HideMembersList;
 
             if (notificationPanelTransform.Get() == null)
             {
@@ -82,6 +85,8 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController);
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -106,6 +111,8 @@ namespace DCL.Chat.HUD
             View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
             ReloadAllChats().Forget();
+
+            channelMembersHUDController.SetChannelId(channelId);
         }
 
         public void SetVisibility(bool visible)
@@ -391,5 +398,9 @@ namespace DCL.Chat.HUD
             var channel = chatController.GetAllocatedChannel(channelId);
             View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, updatedChannel.MemberCount));
         }
+
+        private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
+
+        private void HideMembersList() => channelMembersHUDController.SetVisibility(false);
     }
 }

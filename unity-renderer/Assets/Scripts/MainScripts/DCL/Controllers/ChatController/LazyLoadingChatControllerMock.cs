@@ -205,4 +205,14 @@ public class LazyLoadingChatControllerMock : IChatController
         };
         controller.InitializeChat(JsonUtility.ToJson(payload));
     }
+
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip)
+    {
+        throw new NotImplementedException();
+    }
 }
