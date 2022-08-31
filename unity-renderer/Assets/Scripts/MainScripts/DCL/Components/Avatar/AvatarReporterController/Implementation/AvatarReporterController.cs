@@ -39,10 +39,7 @@ public class AvatarReporterController : IAvatarReporterController
     
     string GetcurrentSceneIdNonAlloc(Vector2Int coords)
     {
-        if (worldState.loadedScenesByCoordinate.ContainsKey(coords))
-            return worldState.loadedScenesByCoordinate[coords];
-        
-        return null;
+        return worldState.GetSceneIdByCoords(coords);
     }
 
     void IAvatarReporterController.ReportAvatarPosition(Vector3 position)

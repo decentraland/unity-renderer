@@ -6,7 +6,7 @@ public class PrivateChatHUDView : ChatHUDView
 {
     [SerializeField] private DateSeparatorEntry separatorEntryPrefab;
     
-    private readonly Dictionary<DateTime, DateSeparatorEntry> dateSeparators = new Dictionary<DateTime, DateSeparatorEntry>();
+    private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new Dictionary<string, DateSeparatorEntry>();
 
     public override void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
@@ -28,12 +28,13 @@ public class PrivateChatHUDView : ChatHUDView
     private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
     {
         var entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp).Date;
-        if (dateSeparators.ContainsKey(entryDateTime)) return;
+        var separatorId = $"{entryDateTime.Ticks}";
+        if (dateSeparators.ContainsKey(separatorId)) return;
         var dateSeparatorEntry = Instantiate(separatorEntryPrefab, chatEntriesContainer);
         dateSeparatorEntry.Populate(chatEntryModel);
         dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
-        dateSeparators.Add(entryDateTime, dateSeparatorEntry);
-        entries.Add(dateSeparatorEntry);
+        dateSeparators[separatorId] = dateSeparatorEntry;
+        entries[separatorId] = dateSeparatorEntry;
     }
 
     private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)

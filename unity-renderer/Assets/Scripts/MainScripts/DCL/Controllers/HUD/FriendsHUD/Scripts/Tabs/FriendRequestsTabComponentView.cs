@@ -259,6 +259,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void SendFriendRequest(string friendUserName)
     {
+        friendUserName = friendUserName.Trim()
+            .Replace("\n", "")
+            .Replace("\r", "");
         if (string.IsNullOrEmpty(friendUserName)) return;
 
         searchBar.ClearSearch();

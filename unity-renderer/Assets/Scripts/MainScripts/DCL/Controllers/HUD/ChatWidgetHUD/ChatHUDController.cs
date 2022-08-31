@@ -133,6 +133,7 @@ public class ChatHUDController : IDisposable
         var model = new ChatEntryModel();
         var ownProfile = userProfileBridge.GetOwn();
 
+        model.messageId = message.messageId;
         model.messageType = message.messageType;
         model.bodyText = message.body;
         model.timestamp = message.timestamp;

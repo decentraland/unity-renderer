@@ -1,4 +1,5 @@
 using System;
+using DCL;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -48,6 +49,7 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
+        DataStore.i.emotes.newFlowEnabled.Set(model.avatar.version >= 1);
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
@@ -66,6 +68,9 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
+        model.userId = model.userId.ToLower();
+        model.ethAddress = model.ethAddress?.ToLower();
+        
         if (!userProfilesCatalog.TryGetValue(model.userId, out UserProfile userProfile))
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
 

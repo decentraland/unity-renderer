@@ -26,9 +26,9 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.UNIQUE);
 
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        userProfileController.AddUserProfileToCatalog(new UserProfileModel { userId = "userId" });
+        userProfileController.AddUserProfileToCatalog(new UserProfileModel { userId = "userid" });
 
-        userProfile = UserProfileController.userProfilesCatalog.Get("userId");
+        userProfile = UserProfileController.userProfilesCatalog.Get("userid");
         userProfile.UpdateData(new UserProfileModel
         {
             userId = "userId",
