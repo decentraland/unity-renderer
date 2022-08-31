@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DCL;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSComponents;
@@ -21,14 +22,17 @@ namespace DCLPlugins.ECSComponents.Events.Test
         private PointerInputRepresentantion pointerInputRepresentantion;
         private IDCLEntity entity;
         private Queue<PointerEvent> pendingsPointerEvents;
+        private IOnPointerEventHandler onPointerEventHandler;
         
         [SetUp]
         public void SetUp()
         {
+            onPointerEventHandler = Substitute.For<IOnPointerEventHandler>();
+            
             entity = Substitute.For<IDCLEntity>();
             entity.Configure().entityId.Returns(512);
             pendingsPointerEvents = new Queue<PointerEvent>();
-            pointerInputRepresentantion = new PointerInputRepresentantion(entity, new DataStore_ECS7(), PointerEventType.Up,Substitute.For<IECSComponentWriter>(),new Queue<PointerEvent>());
+            pointerInputRepresentantion = new PointerInputRepresentantion(entity, new DataStore_ECS7(), PointerEventType.Up,Substitute.For<IECSComponentWriter>(), onPointerEventHandler, pendingsPointerEvents);
         }
 
         [TearDown]
@@ -71,6 +75,7 @@ namespace DCLPlugins.ECSComponents.Events.Test
         public void ReportEventCorrectly()
         {
             // Arrange
+            onPointerEventHandler.Configure().GetMeshName(Arg.Any<Collider>()).Returns("TestMesh");
             string sceneId = "TestIdScene"; 
             var parcelScene = Substitute.For<IParcelScene>();
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
@@ -100,7 +105,7 @@ namespace DCLPlugins.ECSComponents.Events.Test
             Assert.AreEqual(pointerEvent.timestamp, PointerInputRepresentantion.lamportTimestamp-1);
             
             var hit = pointerEvent.hit;
-            var result = ProtoConvertUtils.ToPBRaycasHit(512, null, ray, hitInfo);
+            var result = ProtoConvertUtils.ToPBRaycasHit(512, "TestMesh", ray, hitInfo);
             
             Assert.AreEqual(hit,result);
         }

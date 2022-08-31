@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DCL;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSComponents;
@@ -32,7 +33,8 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerEventType.Down, componentWriter, context.systemsContext.pendingResolvePointerEvents);
+            representantion = new PointerInputRepresentantion(entity, dataStore, PointerEventType.Down, componentWriter, new OnPointerEventHandler(), context.systemsContext.pendingResolvePointerEvents);
+            
             isAdded = false;
         }
 

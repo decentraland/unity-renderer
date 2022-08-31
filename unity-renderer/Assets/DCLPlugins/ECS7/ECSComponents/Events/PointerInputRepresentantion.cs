@@ -20,7 +20,7 @@ namespace DCLPlugins.ECSComponents.Events
         internal static int lamportTimestamp = 0;
         internal IDCLEntity eventEntity;
         private IParcelScene scene;
-        private readonly OnPointerEventHandler pointerEventHandler;
+        private readonly IOnPointerEventHandler pointerEventHandler;
         internal readonly PointerEventType pointerEventType;
         private readonly PointerInputEventType inputEventType;
         private readonly IECSComponentWriter componentWriter;
@@ -33,12 +33,12 @@ namespace DCLPlugins.ECSComponents.Events
         internal float distance;
         internal Queue<PointerEvent> pendingResolvingPointerEvents;
 
-        public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, Queue<PointerEvent> pendingResolvingPointerEvents)
+        public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, IOnPointerEventHandler pointerEventHandler, Queue<PointerEvent> pendingResolvingPointerEvents)
         {
             this.dataStore = dataStore;
             this.pointerEventType = pointerEventType;
             this.componentWriter = componentWriter;
-            pointerEventHandler = new OnPointerEventHandler();
+            this.pointerEventHandler = pointerEventHandler;
             this.pendingResolvingPointerEvents = pendingResolvingPointerEvents;
 
             // We set the equivalent enum of the proto 
