@@ -3,7 +3,6 @@ using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using UnityEngine;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -14,107 +13,148 @@ namespace ECSSystems.PointerInputSystem
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup;
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup;
             public DataStore_ECS7 dataStoreEcs7;
-            public long? lastPointerDownEntityId;
+            public DataStore_Cursor dataStoreCursor;
+            public bool isPointerDown;
+            public PointerInputResult lastPointerDownResult;
+            public PointerHoverResult lastPointerHoverResult;
         }
 
         public static Action CreateSystem(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
-            DataStore_ECS7 dataStoreEcs)
+            DataStore_ECS7 dataStoreEcs, DataStore_Cursor dataStoreCursor)
         {
             var state = new State()
             {
                 pointerDownGroup = pointerDownGroup,
                 pointerUpGroup = pointerUpGroup,
                 dataStoreEcs7 = dataStoreEcs,
-                lastPointerDownEntityId = null,
+                dataStoreCursor = dataStoreCursor,
+                isPointerDown = false,
+                lastPointerDownResult = PointerInputResult.empty,
+                lastPointerHoverResult = PointerHoverResult.empty
             };
             return () => Update(state);
         }
 
         private static void Update(State state)
         {
+            bool isPointerDown = state.isPointerDown;
+
+            // process pointer down/up input
             if (state.dataStoreEcs7.lastPointerInputEvent.HasValue)
             {
-                var input = state.dataStoreEcs7.lastPointerInputEvent.Value;
+                isPointerDown = state.dataStoreEcs7.lastPointerInputEvent.Value.isButtonDown;
+                DataStore_ECS7.PointerEvent pointerEvent = state.dataStoreEcs7.lastPointerInputEvent.Value;
 
-                long entityId;
+                PointerInputResult result = PointerDownUpProcessor.ProcessPointerDownUp(pointerEvent,
+                    state.pointerDownGroup, state.pointerUpGroup, state.lastPointerDownResult);
 
-                if (input.isButtonDown)
+                state.lastPointerDownResult = result;
+                if (result.hasValue)
                 {
-                    if (GetPointerDownEntity(state.pointerDownGroup, input, out entityId))
+                    if (pointerEvent.isButtonDown)
                     {
-                        state.lastPointerDownEntityId = entityId;
                         // TODO: add pointer down result
-                        Debug.Log($"down {entityId}");
                     }
                     else
                     {
-                        state.lastPointerDownEntityId = null;
+                        // TODO: add pointer up result
+                        state.lastPointerDownResult = PointerInputResult.empty;
+                    }
+                }
+            }
+
+            // process pointer hover
+            if (state.dataStoreEcs7.lastPointerRayHit.HasValue)
+            {
+                PointerHoverResult result = PointerHoverProcessor.ProcessPointerHover(isPointerDown,
+                    state.dataStoreEcs7.lastPointerRayHit.Value, state.pointerDownGroup, state.pointerUpGroup);
+
+                if (isPointerDown)
+                {
+                    PointerInputResult lastPointerDown = state.lastPointerDownResult;
+                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult) && result.IsSameEntity(lastPointerDown))
+                    {
+                        state.dataStoreCursor.ShowHoverFeedback(result);
                     }
                 }
                 else
                 {
-                    if (GetPointerUpEntity(state.pointerUpGroup, input, out entityId))
+                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult))
                     {
-                        if (state.lastPointerDownEntityId.HasValue && state.lastPointerDownEntityId.Value == entityId)
-                        {
-                            // TODO: add pointer up result
-                            Debug.Log($"up {entityId}");
-                        }
+                        state.dataStoreCursor.ShowHoverFeedback(result);
                     }
-                    state.lastPointerDownEntityId = null;
                 }
+                state.lastPointerHoverResult = result;
+            }
+            else if (state.lastPointerHoverResult.hasValue)
+            {
+                state.dataStoreCursor.HideHoverFeedback();
+                state.lastPointerHoverResult = PointerHoverResult.empty;
+            }
 
-                state.dataStoreEcs7.lastPointerInputEvent = null;
+            ForceFeedbackUpdate(state.dataStoreCursor, state.lastPointerHoverResult);
+
+            state.dataStoreEcs7.lastPointerInputEvent = null;
+            state.dataStoreEcs7.lastPointerRayHit = null;
+            state.isPointerDown = isPointerDown;
+        }
+
+        private static bool IsSameEntity(this PointerHoverResult self, PointerInputResult other)
+        {
+            if (!self.hasValue || !other.hasValue)
+                return false;
+
+            return self.sceneId == other.sceneId && self.entityId == other.entityId;
+        }
+
+        private static void ShowHoverFeedback(this DataStore_Cursor cursor, PointerHoverResult hoverResult)
+        {
+            if (!hoverResult.hasValue)
+                return;
+
+            cursor.hoverFeedbackEnabled.Set(hoverResult.hasFeedback);
+
+            if (hoverResult.hasFeedback)
+            {
+                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
+                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.ToString());
+                cursor.hoverFeedbackText.Set(hoverResult.text);
+                cursor.hoverFeedbackHoverState.Set(true);
             }
         }
 
-        private static bool GetPointerDownEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
-            DataStore_ECS7.PointerEvent pointerEvent, out long entityPressed)
+        private static void HideHoverFeedback(this DataStore_Cursor cursor)
         {
-            var componentGroup = pointerDownGroup.group;
-            for (int i = 0; i < componentGroup.Count; i++)
-            {
-                if (!componentGroup[i].componentData1.model.colliders.Contains(pointerEvent.rayResult.hitInfo.hit.collider))
-                    continue;
-
-                PBOnPointerDown pointerDown = componentGroup[i].componentData2.model;
-                if (pointerEvent.rayResult.hitInfo.hit.distance > pointerDown.GetMaxDistance())
-                    continue;
-
-                var expectedButton = pointerDown.GetButton();
-                if (expectedButton == ActionButton.Any || (int)expectedButton == pointerEvent.buttonId)
-                {
-                    entityPressed = componentGroup[i].entity.entityId;
-                    return true;
-                }
-            }
-            entityPressed = 0;
-            return false;
+            cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
+            cursor.hoverFeedbackHoverState.Set(false);
         }
 
-        private static bool GetPointerUpEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
-            DataStore_ECS7.PointerEvent pointerEvent, out long entityPressed)
+        private static void ForceFeedbackUpdate(DataStore_Cursor cursor, PointerHoverResult hoverResult)
         {
-            var componentGroup = pointerUpGroup.group;
-            for (int i = 0; i < componentGroup.Count; i++)
+            if (!hoverResult.hasValue)
             {
-                if (!componentGroup[i].componentData1.model.colliders.Contains(pointerEvent.rayResult.hitInfo.hit.collider))
-                    continue;
-
-                PBOnPointerUp pointerUp = componentGroup[i].componentData2.model;
-                if (pointerEvent.rayResult.hitInfo.hit.distance > pointerUp.GetMaxDistance())
-                    continue;
-
-                var expectedButton = pointerUp.GetButton();
-                if (expectedButton == ActionButton.Any || (int)expectedButton == pointerEvent.buttonId)
-                {
-                    entityPressed = componentGroup[i].entity.entityId;
-                    return true;
-                }
+                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
+                cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
+                cursor.hoverFeedbackHoverState.Set(true);
+                cursor.hoverFeedbackHoverState.Set(false);
+                return;
             }
-            entityPressed = 0;
-            return false;
+
+
+            if (hoverResult.hasFeedback)
+            {
+                cursor.hoverFeedbackEnabled.Set(false);
+                cursor.hoverFeedbackEnabled.Set(true);
+                cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
+                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
+                cursor.hoverFeedbackButton.Set(null);
+                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.GetName());
+                cursor.hoverFeedbackText.Set(null);
+                cursor.hoverFeedbackText.Set(hoverResult.text);
+                cursor.hoverFeedbackHoverState.Set(false);
+                cursor.hoverFeedbackHoverState.Set(true);
+            }
         }
     }
 }

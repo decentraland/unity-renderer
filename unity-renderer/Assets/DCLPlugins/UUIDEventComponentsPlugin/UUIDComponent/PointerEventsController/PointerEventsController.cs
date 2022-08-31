@@ -116,6 +116,9 @@ namespace DCL
                 return;
             }
 
+            if (dataStoreEcs7.isEcs7Enable)
+                dataStoreEcs7.lastPointerRayHit = hitInfo;
+
             var raycastHandlerTarget = hitInfo.collider.GetComponent<IRaycastPointerHandler>();
 
             if (raycastHandlerTarget != null)

@@ -23,7 +23,7 @@ namespace DCL
                 this.rayResult = rayResult;
             }
         }
-        
+
         public readonly BaseList<IParcelScene> scenes = new BaseList<IParcelScene>();
         public readonly BaseDictionary<string, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<string, BaseRefCountedCollection<object>>();
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
@@ -31,5 +31,6 @@ namespace DCL
         public IUIDataContainer uiDataContainer = new UIDataContainer();
         public bool isEcs7Enable = false;
         public PointerEvent? lastPointerInputEvent = null;
+        public RaycastHit? lastPointerRayHit = null;
     }
 }
