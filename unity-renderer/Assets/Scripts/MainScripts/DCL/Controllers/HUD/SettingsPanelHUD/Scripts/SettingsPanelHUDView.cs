@@ -89,6 +89,8 @@ namespace DCL.SettingsPanelHUD
 
             DataStore.i.screen.size.OnChange += ScreenSizeChanged;
             ScreenSizeChanged(DataStore.i.screen.size.Get(), Vector2Int.zero);
+            
+            worldPreviewWindowTransform.gameObject.SetActive(false);
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
