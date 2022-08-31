@@ -7,6 +7,12 @@ using UnityEngine;
 
 namespace DCL.Models
 {
+    /// <summary>
+    /// (NOTE) Kinerius: this class is a data holder that was made in the past for multiple systems to have access to this specific entity data.
+    /// This has a big architectural issue where if we decide to remove any component (renderer, mesh filter, collider) from the gameObject
+    /// from anywhere within the system, we have to explicitly update this class values, it makes no sense,
+    /// we need to reconsider this class functionality and purpose since it has an ambiguous design and it might be the source of many bugs to come.
+    /// </summary>
     [Serializable]
     public class MeshesInfo
     {
@@ -29,7 +35,7 @@ namespace DCL.Models
         GameObject meshRootGameObjectValue;
 
         public IShape currentShape;
-        public Renderer[] renderers;
+        public Renderer[] renderers { get; private set; }
         public MeshFilter[] meshFilters;
         public HashSet<Collider> colliders = new HashSet<Collider>();
         public Animation animation { get; private set; }
@@ -87,7 +93,7 @@ namespace DCL.Models
             renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
             meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
             animation = meshRootGameObjectValue.GetComponentInChildren<Animation>();
-
+            
             TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
             if (tmpros.Length > 0)
             {
@@ -136,6 +142,10 @@ namespace DCL.Models
                 Debug.LogError(
                     $"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
             }
+        }
+        public void OverrideRenderers(Renderer[] renderers)
+        {
+            this.renderers = renderers.Where(r => r != null).ToArray();
         }
     }
 }

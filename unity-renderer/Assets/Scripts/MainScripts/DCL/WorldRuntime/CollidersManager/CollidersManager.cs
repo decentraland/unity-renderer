@@ -143,12 +143,14 @@ namespace DCL
                 if (meshFilters[i].gameObject.layer == onClickLayer)
                     continue;
 
+                // NOTE(Kinerius): By design every collider shouldn't have a renderer, so if we detect it, we remove it,
+                // but this step should not be done on this domain, we should be able to remove this check safely in the future
                 if (filterByColliderName)
                 {
                     if (!IsCollider(meshFilters[i].transform))
                         continue;
 
-                    // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
+                    // NOTE(Kinerius): This is dangerous and might cause some null references since some objects like MeshesInfo contains references to this
                     Object.Destroy(meshFilters[i].GetComponent<Renderer>());
                 }
 

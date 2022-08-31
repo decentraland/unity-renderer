@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -107,6 +109,8 @@ namespace DCL
                 else
                 {
                     subPromise.asset.Instantiate(asset.container.transform);
+
+                    yield return RemoveColliderRenderers(asset.container.transform);
                 }
             }
 
@@ -124,6 +128,32 @@ namespace DCL
                 Debug.LogException(loadingException);
                 OnFail?.Invoke(loadingException);
             }
+        }
+        
+        private IEnumerator RemoveColliderRenderers(Transform rootGameObject)
+        {
+            Utils.InverseTransformChildTraversal<Renderer>(renderer =>
+            {
+                if (IsCollider(renderer.transform))
+                {
+                    if (renderer.name.Contains("meteor"))
+                    {
+                        Debug.Log("<color=red>THIS IS WHERE THE RENDERER GETS DELETED</color>");
+                    }
+                    Object.Destroy(renderer);
+                }
+            }, rootGameObject.transform);
+
+            // we wait a single frame until the collider renderers are deleted because some systems might be able to get a reference to them before this is done and we dont want that
+            yield return new WaitForEndOfFrame();
+        }
+        
+        private static bool IsCollider(Transform transform)
+        {
+            bool transformName = transform.name.ToLower().Contains("_collider");
+            bool parentName = transform.parent.name.ToLower().Contains("_collider");
+
+            return parentName || transformName;
         }
 
         protected override Asset_GLTFast_GameObject GetAsset(object id)
