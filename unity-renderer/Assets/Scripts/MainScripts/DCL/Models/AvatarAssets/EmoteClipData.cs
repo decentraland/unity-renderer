@@ -4,18 +4,18 @@ namespace DCL.Emotes
 {
     public class EmoteClipData
     {
-        public readonly AnimationClip Clip;
-        public readonly bool Loop;
+        public readonly AnimationClip clip;
+        public readonly bool loop;
 
         public EmoteClipData(AnimationClip clip)
         {
-            Clip = clip;
+            this.clip = clip;
         }
 
         public EmoteClipData(AnimationClip clip, EmoteDataV0 emoteDataV0)
         {
-            Clip = clip;
-            Loop = emoteDataV0?.loop ?? false;
+            this.clip = clip;
+            loop = emoteDataV0?.loop ?? false;
         }
     }
 }

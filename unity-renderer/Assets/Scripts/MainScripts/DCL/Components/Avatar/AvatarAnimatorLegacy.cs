@@ -417,7 +417,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             }
             
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
-                                    && clipData.Loop;
+                                    && clipData.loop;
 
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
@@ -462,7 +462,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         emoteClipDataMap[emoteId] = emoteClipData;
 
-        animation.AddClip(emoteClipData.Clip, emoteId);
+        animation.AddClip(emoteClipData.clip, emoteId);
     }
 
     public void UnequipEmote(string emoteId)
