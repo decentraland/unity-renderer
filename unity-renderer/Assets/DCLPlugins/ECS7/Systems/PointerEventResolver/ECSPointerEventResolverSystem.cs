@@ -37,7 +37,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             if (queueCount == 0)
                 return;
             
-            for(int i = 0; i <= queueCount; i++)
+            for(int i = 0; i < queueCount; i++)
             {
                 var rawPointerevent = state.pointerEventsQueue.Dequeue();
                 // If the scene hasn't been added, we create it
