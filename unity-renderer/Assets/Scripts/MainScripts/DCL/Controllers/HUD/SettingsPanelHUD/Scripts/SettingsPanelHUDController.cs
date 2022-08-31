@@ -171,9 +171,6 @@ namespace DCL.SettingsPanelHUD
             foreach (var section in sections)
             {
                 section.SetActive(section == sectionToOpen);
-
-                if (section == sectionToOpen)
-                    view.SetWorldPreviewActive(section.sectionName.ToLower() == SECTION_TO_ACTIVATE_WORLD_PREVIEW);
             }
         }
 
@@ -183,9 +180,6 @@ namespace DCL.SettingsPanelHUD
             {
                 var section = sections[i];
                 section.SetActive(i == sectionIndex);
-
-                if (i == sectionIndex)
-                    view.SetWorldPreviewActive(section.sectionName.ToLower() == SECTION_TO_ACTIVATE_WORLD_PREVIEW);
             }
         }
 
