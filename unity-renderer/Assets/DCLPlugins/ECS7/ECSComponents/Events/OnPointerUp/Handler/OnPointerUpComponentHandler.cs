@@ -9,7 +9,7 @@ namespace DCL.ECSComponents.OnPointerUp
 {
     public class OnPointerUpComponentHandler : IECSComponentHandler<PBOnPointerUp>
     {
-        private PointerInputRepresentantion representantion;
+        internal PointerInputRepresentantion representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
         private IECSContext context;

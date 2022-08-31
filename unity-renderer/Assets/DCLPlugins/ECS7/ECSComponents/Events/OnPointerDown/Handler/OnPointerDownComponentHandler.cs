@@ -12,7 +12,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
 {
     public class OnPointerDownComponentHandler : IECSComponentHandler<PBOnPointerDown>
     {
-        private PointerInputRepresentantion representantion;
+        internal PointerInputRepresentantion representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
         private IECSContext context;

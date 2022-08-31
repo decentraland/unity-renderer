@@ -25,12 +25,6 @@ namespace Tests
             pointerEventsQueue = new Queue<PointerEvent>();
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            
-        }
-
         [Test]
         public void SendPointerEventResult()
         {

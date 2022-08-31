@@ -17,21 +17,21 @@ namespace DCLPlugins.ECSComponents.Events
 {
     public class PointerInputRepresentantion : IPointerInputEvent
     {
-        private static int lamportTimestamp = 0;
-        private IDCLEntity eventEntity;
+        internal static int lamportTimestamp = 0;
+        internal IDCLEntity eventEntity;
         private IParcelScene scene;
         private readonly OnPointerEventHandler pointerEventHandler;
-        private readonly PointerEventType pointerEventType;
+        internal readonly PointerEventType pointerEventType;
         private readonly PointerInputEventType inputEventType;
         private readonly IECSComponentWriter componentWriter;
         private readonly DataStore_ECS7 dataStore;
 
         // This represents the model component, since we have several components model, we just use their data
-        private bool showFeedback = false;
-        private ActionButton button;
-        private string hoverText;
-        private float distance;
-        private Queue<PointerEvent> pendingResolvingPointerEvents;
+        internal bool showFeedback = false;
+        internal ActionButton button;
+        internal string hoverText;
+        internal float distance;
+        internal Queue<PointerEvent> pendingResolvingPointerEvents;
 
         public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, Queue<PointerEvent> pendingResolvingPointerEvents)
         {
@@ -109,22 +109,25 @@ namespace DCLPlugins.ECSComponents.Events
                 return;
 
             if (ShouldReportEvent(buttonId, hit))
-            {
-                string meshName = pointerEventHandler.GetMeshName(hit.collider);
-                long entityId = eventEntity.entityId;
+                ReportEvent(buttonId, ray, hit);
+        }
 
-                PointerEvent pointerEvent = new PointerEvent();
-                pointerEvent.sceneId = scene.sceneData.id;
-                pointerEvent.button = (ActionButton)buttonId;
-                pointerEvent.hit = ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit);
-                pointerEvent.type = pointerEventType;
-                pointerEvent.timestamp = GetLamportTimestamp();
+        internal void ReportEvent(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
+        {
+            string meshName = pointerEventHandler.GetMeshName(hit.collider);
+            long entityId = eventEntity.entityId;
+
+            PointerEvent pointerEvent = new PointerEvent();
+            pointerEvent.sceneId = scene.sceneData.id;
+            pointerEvent.button = (ActionButton)buttonId;
+            pointerEvent.hit = ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit);
+            pointerEvent.type = pointerEventType;
+            pointerEvent.timestamp = GetLamportTimestamp();
                 
-                pendingResolvingPointerEvents.Enqueue(pointerEvent);
-            }
+            pendingResolvingPointerEvents.Enqueue(pointerEvent);
         }
         
-        PointerInputEventType IPointerInputEvent.GetEventType() => inputEventType; 
+        public /*IPointerInputEvent*/ PointerInputEventType GetEventType() => inputEventType; 
         
         WebInterface.ACTION_BUTTON IPointerInputEvent.GetActionButton() => (WebInterface.ACTION_BUTTON) button;
 
