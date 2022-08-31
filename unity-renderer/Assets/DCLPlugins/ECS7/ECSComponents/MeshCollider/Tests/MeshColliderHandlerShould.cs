@@ -3,7 +3,7 @@ using DCL;
 using DCL.Configuration;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using NSubstitute;
+using DCL.ECSRuntime;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -16,15 +16,27 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
+        private InternalECSComponents internalComponents;
 
         [SetUp]
         public void SetUp()
         {
-            handler = new MeshColliderHandler(Substitute.For<IInternalECSComponent<InternalColliders>>(),
-                Substitute.For<IInternalECSComponent<InternalColliders>>());
-            testUtils = new ECS7TestUtilsScenesAndEntities();
+            var componentsFactory = new ECSComponentsFactory();
+            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+
+            var keepEntityAliveComponent = new InternalECSComponent<object>(
+                0, componentsManager, componentsFactory, null);
+
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+
+            handler = new MeshColliderHandler(internalComponents.onPointerColliderComponent,
+                internalComponents.physicColliderComponent);
+
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1101);
+
+            keepEntityAliveComponent.PutFor(scene, entity, entity);
         }
 
         [TearDown]
@@ -191,6 +203,63 @@ namespace Tests
 
             yield return null;
             handler.OnComponentRemoved(scene, entity);
+        }
+
+        [UnityTest]
+        public IEnumerator CreateInternalCollidersCorrectly()
+        {
+            IInternalECSComponent<InternalColliders> physicColliders = internalComponents.physicColliderComponent;
+            IInternalECSComponent<InternalColliders> pointerColliders = internalComponents.onPointerColliderComponent;
+
+            handler.OnComponentCreated(scene, entity);
+
+            // physics collider
+            handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
+            {
+                Plane = new PBMeshCollider.Types.PlaneMesh(),
+                CollisionMask = (int)ColliderLayer.Physics
+            });
+
+            BoxCollider boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
+
+            Assert.NotNull(physicColliders.GetFor(scene, entity));
+            Assert.IsNull(pointerColliders.GetFor(scene, entity));
+            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).model.colliders[0]);
+
+            // pointer collider
+            handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
+            {
+                Plane = new PBMeshCollider.Types.PlaneMesh(),
+                CollisionMask = (int)ColliderLayer.Pointer
+            });
+
+            boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
+
+            Assert.IsNull(physicColliders.GetFor(scene, entity));
+            Assert.NotNull(pointerColliders.GetFor(scene, entity));
+            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).model.colliders[0]);
+
+            // physic and pointer collider
+            handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
+            {
+                Plane = new PBMeshCollider.Types.PlaneMesh(),
+                CollisionMask = (int)ColliderLayer.Pointer | (int)ColliderLayer.Physics
+            });
+
+            boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
+
+            Assert.NotNull(physicColliders.GetFor(scene, entity));
+            Assert.NotNull(pointerColliders.GetFor(scene, entity));
+            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).model.colliders[0]);
+            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).model.colliders[0]);
+
+            // remove component, internal colliders should be removed too
+            handler.OnComponentRemoved(scene, entity);
+            yield return null;
+
+            Assert.IsFalse(handler.colliderGameObject);
+            Assert.IsNull(physicColliders.GetFor(scene, entity));
+            Assert.IsNull(pointerColliders.GetFor(scene, entity));
         }
     }
 }
