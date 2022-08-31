@@ -1,5 +1,7 @@
 using DCL;
 using DCL.Chat.Channels;
+using SocialFeaturesAnalytics;
+using UnityEngine;
 
 /// <summary>
 /// Plugin feature that initialize the Join Channel Modal feature.
@@ -14,7 +16,9 @@ public class JoinChannelModalPlugin : IPlugin
             JoinChannelComponentView.Create(),
             // TODO (channels): Pass ChatController.i after kernel integration
             ChatChannelsControllerMock.i,
-            DataStore.i.channels);
+            DataStore.i,
+            SocialAnalytics.i,
+            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"));
     }
 
     public void Dispose() { joinChannelComponentController.Dispose(); }

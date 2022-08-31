@@ -30,6 +30,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string MESSAGE_SENT_TO_CHANNEL = "send_chat_message";
+        private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
         
         public static SocialAnalytics i { get; private set; }
 
@@ -313,6 +314,24 @@ namespace SocialFeaturesAnalytics
                 ["length"] = bodyLength.ToString()
             };
             analytics.SendAnalytic(MESSAGE_SENT_TO_CHANNEL, data);
+        }
+
+        public void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelLinkSource.Chat => "chat",
+                    ChannelLinkSource.Event => "event",
+                    ChannelLinkSource.Place => "place",
+                    ChannelLinkSource.Profile => "profile",
+                    _ => ""
+                },
+                ["channel"] = channel,
+                ["result"] = joinAccepted ? "joined" : "cancel"
+            };
+            analytics.SendAnalytic(CHANNEL_LINK_CLICK, data);
         }
 
         private PlayerType? GetPlayerTypeByUserId(string userId)

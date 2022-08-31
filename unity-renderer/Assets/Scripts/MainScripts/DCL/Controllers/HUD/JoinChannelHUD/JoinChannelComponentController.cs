@@ -1,22 +1,33 @@
-using DCL;
 using System;
+using System.Linq;
+using DCL;
+using SocialFeaturesAnalytics;
 
 public class JoinChannelComponentController : IDisposable
 {
     internal readonly IJoinChannelComponentView joinChannelView;
     internal readonly IChatController chatController;
+    private readonly DataStore dataStore;
     internal readonly DataStore_Channels channelsDataStore;
+    private readonly ISocialAnalytics socialAnalytics;
+    private readonly StringVariable currentPlayerInfoCardId;
+    private string channelId;
 
     public JoinChannelComponentController(
         IJoinChannelComponentView joinChannelView,
         IChatController chatController,
-        DataStore_Channels channelsDataStore)
+        DataStore dataStore,
+        ISocialAnalytics socialAnalytics,
+        StringVariable currentPlayerInfoCardId)
     {
         this.joinChannelView = joinChannelView;
         this.chatController = chatController;
-        this.channelsDataStore = channelsDataStore;
+        this.dataStore = dataStore;
+        channelsDataStore = dataStore.channels;
+        this.socialAnalytics = socialAnalytics;
+        this.currentPlayerInfoCardId = currentPlayerInfoCardId;
 
-        this.channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
+        channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.joinChannelView.OnCancelJoin += OnCancelJoin;
         this.joinChannelView.OnConfirmJoin += OnConfirmJoin;
     }
@@ -33,6 +44,7 @@ public class JoinChannelComponentController : IDisposable
         if (string.IsNullOrEmpty(currentChannelId))
             return;
 
+        channelId = currentChannelId;
         joinChannelView.SetChannel(currentChannelId);
         joinChannelView.Show();
     }
@@ -40,6 +52,9 @@ public class JoinChannelComponentController : IDisposable
     private void OnCancelJoin()
     {
         joinChannelView.Hide();
+
+        if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
+            socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
     }
 
     private void OnConfirmJoin(string channelId)
@@ -47,5 +62,30 @@ public class JoinChannelComponentController : IDisposable
         chatController.JoinOrCreateChannel(channelId.Replace("#", "").Replace("~", ""));
         joinChannelView.Hide();
         channelsDataStore.currentJoinChannelModal.Set(null);
+        
+        if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
+            socialAnalytics.SendChannelLinkClicked(channelId, true, GetChannelLinkSource());
+    }
+
+    private ChannelLinkSource GetChannelLinkSource()
+    {
+        if (dataStore.exploreV2.isOpen.Get())
+        {
+            if (dataStore.exploreV2.placesAndEventsVisible.Get())
+                // TODO: solve differentiation between places and events
+                return ChannelLinkSource.Place;
+        }
+        
+        if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
+            return ChannelLinkSource.Profile;
+
+        var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();
+
+        if (visibleTaskbarPanels.Any(panel => panel == "PrivateChatChannel"
+                                              || panel == "ChatChannel"
+                                              || panel == "PublicChatChannel"))
+            return ChannelLinkSource.Chat;
+
+        return ChannelLinkSource.Unknown;
     }
 }
