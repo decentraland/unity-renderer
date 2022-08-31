@@ -164,7 +164,6 @@ namespace DCL.SettingsPanelHUD
             {
                 settingsAnimator.Hide();
                 settingsPanelController.SaveSettings();
-                SetWorldPreviewActive(false);
             }
             
             isOpen = visible;
