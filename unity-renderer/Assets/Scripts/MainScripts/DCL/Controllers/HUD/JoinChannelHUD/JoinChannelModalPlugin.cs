@@ -17,7 +17,9 @@ public class JoinChannelModalPlugin : IPlugin
             // TODO (channels): Pass ChatController.i after kernel integration
             ChatChannelsControllerMock.i,
             DataStore.i,
-            SocialAnalytics.i,
+            new SocialAnalytics(
+                Environment.i.platform.serviceProviders.analytics,
+                new UserProfileWebInterfaceBridge()),
             Resources.Load<StringVariable>("CurrentPlayerInfoCardId"));
     }
 
