@@ -171,6 +171,7 @@ namespace DCL.Components
 
         private const string AB_GO_NAME_PREFIX = "AB:";
         private const string GLTF_GO_NAME_PREFIX = "GLTF:";
+        private const string GLTFAST_GO_NAME_PREFIX = "GLTFast:";
 
         void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
@@ -303,7 +304,7 @@ namespace DCL.Components
             gltfastPromise.OnSuccessEvent += (Asset_GLTFast_GameObject x) =>
             {
 #if UNITY_EDITOR
-                x.container.name = GLTF_GO_NAME_PREFIX + x.container.name;
+                x.container.name = GLTFAST_GO_NAME_PREFIX + x.container.name;
 #endif
                 Rendereable r = x.ToRendereable();
 

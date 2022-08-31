@@ -17,11 +17,5 @@ ScriptedImporter:
     defaultMinFilterMode: 9729
     defaultMagFilterMode: 9729
     anisotropicFilterLevel: 1
-  instantiationSettings:
-    mask: -1
-    layer: 0
-    skinUpdateWhenOffscreen: 1
-    lightIntensityFactor: 1
-    sceneObjectCreation: 2
   assetDependencies: []
   reportItems: []

@@ -306,8 +306,19 @@ namespace DCL
         /// <returns></returns>
         internal static CullMode GetCullMode(Material material)
         {
-            CullMode result = (CullMode)material.GetInt( ShaderUtils.Cull );
-            return result;
+            if (material.HasProperty(ShaderUtils.Cull))
+            {
+                CullMode result = (CullMode)material.GetInt( ShaderUtils.Cull );
+                return result;
+            }
+
+            // GLTFast materials dont have culling, instead they have the "Double Sided" check toggled on "double" suffixed shaders
+            if (material.shader.name.Contains("double"))
+            {
+                return CullMode.Off;
+            }
+            
+            return CullMode.Back;
         }
 
         /// <summary>
