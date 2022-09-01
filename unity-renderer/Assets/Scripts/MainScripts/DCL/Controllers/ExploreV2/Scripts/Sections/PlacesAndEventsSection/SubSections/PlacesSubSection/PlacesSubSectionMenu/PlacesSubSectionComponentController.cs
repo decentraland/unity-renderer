@@ -192,12 +192,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
@@ -210,6 +212,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             return;
 
         view.HidePlaceModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
     }
 }

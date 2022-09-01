@@ -51,20 +51,23 @@ public class JoinChannelComponentController : IDisposable
 
     private void OnCancelJoin()
     {
-        joinChannelView.Hide();
-
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
+        
+        joinChannelView.Hide();
     }
 
-    private void OnConfirmJoin(string channelId)
+    private void OnConfirmJoin(string channelName)
     {
-        chatController.JoinOrCreateChannel(channelId.Replace("#", "").Replace("~", ""));
-        joinChannelView.Hide();
-        channelsDataStore.currentJoinChannelModal.Set(null);
+        channelName = channelName.Replace("#", "").Replace("~", "");
+        
+        chatController.JoinOrCreateChannel(channelName);
         
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
-            socialAnalytics.SendChannelLinkClicked(channelId, true, GetChannelLinkSource());
+            socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
+        
+        joinChannelView.Hide();
+        channelsDataStore.currentJoinChannelModal.Set(null);
     }
 
     private ChannelLinkSource GetChannelLinkSource()
@@ -72,8 +75,18 @@ public class JoinChannelComponentController : IDisposable
         if (dataStore.exploreV2.isOpen.Get())
         {
             if (dataStore.exploreV2.placesAndEventsVisible.Get())
-                // TODO: solve differentiation between places and events
-                return ChannelLinkSource.Place;
+            {
+                if (dataStore.exploreV2.isSomeModalOpen.Get())
+                {
+                    switch (dataStore.exploreV2.currentVisibleModal.Get())
+                    {
+                        case ExploreV2CurrentModal.Events:
+                            return ChannelLinkSource.Event;
+                        case ExploreV2CurrentModal.Places:
+                            return ChannelLinkSource.Place;
+                    }
+                }    
+            }
         }
         
         if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
