@@ -310,9 +310,6 @@ namespace DCL.Controllers
 
         private void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if (entity.isInsideSceneBoundaries == isInsideBoundaries)
-                return;
-            
             SetEntityMeshesInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
             SetEntityCollidersInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
             SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
