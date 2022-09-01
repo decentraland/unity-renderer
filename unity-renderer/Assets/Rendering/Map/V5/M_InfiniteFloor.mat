@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_InfiniteFloor
-  m_Shader: {fileID: -6465566751694194690, guid: ad2ce2dc8aac5654fb92e62514222ce4,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: d81a4238e4e3f064d93bfafdf3e5f630, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -72,14 +71,22 @@ Material:
     - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
     - Vector1_ba9eae2f64304e849fda8473dbdd3a57: 2
     - Vector1_c87711ac559c4306ada261dfe896c46a: 0.02
+    - _ColorMask: 15
     - _GrassGridFade: 2
     - _GrassGridThickness: 0.02
     - _GrassGridTiling: 16
     - _GrassScale: 0.0005
     - _GridThickness: 0.02
+    - _HighlightRotation: 10
+    - _HighlightThickness: 0
     - _Metallic: 0
     - _RoadScale: 5
     - _Smoothness: 0.2
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _ThicknessOffset: 2500
     - _Zoom: 8200
     m_Colors:
@@ -96,6 +103,7 @@ Material:
     - _ColorDistricts: {r: 0.13725486, g: 0.6784314, b: 0.6039216, a: 1}
     - _ColorEmpty: {r: 0, g: 0.10196077, b: 0.03137255, a: 1}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
+    - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
     - _ColorOwnedParcels: {r: 0.5294118, g: 0.46757755, b: 0.16862743, a: 1}
     - _ColorParcels: {r: 0.26274508, g: 0.42745098, b: 0.29019606, a: 1}
     - _ColorPlazas: {r: 0.16862747, g: 0.43529406, b: 0.21568623, a: 1}
@@ -103,6 +111,7 @@ Material:
     - _GrassGridColor: {r: 0, g: 1.4142135, b: 0.97608465, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HighlightColor: {r: 0, g: 0.6943347, b: 1, a: 1}
     - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OverlayColor: {r: 0, g: 0, b: 0, a: 1}
     - _PlayerPosition: {r: 0, g: -0.16, b: 0, a: 0}
