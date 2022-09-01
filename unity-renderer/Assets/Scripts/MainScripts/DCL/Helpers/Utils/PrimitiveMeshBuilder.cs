@@ -206,6 +206,86 @@ namespace DCL.Helpers
             mesh.triangles = tris;
             return mesh;
         }
+        
+        public static Mesh BuildPlaneV2(float _size)
+        {
+            Mesh mesh = new Mesh();
+            mesh.name = "DCL Plane";
+            Vector3[] vertices = new Vector3[8];
+            Vector3[] normals = new Vector3[8];
+            Vector2[] uvs = new Vector2[8];
+            Color[] colors = new Color[8];
+
+            int[] tris = new int[4 * 3];
+
+            int vIndex = 0;
+            Vector3 start = new Vector3(-_size / 2, _size / 2, 0);
+            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(-start.x,-start.y, 0);
+
+            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(-start.x, -start.y, 0);
+
+            vIndex = 0;
+            uvs[vIndex++] = new Vector2(0f, 1f);
+            uvs[vIndex++] = new Vector2(1f, 1f);
+            uvs[vIndex++] = new Vector2(1f, 0f);
+            uvs[vIndex++] = new Vector2(0f, 0f);
+
+            uvs[vIndex++] = new Vector2(0f, 1f);
+            uvs[vIndex++] = new Vector2(1f, 1f);
+            uvs[vIndex++] = new Vector2(1f, 0f);
+            uvs[vIndex++] = new Vector2(0f, 0f);
+
+            vIndex = 0;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
+
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
+
+            vIndex = 0;
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+            colors[vIndex++] = Color.white;
+
+            int cnt = 0;
+            tris[cnt++] = 2;
+            tris[cnt++] = 1;
+            tris[cnt++] = 0;
+            tris[cnt++] = 3;
+            tris[cnt++] = 2;
+            tris[cnt++] = 0;
+
+            tris[cnt++] = 4 + 1;
+            tris[cnt++] = 4 + 2;
+            tris[cnt++] = 4 + 0;
+            tris[cnt++] = 4 + 2;
+            tris[cnt++] = 4 + 3;
+            tris[cnt++] = 4 + 0;
+
+            mesh.vertices = vertices;
+            mesh.normals = normals;
+            mesh.uv = uvs;
+            mesh.colors = colors;
+
+            mesh.triangles = tris;
+            return mesh;
+        }
 
         public static Mesh BuildCube(float _size)
         {

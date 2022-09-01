@@ -62,42 +62,11 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ProcessCurrentMessagesWhenInitialize()
-    {
-        GivenPrivateMessages(FRIEND_ID, 3);
-
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
-    }
-
-    [Test]
     public void ClearAllMessagesWhenInitialize()
     {
         WhenControllerInitializes(FRIEND_ID);
         
         internalChatView.Received(1).ClearAllEntries();
-    }
-
-    [UnityTest]
-    public IEnumerator ThrottleMessagesWhenThereAreTooMany()
-    {
-        GivenPrivateMessages(FRIEND_ID, 16);
-        
-        WhenControllerInitializes(FRIEND_ID);
-        controller.SetVisibility(true);
-        
-        internalChatView.Received(5).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
-
-        yield return null;
-        
-        internalChatView.Received(16).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == ChatMessage.Type.PRIVATE
-            && model.senderId == FRIEND_ID));
     }
 
     [Test]
@@ -164,6 +133,7 @@ public class PrivateChatWindowControllerShould
     public void SetupViewCorrectly()
     {
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
 
         view.Received(1).Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
     }
@@ -172,6 +142,7 @@ public class PrivateChatWindowControllerShould
     public void SetUpViewAsBlocked()
     {
         WhenControllerInitializes(BLOCKED_FRIEND_ID);
+        controller.SetVisibility(true);
 
         view.Received(1).Setup(Arg.Is<UserProfile>(u => u.userId == BLOCKED_FRIEND_ID), false, true);
     }
@@ -180,9 +151,12 @@ public class PrivateChatWindowControllerShould
     public void AvoidReloadingChatsWhenIsTheSameUser()
     {
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
+        controller.SetVisibility(false);
         WhenControllerInitializes(FRIEND_ID);
+        controller.SetVisibility(true);
         
-        view.ReceivedWithAnyArgs(1).Setup(default, default, default);
+        chatController.ReceivedWithAnyArgs(1).GetPrivateMessages(default, default, default);
     }
 
     [Test]
@@ -300,13 +274,11 @@ public class PrivateChatWindowControllerShould
         string userId = "testId";
         int limit = 30;
         string testMessageId = "testId";
-        controller.directMessagesAlreadyRequested.Clear();
 
         controller.RequestPrivateMessages(userId, limit, testMessageId);
 
         view.Received(1).SetLoadingMessagesActive(true);
         chatController.Received(1).GetPrivateMessages(userId, limit, testMessageId);
-        Assert.IsTrue(controller.directMessagesAlreadyRequested.Contains(userId));
     }
 
     [Test]
