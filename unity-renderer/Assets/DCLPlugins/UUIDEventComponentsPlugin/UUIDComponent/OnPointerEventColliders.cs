@@ -61,6 +61,27 @@ namespace DCL.Components
             }
         }
 
+        public void UpdateCollidersEnabledBasedOnRenderers(IDCLEntity entity)
+        {
+            if (colliders == null || colliders.Length == 0)
+                return;
+            
+            Renderer[] rendererList = entity?.meshesInfo?.renderers;
+            
+            if (rendererList == null || rendererList.Length == 0)
+            {
+                DestroyColliders();
+                return;
+            }
+            
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (rendererList[i] == null)
+                    continue;
+                colliders[i].enabled = rendererList[i].enabled;
+            }
+        }
+
         void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
         {
             for (int i = 0; i < colliders.Length; i++)
