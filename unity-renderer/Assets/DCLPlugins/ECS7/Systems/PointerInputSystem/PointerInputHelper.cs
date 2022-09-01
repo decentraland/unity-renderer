@@ -12,7 +12,7 @@ namespace ECSSystems.PointerInputSystem
 
         public static bool IsValidFistanceForEntity(float pointerEventDistance, float maxDistance)
         {
-            return pointerEventDistance < maxDistance;
+            return pointerEventDistance <= maxDistance;
         }
 
         public static bool IsValidInputForEntity(int pointerEventButton, float pointerEventDistance, float maxDistance, ActionButton button)

@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using UnityEngine;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -12,32 +10,36 @@ namespace ECSSystems.PointerInputSystem
         public readonly long entityId;
         public readonly string sceneId;
         public readonly bool hasValue;
+        public readonly bool hasEventComponent;
 
-        public PointerInputResult(string sceneId, long entityId, bool hasValue = true)
+        public PointerInputResult(string sceneId, long entityId, bool hasEventComponent, bool hasValue = true)
         {
             this.entityId = entityId;
             this.sceneId = sceneId;
             this.hasValue = hasValue;
+            this.hasEventComponent = hasEventComponent;
         }
 
-        public static PointerInputResult empty => new PointerInputResult(null, -1, false);
+        public static PointerInputResult empty => new PointerInputResult(null, -1, false, false);
     }
 
     internal static class PointerDownUpProcessor
     {
-        public static PointerInputResult ProcessPointerDownUp(DataStore_ECS7.PointerEvent pointerEvent,
-            IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
-            IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
-            PointerInputResult lastPointerDownEntity)
+        public static PointerInputResult ProcessPointerDownUp(
+            DataStore_ECS7.PointerEvent pointerEvent,
+            IInternalECSComponent<InternalColliders> pointerColliderComponent,
+            ECSComponent<PBOnPointerDown> pointerDownComponent,
+            ECSComponent<PBOnPointerUp> pointerUpComponent,
+            PointerInputResult lastPointerDownResult)
         {
             if (pointerEvent.isButtonDown)
             {
-                return GetPointerDownEntity(pointerDownGroup, pointerEvent);
+                return GetPointerDownEntity(pointerDownComponent, pointerColliderComponent, pointerEvent);
             }
 
-            PointerInputResult pointerUp = GetPointerUpEntity(pointerUpGroup, pointerEvent);
+            PointerInputResult pointerUp = GetPointerUpEntity(pointerUpComponent, pointerColliderComponent, pointerEvent);
 
-            if (lastPointerDownEntity.hasValue && lastPointerDownEntity.Equals(pointerUp))
+            if (lastPointerDownResult.IsSameEntity(pointerUp))
             {
                 return pointerUp;
             }
@@ -45,46 +47,67 @@ namespace ECSSystems.PointerInputSystem
             return PointerInputResult.empty;
         }
 
-        private static PointerInputResult GetPointerDownEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
+        private static PointerInputResult GetPointerDownEntity(
+            ECSComponent<PBOnPointerDown> pointerDownComponent,
+            IInternalECSComponent<InternalColliders> pointerColliderComponent,
             DataStore_ECS7.PointerEvent pointerEvent)
         {
-            var componentGroup = pointerDownGroup.group;
-            for (int i = 0; i < componentGroup.Count; i++)
+            var colliders = pointerColliderComponent.GetForAll();
+            for (int i = 0; i < colliders.Count; i++)
             {
-                PBOnPointerDown pointerDown = componentGroup[i].componentData2.model;
-                IList<Collider> entityColliders = componentGroup[i].componentData1.model.colliders;
-
-                if (!PointerInputHelper.IsInputForEntity(pointerEvent.rayResult.hitInfo.hit.collider, entityColliders))
+                ECSComponentData<InternalColliders> collider = colliders[i].value;
+                if (!collider.model.colliders.Contains(pointerEvent.rayResult.hitInfo.hit.collider))
                     continue;
 
-                if (!PointerInputHelper.IsValidInputForEntity(pointerEvent.buttonId,
-                    pointerEvent.rayResult.hitInfo.hit.distance, pointerDown.GetMaxDistance(), pointerDown.GetButton()))
-                    return PointerInputResult.empty;
+                var pointerDownData = pointerDownComponent.Get(collider.scene, collider.entity);
+                if (pointerDownData == null)
+                    return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, false);
 
-                return new PointerInputResult(componentGroup[i].scene.sceneData.id, componentGroup[i].entity.entityId);
+                if (PointerInputHelper.IsValidInputForEntity(pointerEvent.buttonId,
+                    pointerEvent.rayResult.hitInfo.hit.distance,
+                    pointerDownData.model.GetMaxDistance(),
+                    pointerDownData.model.GetButton()))
+                {
+                    return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, true);
+                }
+                return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, false);
             }
             return PointerInputResult.empty;
         }
 
-        private static PointerInputResult GetPointerUpEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
+        private static PointerInputResult GetPointerUpEntity(
+            ECSComponent<PBOnPointerUp> pointerUpComponent,
+            IInternalECSComponent<InternalColliders> pointerColliderComponent,
             DataStore_ECS7.PointerEvent pointerEvent)
         {
-            var componentGroup = pointerUpGroup.group;
-            for (int i = 0; i < componentGroup.Count; i++)
+            var colliders = pointerColliderComponent.GetForAll();
+            for (int i = 0; i < colliders.Count; i++)
             {
-                PBOnPointerUp pointerUp = componentGroup[i].componentData2.model;
-                IList<Collider> entityColliders = componentGroup[i].componentData1.model.colliders;
-
-                if (!PointerInputHelper.IsInputForEntity(pointerEvent.rayResult.hitInfo.hit.collider, entityColliders))
+                ECSComponentData<InternalColliders> collider = colliders[i].value;
+                if (!collider.model.colliders.Contains(pointerEvent.rayResult.hitInfo.hit.collider))
                     continue;
 
-                if (!PointerInputHelper.IsValidInputForEntity(pointerEvent.buttonId,
-                    pointerEvent.rayResult.hitInfo.hit.distance, pointerUp.GetMaxDistance(), pointerUp.GetButton()))
-                    return PointerInputResult.empty;
+                var pointerUpData = pointerUpComponent.Get(collider.scene, collider.entity);
+                if (pointerUpData == null)
+                    return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, false);
 
-                return new PointerInputResult(componentGroup[i].scene.sceneData.id, componentGroup[i].entity.entityId);
+                if (PointerInputHelper.IsValidInputForEntity(pointerEvent.buttonId,
+                    pointerEvent.rayResult.hitInfo.hit.distance,
+                    pointerUpData.model.GetMaxDistance(),
+                    pointerUpData.model.GetButton()))
+                {
+                    return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, true);
+                }
+                return new PointerInputResult(collider.scene.sceneData.id, collider.entity.entityId, false);
             }
             return PointerInputResult.empty;
+        }
+
+        private static bool IsSameEntity(this PointerInputResult self, PointerInputResult other)
+        {
+            if (!self.hasValue || !other.hasValue)
+                return false;
+            return self.entityId == other.entityId && self.sceneId == other.sceneId;
         }
     }
 }

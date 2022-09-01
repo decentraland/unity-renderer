@@ -32,7 +32,11 @@ public class ECSSystemsController : IDisposable
         lateUpdateSystems = new ECS7System[]
         {
             ECSPointerInputSystem.CreateSystem(context.componentGroups.pointerDownGroup,
-                context.componentGroups.pointerUpGroup, DataStore.i.ecs7, DataStore.i.Get<DataStore_Cursor>()),
+                context.componentGroups.pointerUpGroup,
+                context.internalEcsComponents.onPointerColliderComponent,
+                context.pointerDownComponent,
+                context.pointerUpComponent,
+                DataStore.i.ecs7, DataStore.i.Get<DataStore_Cursor>()),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };

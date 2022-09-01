@@ -3,6 +3,7 @@ using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using UnityEngine;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -12,6 +13,9 @@ namespace ECSSystems.PointerInputSystem
         {
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup;
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup;
+            public IInternalECSComponent<InternalColliders> pointerColliderComponent;
+            public ECSComponent<PBOnPointerDown> pointerDownComponent;
+            public ECSComponent<PBOnPointerUp> pointerUpComponent;
             public DataStore_ECS7 dataStoreEcs7;
             public DataStore_Cursor dataStoreCursor;
             public bool isPointerDown;
@@ -19,14 +23,22 @@ namespace ECSSystems.PointerInputSystem
             public PointerHoverResult lastPointerHoverResult;
         }
 
-        public static Action CreateSystem(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
+        public static Action CreateSystem(
+            IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
-            DataStore_ECS7 dataStoreEcs, DataStore_Cursor dataStoreCursor)
+            IInternalECSComponent<InternalColliders> pointerColliderComponent,
+            ECSComponent<PBOnPointerDown> pointerDownComponent,
+            ECSComponent<PBOnPointerUp> pointerUpComponent,
+            DataStore_ECS7 dataStoreEcs,
+            DataStore_Cursor dataStoreCursor)
         {
             var state = new State()
             {
                 pointerDownGroup = pointerDownGroup,
                 pointerUpGroup = pointerUpGroup,
+                pointerColliderComponent = pointerColliderComponent,
+                pointerDownComponent = pointerDownComponent,
+                pointerUpComponent = pointerUpComponent,
                 dataStoreEcs7 = dataStoreEcs,
                 dataStoreCursor = dataStoreCursor,
                 isPointerDown = false,
@@ -47,18 +59,27 @@ namespace ECSSystems.PointerInputSystem
                 DataStore_ECS7.PointerEvent pointerEvent = state.dataStoreEcs7.lastPointerInputEvent.Value;
 
                 PointerInputResult result = PointerDownUpProcessor.ProcessPointerDownUp(pointerEvent,
-                    state.pointerDownGroup, state.pointerUpGroup, state.lastPointerDownResult);
+                    state.pointerColliderComponent, state.pointerDownComponent, state.pointerUpComponent,
+                    state.lastPointerDownResult);
 
                 state.lastPointerDownResult = result;
                 if (result.hasValue)
                 {
                     if (pointerEvent.isButtonDown)
                     {
-                        // TODO: add pointer down result
+                        if (result.hasEventComponent)
+                        {
+                            // TODO: add pointer down result
+                            Debug.Log($"down {result.entityId}");
+                        }
                     }
                     else
                     {
-                        // TODO: add pointer up result
+                        if (result.hasEventComponent)
+                        {
+                            // TODO: add pointer up result
+                            Debug.Log($"up {result.entityId}");
+                        }
                         state.lastPointerDownResult = PointerInputResult.empty;
                     }
                 }
