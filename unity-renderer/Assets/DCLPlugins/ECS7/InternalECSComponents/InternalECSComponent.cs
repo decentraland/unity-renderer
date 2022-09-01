@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -34,6 +35,11 @@ public class InternalECSComponent<T> : IInternalECSComponent<T>
     public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)
     {
         return component.Get(scene, entity);
+    }
+
+    public IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<T>>> GetForAll()
+    {
+        return component.Get();
     }
 
     public void Dispose()
