@@ -386,6 +386,46 @@ namespace SceneBoundariesCheckerTests
 
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
+        
+        public static IEnumerator OnPointerEventCollidersAreResetWhenReenteringBounds(ParcelScene scene)
+        {
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(18, 1, 18));
+            yield return boxShape.routine;
+            
+            var entity = boxShape.attachedEntities.First();
+            // yield return null;
+            
+            // Attach onpointer event component
+            string onPointerId = "pointerevent-1";
+            var OnPointerDownModel = new OnPointerDown.Model()
+            {
+                type = "pointerUp",
+                uuid = onPointerId
+            };
+            
+            // Grab onpointer event collider
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+                OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
+            var onPointerEventCollider = meshFilter.transform.Find(OnPointerEventColliders.COLLIDER_NAME).GetComponent<MeshCollider>();
+
+            Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist");
+
+            // Check onpointer evwent collider is disabled with the entity outside scene boundaries
+            AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
+            Assert.IsFalse(onPointerEventCollider.enabled);
+
+            // Move object to re-enter the scene boundaries
+            var transformModel = new DCLTransform.Model { position = new Vector3(8, 1, 8) };
+            TestUtils.SetEntityTransform(scene, entity, transformModel);
+
+            yield return null;
+            yield return null;
+
+            AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
+            Assert.IsTrue(onPointerEventCollider.enabled);
+        }
 
         public static IEnumerator GLTFShapeIsResetWhenReenteringBounds(ParcelScene scene)
         {
