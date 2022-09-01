@@ -565,7 +565,7 @@ SpriteAtlas:
   - QuestOff
   - InputGray
   - Frame10
-  - BlockIcon
+  - BlockPlayerIcon
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
@@ -730,7 +730,7 @@ SpriteAtlas:
   - Ellipse128Stroke
   - UnpublishIconOutline
   - Button12
-  - DeleteFriend
+  - UnfriendIcon
   - QuitIconOutline
   - ContainerRectBottom
   - CardBlockIcon
