@@ -8,8 +8,8 @@ namespace DCL.ECSRuntime
 {
     public class ECSComponent<ModelType> : IECSComponent
     {
-        internal readonly Dictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>> componentData =
-            new Dictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>>();
+        internal readonly DualKeyValueSet<IParcelScene, long, ECSComponentData<ModelType>> componentData =
+            new DualKeyValueSet<IParcelScene, long, ECSComponentData<ModelType>>(50);
 
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
@@ -29,7 +29,7 @@ namespace DCL.ECSRuntime
         {
             var entityId = entity.entityId;
 
-            if (ComponentDataContainsEntity(componentData, scene, entity))
+            if (componentData.ContainsKey(scene, entityId))
             {
                 Debug.LogError($"entity {entityId} already contains component {typeof(ModelType)}", entity.gameObject);
                 return;
@@ -37,15 +37,13 @@ namespace DCL.ECSRuntime
 
             var handler = handlerBuilder?.Invoke();
 
-            ComponentDataAdd(componentData, scene, entity,
-                new ECSComponentData<ModelType>()
-                {
-                    entity = entity,
-                    model = default,
-                    scene = scene,
-                    handler = handler
-                }
-            );
+            componentData.Add(scene, entityId, new ECSComponentData<ModelType>()
+            {
+                entity = entity,
+                model = default,
+                scene = scene,
+                handler = handler
+            });
 
             handler?.OnComponentCreated(scene, entity);
         }
@@ -58,10 +56,11 @@ namespace DCL.ECSRuntime
         /// <returns>true if component removed successfully, false if entity didn't contain component</returns>
         public bool Remove(IParcelScene scene, IDCLEntity entity)
         {
-            if (!ComponentDataRemove(componentData, scene, entity, out ECSComponentData<ModelType> data))
+            if (!componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
                 return false;
 
             data.handler?.OnComponentRemoved(scene, entity);
+            componentData.Remove(scene, entity.entityId);
             return true;
         }
 
@@ -73,7 +72,7 @@ namespace DCL.ECSRuntime
         /// <param name="model">new model</param>
         public void SetModel(IParcelScene scene, IDCLEntity entity, ModelType model)
         {
-            if (ComponentDataTryGet(componentData, scene, entity, out ECSComponentData<ModelType> data))
+            if (componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
             {
                 data.model = model;
                 data.handler?.OnComponentModelUpdated(scene, entity, model);
@@ -104,7 +103,7 @@ namespace DCL.ECSRuntime
         /// <returns>true if entity contains this component</returns>
         public bool HasComponent(IParcelScene scene, IDCLEntity entity)
         {
-            return ComponentDataContainsEntity(componentData, scene, entity);
+            return componentData.ContainsKey(scene, entity.entityId);
         }
 
         /// <summary>
@@ -115,62 +114,20 @@ namespace DCL.ECSRuntime
         /// <returns>component data, including model</returns>
         public IECSReadOnlyComponentData<ModelType> Get(IParcelScene scene, IDCLEntity entity)
         {
-            if (ComponentDataTryGet(componentData, scene, entity, out ECSComponentData<ModelType> data))
+            if (componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
             {
                 return data;
             }
             return null;
         }
 
-        private static bool ComponentDataContainsEntity(IReadOnlyDictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>> componentData,
-            IParcelScene scene, IDCLEntity entity)
+        /// <summary>
+        /// get component data for all entities
+        /// </summary>
+        /// <returns>list of component's data</returns>
+        public IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<ModelType>>> Get()
         {
-            if (!componentData.TryGetValue(scene, out Dictionary<long, ECSComponentData<ModelType>> entitiesData))
-                return false;
-
-            return entitiesData.ContainsKey(entity.entityId);
-        }
-
-        private static void ComponentDataAdd(IDictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>> componentData,
-            IParcelScene scene, IDCLEntity entity, ECSComponentData<ModelType> newData)
-        {
-            if (!componentData.TryGetValue(scene, out Dictionary<long, ECSComponentData<ModelType>> entitiesData))
-            {
-                entitiesData = new Dictionary<long, ECSComponentData<ModelType>>();
-                componentData.Add(scene, entitiesData);
-            }
-            entitiesData.Add(entity.entityId, newData);
-        }
-
-        private static bool ComponentDataRemove(IDictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>> componentData,
-            IParcelScene scene, IDCLEntity entity, out ECSComponentData<ModelType> data)
-        {
-            if (!componentData.TryGetValue(scene, out Dictionary<long, ECSComponentData<ModelType>> entitiesData))
-            {
-                data = null;
-                return false;
-            }
-
-            if (!entitiesData.TryGetValue(entity.entityId, out data))
-                return false;
-
-            entitiesData.Remove(entity.entityId);
-
-            if (entitiesData.Count == 0)
-            {
-                componentData.Remove(scene);
-            }
-            return true;
-        }
-
-        private static bool ComponentDataTryGet(IReadOnlyDictionary<IParcelScene, Dictionary<long, ECSComponentData<ModelType>>> componentData,
-            IParcelScene scene, IDCLEntity entity, out ECSComponentData<ModelType> data)
-        {
-            if (componentData.TryGetValue(scene, out Dictionary<long, ECSComponentData<ModelType>> entitiesData))
-                return entitiesData.TryGetValue(entity.entityId, out data);
-
-            data = null;
-            return false;
+            return componentData.Pairs;
         }
     }
 }

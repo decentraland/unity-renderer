@@ -125,22 +125,22 @@ namespace Tests
                 trackedModels.Remove(entity);
             }
 
-            Assert.AreEqual(trackedEntities.Count, component.componentData[scene0].Count);
+            Assert.AreEqual(trackedEntities.Count, component.componentData.Count);
 
-            using (var iterator = component.componentData[scene0].Values.GetEnumerator())
+            using (var iterator = component.componentData.GetEnumerator())
             {
                 IDCLEntity currentEntity = null;
                 while (iterator.MoveNext())
                 {
                     if (currentEntity != null)
                     {
-                        Assert.AreNotEqual(currentEntity, iterator.Current.entity);
+                        Assert.AreNotEqual(currentEntity, iterator.Current.value.entity);
                     }
-                    Assert.IsNotNull(iterator.Current.entity);
+                    Assert.IsNotNull(iterator.Current.value.entity);
 
-                    currentEntity = iterator.Current.entity;
-                    Assert.AreEqual(trackedModels[currentEntity].someString, iterator.Current.model.someString);
-                    Assert.AreEqual(trackedModels[currentEntity].someVector, iterator.Current.model.someVector);
+                    currentEntity = iterator.Current.value.entity;
+                    Assert.AreEqual(trackedModels[currentEntity].someString, iterator.Current.value.model.someString);
+                    Assert.AreEqual(trackedModels[currentEntity].someVector, iterator.Current.value.model.someVector);
                 }
             }
         }
