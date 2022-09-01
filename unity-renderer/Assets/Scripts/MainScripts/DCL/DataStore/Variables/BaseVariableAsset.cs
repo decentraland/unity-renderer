@@ -26,6 +26,9 @@ public class BaseVariableAsset<T> : BaseVariableAsset, IEquatable<T>
 {
     public delegate void Change(T current, T previous);
 
+    public delegate void Same(T current);
+
+    public event Same OnSame;
     public event Change OnChange;
 
     [SerializeField] protected T value;
@@ -33,7 +36,10 @@ public class BaseVariableAsset<T> : BaseVariableAsset, IEquatable<T>
     public void Set(T newValue)
     {
         if (Equals(newValue))
+        {
+            OnSame?.Invoke(newValue);
             return;
+        }
 
         var previous = value;
         value = newValue;
