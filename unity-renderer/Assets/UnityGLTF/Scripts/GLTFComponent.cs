@@ -101,7 +101,7 @@ namespace UnityGLTF
 
         private  CancellationTokenSource ctokenSource;
         
-        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant";
+        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant:enabled";
 
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }

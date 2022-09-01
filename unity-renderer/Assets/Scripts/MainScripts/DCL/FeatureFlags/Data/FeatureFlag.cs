@@ -5,13 +5,21 @@ public class FeatureFlag
     public readonly Dictionary<string, bool> flags  = new Dictionary<string, bool>();
     public readonly Dictionary<string, FeatureFlagVariant> variants  = new Dictionary<string, FeatureFlagVariant>();
     
-    public bool IsFeatureEnabled(string featureName)
+    /// <summary>
+    /// Will check if featureName contains variant to be checked.
+    /// Supported formats: featureName, featureName:variantName
+    /// </summary>
+    /// <param name="featureNameLong"></param>
+    /// <returns></returns>
+    public bool IsFeatureEnabled(string featureNameLong)
     {
-        if (variants.TryGetValue(featureName, out var variant) && variant.enabled)
+        string[] splitFeatureName = featureNameLong.Split(':');
+        string featureName = splitFeatureName[0];
+
+        if (splitFeatureName.Length > 1 && variants.TryGetValue(featureName, out var variant))
         {
-            //We use name property, to determine what A/B test variant is used
-            //Currently for simplicity we supposed enabled/disabled name 
-            return variant.name == "enabled";
+            string variantName = splitFeatureName[splitFeatureName.Length - 1];
+            return variant.enabled && variant.name == variantName;
         }
         
         if (flags.ContainsKey(featureName))
