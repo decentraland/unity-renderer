@@ -82,11 +82,11 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
-        protected override void OnAfterLoadOrReuse()
+        protected override void OnBeforeLoadOrReuse()
         {
         }
-
-        protected override void OnBeforeLoadOrReuse()
+        
+        protected override void OnAfterLoadOrReuse()
         {
         }
 
@@ -186,6 +186,7 @@ namespace DCL
             }
 
             asset.SetAssetBundle(assetBundle);
+            asset.LoadMetrics();
 
             return true;
         }

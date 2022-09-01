@@ -40,20 +40,20 @@ namespace Tests
             }
         }
 
-        static bool AreStatesEqual(CRDTProtocol crdt, Dictionary<long, CRDTMessage> inputDictionary)
+        static bool AreStatesEqual(CRDTProtocol crdt, IList<CRDTMessage> inputDictionary)
         {
             if (inputDictionary.Count != crdt.state.Count)
             {
                 return false;
             }
 
-            foreach (var kvp in inputDictionary)
+            foreach (var crdtMessage in inputDictionary)
             {
-                if (!crdt.state.TryGetValue(kvp.Key, out CRDTMessage storedMessage))
+                if (!crdt.TryGetState(crdtMessage.key1, crdtMessage.key2, out CRDTMessage storedMessage))
                     return false;
 
-                if (!(storedMessage.timestamp == kvp.Value.timestamp
-                      && CRDTProtocol.IsSameData(storedMessage.data, kvp.Value.data)))
+                if (!(storedMessage.timestamp == crdtMessage.timestamp
+                      && CRDTProtocol.IsSameData(storedMessage.data, crdtMessage.data)))
                     return false;
             }
 

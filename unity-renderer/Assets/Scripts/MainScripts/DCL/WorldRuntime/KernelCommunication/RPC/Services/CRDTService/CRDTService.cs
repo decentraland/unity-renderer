@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -8,22 +9,28 @@ using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
 using UnityEngine;
+using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
     public static class CRDTServiceImpl
     {
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
+        private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
+
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
         private static readonly CRDTStream crdtStream = new CRDTStream();
+        private static readonly MemoryStream memoryStream = new MemoryStream();
+        private static readonly BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             CRDTService<RPCContext>.RegisterService(
                 port,
                 sendCrdt: OnCRDTReceived,
-                crdtNotificationStream: CRDTNotificationStream
+                pullCrdt: SendCRDT,
+                crdtNotificationStream: CrdtNotificationStream
             );
         }
 
@@ -63,22 +70,40 @@ namespace RPC.Services
             return defaultResponse;
         }
 
-        private static IEnumerator<CRDTManyMessages> CRDTNotificationStream(CRDTStreamRequest request, RPCContext context)
+        private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
-            while (true)
+            string sceneId = request.SceneId;
+
+            try
             {
-                if (context.crdtContext.notifications.Count > 0)
+                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
                 {
-                    var (sceneId, payload) = context.crdtContext.notifications.Dequeue();
-                    reusableCrdtMessage.SceneId = sceneId;
-                    reusableCrdtMessage.Payload = ByteString.CopyFrom(payload);
-                    yield return reusableCrdtMessage;
+                    return emptyResponse;
                 }
-                else
-                {
-                    yield return null;
-                }
+
+                memoryStream.SetLength(0);
+
+                context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+
+                KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
+                sceneCrdtState.ClearOnUpdated();
+
+                reusableCrdtMessage.SceneId = sceneId;
+                reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
+
+                return UniTask.FromResult(reusableCrdtMessage);
             }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return emptyResponse;
+            }
+        }
+
+        [Obsolete("deprecated")]
+        private static IEnumerator<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
+        {
+            yield break;
         }
     }
 }

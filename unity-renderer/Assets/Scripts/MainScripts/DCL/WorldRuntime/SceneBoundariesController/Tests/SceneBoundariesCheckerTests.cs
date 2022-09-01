@@ -1,15 +1,10 @@
-using System;
-using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
-using System.Linq;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Helpers.NFT;
 using DCL.Helpers.NFT.Markets;
-using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -29,6 +24,7 @@ namespace SceneBoundariesCheckerTests
 
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            scene.isPersistent = false;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }
@@ -58,6 +54,9 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator EntitiesAreBeingCorrectlyRegistered() { yield return SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene); }
+        
+        [UnityTest]
+        public IEnumerator EntityIsEvaluatedOnReparenting() { yield return SBC_Asserts.EntityIsEvaluatedOnReparenting(scene); }
 
         [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
@@ -65,6 +64,24 @@ namespace SceneBoundariesCheckerTests
         [UnityTest]
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
+        [UnityTest]
+        public IEnumerator GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeWithCollidersAndNoRenderersIsInvalidatedWhenStartingOutOfBounds(scene); }
+        
+        [UnityTest]
+        public IEnumerator GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries() { yield return SBC_Asserts.GLTFShapeCollidersCheckedWhenEvaluatingSceneInnerBoundaries(scene); }
+
+        [UnityTest]
+        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        
+        [UnityTest]
+        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBoundsWithoutTransform(scene); }
+        
+        [UnityTest]
+        public IEnumerator PShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.PShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        
+        [UnityTest]
+        public IEnumerator GLTFShapeIsEvaluatedAfterCorrectTransformAttachment() { yield return SBC_Asserts.GLTFShapeIsEvaluatedAfterCorrectTransformAttachment(scene); }
+        
         [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
@@ -123,57 +140,6 @@ namespace SceneBoundariesCheckerTests
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.AreEqual(0, dclAudioSource.volume);
-        }
-
-        [UnityTest]
-        public IEnumerator HighPrioEntitiesAreRegistered_Position()
-        {
-            var boxShape1 = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0, 0));
-            var boxShape2 = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0));
-            var boxShape3 = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(0, 0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f));
-
-            var entity1 = boxShape1.attachedEntities.First();
-            var entity2 = boxShape2.attachedEntities.First();
-            var entity3 = boxShape3.attachedEntities.First();
-
-            Assert.AreEqual(3, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check can't be zero!");
-
-            yield return null;
-
-            TestUtils.RemoveSceneEntity(scene, entity1.entityId);
-            TestUtils.RemoveSceneEntity(scene, entity2.entityId);
-            TestUtils.RemoveSceneEntity(scene, entity3.entityId);
-
-            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
-
-            Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
-        }
-
-        [UnityTest]
-        public IEnumerator HighPrioEntitiesAreRegistered_Scale()
-        {
-            var boxShape1 = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one);
-            var boxShape2 = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one);
-            var boxShape3 = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one);
-
-            var entity1 = boxShape1.attachedEntities.First();
-            TestUtils.SetEntityTransform(scene, entity1, Vector3.one, Quaternion.identity, new Vector3(SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0, 0));
-            var entity2 = boxShape2.attachedEntities.First();
-            TestUtils.SetEntityTransform(scene, entity2, Vector3.one, Quaternion.identity, new Vector3(0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0));
-            var entity3 = boxShape3.attachedEntities.First();
-            TestUtils.SetEntityTransform(scene, entity3, Vector3.one, Quaternion.identity, new Vector3(0, 0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f));
-
-            Assert.AreEqual(3, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check can't be zero!");
-
-            yield return null;
-
-            TestUtils.RemoveSceneEntity(scene, entity1.entityId);
-            TestUtils.RemoveSceneEntity(scene, entity2.entityId);
-            TestUtils.RemoveSceneEntity(scene, entity3.entityId);
-
-            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
-
-            Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
         }
 
         [UnityTest]

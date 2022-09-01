@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DCL.Controllers;
 
 namespace DCL.ECSRuntime
 {
     public class ECSComponentsFactory
     {
-        public delegate IECSComponent ECSComponentBuilder(IParcelScene scene);
+        public delegate IECSComponent ECSComponentBuilder();
 
         private readonly Dictionary<int, ECSComponentBuilder> components =
             new Dictionary<int, ECSComponentBuilder>();
@@ -30,7 +29,7 @@ namespace DCL.ECSRuntime
         {
             components[componentId] = CreateComponentBuilder(deserializer, handlerBuilder);
         }
-        
+
         /// <summary>
         /// Remove component to the components builder dictionary
         /// </summary>
@@ -51,15 +50,14 @@ namespace DCL.ECSRuntime
             Func<object, ModelType> deserializer,
             Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
-            return (scene) => BuildComponent(scene, deserializer, handlerBuilder);
+            return () => BuildComponent(deserializer, handlerBuilder);
         }
 
         private static IECSComponent BuildComponent<ModelType>(
-            IParcelScene scene,
             Func<object, ModelType> deserializer,
             Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
-            return new ECSComponent<ModelType>(scene, deserializer, handlerBuilder);
+            return new ECSComponent<ModelType>(deserializer, handlerBuilder);
         }
     }
 }

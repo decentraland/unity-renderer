@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DCL.CRDT;
 
 namespace KernelCommunication
@@ -17,11 +18,20 @@ namespace KernelCommunication
             CRDTSerializer.Serialize(binaryWriter, message);
         }
 
+        public static void Serialize(BinaryWriter binaryWriter, CRDTProtocol crdt)
+        {
+            IReadOnlyList<CRDTMessage> state = crdt.GetState();
+            for (int i = 0; i < state.Count; i++)
+            {
+                Serialize(binaryWriter, state[i]);
+            }
+        }
+
         private static int GetCRDTMessageType(CRDTMessage message)
         {
             if (message.data == null)
-                return (int)KernelBinaryMessageType.DELETE_COMPONENT;
-            return (int)KernelBinaryMessageType.PUT_COMPONENT;
+                return (int)CrdtMessageType.DELETE_COMPONENT;
+            return (int)CrdtMessageType.PUT_COMPONENT;
         }
     }
 }

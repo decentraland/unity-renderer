@@ -20,10 +20,12 @@ namespace DCL.Components
         private CanvasGroup canvasGroup;
         private bool isInsideSceneBounds;
         private BaseVariable<bool> isUIEnabled => DataStore.i.HUDs.isSceneUIEnabled;
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
+        private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
         public UIScreenSpace()
         {
-            CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerWorldPositionChanged;
+            dataStorePlayer.playerGridPosition.OnChange += OnPlayerCoordinatesChanged;
             DataStore.i.HUDs.isSceneUIEnabled.OnChange += OnChangeSceneUI;
             OnChangeSceneUI(isUIEnabled.Get(), true);
             model = new Model();
@@ -50,7 +52,7 @@ namespace DCL.Components
             }
             else
             {
-                OnPlayerWorldPositionChanged(CommonScriptableObjects.playerWorldPosition.Get(), CommonScriptableObjects.playerWorldPosition.Get());
+                OnPlayerCoordinatesChanged(dataStorePlayer.playerGridPosition.Get(), dataStorePlayer.playerGridPosition.Get());
             }
 
             //We have to wait a frame for the Canvas Scaler to act
@@ -59,7 +61,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerWorldPositionChanged;
+            hudCanvasCameraModeController?.Dispose();
+            dataStorePlayer.playerGridPosition.OnChange -= OnPlayerCoordinatesChanged;
             DataStore.i.HUDs.isSceneUIEnabled.OnChange -= OnChangeSceneUI;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
@@ -74,7 +77,7 @@ namespace DCL.Components
             UpdateCanvasVisibility();
         }
 
-        void OnPlayerWorldPositionChanged(Vector3 current, Vector3 previous)
+        void OnPlayerCoordinatesChanged(Vector2Int current, Vector2Int previous)
         {
             if (canvas == null)
                 return;
@@ -96,7 +99,7 @@ namespace DCL.Components
 
             var model = (Model) this.model;
 
-            isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
+            isInsideSceneBounds = scene.IsInsideSceneBoundaries(dataStorePlayer.playerGridPosition.Get());
 
             if (isInsideSceneBounds)
             {
@@ -104,7 +107,7 @@ namespace DCL.Components
             }
             
             bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
-
+            
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
         }
@@ -123,7 +126,7 @@ namespace DCL.Components
 
             // Canvas
             canvas = canvasGameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, DataStore.i.camera.hudsCamera);
 
             // Canvas Scaler (for maintaining ui aspect ratio)
             CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
@@ -175,7 +178,7 @@ namespace DCL.Components
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
             }
 
-            OnPlayerWorldPositionChanged(CommonScriptableObjects.playerWorldPosition, CommonScriptableObjects.playerWorldPosition);
+            OnPlayerCoordinatesChanged(dataStorePlayer.playerGridPosition.Get(), dataStorePlayer.playerGridPosition.Get());
 
             if (VERBOSE)
             {

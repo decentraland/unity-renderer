@@ -108,11 +108,11 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         }
     }
 
-    public async UniTask StartAvatarRevealAnimation(bool instant, CancellationToken cancellationToken)
+    public async UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken cancellationToken)
     {
         try
         {
-            if (!instant)
+            if (!withTransition)
             {
                 SetFullRendered();
                 return;
@@ -120,7 +120,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 
             isRevealing = true;
             animation.Play();
-            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken);
+            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
         }
         catch(OperationCanceledException)
         {

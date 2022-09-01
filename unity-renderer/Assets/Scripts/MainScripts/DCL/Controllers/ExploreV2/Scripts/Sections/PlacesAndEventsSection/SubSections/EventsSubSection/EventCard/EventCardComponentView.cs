@@ -117,7 +117,7 @@ public interface IEventCardComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig
+public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig<EventCardComponentModel>
 {
     internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
@@ -178,9 +178,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             modalBackgroundButton.onClick.AddListener(CloseModal);
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(EventCardComponentModel newModel)
     {
-        model = (EventCardComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

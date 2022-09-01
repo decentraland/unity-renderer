@@ -14,10 +14,15 @@ namespace DCL
 
         [SerializeField] private InfoPanel infoPanel;
 
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
+
         private void Awake()
         {
             infoPanel.SetVisible(false);
+            hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
+
+        private void OnDestroy() { hudCanvasCameraModeController?.Dispose(); }
 
         public void ShowFPSPanel()
         {

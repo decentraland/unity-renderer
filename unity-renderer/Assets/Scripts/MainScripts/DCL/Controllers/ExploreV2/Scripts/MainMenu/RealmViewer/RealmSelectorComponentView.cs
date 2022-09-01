@@ -34,7 +34,7 @@ public interface IRealmSelectorComponentView
     void SetAvailableRealms(List<RealmRowComponentModel> realms);
 }
 
-public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorComponentView, IComponentModelConfig
+public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorComponentView, IComponentModelConfig<RealmSelectorComponentModel>
 {
     internal const string REALMS_POOL_NAME = "RealmSelector_RealmRowsPool";
     internal const int REALMS_POOL_PREWARM = 20;
@@ -108,9 +108,9 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         RefreshSortingArrows();
     }
 
-    public void Configure(BaseComponentModel newModel)
+    public void Configure(RealmSelectorComponentModel newModel)
     {
-        model = (RealmSelectorComponentModel)newModel;
+        model = newModel;
         RefreshControl();
     }
 

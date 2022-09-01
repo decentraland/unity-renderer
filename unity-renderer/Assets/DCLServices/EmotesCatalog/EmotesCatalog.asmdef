@@ -1,0 +1,23 @@
+{
+    "name": "EmotesCatalog",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:e99faafecbf8dd74d8130597511b9b27",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ce5ce184029b7f34c9188d4ae2aeb3d7",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

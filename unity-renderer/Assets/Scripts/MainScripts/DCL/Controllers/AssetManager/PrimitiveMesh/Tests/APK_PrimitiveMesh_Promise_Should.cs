@@ -1,12 +1,8 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System.Collections;
+using AssetPromiseKeeper_Tests;
 using DCL;
-using DCL.Helpers;
-using System.Collections;
-using System.Linq;
-using NUnit.Framework;
-using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.TestTools;
-using Assert = UnityEngine.Assertions.Assert;
 
 namespace AssetPromiseKeeper_PrimitiveMesh_Tests
 {
@@ -15,14 +11,13 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         Asset_PrimitiveMesh,
         AssetLibrary_RefCounted<Asset_PrimitiveMesh>>
     {
-        protected AssetPromise_PrimitiveMesh CreatePromise()
+        private AssetPromise_PrimitiveMesh CreatePromise()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            var prom = new AssetPromise_PrimitiveMesh(model);
+            var prom = new AssetPromise_PrimitiveMesh(AssetPromise_PrimitiveMesh_Model.CreateBox(null));
             return prom;
         }
-        
-        protected AssetPromise_PrimitiveMesh CreatePromise(PrimitiveMeshModel model)
+
+        private AssetPromise_PrimitiveMesh CreatePromise(AssetPromise_PrimitiveMesh_Model model)
         {
             var prom = new AssetPromise_PrimitiveMesh(model);
             return prom;
@@ -42,7 +37,7 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
 
             Assert.IsNotNull(loadedAsset);
             Assert.IsNotNull(loadedAsset.mesh);
-            
+
             loadedAsset = null;
             prom = CreatePromise();
 
@@ -86,18 +81,17 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         [UnityTest]
         public IEnumerator NotShareMeshAmongPromisesWithDifferentSettings()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            PrimitiveMeshModel model2 = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            float[] uvs = new float[]
-            {
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
-            };
-            model2.uvs.Add(uvs.ToList());
+            AssetPromise_PrimitiveMesh_Model model = AssetPromise_PrimitiveMesh_Model.CreateBox(null);
+            AssetPromise_PrimitiveMesh_Model model2 = AssetPromise_PrimitiveMesh_Model.CreateBox(
+                new float[]
+                {
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
+                });
             Asset_PrimitiveMesh loadedAsset = null;
             var prom = CreatePromise(model);
 
@@ -120,6 +114,36 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
             Assert.IsNotNull(loadedAsset2.mesh);
 
             Assert.IsTrue(loadedAsset.mesh != loadedAsset2.mesh);
+        }
+
+        [UnityTest]
+        public IEnumerator KeepRefCountCorrectly()
+        {
+            AssetPromise_PrimitiveMesh_Model model = AssetPromise_PrimitiveMesh_Model.CreateBox(null);
+            var prom = new AssetPromise_PrimitiveMesh(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            var prom2 = new AssetPromise_PrimitiveMesh(model);
+            keeper.Keep(prom2);
+            yield return prom2;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+
+            keeper.Forget(prom);
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            prom = new AssetPromise_PrimitiveMesh(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+            keeper.Forget(prom);
+            keeper.Forget(prom2);
+
+            Assert.AreEqual(0, keeper.library.masterAssets.Count);
         }
     }
 }

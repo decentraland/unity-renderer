@@ -7,9 +7,7 @@ namespace DCL.Helpers
         public static readonly Vector2Int WORLD_PARCELS_OFFSET_MIN = new Vector2Int(-150, -150);
         public static readonly Vector2Int WORLD_PARCELS_OFFSET_MAX = new Vector2Int(175, 175); //NOTE(Brian): We use 175 instead of 150 to make the chunks look even.
         public static readonly Vector2Int CHUNK_SIZE = new Vector2Int(1020, 1020);
-        public static readonly int PARCEL_SIZE = 20;
-
-        public static Vector2Int GetTileFromLocalPosition(Vector3 position) { return new Vector2Int((int)(position.x / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.x, (int)(position.y / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.y); }
+        public const int PARCEL_SIZE = 20;
 
         public static Vector3 GetTileToLocalPosition(float x, float y)
         {
@@ -20,13 +18,14 @@ namespace DCL.Helpers
             return result;
         }
 
-        public static Vector3 GetTileCenterToLocalPosition(float x, float y)
-        {
-            x -= WORLD_PARCELS_OFFSET_MIN.x;
-            y -= WORLD_PARCELS_OFFSET_MIN.y;
-
-            return new Vector3((x * PARCEL_SIZE)+(PARCEL_SIZE/2), (y * PARCEL_SIZE) + (PARCEL_SIZE / 2), 0);
-        }
+        public static Vector2 CoordsToPositionUnclamped(Vector2 coords) => CoordsToPositionUnclamped(coords, PARCEL_SIZE);
+        public static Vector2 CoordsToPositionUnclamped(Vector2 coords, int parcelSize) { return coords * parcelSize; }
+        public static Vector2 CoordsToPosition(Vector2Int coords) => CoordsToPosition(coords, PARCEL_SIZE);
+        public static Vector2 CoordsToPosition(Vector2Int coords, int parcelSize) { return ((Vector2)coords) * parcelSize; }
+        public static Vector2 CoordsToPositionWithOffset(Vector3 coords) => CoordsToPositionWithOffset(coords, PARCEL_SIZE);
+        public static Vector2 CoordsToPositionWithOffset(Vector3 coords, int parcelSize) { return (((Vector2)coords) * parcelSize) - new Vector2(parcelSize / 2, parcelSize / 2); }
+        public static Vector2 CoordsToPosition(Vector2 coords) => CoordsToPosition(coords, PARCEL_SIZE);
+        public static Vector2 CoordsToPosition(Vector2 coords, int parcelSize) { return coords * parcelSize; }
 
         public static string GetMarketPlaceThumbnailUrl(Vector2Int[] parcels, int width, int height, int sizeFactor)
         {

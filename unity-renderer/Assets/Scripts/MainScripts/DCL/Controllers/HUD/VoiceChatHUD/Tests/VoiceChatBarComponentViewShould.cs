@@ -34,32 +34,6 @@ public class VoiceChatBarComponentViewShould
     }
 
     [Test]
-    public void ShowCorrectly()
-    {
-        // Arrange
-        voiceChatBarComponent.gameObject.SetActive(false);
-
-        // Act
-        voiceChatBarComponent.Show();
-
-        // Assert
-        Assert.IsTrue(voiceChatBarComponent.gameObject.activeSelf);
-    }
-
-    [Test]
-    public void HideCorrectly()
-    {
-        // Arrange
-        voiceChatBarComponent.gameObject.SetActive(true);
-
-        // Act
-        voiceChatBarComponent.Hide();
-
-        // Assert
-        Assert.IsFalse(voiceChatBarComponent.gameObject.activeSelf);
-    }
-
-    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetTalkingMessageCorrectly(bool isSomeoneTalking)
@@ -84,5 +58,24 @@ public class VoiceChatBarComponentViewShould
             Assert.AreEqual(testMessage, voiceChatBarComponent.someoneTalkingText.text);
         else
             Assert.AreEqual(testMessage, voiceChatBarComponent.altText.text);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetAsJoinedCorrectly(bool isJoined)
+    {
+        // Arrange
+        voiceChatBarComponent.model.isJoined = !isJoined;
+        voiceChatBarComponent.joinedPanel.SetActive(isJoined);
+        voiceChatBarComponent.startCallButton.gameObject.SetActive(!isJoined);
+
+        // Act
+        voiceChatBarComponent.SetAsJoined(isJoined);
+
+        // Assert
+        Assert.AreEqual(isJoined, voiceChatBarComponent.model.isJoined);
+        Assert.AreEqual(isJoined, voiceChatBarComponent.joinedPanel.activeSelf);
+        Assert.AreEqual(!isJoined, voiceChatBarComponent.startCallButton.gameObject.activeSelf);
     }
 }

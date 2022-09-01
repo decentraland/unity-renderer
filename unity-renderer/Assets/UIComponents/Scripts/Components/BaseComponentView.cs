@@ -79,13 +79,13 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig
+public interface IComponentModelConfig<T> where T: BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
     /// </summary>
     /// <param name="newModel">Data to configure the component.</param>
-    void Configure(BaseComponentModel newModel);
+    void Configure(T newModel);
 }
 
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView

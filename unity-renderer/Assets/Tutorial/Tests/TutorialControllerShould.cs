@@ -3,9 +3,11 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using NSubstitute;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -27,10 +29,11 @@ namespace DCL.Tutorial_Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.world.state.loadedScenes = new Dictionary<string, IParcelScene>();
-            genesisPlazaSimulator = TestUtils.CreateTestScene();
-            Environment.i.world.state.currentSceneId = genesisPlazaSimulator.sceneData.id;
-            genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
+            genesisPlazaSimulator = TestUtils.CreateTestScene(new LoadParcelScenesMessage.UnityParcelScene() {basePosition = genesisPlazaLocation});
+            genesisPlazaSimulator.isPersistent = false;
+            IWorldState worldState = Environment.i.world.state;
+            worldState.TryGetScene(Arg.Any<string>(), out Arg.Any<IParcelScene>()).Returns(param => param[1] = genesisPlazaSimulator);
+            
             CreateAndConfigureTutorial();
         }
 
@@ -69,7 +72,6 @@ namespace DCL.Tutorial_Tests
             // Assert
             Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
-            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
             Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
@@ -123,6 +125,42 @@ namespace DCL.Tutorial_Tests
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
+        }
+        
+        [UnityTest]
+        public IEnumerator MusicPlayingWhenStartingFromGenesisPlaza()
+        {
+            // Arrange
+            bool fromDeepLink = false;
+            bool enableNewTutorialCamera = true;
+            TutorialType tutorialType = TutorialType.Initial;
+            bool userAlreadyDidTheTutorial = false;
+
+            // Act
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            yield return null;
+
+            // Assert
+            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+        }
+        
+        [UnityTest]
+        public IEnumerator MusicNotPlayingWhenStartingFromDeepLink()
+        {
+            // Arrange
+            bool fromDeepLink = true;
+            bool enableNewTutorialCamera = true;
+            TutorialType tutorialType = TutorialType.Initial;
+            bool userAlreadyDidTheTutorial = false;
+            if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
+
+            // Act
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            yield return null;
+
+
+            // Assert
+            Assert.AreEqual(1f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
         }
 
         [UnityTest]
@@ -333,10 +371,9 @@ namespace DCL.Tutorial_Tests
             // Arrange
             Vector3 toPosition = new Vector3(1, 1, 0);
             Vector3 initialPosition = new Vector3(2, 2, 0);
-            tutorialController.configuration.teacherRawImage.rectTransform.position = initialPosition;
 
             // Act
-            stepCoroutine = CoroutineStarter.Start(tutorialController.MoveTeacher(initialPosition, toPosition));
+            stepCoroutine = CoroutineStarter.Start(tutorialController.MoveTeacher(toPosition));
             yield return null;
 
             // Assert

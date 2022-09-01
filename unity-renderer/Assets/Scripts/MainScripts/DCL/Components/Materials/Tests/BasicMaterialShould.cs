@@ -66,7 +66,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator WorkCorrectlyWhenAttachedBeforeShape()
     {
         IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
-
+        
         DCLTexture dclTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/atlas.png",
@@ -92,6 +92,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             new SphereShape.Model { });
 
         TestUtils.SharedComponentAttach(shape, entity);
+        
+        yield return null;
 
         Assert.IsTrue(entity.meshRootGameObject != null);
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.SettingsCommon;
@@ -56,17 +57,12 @@ namespace DCL
             InitializeDataStore();
             SetupPlugins();
             InitializeCommunication();
-
-            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
-            // We should re-enable this later as produces a performance regression.
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-                Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
         protected virtual void InitializeDataStore()
         {
-            DataStore.i.textureConfig.gltfMaxSize.Set(512);
-            DataStore.i.textureConfig.generalMaxSize.Set(2048);
+            DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettings.GLTF_TEX_MAX_SIZE_WEB);
+            DataStore.i.textureConfig.generalMaxSize.Set(TextureCompressionSettings.GENERAL_TEX_MAX_SIZE_WEB);
             DataStore.i.avatarConfig.useHologramAvatar.Set(true);
         }
 

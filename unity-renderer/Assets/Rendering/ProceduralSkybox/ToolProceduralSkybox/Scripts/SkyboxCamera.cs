@@ -38,14 +38,18 @@ namespace DCL.Skybox
 
             Camera mainCamComponent = mainCam.GetComponent<Camera>();
             var mainCameraData = mainCamComponent.GetUniversalAdditionalCameraData();
+            var cameraStack = mainCameraData.cameraStack;
+
             mainCameraData.renderType = CameraRenderType.Overlay;
 
             var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
             cameraData.cameraStack.Add(mainCamComponent);
+            foreach (Camera camera in cameraStack)
+            {
+                cameraData.cameraStack.Add(camera);
+            }
 
             camBehavior.AssignCamera(mainCamComponent, skyboxCamera);
         }
-
-        public void SetCameraEnabledState(bool enabled) { skyboxCamera.enabled = enabled; }
     }
 }

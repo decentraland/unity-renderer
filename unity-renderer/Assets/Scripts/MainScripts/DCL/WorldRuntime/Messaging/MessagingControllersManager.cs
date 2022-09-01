@@ -11,7 +11,7 @@ namespace DCL
     {
         public static bool VERBOSE = false;
         
-        private const float MAX_GLOBAL_MSG_BUDGET = 0.006f;
+        private const float MAX_GLOBAL_MSG_BUDGET = 0.02f;
         private const float MAX_SYSTEM_MSG_BUDGET_FOR_FAR_SCENES = 0.003f;
 
         private const float GLTF_BUDGET_MAX = 0.033f;
@@ -85,8 +85,8 @@ namespace DCL
             lock (busesToProcess)
             {
                 IWorldState worldState = Environment.i.world.state;
-                string currentSceneId = worldState.currentSceneId;
-                List<IParcelScene> scenesSortedByDistance = worldState.scenesSortedByDistance;
+                string currentSceneId = worldState.GetCurrentSceneId();
+                var scenesSortedByDistance = worldState.GetScenesSortedByDistance();
 
                 int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
                 // may change after a yield return

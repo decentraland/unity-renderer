@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1072;
+import "common/CameraModeValue.proto";
+
+message PBCameraMode {
+  CameraModeValue mode = 1;
+}

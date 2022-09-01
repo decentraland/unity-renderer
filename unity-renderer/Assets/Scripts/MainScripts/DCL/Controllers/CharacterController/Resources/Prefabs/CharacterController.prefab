@@ -418,6 +418,7 @@ MonoBehaviour:
   avatarContainer: {fileID: 8138691981628023791}
   armatureContainer: {fileID: 3711435650905816617}
   loadingAvatarContainer: {fileID: 4944901710069794483}
+  stickersControllers: {fileID: 2374946182991755626}
   avatarCollider: {fileID: 7115442889188564318}
   loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}

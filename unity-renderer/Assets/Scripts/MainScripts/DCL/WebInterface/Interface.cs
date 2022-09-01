@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -409,6 +410,19 @@ namespace DCL.Interface
         {
             public string userId;
         }
+        
+        [Serializable]
+        private class SendReportPlayerPayload
+        {
+            public string userId;
+            public string name;
+        }
+        
+        [Serializable]
+        private class SendReportScenePayload
+        {
+            public string sceneId;
+        }
 
         [System.Serializable]
         public class SendUnblockPlayerPayload
@@ -463,6 +477,9 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
+            
+            // TODO: remove useBinaryTransform after ECS7 is fully in prod
+            public bool useBinaryTransform = true;
         }
 
         [System.Serializable]
@@ -624,9 +641,25 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class EmotesRequestFiltersPayload
+        {
+            public string ownedByUser;
+            public string[] emoteIds;
+            public string[] collectionIds;
+            public string thirdPartyId;
+        }
+
+        [System.Serializable]
         public class RequestWearablesPayload
         {
             public WearablesRequestFiltersPayload filters;
+            public string context;
+        }
+
+        [System.Serializable]
+        public class RequestEmotesPayload
+        {
+            public EmotesRequestFiltersPayload filters;
             public string context;
         }
 
@@ -814,6 +847,7 @@ namespace DCL.Interface
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
         private static SetDisabledPortableExperiencesPayload setDisabledPortableExperiencesPayload = new SetDisabledPortableExperiencesPayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
+        private static RequestEmotesPayload requestEmotesPayload = new RequestEmotesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
@@ -905,6 +939,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }
 
+        // TODO: Add sceneNumber to this response
         private static void ReportRaycastResult<T, P>(string sceneId, string queryId, string queryType, P payload) where T : RaycastResponse<P>, new() where P : RaycastHitInfo
         {
             T response = new T();
@@ -1264,9 +1299,22 @@ namespace DCL.Interface
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
 
-        public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
+        public static void SendReportScene(string sceneID)
+        {
+            SendMessage("ReportScene", new SendReportScenePayload
+            {
+                sceneId = sceneID
+            });
+        }
 
-        public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
+        public static void SendReportPlayer(string playerId, string playerName)
+        {
+            SendMessage("ReportPlayer", new SendReportPlayerPayload
+            {
+                userId = playerId,
+                name = playerName
+            });
+        }
 
         public static void SendBlockPlayer(string userId)
         {
@@ -1300,6 +1348,10 @@ namespace DCL.Interface
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
         }
+
+        public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
+
+        public static void LeaveVoiceChat() { SendMessage("LeaveVoiceChat"); }
 
         public static void SendSetVoiceChatRecording(bool recording)
         {
@@ -1451,6 +1503,25 @@ namespace DCL.Interface
             requestWearablesPayload.context = context;
 
             SendMessage("RequestWearables", requestWearablesPayload);
+        }
+
+        public static void RequestEmotes(
+            string ownedByUser,
+            string[] emoteIds,
+            string[] collectionIds,
+            string context)
+        {
+            requestEmotesPayload.filters = new EmotesRequestFiltersPayload()
+            {
+                ownedByUser = ownedByUser,
+                emoteIds = emoteIds,
+                collectionIds = collectionIds,
+                thirdPartyId = null
+            };
+
+            requestEmotesPayload.context = context;
+
+            SendMessage("RequestEmotes", requestEmotesPayload);
         }
 
         public static void SearchENSOwner(string name, int maxResults)

@@ -1,6 +1,7 @@
 using System;
 using Cinemachine;
 using DCL.Camera;
+using DCL.CameraTool;
 using UnityEngine;
 
 namespace DCL.Camera

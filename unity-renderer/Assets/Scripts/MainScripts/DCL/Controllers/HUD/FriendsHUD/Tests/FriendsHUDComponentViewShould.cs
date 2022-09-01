@@ -130,7 +130,7 @@ public class FriendsHUDComponentViewShould
         GivenFriendListTabFocused();
         GivenApprovedFriend(userId);
         yield return null;
-        GivenRejectedFriend(userId);
+        GivenRemovedFriend(userId);
         yield return null;
         
         Assert.IsFalse(view.ContainsFriend(userId));
@@ -184,7 +184,7 @@ public class FriendsHUDComponentViewShould
         const string userId = "userId";
         
         GivenRequestTabFocused();
-        GivenCancelledRequest(userId);
+        GivenRemovedFriend(userId);
         yield return null;
         
         Assert.IsFalse(view.ContainsFriendRequest(userId));
@@ -202,7 +202,7 @@ public class FriendsHUDComponentViewShould
         const string userId = "userId";
         
         GivenFriendListTabFocused();
-        view.Set(userId, FriendshipStatus.FRIEND, new FriendEntryModel
+        view.Set(userId, new FriendEntryModel
         {
             blocked = false,
             coords = Vector2.one,
@@ -223,20 +223,12 @@ public class FriendsHUDComponentViewShould
     }
     
     [UnityTest]
-    public IEnumerator UpdateFriendshipStatusToNotFriend()
+    public IEnumerator RemoveFriendship()
     {
         const string userId = "userId";
         
         GivenFriendListTabFocused();
-        view.Set(userId, FriendshipStatus.NOT_FRIEND, new FriendEntryModel
-        {
-            blocked = false,
-            coords = Vector2.one,
-            avatarSnapshotObserver = Substitute.For<ILazyTextureObserver>(),
-            status = PresenceStatus.OFFLINE,
-            userId = userId,
-            userName = "name"
-        });
+        view.Remove(userId);
         yield return null;
         
         Assert.IsFalse(view.ContainsFriend(userId));
@@ -254,7 +246,7 @@ public class FriendsHUDComponentViewShould
         const string userId = "userId";
         
         GivenRequestTabFocused();
-        view.Set(userId, FriendshipStatus.REQUESTED_TO, new FriendRequestEntryModel
+        view.Set(userId, new FriendRequestEntryModel
         {
             blocked = false,
             coords = Vector2.one,
@@ -281,7 +273,7 @@ public class FriendsHUDComponentViewShould
         const string userId = "userId";
         
         GivenRequestTabFocused();
-        view.Set(userId, FriendshipStatus.REQUESTED_FROM, new FriendRequestEntryModel
+        view.Set(userId, new FriendRequestEntryModel
         {
             blocked = false,
             coords = Vector2.one,
@@ -375,24 +367,10 @@ public class FriendsHUDComponentViewShould
         
         Assert.IsFalse(view.loadingSpinner.activeSelf);
     }
-    
-    private void GivenCancelledRequest(string userId)
-    {
-        view.Set(userId, FriendshipAction.CANCELLED, new FriendRequestEntryModel
-        {
-            blocked = false,
-            coords = Vector2.one,
-            avatarSnapshotObserver = Substitute.For<ILazyTextureObserver>(),
-            status = PresenceStatus.OFFLINE,
-            userId = userId,
-            userName = "name",
-            isReceived = false
-        });
-    }
 
     private void GivenSentFriendRequest(string userId)
     {
-        view.Set(userId, FriendshipAction.REQUESTED_TO, new FriendRequestEntryModel
+        view.Set(userId, new FriendRequestEntryModel
         {
             blocked = false,
             coords = Vector2.one,
@@ -406,7 +384,7 @@ public class FriendsHUDComponentViewShould
 
     private void GivenFriendRequestReceived(string userId)
     {
-        view.Set(userId, FriendshipAction.REQUESTED_FROM, new FriendRequestEntryModel
+        view.Set(userId, new FriendRequestEntryModel
         {
             blocked = false,
             coords = Vector2.one,
@@ -422,35 +400,11 @@ public class FriendsHUDComponentViewShould
 
     private void GivenFriendListTabFocused() => view.FocusTab(0);
 
-    private void GivenRejectedFriend(string userId)
-    {
-        view.Set(userId, FriendshipAction.REJECTED, new FriendEntryModel
-        {
-            blocked = false,
-            coords = Vector2.one,
-            avatarSnapshotObserver = Substitute.For<ILazyTextureObserver>(),
-            status = PresenceStatus.OFFLINE,
-            userId = userId,
-            userName = "name"
-        });
-    }
-
-    private void GivenRemovedFriend(string userId)
-    {
-        view.Set(userId, FriendshipAction.DELETED, new FriendEntryModel
-        {
-            blocked = false,
-            coords = Vector2.one,
-            avatarSnapshotObserver = Substitute.For<ILazyTextureObserver>(),
-            status = PresenceStatus.OFFLINE,
-            userId = userId,
-            userName = "name"
-        });
-    }
+    private void GivenRemovedFriend(string userId) => view.Remove(userId);
 
     private void GivenApprovedFriend(string userId)
     {
-        view.Set(userId, FriendshipAction.APPROVED, new FriendEntryModel
+        view.Set(userId, new FriendEntryModel
         {
             blocked = false,
             coords = Vector2.one,

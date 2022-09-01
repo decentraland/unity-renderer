@@ -180,14 +180,14 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(debugSceneId))
             {
-                if (worldState.loadedScenes.TryGetValue(debugSceneId, out IParcelScene scene))
+                if (worldState.TryGetScene(debugSceneId, out IParcelScene scene))
                     return scene;
             }
 
-            var currentPos = Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition);
-            return worldState.loadedScenes.Values.FirstOrDefault(
-                x => x.sceneData.parcels != null
-                     && x.sceneData.parcels.Any(y => y == currentPos));
+            var currentPos = DataStore.i.player.playerGridPosition.Get();
+            worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), out IParcelScene resultScene);
+
+            return resultScene;
         }
     }
 }

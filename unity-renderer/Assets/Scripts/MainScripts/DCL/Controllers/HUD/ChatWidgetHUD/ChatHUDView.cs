@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
@@ -37,10 +36,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
-    private bool isLayoutDirty;
+    private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
 
-    protected bool IsFadeoutModeEnabled => this.model.enableFadeoutMode;
+    protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
     public event Action<string> OnMessageUpdated;
 
@@ -113,7 +112,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
         ChatEntryFactory ??= defaultChatEntryFactory;
-        this.model.enableFadeoutMode = true;
+        model.enableFadeoutMode = true;
     }
     
     public override void OnEnable()
@@ -134,10 +133,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public override void Update()
     {
         base.Update();
-        
-        if (isLayoutDirty)
-            chatEntriesContainer.ForceUpdateLayout(delayed: false);
-        isLayoutDirty = false;
+
+        if (updateLayoutDelayedFrames > 0)
+        {
+            updateLayoutDelayedFrames--;
+            
+            if (updateLayoutDelayedFrames <= 0)
+                chatEntriesContainer.ForceUpdateLayout(delayed: false);
+        }
         
         if (isSortingDirty)
             SortEntriesImmediate();
@@ -314,6 +317,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (inputField.wasCanceled)
             currentMessage.body = string.Empty;
 
+        // we have to wait one frame to disengage the flow triggered by OnSendMessage
+        // otherwise it crashes the application (WebGL only) due a TextMeshPro bug
+        StartCoroutine(WaitThenTriggerSendMessage());
+    }
+
+    private IEnumerator WaitThenTriggerSendMessage()
+    {
+        yield return null;
         OnSendMessage?.Invoke(currentMessage);
     }
 
@@ -375,7 +386,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     
     private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
 
-    private void UpdateLayout() => isLayoutDirty = true;
+    private void UpdateLayout()
+    {
+        // we have to wait several frames before updating the layout
+        // every message entry waits for 3 frames before updating its own layout
+        // we gotta force the layout updating after that
+        // TODO: simplify this change to a bool when we update to a working TextMeshPro version
+        updateLayoutDelayedFrames = 4;
+    }
 
     [Serializable]
     private struct Model

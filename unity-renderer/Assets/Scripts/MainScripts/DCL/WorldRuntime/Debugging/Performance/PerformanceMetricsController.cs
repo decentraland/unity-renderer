@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
@@ -59,7 +60,7 @@ namespace DCL
             if (!CommonScriptableObjects.focusState.Get())
                 return;
 #endif
-            if (!CommonScriptableObjects.rendererState.Get())
+            if (!CommonScriptableObjects.rendererState.Get() && !CommonScriptableObjects.forcePerformanceMeter.Get())
                 return;
 
             var deltaInMs = Time.deltaTime * 1000;
@@ -90,15 +91,17 @@ namespace DCL
         private void Report(string encodedSamples)
         {
 
-            Dictionary<string, IParcelScene>.ValueCollection loadedScenesValues = worldState.loadedScenes.Values;
+            var loadedScenesValues = worldState.GetLoadedScenes();
             scenesMemoryScore.Clear();
-            foreach (IParcelScene parcelScene in loadedScenesValues)
+            foreach (var parcelScene in loadedScenesValues)
             {
                 // we ignore global scene
-                if (parcelScene.isPersistent)
+                IParcelScene parcelSceneValue = parcelScene.Value;
+
+                if (parcelSceneValue.isPersistent)
                     continue; 
 
-                scenesMemoryScore.Add(parcelScene.sceneData.id, parcelScene.metricsCounter.currentCount.totalMemoryScore);
+                scenesMemoryScore.Add(parcelSceneValue.sceneData.id, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
             }
 
             object drawCalls = null;

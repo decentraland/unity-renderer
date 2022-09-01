@@ -4,7 +4,7 @@ import "common/id.proto";
 option (ecs_component_id) = 1090;
 
 message PBBillboard {
-  bool x = 1;
-  bool y = 2;
-  bool z = 3;
+  optional bool x = 1; // default=true
+  optional bool y = 2; // default=true
+  optional bool z = 3; // default=true
 }

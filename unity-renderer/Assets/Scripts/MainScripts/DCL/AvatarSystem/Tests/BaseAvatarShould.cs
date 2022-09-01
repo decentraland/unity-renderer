@@ -51,7 +51,7 @@ namespace Test.AvatarSystem
             await baseAvatar.FadeOut(testMesh, false, cancellationToken);
             
             baseAvatarRevealer.Received().AddTarget(testMesh);
-            baseAvatarRevealer.Received().StartAvatarRevealAnimation(false, cancellationToken);
+            baseAvatarRevealer.Received().StartAvatarRevealAnimation(false, Arg.Any<CancellationToken>());
         });
 
     }

@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DCL.Configuration;
 using Google.Protobuf.Collections;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Helpers
 {
@@ -59,6 +61,37 @@ namespace DCL.Helpers
             }
         }
 
+        public static ScriptableRendererFeature ToggleRenderFeature<T>(this UniversalRenderPipelineAsset asset, bool enable) where T : ScriptableRendererFeature
+        {
+            var type = asset.GetType();
+            var propertyInfo = type.GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (propertyInfo == null)
+            {
+                return null;
+            }
+
+            var scriptableRenderData = (ScriptableRendererData[])propertyInfo.GetValue(asset);
+
+            if (scriptableRenderData != null && scriptableRenderData.Length > 0)
+            {
+                foreach (var renderData in scriptableRenderData)
+                {
+                    foreach (var rendererFeature in renderData.rendererFeatures)
+                    {
+                        if (rendererFeature is T)
+                        {
+                            rendererFeature.SetActive(enable);
+
+                            return rendererFeature;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static Vector2[] FloatArrayToV2List(RepeatedField<float> uvs)
         {
             Vector2[] uvsResult = new Vector2[uvs.Count / 2];
@@ -76,12 +109,12 @@ namespace DCL.Helpers
             return uvsResult;
         }
         
-        public static Vector2[] FloatArrayToV2List(float[] uvs)
+        public static Vector2[] FloatArrayToV2List(IList<float> uvs)
         {
-            Vector2[] uvsResult = new Vector2[uvs.Length / 2];
+            Vector2[] uvsResult = new Vector2[uvs.Count / 2];
             int uvsResultIndex = 0;
 
-            for (int i = 0; i < uvs.Length;)
+            for (int i = 0; i < uvs.Count;)
             {
                 uvsResult[uvsResultIndex++] = new Vector2(uvs[i++],uvs[i++]);
             }
@@ -89,6 +122,63 @@ namespace DCL.Helpers
             return uvsResult;
         }
 
+        private const int MAX_TRANSFORM_VALUE = 10000;
+        public static void CapGlobalValuesToMax(this Transform transform)
+        {
+            bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
+            bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
+            
+            if (positionOutsideBoundaries || scaleOutsideBoundaries)
+            {
+                Vector3 newPosition = transform.position;
+                if (positionOutsideBoundaries)
+                {
+                    if (Mathf.Abs(newPosition.x) > MAX_TRANSFORM_VALUE)
+                        newPosition.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.x);
+
+                    if (Mathf.Abs(newPosition.y) > MAX_TRANSFORM_VALUE)
+                        newPosition.y = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.y);
+
+                    if (Mathf.Abs(newPosition.z) > MAX_TRANSFORM_VALUE)
+                        newPosition.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.z);
+                }
+                
+                Vector3 newScale = transform.lossyScale;
+                if (scaleOutsideBoundaries)
+                {
+                    if (Mathf.Abs(newScale.x) > MAX_TRANSFORM_VALUE)
+                        newScale.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.x);
+
+                    if (Mathf.Abs(newScale.y) > MAX_TRANSFORM_VALUE)
+                        newScale.y = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.y);
+
+                    if (Mathf.Abs(newScale.z) > MAX_TRANSFORM_VALUE)
+                        newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
+                }
+                
+                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
+            }
+        }
+        
+        public static void SetTransformGlobalValues(Transform transform, Vector3 newPos, Quaternion newRot, Vector3 newScale, bool setScale = true)
+        {
+            transform.position = newPos;
+            transform.rotation = newRot;
+
+            if (setScale)
+            {
+                transform.localScale = Vector3.one;
+                var m = transform.worldToLocalMatrix;
+
+                m.SetColumn(0, new Vector4(m.GetColumn(0).magnitude, 0f));
+                m.SetColumn(1, new Vector4(0f, m.GetColumn(1).magnitude));
+                m.SetColumn(2, new Vector4(0f, 0f, m.GetColumn(2).magnitude));
+                m.SetColumn(3, new Vector4(0f, 0f, 0f, 1f));
+
+                transform.localScale = m.MultiplyPoint(newScale);
+            }
+        }
+        
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;

@@ -48,7 +48,7 @@ namespace DCL
 
             SetupDeferredRunners();
 
-            CommonScriptableObjects.playerWorldPosition.OnChange += SetPositionDirty;
+            DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
             // TODO(Brian): Move this later to Main.cs
@@ -113,7 +113,7 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
 
-            CommonScriptableObjects.playerWorldPosition.OnChange -= SetPositionDirty;
+            DataStore.i.player.playerGridPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
@@ -176,7 +176,7 @@ namespace DCL
             IWorldState worldState = Environment.i.world.state;
             DebugConfig debugConfig = DataStore.i.debugConfig;
 
-            if (worldState.loadedScenes.TryGetValue(sceneId, out scene))
+            if (worldState.TryGetScene(sceneId, out scene))
             {
 #if UNITY_EDITOR
                 if (debugConfig.soloScene && scene is GlobalScene && debugConfig.ignoreGlobalScenes)
@@ -339,7 +339,7 @@ namespace DCL
                         {
                             if (msgPayload is CRDTMessage crdtMessage)
                             {
-                                scene.crdtExecutor.Execute(crdtMessage);
+                                scene.crdtExecutor?.Execute(crdtMessage);
                             }
                             break;
                         }
@@ -365,7 +365,7 @@ namespace DCL
 
         public void ParseQuery(object payload, string sceneId)
         {
-            IParcelScene scene = Environment.i.world.state.loadedScenes[sceneId];
+            if (!Environment.i.world.state.TryGetScene(sceneId, out var scene)) return;
 
             if (!(payload is RaycastQuery raycastQuery))
                 return;
@@ -522,8 +522,6 @@ namespace DCL
         
         public void SendSceneReady(string sceneId)
         {
-            Environment.i.world.state.readyScenes.Add(sceneId);
-
             messagingControllersManager.SetSceneReady(sceneId);
 
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
@@ -538,18 +536,14 @@ namespace DCL
 
         public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
 
-        private void SetPositionDirty(Vector3 worldPosition, Vector3 previous)
+        private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
-            var currentX = (int) Math.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE);
-            var currentY = (int) Math.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE);
-
-            positionDirty = currentX != currentGridSceneCoordinate.x || currentY != currentGridSceneCoordinate.y;
+            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.x != currentGridSceneCoordinate.y;
 
             if (positionDirty)
             {
                 sceneSortDirty = true;
-                currentGridSceneCoordinate.x = currentX;
-                currentGridSceneCoordinate.y = currentY;
+                currentGridSceneCoordinate = gridPosition;
 
                 // Since the first position for the character is not sent from Kernel until just-before calling
                 // the rendering activation from Kernel, we need to sort the scenes to get the current scene id
@@ -568,34 +562,11 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            worldState.currentSceneId = null;
-            worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+            worldState.SortScenesByDistance(currentGridSceneCoordinate);
 
-            using (var iterator = Environment.i.world.state.scenesSortedByDistance.GetEnumerator())
-            {
-                IParcelScene scene;
-                bool characterIsInsideScene;
+            string currentSceneId = worldState.GetCurrentSceneId();
 
-                while (iterator.MoveNext())
-                {
-                    scene = iterator.Current;
-
-                    if (scene == null)
-                        continue;
-
-                    characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
-                    bool isGlobalScene = worldState.globalSceneIds.Contains(scene.sceneData.id);
-
-                    if (!isGlobalScene && characterIsInsideScene)
-                    {
-                        worldState.currentSceneId = scene.sceneData.id;
-
-                        break;
-                    }
-                }
-            }
-
-            if (!DataStore.i.debugConfig.isDebugMode.Get() && string.IsNullOrEmpty(worldState.currentSceneId))
+            if (!DataStore.i.debugConfig.isDebugMode.Get() && string.IsNullOrEmpty(currentSceneId))
             {
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
@@ -603,7 +574,7 @@ namespace DCL
             else
             {
                 // 1. Set current scene id
-                CommonScriptableObjects.sceneID.Set(worldState.currentSceneId);
+                CommonScriptableObjects.sceneID.Set(currentSceneId);
 
                 // 2. Attempt to remove SceneController's lock on rendering
                 CommonScriptableObjects.rendererState.RemoveLock(this);
@@ -611,18 +582,7 @@ namespace DCL
 
             OnSortScenes?.Invoke();
         }
-
-        private int SortScenesByDistanceMethod(IParcelScene sceneA, IParcelScene sceneB)
-        {
-            sortAuxiliaryVector = sceneA.sceneData.basePosition - currentGridSceneCoordinate;
-            int dist1 = sortAuxiliaryVector.sqrMagnitude;
-
-            sortAuxiliaryVector = sceneB.sceneData.basePosition - currentGridSceneCoordinate;
-            int dist2 = sortAuxiliaryVector.sqrMagnitude;
-
-            return dist1 - dist2;
-        }
-
+        
         private void OnCurrentSceneIdChange(string newSceneId, string prevSceneId)
         {
             if (Environment.i.world.state.TryGetScene(newSceneId, out IParcelScene newCurrentScene)
@@ -661,7 +621,7 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (!worldState.loadedScenes.ContainsKey(sceneToLoad.id))
+            if (!worldState.ContainsScene(sceneToLoad.id))
             {
                 var newGameObject = new GameObject("New Scene");
 
@@ -673,8 +633,7 @@ namespace DCL
                     newScene.InitializeDebugPlane();
                 }
 
-                worldState.loadedScenes.Add(sceneToLoad.id, newScene);
-                worldState.scenesSortedByDistance.Add(newScene);
+                worldState.AddScene(sceneToLoad.id, newScene);
 
                 sceneSortDirty = true;
 
@@ -744,20 +703,15 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (!worldState.Contains(sceneId))
+            if (!worldState.TryGetScene(sceneId, out ParcelScene scene))
                 return;
 
-            ParcelScene scene = (ParcelScene) worldState.loadedScenes[sceneId];
+            worldState.RemoveScene(sceneId);
             
-            worldState.loadedScenes.Remove(sceneId);
-            worldState.globalSceneIds.Remove(sceneId);
             DataStore.i.world.portableExperienceIds.Remove(sceneId);
             
-            // Remove the scene id from the msg. priorities list
-            worldState.scenesSortedByDistance.Remove(scene);
-
             // Remove messaging controller for unloaded scene
-            messagingControllersManager.RemoveController(scene.sceneData.id);
+            messagingControllersManager.RemoveController(sceneId);
 
             scene.Cleanup(!CommonScriptableObjects.rendererState.Get());
 
@@ -769,20 +723,22 @@ namespace DCL
             Environment.i.world.blockersController.SetupWorldBlockers();
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
+            OnSceneRemoved?.Invoke(scene);
         }
 
         public void UnloadAllScenes(bool includePersistent = false)
         {
             var worldState = Environment.i.world.state;
+            
+            // since the list was changing by this foreach, we make a copy
+            var list = worldState.GetLoadedScenes().ToArray();
 
-            var list = worldState.loadedScenes.ToArray();
-
-            for (int i = 0; i < list.Length; i++)
+            foreach (var kvp in list)
             {
-                if (list[i].Value.isPersistent && !includePersistent)
+                if (kvp.Value.isPersistent && !includePersistent)
                     continue;
-                
-                UnloadParcelSceneExecute(list[i].Key);
+
+                UnloadParcelSceneExecute(kvp.Key);
             }
         }
 
@@ -845,7 +801,7 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (worldState.loadedScenes.ContainsKey(newGlobalSceneId))
+            if (worldState.ContainsScene(newGlobalSceneId))
                 return;
 
             var newGameObject = new GameObject("Global Scene - " + newGlobalSceneId);
@@ -871,15 +827,13 @@ namespace DCL
                 newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
             }
 
-            worldState.loadedScenes.Add(newGlobalSceneId, newScene);
+            worldState.AddGlobalScene(newGlobalSceneId, newScene);
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)
             {
                 DataStore.i.world.portableExperienceIds.Add(newGlobalSceneId);
             }
-
-            worldState.globalSceneIds.Add(newGlobalSceneId);
 
             messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 
@@ -889,7 +843,7 @@ namespace DCL
 
         public void IsolateScene(IParcelScene sceneToActive)
         {
-            foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
             {
                 if (scene != sceneToActive)
                     scene.GetSceneTransform().gameObject.SetActive(false);
@@ -898,7 +852,7 @@ namespace DCL
 
         public void ReIntegrateIsolatedScene()
         {
-            foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
             {
                 scene.GetSceneTransform().gameObject.SetActive(true);
             }
@@ -922,8 +876,8 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
+        public event Action<IParcelScene> OnSceneRemoved;
         
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
-        private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
     }
 }
