@@ -109,6 +109,7 @@ public class FriendEntryBase : BaseComponentView
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        
         currentPlayerInfoCardId.Set(Model.userId);
     }
 }
