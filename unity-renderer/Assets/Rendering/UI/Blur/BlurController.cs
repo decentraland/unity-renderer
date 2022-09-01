@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 
 public class BlurController : MonoBehaviour
 {
-    [SerializeField]private ForwardRendererData rendererData = null;
+    [SerializeField]private UniversalRendererData rendererData = null;
     [SerializeField] private string featureName = null;
     private ScriptableRendererFeature feature;
 
