@@ -8,6 +8,6 @@ namespace DCL
 {
     public class DataStore_SceneBoundariesChecker
     {
-        public BaseDictionary<long, List<IOutOfSceneBoundariesHandler>> componentsCheckSceneBoundaries = new BaseDictionary<long, List<IOutOfSceneBoundariesHandler>>();
+        public BaseDictionary<long, HashSet<IOutOfSceneBoundariesHandler>> componentsCheckSceneBoundaries = new BaseDictionary<long, HashSet<IOutOfSceneBoundariesHandler>>();
     }
 }

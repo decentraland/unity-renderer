@@ -345,11 +345,9 @@ namespace DCL.Controllers
             if(entity.isInsideSceneBoundaries == isInsideBoundaries || !DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
                 return;
             
-            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId];
-
-            for (int i = 0; i < components.Count; i++)
+            foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
             {
-                components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
+                component.UpdateOutOfBoundariesState(isInsideBoundaries);   
             }
         }
     }
