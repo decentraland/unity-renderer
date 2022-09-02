@@ -95,7 +95,7 @@ namespace DCL.ECSComponents
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             avatar = new AvatarWithHologram(
                 baseAvatar,
-                new AvatarCurator(new WearableItemResolver()),
+                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
                 visibility,
@@ -220,6 +220,13 @@ namespace DCL.ECSComponents
         {
             try
             {
+                HashSet<string> emotes = new HashSet<string>();
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                if (DataStore.i.emotes.newFlowEnabled.Get())
+                {
+                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
+                
                 //TODO Add Collider to the AvatarSystem
                 //TODO Without this the collider could get triggered disabling the avatar container,
                 // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
@@ -228,7 +235,7 @@ namespace DCL.ECSComponents
                 SetImpostor(model.Id);
                 playerName.SetName(model.GetName());
                 playerName.Show(true);
-                await avatar.Load(wearableItems, new AvatarSettings
+                await avatar.Load(wearableItems, emotes.ToList(),new AvatarSettings
                 {
                     playerName = model.GetName(),
                     bodyshapeId = model.GetBodyShape(),

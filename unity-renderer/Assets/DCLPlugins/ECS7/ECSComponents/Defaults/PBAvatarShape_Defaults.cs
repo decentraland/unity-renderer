@@ -45,12 +45,12 @@ namespace DCL.ECSComponents
         
         public static Color3 GetHairColor(this PBAvatarShape self)
         {
-            return self.EyeColor ?? new Color3(hairDefaultColor);
+            return self.HairColor ?? new Color3(hairDefaultColor);
         }
         
         public static Color3 GetSkinColor(this PBAvatarShape self)
         {
-            return self.EyeColor ?? new Color3(neutralColor);
+            return self.SkinColor ?? new Color3(neutralColor);
         }
         
         public static string GetName(this PBAvatarShape self)
