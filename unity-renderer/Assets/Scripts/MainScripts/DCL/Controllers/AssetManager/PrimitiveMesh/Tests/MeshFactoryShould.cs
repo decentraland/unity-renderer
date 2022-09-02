@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DCL;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -8,28 +7,21 @@ public class MeshFactoryShould
     [Test]
     public void CreateBoxMeshCorrectly()
     {
-        // Arrange
-        PrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
-        PrimitiveMeshModel meshModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            
-        // Act
-        Mesh mesh = primitiveMeshFactory.CreateMesh(meshModel);
+        Mesh mesh = PrimitiveMeshFactory.CreateMesh(AssetPromise_PrimitiveMesh_Model.CreateBox(null));
         
         // Assert
         Assert.NotNull(mesh);
+        Object.DestroyImmediate(mesh);
     }
     
     [Test]
     public void CreateSphereMeshCorrectly()
     {
-        // Arrange
-        PrimitiveMeshFactory primitiveMeshFactory = new PrimitiveMeshFactory();
-        PrimitiveMeshModel meshModel = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Sphere);
-            
         // Act
-        Mesh mesh = primitiveMeshFactory.CreateMesh(meshModel);
+        Mesh mesh = PrimitiveMeshFactory.CreateMesh(AssetPromise_PrimitiveMesh_Model.CreateSphere());
         
         // Assert
         Assert.NotNull(mesh);
+        Object.DestroyImmediate(mesh);
     }
 }

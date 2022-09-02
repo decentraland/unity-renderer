@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL
@@ -16,5 +17,11 @@ namespace DCL
         public readonly BaseCollection<EquippedEmoteData> equippedEmotes = new BaseCollection<EquippedEmoteData>(new List<EquippedEmoteData> { null, null, null, null, null, null, null, null, null, null });
         public readonly BaseVariable<bool> isEmotesCustomizationSelected = new BaseVariable<bool>(false);
         public readonly BaseCollection<string> currentLoadedEmotes = new BaseCollection<string>();
+
+        public void FilterOutNotOwnedEquippedEmotes(IEnumerable<WearableItem> emotes)
+        {
+            var filtered = equippedEmotes.Get().Where(x => emotes.Any(y => x.id == y.id) ).ToArray();
+            equippedEmotes.Set(filtered);
+        }
     }
 }
