@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL.Components.Interfaces;
+using UnityEngine;
 
 namespace DCL
 {
@@ -23,6 +24,7 @@ namespace DCL
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
+        public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
         public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 

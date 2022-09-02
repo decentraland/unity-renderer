@@ -545,7 +545,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 87.1, y: -15}
+  m_AnchoredPosition: {x: 71, y: -15}
   m_SizeDelta: {x: 122.4, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4959148020755671705
@@ -1037,7 +1037,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Show scene UI
+  m_text: Scene UI
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
@@ -2549,6 +2549,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.2627451
+      objectReference: {fileID: 0}
     - target: {fileID: 7225474628005434785, guid: 4768a7605f725514d85fba8acf39f83e,
         type: 3}
       propertyPath: m_Name
@@ -3217,6 +3232,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 6975587278961672583, guid: 4768a7605f725514d85fba8acf39f83e,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.2627451
       objectReference: {fileID: 0}
     - target: {fileID: 7225474628005434785, guid: 4768a7605f725514d85fba8acf39f83e,
         type: 3}
