@@ -31,7 +31,7 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSPointerEventResolverSystem.CreateSystem(context.componentWriter, context.pendingResolvePointerEvents),
+            ECSPointerEventResolverSystem.CreateSystem(context.componentWriter, context.pendingResolvingPointerEvents),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };

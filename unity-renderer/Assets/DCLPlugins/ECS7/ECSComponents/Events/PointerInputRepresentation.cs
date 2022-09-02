@@ -15,7 +15,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCLPlugins.ECSComponents.Events
 {
-    public class PointerInputRepresentantion : IPointerInputEvent
+    public class PointerInputRepresentation : IPointerInputEvent
     {
         internal static int lamportTimestamp = 0;
         internal IDCLEntity eventEntity;
@@ -33,7 +33,7 @@ namespace DCLPlugins.ECSComponents.Events
         internal float distance;
         internal Queue<PointerEvent> pendingResolvingPointerEvents;
 
-        public PointerInputRepresentantion(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, IOnPointerEventHandler pointerEventHandler, Queue<PointerEvent> pendingResolvingPointerEvents)
+        public PointerInputRepresentation(IDCLEntity entity, DataStore_ECS7 dataStore, PointerEventType pointerEventType, IECSComponentWriter componentWriter, IOnPointerEventHandler pointerEventHandler, Queue<PointerEvent> pendingResolvingPointerEvents)
         {
             this.dataStore = dataStore;
             this.pointerEventType = pointerEventType;

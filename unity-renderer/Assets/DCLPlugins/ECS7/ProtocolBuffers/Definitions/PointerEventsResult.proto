@@ -2,15 +2,9 @@
 
 import "common/id.proto";
 import "RaycastResult.proto";
+import "PointerEvents.proto";
 option (ecs_component_id) = 1065;
 import "common/ActionButton.proto";
-
-enum PointerEventType {
-  UP = 0;
-  DOWN = 1;
-  HOVER_ENTER = 2;
-  HOVER_LEAVE = 3;
-}
 
 // the renderer will set this component to the root entity once per frame with all the events
 message PBPointerEventsResult {

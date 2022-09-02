@@ -25,35 +25,24 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChlQb2ludGVyRXZlbnRzUmVzdWx0LnByb3RvEhBkZWNlbnRyYWxhbmQuZWNz",
-            "GhNSYXljYXN0UmVzdWx0LnByb3RvGhljb21tb24vQWN0aW9uQnV0dG9uLnBy",
-            "b3RvIqQCChVQQlBvaW50ZXJFdmVudHNSZXN1bHQSSAoIY29tbWFuZHMYASAD",
-            "KAsyNi5kZWNlbnRyYWxhbmQuZWNzLlBCUG9pbnRlckV2ZW50c1Jlc3VsdC5Q",
-            "b2ludGVyQ29tbWFuZBrAAQoOUG9pbnRlckNvbW1hbmQSHQoGYnV0dG9uGAEg",
-            "ASgOMg0uQWN0aW9uQnV0dG9uEikKA2hpdBgCIAEoCzIcLmRlY2VudHJhbGFu",
-            "ZC5lY3MuUmF5Y2FzdEhpdBIxCgVzdGF0ZRgEIAEoDjIiLmRlY2VudHJhbGFu",
-            "ZC5lY3MuUG9pbnRlckV2ZW50VHlwZRIRCgl0aW1lc3RhbXAYBSABKAUSEwoG",
-            "YW5hbG9nGAYgASgCSACIAQFCCQoHX2FuYWxvZypGChBQb2ludGVyRXZlbnRU",
-            "eXBlEgYKAlVQEAASCAoERE9XThABEg8KC0hPVkVSX0VOVEVSEAISDwoLSE9W",
-            "RVJfTEVBVkUQA0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "GhNSYXljYXN0UmVzdWx0LnByb3RvGhNQb2ludGVyRXZlbnRzLnByb3RvGhlj",
+            "b21tb24vQWN0aW9uQnV0dG9uLnByb3RvIqQCChVQQlBvaW50ZXJFdmVudHNS",
+            "ZXN1bHQSSAoIY29tbWFuZHMYASADKAsyNi5kZWNlbnRyYWxhbmQuZWNzLlBC",
+            "UG9pbnRlckV2ZW50c1Jlc3VsdC5Qb2ludGVyQ29tbWFuZBrAAQoOUG9pbnRl",
+            "ckNvbW1hbmQSHQoGYnV0dG9uGAEgASgOMg0uQWN0aW9uQnV0dG9uEikKA2hp",
+            "dBgCIAEoCzIcLmRlY2VudHJhbGFuZC5lY3MuUmF5Y2FzdEhpdBIxCgVzdGF0",
+            "ZRgEIAEoDjIiLmRlY2VudHJhbGFuZC5lY3MuUG9pbnRlckV2ZW50VHlwZRIR",
+            "Cgl0aW1lc3RhbXAYBSABKAUSEwoGYW5hbG9nGAYgASgCSACIAQFCCQoHX2Fu",
+            "YWxvZ0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastResultReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PointerEventType), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastResultReflection.Descriptor, global::DCL.ECSComponents.PointerEventsReflection.Descriptor, global::ActionButtonReflection.Descriptor, },
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));
     }
     #endregion
 
   }
-  #region Enums
-  public enum PointerEventType {
-    [pbr::OriginalName("UP")] Up = 0,
-    [pbr::OriginalName("DOWN")] Down = 1,
-    [pbr::OriginalName("HOVER_ENTER")] HoverEnter = 2,
-    [pbr::OriginalName("HOVER_LEAVE")] HoverLeave = 3,
-  }
-
-  #endregion
-
   #region Messages
   /// <summary>
   /// the renderer will set this component to the root entity once per frame with all the events

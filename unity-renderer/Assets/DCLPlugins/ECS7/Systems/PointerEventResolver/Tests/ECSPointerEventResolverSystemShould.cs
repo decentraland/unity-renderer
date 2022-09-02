@@ -9,6 +9,7 @@ using DCLPlugins.ECSComponents.Events;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using PointerEvent = DCLPlugins.ECSComponents.Events.PointerEvent;
 
 namespace Tests
 {
@@ -79,6 +80,41 @@ namespace Tests
                                 SpecialEntityId.SCENE_ROOT_ENTITY,
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
+        }
+        
+        [Test]
+        public void RemoveOlderPointerEventsWhen()
+        {
+            // Arrange
+            var state = new ECSPointerEventResolverSystem.State()
+            {
+                pendingPointerEventsQueue = pointerEventsQueue,
+                currentPointerEventsQueue = new Queue<PointerEvent>(),
+                componentsWriter = componentsWriter
+            };
+
+            var firstPointerEvent = CreatePointerEvent();
+            firstPointerEvent.button = ActionButton.Backward;
+            pointerEventsQueue.Enqueue(firstPointerEvent);
+            
+            for (int i = 0; i < ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT; i++)
+            {
+                pointerEventsQueue.Enqueue(CreatePointerEvent());
+            }
+
+            // Act
+            ECSPointerEventResolverSystem.LateUpdate(state);
+            
+            // Assert
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                SCENE_ID,
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.POINTER_EVENTS_RESULT,
+                                Arg.Any<PBPointerEventsResult>());
+            
+            Assert.IsFalse(state.currentPointerEventsQueue.Contains(firstPointerEvent));
+            Assert.AreEqual(state.currentPointerEventsQueue.Count,ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT );
         }
         
         [Test]

@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
-using DCL;
+﻿using DCL;
 using DCL.ECS7;
 using DCL.ECSComponents;
-using DCL.ECSComponents.OnPointerUp;
 using DCL.ECSRuntime;
+using DCLPlugins.ECSComponents.OnPointerDown;
 
 namespace DCLPlugins.ECSComponents
 {
-    public class OnPointerUpRegister
+    public class PointerEventsRegister
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
         
-        public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IECSContext context)
+        public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IECSContext context)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerUpSerializer.Deserialize, () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7, context));
-            componentWriter.AddOrReplaceComponentSerializer<PBOnPointerUp>(componentId, OnPointerUpSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBPointerEvents>, () => new PointerEventsComponentHandler(componentWriter, DataStore.i.ecs7, context));
+            componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

@@ -1,5 +1,5 @@
 {
-    "name": "DCL.ECSComponents.OnPointerDown.Test",
+    "name": "DCL.ECSComponents.PointerEvents.Test",
     "rootNamespace": "",
     "references": [
         "GUID:01b80bf4301e3ca49bca167b4ee798a9",
@@ -20,7 +20,8 @@
     "precompiledReferences": [
         "NSubstitute.dll",
         "nunit.framework.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "System.Threading.Tasks.Extensions.dll",
+        "Google.Protobuf.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

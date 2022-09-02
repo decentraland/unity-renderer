@@ -19,7 +19,7 @@ namespace DCLPlugins.ECSComponents.Events.Test
 {
     public class PointerInputRepresentantionShould
     {
-        private PointerInputRepresentantion pointerInputRepresentantion;
+        private PointerInputRepresentation pointerInputRepresentation;
         private IDCLEntity entity;
         private Queue<PointerEvent> pendingsPointerEvents;
         private IOnPointerEventHandler onPointerEventHandler;
@@ -32,21 +32,21 @@ namespace DCLPlugins.ECSComponents.Events.Test
             entity = Substitute.For<IDCLEntity>();
             entity.Configure().entityId.Returns(512);
             pendingsPointerEvents = new Queue<PointerEvent>();
-            pointerInputRepresentantion = new PointerInputRepresentantion(entity, new DataStore_ECS7(), PointerEventType.Up,Substitute.For<IECSComponentWriter>(), onPointerEventHandler, pendingsPointerEvents);
+            pointerInputRepresentation = new PointerInputRepresentation(entity, new DataStore_ECS7(), PointerEventType.Up,Substitute.For<IECSComponentWriter>(), onPointerEventHandler, pendingsPointerEvents);
         }
 
         [TearDown]
         public void TearDown()
         {
-            PointerInputRepresentantion.lamportTimestamp = 0;
+            PointerInputRepresentation.lamportTimestamp = 0;
         }
 
         [Test]
         public void AssignCorrectEnums()
         {
             // Assert
-            Assert.AreEqual(PointerEventType.Up, pointerInputRepresentantion.pointerEventType);
-            Assert.AreEqual(PointerInputEventType.UP, pointerInputRepresentantion.GetEventType());
+            Assert.AreEqual(PointerEventType.Up, pointerInputRepresentation.pointerEventType);
+            Assert.AreEqual(PointerInputEventType.UP, pointerInputRepresentation.GetEventType());
         }
 
         [Test]
@@ -61,14 +61,14 @@ namespace DCLPlugins.ECSComponents.Events.Test
             float distance = 16;
             
             // Act
-            pointerInputRepresentantion.SetData(parcelScene, entity, showFeedback, button, distance, hoverText);
+            pointerInputRepresentation.SetData(parcelScene, entity, showFeedback, button, distance, hoverText);
             
             // Arrange
-            Assert.AreEqual(entity, pointerInputRepresentantion.eventEntity);
-            Assert.AreEqual(button, pointerInputRepresentantion.button);
-            Assert.AreEqual(hoverText, pointerInputRepresentantion.hoverText);
-            Assert.AreEqual(showFeedback, pointerInputRepresentantion.showFeedback);
-            Assert.IsTrue(Mathf.Approximately(distance, pointerInputRepresentantion.distance));
+            Assert.AreEqual(entity, pointerInputRepresentation.eventEntity);
+            Assert.AreEqual(button, pointerInputRepresentation.button);
+            Assert.AreEqual(hoverText, pointerInputRepresentation.hoverText);
+            Assert.AreEqual(showFeedback, pointerInputRepresentation.showFeedback);
+            Assert.IsTrue(Mathf.Approximately(distance, pointerInputRepresentation.distance));
         }
 
         [Test]
@@ -86,15 +86,15 @@ namespace DCLPlugins.ECSComponents.Events.Test
             string hoverText = "This test is a hover test one";
             ActionButton button = ActionButton.Backward;
             float distance = 16;
-            pointerInputRepresentantion.SetData(parcelScene, entity, showFeedback, button, distance, hoverText);
+            pointerInputRepresentation.SetData(parcelScene, entity, showFeedback, button, distance, hoverText);
 
             var ray = new Ray(UnityEngine.Vector3.zero, UnityEngine.Vector3.back);
             var hitInfo = new HitInfo();
 
             // Act
-            pointerInputRepresentantion.ReportEvent(WebInterface.ACTION_BUTTON.ACTION_3, ray, hitInfo);
+            pointerInputRepresentation.ReportEvent(WebInterface.ACTION_BUTTON.ACTION_3, ray, hitInfo);
             
-            // 
+            // Assert
             Assert.AreEqual(1, pendingsPointerEvents.Count);
 
             var pointerEvent = pendingsPointerEvents.Dequeue();
@@ -102,7 +102,7 @@ namespace DCLPlugins.ECSComponents.Events.Test
             Assert.AreEqual(pointerEvent.button, ActionButton.Action3);
             Assert.AreEqual(pointerEvent.sceneId, sceneId);
             Assert.AreEqual(pointerEvent.type, PointerEventType.Up);
-            Assert.AreEqual(pointerEvent.timestamp, PointerInputRepresentantion.lamportTimestamp-1);
+            Assert.AreEqual(pointerEvent.timestamp, PointerInputRepresentation.lamportTimestamp-1);
             
             var hit = pointerEvent.hit;
             var result = ProtoConvertUtils.ToPBRaycasHit(512, "TestMesh", ray, hitInfo);

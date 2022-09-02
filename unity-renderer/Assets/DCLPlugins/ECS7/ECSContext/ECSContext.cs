@@ -11,7 +11,7 @@ namespace DCL.ECS7
     
     public readonly struct ECSContext : IECSContext
     {
-        private const int EXPECTED_AMOUNT_OF_QUEUE_ITEMS_APPROXIMATELY = 6;
+        private const int EXPECTED_AMOUNT_OF_QUEUE_ITEMS_APPROXIMATELY = 26;
         public readonly SystemsContext systemsContext { get; }
 
         public ECSContext(IECSComponentWriter componentWriter,

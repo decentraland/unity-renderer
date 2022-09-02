@@ -4,9 +4,25 @@ import "common/id.proto";
 option (ecs_component_id) = 1060;
 import "common/ActionButton.proto";
 
-message PBOnPointerDown {
+enum PointerEventType {
+  UP = 0;
+  DOWN = 1;
+  HOVER_ENTER = 2;
+  HOVER_LEAVE = 3;
+}
+
+message PBPointerEvent {
   optional ActionButton button = 1; // default=ActionButton.ANY
   optional string hover_text = 2; // default='Interact'
   optional float max_distance = 3; // default=10
   optional bool show_feedback = 4; // default=true
+}
+
+message PBPointerEventEntry{
+  PointerEventType eventType = 1;
+  PBPointerEvent eventInfo = 2;
+}
+
+message PBPointerEvents {
+  repeated PBPointerEventEntry pointerEvents = 1;
 }
