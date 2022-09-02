@@ -195,9 +195,6 @@ namespace Tests
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
 
-            // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
-
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
 
