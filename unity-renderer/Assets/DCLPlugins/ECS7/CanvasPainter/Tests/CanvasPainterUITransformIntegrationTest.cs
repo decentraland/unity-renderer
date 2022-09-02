@@ -34,7 +34,7 @@ namespace DCL.ECS7.Tests
             
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             var componentFactory = new ECSComponentsFactory();
-            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>());
+            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>(), Substitute.For<IECSContext>());
             componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
             
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
