@@ -49,7 +49,7 @@ namespace AvatarSystem
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 //New emotes flow use the emotes catalog
-                if (emoteIds != null && DataStore.i.emotes.newFlowEnabled.Get())
+                if (emoteIds != null)
                 {
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
                     if (moreEmotes != null)

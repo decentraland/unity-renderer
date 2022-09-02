@@ -40,7 +40,7 @@ namespace DCL.EquippedEmotes
 
         private void OnOwnUserProfileUpdated(UserProfile userProfile)
         {
-            if (userProfile == null || userProfile.avatar == null || !DataStore.i.emotes.newFlowEnabled.Get())
+            if (userProfile == null || userProfile.avatar == null)
                 return;
 
             List<string> equippedEmotes = new List<string> (Enumerable.Repeat((string) null, 10));
@@ -91,14 +91,12 @@ namespace DCL.EquippedEmotes
 
         internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes)
         {
-            if (!DataStore.i.emotes.newFlowEnabled.Get())
-                SaveEquippedEmotesInLocalStorage();
+          
         }
 
         internal void OnEquippedEmoteAddedOrRemoved(EquippedEmoteData equippedEmote)
         {
-            if (!DataStore.i.emotes.newFlowEnabled.Get())
-                SaveEquippedEmotesInLocalStorage();
+          
         }
 
         internal void SaveEquippedEmotesInLocalStorage()

@@ -101,10 +101,7 @@ namespace DCL.Emotes
             try
             {
                 WearableItem emote;
-                if (dataStore.newFlowEnabled.Get())
-                    emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct);
-                else
-                    emote = await wearableItemResolver.Resolve(emoteId, ct);
+                emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct);
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);

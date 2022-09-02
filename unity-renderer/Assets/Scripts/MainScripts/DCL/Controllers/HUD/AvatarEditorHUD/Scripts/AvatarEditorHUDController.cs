@@ -180,14 +180,6 @@ public class AvatarEditorHUDController : IHUD
                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly 
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
                              LoadUserProfile(userProfile, true);
-                             if (userProfile?.avatar != null && !DataStore.i.emotes.newFlowEnabled.Get())
-                             {
-                                 var emotes = ownedWearables.Where(x => x.IsEmote()).ToArray();
-                                 //Add embedded emotes
-                                 var allEmotes = emotes.Concat(EmbeddedEmotesSO.Provide().emotes).ToArray();
-                                 emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(allEmotes);
-                                 emotesCustomizationComponentController.SetEmotes(allEmotes);
-                             }
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
                          })
@@ -228,7 +220,7 @@ public class AvatarEditorHUDController : IHUD
         loadEmotesCTS?.Dispose();
         loadEmotesCTS = null;
         // we only follow this flow with new profiles
-        if (userProfile?.avatar != null && DataStore.i.emotes.newFlowEnabled.Get())
+        if (userProfile?.avatar != null)
         {
             loadEmotesCTS = new CancellationTokenSource();
             LoadOwnedEmotesTask(loadEmotesCTS.Token);
@@ -487,18 +479,12 @@ public class AvatarEditorHUDController : IHUD
         if (bypassUpdateAvatarPreview)
             return;
 
-        AvatarModel modelToUpdate = model.ToAvatarModel(userProfile.avatar.version);
+        AvatarModel modelToUpdate = model.ToAvatarModel();
 
         // We always keep the loaded emotes into the Avatar Preview
         foreach (string emoteId in emotesCustomizationDataStore.currentLoadedEmotes.Get())
         {
-            if (DataStore.i.emotes.newFlowEnabled.Get())
-                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
-            else
-            {
-                if (!modelToUpdate.wearables.Contains(emoteId))
-                    modelToUpdate.wearables.Add(emoteId);
-            }
+            modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
         }
 
         view.UpdateAvatarPreview(modelToUpdate, skipAudio);
@@ -832,8 +818,7 @@ public class AvatarEditorHUDController : IHUD
 
     public void SaveAvatar(Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
-        int version = userProfile?.avatar?.version ?? 0;
-        var avatarModel = model.ToAvatarModel(version);
+        var avatarModel = model.ToAvatarModel();
 
         // Add the equipped emotes to the avatar model
         List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
@@ -845,15 +830,7 @@ public class AvatarEditorHUDController : IHUD
                 continue;
             emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
         }
-
-        //Add emotes to wearables if Old flow
-        if (!DataStore.i.emotes.newFlowEnabled.Get())
-        {
-            //Filter out embedded emotes
-            avatarModel.wearables.AddRange(emotesCustomizationDataStore.unsavedEquippedEmotes.Get()
-                                                                       .Where(x => x != null && x.id.StartsWith("urn:"))
-                                                                       .Select(x => x.id));
-        }
+        
         avatarModel.emotes = emoteEntries; 
 
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);

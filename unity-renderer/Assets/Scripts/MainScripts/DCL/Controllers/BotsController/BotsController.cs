@@ -81,6 +81,7 @@ namespace DCL.Bots
         /// <param name="newWearables">The list of WearableItem objects to be added to the catalog</param>
         private void PopulateCatalog(List<WearableItem> newWearables)
         {
+            var wearablesToAdd = new List<WearableItem>();
             foreach (var wearableItem in newWearables)
             {
                 switch (wearableItem.data.category)
@@ -113,9 +114,12 @@ namespace DCL.Bots
                         bodyshapeWearableIds.Add(wearableItem.id);
                         break;
                 }
+                
+                if(wearableItem.emoteDataV0 == null)
+                    wearablesToAdd.Add(wearableItem);
             }
 
-            CatalogController.i.AddWearablesToCatalog(newWearables);
+            CatalogController.i.AddWearablesToCatalog(wearablesToAdd);
         }
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();

@@ -35,6 +35,9 @@ public class EmotesCatalogService : IEmotesCatalogService
                 continue;
 
             emotes[emote.id] = emote;
+            
+            
+            
             if (promises.TryGetValue(emote.id, out var emotePromises))
             {
                 foreach (Promise<WearableItem> promise in emotePromises)

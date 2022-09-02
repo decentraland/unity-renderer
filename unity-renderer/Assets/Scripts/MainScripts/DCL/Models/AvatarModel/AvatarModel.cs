@@ -22,8 +22,6 @@ public class AvatarModel : BaseModel
     public Color eyeColor;
     public List<string> wearables = new List<string>();
 
-    // if version < 1 Emotes are contained in wearables instead of the emotes propery.  
-    public int version = 0;
     public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
 
     public string expressionTriggerId = null;
@@ -38,7 +36,9 @@ public class AvatarModel : BaseModel
             return false;
 
         //wearables are the same
-        if (!(wearables.Count == other.wearables.Count && wearables.All(other.wearables.Contains)))
+        if (!(wearables.Count == other.wearables.Count 
+              && wearables.All(other.wearables.Contains) 
+              && other.wearables.All(wearables.Contains)))
             return false;
 
         //emotes are the same
@@ -74,7 +74,9 @@ public class AvatarModel : BaseModel
 
     public bool Equals(AvatarModel other)
     {
-        bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;
+        bool wearablesAreEqual = wearables.All(other.wearables.Contains) 
+                                 && other.wearables.All(wearables.Contains) 
+                                 && wearables.Count == other.wearables.Count;
 
         return id == other.id &&
                name == other.name &&
@@ -105,7 +107,8 @@ public class AvatarModel : BaseModel
         stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);
         emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
-        version = other.version;
+        
+        
     }
 
     public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
