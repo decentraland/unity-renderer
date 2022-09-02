@@ -1,6 +1,7 @@
 void Merger_float(
-    float4 MapColor, float MapOutline, float RandomTilingMixed, float RandomTilingOwned, float GrassTexture, float RoadTexture, float GrassGrid, 
-    float4 ColorGrid, float4 ColorPlaza, float4 ColorDistricts, float4 ColorStreets, float4 ColorParcels, float4 ColorOwned, float4 ColorEmpty, float4 ColorGrassGrid, out float4 Out)
+    float4 MapColor, float MapOutline, float MapOutlineInner, float RandomTilingMixed, float RandomTilingOwned, float GrassTexture, float RoadTexture, float GrassGrid, float FogMask,
+    float4 ColorGrid, float4 ColorPlaza, float4 ColorDistricts, float4 ColorStreets, float4 ColorParcels, float4 ColorOwned, float4 ColorEmpty, float4 ColorGrassGrid, float4 FogColor,
+    out float4 Out)
 {
     Out = (0, 0, 0, 0);
     Out = lerp(ColorDistricts, ColorOwned, RandomTilingOwned);
@@ -9,16 +10,20 @@ void Merger_float(
     Out = lerp(ColorPlaza, Out, MapColor.r);
 
     Out = Out * GrassTexture;
-    Out = lerp(Out, ColorGrassGrid, GrassGrid);
+    Out = Out + ColorGrassGrid * GrassGrid * (1 - MapOutline);//lerp(Out, ColorGrassGrid, GrassGrid * (1 - MapOutline));
 
     Out = lerp(Out, ColorStreets * RoadTexture, MapColor.g);
 
     float4 temp = ((lerp(ColorParcels, ColorOwned, RandomTilingOwned) * RandomTilingMixed) * GrassTexture);
-    temp = lerp(temp, ColorGrassGrid, GrassGrid);
+    temp = temp + ColorGrassGrid * GrassGrid * (1 - MapOutline);//lerp(temp, ColorGrassGrid, GrassGrid * (1 - MapOutline));
 
     Out = lerp(Out, temp, MapColor.b);
 
     Out = lerp(Out, ColorEmpty, MapColor.a);
 
-    Out = lerp(Out, ColorGrid, ColorGrid.a * MapOutline);
+    Out = Out + Out * ColorGrid.a * MapOutline; //Out + ColorGrid * ColorGrid.a * MapOutline; //lerp(Out, ColorGrid, ColorGrid.a * MapOutline);
+
+    Out = lerp(Out, ColorGrid, MapOutlineInner);
+
+    Out = lerp(Out, FogColor, FogMask);
 }
