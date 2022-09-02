@@ -109,12 +109,12 @@ namespace DCL.Helpers
             return uvsResult;
         }
         
-        public static Vector2[] FloatArrayToV2List(float[] uvs)
+        public static Vector2[] FloatArrayToV2List(IList<float> uvs)
         {
-            Vector2[] uvsResult = new Vector2[uvs.Length / 2];
+            Vector2[] uvsResult = new Vector2[uvs.Count / 2];
             int uvsResultIndex = 0;
 
-            for (int i = 0; i < uvs.Length;)
+            for (int i = 0; i < uvs.Count;)
             {
                 uvsResult[uvsResultIndex++] = new Vector2(uvs[i++],uvs[i++]);
             }

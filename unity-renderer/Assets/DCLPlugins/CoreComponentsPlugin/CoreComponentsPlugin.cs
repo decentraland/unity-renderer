@@ -80,7 +80,7 @@ public class CoreComponentsPlugin : IPlugin
     {
         // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
         // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
-        IParcelScene scene = Environment.i.world.state.loadedScenes[sceneid];
+        IParcelScene scene = Environment.i.world.state.GetScene(sceneid);
         IDCLEntity entity = scene.entities[entityid];
 
         if (scene.componentsManagerLegacy.TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
