@@ -393,7 +393,6 @@ namespace SceneBoundariesCheckerTests
             yield return boxShape.routine;
             
             var entity = boxShape.attachedEntities.First();
-            // yield return null;
             
             // Attach onpointer event component
             string onPointerId = "pointerevent-1";
@@ -412,7 +411,7 @@ namespace SceneBoundariesCheckerTests
 
             Assert.IsTrue(onPointerEventCollider != null, "OnPointerEventCollider should exist");
 
-            // Check onpointer evwent collider is disabled with the entity outside scene boundaries
+            // Check onpointer event collider is disabled with the entity outside scene boundaries
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
             Assert.IsFalse(onPointerEventCollider.enabled);
 
@@ -423,6 +422,7 @@ namespace SceneBoundariesCheckerTests
             yield return null;
             yield return null;
 
+            // Check onpointer event collider got enabled
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
             Assert.IsTrue(onPointerEventCollider.enabled);
         }
