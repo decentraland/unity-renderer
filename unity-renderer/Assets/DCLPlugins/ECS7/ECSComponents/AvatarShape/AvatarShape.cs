@@ -175,6 +175,11 @@ namespace DCL.ECSComponents
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            HashSet<string> emotes = new HashSet<string>();
+            if (DataStore.i.emotes.newFlowEnabled.Get())
+            {
+                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+            }
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
@@ -183,7 +188,7 @@ namespace DCL.ECSComponents
                 loadingCts = new CancellationTokenSource();
                 try
                 {
-                    await LoadAvatar(wearableItems);
+                    await LoadAvatar(wearableItems,emotes);
                 }
                 catch (Exception e)
                 {
@@ -216,17 +221,10 @@ namespace DCL.ECSComponents
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
         }
 
-        private async UniTask LoadAvatar(List<string> wearableItems)
+        private async UniTask LoadAvatar(List<string> wearableItems, HashSet<string> emotes)
         {
             try
             {
-                HashSet<string> emotes = new HashSet<string>();
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                if (DataStore.i.emotes.newFlowEnabled.Get())
-                {
-                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                }
-                
                 //TODO Add Collider to the AvatarSystem
                 //TODO Without this the collider could get triggered disabling the avatar container,
                 // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
