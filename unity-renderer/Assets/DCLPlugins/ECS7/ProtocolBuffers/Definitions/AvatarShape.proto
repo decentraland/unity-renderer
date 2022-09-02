@@ -6,15 +6,22 @@ import "common/Color3.proto";
 
 message PBAvatarShape {
   string id = 1;
-  optional string name = 2;
-  optional string body_shape = 3;
-  optional Color3 skin_color = 4;
-  optional Color3 hair_color = 5;
-  optional Color3 eye_color = 6;
-  repeated string wearables = 7;
-  optional string expression_trigger_id = 8;
-  optional int64 expression_trigger_timestamp = 9;
-  optional string sticker_trigger_id = 10;
-  optional int64 sticker_trigger_timestamp = 11;
-  optional bool talking = 12;
+  optional string name = 2; // default = NPC
+  optional string body_shape = 3; // default = urn:decentraland:off-chain:base-avatars:BaseFemale
+  optional Color3 skin_color = 4; // default = Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+  optional Color3 hair_color = 5; // default = Color3(R = 0.283f, G = 0.142f, B = 0f)
+  optional Color3 eye_color = 6; // default = Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+  optional string expression_trigger_id = 7;
+  optional int64 expression_trigger_timestamp = 8; // default = timestamp
+  optional bool talking = 9;
+  /**
+   * default = ["urn:decentraland:off-chain:base-avatars:f_eyes_00", 
+   *  "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
+   *  "urn:decentraland:off-chain:base-avatars:f_mouth_00" 
+   *  "urn:decentraland:off-chain:base-avatars:standard_hair", 
+   *  "urn:decentraland:off-chain:base-avatars:f_simple_yellow_tshirt", 
+   *  "urn:decentraland:off-chain:base-avatars:f_brown_trousers", 
+   *  "urn:decentraland:off-chain:base-avatars:bun_shoes"]
+   */
+  repeated string wearables = 10;
 }

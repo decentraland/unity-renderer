@@ -25,24 +25,21 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChFBdmF0YXJTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9u",
-            "L0NvbG9yMy5wcm90byKtBAoNUEJBdmF0YXJTaGFwZRIKCgJpZBgBIAEoCRIR",
+            "L0NvbG9yMy5wcm90byKvAwoNUEJBdmF0YXJTaGFwZRIKCgJpZBgBIAEoCRIR",
             "CgRuYW1lGAIgASgJSACIAQESFwoKYm9keV9zaGFwZRgDIAEoCUgBiAEBEiAK",
             "CnNraW5fY29sb3IYBCABKAsyBy5Db2xvcjNIAogBARIgCgpoYWlyX2NvbG9y",
             "GAUgASgLMgcuQ29sb3IzSAOIAQESHwoJZXllX2NvbG9yGAYgASgLMgcuQ29s",
-            "b3IzSASIAQESEQoJd2VhcmFibGVzGAcgAygJEiIKFWV4cHJlc3Npb25fdHJp",
-            "Z2dlcl9pZBgIIAEoCUgFiAEBEikKHGV4cHJlc3Npb25fdHJpZ2dlcl90aW1l",
-            "c3RhbXAYCSABKANIBogBARIfChJzdGlja2VyX3RyaWdnZXJfaWQYCiABKAlI",
-            "B4gBARImChlzdGlja2VyX3RyaWdnZXJfdGltZXN0YW1wGAsgASgDSAiIAQES",
-            "FAoHdGFsa2luZxgMIAEoCEgJiAEBQgcKBV9uYW1lQg0KC19ib2R5X3NoYXBl",
-            "Qg0KC19za2luX2NvbG9yQg0KC19oYWlyX2NvbG9yQgwKCl9leWVfY29sb3JC",
-            "GAoWX2V4cHJlc3Npb25fdHJpZ2dlcl9pZEIfCh1fZXhwcmVzc2lvbl90cmln",
-            "Z2VyX3RpbWVzdGFtcEIVChNfc3RpY2tlcl90cmlnZ2VyX2lkQhwKGl9zdGlj",
-            "a2VyX3RyaWdnZXJfdGltZXN0YW1wQgoKCF90YWxraW5nQhSqAhFEQ0wuRUNT",
-            "Q29tcG9uZW50c2IGcHJvdG8z"));
+            "b3IzSASIAQESIgoVZXhwcmVzc2lvbl90cmlnZ2VyX2lkGAcgASgJSAWIAQES",
+            "KQocZXhwcmVzc2lvbl90cmlnZ2VyX3RpbWVzdGFtcBgIIAEoA0gGiAEBEhQK",
+            "B3RhbGtpbmcYCSABKAhIB4gBARIRCgl3ZWFyYWJsZXMYCiADKAlCBwoFX25h",
+            "bWVCDQoLX2JvZHlfc2hhcGVCDQoLX3NraW5fY29sb3JCDQoLX2hhaXJfY29s",
+            "b3JCDAoKX2V5ZV9jb2xvckIYChZfZXhwcmVzc2lvbl90cmlnZ2VyX2lkQh8K",
+            "HV9leHByZXNzaW9uX3RyaWdnZXJfdGltZXN0YW1wQgoKCF90YWxraW5nQhSq",
+            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "Wearables", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, new[]{ "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "StickerTriggerId", "StickerTriggerTimestamp", "Talking" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking", "Wearables" }, new[]{ "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking" }, null, null, null)
           }));
     }
     #endregion
@@ -91,12 +88,10 @@ namespace DCL.ECSComponents {
       skinColor_ = other.skinColor_ != null ? other.skinColor_.Clone() : null;
       hairColor_ = other.hairColor_ != null ? other.hairColor_.Clone() : null;
       eyeColor_ = other.eyeColor_ != null ? other.eyeColor_.Clone() : null;
-      wearables_ = other.wearables_.Clone();
       expressionTriggerId_ = other.expressionTriggerId_;
       expressionTriggerTimestamp_ = other.expressionTriggerTimestamp_;
-      stickerTriggerId_ = other.stickerTriggerId_;
-      stickerTriggerTimestamp_ = other.stickerTriggerTimestamp_;
       talking_ = other.talking_;
+      wearables_ = other.wearables_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -121,6 +116,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "name" field.</summary>
     public const int NameFieldNumber = 2;
     private string name_;
+    /// <summary>
+    /// default = NPC
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
@@ -145,6 +143,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "body_shape" field.</summary>
     public const int BodyShapeFieldNumber = 3;
     private string bodyShape_;
+    /// <summary>
+    /// default = urn:decentraland:off-chain:base-avatars:BaseFemale
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string BodyShape {
@@ -169,6 +170,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "skin_color" field.</summary>
     public const int SkinColorFieldNumber = 4;
     private global::Color3 skinColor_;
+    /// <summary>
+    /// default = Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 SkinColor {
@@ -181,6 +185,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "hair_color" field.</summary>
     public const int HairColorFieldNumber = 5;
     private global::Color3 hairColor_;
+    /// <summary>
+    /// default = Color3(R = 0.283f, G = 0.142f, B = 0f)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 HairColor {
@@ -193,6 +200,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "eye_color" field.</summary>
     public const int EyeColorFieldNumber = 6;
     private global::Color3 eyeColor_;
+    /// <summary>
+    /// default = Color3(R = 0.6f, G = 0.462f, B = 0.356f)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Color3 EyeColor {
@@ -202,19 +212,8 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "wearables" field.</summary>
-    public const int WearablesFieldNumber = 7;
-    private static readonly pb::FieldCodec<string> _repeated_wearables_codec
-        = pb::FieldCodec.ForString(58);
-    private readonly pbc::RepeatedField<string> wearables_ = new pbc::RepeatedField<string>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<string> Wearables {
-      get { return wearables_; }
-    }
-
     /// <summary>Field number for the "expression_trigger_id" field.</summary>
-    public const int ExpressionTriggerIdFieldNumber = 8;
+    public const int ExpressionTriggerIdFieldNumber = 7;
     private string expressionTriggerId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -238,8 +237,11 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "expression_trigger_timestamp" field.</summary>
-    public const int ExpressionTriggerTimestampFieldNumber = 9;
+    public const int ExpressionTriggerTimestampFieldNumber = 8;
     private long expressionTriggerTimestamp_;
+    /// <summary>
+    /// default = timestamp
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long ExpressionTriggerTimestamp {
@@ -262,64 +264,15 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~1;
     }
 
-    /// <summary>Field number for the "sticker_trigger_id" field.</summary>
-    public const int StickerTriggerIdFieldNumber = 10;
-    private string stickerTriggerId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string StickerTriggerId {
-      get { return stickerTriggerId_ ?? ""; }
-      set {
-        stickerTriggerId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "sticker_trigger_id" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasStickerTriggerId {
-      get { return stickerTriggerId_ != null; }
-    }
-    /// <summary>Clears the value of the "sticker_trigger_id" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearStickerTriggerId() {
-      stickerTriggerId_ = null;
-    }
-
-    /// <summary>Field number for the "sticker_trigger_timestamp" field.</summary>
-    public const int StickerTriggerTimestampFieldNumber = 11;
-    private long stickerTriggerTimestamp_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long StickerTriggerTimestamp {
-      get { if ((_hasBits0 & 2) != 0) { return stickerTriggerTimestamp_; } else { return 0L; } }
-      set {
-        _hasBits0 |= 2;
-        stickerTriggerTimestamp_ = value;
-      }
-    }
-    /// <summary>Gets whether the "sticker_trigger_timestamp" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasStickerTriggerTimestamp {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "sticker_trigger_timestamp" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearStickerTriggerTimestamp() {
-      _hasBits0 &= ~2;
-    }
-
     /// <summary>Field number for the "talking" field.</summary>
-    public const int TalkingFieldNumber = 12;
+    public const int TalkingFieldNumber = 9;
     private bool talking_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Talking {
-      get { if ((_hasBits0 & 4) != 0) { return talking_; } else { return false; } }
+      get { if ((_hasBits0 & 2) != 0) { return talking_; } else { return false; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         talking_ = value;
       }
     }
@@ -327,13 +280,34 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTalking {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "talking" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTalking() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
+    }
+
+    /// <summary>Field number for the "wearables" field.</summary>
+    public const int WearablesFieldNumber = 10;
+    private static readonly pb::FieldCodec<string> _repeated_wearables_codec
+        = pb::FieldCodec.ForString(82);
+    private readonly pbc::RepeatedField<string> wearables_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    ///*
+    /// default = ["urn:decentraland:off-chain:base-avatars:f_eyes_00", 
+    ///  "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
+    ///  "urn:decentraland:off-chain:base-avatars:f_mouth_00" 
+    ///  "urn:decentraland:off-chain:base-avatars:standard_hair", 
+    ///  "urn:decentraland:off-chain:base-avatars:f_simple_yellow_tshirt", 
+    ///  "urn:decentraland:off-chain:base-avatars:f_brown_trousers", 
+    ///  "urn:decentraland:off-chain:base-avatars:bun_shoes"]
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<string> Wearables {
+      get { return wearables_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -357,12 +331,10 @@ namespace DCL.ECSComponents {
       if (!object.Equals(SkinColor, other.SkinColor)) return false;
       if (!object.Equals(HairColor, other.HairColor)) return false;
       if (!object.Equals(EyeColor, other.EyeColor)) return false;
-      if(!wearables_.Equals(other.wearables_)) return false;
       if (ExpressionTriggerId != other.ExpressionTriggerId) return false;
       if (ExpressionTriggerTimestamp != other.ExpressionTriggerTimestamp) return false;
-      if (StickerTriggerId != other.StickerTriggerId) return false;
-      if (StickerTriggerTimestamp != other.StickerTriggerTimestamp) return false;
       if (Talking != other.Talking) return false;
+      if(!wearables_.Equals(other.wearables_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -376,12 +348,10 @@ namespace DCL.ECSComponents {
       if (skinColor_ != null) hash ^= SkinColor.GetHashCode();
       if (hairColor_ != null) hash ^= HairColor.GetHashCode();
       if (eyeColor_ != null) hash ^= EyeColor.GetHashCode();
-      hash ^= wearables_.GetHashCode();
       if (HasExpressionTriggerId) hash ^= ExpressionTriggerId.GetHashCode();
       if (HasExpressionTriggerTimestamp) hash ^= ExpressionTriggerTimestamp.GetHashCode();
-      if (HasStickerTriggerId) hash ^= StickerTriggerId.GetHashCode();
-      if (HasStickerTriggerTimestamp) hash ^= StickerTriggerTimestamp.GetHashCode();
       if (HasTalking) hash ^= Talking.GetHashCode();
+      hash ^= wearables_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -424,27 +394,19 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(50);
         output.WriteMessage(EyeColor);
       }
-      wearables_.WriteTo(output, _repeated_wearables_codec);
       if (HasExpressionTriggerId) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(58);
         output.WriteString(ExpressionTriggerId);
       }
       if (HasExpressionTriggerTimestamp) {
-        output.WriteRawTag(72);
+        output.WriteRawTag(64);
         output.WriteInt64(ExpressionTriggerTimestamp);
       }
-      if (HasStickerTriggerId) {
-        output.WriteRawTag(82);
-        output.WriteString(StickerTriggerId);
-      }
-      if (HasStickerTriggerTimestamp) {
-        output.WriteRawTag(88);
-        output.WriteInt64(StickerTriggerTimestamp);
-      }
       if (HasTalking) {
-        output.WriteRawTag(96);
+        output.WriteRawTag(72);
         output.WriteBool(Talking);
       }
+      wearables_.WriteTo(output, _repeated_wearables_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -479,27 +441,19 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(50);
         output.WriteMessage(EyeColor);
       }
-      wearables_.WriteTo(ref output, _repeated_wearables_codec);
       if (HasExpressionTriggerId) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(58);
         output.WriteString(ExpressionTriggerId);
       }
       if (HasExpressionTriggerTimestamp) {
-        output.WriteRawTag(72);
+        output.WriteRawTag(64);
         output.WriteInt64(ExpressionTriggerTimestamp);
       }
-      if (HasStickerTriggerId) {
-        output.WriteRawTag(82);
-        output.WriteString(StickerTriggerId);
-      }
-      if (HasStickerTriggerTimestamp) {
-        output.WriteRawTag(88);
-        output.WriteInt64(StickerTriggerTimestamp);
-      }
       if (HasTalking) {
-        output.WriteRawTag(96);
+        output.WriteRawTag(72);
         output.WriteBool(Talking);
       }
+      wearables_.WriteTo(ref output, _repeated_wearables_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -528,22 +482,16 @@ namespace DCL.ECSComponents {
       if (eyeColor_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(EyeColor);
       }
-      size += wearables_.CalculateSize(_repeated_wearables_codec);
       if (HasExpressionTriggerId) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ExpressionTriggerId);
       }
       if (HasExpressionTriggerTimestamp) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(ExpressionTriggerTimestamp);
       }
-      if (HasStickerTriggerId) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(StickerTriggerId);
-      }
-      if (HasStickerTriggerTimestamp) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(StickerTriggerTimestamp);
-      }
       if (HasTalking) {
         size += 1 + 1;
       }
+      size += wearables_.CalculateSize(_repeated_wearables_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -583,22 +531,16 @@ namespace DCL.ECSComponents {
         }
         EyeColor.MergeFrom(other.EyeColor);
       }
-      wearables_.Add(other.wearables_);
       if (other.HasExpressionTriggerId) {
         ExpressionTriggerId = other.ExpressionTriggerId;
       }
       if (other.HasExpressionTriggerTimestamp) {
         ExpressionTriggerTimestamp = other.ExpressionTriggerTimestamp;
       }
-      if (other.HasStickerTriggerId) {
-        StickerTriggerId = other.StickerTriggerId;
-      }
-      if (other.HasStickerTriggerTimestamp) {
-        StickerTriggerTimestamp = other.StickerTriggerTimestamp;
-      }
       if (other.HasTalking) {
         Talking = other.Talking;
       }
+      wearables_.Add(other.wearables_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -648,27 +590,19 @@ namespace DCL.ECSComponents {
             break;
           }
           case 58: {
-            wearables_.AddEntriesFrom(input, _repeated_wearables_codec);
-            break;
-          }
-          case 66: {
             ExpressionTriggerId = input.ReadString();
             break;
           }
-          case 72: {
+          case 64: {
             ExpressionTriggerTimestamp = input.ReadInt64();
             break;
           }
-          case 82: {
-            StickerTriggerId = input.ReadString();
-            break;
-          }
-          case 88: {
-            StickerTriggerTimestamp = input.ReadInt64();
-            break;
-          }
-          case 96: {
+          case 72: {
             Talking = input.ReadBool();
+            break;
+          }
+          case 82: {
+            wearables_.AddEntriesFrom(input, _repeated_wearables_codec);
             break;
           }
         }
@@ -720,27 +654,19 @@ namespace DCL.ECSComponents {
             break;
           }
           case 58: {
-            wearables_.AddEntriesFrom(ref input, _repeated_wearables_codec);
-            break;
-          }
-          case 66: {
             ExpressionTriggerId = input.ReadString();
             break;
           }
-          case 72: {
+          case 64: {
             ExpressionTriggerTimestamp = input.ReadInt64();
             break;
           }
-          case 82: {
-            StickerTriggerId = input.ReadString();
-            break;
-          }
-          case 88: {
-            StickerTriggerTimestamp = input.ReadInt64();
-            break;
-          }
-          case 96: {
+          case 72: {
             Talking = input.ReadBool();
+            break;
+          }
+          case 82: {
+            wearables_.AddEntriesFrom(ref input, _repeated_wearables_codec);
             break;
           }
         }
