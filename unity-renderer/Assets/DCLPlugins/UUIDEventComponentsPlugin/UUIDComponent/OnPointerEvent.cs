@@ -12,16 +12,31 @@ namespace DCL.Components
 {
     public interface IOnPointerEventHandler
     {
-        // This set the feedback state of the UI view 
+        /// <summary>
+        /// This set the feedback state of the UI view 
+        /// </summary>
+        /// <param name="showFeedback"></param>
+        /// <param name="hoverState"></param>
+        /// <param name="button"></param>
+        /// <param name="hoverText"></param>
         void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText);
-
-        // This will setup the collider for an specific entity
+        
+        /// <summary>
+        /// This will setup the collider for an specific entity
+        /// </summary>
+        /// <param name="entity"></param>
         void SetColliders(IDCLEntity entity);
         
-        // This will return the mesh name of the passed Collider
+        /// <summary>
+        /// This will return the mesh name of the passed Collider
+        /// </summary>
+        /// <param name="collider"></param>
+        /// <returns></returns>
         string GetMeshName(Collider collider);
         
-        // This dispose the class
+        /// <summary>
+        /// This dispose the class
+        /// </summary>
         void Dispose();
     }
     

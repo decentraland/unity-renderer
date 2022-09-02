@@ -78,9 +78,13 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             }
 
             // We send the pointer events to each scene
-            foreach (KeyValuePair<string, PBPointerEventsResult> entry in scenesDict)
+            using (var scenesDicts = scenesDict.GetEnumerator())
             {
-                state.componentsWriter.PutComponent(entry.Key, SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.POINTER_EVENTS_RESULT, entry.Value);
+                while (scenesDicts.MoveNext())
+                {
+                    KeyValuePair<string, PBPointerEventsResult> entry = scenesDicts.Current;
+                    state.componentsWriter.PutComponent(entry.Key, SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.POINTER_EVENTS_RESULT, entry.Value);
+                }
             }
 
             // We clear everything for the next frame
