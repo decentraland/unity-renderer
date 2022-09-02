@@ -10,6 +10,7 @@ namespace DCL.Chat.HUD
         event Action OnBack;
         event Action OnRequireMoreMessages;
         event Action OnLeaveChannel;
+        event Action<bool> OnMuteChanged; 
 
         bool IsActive { get; }
         IChatHUDComponentView ChatHUD { get; }

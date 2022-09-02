@@ -794,6 +794,12 @@ namespace DCL.Interface
         {
             public string channelId;
         }
+        
+        public struct MuteChannelPayload
+        {
+            public string channelId;
+            public bool muted;
+        }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
@@ -1788,6 +1794,15 @@ namespace DCL.Interface
             SendMessage("CreateChannel", new CreateChannelPayload
             {
                 channelId = channelId
+            });
+        }
+
+        public static void MuteChannel(string channelId, bool muted)
+        {
+            SendMessage("MuteChannel", new MuteChannelPayload
+            {
+                channelId = channelId,
+                muted = muted
             });
         }
     }

@@ -64,7 +64,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+    public void GetChannelMessages(string channelId, int limit, string fromMessageId)
     {
     }
 
@@ -81,6 +81,10 @@ public class ChatController_Mock : IChatController
     }
 
     public void MuteChannel(string channelId)
+    {
+    }
+
+    public void UnmuteChannel(string channelId)
     {
     }
 

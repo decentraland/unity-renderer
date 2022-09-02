@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
 {
@@ -16,20 +16,21 @@ namespace DCL.Chat.HUD
 
         public IChatChannelWindowView View { get; private set; }
 
+        private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+        private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private readonly DataStore dataStore;
-        internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
-        private readonly List<string> directMessagesAlreadyRequested = new List<string>();
         private ChatHUDController chatHudController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
         private float lastRequestTime;
         private string channelId;
+        private bool mustRequestMessages;
+        private ChatMessage oldestMessage;
 
         public event Action OnPressBack;
         public event Action OnClosed;
@@ -59,6 +60,7 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
+            view.OnMuteChanged += MuteChannel;
 
             if (notificationPanelTransform.Get() == null)
             {
@@ -76,22 +78,12 @@ namespace DCL.Chat.HUD
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
             chatController.OnChannelLeft += HandleChannelLeft;
+            chatController.OnChannelUpdated += HandleChannelUpdated;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
-        }
-
-        private void SetVisiblePanelList(bool visible)
-        {
-            HashSet<string> newSet = visibleTaskbarPanels.Get();
-            if (visible)
-                newSet.Add("ChatChannel");
-            else
-                newSet.Remove("ChatChannel");
-
-            visibleTaskbarPanels.Set(newSet, true);
         }
 
         public void Setup(string channelId)
@@ -102,9 +94,11 @@ namespace DCL.Chat.HUD
             lastRequestTime = 0;
 
             var channel = chatController.GetAllocatedChannel(channelId);
-            View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+            View.Setup(ToPublicChatModel(channel));
 
-            ReloadAllChats().Forget();
+            chatHudController.ClearAllEntries();
+            mustRequestMessages = true;
+            oldestMessage = null;
         }
 
         public void SetVisibility(bool visible)
@@ -120,14 +114,15 @@ namespace DCL.Chat.HUD
                 if (!string.IsNullOrEmpty(channelId))
                 {
                     var channel = chatController.GetAllocatedChannel(channelId);
-                    View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
+                    View.Setup(ToPublicChatModel(channel));
 
-                    if (!directMessagesAlreadyRequested.Contains(channelId))
+                    if (mustRequestMessages)
                     {
                         RequestMessages(
                             channelId,
-                            INITIAL_PAGE_SIZE,
-                            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                            INITIAL_PAGE_SIZE);
+                        
+                        mustRequestMessages = false;
                     }
                 }
 
@@ -159,6 +154,7 @@ namespace DCL.Chat.HUD
             {
                 chatController.OnAddMessage -= HandleMessageReceived;
                 chatController.OnChannelLeft -= HandleChannelLeft;
+                chatController.OnChannelUpdated -= HandleChannelUpdated;
             }
 
             if (mouseCatcher != null)
@@ -172,29 +168,13 @@ namespace DCL.Chat.HUD
                 View.OnClose -= Hide;
                 View.OnFocused -= HandleViewFocused;
                 View.OnRequireMoreMessages -= RequestOldConversations;
-                View.OnLeaveChannel += LeaveChannel;
+                View.OnLeaveChannel -= LeaveChannel;
+                View.OnMuteChanged -= MuteChannel;
                 View.Dispose();
             }
-            
+
             hideLoadingCancellationToken.Dispose();
             deactivatePreviewCancellationToken.Dispose();
-        }
-
-        private async UniTaskVoid ReloadAllChats()
-        {
-            chatHudController.ClearAllEntries();
-
-            const int entriesPerFrame = 10;
-            var list = chatController.GetAllocatedEntries();
-            if (list.Count == 0) return;
-
-            for (var i = list.Count - 1; i >= 0; i--)
-            {
-                var message = list[i];
-                if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
-                if (!IsMessageFomCurrentChannel(message)) continue;
-                chatHudController.AddChatMessage(message, spamFiltering: false, limitMaxEntries: false);
-            }
         }
 
         private void HandleSendChatMessage(ChatMessage message)
@@ -232,7 +212,9 @@ namespace DCL.Chat.HUD
         private void HandleMessageReceived(ChatMessage message)
         {
             if (!IsMessageFomCurrentChannel(message)) return;
-            
+
+            UpdateOldestMessage(message);
+
             message.isChannelMessage = true;
             chatHudController.AddChatMessage(message, limitMaxEntries: false);
 
@@ -246,6 +228,14 @@ namespace DCL.Chat.HUD
             View?.SetOldMessagesLoadingActive(false);
         }
 
+        private void UpdateOldestMessage(ChatMessage message)
+        {
+            if (oldestMessage == null)
+                oldestMessage = message;
+            else if (message.timestamp < oldestMessage.timestamp)
+                oldestMessage = message;
+        }
+
         private void Hide()
         {
             SetVisibility(false);
@@ -254,7 +244,8 @@ namespace DCL.Chat.HUD
 
         private void HandlePressBack() => OnPressBack?.Invoke();
 
-        private bool IsMessageFomCurrentChannel(ChatMessage message) => message.sender == channelId || message.recipient == channelId;
+        private bool IsMessageFomCurrentChannel(ChatMessage message) =>
+            message.sender == channelId || message.recipient == channelId;
 
         private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
@@ -324,11 +315,10 @@ namespace DCL.Chat.HUD
             chatHudController.FocusInputField();
         }
 
-        private void RequestMessages(string channelId, int limit, long fromTimestamp)
+        private void RequestMessages(string channelId, int limit, string fromMessageId = null)
         {
             View?.SetLoadingMessagesActive(true);
-            chatController.GetChannelMessages(channelId, limit, fromTimestamp);
-            directMessagesAlreadyRequested.Add(channelId);
+            chatController.GetChannelMessages(channelId, limit, fromMessageId);
             hideLoadingCancellationToken.Cancel();
             hideLoadingCancellationToken = new CancellationTokenSource();
             WaitForRequestTimeOutThenHideLoadingFeedback(hideLoadingCancellationToken.Token).Forget();
@@ -338,18 +328,13 @@ namespace DCL.Chat.HUD
         {
             if (IsLoadingMessages()) return;
 
-            var allocatedMessages = chatController.GetAllocatedEntriesByChannel(channelId);
-
-            if (allocatedMessages.Count <= 0) return;
-            var minTimestamp = (long) allocatedMessages.Min(x => x.timestamp);
-            
             View?.SetOldMessagesLoadingActive(true);
             lastRequestTime = Time.realtimeSinceStartup;
-            
+
             chatController.GetChannelMessages(
                 channelId,
                 SHOW_MORE_PAGE_SIZE,
-                minTimestamp);
+                oldestMessage?.messageId);
 
             hideLoadingCancellationToken.Cancel();
             hideLoadingCancellationToken = new CancellationTokenSource();
@@ -364,7 +349,8 @@ namespace DCL.Chat.HUD
             lastRequestTime = Time.realtimeSinceStartup;
 
             await UniTask.WaitUntil(() =>
-                Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT, cancellationToken: cancellationToken);
+                    Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT,
+                cancellationToken: cancellationToken);
             if (cancellationToken.IsCancellationRequested) return;
 
             View?.SetLoadingMessagesActive(false);
@@ -379,6 +365,38 @@ namespace DCL.Chat.HUD
         {
             if (channelId != this.channelId) return;
             OnPressBack?.Invoke();
+        }
+
+        private void MuteChannel(bool muted)
+        {
+            if (muted)
+                chatController.MuteChannel(channelId);
+            else
+                chatController.UnmuteChannel(channelId);
+        }
+
+        private void SetVisiblePanelList(bool visible)
+        {
+            var newSet = visibleTaskbarPanels.Get();
+
+            if (visible)
+                newSet.Add("ChatChannel");
+            else
+                newSet.Remove("ChatChannel");
+
+            visibleTaskbarPanels.Set(newSet, true);
+        }
+
+        private void HandleChannelUpdated(Channel channel)
+        {
+            if (channel.ChannelId != channelId) return;
+            View.Setup(ToPublicChatModel(channel));
+        }
+
+        private PublicChatModel ToPublicChatModel(Channel channel)
+        {
+            return new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp,
+                channel.Joined, channel.MemberCount, channel.Muted);
         }
     }
 }

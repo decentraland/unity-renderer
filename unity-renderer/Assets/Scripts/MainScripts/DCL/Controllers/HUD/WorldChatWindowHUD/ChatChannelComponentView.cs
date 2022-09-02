@@ -22,6 +22,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal GameObject oldMessagesLoadingContainer;
         [SerializeField] internal ChannelContextualMenu contextualMenu;
+        [SerializeField] internal Toggle muteToggle;
 
         private Coroutine alphaRoutine;
         private Vector2 originalSize;
@@ -32,6 +33,7 @@ namespace DCL.Chat.HUD
         public event Action OnBack;
         public event Action OnRequireMoreMessages;
         public event Action OnLeaveChannel;
+        public event Action<bool> OnMuteChanged;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
@@ -58,11 +60,13 @@ namespace DCL.Chat.HUD
                 if (scrollPos.y > 0.995f)
                     OnRequireMoreMessages?.Invoke();
             });
+            muteToggle.onValueChanged.AddListener(muted => OnMuteChanged?.Invoke(muted));
         }
 
         public override void RefreshControl()
         {
             nameLabel.text = $"#{model.name}";
+            muteToggle.SetIsOnWithoutNotify(model.muted);
         }
 
         public void Hide() => gameObject.SetActive(false);

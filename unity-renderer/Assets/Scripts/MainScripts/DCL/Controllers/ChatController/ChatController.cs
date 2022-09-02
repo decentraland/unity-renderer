@@ -123,7 +123,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
 
-    public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+    public void GetChannelMessages(string channelId, int limit, string fromMessageId)
     {
         throw new NotImplementedException();
     }
@@ -143,18 +143,12 @@ public class ChatController : MonoBehaviour, IChatController
         throw new NotImplementedException();
     }
 
-    public void MuteChannel(string channelId)
-    {
-        throw new NotImplementedException();
-    }
+    public void MuteChannel(string channelId) => WebInterface.MuteChannel(channelId, true);
+
+    public void UnmuteChannel(string channelId) => WebInterface.MuteChannel(channelId, false);
 
     public Channel GetAllocatedChannel(string channelId) =>
         channels.ContainsKey(channelId) ? channels[channelId] : null;
-
-    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId)
-    {
-        return messages.Where(message => message.recipient == channelId).ToList();
-    }
 
     // called by kernel
     [UsedImplicitly]
