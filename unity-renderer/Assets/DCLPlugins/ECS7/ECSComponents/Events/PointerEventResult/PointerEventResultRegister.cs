@@ -4,13 +4,13 @@ using DCL.ECSRuntime;
 
 namespace DCLPlugins.ECSComponents
 {
-    public class OnPointerResultRegister
+    public class PointerEventResultRegister
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
         
-        public OnPointerResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public PointerEventResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBPointerEventsResult>, null);
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEventsResult>(componentId, ProtoSerialization.Serialize);
