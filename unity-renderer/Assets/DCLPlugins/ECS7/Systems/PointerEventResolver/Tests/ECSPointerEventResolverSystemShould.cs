@@ -83,6 +83,33 @@ namespace Tests
         }
         
         [Test]
+        public void DontSendIfThereIsNoPendingPointerEvents()
+        {
+            // Arrange
+            var state = new ECSPointerEventResolverSystem.State()
+            {
+                pendingPointerEventsQueue = pointerEventsQueue,
+                currentPointerEventsQueue = new Queue<PointerEvent>(),
+                componentsWriter = componentsWriter
+            };
+            
+            state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
+            state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
+            state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
+
+            // Act
+            ECSPointerEventResolverSystem.LateUpdate(state);
+            
+            // Assert
+            componentsWriter.Received(0)
+                            .PutComponent(
+                                SCENE_ID,
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.POINTER_EVENTS_RESULT,
+                                Arg.Any<PBPointerEventsResult>());
+        }
+        
+        [Test]
         public void RemoveOlderPointerEventsWhen()
         {
             // Arrange

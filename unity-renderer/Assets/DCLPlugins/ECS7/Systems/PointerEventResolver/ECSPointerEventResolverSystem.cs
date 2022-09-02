@@ -37,18 +37,17 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
         internal static void LateUpdate(State state)
         {
             var pendingPointerEventsQueue = state.pendingPointerEventsQueue;
+
+            // If there is no pending events, we skip
+            if (pendingPointerEventsQueue.Count == 0)
+                return;
+
             var pointerEventsQueue = state.currentPointerEventsQueue;
             var scenesDict = state.scenesDict;
             Queue<PointerEvent> newPointerEventsQueue = new Queue<PointerEvent>(MAX_AMOUNT_OF_POINTER_EVENTS_SENT);
-
-            // We iterate over the pending event results and group them by scene
-            int queueCount = pendingPointerEventsQueue.Count + pointerEventsQueue.Count;
-
-            // If there is no pending events, we skip
-            if (queueCount == 0)
-                return;
-
+            
             // If we have more pointerEvents than the max amount that we should send, we remove the olds ones
+            int queueCount = pendingPointerEventsQueue.Count + pointerEventsQueue.Count;
             int amountOfItemsToRemove = queueCount - MAX_AMOUNT_OF_POINTER_EVENTS_SENT;
             if (amountOfItemsToRemove > 0)
             {
