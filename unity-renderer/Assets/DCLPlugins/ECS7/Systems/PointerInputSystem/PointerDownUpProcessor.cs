@@ -10,14 +10,14 @@ namespace ECSSystems.PointerInputSystem
         public readonly long entityId;
         public readonly string sceneId;
         public readonly bool hasValue;
-        public readonly bool hasEventComponent;
+        public readonly bool shouldTriggerEvent;
 
-        public PointerInputResult(string sceneId, long entityId, bool hasEventComponent, bool hasValue = true)
+        public PointerInputResult(string sceneId, long entityId, bool shouldTriggerEvent, bool hasValue = true)
         {
             this.entityId = entityId;
             this.sceneId = sceneId;
             this.hasValue = hasValue;
-            this.hasEventComponent = hasEventComponent;
+            this.shouldTriggerEvent = shouldTriggerEvent;
         }
 
         public static PointerInputResult empty => new PointerInputResult(null, -1, false, false);

@@ -1,9 +1,9 @@
 using System;
 using DCL;
+using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using UnityEngine;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -11,6 +11,7 @@ namespace ECSSystems.PointerInputSystem
     {
         private class State
         {
+            public IECSComponentWriter componentWriter;
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup;
             public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup;
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
@@ -24,6 +25,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         public static Action CreateSystem(
+            IECSComponentWriter componentWriter,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
@@ -34,6 +36,7 @@ namespace ECSSystems.PointerInputSystem
         {
             var state = new State()
             {
+                componentWriter = componentWriter,
                 pointerDownGroup = pointerDownGroup,
                 pointerUpGroup = pointerUpGroup,
                 pointerColliderComponent = pointerColliderComponent,
@@ -67,18 +70,24 @@ namespace ECSSystems.PointerInputSystem
                 {
                     if (pointerEvent.isButtonDown)
                     {
-                        if (result.hasEventComponent)
+                        if (result.shouldTriggerEvent)
                         {
-                            // TODO: add pointer down result
-                            Debug.Log($"down {result.entityId}");
+                            state.componentWriter.PutComponent(result.sceneId, result.entityId,
+                                ComponentID.ON_POINTER_DOWN_RESULT,
+                                ProtoConvertUtils.GetPointerDownResultModel((ActionButton)pointerEvent.buttonId,
+                                    null, pointerEvent.rayResult.ray, pointerEvent.rayResult.hitInfo.hit),
+                                ECSComponentWriteType.SEND_TO_SCENE);
                         }
                     }
                     else
                     {
-                        if (result.hasEventComponent)
+                        if (result.shouldTriggerEvent)
                         {
-                            // TODO: add pointer up result
-                            Debug.Log($"up {result.entityId}");
+                            state.componentWriter.PutComponent(result.sceneId, result.entityId,
+                                ComponentID.ON_POINTER_UP_RESULT,
+                                ProtoConvertUtils.GetPointerUpResultModel((ActionButton)pointerEvent.buttonId,
+                                    null, pointerEvent.rayResult.ray, pointerEvent.rayResult.hitInfo.hit),
+                                ECSComponentWriteType.SEND_TO_SCENE);
                         }
                         state.lastPointerDownResult = PointerInputResult.empty;
                     }

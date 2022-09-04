@@ -31,7 +31,9 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSPointerInputSystem.CreateSystem(context.componentGroups.pointerDownGroup,
+            ECSPointerInputSystem.CreateSystem(
+                context.componentWriter,
+                context.componentGroups.pointerDownGroup,
                 context.componentGroups.pointerUpGroup,
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.pointerDownComponent,
