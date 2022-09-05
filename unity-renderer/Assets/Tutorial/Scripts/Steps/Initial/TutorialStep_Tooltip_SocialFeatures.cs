@@ -94,7 +94,11 @@ namespace DCL.Tutorial
 
         internal void FriendsHud_OnFriendsClosed() { SocialFeatureIsOpen(false); }
 
-        internal void VoiceChatAction_OnStarted(DCLAction_Hold action) { SocialFeatureIsOpen(true); }
+        internal void VoiceChatAction_OnStarted(DCLAction_Hold action)
+        {
+            Debug.Log("LLAMADO AL VOICECHATACTION");
+            SocialFeatureIsOpen(true);
+        }
 
         internal void VoiceChatAction_OnFinished(DCLAction_Hold action) { SocialFeatureIsOpen(false); }
 
