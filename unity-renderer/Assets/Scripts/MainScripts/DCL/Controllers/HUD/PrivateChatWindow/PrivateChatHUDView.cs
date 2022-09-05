@@ -14,17 +14,6 @@ public class PrivateChatHUDView : ChatHUDView
         base.AddEntry(model, setScrollPositionToBottom);
     }
 
-    public override void ClearAllEntries()
-    {
-        base.ClearAllEntries();
-        
-        foreach (var separator in dateSeparators.Values)
-            if (separator)
-                Destroy(separator.gameObject);
-
-        dateSeparators.Clear();
-    }
-
     private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
     {
         var entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp).Date;
@@ -34,7 +23,7 @@ public class PrivateChatHUDView : ChatHUDView
         dateSeparatorEntry.Populate(chatEntryModel);
         dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
         dateSeparators[separatorId] = dateSeparatorEntry;
-        entries[separatorId] = dateSeparatorEntry;
+        SetEntry(separatorId, dateSeparatorEntry);
     }
 
     private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)
