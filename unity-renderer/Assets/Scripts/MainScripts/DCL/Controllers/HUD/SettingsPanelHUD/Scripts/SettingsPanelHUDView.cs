@@ -203,10 +203,8 @@ namespace DCL.SettingsPanelHUD
             //WorldPreviewWindow is not being used at the moment. Leaving this code here
             //in case we decide to reuse it someday.
             return;
-            isActive = false;
             worldPreviewWindowTransform.gameObject.SetActive(isActive);
             DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(DataStore.i.exploreV2.isOpen.Get() && !isActive);
         }
 
         private void OpenAction_OnTriggered(DCLAction_Trigger action)
