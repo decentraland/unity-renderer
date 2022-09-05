@@ -132,9 +132,8 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
             
-            ApplyHidePassportModifier();
+            DisablePassport();
 
             var model = (AvatarModel) newModel;
 
@@ -238,7 +237,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            RemoveHidePassportModifier();
+            EnablePasssport();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -382,10 +381,7 @@ namespace DCL
         {
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
             {
-                if (onPointerDown.collider == null)
-                    return;
-
-                onPointerDown.SetPassportEnabled(false);
+                DisablePassport();
             }
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
@@ -395,11 +391,24 @@ namespace DCL
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
             {
-                if (onPointerDown.collider == null)
-                    return;
-
-                onPointerDown.SetPassportEnabled(true);
+                EnablePasssport();
             }
+        }
+
+        private void EnablePasssport()
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(true);
+        }
+
+        private void DisablePassport()
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(false);
         }
 
         public override void Cleanup()
