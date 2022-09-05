@@ -39,7 +39,6 @@ namespace DCL.Tutorial
                 if (voiceChatAction != null)
                 {
                     voiceChatAction.OnStarted += VoiceChatAction_OnStarted;
-                    voiceChatAction.OnFinished += VoiceChatAction_OnFinished;
                 }
             }
         }
@@ -67,7 +66,6 @@ namespace DCL.Tutorial
                 if (voiceChatAction != null)
                 {
                     voiceChatAction.OnStarted -= VoiceChatAction_OnStarted;
-                    voiceChatAction.OnFinished -= VoiceChatAction_OnFinished;
                 }
             }
         }
@@ -92,20 +90,23 @@ namespace DCL.Tutorial
 
         internal void FriendsHud_OnFriendsOpened() { SocialFeatureIsOpen(true); }
 
-        internal void FriendsHud_OnFriendsClosed() { SocialFeatureIsOpen(false); }
+        internal void FriendsHud_OnFriendsClosed()
+        {
+            SocialFeatureIsOpen(false);
+            isRelatedFeatureActived = false;
+        }
 
         internal void VoiceChatAction_OnStarted(DCLAction_Hold action)
         {
-            Debug.Log("LLAMADO AL VOICECHATACTION");
             SocialFeatureIsOpen(true);
+            isRelatedFeatureActived = false;
         }
-
-        internal void VoiceChatAction_OnFinished(DCLAction_Hold action) { SocialFeatureIsOpen(false); }
-
+        
         private void SocialFeatureIsOpen(bool isOpen)
         {
             if (isOpen)
             {
+                isRelatedFeatureActived = true;
                 stepIsFinished = true;
                 tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
             }

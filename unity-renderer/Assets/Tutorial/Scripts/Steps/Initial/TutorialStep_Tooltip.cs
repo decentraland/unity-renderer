@@ -55,11 +55,6 @@ namespace DCL.Tutorial
         public override IEnumerator OnStepPlayHideAnimation()
         {
             yield return base.OnStepPlayHideAnimation();
-            while (isRelatedFeatureActived)
-            {
-                Debug.Log("ESTOY TRABADO ACA C");
-                yield return null;
-            }
             yield return new WaitUntil(() => !isRelatedFeatureActived);
         }
 

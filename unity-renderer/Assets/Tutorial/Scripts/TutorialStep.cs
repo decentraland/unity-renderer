@@ -94,10 +94,6 @@ namespace DCL.Tutorial
             OnJustAfterStepExecuted?.Invoke();
             yield return PlayAndWaitForHideAnimation();
             yield return null;
-            while (CommonScriptableObjects.cameraIsBlending.Get())
-            {
-                Debug.Log("ESTOY TRABADO ACA B");
-            }
             yield return new WaitUntil(() => !CommonScriptableObjects.cameraIsBlending.Get());
         }
 
@@ -129,11 +125,6 @@ namespace DCL.Tutorial
                 yield break;
 
             stepAnimator.SetTrigger(STEP_FINISHED_ANIMATOR_TRIGGER);
-            while (!hideAnimationFinished)
-            {
-                Debug.Log("ESTOY TRABADO ACA A");
-                yield return null;
-            }
             yield return new WaitUntil(() => hideAnimationFinished);
         }
 
