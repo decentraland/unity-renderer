@@ -110,10 +110,6 @@ namespace DCL.Tutorial
                 stepIsFinished = true;
                 tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
             }
-            else if (isRelatedFeatureActived)
-            {
-                isRelatedFeatureActived = false;
-            }
         }
     }
 }
