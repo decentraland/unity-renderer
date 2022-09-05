@@ -100,8 +100,8 @@ namespace DCL.Emotes
 
             try
             {
-                WearableItem emote;
-                emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct);
+                var emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct) ?? 
+                                       await wearableItemResolver.Resolve(emoteId, ct);
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);

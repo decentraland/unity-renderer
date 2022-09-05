@@ -73,6 +73,9 @@ public class AvatarEditorHUDController : IHUD
 
     public AvatarEditorHUDView view;
 
+    private bool loadingWearables;
+    private WearableItem[] emotesLoadedAsWearables;
+
     public event Action OnOpen;
     public event Action OnClose;
 
@@ -173,6 +176,7 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingRetry(false);
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
+        loadingWearables = true;
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
@@ -180,8 +184,13 @@ public class AvatarEditorHUDController : IHUD
                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly 
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
                              LoadUserProfile(userProfile, true);
+                             if (userProfile != null && userProfile.avatar != null)
+                             {
+                                 emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
+                             }
                              view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
+                             loadingWearables = false;
                          })
                          .Catch((error) =>
                          {
@@ -204,6 +213,7 @@ public class AvatarEditorHUDController : IHUD
                                  view.ShowCollectiblesLoadingSpinner(false);
                                  view.ShowCollectiblesLoadingRetry(true);
                                  Debug.LogError(error);
+                                 loadingWearables = false;
                              }
                          });
     }
@@ -234,17 +244,27 @@ public class AvatarEditorHUDController : IHUD
         {
             var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
-            if (emotes != null)
+            var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
+            var emotesFilter = new HashSet<string>();
+            foreach (var e in emotesList)
+                emotesFilter.Add(e.id);
+            
+            if(loadingWearables)
+                await UniTask.WaitWhile(() => loadingWearables, cancellationToken: ct);
+
+            if (emotesLoadedAsWearables != null)
             {
-                var allEmotes = emotes.Concat(embeddedEmotes).ToArray();
-                emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(allEmotes);
-                emotesCustomizationComponentController.SetEmotes(allEmotes);
+                foreach (var emoteAsWearable in emotesLoadedAsWearables)
+                {
+                    if (emotesFilter.Contains(emoteAsWearable.id))
+                        continue;
+
+                    emotesList.Add(emoteAsWearable);
+                }
             }
-            else
-            {
-                emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(embeddedEmotes);
-                emotesCustomizationComponentController.SetEmotes(embeddedEmotes);
-            }
+            
+            emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotesList);
+            emotesCustomizationComponentController.SetEmotes(emotesList.ToArray());
 
         }
         catch (Exception e)

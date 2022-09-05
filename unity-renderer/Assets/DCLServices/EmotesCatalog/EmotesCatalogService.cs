@@ -154,7 +154,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default)
     {
-        const int TIMEOUT = 60;
+        const int TIMEOUT = 45;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
         var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
@@ -164,7 +164,7 @@ public class EmotesCatalogService : IEmotesCatalogService
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
             await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException ex)
         {
             if (promises.ContainsKey(id))
             {
@@ -172,6 +172,8 @@ public class EmotesCatalogService : IEmotesCatalogService
                 if (promises[id].Count == 0)
                     promises.Remove(id);
             }
+            
+            UnityEngine.Debug.LogError($"RequestEmoteAsync OperationCanceledException: {ex.Message} {ex.StackTrace}");
 
             return null;
         }

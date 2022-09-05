@@ -46,6 +46,7 @@ namespace AvatarSystem
             {
                 //Old flow contains emotes among the wearablesIds
                 (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
+                
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 //New emotes flow use the emotes catalog
@@ -53,7 +54,17 @@ namespace AvatarSystem
                 {
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
                     if (moreEmotes != null)
-                        emotes.AddRange(moreEmotes.Where(x => x != null));
+                    {
+                        //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
+                        var loadedEmotesFilter = new HashSet<string>();
+                        emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
+                        
+                        foreach(var otherEmote in moreEmotes)
+                            if (otherEmote != null && loadedEmotesFilter.Contains(otherEmote.id))
+                            {
+                                emotes.Add(otherEmote);
+                            }
+                    }
                 }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();

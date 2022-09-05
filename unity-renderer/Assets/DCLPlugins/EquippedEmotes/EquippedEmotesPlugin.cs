@@ -40,7 +40,7 @@ namespace DCL.EquippedEmotes
 
         private void OnOwnUserProfileUpdated(UserProfile userProfile)
         {
-            if (userProfile == null || userProfile.avatar == null)
+            if (userProfile == null || userProfile.avatar == null || userProfile.avatar.emotes.Count == 0)
                 return;
 
             List<string> equippedEmotes = new List<string> (Enumerable.Repeat((string) null, 10));

@@ -172,7 +172,14 @@ namespace DCL
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                //here we add emote ids to both new and old emote loading flow to merge the results later
+                //because some users might have emotes as wearables and others only as emotes
+                foreach (var emoteId in embeddedEmoteIds)
+                {
+                    emotes.Add(emoteId);
+                    wearableItems.Add(emoteId);
+                }
 
                 //TODO Add Collider to the AvatarSystem
                 //TODO Without this the collider could get triggered disabling the avatar container,
