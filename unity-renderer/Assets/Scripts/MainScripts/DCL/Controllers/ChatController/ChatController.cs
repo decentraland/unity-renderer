@@ -2,6 +2,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Chat;
 using DCL.Chat.WebApi;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -56,7 +57,7 @@ public class ChatController : MonoBehaviour, IChatController
         if (wasNearbyMessage)
         {
             OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
+            OnUserUnseenMessagesUpdated?.Invoke(ChatUtils.NEARBY_CHANNEL_ID, nearbyUnseenMessages);
         }
     }
 
@@ -87,7 +88,7 @@ public class ChatController : MonoBehaviour, IChatController
         if (wasNearbyMessage)
         {
             OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
+            OnUserUnseenMessagesUpdated?.Invoke(ChatUtils.NEARBY_CHANNEL_ID, nearbyUnseenMessages);
         }
     }
 
@@ -130,11 +131,11 @@ public class ChatController : MonoBehaviour, IChatController
     {
         WebInterface.MarkMessagesAsSeen(userId);
         
-        if (userId == "nearby")
+        if (userId == ChatUtils.NEARBY_CHANNEL_ID)
         {
             nearbyUnseenMessages = 0;
             OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
-            OnUserUnseenMessagesUpdated?.Invoke("nearby", nearbyUnseenMessages);
+            OnUserUnseenMessagesUpdated?.Invoke(ChatUtils.NEARBY_CHANNEL_ID, nearbyUnseenMessages);
         }
     }
 
@@ -147,7 +148,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public int GetAllocatedUnseenMessages(string userId)
     {
-        if (userId == "nearby")
+        if (userId == ChatUtils.NEARBY_CHANNEL_ID)
             return nearbyUnseenMessages;
         return unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
     }

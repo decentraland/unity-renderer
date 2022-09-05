@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -91,7 +92,7 @@ public class PublicChatChannelController : IHUD
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
-        View.Configure(new PublicChatChannelModel(this.channelId, "nearby",
+        View.Configure(new PublicChatChannelModel(this.channelId, ChatUtils.NEARBY_CHANNEL_ID,
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed."));
 
         ReloadAllChats().Forget();

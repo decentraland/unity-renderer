@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DCL.Chat;
 using DCL.Interface;
 using DCL.Friends.WebApi;
 
 public class WorldChatWindowController : IHUD
 {
-    private const string GENERAL_CHANNEL_ID = "nearby";
     private const int MAX_SEARCHED_CHANNELS = 100;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
@@ -61,9 +61,9 @@ public class WorldChatWindowController : IHUD
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
 
         // TODO: this data should come from the chat service when channels are implemented
-        publicChannels[GENERAL_CHANNEL_ID] = new PublicChatChannelModel(GENERAL_CHANNEL_ID, "nearby",
+        publicChannels[ChatUtils.NEARBY_CHANNEL_ID] = new PublicChatChannelModel(ChatUtils.NEARBY_CHANNEL_ID, ChatUtils.NEARBY_CHANNEL_ID,
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed.");
-        view.SetPublicChannel(publicChannels[GENERAL_CHANNEL_ID]);
+        view.SetPublicChannel(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
 
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
