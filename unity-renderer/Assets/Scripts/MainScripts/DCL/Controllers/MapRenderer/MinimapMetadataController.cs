@@ -20,7 +20,7 @@ public class MinimapMetadataController : MonoBehaviour
     {
         if (sceneCoordinates == null)
             return;
-
+        
         homePoint.Set(new Vector2Int(Int32.Parse(sceneCoordinates.Split(',')[0]), Int32.Parse(sceneCoordinates.Split(',')[1])));
         OnHomeChanged?.Invoke(homePoint.Get());
     }

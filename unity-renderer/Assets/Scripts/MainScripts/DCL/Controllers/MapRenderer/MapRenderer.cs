@@ -114,9 +114,8 @@ namespace DCL
                 return;
 
             isInitialized = true;
-            homePointIcon = GameObject.Instantiate(homePointIconPrefab).GetComponent<RectTransform>();
-            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, true);
-
+            
+            InitializeHomePointIcon();
             EnsurePools();
             atlas.InitializeChunks();
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
@@ -124,7 +123,8 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             otherPlayers.OnRemoved += OnOtherPlayerRemoved;
-            //homePointCoordinates.OnChange += MoveHomePointIcon;
+            homePointCoordinates.OnChange += MoveHomePointIcon;
+            MoveHomePointIcon(homePointCoordinates.Get(), new Vector2Int());
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -143,7 +143,16 @@ namespace DCL
 
         private void MoveHomePointIcon(Vector2Int current, Vector2Int previous)
         {
-            homePointIcon.anchoredPosition = MapUtils.CoordsToPositionWithOffset(new Vector3(current.x, current.y, 0));
+            homePointIcon.anchoredPosition = MapUtils.CoordsToPosition(new Vector3(current.x, current.y, 0));
+        }
+
+        private void InitializeHomePointIcon()
+        {
+            homePointIcon = GameObject.Instantiate(homePointIconPrefab).GetComponent<RectTransform>();
+            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, true);
+            homePointIcon.anchoredPosition = new Vector2(0,0);
+            homePointIcon.transform.position = new Vector3(homePointIcon.transform.position.x, homePointIcon.transform.position.y, 0);
+            homePointIcon.localScale = new Vector3(2,2,2);
         }
 
         private void EnsurePools()
@@ -205,6 +214,7 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded -= OnOtherPlayersAdded;
             otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
+            homePointCoordinates.OnChange -= MoveHomePointIcon;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
