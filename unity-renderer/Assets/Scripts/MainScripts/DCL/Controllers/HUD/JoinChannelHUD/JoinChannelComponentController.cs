@@ -53,42 +53,38 @@ public class JoinChannelComponentController : IDisposable
     {
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
-        
+
         joinChannelView.Hide();
     }
 
     private void OnConfirmJoin(string channelName)
     {
         channelName = channelName.Replace("#", "").Replace("~", "");
-        
+
         chatController.JoinOrCreateChannel(channelName);
-        
+
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
-        
+
         joinChannelView.Hide();
         channelsDataStore.currentJoinChannelModal.Set(null);
     }
 
     private ChannelLinkSource GetChannelLinkSource()
     {
-        if (dataStore.exploreV2.isOpen.Get())
+        if (dataStore.exploreV2.isOpen.Get()
+            && dataStore.exploreV2.placesAndEventsVisible.Get()
+            && dataStore.exploreV2.isSomeModalOpen.Get())
         {
-            if (dataStore.exploreV2.placesAndEventsVisible.Get())
+            switch (dataStore.exploreV2.currentVisibleModal.Get())
             {
-                if (dataStore.exploreV2.isSomeModalOpen.Get())
-                {
-                    switch (dataStore.exploreV2.currentVisibleModal.Get())
-                    {
-                        case ExploreV2CurrentModal.Events:
-                            return ChannelLinkSource.Event;
-                        case ExploreV2CurrentModal.Places:
-                            return ChannelLinkSource.Place;
-                    }
-                }    
+                case ExploreV2CurrentModal.Events:
+                    return ChannelLinkSource.Event;
+                case ExploreV2CurrentModal.Places:
+                    return ChannelLinkSource.Place;
             }
         }
-        
+
         if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
             return ChannelLinkSource.Profile;
 
