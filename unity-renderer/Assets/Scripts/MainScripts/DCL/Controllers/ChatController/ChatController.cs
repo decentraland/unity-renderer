@@ -33,7 +33,8 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
-    
+    public event Action<string, string[]> OnUpdateChannelMembers;
+
     public int TotalUnseenMessages { get; private set; }
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
@@ -151,6 +152,14 @@ public class ChatController : MonoBehaviour, IChatController
     public void GetChannelMembers(string channelId, int limit, int skip)
     {
         throw new NotImplementedException();
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateChannelMembers(string payload)
+    {
+        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
+        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
     }
 
     public void MuteChannel(string channelId)

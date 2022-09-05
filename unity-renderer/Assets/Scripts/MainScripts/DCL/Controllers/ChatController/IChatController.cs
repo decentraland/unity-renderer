@@ -15,6 +15,7 @@ public interface IChatController
     event Action<int> OnTotalUnseenMessagesUpdated;
     event Action<string, int> OnUserUnseenMessagesUpdated;
     event Action<string, int> OnChannelUnseenMessagesUpdated;
+    event Action<string, string[]> OnUpdateChannelMembers;
 
     int TotalUnseenMessages { get; }
 

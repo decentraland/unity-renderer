@@ -14,6 +14,8 @@ namespace DCL.Chat.HUD
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
         private string currentChannelId;
+        private int lastLimitRequested;
+        private bool isSearching;
 
         public IChannelMembersComponentView View => view;
 
@@ -23,7 +25,11 @@ namespace DCL.Chat.HUD
             this.chatController = chatController;
         }
 
-        public void SetChannelId(string channelId) => currentChannelId = channelId;
+        public void SetChannelId(string channelId)
+        {
+            currentChannelId = channelId;
+            lastLimitRequested = LOAD_PAGE_SIZE;
+        }
 
         public void Dispose()
         {
@@ -43,13 +49,14 @@ namespace DCL.Chat.HUD
 
                 view.OnSearchUpdated += SearchMembers;
                 view.OnRequestMoreMembers += LoadMoreMembers;
+                chatController.OnUpdateChannelMembers += UpdateChannelMembers;
 
                 view.Show();
                 view.ClearAllEntries();
                 view.ShowLoading();
 
                 loadStartedTimestamp = DateTime.Now;
-                chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, 0);
+                chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
                 loadingCancellationToken.Cancel();
                 loadingCancellationToken = new CancellationTokenSource();
@@ -69,8 +76,10 @@ namespace DCL.Chat.HUD
             view.HideLoadingMore();
             view.ShowLoading();
 
+            isSearching = !string.IsNullOrEmpty(searchText);
+
             if (string.IsNullOrEmpty(searchText))
-                chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, 0);
+                chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
             else
                 chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, 0, searchText);
 
@@ -79,12 +88,40 @@ namespace DCL.Chat.HUD
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
 
+        private void UpdateChannelMembers(string channelId, string[] userIds)
+        {
+            if (!view.IsActive) return;
+            view.HideLoading();
+            view.ShowLoadingMore();
+
+            foreach (string userId in userIds)
+            {
+                UserProfile memberProfile = UserProfileController.GetProfileByUserId(userId);
+
+                if (memberProfile != null)
+                {
+                    ChannelMemberEntryModel userToAdd = new ChannelMemberEntryModel
+                    {
+                        isOnline = false,
+                        thumnailUrl = memberProfile.face256SnapshotURL,
+                        userId = memberProfile.userId,
+                        userName = memberProfile.userName
+                    };
+
+                    view.Set(userToAdd);
+                }
+            }
+        }
+
         private void LoadMoreMembers()
         {
             if (IsLoading()) return;
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
             chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, view.EntryCount);
+
+            if (!isSearching)
+                lastLimitRequested = LOAD_PAGE_SIZE + view.EntryCount;
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
@@ -93,6 +130,7 @@ namespace DCL.Chat.HUD
         {
             view.OnSearchUpdated -= SearchMembers;
             view.OnRequestMoreMembers -= LoadMoreMembers;
+            chatController.OnUpdateChannelMembers -= UpdateChannelMembers;
         }
 
         private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)

@@ -33,7 +33,7 @@ namespace DCL.Chat.HUD
             base.Awake();
 
             searchBar.OnSearchText += s => OnSearchUpdated?.Invoke(s);
-            memberList.SortingMethod = (a, b) => b.Model.userName.CompareTo(a.Model.userName);
+            memberList.SortingMethod = (a, b) => a.Model.userName.CompareTo(b.Model.userName);
             scroll.onValueChanged.AddListener(LoadMoreEntries);
         }
 
@@ -76,7 +76,6 @@ namespace DCL.Chat.HUD
         public void Set(ChannelMemberEntryModel user)
         {
             memberList.Set(user.userId, user);
-
             UpdateLayout();
             Sort();
             UpdateHeaders();

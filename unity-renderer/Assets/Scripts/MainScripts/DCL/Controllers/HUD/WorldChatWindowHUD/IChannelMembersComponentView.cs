@@ -1,5 +1,5 @@
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace DCL.Chat.HUD
 {
@@ -13,7 +13,7 @@ namespace DCL.Chat.HUD
         void ClearAllEntries();
         void ShowLoading();
         void Dispose();
-        void Set(ChannelMemberEntryModel member);
+        void Set(ChannelMemberEntryModel user);
         void Show(bool instant = false);
         void Hide(bool instant = false);
         void ClearSearchInput();

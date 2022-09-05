@@ -82,6 +82,12 @@ namespace DCL.Chat.Channels
             remove => controller.OnMuteChannelError -= value;
         }
 
+        public event Action<string, string[]> OnUpdateChannelMembers
+        {
+            add => controller.OnUpdateChannelMembers += value;
+            remove => controller.OnUpdateChannelMembers -= value;
+        }
+
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
         public ChatChannelsControllerMock(
@@ -630,14 +636,46 @@ Invite others to join by quoting the channel name in other chats or include it a
             }
         }
 
-        public void GetChannelMembers(string channelId, int limit, int skip, string name)
-        {
-            throw new NotImplementedException();
-        }
+        public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
+            GetFakeChannelMembers(channelId, limit, skip, name).Forget();
 
-        public void GetChannelMembers(string channelId, int limit, int skip)
+        public void GetChannelMembers(string channelId, int limit, int skip) =>
+            GetFakeChannelMembers(channelId, limit, skip, "").Forget();
+
+        private async UniTask GetFakeChannelMembers(string channelId, int limit, int skip, string name)
         {
-            throw new NotImplementedException();
+            List<string> members = new List<string>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var profile = new UserProfileModel
+                {
+                    userId = $"{channelId}_member{i + 1}",
+                    name = $"{channelId}_member{i + 1}",
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/seed/{i}/256" }
+                };
+
+                userProfileController.AddUserProfileToCatalog(profile);
+                members.Add(profile.userId);
+            }
+
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            List<string> membersToUpdate = new List<string>();
+            for (var i = skip; i < skip + limit && i < members.Count; i++)
+            {
+                var userName = members[i];
+                if (!userName.Contains(name) && !string.IsNullOrEmpty(name)) continue;
+
+                membersToUpdate.Add(userName);
+            }
+
+            var msg = new UpdateChannelMembersPayload
+            {
+                channelId = channelId,
+                members = membersToUpdate.ToArray()
+            };
+            controller.UpdateChannelMembers(JsonUtility.ToJson(msg));
         }
     }
 }
