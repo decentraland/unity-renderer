@@ -106,7 +106,6 @@ namespace DCL.Tutorial
         {
             if (isOpen)
             {
-                isRelatedFeatureActived = true;
                 stepIsFinished = true;
                 tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
             }
