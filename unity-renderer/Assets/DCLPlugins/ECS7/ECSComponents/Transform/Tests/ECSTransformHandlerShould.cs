@@ -122,7 +122,7 @@ namespace Tests
         public void MoveCharacterWhenSameSceneAndValidPosition()
         {
             string sceneId = scene.sceneData.id;
-            worldState.currentSceneId.Returns(sceneId);
+            worldState.GetCurrentSceneId().Returns(sceneId);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(8, 0, 0);
@@ -134,7 +134,7 @@ namespace Tests
         public void NotMoveCharacterWhenSameSceneButInvalidPosition()
         {
             string sceneId = scene.sceneData.id;
-            worldState.currentSceneId.Returns(sceneId);
+            worldState.GetCurrentSceneId().Returns(sceneId);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(1000, 0, 0);
@@ -145,7 +145,7 @@ namespace Tests
         [Test]
         public void NotMoveCharacterWhenPlayerIsNotInScene()
         {
-            worldState.currentSceneId.Returns("NOTtemptation");
+            worldState.GetCurrentSceneId().Returns("NOTtemptation");
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(1000, 0, 0);

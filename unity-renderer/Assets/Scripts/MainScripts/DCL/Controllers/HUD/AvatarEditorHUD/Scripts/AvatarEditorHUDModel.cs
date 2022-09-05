@@ -10,7 +10,7 @@ public class AvatarEditorHUDModel
     public Color skinColor;
     public Color eyesColor;
 
-    public AvatarModel ToAvatarModel()
+    public AvatarModel ToAvatarModel(int version)
     {
         return new AvatarModel()
         {
@@ -18,7 +18,8 @@ public class AvatarEditorHUDModel
             wearables = wearables.Select(x => x.id).ToList(),
             hairColor = hairColor,
             skinColor = skinColor,
-            eyeColor = eyesColor
+            eyeColor = eyesColor,
+            version = version
         };
     }
 

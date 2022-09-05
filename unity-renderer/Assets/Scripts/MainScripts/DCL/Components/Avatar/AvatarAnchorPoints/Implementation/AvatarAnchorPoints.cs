@@ -21,6 +21,9 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
         this.nameTagY = nameTagY;
 
         boneTransformMapping.Clear();
+        
+        if(bones == null)
+            return;
 
         foreach (var bone in bones)
         {
@@ -30,6 +33,7 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
             }
         }
     }
+    
     (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransform(AvatarAnchorPointIds anchorPointId)
     {
         if (anchorPointId == AvatarAnchorPointIds.Position && avatarTransform != null)

@@ -26,6 +26,7 @@ namespace DCL.Controllers
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         ICRDTExecutor crdtExecutor { get; set; }
+        HashSet<Vector2Int> GetParcels();
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);

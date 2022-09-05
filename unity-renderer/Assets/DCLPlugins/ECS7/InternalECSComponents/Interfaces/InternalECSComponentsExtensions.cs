@@ -14,10 +14,10 @@ namespace DCL.ECS7.InternalComponents
                 return;
 
             var model = texurizableInternalComponent.GetFor(scene, entity)?.model;
-            
+
             if (model == null)
                 return;
-            
+
             for (int i = 0; i < renderers.Count; i++)
             {
                 model.renderers.Remove(renderers[i]);
@@ -36,6 +36,33 @@ namespace DCL.ECS7.InternalComponents
             {
                 model.renderers.Add(renderers[i]);
             }
+            model.dirty = true;
+            texurizableInternalComponent.PutFor(scene, entity, model);
+        }
+
+        public static void RemoveRenderer(this IInternalECSComponent<InternalTexturizable> texurizableInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Renderer renderer)
+        {
+            if (renderer == null)
+                return;
+
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model;
+
+            if (model == null)
+                return;
+
+            model.renderers.Remove(renderer);
+            texurizableInternalComponent.PutFor(scene, entity, model);
+        }
+
+        public static void AddRenderer(this IInternalECSComponent<InternalTexturizable> texurizableInternalComponent,
+            IParcelScene scene, IDCLEntity entity, Renderer renderer)
+        {
+            if (renderer == null)
+                return;
+
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
+            model.renderers.Add(renderer);
             model.dirty = true;
             texurizableInternalComponent.PutFor(scene, entity, model);
         }

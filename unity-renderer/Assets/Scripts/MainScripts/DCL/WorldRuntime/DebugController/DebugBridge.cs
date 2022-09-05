@@ -59,7 +59,7 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            foreach (var kvp in DCL.Environment.i.world.state.loadedScenes)
+            foreach (var kvp in DCL.Environment.i.world.state.GetLoadedScenes())
             {
                 IParcelScene scene = kvp.Value;
                 debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
@@ -123,7 +123,7 @@ namespace DCL
 
             var crashPayload = CrashPayloadUtils.ComputePayload
             (
-                DCL.Environment.i.world.state.loadedScenes,
+                DCL.Environment.i.world.state.GetLoadedScenes(),
                 debugController.GetTrackedMovements(),
                 debugController.GetTrackedTeleportPositions()
             );
@@ -150,7 +150,7 @@ namespace DCL
 
             var payload = CrashPayloadUtils.ComputePayload
             (
-                DCL.Environment.i.world.state.loadedScenes,
+                DCL.Environment.i.world.state.GetLoadedScenes(),
                 debugController.GetTrackedMovements(),
                 debugController.GetTrackedTeleportPositions()
             );

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using AssetPromiseKeeper_Tests;
 using DCL;
 using UnityEngine.Assertions;
@@ -12,14 +11,13 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         Asset_PrimitiveMesh,
         AssetLibrary_RefCounted<Asset_PrimitiveMesh>>
     {
-        protected AssetPromise_PrimitiveMesh CreatePromise()
+        private AssetPromise_PrimitiveMesh CreatePromise()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            var prom = new AssetPromise_PrimitiveMesh(model);
+            var prom = new AssetPromise_PrimitiveMesh(AssetPromise_PrimitiveMesh_Model.CreateBox(null));
             return prom;
         }
 
-        protected AssetPromise_PrimitiveMesh CreatePromise(PrimitiveMeshModel model)
+        private AssetPromise_PrimitiveMesh CreatePromise(AssetPromise_PrimitiveMesh_Model model)
         {
             var prom = new AssetPromise_PrimitiveMesh(model);
             return prom;
@@ -83,18 +81,17 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         [UnityTest]
         public IEnumerator NotShareMeshAmongPromisesWithDifferentSettings()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            PrimitiveMeshModel model2 = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            float[] uvs = new float[]
-            {
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
-                0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
-            };
-            model2.uvs.Add(uvs.ToList());
+            AssetPromise_PrimitiveMesh_Model model = AssetPromise_PrimitiveMesh_Model.CreateBox(null);
+            AssetPromise_PrimitiveMesh_Model model2 = AssetPromise_PrimitiveMesh_Model.CreateBox(
+                new float[]
+                {
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
+                    0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1
+                });
             Asset_PrimitiveMesh loadedAsset = null;
             var prom = CreatePromise(model);
 
@@ -122,7 +119,7 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
         [UnityTest]
         public IEnumerator KeepRefCountCorrectly()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
+            AssetPromise_PrimitiveMesh_Model model = AssetPromise_PrimitiveMesh_Model.CreateBox(null);
             var prom = new AssetPromise_PrimitiveMesh(model);
             keeper.Keep(prom);
             yield return prom;

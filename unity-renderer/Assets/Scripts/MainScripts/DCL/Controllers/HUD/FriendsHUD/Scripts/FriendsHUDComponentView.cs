@@ -75,11 +75,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public RectTransform Transform => transform as RectTransform;
 
-    public bool ListByOnlineStatus
-    {
-        set => friendsTab.ListByOnlineStatus = value;
-    }
-
     public int FriendCount => friendsTab.Count;
     public int FriendRequestCount => friendRequestsTab.Count;
 
@@ -98,6 +93,11 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
     }
 
+    public void RefreshFriendsTab()
+    {
+        friendsTab.RefreshControl();
+    }
+
     public override void Awake()
     {
         base.Awake();
@@ -110,7 +110,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             Hide();
         });
 
-        friendsTab.Expand();
         friendRequestsTab.Expand();
     }
 

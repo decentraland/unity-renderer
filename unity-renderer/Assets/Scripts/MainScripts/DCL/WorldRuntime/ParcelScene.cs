@@ -213,8 +213,12 @@ namespace DCL.Controllers
             return string.IsNullOrEmpty(sceneName) ? "Unnamed" : sceneName;
         }
 
+        public HashSet<Vector2Int> GetParcels() => parcels;
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
+            if (isPersistent)
+                return true;
+            
             if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.worldOffset, objectBounds.max.y))
                 return false;
             if (!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.worldOffset, objectBounds.max.y))
@@ -225,6 +229,9 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f)
         {
+            if (isPersistent)
+                return true;
+            
             if (parcels.Count == 0)
                 return false;
 
@@ -238,6 +245,9 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
         {
+            if (isPersistent)
+                return true;
+            
             if (parcels.Count == 0)
                 return false;
 
@@ -287,6 +297,9 @@ namespace DCL.Controllers
         
         public bool IsInsideSceneOuterBoundaries(Bounds objectBounds)
         {
+            if (isPersistent)
+                return true;
+            
             Vector3 objectBoundsMin = new Vector3(objectBounds.min.x, 0f, objectBounds.min.z);
             Vector3 objectBoundsMax = new Vector3(objectBounds.max.x, 0f, objectBounds.max.z);
             bool isInsideOuterBoundaries = outerBounds.Contains(objectBoundsMin) && outerBounds.Contains(objectBoundsMax);
@@ -296,6 +309,9 @@ namespace DCL.Controllers
 
         public bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition)
         {
+            if (isPersistent)
+                return true;
+            
             objectUnityPosition.y = 0f;
             return outerBounds.Contains(objectUnityPosition);
         }

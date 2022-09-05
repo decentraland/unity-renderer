@@ -12,6 +12,7 @@ using DCL.NotificationModel;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using Environment = DCL.Environment;
 using Type = DCL.NotificationModel.Type;
 
 public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHidePassportAreaHandler
@@ -78,7 +79,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         AvatarSystem.NoLODs noLod = new NoLODs();
         return new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver()),
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
@@ -95,7 +96,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         return new AvatarSystem.AvatarWithHologram(
             baseAvatar,
-            new AvatarCurator(new WearableItemResolver()),
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
@@ -202,11 +203,20 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
 
-                //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                if (DataStore.i.emotes.newFlowEnabled.Get())
+                {
+                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
+                else
+                {
+                    //TODO remove this when new flow is the default and we can los retrocompatibility
+                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
+                    wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                }
 
-                await avatar.Load(wearableItems, new AvatarSettings
+                await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     bodyshapeId = profile.avatar.bodyShape,
                     eyesColor = profile.avatar.eyeColor,

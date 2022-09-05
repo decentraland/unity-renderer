@@ -1,15 +1,10 @@
-using System;
-using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
-using System.Linq;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Helpers.NFT;
 using DCL.Helpers.NFT.Markets;
-using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -29,6 +24,7 @@ namespace SceneBoundariesCheckerTests
 
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            scene.isPersistent = false;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
         }

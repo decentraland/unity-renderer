@@ -23,7 +23,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);
 
-        var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
+        var scene = Environment.i.world.state.GetScene("0,0") as ParcelScene;
 
         // FULL GLB
         TestUtils.InstantiateEntityWithShape(scene, 1, DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),

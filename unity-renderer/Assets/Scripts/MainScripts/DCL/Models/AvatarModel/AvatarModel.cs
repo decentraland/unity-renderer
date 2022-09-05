@@ -1,11 +1,19 @@
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class AvatarModel : BaseModel
 {
+    [Serializable]
+    public class AvatarEmoteEntry
+    {
+        public int slot;
+        public string urn;
+    }
+
     public string id;
     public string name;
     public string bodyShape;
@@ -13,6 +21,11 @@ public class AvatarModel : BaseModel
     public Color hairColor;
     public Color eyeColor;
     public List<string> wearables = new List<string>();
+
+    // if version < 1 Emotes are contained in wearables instead of the emotes propery.  
+    public int version = 0;
+    public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
+
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
     public string stickerTriggerId = null;
@@ -24,13 +37,32 @@ public class AvatarModel : BaseModel
         if (other == null)
             return false;
 
-        bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;
+        //wearables are the same
+        if (!(wearables.Count == other.wearables.Count && wearables.All(other.wearables.Contains)))
+            return false;
+
+        //emotes are the same
+        if (emotes == null && other.emotes != null)
+            return false;
+        if (emotes != null && other.emotes == null)
+            return false;
+        if (emotes != null && other.emotes != null)
+        {
+            if (emotes.Count != other.emotes.Count)
+                return false;
+
+            for (var i = 0; i < emotes.Count; i++)
+            {
+                AvatarEmoteEntry emote = emotes[i];
+                if (other.emotes.FirstOrDefault(x => x.urn == emote.urn) == null)
+                    return false;
+            }
+        }
 
         return bodyShape == other.bodyShape &&
                skinColor == other.skinColor &&
                hairColor == other.hairColor &&
-               eyeColor == other.eyeColor &&
-               wearablesAreEqual;
+               eyeColor == other.eyeColor;
     }
 
     public bool HaveSameExpressions(AvatarModel other)
@@ -72,6 +104,8 @@ public class AvatarModel : BaseModel
         stickerTriggerId = other.stickerTriggerId;
         stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);
+        emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
+        version = other.version;
     }
 
     public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
