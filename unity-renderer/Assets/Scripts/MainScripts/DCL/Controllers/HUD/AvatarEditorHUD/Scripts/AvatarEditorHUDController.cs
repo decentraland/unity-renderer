@@ -263,7 +263,7 @@ public class AvatarEditorHUDController : IHUD
                 }
             }
             
-            emotesCustomizationDataStore.FilterOutNotOwnedEquippedEmotes(emotesList);
+            emotesCustomizationDataStore.UnequipMissingEmotes(emotesList);
             emotesCustomizationComponentController.SetEmotes(emotesList.ToArray());
 
         }
