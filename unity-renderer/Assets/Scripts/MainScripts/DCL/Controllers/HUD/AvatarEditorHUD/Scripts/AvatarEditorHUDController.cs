@@ -261,6 +261,8 @@ public class AvatarEditorHUDController : IHUD
 
                     emotesList.Add(emoteAsWearable);
                 }
+
+                emotesLoadedAsWearables = null;
             }
             
             emotesCustomizationDataStore.UnequipMissingEmotes(emotesList);
