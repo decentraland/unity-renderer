@@ -68,6 +68,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         OnChannelUpdated?.Invoke(channel);
 
+        // TODO (responsibility issues): extract to another class
         if (!msg.joined)
             AudioScriptableObjects.dialogOpen.Play(true);
     }
@@ -89,6 +90,7 @@ public class ChatController : MonoBehaviour, IChatController
         OnChannelJoined?.Invoke(channel);
         OnChannelUpdated?.Invoke(channel);
 
+        // TODO (responsibility issues): extract to another class
         AudioScriptableObjects.dialogClose.Play(true);
     }
 

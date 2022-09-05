@@ -68,6 +68,7 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
+        // TODO: the renderer should not alter the userId nor ethAddress, this is just a patch derived from a kernel issue
         model.userId = model.userId.ToLower();
         model.ethAddress = model.ethAddress?.ToLower();
         
