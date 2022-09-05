@@ -6,6 +6,7 @@ using DCL.Friends.WebApi;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 public class WorldChatWindowControllerShould
@@ -20,6 +21,8 @@ public class WorldChatWindowControllerShould
     private IFriendsController friendsController;
     private IMouseCatcher mouseCatcher;
     private UserProfile ownUserProfile;
+    private ISocialAnalytics socialAnalytics;
+    private DataStore dataStore;
 
     [SetUp]
     public void SetUp()
@@ -34,11 +37,14 @@ public class WorldChatWindowControllerShould
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, "", 0));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
+        dataStore = new DataStore();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
-            new DataStore(),
-            mouseCatcher);
+            dataStore,
+            mouseCatcher,
+            socialAnalytics);
         view = Substitute.For<IWorldChatWindowView>();
     }
 
@@ -436,6 +442,43 @@ public class WorldChatWindowControllerShould
         view.OnLeaveChannel += Raise.Event<Action<string>>(channelId);
 
         Assert.AreEqual(channelToLeave, channelId);
+    }
+
+    [Test]
+    public void TrackEmptyChannelCreated()
+    {
+        controller.Initialize(view);
+
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
+        chatController.OnChannelJoined +=
+            Raise.Event<Action<Channel>>(new Channel("channelId", 0, 1, true, false, "", 0));
+        
+        socialAnalytics.Received(1).SendEmptyChannelCreated("channelId", ChannelJoinedSource.Search);
+    }
+    
+    [Test]
+    public void TrackPopulatedChannelJoined()
+    {
+        controller.Initialize(view);
+
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        chatController.OnChannelJoined +=
+            Raise.Event<Action<Channel>>(new Channel("channelId", 0, 2, true, false, "", 0));
+        
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId", ChannelJoinedSource.Link);
+    }
+
+    [Test]
+    public void RemoveChannelWhenLeaveIsConfirmed()
+    {
+        controller.Initialize(view);
+        
+        dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
+
+        chatController.OnChannelLeft += Raise.Event<Action<string>>("channelId");
+        
+        socialAnalytics.Received(1).SendLeaveChannel("channelId", ChannelLeaveSource.Command);
+        view.Received(1).RemovePublicChat("channelId");
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)
