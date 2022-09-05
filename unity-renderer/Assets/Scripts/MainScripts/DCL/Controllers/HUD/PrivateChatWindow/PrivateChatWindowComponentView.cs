@@ -32,7 +32,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
-    internal bool isPreviewActivated = false;
+    private bool isPreviewActivated;
 
     public event Action OnPressBack;
     public event Action OnMinimize;

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
@@ -131,29 +131,25 @@ public class PrivateChatWindowComponentViewShould
     [UnityTest]
     public IEnumerator ActivatePreview()
     {
-        view.isPreviewActivated = false;
+        view.DeactivatePreview();
         view.ActivatePreview();
 
         yield return new WaitForSeconds(1f);
 
         foreach (var canvas in view.previewCanvasGroup)
             Assert.AreEqual(0f, canvas.alpha);
-
-        Assert.IsTrue(view.isPreviewActivated);
     }
     
     [UnityTest]
     public IEnumerator DeactivatePreview()
     {
-        view.isPreviewActivated = true;
+        view.ActivatePreview();
         view.DeactivatePreview();
 
         yield return new WaitForSeconds(1f);
 
         foreach (var canvas in view.previewCanvasGroup)
             Assert.AreEqual(1f, canvas.alpha);
-
-        Assert.IsFalse(view.isPreviewActivated);
     }
 
     [Test]
