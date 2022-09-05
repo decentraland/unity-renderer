@@ -172,8 +172,6 @@ public class EmotesCatalogService : IEmotesCatalogService
                 if (promises[id].Count == 0)
                     promises.Remove(id);
             }
-            
-            UnityEngine.Debug.LogError($"RequestEmoteAsync OperationCanceledException: {ex.Message} {ex.StackTrace}");
 
             return null;
         }
