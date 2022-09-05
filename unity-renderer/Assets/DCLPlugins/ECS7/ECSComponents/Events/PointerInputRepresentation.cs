@@ -115,6 +115,8 @@ namespace DCLPlugins.ECSComponents.Events
         internal void ReportEvent(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
             string meshName = pointerEventHandler.GetMeshName(hit.collider);
+            if (meshName == null)
+                meshName = "";
             long entityId = eventEntity.entityId;
 
             PointerEvent pointerEvent = new PointerEvent();
