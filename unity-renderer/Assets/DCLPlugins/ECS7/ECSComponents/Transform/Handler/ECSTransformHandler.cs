@@ -112,7 +112,7 @@ namespace DCL.ECSComponents
         {
             // If player is not at the scene that triggered this event
             // we'll ignore it
-            if (scene.sceneData.id != worldState.currentSceneId)
+            if (scene.sceneData.id != worldState.GetCurrentSceneId())
             {
                 return false;
             }

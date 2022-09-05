@@ -28,7 +28,7 @@ public class UIComponentsPlugin : IPlugin
 
     bool CanCreateScreenShape(string sceneId, int classId)
     {
-        IParcelScene scene = Environment.i.world.state.loadedScenes[sceneId];
+        IParcelScene scene = Environment.i.world.state.GetScene(sceneId);
 
         if (scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>() != null)
             return false;

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_FinalMap_Minimap
+  m_Shader: {fileID: 4800000, guid: 92b885ebd877a804e9128df612d1e5ab, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_ca38f0c2dd0b47d09c01597020888c39:
+        m_Texture: {fileID: 2800000, guid: 3ad7373032aa69c4b9494945da28d5c2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EstateIDMap:
+        m_Texture: {fileID: 2800000, guid: 9fd4d3757b5f1c148ac6903817ed6c8a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Map:
+        m_Texture: {fileID: 2800000, guid: d32d7bccfd7609a4c923dcbf9c154a0e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
+    - _ColorMask: 15
+    - _GridThickness: 0.5
+    - _HighlightRotation: 10
+    - _HighlightThickness: 2
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _Zoom: 22.62
+    m_Colors:
+    - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
+        a: 1}
+    - _Color01: {r: 0.4392157, g: 0.6745098, b: 0.4627451, a: 0}
+    - _Color02: {r: 0.3137255, g: 0.32941177, b: 0.83137256, a: 0}
+    - _Color03: {r: 0.44313726, g: 0.42352942, b: 0.47843137, a: 0}
+    - _Color04: {r: 0.23921569, g: 0.22745098, b: 0.27450982, a: 0}
+    - _Color05: {r: 0.101960786, g: 0.101960786, b: 0.101960786, a: 0}
+    - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
+    - _GridColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HighlightColor: {r: 0.47932023, g: 0.44520125, b: 0.16513224, a: 1}
+    - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
+    - _OverlayColor: {r: 0, g: 0.8026962, b: 1, a: 0.48235294}
+    - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
+    - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
+  m_BuildTextureStacks: []

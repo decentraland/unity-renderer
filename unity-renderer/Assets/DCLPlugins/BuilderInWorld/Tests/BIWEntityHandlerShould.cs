@@ -34,6 +34,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
+        scene.isPersistent = false;
         coreComponentsPlugin = new CoreComponentsPlugin();
         BuilderInWorldPlugin.RegisterRuntimeComponents();
 

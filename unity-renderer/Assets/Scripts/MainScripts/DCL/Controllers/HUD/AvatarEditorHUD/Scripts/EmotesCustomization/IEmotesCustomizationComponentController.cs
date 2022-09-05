@@ -7,22 +7,34 @@ namespace DCL.EmotesCustomization
         /// <summary>
         /// It will be triggered when an emote should be previewed.
         /// </summary>
-        public event Action<string> onEmotePreviewed;
+        event Action<string> onEmotePreviewed;
 
         /// <summary>
         /// It will be triggered when an emote is equipped.
         /// </summary>
-        public event Action<string> onEmoteEquipped;
+        event Action<string> onEmoteEquipped;
 
         /// <summary>
         /// It will be triggered when an emote is unequipped.
         /// </summary>
-        public event Action<string> onEmoteUnequipped;
+        event Action<string> onEmoteUnequipped;
 
         /// <summary>
         /// It will be triggered when the sell button is clicked for an emote.
         /// </summary>
-        public event Action<string> onEmoteSell;
+        event Action<string> onEmoteSell;
+
+        /// <summary>
+        /// Set the owned emotes
+        /// </summary>
+        /// <param name="ownedEmotes"></param>
+        void SetEmotes(WearableItem[] ownedEmotes);
+
+        /// <summary>
+        /// Set the current equipped bodyshape
+        /// </summary>
+        /// <param name="bodyShapeId"></param>
+        void SetEquippedBodyShape(string bodyShapeId);
 
         /// <summary>
         /// Initializes the emotes customization controller.
@@ -38,8 +50,7 @@ namespace DCL.EmotesCustomization
             DataStore_EmotesCustomization emotesCustomizationDataStore,
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
-            DataStore_HUDs hudsDataStore,
-            UserProfile userProfile, BaseDictionary<string, WearableItem> catalog);
+            DataStore_HUDs hudsDataStore );
 
         /// <summary>
         /// Restore the emote slots with the stored data.
