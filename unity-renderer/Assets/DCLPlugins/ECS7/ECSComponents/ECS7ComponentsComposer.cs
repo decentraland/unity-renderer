@@ -21,11 +21,13 @@ namespace DCL.ECSComponents
         private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
         private readonly BillboardRegister billboardRegister;
+        private readonly AvatarShapeRegister avatarShapeRegister;
         private readonly CameraModeAreaRegister cameraModeAreaRegister;
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
         private readonly MaterialRegister materialRegister;
         private readonly MeshRendererRegister meshRendererRegister;
+        private readonly MeshColliderRegister meshColliderRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
 
         // UI components
@@ -56,9 +58,11 @@ namespace DCL.ECSComponents
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter);
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
+            avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
             meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
+            meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter);
 
             // UI components
@@ -90,9 +94,11 @@ namespace DCL.ECSComponents
             avatarModifierAreaRegister.Dispose();
             pointerDownRegister.Dispose();
             pointerUpRegister.Dispose();
+            avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             materialRegister.Dispose();
             meshRendererRegister.Dispose();
+            meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
 
             // UI components

@@ -35,6 +35,9 @@ public class EmotesCatalogService : IEmotesCatalogService
                 continue;
 
             emotes[emote.id] = emote;
+            
+            
+            
             if (promises.TryGetValue(emote.id, out var emotePromises))
             {
                 foreach (Promise<WearableItem> promise in emotePromises)
@@ -151,7 +154,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default)
     {
-        const int TIMEOUT = 60;
+        const int TIMEOUT = 45;
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
         var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
@@ -161,7 +164,7 @@ public class EmotesCatalogService : IEmotesCatalogService
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
             await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException ex)
         {
             if (promises.ContainsKey(id))
             {
