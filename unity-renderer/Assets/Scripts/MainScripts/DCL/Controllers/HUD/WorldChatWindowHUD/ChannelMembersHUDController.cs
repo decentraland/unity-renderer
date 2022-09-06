@@ -9,7 +9,7 @@ namespace DCL.Chat.HUD
     {
         private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
-        private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
+        private const int MINUTES_FOR_AUTOMATIC_RELOADING = 5;
         private readonly IChatController chatController;
         private IChannelMembersComponentView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;

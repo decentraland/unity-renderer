@@ -10,6 +10,7 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
     private const string POOL_NAME_PREFIX = "ChannelMembersPool_";
 
     [SerializeField] private ChannelMemberEntry entryPrefab;
+    [SerializeField] private UserContextMenu userContextMenu;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
@@ -58,6 +59,7 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
         var newFriendEntry = entryPool.Get();
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<ChannelMemberEntry>();
+        entry.SetUserContextMenu(userContextMenu);
         Add(userId, entry);
     }
 

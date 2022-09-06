@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
@@ -9,11 +10,26 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ImageComponentView userThumbnail;
         [SerializeField] internal GameObject onlineMark;
         [SerializeField] internal GameObject offlineMark;
+        [SerializeField] internal Button optionsButton;
+        [SerializeField] internal RectTransform userContextMenuPositionReference;
 
         [Header("Configuration")]
         [SerializeField] internal ChannelMemberEntryModel model;
 
+        private UserContextMenu userContextMenu;
+
         public ChannelMemberEntryModel Model => model;
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            optionsButton.onClick.AddListener(() =>
+            {
+                userContextMenu.Show(model.userId);
+                Dock(userContextMenu);
+            });
+        }
 
         public void Configure(ChannelMemberEntryModel newModel)
         {
@@ -32,6 +48,11 @@ namespace DCL.Chat.HUD
         internal void SetUserId(string userId)
         {
             model.userId = userId;
+        }
+
+        internal void SetUserContextMenu(UserContextMenu userContextMenu)
+        {
+            this.userContextMenu = userContextMenu;
         }
 
         internal void SetUserName(string userName)
@@ -66,6 +87,13 @@ namespace DCL.Chat.HUD
 
             if (offlineMark != null)
                 offlineMark.SetActive(!isOnline);
+        }
+
+        internal void Dock(UserContextMenu userContextMenu)
+        {
+            var menuTransform = (RectTransform)userContextMenu.transform;
+            menuTransform.pivot = userContextMenuPositionReference.pivot;
+            menuTransform.position = userContextMenuPositionReference.position;
         }
     }
 }
