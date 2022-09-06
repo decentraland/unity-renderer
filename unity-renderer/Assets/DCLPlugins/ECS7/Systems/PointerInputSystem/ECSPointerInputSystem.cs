@@ -100,20 +100,29 @@ namespace ECSSystems.PointerInputSystem
                 PointerHoverResult result = PointerHoverProcessor.ProcessPointerHover(isPointerDown,
                     state.dataStoreEcs7.lastPointerRayHit.Value, state.pointerDownGroup, state.pointerUpGroup);
 
-                if (isPointerDown)
+                if (result.hasFeedback)
                 {
-                    PointerInputResult lastPointerDown = state.lastPointerDownResult;
-                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult) && result.IsSameEntity(lastPointerDown))
+                    if (isPointerDown)
                     {
-                        state.dataStoreCursor.ShowHoverFeedback(result);
+                        PointerInputResult lastPointerDown = state.lastPointerDownResult;
+                        if (!result.Equals(state.lastPointerHoverResult)
+                            && result.IsSameEntity(lastPointerDown)
+                            && result.IsSameButton(state.dataStoreEcs7.lastPointerInputEvent))
+                        {
+                            state.dataStoreCursor.ShowHoverFeedback(result);
+                        }
+                    }
+                    else
+                    {
+                        if (!result.Equals(state.lastPointerHoverResult))
+                        {
+                            state.dataStoreCursor.ShowHoverFeedback(result);
+                        }
                     }
                 }
                 else
                 {
-                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult))
-                    {
-                        state.dataStoreCursor.ShowHoverFeedback(result);
-                    }
+                    state.dataStoreCursor.HideHoverFeedback();
                 }
                 state.lastPointerHoverResult = result;
             }
@@ -136,6 +145,14 @@ namespace ECSSystems.PointerInputSystem
             return self.sceneId == other.sceneId && self.entityId == other.entityId;
         }
 
+        private static bool IsSameButton(this PointerHoverResult self, DataStore_ECS7.PointerEvent? other)
+        {
+            if (!self.hasValue || !other.HasValue)
+                return false;
+
+            return (int)self.buttonId == other.Value.buttonId;
+        }
+
         private static void ShowHoverFeedback(this DataStore_Cursor cursor, PointerHoverResult hoverResult)
         {
             if (!hoverResult.hasValue)
@@ -146,7 +163,7 @@ namespace ECSSystems.PointerInputSystem
             if (hoverResult.hasFeedback)
             {
                 cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
-                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.ToString());
+                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.GetName());
                 cursor.hoverFeedbackText.Set(hoverResult.text);
                 cursor.hoverFeedbackHoverState.Set(true);
             }
