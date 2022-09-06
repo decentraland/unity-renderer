@@ -9,7 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar Material
   m_Shader: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _SSAO_OFF
   m_InvalidKeywords:
   - _EMISSION
   - _NORMALMAP
