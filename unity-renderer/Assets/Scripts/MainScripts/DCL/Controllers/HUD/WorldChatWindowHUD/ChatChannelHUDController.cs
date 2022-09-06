@@ -108,6 +108,8 @@ namespace DCL.Chat.HUD
 
         public void Setup(string channelId)
         {
+            channelMembersHUDController.SetChannelId(channelId);
+
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
 
             this.channelId = channelId;
@@ -117,8 +119,6 @@ namespace DCL.Chat.HUD
             View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount));
 
             ReloadAllChats().Forget();
-
-            channelMembersHUDController.SetChannelId(channelId);
         }
 
         public void SetVisibility(bool visible)
@@ -150,6 +150,7 @@ namespace DCL.Chat.HUD
             }
             else
             {
+                channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
                 View.Hide();
             }
@@ -193,6 +194,7 @@ namespace DCL.Chat.HUD
             
             hideLoadingCancellationToken.Dispose();
             deactivatePreviewCancellationToken.Dispose();
+            channelMembersHUDController.Dispose();
         }
 
         private async UniTaskVoid ReloadAllChats()

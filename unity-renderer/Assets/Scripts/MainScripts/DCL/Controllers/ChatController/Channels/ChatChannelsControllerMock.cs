@@ -82,7 +82,7 @@ namespace DCL.Chat.Channels
             remove => controller.OnMuteChannelError -= value;
         }
 
-        public event Action<string, string[]> OnUpdateChannelMembers
+        public event Action<string, ChannelMember[]> OnUpdateChannelMembers
         {
             add => controller.OnUpdateChannelMembers += value;
             remove => controller.OnUpdateChannelMembers -= value;
@@ -636,6 +636,24 @@ Invite others to join by quoting the channel name in other chats or include it a
             }
         }
 
+        public void GetChannelInfo(string channelId) =>
+            GetFakeChannelInfo(channelId).Forget();
+
+        private async UniTask GetFakeChannelInfo(string channelId)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            var msg = new ChannelInfoPayload
+            {
+                joined = true,
+                channelId = channelId,
+                muted = false,
+                memberCount = Random.Range(0, 100),
+                unseenMessages = 0
+            };
+            controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+        }
+
         public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
             GetFakeChannelMembers(channelId, limit, skip, name).Forget();
 
@@ -661,13 +679,17 @@ Invite others to join by quoting the channel name in other chats or include it a
 
             await UniTask.Delay(Random.Range(40, 1000));
 
-            List<string> membersToUpdate = new List<string>();
+            List<ChannelMember> membersToUpdate = new List<ChannelMember>();
             for (var i = skip; i < skip + limit && i < members.Count; i++)
             {
-                var userName = members[i];
-                if (!userName.Contains(name) && !string.IsNullOrEmpty(name)) continue;
+                var userId = members[i];
+                if (!userId.Contains(name) && !string.IsNullOrEmpty(name)) continue;
 
-                membersToUpdate.Add(userName);
+                membersToUpdate.Add(new ChannelMember
+                {
+                    userId = userId,
+                    isOnline = Random.Range(0, 2) == 0
+                });
             }
 
             var msg = new UpdateChannelMembersPayload

@@ -33,7 +33,7 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
-    public event Action<string, string[]> OnUpdateChannelMembers;
+    public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
 
     public int TotalUnseenMessages { get; private set; }
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
@@ -144,24 +144,6 @@ public class ChatController : MonoBehaviour, IChatController
     public void GetChannels(int limit, int skip)
     {
         throw new NotImplementedException();
-    }
-
-    public void GetChannelMembers(string channelId, int limit, int skip, string name)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GetChannelMembers(string channelId, int limit, int skip)
-    {
-        throw new NotImplementedException();
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateChannelMembers(string payload)
-    {
-        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
-        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
     }
 
     public void MuteChannel(string channelId)
@@ -297,6 +279,29 @@ public class ChatController : MonoBehaviour, IChatController
         return messages
             .Where(x => (x.sender == userId || x.recipient == userId) && x.messageType == ChatMessage.Type.PRIVATE)
             .ToList();
+    }
+
+    public void GetChannelInfo(string channelId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip)
+    {
+        throw new NotImplementedException();
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateChannelMembers(string payload)
+    {
+        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
+        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
     }
 
     [ContextMenu("Fake Public Message")]
