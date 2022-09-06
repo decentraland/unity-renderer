@@ -87,5 +87,21 @@ namespace DCL.Chat.HUD
 
             Assert.AreEqual(channelToLeave, CHANNEL_ID);
         }
+
+        [Test]
+        public void MuteChannel()
+        {
+            view.OnMuteChanged += Raise.Event<Action<bool>>(true);
+            
+            chatController.Received(1).MuteChannel(CHANNEL_ID);
+        }
+        
+        [Test]
+        public void UnmuteChannel()
+        {
+            view.OnMuteChanged += Raise.Event<Action<bool>>(false);
+            
+            chatController.Received(1).UnmuteChannel(CHANNEL_ID);
+        }
     }
 }
