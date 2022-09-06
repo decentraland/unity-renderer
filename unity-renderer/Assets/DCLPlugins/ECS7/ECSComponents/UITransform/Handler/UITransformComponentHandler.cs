@@ -33,6 +33,7 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
             entity.parentId = model.Parent;
+            // model.RightOf = 512;
 
             uiDataContainer.AddUIComponent(scene,entity, model);
         }

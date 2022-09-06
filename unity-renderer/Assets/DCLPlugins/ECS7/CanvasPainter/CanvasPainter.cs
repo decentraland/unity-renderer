@@ -15,6 +15,7 @@ namespace DCL.ECS7
     {
         public long entityId;
         public long parentId;
+        public long rightOf;
         public VisualElement visualElement;
         public VisualElement parentVisualElement;
     }
@@ -35,6 +36,7 @@ namespace DCL.ECS7
         internal UISceneDataContainer sceneDataContainerToUse;
         private IParcelScene scene;
 
+        internal Dictionary<VisualElement, VisualElementRepresentation> elementsByEntityId = new Dictionary<VisualElement, VisualElementRepresentation>();
         internal Dictionary<long, VisualElementRepresentation> visualElements = new Dictionary<long, VisualElementRepresentation>();
         internal List<VisualElementRepresentation> orphanVisualElements = new List<VisualElementRepresentation>();
         
@@ -42,9 +44,21 @@ namespace DCL.ECS7
 
         internal int framesCounter = 0;
         internal bool canvasCleared = false;
-        
+        private Color[] testsColor;
+        private Dictionary<long, Color> colorDict = new Dictionary<long, Color>();
+        private int colorCount = 0;
+
         public CanvasPainter(DataStore_ECS7 dataStoreEcs7, RendererState rendererState, IUpdateEventHandler updateEventHandler, ECSComponentsManager componentsManager, IWorldState worldState)
         {
+            testsColor = new [] { Color.red, Color.gray, Color.blue, Color.black, Color.magenta, Color.yellow,  Color.cyan   };
+            colorDict[512] = Color.black;
+            colorDict[513] = Color.red;
+            colorDict[514] = Color.blue;
+            colorDict[515] = Color.magenta;
+            colorDict[516] = Color.yellow;
+            colorDict[517] = Color.cyan;
+            colorDict[518] = Color.green;
+            
             this.updateEventHandler = updateEventHandler;
             this.loadedScenes = dataStoreEcs7.scenes;
             this.rendererState = rendererState;
@@ -165,9 +179,31 @@ namespace DCL.ECS7
             // We set the parent of all the elements that has been created
             foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
             {
-                var visualElement =  kvp.Value;
-                SetParent(ref visualElement);
+                var visualElementRepresentantion =  kvp.Value;
+                SetParent(ref visualElementRepresentantion);
             }
+            
+            // We set the order of the elements
+            foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
+            {
+                var visualElementRepresentantion =  kvp.Value;
+                if(visualElementRepresentantion.rightOf == 0)
+                    continue;
+
+                if (visualElements.TryGetValue(visualElementRepresentantion.rightOf, out VisualElementRepresentation rightOfRepresentantion))
+                {
+                    var leftVisualElement = visualElementRepresentantion.visualElement;
+                    var nextVisualElement = rightOfRepresentantion.visualElement;
+                    
+                    leftVisualElement.PlaceInFront(nextVisualElement);
+                }
+            }
+            // We set the order of the elements
+            foreach (KeyValuePair<long,VisualElementRepresentation> kvp in visualElements)
+            {
+                kvp.Value.visualElement.Sort(CompareVisualElementsOrder );
+            }
+            
         }
 
         internal void CreateContainers(List<long> excludedEntities)
@@ -179,6 +215,7 @@ namespace DCL.ECS7
                 while (enumerator.MoveNext())
                 {
                     var kvp = enumerator.Current;
+                    var uiTransfrom = kvp.Value;
                     // If the entity doesn't exist we skip
                     if (!scene.entities.TryGetValue( kvp.Key, out IDCLEntity entity))
                         continue;
@@ -188,13 +225,17 @@ namespace DCL.ECS7
                         continue;
 
                     // We create the element to position the rendering element correctly
-                    var visualElement = TransformToVisualElement(kvp.Value,  new Image());
-                    visualElements[entity.entityId] = new VisualElementRepresentation()
+                    var visualElement = TransformToVisualElement(entity.entityId, uiTransfrom,  new Image());
+                    var visualElementRepresentantion = new VisualElementRepresentation()
                     {
                         entityId = entity.entityId,
                         parentId = entity.parentId,
+                        rightOf = uiTransfrom.RightOf,
                         visualElement = visualElement
                     };
+                    
+                    visualElements[entity.entityId] = visualElementRepresentantion;
+                    elementsByEntityId[visualElement] = visualElementRepresentantion;
                 }
             }
             finally
@@ -218,7 +259,7 @@ namespace DCL.ECS7
                 textElement.style.color =  new UnityEngine.Color(color.R, color.G,color.B,1);
                 
                 // We create the text element
-                var visualElement = TransformToVisualElement(componentData.model, textElement, false);
+                var visualElement = TransformToVisualElement( componentData.entity.entityId, componentData.model, textElement, false);
 
                 visualElements[componentData.entity.entityId] = new VisualElementRepresentation()
                 {
@@ -273,8 +314,19 @@ namespace DCL.ECS7
             }
         }
 
-        internal VisualElement TransformToVisualElement(PBUiTransform model, VisualElement element, bool randomColor = true)
+        public int CompareVisualElementsOrder(VisualElement first, VisualElement second)
         {
+            var firstElementRepresentantion =  elementsByEntityId[first];
+            var secondElementRepresentantion =  elementsByEntityId[second];
+            return firstElementRepresentantion.rightOf.CompareTo(secondElementRepresentantion.rightOf);
+        }
+
+        internal VisualElement TransformToVisualElement(long entityId, PBUiTransform model, VisualElement element, bool randomColor = true)
+        {
+            // element.Sort(( visualElement,  secondVisualElement) =>
+            // {
+            //     return CompareVisualElementsOrder(visualElement,secondVisualElement);
+            // });
             element.style.display = GetDisplay(model.Display);
             element.style.overflow = GetOverflow(model.Overflow);
 
@@ -343,7 +395,10 @@ namespace DCL.ECS7
 
             // This is for debugging purposes, we will change this to a proper approach so devs can debug the UI easily.
             if (randomColor)
-                element.style.backgroundColor = Random.ColorHSV();
+            {
+                element.style.backgroundColor = colorDict[entityId]; //Random.ColorHSV();
+                colorCount++;
+            }
 
             return element;
         }

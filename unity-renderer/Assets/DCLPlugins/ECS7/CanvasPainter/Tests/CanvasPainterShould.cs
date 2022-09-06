@@ -228,7 +228,7 @@ namespace DCL.ECS7.Tests
             var model = CreateUITransformModel();
             
             // Act
-            var visualElement = canvasPainter.TransformToVisualElement(model, new Image());
+            var visualElement = canvasPainter.TransformToVisualElement(0,model, new Image());
 
             // Assert
             Assert.AreEqual(visualElement.style.display, canvasPainter.GetDisplay(model.Display));

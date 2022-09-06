@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.CRDT;
 using DCL.ECS7.UI;
@@ -42,7 +43,8 @@ namespace DCL.ECS7.Tests
             rendererState.Set(true);
             canvasPainter.rootNode.rootVisualElement.style.justifyContent = new StyleEnum<Justify>(Justify.Center);
             canvasPainter.rootNode.rootVisualElement.style.alignContent = new StyleEnum<Align>(Align.Center);
-        }
+            
+            }
 
         [TearDown]
         protected void TearDown()
@@ -73,12 +75,60 @@ namespace DCL.ECS7.Tests
                 int childId = childIdStartIndex + i;
                 childModel.Parent = parentId;
                 childModel.Height = 20;
-            
+
                 CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
             }
 
             DrawUI();
             
+            // Assert parent
+            VisualElementRepresentation visualElementRepresentation = canvasPainter.visualElements[parentId];
+            
+            Assert.IsTrue(visualElementRepresentation.parentId == SpecialEntityId.SCENE_ROOT_ENTITY);
+            Assert.IsTrue(visualElementRepresentation.visualElement.style.flexDirection == canvasPainter.GetFlexDirection(parentModel.FlexDirection));
+
+            AssertWidth(parentModel, visualElementRepresentation.visualElement);
+            AssertHeight(parentModel, visualElementRepresentation.visualElement);
+            
+            // Assert childrens
+            for (int i = 0; i <= amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                Assert.IsTrue(canvasPainter.visualElements[childId].parentId == parentId);
+                
+                AssertHeight(childModel, canvasPainter.visualElements[childId].visualElement);
+            }
+        }
+        
+        [UnityTest]
+        public IEnumerator ThisShouldWait()
+        {
+            int parentId = 512;
+            int childIdStartIndex = 513;
+            int amountOfChildren = 6;
+            var testScene = CreateUITestScene();
+
+            var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            parentModel.Width = 300;
+            parentModel.Height = 700;
+            parentModel.FlexDirection = YGFlexDirection.Column;
+            CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
+
+            PBUiTransform childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
+            for (int i = 0; i < amountOfChildren; i++)
+            {
+                int childId = childIdStartIndex + i;
+                childModel.Parent = parentId;
+                childModel.Height = 20;
+                childModel.RightOf = childId + 1;
+                
+                CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
+            }
+
+            DrawUI();
+            //SetupBackgroundColorsInOrder(canvasPainter.visualElements.Values.ToList());
+            
+            yield return new WaitForSeconds(200);
             // Assert parent
             VisualElementRepresentation visualElementRepresentation = canvasPainter.visualElements[parentId];
             
@@ -310,6 +360,20 @@ namespace DCL.ECS7.Tests
             testScene.CreateEntity(513);
             DataStore.i.ecs7.scenes.Add(testScene);
             return testScene;
+        }
+        
+        private Color[] testsColor;
+        private void SetupBackgroundColorsInOrder(List<VisualElementRepresentation> visualElements)
+        {
+            if (visualElements.Count > testsColor.Length)
+            {
+                Debug.LogError("There are more elements than colors in this test! You need to add " + (visualElements.Count - testsColor.Length) + " colors to do this test");
+                return;
+            }
+            for (int i = 0; i < visualElements.Count; i++)
+            {
+                visualElements[i].visualElement.style.backgroundColor = testsColor[i];
+            }
         }
 
         private void DrawUI()

@@ -1,6 +1,8 @@
 syntax = "proto3";
 
+import "common/Color3.proto";
 import "common/id.proto";
+
 option (ecs_component_id) = 1050;
 
 enum YGPositionType {
@@ -79,8 +81,11 @@ enum YGEdge {
 }
 
 message PBUiTransform {
-  int64 parent = 79;
-  
+  int32 parent = 79;
+  int32 right_of = 80;
+  Color3 background_color = 81;
+
+
   YGPositionType position_type = 1;
 
   YGAlign align_content = 2;
