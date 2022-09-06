@@ -27,7 +27,6 @@ namespace DCL
         Camera charCamera;
 
         GameObject lastHoveredObject = null;
-        GameObject newHoveredGO = null;
 
         IPointerEvent newHoveredInputEvent = null;
         IList<IPointerEvent> lastHoveredEventList = null;
@@ -42,6 +41,8 @@ namespace DCL
         private InteractionHoverCanvasController hoverCanvas;
 
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
+        private DataStore_World worldData = DataStore.i.Get<DataStore_World>();
+        private DataStore_Cursor cursorData = DataStore.i.Get<DataStore_Cursor>();
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
             InteractionHoverCanvasController hoverCanvas)
@@ -96,12 +97,11 @@ namespace DCL
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
             if (didHit && validCurrentSceneId && validCurrentScene)
             {
-                DataStore_World worldData = DataStore.i.Get<DataStore_World>();
                 GraphicRaycaster raycaster = worldData.currentRaycaster.Get();
 
                 if (raycaster)
                 {
-                    uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width / 2, Screen.height / 2);
+                    uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
                     uiGraphicRaycastResults.Clear();
                     raycaster.Raycast(uiGraphicRaycastPointerEventData, uiGraphicRaycastResults);
                     uiIsBlocking = uiGraphicRaycastResults.Count > 0;
@@ -119,6 +119,8 @@ namespace DCL
             if (dataStoreEcs7.isEcs7Enable)
                 dataStoreEcs7.lastPointerRayHit = hitInfo;
 
+            GameObject newHoveredGO = hitInfo.collider.gameObject; 
+                
             var raycastHandlerTarget = hitInfo.collider.GetComponent<IRaycastPointerHandler>();
 
             if (raycastHandlerTarget != null)
@@ -136,14 +138,14 @@ namespace DCL
 
             clickHandler = null;
 
-            if (!EventObjectCanBeHovered(info, hitInfo.distance))
+            if (lastHoveredEventList != null && newHoveredInputEvent != null 
+                && lastHoveredEventList.Contains(newHoveredInputEvent) 
+                && !EventObjectCanBeHovered(newHoveredInputEvent, info, hitInfo.distance))
             {
                 UnhoverLastHoveredObject();
 
                 return;
             }
-
-            newHoveredGO = newHoveredInputEvent.GetTransform().gameObject;
 
             if (newHoveredGO != lastHoveredObject)
             {
@@ -151,15 +153,18 @@ namespace DCL
 
                 lastHoveredObject = newHoveredGO;
 
-                lastHoveredEventList = GetPointerEventList(newHoveredInputEvent.entity);
-
-                // NOTE: this case is for the Avatar, since it hierarchy differs from other ECS components
-                if (lastHoveredEventList?.Count == 0)
+                if (newHoveredInputEvent != null)
                 {
-                    lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
-                }
+                    lastHoveredEventList = GetPointerEventList(newHoveredInputEvent.entity);
 
-                OnPointerHoverStarts?.Invoke();
+                    // NOTE: this case is for the Avatar, since it hierarchy differs from other ECS components
+                    if (lastHoveredEventList?.Count == 0)
+                    {
+                        lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+                    }
+
+                    OnPointerHoverStarts?.Invoke();
+                }
             }
 
             // OnPointerDown/OnClick and OnPointerUp should display their hover feedback at different moments
@@ -199,14 +204,13 @@ namespace DCL
                 }
             }
 
-            newHoveredGO = null;
             newHoveredInputEvent = null;
         }
 
         private IList<IPointerEvent> GetPointerEventList(IDCLEntity entity)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (dataStoreEcs7.isEcs7Enable && dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
             {
                 return pointerInputEvent.Cast<IPointerEvent>().ToList();
             }
@@ -224,7 +228,7 @@ namespace DCL
         private IPointerEvent GetPointerEvent(IDCLEntity entity)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (dataStoreEcs7.isEcs7Enable && dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
                 return pointerInputEvent.First();
             else
                 return entity.gameObject.GetComponentInChildren<IPointerEvent>();
@@ -233,18 +237,18 @@ namespace DCL
         private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
         {
             // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (entity != null && dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
+            if (entity != null && dataStoreEcs7.isEcs7Enable && dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
                 return pointerInputEvent;
             else
                 return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
-        private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
+        private static bool EventObjectCanBeHovered(IPointerEvent hoveredInputEvent, ColliderInfo colliderInfo, float distance)
         {
-            return newHoveredInputEvent != null &&
-                   newHoveredInputEvent.IsAtHoverDistance(distance) &&
-                   newHoveredInputEvent.IsVisible() &&
-                   AreSameEntity(newHoveredInputEvent, colliderInfo);
+            return hoveredInputEvent != null &&
+                   hoveredInputEvent.IsAtHoverDistance(distance) &&
+                   hoveredInputEvent.IsVisible() &&
+                   AreSameEntity(hoveredInputEvent, colliderInfo);
         }
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
@@ -292,14 +296,17 @@ namespace DCL
                 return;
             }
 
-            OnPointerHoverEnds?.Invoke();
-
-            for (int i = 0; i < lastHoveredEventList.Count; i++)
+            if (lastHoveredEventList != null)
             {
-                if (lastHoveredEventList[i] == null)
-                    continue;
+                OnPointerHoverEnds?.Invoke();
+                
+                for (int i = 0; i < lastHoveredEventList.Count; i++)
+                {
+                    if (lastHoveredEventList[i] == null)
+                        continue;
 
-                lastHoveredEventList[i].SetHoverState(false);
+                    lastHoveredEventList[i].SetHoverState(false);
+                }
             }
 
             lastHoveredEventList = null;
@@ -319,7 +326,6 @@ namespace DCL
             }
 
             lastHoveredObject = null;
-            newHoveredGO = null;
             newHoveredInputEvent = null;
             lastHoveredEventList = null;
 
@@ -424,7 +430,7 @@ namespace DCL
                 currentSceneId);
 
             // Raycast for global pointer events (for each PE scene)
-            List<string> currentPortableExperienceIds = DataStore.i.Get<DataStore_World>().portableExperienceIds.Get().ToList();
+            List<string> currentPortableExperienceIds = worldData.portableExperienceIds.Get().ToList();
 
             for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
@@ -606,13 +612,13 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo)
+        private static bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo)
         {
             return pointerInputEvent != null && colliderInfo.entity != null &&
                    pointerInputEvent.entity == colliderInfo.entity;
         }
 
-        bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
+        private static bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {
             return
                 potentialBlockerHit.hit.collider != null // Does a potential blocker hit exist?
@@ -623,7 +629,7 @@ namespace DCL
                     targetOnClickHit); // Does potential blocker belong to other entity rather than target entity?
         }
 
-        bool EntityHasPointerEvent(IDCLEntity entity)
+        private static bool EntityHasPointerEvent(IDCLEntity entity)
         {
             var componentsManager = entity.scene.componentsManagerLegacy;
 
@@ -633,7 +639,7 @@ namespace DCL
                    componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_CLICK);
         }
 
-        bool AreCollidersFromSameEntity(RaycastHitInfo hitInfoA, RaycastHitInfo hitInfoB)
+        private static bool AreCollidersFromSameEntity(RaycastHitInfo hitInfoA, RaycastHitInfo hitInfoB)
         {
             CollidersManager.i.GetColliderInfo(hitInfoA.hit.collider, out ColliderInfo colliderInfoA);
             CollidersManager.i.GetColliderInfo(hitInfoB.hit.collider, out ColliderInfo colliderInfoB);
@@ -669,10 +675,10 @@ namespace DCL
                 UnhoverLastHoveredObject();
         }
 
-        private void HideOrShowCursor(bool isCursorLocked) { DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(isCursorLocked); }
+        private void HideOrShowCursor(bool isCursorLocked) { cursorData.cursorVisible.Set(isCursorLocked); }
 
-        private void SetHoverCursor() { DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.HOVER); }
+        private void SetHoverCursor() { cursorData.cursorType.Set(DataStore_Cursor.CursorType.HOVER); }
 
-        private void SetNormalCursor() { DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL); }
+        private void SetNormalCursor() { cursorData.cursorType.Set(DataStore_Cursor.CursorType.NORMAL); }
     }
 }
