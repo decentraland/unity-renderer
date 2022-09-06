@@ -50,7 +50,13 @@ public class ChatNotificationController : IHUD
         if (message.messageType != ChatMessage.Type.PRIVATE && message.messageType != ChatMessage.Type.PUBLIC) return;
         ownUserProfile ??= userProfileBridge.GetOwn();
         if (message.sender == ownUserProfile.userId) return;
-        
+
+        if (!string.IsNullOrEmpty(message.recipient))
+        {
+            var channel = chatController.GetAllocatedChannel(message.recipient);
+            if (channel is {Muted: true}) return;    
+        }
+
         var peerId = ExtractPeerId(message);
 
         var channel = chatController.GetAllocatedChannel(peerId);
