@@ -14,7 +14,7 @@ namespace DCLPlugins.ECSComponents
         
         public OnPointerDownRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerDownSerializer.Deserialize, () => new OnPointerDownComponentHandler(componentWriter, DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, OnPointerDownSerializer.Deserialize, null);
             componentWriter.AddOrReplaceComponentSerializer<PBOnPointerDown>(componentId, OnPointerDownSerializer.Serialize);
 
             this.factory = factory;

@@ -14,7 +14,7 @@ namespace DCLPlugins.ECSComponents
         
         public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerUpSerializer.Deserialize, () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, OnPointerUpSerializer.Deserialize, null);
             componentWriter.AddOrReplaceComponentSerializer<PBOnPointerUp>(componentId, OnPointerUpSerializer.Serialize);
 
             this.factory = factory;
