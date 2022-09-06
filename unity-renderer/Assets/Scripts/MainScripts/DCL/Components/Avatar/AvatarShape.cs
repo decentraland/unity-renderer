@@ -172,16 +172,13 @@ namespace DCL
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                if (DataStore.i.emotes.newFlowEnabled.Get())
+                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                //here we add emote ids to both new and old emote loading flow to merge the results later
+                //because some users might have emotes as wearables and others only as emotes
+                foreach (var emoteId in embeddedEmoteIds)
                 {
-                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                }
-                else
-                {
-                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    //TODO remove this when new flow is the default and we can los retrocompatibility
-                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                    emotes.Add(emoteId);
+                    wearableItems.Add(emoteId);
                 }
 
                 //TODO Add Collider to the AvatarSystem
