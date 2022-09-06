@@ -52,6 +52,10 @@ public class ChatNotificationController : IHUD
         if (message.sender == ownUserProfile.userId) return;
         
         var peerId = ExtractPeerId(message);
+
+        var channel = chatController.GetAllocatedChannel(peerId);
+        if (channel is {Muted: true}) return;
+
         var peerProfile = userProfileBridge.Get(peerId);
         var peerName = peerProfile?.userName ?? peerId;
         var peerProfilePicture = peerProfile?.face256SnapshotURL;
