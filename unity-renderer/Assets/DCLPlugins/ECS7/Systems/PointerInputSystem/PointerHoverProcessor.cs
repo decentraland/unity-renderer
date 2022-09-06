@@ -31,19 +31,19 @@ namespace ECSSystems.PointerInputSystem
 
     internal static class PointerHoverProcessor
     {
-        public static PointerHoverResult ProcessPointerHover(bool isPointerDown, RaycastHit raycastHit,
+        public static PointerHoverResult ProcessPointerHover(bool isPointerDown, Collider hitCollider, float hitDistance,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
             IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup)
         {
             if (isPointerDown)
             {
-                return GetPointerUpEntity(pointerUpGroup, raycastHit);
+                return GetPointerUpEntity(pointerUpGroup, hitCollider, hitDistance);
             }
-            return GetPointerDownEntity(pointerDownGroup, raycastHit);
+            return GetPointerDownEntity(pointerDownGroup, hitCollider, hitDistance);
         }
 
         private static PointerHoverResult GetPointerDownEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
-            RaycastHit raycastHit)
+            Collider hitCollider, float hitDistance)
         {
             var componentGroup = pointerDownGroup.group;
             for (int i = 0; i < componentGroup.Count; i++)
@@ -51,10 +51,10 @@ namespace ECSSystems.PointerInputSystem
                 PBOnPointerDown pointerDown = componentGroup[i].componentData2.model;
                 IList<Collider> entityColliders = componentGroup[i].componentData1.model.colliders;
 
-                if (!PointerInputHelper.IsInputForEntity(raycastHit.collider, entityColliders))
+                if (!PointerInputHelper.IsInputForEntity(hitCollider, entityColliders))
                     continue;
 
-                if (!PointerInputHelper.IsValidDistanceForEntity(raycastHit.distance, pointerDown.GetMaxDistance()))
+                if (!PointerInputHelper.IsValidDistanceForEntity(hitDistance, pointerDown.GetMaxDistance()))
                     return PointerHoverResult.empty;
 
                 if (!pointerDown.GetShowFeedback())
@@ -67,7 +67,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static PointerHoverResult GetPointerUpEntity(IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
-            RaycastHit raycastHit)
+            Collider hitCollider, float hitDistance)
         {
             var componentGroup = pointerUpGroup.group;
             for (int i = 0; i < componentGroup.Count; i++)
@@ -75,10 +75,10 @@ namespace ECSSystems.PointerInputSystem
                 PBOnPointerUp pointerUp = componentGroup[i].componentData2.model;
                 IList<Collider> entityColliders = componentGroup[i].componentData1.model.colliders;
 
-                if (!PointerInputHelper.IsInputForEntity(raycastHit.collider, entityColliders))
+                if (!PointerInputHelper.IsInputForEntity(hitCollider, entityColliders))
                     continue;
 
-                if (!PointerInputHelper.IsValidDistanceForEntity(raycastHit.distance, pointerUp.GetMaxDistance()))
+                if (!PointerInputHelper.IsValidDistanceForEntity(hitDistance, pointerUp.GetMaxDistance()))
                     return PointerHoverResult.empty;
 
                 if (!pointerUp.GetShowFeedback())

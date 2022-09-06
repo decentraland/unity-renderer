@@ -4,6 +4,7 @@ using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using UnityEngine;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -97,8 +98,9 @@ namespace ECSSystems.PointerInputSystem
             // process pointer hover
             if (state.dataStoreEcs7.lastPointerRayHit.HasValue)
             {
+                RaycastHit raycastHit = state.dataStoreEcs7.lastPointerRayHit.Value;
                 PointerHoverResult result = PointerHoverProcessor.ProcessPointerHover(isPointerDown,
-                    state.dataStoreEcs7.lastPointerRayHit.Value, state.pointerDownGroup, state.pointerUpGroup);
+                    raycastHit.collider, raycastHit.distance, state.pointerDownGroup, state.pointerUpGroup);
 
                 if (result.hasFeedback)
                 {
