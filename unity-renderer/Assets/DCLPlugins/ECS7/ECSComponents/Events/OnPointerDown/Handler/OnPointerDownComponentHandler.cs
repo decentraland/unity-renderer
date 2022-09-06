@@ -3,13 +3,14 @@ using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCLPlugins.ECSComponents.Events;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 
 namespace DCLPlugins.ECSComponents.OnPointerDown
 {
     public class OnPointerDownComponentHandler : IECSComponentHandler<PBOnPointerDown>
     {
-        private PointerInputRepresentantion representantion;
+        private PointerInputRepresentation representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
 
@@ -26,7 +27,7 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.DOWN, componentWriter);
+            representantion = new PointerInputRepresentation(entity, dataStore, PointerEventType.Down, componentWriter);
             isAdded = false;
         }
 

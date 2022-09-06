@@ -4,13 +4,14 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCLPlugins.ECSComponents;
+using DCLPlugins.ECSComponents.Events;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 
 namespace DCL.ECSComponents.OnPointerUp
 {
     public class OnPointerUpComponentHandler : IECSComponentHandler<PBOnPointerUp>
     {
-        private PointerInputRepresentantion representantion;
+        private PointerInputRepresentation representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
         
@@ -27,7 +28,7 @@ namespace DCL.ECSComponents.OnPointerUp
             if(representantion != null)
                 representantion.Dispose();
             
-            representantion = new PointerInputRepresentantion(entity, dataStore, PointerInputEventType.UP, componentWriter);
+            representantion = new PointerInputRepresentation(entity, dataStore, PointerInputEventType.UP, componentWriter);
             isAdded = false;
         }
 
