@@ -149,9 +149,9 @@ namespace DCL
         private void InitializeHomePointIcon()
         {
             homePointIcon = GameObject.Instantiate(homePointIconPrefab).GetComponent<RectTransform>();
-            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, true);
+            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, false);
             homePointIcon.anchoredPosition = new Vector2(0,0);
-            homePointIcon.transform.position = new Vector3(homePointIcon.transform.position.x, homePointIcon.transform.position.y, 0);
+            homePointIcon.transform.localPosition = new Vector3(homePointIcon.transform.localPosition.x, homePointIcon.transform.localPosition.y, 0);
             homePointIcon.localScale = new Vector3(2,2,2);
         }
 
