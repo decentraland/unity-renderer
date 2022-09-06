@@ -10,14 +10,14 @@ namespace ECSSystems.PointerInputSystem
             return colliders.Contains(pointerEventCollider);
         }
 
-        public static bool IsValidFistanceForEntity(float pointerEventDistance, float maxDistance)
+        public static bool IsValidDistanceForEntity(float pointerEventDistance, float maxDistance)
         {
             return pointerEventDistance <= maxDistance;
         }
 
         public static bool IsValidInputForEntity(int pointerEventButton, float pointerEventDistance, float maxDistance, ActionButton button)
         {
-            if (!IsValidFistanceForEntity(pointerEventDistance, maxDistance))
+            if (!IsValidDistanceForEntity(pointerEventDistance, maxDistance))
                 return false;
 
             if (button == ActionButton.Any || (int)button == pointerEventButton)

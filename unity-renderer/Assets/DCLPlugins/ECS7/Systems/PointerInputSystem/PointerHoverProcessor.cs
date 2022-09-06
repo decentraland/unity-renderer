@@ -54,7 +54,7 @@ namespace ECSSystems.PointerInputSystem
                 if (!PointerInputHelper.IsInputForEntity(raycastHit.collider, entityColliders))
                     continue;
 
-                if (!PointerInputHelper.IsValidFistanceForEntity(raycastHit.distance, pointerDown.GetMaxDistance()))
+                if (!PointerInputHelper.IsValidDistanceForEntity(raycastHit.distance, pointerDown.GetMaxDistance()))
                     return PointerHoverResult.empty;
 
                 if (!pointerDown.GetShowFeedback())
@@ -78,7 +78,7 @@ namespace ECSSystems.PointerInputSystem
                 if (!PointerInputHelper.IsInputForEntity(raycastHit.collider, entityColliders))
                     continue;
 
-                if (!PointerInputHelper.IsValidFistanceForEntity(raycastHit.distance, pointerUp.GetMaxDistance()))
+                if (!PointerInputHelper.IsValidDistanceForEntity(raycastHit.distance, pointerUp.GetMaxDistance()))
                     return PointerHoverResult.empty;
 
                 if (!pointerUp.GetShowFeedback())
