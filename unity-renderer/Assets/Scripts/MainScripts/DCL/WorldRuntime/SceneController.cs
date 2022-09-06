@@ -397,6 +397,7 @@ namespace DCL
 
             if (!MessageDecoder.DecodePayloadChunk(payload,
                     out string sceneId,
+                    out int sceneNumber,
                     out string message,
                     out string messageTag,
                     out PB_SendSceneMessage sendSceneMessage))
@@ -404,7 +405,7 @@ namespace DCL
                 return null;
             }
 
-            MessageDecoder.DecodeSceneMessage(sceneId, message, messageTag, sendSceneMessage, ref queuedMessage);
+            MessageDecoder.DecodeSceneMessage(sceneId, sceneNumber, message, messageTag, sendSceneMessage, ref queuedMessage);
 
             ProfilingEvents.OnMessageDecodeEnds?.Invoke("Misc");
 
@@ -601,6 +602,8 @@ namespace DCL
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
             scene = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
+            
+            // Debug.Log($"LoadParcelScenesExecute - sceneId:{scene.id}...sceneNumber:{scene.number}");
 
             if (scene == null || scene.id == null)
                 return;
@@ -749,6 +752,8 @@ namespace DCL
                 type = QueuedSceneMessage.Type.LOAD_PARCEL,
                 message = decentralandSceneJSON
             };
+            
+            Debug.Log($"LoadParcelScenes - sceneId:{queuedMessage.sceneId}...sceneNumber:{queuedMessage.sceneNumber}");
 
             ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 

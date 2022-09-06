@@ -201,6 +201,8 @@ namespace DCL
 
                         if (!(m is QueuedSceneMessage_Scene sceneMessage))
                             continue;
+                        
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.SCENE_MESSAGE - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
 
                         if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                         {
@@ -234,16 +236,22 @@ namespace DCL
 
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.LOAD_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        
                         handler.LoadParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_PARCEL:
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UNLOAD_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        
                         handler.UnloadParcelSceneExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UPDATE_PARCEL:
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UPDATE_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        
                         handler.UpdateParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
 

@@ -28,6 +28,7 @@ namespace DCL.Models
         {
             public static bool VERBOSE = false;
             public string id;
+            // public int number;
             public string baseUrl;
             public string baseUrlBundles;
 
