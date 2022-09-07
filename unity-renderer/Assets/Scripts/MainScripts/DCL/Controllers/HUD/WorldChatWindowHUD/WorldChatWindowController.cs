@@ -235,7 +235,7 @@ public class WorldChatWindowController : IHUD
 
     private void OpenPublicChat(string channelId)
     {
-        if (channelId == NEARBY_CHANNEL_ID)
+        if (channelId == ChatUtils.NEARBY_CHANNEL_ID)
             OnOpenPublicChat?.Invoke(channelId);
         else
             OnOpenChannel?.Invoke(channelId);
