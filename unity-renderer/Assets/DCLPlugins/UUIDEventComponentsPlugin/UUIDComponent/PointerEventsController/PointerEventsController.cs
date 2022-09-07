@@ -116,7 +116,7 @@ namespace DCL
                 return;
             }
 
-            if (dataStoreEcs7.isEcs7Enable)
+            if (dataStoreEcs7.isEcs7Enabled)
                 dataStoreEcs7.lastPointerRayHit = hitInfo;
 
             var raycastHandlerTarget = hitInfo.collider.GetComponent<IRaycastPointerHandler>();
@@ -397,7 +397,7 @@ namespace DCL
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
             RaycastResultInfo raycastInfoPointerEventLayer = null;
-            if (pointerInputUpEvent != null || dataStoreEcs7.isEcs7Enable)
+            if (pointerInputUpEvent != null || dataStoreEcs7.isEcs7Enabled)
             {
                 // Raycast for pointer event components
                 raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane,
@@ -440,7 +440,7 @@ namespace DCL
                 }
             }
 
-            if (dataStoreEcs7.isEcs7Enable)
+            if (dataStoreEcs7.isEcs7Enabled)
                 dataStoreEcs7.lastPointerInputEvent = new DataStore_ECS7.PointerEvent((int)buttonId, false, raycastInfoPointerEventLayer);
         }
 
@@ -530,7 +530,7 @@ namespace DCL
                 
             }
 
-            if (dataStoreEcs7.isEcs7Enable)
+            if (dataStoreEcs7.isEcs7Enabled)
                 dataStoreEcs7.lastPointerInputEvent = new DataStore_ECS7.PointerEvent((int)buttonId, true, raycastInfoPointerEventLayer);
         }
 

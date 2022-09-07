@@ -29,7 +29,7 @@ namespace DCL
         public readonly BaseDictionary<long, List<IPointerInputEvent>> entityEvents = new BaseDictionary<long, List<IPointerInputEvent>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public IUIDataContainer uiDataContainer = new UIDataContainer();
-        public bool isEcs7Enable = false;
+        public bool isEcs7Enabled = false;
         public PointerEvent? lastPointerInputEvent = null;
         public RaycastHit? lastPointerRayHit = null;
     }

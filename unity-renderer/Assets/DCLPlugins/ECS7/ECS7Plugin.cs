@@ -20,7 +20,7 @@ namespace DCL.ECS7
 
         public ECS7Plugin()
         {
-            DataStore.i.ecs7.isEcs7Enable = true;
+            DataStore.i.ecs7.isEcs7Enabled = true;
 
             sceneController = Environment.i.world.sceneController;
 
