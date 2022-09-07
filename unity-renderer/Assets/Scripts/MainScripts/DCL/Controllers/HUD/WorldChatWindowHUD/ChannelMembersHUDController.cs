@@ -75,6 +75,7 @@ namespace DCL.Chat.HUD
             ClearListeners();
 
             view.ClearSearchInput();
+            isSearching = false;
 
             view.OnSearchUpdated += SearchMembers;
             view.OnRequestMoreMembers += LoadMoreMembers;
@@ -126,11 +127,6 @@ namespace DCL.Chat.HUD
             if (!view.IsActive) return;
             view.HideLoading();
 
-            if (!isSearching)
-                view.ShowLoadingMore();
-            else
-                view.HideLoadingMore();
-
             foreach (ChannelMember member in channelMembers)
             {
                 UserProfile memberProfile = UserProfileController.GetProfileByUserId(member.userId);
@@ -151,12 +147,17 @@ namespace DCL.Chat.HUD
 
             if (isSearching)
             {
+                view.HideLoadingMore();
+
                 if (view.EntryCount > 0)
                     view.ShowResultsHeader();
                 else
                     view.HideResultsHeader();
             }
-
+            else
+            {
+                view.ShowLoadingMore();
+            }
         }
 
         private void LoadMoreMembers()

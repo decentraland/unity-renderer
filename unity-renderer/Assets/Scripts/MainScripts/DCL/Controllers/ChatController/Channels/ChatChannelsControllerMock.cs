@@ -668,7 +668,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             {
                 var profile = new UserProfileModel
                 {
-                    userId = $"{channelId}_member{i + 1}",
+                    userId = $"{channelId.Substring(0, 3)}_member{i + 1}",
                     name = $"{channelId.Substring(0, 3)}_member{i + 1}",
                     snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/seed/{i}/256" }
                 };
