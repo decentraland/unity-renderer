@@ -4,6 +4,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DCL.Chat;
 
 public class ChatHUDController : IDisposable
 {

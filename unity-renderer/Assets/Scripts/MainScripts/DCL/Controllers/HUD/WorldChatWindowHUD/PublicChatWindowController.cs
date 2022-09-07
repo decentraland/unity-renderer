@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using UnityEngine;

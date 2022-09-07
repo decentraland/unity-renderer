@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Chat;
+using DCL.Interface;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using DCL;
@@ -12,7 +14,6 @@ using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowController : IHUD
 {
-    private const string NEARBY_CHANNEL_ID = "nearby";
     private const int MAX_SEARCHED_CHANNELS = 100;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
@@ -89,13 +90,13 @@ public class WorldChatWindowController : IHUD
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
         
-        var channel = chatController.GetAllocatedChannel(NEARBY_CHANNEL_ID);
-        publicChannels[NEARBY_CHANNEL_ID] = new PublicChatModel(NEARBY_CHANNEL_ID, channel.Name,
+        var channel = chatController.GetAllocatedChannel(ChatUtils.NEARBY_CHANNEL_ID);
+        publicChannels[ChatUtils.NEARBY_CHANNEL_ID] = new PublicChatModel(ChatUtils.NEARBY_CHANNEL_ID, channel.Name,
             channel.Description,
             channel.LastMessageTimestamp,
             channel.Joined,
             channel.MemberCount);
-        view.SetPublicChat(publicChannels[NEARBY_CHANNEL_ID]);
+        view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
         view.ShowChannelsLoading();
 
         foreach (var value in chatController.GetAllocatedEntries())
@@ -234,7 +235,7 @@ public class WorldChatWindowController : IHUD
 
     private void OpenPublicChat(string channelId)
     {
-        if (channelId == NEARBY_CHANNEL_ID)
+        if (channelId == ChatUtils.NEARBY_CHANNEL_ID)
             OnOpenPublicChat?.Invoke(channelId);
         else
             OnOpenChannel?.Invoke(channelId);
