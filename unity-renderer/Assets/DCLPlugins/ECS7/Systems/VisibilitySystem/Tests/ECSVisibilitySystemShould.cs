@@ -26,8 +26,10 @@ namespace Tests
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
-            var componentGroups = new ComponentGroups(componentsManager);
-            VisibilitySystemUpdate = ECSVisibilitySystem.CreateSystem(componentGroups.visibilityGroup,
+            var visibilityGroup = componentsManager.CreateComponentGroup<InternalRenderers, InternalVisibility>
+                ((int)InternalECSComponentsId.RENDERERS, (int)InternalECSComponentsId.VISIBILITY);
+            
+            VisibilitySystemUpdate = ECSVisibilitySystem.CreateSystem(visibilityGroup,
                 internalEcsComponents.renderersComponent,
                 internalEcsComponents.visibilityComponent);
 
@@ -39,7 +41,7 @@ namespace Tests
         [TearDown]
         public void TearDown()
         {
-            testUtils.Dispose();
+            testUtils?.Dispose();
         }
 
         [Test]
