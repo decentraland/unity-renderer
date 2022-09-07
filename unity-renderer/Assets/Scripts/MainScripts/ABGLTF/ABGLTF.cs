@@ -131,7 +131,7 @@ public class ABGLTF : MonoBehaviour
     
     public IParcelScene FindSceneForPlayer()
     {
-        foreach (IParcelScene scene in DCL.Environment.i.world.state.scenesSortedByDistance)
+        foreach (IParcelScene scene in DCL.Environment.i.world.state.GetScenesSortedByDistance())
         {
             if (WorldStateUtils.IsCharacterInsideScene(scene))
                 return scene;
