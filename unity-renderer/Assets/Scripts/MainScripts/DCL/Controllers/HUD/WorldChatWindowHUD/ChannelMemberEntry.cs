@@ -95,5 +95,10 @@ namespace DCL.Chat.HUD
             menuTransform.pivot = userContextMenuPositionReference.pivot;
             menuTransform.position = userContextMenuPositionReference.position;
         }
+
+        public static ChannelMemberEntry Create()
+        {
+            return Instantiate(Resources.Load<ChannelMemberEntry>("SocialBarV1/ChannelMemberEntry"));
+        }
     }
 }
