@@ -636,17 +636,17 @@ Invite others to join by quoting the channel name in other chats or include it a
             }
         }
 
-        public void GetChannelInfo(string channelId) =>
-            GetFakeChannelInfo(channelId).Forget();
+        public void GetChannelInfo(string[] channelIds) =>
+            GetFakeChannelInfo(channelIds).Forget();
 
-        private async UniTask GetFakeChannelInfo(string channelId)
+        private async UniTask GetFakeChannelInfo(string[] channelIds)
         {
             await UniTask.Delay(Random.Range(40, 1000));
 
             var msg = new ChannelInfoPayload
             {
                 joined = true,
-                channelId = channelId,
+                channelId = channelIds[0],
                 muted = false,
                 memberCount = Random.Range(0, 100),
                 unseenMessages = 0

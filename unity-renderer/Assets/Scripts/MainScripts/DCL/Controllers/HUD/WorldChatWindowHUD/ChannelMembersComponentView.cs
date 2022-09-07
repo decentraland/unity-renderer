@@ -10,6 +10,7 @@ namespace DCL.Chat.HUD
     public class ChannelMembersComponentView : BaseComponentView, IChannelMembersComponentView
     {
         [SerializeField] internal CollapsableChannelMemberListComponentView memberList;
+        [SerializeField] internal GameObject resultsHeaderLabelContainer;
         [SerializeField] internal TMP_Text resultsHeaderLabel;
         [SerializeField] internal GameObject loadingContainer;
         [SerializeField] internal ScrollRect scroll;
@@ -101,6 +102,10 @@ namespace DCL.Chat.HUD
         public void ShowLoadingMore() => loadMoreContainer.SetActive(true);
 
         public void HideLoadingMore() => loadMoreContainer.SetActive(false);
+
+        public void ShowResultsHeader() => resultsHeaderLabelContainer.SetActive(true);
+
+        public void HideResultsHeader() => resultsHeaderLabelContainer.SetActive(false);
 
         public override void RefreshControl() { }
 

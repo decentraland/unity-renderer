@@ -85,7 +85,8 @@ namespace DCL.Chat.HUD
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
-            chatController.GetChannelInfo(currentChannelId);
+            string[] channelsToGetInfo = { currentChannelId };
+            chatController.GetChannelInfo(channelsToGetInfo);
             chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
             loadingCancellationToken.Cancel();
@@ -102,15 +103,17 @@ namespace DCL.Chat.HUD
 
             isSearching = !string.IsNullOrEmpty(searchText);
 
-            if (string.IsNullOrEmpty(searchText))
+            if (!isSearching)
             {
                 chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
                 SetAutomaticReloadingActive(true);
+                view.HideResultsHeader();
             }
             else
             {
                 chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, 0, searchText);
                 SetAutomaticReloadingActive(false);
+                view.ShowResultsHeader();
             }
 
             loadingCancellationToken.Cancel();
@@ -122,7 +125,11 @@ namespace DCL.Chat.HUD
         {
             if (!view.IsActive) return;
             view.HideLoading();
-            view.ShowLoadingMore();
+
+            if (!isSearching)
+                view.ShowLoadingMore();
+            else
+                view.HideLoadingMore();
 
             foreach (ChannelMember member in channelMembers)
             {
@@ -141,11 +148,20 @@ namespace DCL.Chat.HUD
                     view.Set(userToAdd);
                 }
             }
+
+            if (isSearching)
+            {
+                if (view.EntryCount > 0)
+                    view.ShowResultsHeader();
+                else
+                    view.HideResultsHeader();
+            }
+
         }
 
         private void LoadMoreMembers()
         {
-            if (IsLoading()) return;
+            if (IsLoading() || isSearching) return;
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
             chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, view.EntryCount);

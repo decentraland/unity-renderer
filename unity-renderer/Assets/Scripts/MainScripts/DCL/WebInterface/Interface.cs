@@ -795,6 +795,50 @@ namespace DCL.Interface
             public string channelId;
         }
 
+        [Serializable]
+        private class JoinOrCreateChannelPayload
+        {
+            public string channelId;
+        }
+
+        [Serializable]
+        private class GetChannelMessagesPayload
+        {
+            public string channelId;
+            public int limit;
+            public long from;
+        }
+
+        [Serializable]
+        private class GetJoinedChannelsPayload
+        {
+            public int limit;
+            public int skip;
+        }
+
+        [Serializable]
+        private class GetChannelsPayload
+        {
+            public int limit;
+            public int skip;
+            public string name;
+        }
+
+        [Serializable]
+        private class GetChannelInfoPayload
+        {
+            public string[] channelIds;
+        }
+
+        [Serializable]
+        private class GetChannelMembersPayload
+        {
+            public string channelId;
+            public int limit;
+            public int skip;
+            public string userName;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -1788,6 +1832,62 @@ namespace DCL.Interface
             SendMessage("CreateChannel", new CreateChannelPayload
             {
                 channelId = channelId
+            });
+        }
+
+        public static void JoinOrCreateChannel(string channelId)
+        {
+            SendMessage("JoinOrCreateChannel", new JoinOrCreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+        {
+            SendMessage("GetChannelMessages", new GetChannelMessagesPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                from = fromTimestamp
+            });
+        }
+
+        public static void GetJoinedChannels(int limit, int skip)
+        {
+            SendMessage("GetJoinedChannels", new GetJoinedChannelsPayload
+            {
+                limit = limit,
+                skip = skip
+            });
+        }
+
+        public static void GetChannels(int limit, int skip, string name)
+        {
+            SendMessage("GetChannels", new GetChannelsPayload
+            {
+                limit = limit,
+                skip = skip,
+                name = name
+            });
+        }
+
+        public static void GetChannelInfo(string[] channelIds)
+        {
+            SendMessage("GetChannelInfo", new GetChannelInfoPayload
+            {
+                channelIds = channelIds
+            });
+        }
+
+        public static void GetChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            SendMessage("GetChannelMembers", new GetChannelMembersPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                skip = skip,
+                userName = name
             });
         }
     }

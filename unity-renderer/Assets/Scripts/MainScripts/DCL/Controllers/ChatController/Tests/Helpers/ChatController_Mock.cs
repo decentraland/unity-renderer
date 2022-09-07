@@ -105,7 +105,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public void GetChannelInfo(string channelId)
+    public void GetChannelInfo(string[] channelIds)
     {
     }
 
