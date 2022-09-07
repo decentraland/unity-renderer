@@ -37,6 +37,7 @@ public class ProfileHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
+    private BaseVariable<bool> nameOrDescriptionJustSaved =>  DataStore.i.exploreV2.nameOrDescriptionJustSaved;
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
         this.userProfileBridge = userProfileBridge;
@@ -99,7 +100,7 @@ public class ProfileHUDController : IHUD
     {
         if (!current)
         {
-            DataStore.i.exploreV2.nameOrDescriptionJustSaved.Set(false);
+            nameOrDescriptionJustSaved.Set(false);
         }
     }
 
@@ -228,8 +229,7 @@ public class ProfileHUDController : IHUD
         }
 
         userProfileBridge.SaveUnverifiedName(newName);
-        DataStore.i.exploreV2.nameOrDescriptionJustSaved.Set(true);
-
+        nameOrDescriptionJustSaved.Set(true);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
@@ -247,7 +247,7 @@ public class ProfileHUDController : IHUD
         view.SetDescription(description);
         view.ActivateDescriptionEditionMode(false);
         userProfileBridge.SaveDescription(description);
-        DataStore.i.exploreV2.nameOrDescriptionJustSaved.Set(true);
+        nameOrDescriptionJustSaved.Set(true);
     }
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
