@@ -41,8 +41,8 @@ public class WearablesAPIData
         public Data data;
         public i18n[] i18n;
         public EmoteDataV0 emoteDataV0 = null;
-        public int createdAt;
-        public int updatedAt;
+        public long createdAt;
+        public long updatedAt;
     }
 
     [Serializable]

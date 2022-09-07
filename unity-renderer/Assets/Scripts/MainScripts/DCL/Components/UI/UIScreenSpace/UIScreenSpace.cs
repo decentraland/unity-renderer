@@ -107,7 +107,7 @@ namespace DCL.Components
             }
             
             bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
-
+            
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
         }

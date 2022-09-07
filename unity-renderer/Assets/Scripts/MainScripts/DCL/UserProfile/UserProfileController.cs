@@ -1,4 +1,5 @@
 using System;
+using DCL;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -84,7 +85,7 @@ public class UserProfileController : MonoBehaviour
         return null;
     }
 
-    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalogValue.Get(targetUserId); }
+    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalog.Get(targetUserId); }
 
     public void RemoveUserProfilesFromCatalog(string payload)
     {

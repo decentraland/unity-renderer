@@ -43,9 +43,10 @@ namespace AvatarSystem
         /// Starts the loading process for the Avatar. 
         /// </summary>
         /// <param name="wearablesIds"></param>
+        /// <param name="emotesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
-        public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
         {
             disposeCts ??= new CancellationTokenSource();
 
@@ -63,7 +64,7 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -93,7 +94,8 @@ namespace AvatarSystem
             catch (Exception e)
             {
                 Dispose();
-                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
+                          $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else

@@ -21,6 +21,7 @@ namespace AssetPromiseKeeper_Tests
             DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
             var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
             serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
             Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;

@@ -19,6 +19,7 @@ namespace SceneBoundariesCheckerTests
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            scene.isPersistent = false;
             coreComponentsPlugin = new CoreComponentsPlugin();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());

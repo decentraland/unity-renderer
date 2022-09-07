@@ -2,6 +2,7 @@ using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
@@ -14,7 +15,9 @@ namespace Tests
     {
         protected override IEnumerator SetUp()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
+            Environment.Setup(serviceLocator);
             yield break;
         }
 
@@ -91,9 +94,9 @@ namespace Tests
 
                 yield return null;
 
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID),
+                Assert.IsTrue(DCL.Environment.i.world.state.ContainsScene(loadedSceneID),
                     "Expected loadedScene not found!");
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes[loadedSceneID] != null,
+                Assert.IsTrue(DCL.Environment.i.world.state.GetScene(loadedSceneID) != null,
                     "Expected loadedScene found but was null!!!");
             }
 

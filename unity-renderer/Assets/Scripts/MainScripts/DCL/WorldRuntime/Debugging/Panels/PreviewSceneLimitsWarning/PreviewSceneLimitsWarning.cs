@@ -90,7 +90,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(sceneId))
             {
-                worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
+                worldState.TryGetScene(sceneId, out IParcelScene scene);
                 ISceneMetricsCounter metricsController = scene?.metricsCounter;
                 SceneMetricsModel currentMetrics = metricsController?.currentCount;
                 SceneMetricsModel limit = metricsController?.maxCount;

@@ -1,15 +1,10 @@
-using System;
-using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
-using System.Linq;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Helpers.NFT;
 using DCL.Helpers.NFT.Markets;
-using NFTShape_Internal;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -21,28 +16,32 @@ namespace SceneBoundariesCheckerTests
     {
         private ParcelScene scene;
         private CoreComponentsPlugin coreComponentsPlugin;
+        private UUIDEventsPlugin uuidEventsPlugin;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
+            uuidEventsPlugin = new UUIDEventsPlugin();
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            scene.isPersistent = false;
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
             TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
+            
         }
 
         protected override IEnumerator TearDown()
         {
+            uuidEventsPlugin.Dispose();
             coreComponentsPlugin.Dispose();
             yield return base.TearDown();
         }
-
+        
         protected override ServiceLocator InitializeServiceLocator()
         {
             ServiceLocator result = base.InitializeServiceLocator();
-
             result.Register<IServiceProviders>(
                 () =>
                 {
@@ -94,6 +93,9 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
+        
+        [UnityTest]
+        public IEnumerator OnPointerEventCollidersAreResetWhenReenteringBounds() { yield return SBC_Asserts.OnPointerEventCollidersAreResetWhenReenteringBounds(scene); }
 
         [UnityTest]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }

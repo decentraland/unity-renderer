@@ -129,6 +129,8 @@ public class ItemSelector : MonoBehaviour
         ShowCompatibleWithBodyShape();
     }
 
+    private void OnEnable() { UpdateSelectorLayout(); }
+
     public void UpdateSelectorLayout() { Utils.ForceUpdateLayout(content); }
 
     private void ShowCompatibleWithBodyShape()

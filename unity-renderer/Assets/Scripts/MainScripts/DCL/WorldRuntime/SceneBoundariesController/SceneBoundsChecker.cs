@@ -140,7 +140,7 @@ namespace DCL.Controllers
 
         public void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false)
         {
-            if (!enabled)
+            if (!enabled || (entity.scene != null && entity.scene.isPersistent))
                 return;
 
             if (runPreliminaryEvaluation)
@@ -182,7 +182,7 @@ namespace DCL.Controllers
 
         public void RunEntityEvaluation(IDCLEntity entity, bool onlyOuterBoundsCheck)
         {
-            if (entity == null || entity.scene == null || entity.gameObject == null)
+            if (entity == null || entity.gameObject == null || entity.scene == null || entity.scene.isPersistent)
                 return;
 
             // Recursively evaluate entity children as well, we need to check this up front because this entity may not have meshes of its own, but the children may.
@@ -231,15 +231,15 @@ namespace DCL.Controllers
             
             if (!entity.isInsideSceneOuterBoundaries)
             {
-                SetEntityInsideBoundariesState(entity, false);
                 SetComponentsInsideBoundariesValidState(entity, false);
+                SetEntityInsideBoundariesState(entity, false);
             }
             
             if (!onlyOuterBoundsCheck)
             {
                 bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get());
-                SetEntityInsideBoundariesState(entity, isInsideBoundaries);
                 SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
+                SetEntityInsideBoundariesState(entity, isInsideBoundaries);
             }
         }
 
@@ -310,19 +310,20 @@ namespace DCL.Controllers
 
         private void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            SetEntityInsideBoundariesState(entity, isInsideBoundaries);
-
-            SetEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
-            SetEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
+            SetEntityMeshesInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
+            SetEntityCollidersInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
             SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
+            
+            // Should always be set last as entity.isInsideSceneBoundaries is checked to avoid re-running code unnecessarily
+            SetEntityInsideBoundariesState(entity, isInsideBoundaries);
         }
 
-        private void SetEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
+        private void SetEntityMeshesInsideBoundariesState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
             feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries);
         }
 
-        private void SetEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
+        private void SetEntityCollidersInsideBoundariesState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
             if (meshesInfo == null || meshesInfo.colliders.Count == 0 || !meshesInfo.currentShape.HasCollisions())
                 return;
@@ -338,14 +339,12 @@ namespace DCL.Controllers
 
         private void SetComponentsInsideBoundariesValidState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if(!DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
+            if(entity.isInsideSceneBoundaries == isInsideBoundaries || !DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
                 return;
             
-            List<IOutOfSceneBoundariesHandler> components = DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId];
-
-            for (int i = 0; i < components.Count; i++)
+            foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
             {
-                components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
+                component.UpdateOutOfBoundariesState(isInsideBoundaries);   
             }
         }
     }

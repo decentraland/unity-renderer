@@ -14,6 +14,7 @@ namespace DCL.Emotes
         private DataStore_Emotes dataStore;
         private EmoteAnimationLoaderFactory loaderFactory;
         private IWearableItemResolver resolver;
+        private IEmotesCatalogService emoteCatalog;
         private CatalogController catalogController;
 
         [SetUp]
@@ -24,7 +25,8 @@ namespace DCL.Emotes
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
             resolver = Substitute.For<IWearableItemResolver>();
-            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver);
+            emoteCatalog = Substitute.For<IEmotesCatalogService>();
+            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog);
         }
 
         [TearDown]

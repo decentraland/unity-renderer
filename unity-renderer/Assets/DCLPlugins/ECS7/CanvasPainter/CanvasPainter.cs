@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using DCL.Controllers;
-using DCL.ECS7;
 using DCL.ECS7.UI;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
-using Environment = DCL.Environment;
 using Random = UnityEngine.Random;
 
 namespace DCL.ECS7
@@ -120,7 +115,7 @@ namespace DCL.ECS7
             bool sceneFound = false;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if(loadedScenes[i].sceneData.id != worldState.currentSceneId)
+                if(loadedScenes[i].sceneData.id != worldState.GetCurrentSceneId())
                     continue;
                 sceneFound = true;
                 DrawUI(loadedScenes[i]);
