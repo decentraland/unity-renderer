@@ -10,9 +10,9 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBVisibilityComponent>, () => new ECSVisibilityComponentHandler());
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBVisibilityComponent>, () => new ECSVisibilityComponentHandler(internalComponents.visibilityComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

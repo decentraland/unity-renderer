@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -11,20 +12,21 @@ namespace ECSSystems.VisibilitySystem
     {
         private class State
         {
-            public IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> componentsGroup;
-            public IInternalECSComponent<InternalTexturizable> texturizableComponent;
-            public IInternalECSComponent<InternalMaterial> materialComponent;
+            public IECSReadOnlyComponentsGroup<InternalRenderers, InternalVisibility> componentsGroup;
+            public IInternalECSComponent<InternalRenderers> renderersComponent;
+            public IInternalECSComponent<InternalVisibility> visibilityComponent;
+
         }
 
-        public static Action CreateSystem(IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> componentsGroup,
-            IInternalECSComponent<InternalTexturizable> texturizableComponent,
-            IInternalECSComponent<InternalMaterial> materialComponent)
+        public static Action CreateSystem(IECSReadOnlyComponentsGroup<InternalRenderers, InternalVisibility> componentsGroup,
+            IInternalECSComponent<InternalRenderers> renderersComponent,
+            IInternalECSComponent<InternalVisibility> visibilityComponent)
         {
             var state = new State()
             {
                 componentsGroup = componentsGroup,
-                texturizableComponent = texturizableComponent,
-                materialComponent = materialComponent
+                renderersComponent = renderersComponent,
+                visibilityComponent = visibilityComponent
             };
             return () => Update(state);
         }
@@ -36,32 +38,27 @@ namespace ECSSystems.VisibilitySystem
             for (int i = 0; i < componentGroup.Count; i++)
             {
                 var entityData = componentGroup[i];
-                InternalMaterial materialModel = entityData.componentData1.model;
-                InternalTexturizable texturizableModel = entityData.componentData2.model;
+                InternalRenderers renderersModel = entityData.componentData1.model;
+                InternalVisibility visibilityModel = entityData.componentData2.model;
+
 
                 // if neither component has changed then we skip this entity
-                if (!materialModel.dirty && !texturizableModel.dirty)
+                if (!renderersModel.dirty && !visibilityModel.dirty)
                     continue;
 
-                IList<Renderer> renderers = texturizableModel.renderers;
-                Material material = materialModel.material;
-                materialModel.renderers = renderers;
+                IList<Renderer> renderers = renderersModel.renderers;
 
                 for (int j = 0; j < renderers.Count; j++)
                 {
                     Renderer renderer = renderers[j];
-                    if (renderer.sharedMaterial != material)
-                    {
-                        renderer.sharedMaterial = material;
-                    }
-                    renderer.shadowCastingMode = materialModel.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+                    renderer.enabled = visibilityModel.visible;
                 }
 
-                materialModel.dirty = false;
-                texturizableModel.dirty = false;
+                renderersModel.dirty = false;
+                visibilityModel.dirty = false;
 
-                state.materialComponent.PutFor(entityData.scene, entityData.entity, materialModel);
-                state.texturizableComponent.PutFor(entityData.scene, entityData.entity, texturizableModel);
+                state.renderersComponent.PutFor(entityData.scene, entityData.entity, renderersModel);
+                state.visibilityComponent.PutFor(entityData.scene, entityData.entity, visibilityModel);
             }
         }
     }

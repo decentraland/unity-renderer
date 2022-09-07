@@ -8,16 +8,23 @@ namespace DCL.ECSComponents
 {
     public class ECSVisibilityComponentHandler : IECSComponentHandler<PBVisibilityComponent>
     {
-        public ECSVisibilityComponentHandler() { }
+        private readonly IInternalECSComponent<InternalVisibility> visibilityInternalComponent;
+
+        public ECSVisibilityComponentHandler(IInternalECSComponent<InternalVisibility> visibilityInternalComponent)
+        {
+            this.visibilityInternalComponent = visibilityInternalComponent;
+        }
+        
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            SetVisibility(entity, true);
+            visibilityInternalComponent.RemoveFor(scene, entity);
         }
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBVisibilityComponent model)
         {
-            SetVisibility(entity, model.GetVisible());
+            var internalModel = new InternalVisibility() { visible = model.GetVisible(), dirty = true };
+            visibilityInternalComponent.PutFor(scene, entity, internalModel);
         }
         
         private void SetVisibility(IDCLEntity entity, bool visible)

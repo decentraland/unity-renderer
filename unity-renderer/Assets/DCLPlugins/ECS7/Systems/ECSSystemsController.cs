@@ -27,7 +27,8 @@ public class ECSSystemsController : IDisposable
             ECSTransformParentingSystem.Update,
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
-            ECSVisibilitySystem.CreateSystem()
+            ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
+                context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent)
         };
 
         lateUpdateSystems = new ECS7System[]

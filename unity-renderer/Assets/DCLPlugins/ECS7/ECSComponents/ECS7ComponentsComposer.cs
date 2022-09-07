@@ -63,7 +63,7 @@ namespace DCL.ECSComponents
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
             meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter);
-            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter);
+            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);

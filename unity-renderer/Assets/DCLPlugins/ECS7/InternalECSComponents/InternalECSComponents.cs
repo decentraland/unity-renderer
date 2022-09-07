@@ -7,6 +7,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { private set; get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { private set; get; }
     public IInternalECSComponent<InternalRenderers> renderersComponent { private set; get; }
+    public IInternalECSComponent<InternalVisibility> visibilityComponent { private set; get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -24,6 +25,12 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         
         renderersComponent = new InternalECSComponent<InternalRenderers>(
             InternalECSComponentsId.RENDERERS,
+            componentsManager,
+            componentsFactory,
+            null);
+        
+        visibilityComponent = new InternalECSComponent<InternalVisibility>(
+            InternalECSComponentsId.VISIBILITY,
             componentsManager,
             componentsFactory,
             null);
