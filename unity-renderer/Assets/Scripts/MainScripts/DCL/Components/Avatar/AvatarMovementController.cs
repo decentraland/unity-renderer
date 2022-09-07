@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace DCL
 {
-    [RequireComponent(typeof(AvatarShape))]
     public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
         const float SPEED_SLOW = 2.0f;
@@ -56,6 +55,11 @@ namespace DCL
         {
             avatarTransformValue = null;
             currentWorldPosition = Vector3.zero;
+        }
+
+        public void SetAvatarTransform(Transform avatarTransform)
+        {
+            avatarTransformValue = avatarTransform;
         }
 
         void OnEnable() { CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition; }
