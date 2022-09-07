@@ -9,6 +9,8 @@ namespace DCL.Chat.HUD
 {
     public class ChannelMembersComponentView : BaseComponentView, IChannelMembersComponentView
     {
+        private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
+
         [SerializeField] internal CollapsableChannelMemberListComponentView memberList;
         [SerializeField] internal GameObject resultsHeaderLabelContainer;
         [SerializeField] internal TMP_Text resultsHeaderLabel;
@@ -125,7 +127,8 @@ namespace DCL.Chat.HUD
 
         private void LoadMoreEntries(Vector2 scrollPosition)
         {
-            if (scrollPosition.y < 0.005f && lastScrollPosition.y >= 0.005f)
+            if (scrollPosition.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && 
+                lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
             {
                 if (requireMoreEntriesRoutine != null)
                     StopCoroutine(requireMoreEntriesRoutine);
