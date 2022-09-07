@@ -132,9 +132,8 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
             
-            ApplyHidePassportModifier();
+            DisablePassport();
 
             var model = (AvatarModel) newModel;
 
@@ -173,16 +172,13 @@ namespace DCL
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                if (DataStore.i.emotes.newFlowEnabled.Get())
+                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                //here we add emote ids to both new and old emote loading flow to merge the results later
+                //because some users might have emotes as wearables and others only as emotes
+                foreach (var emoteId in embeddedEmoteIds)
                 {
-                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                }
-                else
-                {
-                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    //TODO remove this when new flow is the default and we can los retrocompatibility
-                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                    emotes.Add(emoteId);
+                    wearableItems.Add(emoteId);
                 }
 
                 //TODO Add Collider to the AvatarSystem
@@ -238,7 +234,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            RemoveHidePassportModifier();
+            EnablePasssport();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -382,10 +378,7 @@ namespace DCL
         {
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
             {
-                if (onPointerDown.collider == null)
-                    return;
-
-                onPointerDown.SetPassportEnabled(false);
+                DisablePassport();
             }
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
@@ -395,11 +388,24 @@ namespace DCL
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
             {
-                if (onPointerDown.collider == null)
-                    return;
-
-                onPointerDown.SetPassportEnabled(true);
+                EnablePasssport();
             }
+        }
+
+        private void EnablePasssport()
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(true);
+        }
+
+        private void DisablePassport()
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(false);
         }
 
         public override void Cleanup()

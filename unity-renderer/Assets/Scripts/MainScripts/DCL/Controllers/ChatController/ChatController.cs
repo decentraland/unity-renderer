@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Chat.Channels;
+using DCL.Chat;
 using DCL.Chat.WebApi;
 using JetBrains.Annotations;
 using UnityEngine;

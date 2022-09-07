@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView, IPointerDownHandler
 {
+    private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.995f;
+    
     [SerializeField] internal Button backButton;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal UserThumbnailComponentView userThumbnail;
@@ -30,7 +32,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
-    internal bool isPreviewActivated;
+    private bool isPreviewActivated;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -72,7 +74,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             if (isPreviewActivated)
                 return;
 
-            if (scrollPos.y > 0.995f)
+            if (scrollPos.y > REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
                 OnRequireMoreMessages?.Invoke();
         });
     }
