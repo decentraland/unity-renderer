@@ -643,15 +643,18 @@ Invite others to join by quoting the channel name in other chats or include it a
         {
             await UniTask.Delay(Random.Range(40, 1000));
 
-            var msg = new ChannelInfoPayload
+            foreach (string channelId in channelIds)
             {
-                joined = true,
-                channelId = channelIds[0],
-                muted = false,
-                memberCount = Random.Range(0, 100),
-                unseenMessages = 0
-            };
-            controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+                var msg = new ChannelInfoPayload
+                {
+                    joined = true,
+                    channelId = channelId,
+                    muted = false,
+                    memberCount = Random.Range(0, 100),
+                    unseenMessages = 0
+                };
+                controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+            }
         }
 
         public void GetChannelMembers(string channelId, int limit, int skip, string name) =>

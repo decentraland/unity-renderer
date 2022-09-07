@@ -232,6 +232,14 @@ public class ChatController : MonoBehaviour, IChatController
         }
     }
 
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateChannelMembers(string payload)
+    {
+        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
+        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
+    }
+
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public void MarkMessagesAsSeen(string userId)
@@ -272,14 +280,6 @@ public class ChatController : MonoBehaviour, IChatController
     public void GetChannelMembers(string channelId, int limit, int skip, string name) => WebInterface.GetChannelMembers(channelId, limit, skip, name);
 
     public void GetChannelMembers(string channelId, int limit, int skip) => WebInterface.GetChannelMembers(channelId, limit, skip, string.Empty);
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateChannelMembers(string payload)
-    {
-        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
-        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
-    }
 
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()

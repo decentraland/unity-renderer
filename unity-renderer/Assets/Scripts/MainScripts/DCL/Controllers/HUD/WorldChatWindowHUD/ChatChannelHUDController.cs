@@ -92,7 +92,7 @@ namespace DCL.Chat.HUD
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
-            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController);
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
         }
 
         private void SetVisiblePanelList(bool visible)
