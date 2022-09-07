@@ -153,6 +153,7 @@ namespace DCL
             homePointIcon.anchoredPosition = new Vector2(0,0);
             homePointIcon.transform.localPosition = new Vector3(homePointIcon.transform.localPosition.x, homePointIcon.transform.localPosition.y, 0);
             homePointIcon.localScale = new Vector3(2,2,2);
+            homePointIcon.transform.SetAsFirstSibling();
         }
 
         private void EnsurePools()
