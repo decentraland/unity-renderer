@@ -49,7 +49,6 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
-        DataStore.i.emotes.newFlowEnabled.Set(model.avatar.version >= 1);
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
