@@ -4,10 +4,14 @@ using DCL.ECSRuntime;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
-    public IInternalECSComponent<InternalTexturizable> texturizableComponent { private set; get; }
-    public IInternalECSComponent<InternalMaterial> materialComponent { private set; get; }
-    public IInternalECSComponent<InternalRenderers> renderersComponent { private set; get; }
-    public IInternalECSComponent<InternalVisibility> visibilityComponent { private set; get; }
+    public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
+    public IInternalECSComponent<InternalMaterial> materialComponent { get; }
+
+    public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
+    public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
+
+    public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
+    public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -22,7 +26,19 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new InternalMaterialHandler());
-        
+
+        onPointerColliderComponent = new InternalECSComponent<InternalColliders>(
+            InternalECSComponentsId.COLLIDER_POINTER,
+            componentsManager,
+            componentsFactory,
+            null);
+
+        physicColliderComponent = new InternalECSComponent<InternalColliders>(
+            InternalECSComponentsId.COLLIDER_PHYSICAL,
+            componentsManager,
+            componentsFactory,
+            null);
+
         renderersComponent = new InternalECSComponent<InternalRenderers>(
             InternalECSComponentsId.RENDERERS,
             componentsManager,
@@ -40,6 +56,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     {
         texturizableComponent.Dispose();
         materialComponent.Dispose();
+        onPointerColliderComponent.Dispose();
+        physicColliderComponent.Dispose();
         renderersComponent.Dispose();
     }
 }

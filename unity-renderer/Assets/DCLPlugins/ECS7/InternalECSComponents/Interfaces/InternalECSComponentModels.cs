@@ -17,11 +17,17 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty = true;
     }
 
+    public class InternalColliders
+    {
+        public IList<Collider> colliders = new List<Collider>();
+    }
+
     public class InternalRenderers
     {
         public IList<Renderer> renderers = new List<Renderer>();
         public bool dirty = true;
     }
+
     public class InternalVisibility
     {
         public bool visible = true;
