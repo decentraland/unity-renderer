@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using UnityEngine;
+using NSubstitute;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -25,7 +26,7 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            controller = new MinimapHUDController();
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>());
             navmapView = Object.FindObjectOfType<NavmapView>();
         }
 

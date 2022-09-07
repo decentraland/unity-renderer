@@ -17,15 +17,15 @@ public class MinimapHUDController : IHUD
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
-    public MinimapHUDController() : this(new MinimapHUDModel()) { }
+    public MinimapHUDController(MinimapMetadataController minimapMetadataController) : this(new MinimapHUDModel(), minimapMetadataController) { }
 
-    public MinimapHUDController(MinimapHUDModel model)
+    public MinimapHUDController(MinimapHUDModel model, MinimapMetadataController minimapMetadataController)
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         minimapZoom.Set(1f);
         UpdateData(model);
-        metadataController = MinimapMetadataController.i;
+        metadataController = minimapMetadataController;
         if(metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
     }
@@ -94,7 +94,7 @@ public class MinimapHUDController : IHUD
 
     public void UpdateSetHomePanel()
     {
-        view?.UpdateSetHomePanel(currentCoords == homeCoords);
+        view.UpdateSetHomePanel(currentCoords == homeCoords);
     }
 
     public void UpdatePlayerPosition(string position)
