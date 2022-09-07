@@ -93,7 +93,7 @@ namespace AvatarSystem
                 else
                     visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
 
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
                 else
                     visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
@@ -144,7 +144,7 @@ namespace AvatarSystem
                 else
                     visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
 
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
                 else
                     visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
@@ -204,7 +204,7 @@ namespace AvatarSystem
             Material[] mats = renderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     mats[j].DisableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);
                 else
                     mats[j].EnableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);

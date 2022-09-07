@@ -43,6 +43,7 @@ namespace AvatarSystem
         /// Starts the loading process for the Avatar. 
         /// </summary>
         /// <param name="wearablesIds"></param>
+        /// <param name="emotesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
@@ -93,7 +94,8 @@ namespace AvatarSystem
             catch (Exception e)
             {
                 Dispose();
-                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
+                          $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else
