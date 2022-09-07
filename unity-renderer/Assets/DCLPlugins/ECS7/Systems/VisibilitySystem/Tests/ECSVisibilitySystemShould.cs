@@ -56,10 +56,6 @@ namespace Tests
             Renderer renderer01 = entity01.gameObject.AddComponent<MeshRenderer>();
             Renderer renderer10 = entity10.gameObject.AddComponent<MeshRenderer>();
 
-            Assert.IsNull(renderer00.sharedMaterial);
-            Assert.IsNull(renderer01.sharedMaterial);
-            Assert.IsNull(renderer10.sharedMaterial);
-
             // add texturizable component
             renderersComponent.PutFor(scene0, entity00, new InternalRenderers()
             {
