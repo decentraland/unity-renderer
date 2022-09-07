@@ -12,7 +12,7 @@ public class MinimapHUDController : IHUD
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
     private Vector2Int currentCoords;
-    private Vector2Int homeCoords;
+    private Vector2Int homeCoords = new Vector2Int(0,0);
     private MinimapMetadataController metadataController;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
