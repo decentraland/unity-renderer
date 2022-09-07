@@ -1,21 +1,23 @@
 using DCL.Chat.HUD;
+using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
-using UnityEngine;
 
 public class ChannelMemberEntryShould
 {
-    private ChannelMemberEntry view;
+    private ChannelMemberEntry channelMemberEntryComponent;
 
     [SetUp]
     public void SetUp()
     {
-        view = ChannelMemberEntry.Create();
+        channelMemberEntryComponent = BaseComponentView.Create<ChannelMemberEntry>("SocialBarV1/ChannelMemberEntry");
+        channelMemberEntryComponent.userThumbnail.imageObserver = Substitute.For<ILazyTextureObserver>();
     }
 
     [TearDown]
     public void TearDown()
     {
-        view.Dispose();
+        channelMemberEntryComponent.Dispose();
     }
 
     [Test]
@@ -25,10 +27,10 @@ public class ChannelMemberEntryShould
         string testUserId = "testId";
 
         // Act
-        view.SetUserId(testUserId);
+        channelMemberEntryComponent.SetUserId(testUserId);
 
         // Assert
-        Assert.AreEqual(testUserId, view.model.userId);
+        Assert.AreEqual(testUserId, channelMemberEntryComponent.model.userId);
     }
 
     [Test]
@@ -38,11 +40,11 @@ public class ChannelMemberEntryShould
         string testUserName = "testName";
 
         // Act
-        view.SetUserName(testUserName);
+        channelMemberEntryComponent.SetUserName(testUserName);
 
         // Assert
-        Assert.AreEqual(testUserName, view.model.userName);
-        Assert.AreEqual(testUserName, view.nameLabel.text);
+        Assert.AreEqual(testUserName, channelMemberEntryComponent.model.userName);
+        Assert.AreEqual(testUserName, channelMemberEntryComponent.nameLabel.text);
     }
 
     [Test]
@@ -52,10 +54,10 @@ public class ChannelMemberEntryShould
         string testUri = "testUri";
 
         // Act
-        view.SetUserThumbnail(testUri);
+        channelMemberEntryComponent.SetUserThumbnail(testUri);
 
         // Assert
-        Assert.AreEqual(testUri, view.model.thumnailUrl);
+        Assert.AreEqual(testUri, channelMemberEntryComponent.model.thumnailUrl);
     }
 
     [Test]
@@ -64,14 +66,14 @@ public class ChannelMemberEntryShould
     public void SetUserOnlineStatusCorrectly(bool isOnline)
     {
         // Arrange
-        view.model.isOnline = !isOnline;
+        channelMemberEntryComponent.model.isOnline = !isOnline;
 
         // Act
-        view.SetUserOnlineStatus(isOnline);
+        channelMemberEntryComponent.SetUserOnlineStatus(isOnline);
 
         // Assert
-        Assert.AreEqual(isOnline, view.model.isOnline);
-        Assert.AreEqual(isOnline, view.onlineMark.activeSelf);
-        Assert.AreEqual(!isOnline, view.offlineMark.activeSelf);
+        Assert.AreEqual(isOnline, channelMemberEntryComponent.model.isOnline);
+        Assert.AreEqual(isOnline, channelMemberEntryComponent.onlineMark.activeSelf);
+        Assert.AreEqual(!isOnline, channelMemberEntryComponent.offlineMark.activeSelf);
     }
 }

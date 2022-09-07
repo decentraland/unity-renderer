@@ -18,8 +18,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
 
-        private bool isLayoutDirty;
-        private bool isSortDirty;
+        internal bool isLayoutDirty;
+        internal bool isSortDirty;
         private Vector2 lastScrollPosition;
         private Coroutine requireMoreEntriesRoutine;
 
@@ -142,6 +142,11 @@ namespace DCL.Chat.HUD
             yield return new WaitForSeconds(1f);
             loadMoreSpinner.SetActive(false);
             OnRequestMoreMembers?.Invoke();
+        }
+
+        public static ChannelMembersComponentView Create()
+        {
+            return Instantiate(Resources.Load<ChannelMembersComponentView>("SocialBarV1/ChannelMembersHUD"));
         }
     }
 }
