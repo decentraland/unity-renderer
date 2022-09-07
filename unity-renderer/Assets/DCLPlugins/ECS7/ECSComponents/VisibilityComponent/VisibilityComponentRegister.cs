@@ -12,8 +12,8 @@ namespace DCL.ECSComponents
 
         public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, VisibilityComponentSerializer.Deserialize, () => new ECSVisibilityComponentHandler());
-            componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, VisibilityComponentSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBVisibilityComponent>, () => new ECSVisibilityComponentHandler());
+            componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
