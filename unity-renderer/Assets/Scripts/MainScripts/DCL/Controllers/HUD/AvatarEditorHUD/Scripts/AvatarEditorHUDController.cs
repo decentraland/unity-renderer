@@ -345,6 +345,9 @@ public class AvatarEditorHUDController : IHUD
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
 
+        if (DataStore.i.exploreV2.nameOrDescriptionJustSaved.Get())
+            return;
+
         view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
