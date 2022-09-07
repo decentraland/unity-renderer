@@ -6,6 +6,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { private set; get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { private set; get; }
+    public IInternalECSComponent<InternalRenderers> renderersComponent { private set; get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -20,11 +21,18 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new InternalMaterialHandler());
+        
+        renderersComponent = new InternalECSComponent<InternalRenderers>(
+            InternalECSComponentsId.RENDERERS,
+            componentsManager,
+            componentsFactory,
+            null);
     }
 
     public void Dispose()
     {
         texturizableComponent.Dispose();
         materialComponent.Dispose();
+        renderersComponent.Dispose();
     }
 }

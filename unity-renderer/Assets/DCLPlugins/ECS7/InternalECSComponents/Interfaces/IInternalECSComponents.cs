@@ -4,4 +4,5 @@ public interface IInternalECSComponents
 {
     IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     IInternalECSComponent<InternalMaterial> materialComponent { get; }
+    IInternalECSComponent<InternalRenderers> renderersComponent { get; }
 }

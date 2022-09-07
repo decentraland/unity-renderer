@@ -16,4 +16,10 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers = null;
         public bool dirty = true;
     }
+
+    public class InternalRenderers
+    {
+        public IList<Renderer> renderers = new List<Renderer>();
+        public bool dirty = true;
+    }
 }
