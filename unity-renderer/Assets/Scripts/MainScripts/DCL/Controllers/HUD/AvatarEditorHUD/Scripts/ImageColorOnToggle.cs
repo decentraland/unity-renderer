@@ -1,13 +1,13 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
-public class TMPColorOnToggle : UIToggle
+public class ImageColorOnToggle : UIToggle
 {
-    [SerializeField] private TextMeshProUGUI targetText;
+    [SerializeField] private Image targetImage;
 
     [SerializeField] private Color onColor;
 
     [SerializeField] private Color offColor;
 
-    protected override void OnValueChanged(bool isOn) { targetText.color = isOn ? onColor : offColor; }
+    protected override void OnValueChanged(bool isOn) { targetImage.color = isOn ? onColor : offColor; }
 }
