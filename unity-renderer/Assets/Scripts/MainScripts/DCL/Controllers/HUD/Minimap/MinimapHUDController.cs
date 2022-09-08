@@ -14,18 +14,20 @@ public class MinimapHUDController : IHUD
     private Vector2Int currentCoords;
     private Vector2Int homeCoords = new Vector2Int(0,0);
     private MinimapMetadataController metadataController;
+    private IHomeLocationController locationController;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
-    public MinimapHUDController(MinimapMetadataController minimapMetadataController) : this(new MinimapHUDModel(), minimapMetadataController) { }
+    public MinimapHUDController(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController) : this(new MinimapHUDModel(), minimapMetadataController, locationController) { }
 
-    public MinimapHUDController(MinimapHUDModel model, MinimapMetadataController minimapMetadataController)
+    public MinimapHUDController(MinimapHUDModel model, MinimapMetadataController minimapMetadataController, IHomeLocationController locationController)
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         minimapZoom.Set(1f);
         UpdateData(model);
         metadataController = minimapMetadataController;
+        this.locationController = locationController;
         if(metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
     }
@@ -130,12 +132,12 @@ public class MinimapHUDController : IHUD
         if (playerCoords == homeCoords)
         {
             if (!isOn)
-                WebInterface.SetHomeScene($"0,0");
+                locationController.SetHomeScene($"0,0");
         }
         else
         { 
             if(isOn)
-                WebInterface.SetHomeScene($"{coords.x},{coords.y}");
+                locationController.SetHomeScene($"{coords.x},{coords.y}");
         }
     }
 

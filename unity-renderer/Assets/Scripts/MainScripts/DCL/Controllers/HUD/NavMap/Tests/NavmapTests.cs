@@ -26,7 +26,7 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>());
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }
