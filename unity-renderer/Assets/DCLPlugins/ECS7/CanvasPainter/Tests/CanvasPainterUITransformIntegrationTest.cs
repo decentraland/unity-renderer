@@ -31,14 +31,17 @@ namespace DCL.ECS7.Tests
         protected void SetUp()
         {
             worldState = Substitute.For<IWorldState>();
-            
+
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             var componentFactory = new ECSComponentsFactory();
-            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>(), Substitute.For<IECSContext>());
+            componentsComposer = new ECS7ComponentsComposer(componentFactory,
+                Substitute.For<IECSComponentWriter>(),
+                Substitute.For<IInternalECSComponents>(),
+                new ECSContext());
             componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
-            
+
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            canvasPainter = new CanvasPainter(DataStore.i.ecs7, rendererState,Substitute.For<IUpdateEventHandler>(), componentsManager, worldState);
+            canvasPainter = new CanvasPainter(DataStore.i.ecs7, rendererState, Substitute.For<IUpdateEventHandler>(), componentsManager, worldState);
             rendererState.Set(true);
             canvasPainter.rootNode.rootVisualElement.style.justifyContent = new StyleEnum<Justify>(Justify.Center);
             canvasPainter.rootNode.rootVisualElement.style.alignContent = new StyleEnum<Align>(Align.Center);

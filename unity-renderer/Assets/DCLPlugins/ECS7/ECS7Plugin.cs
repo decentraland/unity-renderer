@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCLPlugins.ECSComponents.Events;
 
 namespace DCL.ECS7
 {
@@ -17,7 +19,7 @@ namespace DCL.ECS7
         private readonly CanvasPainter canvasPainter;
 
         private readonly ISceneController sceneController;
-        
+
         public ECS7Plugin()
         {
 
@@ -30,7 +32,12 @@ namespace DCL.ECS7
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
-            ECSContext context = new ECSContext(componentWriter, internalEcsComponents, componentsManager);
+            SystemsContext systemsContext = new SystemsContext(componentWriter,
+                internalEcsComponents,
+                new ComponentGroups(componentsManager),
+                new Queue<PointerEvent>(26));
+
+            ECSContext context = new ECSContext(systemsContext);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents, context);
 

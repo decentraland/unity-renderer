@@ -30,7 +30,10 @@ namespace DCL.ECS7.Tests
             
             rendererState = ScriptableObject.CreateInstance<RendererState>();
             var componentFactory = new ECSComponentsFactory();
-            componentsComposer = new ECS7ComponentsComposer(componentFactory, Substitute.For<IECSComponentWriter>(), Substitute.For<IInternalECSComponents>(), Substitute.For<IECSContext>());
+            componentsComposer = new ECS7ComponentsComposer(componentFactory, 
+                Substitute.For<IECSComponentWriter>(), 
+                Substitute.For<IInternalECSComponents>(),
+                new ECSContext());
             componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
             
             canvasPainter = new CanvasPainter(dataStoreEcs7, rendererState,Substitute.For<IUpdateEventHandler>(), componentsManager, worldState);

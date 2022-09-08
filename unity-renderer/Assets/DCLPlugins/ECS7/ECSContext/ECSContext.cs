@@ -1,24 +1,12 @@
-﻿using System.Collections.Generic;
-using DCL.ECSRuntime;
-using DCLPlugins.ECSComponents.Events;
-
-namespace DCL.ECS7
+﻿namespace DCL.ECS7
 {
-    public interface IECSContext
+    public readonly struct ECSContext
     {
-        SystemsContext systemsContext { get; }
-    }
-    
-    public readonly struct ECSContext : IECSContext
-    {
-        private const int EXPECTED_AMOUNT_OF_QUEUE_ITEMS_APPROXIMATELY = 26;
-        public readonly SystemsContext systemsContext { get; }
+        public readonly SystemsContext systemsContext;
 
-        public ECSContext(IECSComponentWriter componentWriter,
-            IInternalECSComponents internalEcsComponents,
-            ECSComponentsManager componentsManager)
+        public ECSContext(SystemsContext systemsContext)
         {
-            systemsContext = new SystemsContext(componentWriter, internalEcsComponents, new ComponentGroups(componentsManager), new Queue<PointerEvent>(EXPECTED_AMOUNT_OF_QUEUE_ITEMS_APPROXIMATELY));
+            this.systemsContext = systemsContext;
         }
     }
 }

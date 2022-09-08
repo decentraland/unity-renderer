@@ -6,7 +6,6 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCLPlugins.ECSComponents.Events;
-using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 
 namespace DCLPlugins.ECSComponents.OnPointerDown
 {
@@ -15,11 +14,11 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
         private PointerInputRepresentation representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
-        private IECSContext context;
+        private ECSContext context;
 
         private bool isAdded = false;
 
-        public OnPointerDownComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore, IECSContext context)
+        public OnPointerDownComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore, ECSContext context)
         {
             this.context = context;
             this.dataStore = dataStore;

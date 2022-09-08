@@ -12,17 +12,19 @@ namespace DCLPlugins.ECSComponents
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
-        
-        public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IECSContext context)
+
+        public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, ECSContext context)
         {
-            factory.AddOrReplaceComponent(componentId, OnPointerUpSerializer.Deserialize, () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7, context));
+            factory.AddOrReplaceComponent(componentId,
+                OnPointerUpSerializer.Deserialize,
+                () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7, context));
             componentWriter.AddOrReplaceComponentSerializer<PBOnPointerUp>(componentId, OnPointerUpSerializer.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
             this.componentId = componentId;
         }
-        
+
         public void Dispose()
         {
             factory.RemoveComponent(componentId);
