@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
