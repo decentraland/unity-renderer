@@ -2,6 +2,7 @@ using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
@@ -14,7 +15,9 @@ namespace Tests
     {
         protected override IEnumerator SetUp()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
+            Environment.Setup(serviceLocator);
             yield break;
         }
 
