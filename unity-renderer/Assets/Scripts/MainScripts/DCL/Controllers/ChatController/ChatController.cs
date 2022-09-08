@@ -66,13 +66,14 @@ public class ChatController : MonoBehaviour, IChatController
             channels[channelId] = channel;
 
         if (justLeft)
+        {
             OnChannelLeft?.Invoke(channelId);
 
-        OnChannelUpdated?.Invoke(channel);
+            // TODO (responsibility issues): extract to another class
+            AudioScriptableObjects.leaveChannel.Play(true);
+        }
 
-        // TODO (responsibility issues): extract to another class
-        if (!msg.joined)
-            AudioScriptableObjects.dialogOpen.Play(true);
+        OnChannelUpdated?.Invoke(channel);
     }
 
     // called by kernel
@@ -93,7 +94,7 @@ public class ChatController : MonoBehaviour, IChatController
         OnChannelUpdated?.Invoke(channel);
 
         // TODO (responsibility issues): extract to another class
-        AudioScriptableObjects.dialogClose.Play(true);
+        AudioScriptableObjects.joinChannel.Play(true);
     }
 
     // called by kernel
