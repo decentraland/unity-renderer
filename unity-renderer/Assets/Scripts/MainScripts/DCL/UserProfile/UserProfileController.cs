@@ -49,7 +49,6 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
-        DataStore.i.emotes.newFlowEnabled.Set(model.avatar.version >= 1);
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
@@ -68,6 +67,7 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
+        // TODO: the renderer should not alter the userId nor ethAddress, this is just a patch derived from a kernel issue
         model.userId = model.userId.ToLower();
         model.ethAddress = model.ethAddress?.ToLower();
         
@@ -89,7 +89,7 @@ public class UserProfileController : MonoBehaviour
         return null;
     }
 
-    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalogValue.Get(targetUserId); }
+    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalog.Get(targetUserId); }
 
     public void RemoveUserProfilesFromCatalog(string payload)
     {

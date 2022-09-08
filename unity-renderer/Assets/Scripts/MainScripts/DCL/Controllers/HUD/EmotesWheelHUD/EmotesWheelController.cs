@@ -98,11 +98,7 @@ namespace DCL.EmotesWheel
             {
                 if (equippedEmoteData != null)
                 {
-                    WearableItem emoteItem;
-                    if (DataStore.i.emotes.newFlowEnabled.Get())
-                        emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out emoteItem);
-                    else
-                        catalog.TryGetValue(equippedEmoteData.id, out emoteItem);
+                    emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out var emoteItem);
 
                     if (emoteItem != null)
                     {

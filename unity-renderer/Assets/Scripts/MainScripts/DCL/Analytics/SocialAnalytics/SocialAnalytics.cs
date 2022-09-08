@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -12,8 +13,6 @@ namespace SocialFeaturesAnalytics
         private const string VOICE_CHANNEL_CONNECTION = "voice_channel_connection";
         private const string VOICE_CHANNEL_DISCONNECTION = "voice_channel_disconnection";
         private const string VOICE_CHAT_PREFERENCES_CHANGED = "voice_chat_preferences_changed";
-        private const string CHANNEL_MESSAGE_SENT = "send_chat_message";
-        private const string DIRECT_MESSAGE_SENT = "send_direct_message";
         private const string FRIEND_REQUEST_SENT = "friend_request_sent";
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
@@ -26,14 +25,23 @@ namespace SocialFeaturesAnalytics
         private const string PLAYER_REPORT = "player_report";
         private const string PLAYER_JOIN = "player_join";
         private const string PLAY_EMOTE = "used_emote";
+        private const string EMPTY_CHANNEL_CREATED = "chat_channel_created";
+        private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
+        private const string CHANNEL_LEAVE = "player_leaves_channel";
+        private const string CHANNEL_SEARCH = "player_search_channel";
+        private const string MESSAGE_SENT_TO_CHANNEL = "send_chat_message";
+        private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
+        
+        public static SocialAnalytics i { get; private set; }
 
-        private IAnalytics analytics;
-        private IUserProfileBridge userProfileBridge;
+        private readonly IAnalytics analytics;
+        private readonly IUserProfileBridge userProfileBridge;
 
         public SocialAnalytics(IAnalytics analytics, IUserProfileBridge userProfileBridge)
         {
             this.analytics = analytics;
             this.userProfileBridge = userProfileBridge;
+            i ??= this;
         }
 
         public void SendPlayerMuted(string toUserId)
@@ -240,6 +248,92 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
+        public void SendEmptyChannelCreated(string channelChannelId, ChannelJoinedSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelJoinedSource.Command => "command",
+                    ChannelJoinedSource.Link => "link",
+                    ChannelJoinedSource.Search => "create_search",
+                    _ => ""
+                }
+            };
+            analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
+        }
+
+        public void SendPopulatedChannelJoined(string channelChannelId, ChannelJoinedSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelJoinedSource.Command => "command",
+                    ChannelJoinedSource.Link => "link",
+                    ChannelJoinedSource.Search => "search",
+                    ChannelJoinedSource.ConversationList => "conversation_list",
+                    _ => ""
+                }
+            };
+            analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
+        }
+
+        public void SendLeaveChannel(string channelId, ChannelLeaveSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelLeaveSource.Chat => "chat",
+                    ChannelLeaveSource.Command => "command",
+                    ChannelLeaveSource.Search => "search",
+                    ChannelLeaveSource.ConversationList => "conversation_list",
+                    _ => ""
+                },
+                ["channel"] = channelId
+            };
+            analytics.SendAnalytic(CHANNEL_LEAVE, data);
+        }
+
+        public void SendChannelSearch(string text)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["search"] = text
+            };
+            analytics.SendAnalytic(CHANNEL_SEARCH, data);
+        }
+
+        public void SendMessageSentToChannel(string channelName, int bodyLength, string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source,
+                ["channel"] = channelName,
+                ["length"] = bodyLength.ToString()
+            };
+            analytics.SendAnalytic(MESSAGE_SENT_TO_CHANNEL, data);
+        }
+
+        public void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source switch
+                {
+                    ChannelLinkSource.Chat => "chat",
+                    ChannelLinkSource.Event => "event",
+                    ChannelLinkSource.Place => "place",
+                    ChannelLinkSource.Profile => "profile",
+                    _ => ""
+                },
+                ["channel"] = channel,
+                ["result"] = joinAccepted ? "joined" : "cancel"
+            };
+            analytics.SendAnalytic(CHANNEL_LINK_CLICK, data);
+        }
+
         private PlayerType? GetPlayerTypeByUserId(string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -249,8 +343,7 @@ namespace SocialFeaturesAnalytics
 
             if (userProfile == null)
                 return null;
-            else
-                return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
+            return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
         }
     }
 }

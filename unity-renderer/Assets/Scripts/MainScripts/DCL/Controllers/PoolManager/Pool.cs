@@ -69,6 +69,10 @@ namespace DCL
             }
         }
 
+        /// <summary>
+        /// This will return an instance of the poolable object
+        /// </summary>
+        /// <returns></returns>
         public PoolableObject Get()
         {
             // These extra instantiations during initialization are to populate pools that will be used a lot later  

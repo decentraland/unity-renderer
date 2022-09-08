@@ -30,8 +30,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] private Model model;
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
-
-    protected readonly Dictionary<string, ChatEntry> entries = new Dictionary<string, ChatEntry>();
+    
+    private readonly Dictionary<string, ChatEntry> entries = new Dictionary<string, ChatEntry>();
     private readonly ChatMessage currentMessage = new ChatMessage();
 
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
@@ -241,12 +241,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             var chatEntry = entries[model.messageId];
             chatEntry.SetFadeout(this.model.enableFadeoutMode);
             chatEntry.Populate(model);
+            
+            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
         else
         {
             var chatEntry = ChatEntryFactory.Create(model);
-            chatEntry.transform.SetParent(chatEntriesContainer, false);
-
             chatEntry.SetFadeout(this.model.enableFadeoutMode);
             chatEntry.Populate(model);
 
@@ -258,19 +258,25 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             chatEntry.OnCancelHover += OnMessageCancelHover;
             chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
             
-            entries[model.messageId] = chatEntry;
+            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
         
         animationCancellationToken.Cancel();
         animationCancellationToken = new CancellationTokenSource();
         AnimateNewEntry(entries[model.messageId].gameObject.transform, animationCancellationToken.Token).Forget();
+    }
 
-        if (this.model.isInPreviewMode)
-            entries[model.messageId].ActivatePreviewInstantly();
+    public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
+    {
+        chatEntry.transform.SetParent(chatEntriesContainer, false);
+        entries[messageId] = chatEntry;
+        
+        if (model.isInPreviewMode)
+            chatEntry.ActivatePreviewInstantly();
 
         SortEntries();
         UpdateLayout();
-
+        
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
     }

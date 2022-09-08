@@ -126,6 +126,19 @@ namespace DCL.Chat.HUD
             chatController.Received(1).CreateChannel("foo");
             view.Received(1).DisableCreateButton();
         }
+        
+        [Test]
+        public void JoinChannel()
+        {
+            chatController.GetAllocatedChannel(Arg.Any<string>()).Returns((Channel) null);
+            controller.SetVisibility(true);
+            view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
+            view.ClearReceivedCalls();
+            
+            view.OnJoinChannel += Raise.Event<Action>();
+
+            chatController.Received(1).JoinOrCreateChannel("foo");
+        }
 
         [Test]
         public void TriggerNavigationEventWhenJoinsChannel()

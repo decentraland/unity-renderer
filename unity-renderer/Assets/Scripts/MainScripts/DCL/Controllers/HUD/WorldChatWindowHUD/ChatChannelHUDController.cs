@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
@@ -16,19 +17,22 @@ namespace DCL.Chat.HUD
 
         public IChatChannelWindowView View { get; private set; }
 
+        private readonly DataStore dataStore;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
-        private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
+        private readonly ISocialAnalytics socialAnalytics;
         private ChatHUDController chatHudController;
+        private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
         private float lastRequestTime;
         private string channelId;
+        private Channel channel;
         private bool mustRequestMessages;
         private ChatMessage oldestMessage;
 
@@ -41,13 +45,15 @@ namespace DCL.Chat.HUD
             IUserProfileBridge userProfileBridge,
             IChatController chatController,
             IMouseCatcher mouseCatcher,
-            InputAction_Trigger toggleChatTrigger)
+            InputAction_Trigger toggleChatTrigger,
+            ISocialAnalytics socialAnalytics)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.toggleChatTrigger = toggleChatTrigger;
+            this.socialAnalytics = socialAnalytics;
         }
 
         public void Initialize(IChatChannelWindowView view = null)
@@ -60,6 +66,8 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
+            view.OnShowMembersList += ShowMembersList;
+            view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
             if (notificationPanelTransform.Get() == null)
@@ -84,16 +92,20 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
         }
 
         public void Setup(string channelId)
         {
+            channelMembersHUDController.SetChannelId(channelId);
+
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
 
             this.channelId = channelId;
             lastRequestTime = 0;
 
-            var channel = chatController.GetAllocatedChannel(channelId);
+            channel = chatController.GetAllocatedChannel(channelId);
             View.Setup(ToPublicChatModel(channel));
 
             chatHudController.ClearAllEntries();
@@ -131,6 +143,7 @@ namespace DCL.Chat.HUD
             }
             else
             {
+                channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
                 View.Hide();
             }
@@ -175,6 +188,7 @@ namespace DCL.Chat.HUD
 
             hideLoadingCancellationToken.Dispose();
             deactivatePreviewCancellationToken.Dispose();
+            channelMembersHUDController.Dispose();
         }
 
         private void HandleSendChatMessage(ChatMessage message)
@@ -207,6 +221,7 @@ namespace DCL.Chat.HUD
             }
 
             chatController.Send(message);
+            socialAnalytics.SendMessageSentToChannel(channel.Name, message.body.Length, "chat");
         }
 
         private void HandleMessageReceived(ChatMessage message)
@@ -357,15 +372,36 @@ namespace DCL.Chat.HUD
             View?.SetOldMessagesLoadingActive(false);
         }
 
-        private void LeaveChannel() => OnOpenChannelLeave?.Invoke(channelId);
+        private void LeaveChannel()
+        {
+            dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Chat);
+            OnOpenChannelLeave?.Invoke(channelId);
+        }
 
-        private void LeaveChannelFromCommand() => chatController.LeaveChannel(channelId);
+        private void LeaveChannelFromCommand()
+        {
+            dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
+            chatController.LeaveChannel(channelId);
+        }
 
         private void HandleChannelLeft(string channelId)
         {
             if (channelId != this.channelId) return;
             OnPressBack?.Invoke();
         }
+
+        private void HandleChannelUpdated(Channel updatedChannel)
+        {
+            if (updatedChannel.ChannelId != channelId)
+                return;
+
+            var channel = chatController.GetAllocatedChannel(channelId);
+            View.Setup(ToPublicChatModel(updatedChannel));
+        }
+
+        private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
+
+        private void HideMembersList() => channelMembersHUDController.SetVisibility(false);
 
         private void MuteChannel(bool muted)
         {
@@ -385,12 +421,6 @@ namespace DCL.Chat.HUD
                 newSet.Remove("ChatChannel");
 
             visibleTaskbarPanels.Set(newSet, true);
-        }
-
-        private void HandleChannelUpdated(Channel channel)
-        {
-            if (channel.ChannelId != channelId) return;
-            View.Setup(ToPublicChatModel(channel));
         }
 
         private PublicChatModel ToPublicChatModel(Channel channel)

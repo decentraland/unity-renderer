@@ -3,6 +3,7 @@ using System.Collections;
 using DCL.Chat.Channels;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -14,6 +15,8 @@ namespace DCL.Chat.HUD
         private SearchChannelsWindowController controller;
         private ISearchChannelsWindowView view;
         private IMouseCatcher mouseCatcher;
+        private DataStore dataStore;
+        private ISocialAnalytics socialAnalytics;
 
         [SetUp]
         public void SetUp()
@@ -21,7 +24,9 @@ namespace DCL.Chat.HUD
             chatController = Substitute.For<IChatController>();
             mouseCatcher = Substitute.For<IMouseCatcher>();
             view = Substitute.For<ISearchChannelsWindowView>();
-            controller = new SearchChannelsWindowController(chatController, mouseCatcher);
+            dataStore = new DataStore();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
+            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore, socialAnalytics);
             controller.Initialize(view);
         }
 
@@ -103,6 +108,8 @@ namespace DCL.Chat.HUD
         [UnityTest]
         public IEnumerator SearchChannels()
         {
+            const string searchText = "bleh";
+            
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
 
@@ -111,11 +118,12 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
             chatController.ClearReceivedCalls();
 
-            view.OnSearchUpdated += Raise.Event<Action<string>>("bleh");
+            view.OnSearchUpdated += Raise.Event<Action<string>>(searchText);
 
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0, "bleh");
+            socialAnalytics.Received(1).SendChannelSearch(searchText);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0, searchText);
         }
         
         [UnityTest]
@@ -144,6 +152,7 @@ namespace DCL.Chat.HUD
             view.OnJoinChannel += Raise.Event<Action<string>>("channelId");
             
             chatController.Received(1).JoinOrCreateChannel("channelId");
+            Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
         
         [Test]
@@ -160,6 +169,20 @@ namespace DCL.Chat.HUD
             view.OnLeaveChannel += Raise.Event<Action<string>>(testChannelId);
             
             Assert.AreEqual(channelToLeave, testChannelId);
+            Assert.AreEqual(ChannelLeaveSource.Search, dataStore.channels.channelLeaveSource.Get());
+        }
+
+        [Test]
+        public void OpenChannelCreation()
+        {
+            controller.SetVisibility(true);
+            var called = false;
+            controller.OnOpenChannelCreation += () => called = true;
+
+            view.OnCreateChannel += Raise.Event<Action>();
+            
+            Assert.IsTrue(called);
+            Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
     }
 }

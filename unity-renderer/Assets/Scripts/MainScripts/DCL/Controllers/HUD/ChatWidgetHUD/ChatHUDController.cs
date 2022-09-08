@@ -4,6 +4,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DCL.Chat;
 
 public class ChatHUDController : IDisposable
 {
@@ -182,11 +183,18 @@ public class ChatHUDController : IDisposable
     {
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
+        
         RegisterMessageHistory(message);
         currentHistoryIteration = 0;
+        
         if (IsSpamming(message.sender)) return;
         if (IsSpamming(ownProfile.userName)) return;
+        
         ApplyWhisperAttributes(message);
+        
+        if (message.body.ToLower().StartsWith("/join"))
+            dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Command);
+        
         OnSendMessage?.Invoke(message);
     }
 
