@@ -13,6 +13,7 @@ using DG.Tweening;
 public class TopNotificationComponentView : BaseComponentView, ITopNotificationsComponentView
 {
     private const float X_OFFSET = 32f;
+    private const int NEW_NOTIFICATION_DELAY = 5000;
 
     public event Action<string> OnClickedNotification;
 
@@ -27,6 +28,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     private float offsetHeaderXPos;
 
     private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource waitCT = new CancellationTokenSource();
     private RectTransform notificationRect;
 
     public static TopNotificationComponentView Create()
@@ -48,17 +50,38 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         return gameObject.transform;
     }
 
+    public bool isShowingNotification = false;
+    int stackedNotifications = 0;
+
     public void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
+        stackedNotifications++;
+        if(isShowingNotification && stackedNotifications <= 2)
+        {
+            waitCT.Cancel();
+            waitCT = new CancellationTokenSource();
+            WaitBeforeShowingNewNotification(message, waitCT.Token, username, profilePicture).Forget();
+            return;
+        }
+
+        isShowingNotification = true;
         animationCancellationToken.Cancel();
         animationCancellationToken = new CancellationTokenSource();
         chatNotificationComponentView.gameObject.SetActive(true);
+        if(stackedNotifications > 2){
+            PopulateMultipleNotification();
+            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+            OnResetFade?.Invoke(true);
+            return;
+        }
+        stackedNotifications--;
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             PopulatePrivateNotification(message, username, profilePicture);
             chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             OnResetFade?.Invoke(true);
+            ShowNotificationCooldown();
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
@@ -66,7 +89,23 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
             chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             OnResetFade?.Invoke(true);
+            ShowNotificationCooldown();
         }
+    }
+
+    private async UniTaskVoid ShowNotificationCooldown()
+    {
+        await UniTask.Delay(NEW_NOTIFICATION_DELAY);
+        stackedNotifications--;
+        isShowingNotification = false;
+    }
+
+    private async UniTaskVoid WaitBeforeShowingNewNotification(ChatMessage message, CancellationToken cancellationToken, string username = null, string profilePicture = null)
+    {
+        while (isShowingNotification)
+            await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken);
+
+        AddNewChatNotification(message, username, profilePicture);
     }
 
     private async UniTaskVoid AnimateNewEntry(RectTransform notification, CancellationToken cancellationToken)
@@ -117,6 +156,15 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         chatNotificationComponentView.SetNotificationSender(username);
     }
 
+    private void PopulateMultipleNotification()
+    {
+        chatNotificationComponentView.SetIsPrivate(false);
+        chatNotificationComponentView.SetMessage($"You have {stackedNotifications} notifications");
+        chatNotificationComponentView.SetNotificationTargetId("notificationPanel");
+        chatNotificationComponentView.SetNotificationHeader("");
+        chatNotificationComponentView.SetNotificationSender("");
+    }
+
     public override void Show(bool instant = false)
     {
         if (gameObject.activeInHierarchy)
@@ -131,6 +179,8 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         if (!gameObject.activeInHierarchy)
             return;
 
+        isShowingNotification = false;
+        stackedNotifications = 0;
         chatNotificationComponentView.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
@@ -142,6 +192,8 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     public void HideNotification()
     {
+        isShowingNotification = false;
+        stackedNotifications = 0;
         chatNotificationComponentView.Hide();
     }
 

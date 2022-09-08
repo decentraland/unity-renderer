@@ -125,5 +125,6 @@ public class ChatNotificationController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         visibleTaskbarPanels.OnChange -= VisiblePanelsChanged; 
         mainChatNotificationView.OnResetFade -= ResetFadeOut;
+        topNotificationView.OnResetFade -= ResetFadeOut;
     }
 }
