@@ -99,7 +99,8 @@ public class PublicChatWindowController : IHUD
             channel.Description,
             channel.LastMessageTimestamp,
             channel.Joined,
-            channel.MemberCount));
+            channel.MemberCount,
+            false));
 
         ReloadAllChats().Forget();
     }

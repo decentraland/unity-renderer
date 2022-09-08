@@ -18,6 +18,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject leaveButtonContainer;
         [SerializeField] internal GameObject openChatContainer;
         [SerializeField] internal GameObject joinedContainer;
+        [SerializeField] internal Toggle muteNotificationsToggle;
     
         private IChatController chatController;
 
@@ -68,6 +69,8 @@ namespace DCL.Chat.HUD
                 leaveButtonContainer.SetActive(model.isJoined);
             if (openChatContainer)
                 openChatContainer.SetActive(!model.isJoined);
+            if (muteNotificationsToggle)
+                muteNotificationsToggle.SetIsOnWithoutNotify(model.muted);
         }
 
         public void Dock(ChannelContextualMenu contextualMenu)

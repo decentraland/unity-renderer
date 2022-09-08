@@ -22,8 +22,10 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 0));
+        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 4, false));
         view.nameLabel.text = "#nearby";
+        Assert.IsFalse(view.muteNotificationsToggle.isOn);
+        Assert.AreEqual("4 members", view.memberCountLabel.text);
     }
 
     [Test]
@@ -35,5 +37,12 @@ public class PublicChannelEntryShould
         view.openChatButton.onClick.Invoke();
         
         Assert.IsTrue(called);
+    }
+
+    [Test]
+    public void ConfigureAsMuted()
+    {
+        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 0, true));
+        Assert.IsTrue(view.muteNotificationsToggle.isOn);
     }
 }

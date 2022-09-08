@@ -176,7 +176,7 @@ namespace DCL.Chat.Channels
             LeaveFakeChannel(channelId).Forget();
         }
 
-        public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+        public void GetChannelMessages(string channelId, int limit, string fromMessageId)
         {
             currentChannelId = channelId;
         }
@@ -206,12 +206,11 @@ namespace DCL.Chat.Channels
         public void GetChannels(int limit, int skip) =>
             GetFakeChannels(limit, skip, "").Forget();
 
-        public void MuteChannel(string channelId) => MuteFakeChannel(channelId).Forget();
+        public void MuteChannel(string channelId) => MuteFakeChannel(channelId, true).Forget();
+        
+        public void UnmuteChannel(string channelId) => MuteFakeChannel(channelId, false).Forget();
 
         public Channel GetAllocatedChannel(string channelId) => controller.GetAllocatedChannel(channelId);
-
-        public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) =>
-            controller.GetAllocatedEntriesByChannel(channelId);
 
         public void GetUnseenMessagesByUser() => controller.GetUnseenMessagesByUser();
 
@@ -244,7 +243,7 @@ namespace DCL.Chat.Channels
             }));
         }
 
-        private async UniTask MuteFakeChannel(string channelId)
+        private async UniTask MuteFakeChannel(string channelId, bool muted)
         {
             await UniTask.Delay(Random.Range(40, 1000));
 
@@ -252,7 +251,7 @@ namespace DCL.Chat.Channels
             {
                 joined = true,
                 channelId = channelId,
-                muted = true,
+                muted = muted,
                 memberCount = Random.Range(0, 16),
                 unseenMessages = Random.Range(0, 16)
             };

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -12,6 +12,7 @@ namespace DCL.Chat.HUD
         event Action OnLeaveChannel;
         event Action OnShowMembersList;
         event Action OnHideMembersList;
+        event Action<bool> OnMuteChanged; 
 
         bool IsActive { get; }
         IChatHUDComponentView ChatHUD { get; }

@@ -27,13 +27,13 @@ public interface IChatController
     void MarkChannelMessagesAsSeen(string channelId);
     void JoinOrCreateChannel(string channelId);
     void LeaveChannel(string channelId);
-    void GetChannelMessages(string channelId, int limit, long fromTimestamp);
+    void GetChannelMessages(string channelId, int limit, string fromMessageId);
     void GetJoinedChannels(int limit, int skip);
     void GetChannels(int limit, int skip, string name);
     void GetChannels(int limit, int skip);
     void MuteChannel(string channelId);
+    void UnmuteChannel(string channelId);
     Channel GetAllocatedChannel(string channelId);
-    List<ChatMessage> GetAllocatedEntriesByChannel(string channelId);
     void GetUnseenMessagesByUser();
     void GetUnseenMessagesByChannel();
     int GetAllocatedUnseenMessages(string userId);

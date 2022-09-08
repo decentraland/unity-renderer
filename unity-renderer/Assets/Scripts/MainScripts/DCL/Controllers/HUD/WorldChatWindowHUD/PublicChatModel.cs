@@ -9,9 +9,10 @@ public class PublicChatModel : BaseComponentModel
     public long lastMessageTimestamp;
     public bool joined;
     public int memberCount;
+    public bool muted;
 
     public PublicChatModel(string channelId, string name, string description, long lastMessageTimestamp, bool joined,
-        int memberCount)
+        int memberCount, bool muted)
     {
         this.channelId = channelId;
         this.name = name;
@@ -19,6 +20,7 @@ public class PublicChatModel : BaseComponentModel
         this.lastMessageTimestamp = lastMessageTimestamp;
         this.joined = joined;
         this.memberCount = memberCount;
+        this.muted = muted;
     }
 
     public void CopyFrom(PublicChatModel model)
@@ -29,5 +31,6 @@ public class PublicChatModel : BaseComponentModel
         lastMessageTimestamp = model.lastMessageTimestamp;
         joined = model.joined;
         memberCount = model.memberCount;
+        muted = model.muted;
     }
 }

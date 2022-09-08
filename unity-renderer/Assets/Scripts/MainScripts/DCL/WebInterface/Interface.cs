@@ -794,6 +794,12 @@ namespace DCL.Interface
         {
             public string channelId;
         }
+        
+        public struct MuteChannelPayload
+        {
+            public string channelId;
+            public bool muted;
+        }
 
         [Serializable]
         private class JoinOrCreateChannelPayload
@@ -806,7 +812,7 @@ namespace DCL.Interface
         {
             public string channelId;
             public int limit;
-            public long from;
+            public string from;
         }
 
         [Serializable]
@@ -1843,13 +1849,13 @@ namespace DCL.Interface
             });
         }
 
-        public static void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+        public static void GetChannelMessages(string channelId, int limit, string fromMessageId)
         {
             SendMessage("GetChannelMessages", new GetChannelMessagesPayload
             {
                 channelId = channelId,
                 limit = limit,
-                from = fromTimestamp
+                from = fromMessageId
             });
         }
 
@@ -1888,6 +1894,15 @@ namespace DCL.Interface
                 limit = limit,
                 skip = skip,
                 userName = name
+            });
+        }
+
+        public static void MuteChannel(string channelId, bool muted)
+        {
+            SendMessage("MuteChannel", new MuteChannelPayload
+            {
+                channelId = channelId,
+                muted = muted
             });
         }
     }

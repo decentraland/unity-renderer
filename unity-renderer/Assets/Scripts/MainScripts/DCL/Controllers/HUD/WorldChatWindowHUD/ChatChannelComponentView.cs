@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -30,6 +30,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ButtonComponentView expandMembersListButton;
         [SerializeField] internal ButtonComponentView collapseMembersListButton;
         [SerializeField] internal ChannelMembersComponentView membersList;
+        [SerializeField] internal ToggleComponentView muteToggle;
 
         private Coroutine alphaRoutine;
         private Vector2 originalSize;
@@ -44,6 +45,7 @@ namespace DCL.Chat.HUD
         public event Action OnLeaveChannel;
         public event Action OnShowMembersList;
         public event Action OnHideMembersList;
+        public event Action<bool> OnMuteChanged;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
@@ -76,12 +78,14 @@ namespace DCL.Chat.HUD
             membersIconButton.onClick.AddListener(ToggleMembersSection);
             expandMembersListButton.onClick.AddListener(ToggleMembersSection);
             collapseMembersListButton.onClick.AddListener(ToggleMembersSection);
+            muteToggle.OnSelectedChanged += (b, s, arg3) => OnMuteChanged?.Invoke(b);
         }
 
         public override void RefreshControl()
         {
             nameLabel.text = $"#{model.name}";
             memberCountLabel.text = model.memberCount.ToString();
+            muteToggle.SetIsOnWithoutNotify(model.muted);
         }
 
         public void Hide() => gameObject.SetActive(false);
