@@ -3,7 +3,6 @@ using DCL;
 using DCL.Helpers;
 using DCL.Components;
 using DCL.Models;
-using NUnit.Framework;
 using System.Collections;
 using DCL.Components.Video.Plugin;
 using UnityEngine;
@@ -11,8 +10,6 @@ using UnityEngine.TestTools;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.SettingsCommon;
-using NSubstitute;
-using UnityEngine.Assertions;
 using Assert = UnityEngine.Assertions.Assert;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -31,6 +28,8 @@ namespace Tests
 
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
@@ -332,7 +331,7 @@ namespace Tests
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
 
             yield return component.routine;
-
+            
             Assert.AreApproximatelyEqual(1f, component.texturePlayer.volume, 0.01f);
 
             AudioSettings settings = Settings.i.audioSettings.Data;
@@ -349,7 +348,6 @@ namespace Tests
 
             DCLVideoTexture.videoPluginWrapperBuilder = originalVideoPluginBuilder;
         }
-
 
         [UnityTest]
         public IEnumerator UnmuteWhenVideoIsCreatedWithUserInScene()

@@ -11,6 +11,13 @@ public static class NotificationScriptableObjects
 
     private static FloatVariable pendingFriendRequestsValue;
     public static FloatVariable pendingFriendRequests => CommonScriptableObjects.GetOrLoad(ref pendingFriendRequestsValue, "ScriptableObjects/NotificationBadge_PendingFriendRequests");
+    
+    public static void UnloadAll()
+    {
+        Resources.UnloadAsset(newApprovedFriendsValue);
+        Resources.UnloadAsset(pendingChatMessagesValue);
+        Resources.UnloadAsset(pendingFriendRequestsValue);
+    }
 }
 
 public static class AudioScriptableObjects
@@ -99,6 +106,37 @@ public static class AudioScriptableObjects
 
     private static AudioEvent tooltipPopupEvent;
     public static AudioEvent tooltipPopup => CommonScriptableObjects.GetOrLoad(ref tooltipPopupEvent, "ScriptableObjects/AudioEvents/HUDCommon/TooltipPopup");
+    
+    public static void UnloadAll()
+    {
+        Resources.UnloadAsset(builderEnterEvent);
+        Resources.UnloadAsset(builderReadyEvent);
+        Resources.UnloadAsset(cameraFadeInEvent);
+        Resources.UnloadAsset(cameraFadeOutEvent);
+        Resources.UnloadAsset(buttonHoverEvent);
+        Resources.UnloadAsset(buttonClickEvent);
+        Resources.UnloadAsset(buttonReleaseEvent);
+        Resources.UnloadAsset(cancelEvent);
+        Resources.UnloadAsset(confirmEvent);
+        Resources.UnloadAsset(dialogOpenEvent);
+        Resources.UnloadAsset(dialogCloseEvent);
+        Resources.UnloadAsset(enableEvent);
+        Resources.UnloadAsset(errorEvent);
+        Resources.UnloadAsset(disableEvent);
+        Resources.UnloadAsset(fadeInEvent);
+        Resources.UnloadAsset(fadeOutEvent);
+        Resources.UnloadAsset(listItemAppearEvent);
+        Resources.UnloadAsset(chatReceiveGlobalEvent);
+        Resources.UnloadAsset(chatReceivePrivateEvent);
+        Resources.UnloadAsset(chatSendEvent);
+        Resources.UnloadAsset(notificationEvent);
+        Resources.UnloadAsset(sliderValueChangeEvent);
+        Resources.UnloadAsset(inputFieldFocusEvent);
+        Resources.UnloadAsset(inputFieldUnfocusEvent);
+        Resources.UnloadAsset(UIHideEvent);
+        Resources.UnloadAsset(UIShowEvent);
+        Resources.UnloadAsset(tooltipPopupEvent);
+    }
 }
 
 public static class CommonScriptableObjects
@@ -207,5 +245,41 @@ public static class CommonScriptableObjects
         }
 
         return variable;
+    }
+
+    public static void UnloadAll()
+    {
+        Resources.UnloadAsset(playerUnityPositionValue);
+        Resources.UnloadAsset(playerUnityEulerAnglesValue);
+        Resources.UnloadAsset(worldOffsetValue);
+        Resources.UnloadAsset(playerCoordsValue);
+        Resources.UnloadAsset(playerIsOnMovingPlatformValue);
+        Resources.UnloadAsset(movingPlatformRotationDeltaValue);
+        Resources.UnloadAsset(sceneIDValue);
+        Resources.UnloadAsset(minimapZoomValue);
+        Resources.UnloadAsset(characterForwardValue);
+        Resources.UnloadAsset(cameraForwardValue);
+        Resources.UnloadAsset(cameraPositionValue);
+        Resources.UnloadAsset(cameraRightValue);
+        Resources.UnloadAsset(cameraIsBlendingValue);
+        Resources.UnloadAsset(cameraBlockedValue);
+        Resources.UnloadAsset(playerInfoCardVisibleStateValue);
+        Resources.UnloadAsset(forcePerformanceMeterValue);
+        Resources.UnloadAsset(rendererStateValue);
+        Resources.UnloadAsset(focusStateValue);
+        Resources.UnloadAsset(lastReadChatMessagesDictionary);
+        Resources.UnloadAsset(lastReadChatMessagesValue);
+        Resources.UnloadAsset(allUIHiddenValue);
+        Resources.UnloadAsset(builderInWorldNotNecessaryUIVisibilityStatusValue);
+        Resources.UnloadAsset(latestOpenChatsValue);
+        Resources.UnloadAsset(cameraModeValue);
+        Resources.UnloadAsset(cameraModeInputLockedValue);
+        Resources.UnloadAsset(isProfileHUDOpenValue);
+        Resources.UnloadAsset(isFullscreenHUDOpenValue);
+        Resources.UnloadAsset(isTaskbarHUDInitializedValue);
+        Resources.UnloadAsset(tutorialActiveValue);
+        Resources.UnloadAsset(featureKeyTriggersBlockedValue);
+        Resources.UnloadAsset(emailPromptActiveValue);
+        Resources.UnloadAsset(voiceChatDisabledValue);
     }
 }
