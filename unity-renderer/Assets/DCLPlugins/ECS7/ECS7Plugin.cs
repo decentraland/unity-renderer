@@ -22,7 +22,6 @@ namespace DCL.ECS7
 
         public ECS7Plugin()
         {
-
             sceneController = Environment.i.world.sceneController;
 
             componentsFactory = new ECSComponentsFactory();

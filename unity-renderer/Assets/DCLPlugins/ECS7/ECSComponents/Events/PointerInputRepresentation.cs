@@ -119,12 +119,14 @@ namespace DCLPlugins.ECSComponents.Events
                 meshName = "";
             long entityId = eventEntity.entityId;
 
-            PointerEvent pointerEvent = new PointerEvent();
-            pointerEvent.sceneId = scene.sceneData.id;
-            pointerEvent.button = (ActionButton)buttonId;
-            pointerEvent.hit = ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit);
-            pointerEvent.type = pointerEventType;
-            pointerEvent.timestamp = GetLamportTimestamp();
+            PointerEvent pointerEvent = new PointerEvent(
+                sceneId: scene.sceneData.id,
+                button: (ActionButton)buttonId,
+                hit: ProtoConvertUtils.ToPBRaycasHit(entityId, meshName, ray, hit),
+                type: pointerEventType,
+                timestamp: GetLamportTimestamp(),
+                analog: 1
+            );
                 
             pendingResolvingPointerEvents.Enqueue(pointerEvent);
         }

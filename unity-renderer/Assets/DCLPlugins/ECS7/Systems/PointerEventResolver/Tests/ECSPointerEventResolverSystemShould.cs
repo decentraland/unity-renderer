@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -8,8 +7,6 @@ using DCLPlugins.ECS7.Systems.PointerEventResolver;
 using DCLPlugins.ECSComponents.Events;
 using NSubstitute;
 using NUnit.Framework;
-using UnityEngine;
-using PointerEvent = DCLPlugins.ECSComponents.Events.PointerEvent;
 
 namespace Tests
 {
@@ -120,8 +117,7 @@ namespace Tests
                 componentsWriter = componentsWriter
             };
 
-            var firstPointerEvent = CreatePointerEvent();
-            firstPointerEvent.button = ActionButton.Backward;
+            var firstPointerEvent = CreatePointerEvent(SCENE_ID, ActionButton.Backward);
             pointerEventsQueue.Enqueue(firstPointerEvent);
             
             for (int i = 0; i < ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT; i++)
@@ -153,8 +149,7 @@ namespace Tests
 
             pointerEventsQueue.Enqueue(CreatePointerEvent());
             
-            var pointerEventScene2 = CreatePointerEvent();
-            pointerEventScene2.sceneId = newSceneId;
+            var pointerEventScene2 = CreatePointerEvent(newSceneId);
             pointerEventsQueue.Enqueue(pointerEventScene2);
             
             // Act
@@ -178,15 +173,16 @@ namespace Tests
         }
 
 
-        private PointerEvent CreatePointerEvent()
+        private PointerEvent CreatePointerEvent(string sceneId = SCENE_ID, ActionButton actionButton = ActionButton.Action3)
         {
-            PointerEvent pointerEvent = new PointerEvent();
-            pointerEvent.button = ActionButton.Action3;
-            pointerEvent.hit = new DCL.ECSComponents.RaycastHit();
-            pointerEvent.timestamp = 5;
-            pointerEvent.sceneId = SCENE_ID;
-            pointerEvent.analog = 4;
-            return pointerEvent;
+            return new PointerEvent(
+                sceneId: sceneId,
+                button: actionButton,
+                hit: new RaycastHit(),
+                type: PointerEventType.Down,
+                timestamp: 5,
+                analog: 1
+            );
         }
     }
 }
