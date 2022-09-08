@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
@@ -11,7 +8,7 @@ public abstract class UIToggle : MonoBehaviour
 
     public bool isOn
     {
-        get { return toggle.isOn; }
+        get => toggle.isOn;
         set
         {
             if (value != toggle.isOn)
