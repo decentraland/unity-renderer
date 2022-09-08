@@ -45,17 +45,17 @@ namespace DCL.Chat.HUD
             SetUserOnlineStatus(model.isOnline);
         }
 
-        internal void SetUserId(string userId)
-        {
-            model.userId = userId;
-        }
-
-        internal void SetUserContextMenu(UserContextMenu userContextMenu)
+        public void SetUserContextMenu(UserContextMenu userContextMenu)
         {
             this.userContextMenu = userContextMenu;
         }
 
-        internal void SetUserName(string userName)
+        private void SetUserId(string userId)
+        {
+            model.userId = userId;
+        }
+
+        private void SetUserName(string userName)
         {
             model.userName = userName;
 
@@ -65,7 +65,7 @@ namespace DCL.Chat.HUD
             nameLabel.text = userName;
         }
 
-        internal void SetUserThumbnail(string thumbnailUrl)
+        private void SetUserThumbnail(string thumbnailUrl)
         {
             model.thumnailUrl = thumbnailUrl;
 
@@ -75,7 +75,7 @@ namespace DCL.Chat.HUD
             userThumbnail.SetImage(thumbnailUrl);
         }
 
-        internal void SetUserOnlineStatus(bool isOnline)
+        private void SetUserOnlineStatus(bool isOnline)
         {
             model.isOnline = isOnline;
 
@@ -89,7 +89,7 @@ namespace DCL.Chat.HUD
                 offlineMark.SetActive(!isOnline);
         }
 
-        internal void Dock(UserContextMenu userContextMenu)
+        private void Dock(UserContextMenu userContextMenu)
         {
             var menuTransform = (RectTransform)userContextMenu.transform;
             menuTransform.pivot = userContextMenuPositionReference.pivot;

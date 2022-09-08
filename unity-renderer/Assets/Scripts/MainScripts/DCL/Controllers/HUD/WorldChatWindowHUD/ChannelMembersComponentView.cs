@@ -20,8 +20,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
 
-        internal bool isLayoutDirty;
-        internal bool isSortDirty;
+        private bool isLayoutDirty;
+        private bool isSortDirty;
         private Vector2 lastScrollPosition;
         private Coroutine requireMoreEntriesRoutine;
 

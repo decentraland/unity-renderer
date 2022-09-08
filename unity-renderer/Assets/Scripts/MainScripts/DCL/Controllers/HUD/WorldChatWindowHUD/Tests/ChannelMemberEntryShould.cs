@@ -21,58 +21,25 @@ public class ChannelMemberEntryShould
     }
 
     [Test]
-    public void SetUserIdCorrectly()
-    {
-        // Arrange
-        string testUserId = "testId";
-
-        // Act
-        channelMemberEntryComponent.SetUserId(testUserId);
-
-        // Assert
-        Assert.AreEqual(testUserId, channelMemberEntryComponent.model.userId);
-    }
-
-    [Test]
-    public void SetUserNameCorrectly()
-    {
-        // Arrange
-        string testUserName = "testName";
-
-        // Act
-        channelMemberEntryComponent.SetUserName(testUserName);
-
-        // Assert
-        Assert.AreEqual(testUserName, channelMemberEntryComponent.model.userName);
-        Assert.AreEqual(testUserName, channelMemberEntryComponent.nameLabel.text);
-    }
-
-    [Test]
-    public void SetUserThumbnailCorrectly()
-    {
-        // Arrange
-        string testUri = "testUri";
-
-        // Act
-        channelMemberEntryComponent.SetUserThumbnail(testUri);
-
-        // Assert
-        Assert.AreEqual(testUri, channelMemberEntryComponent.model.thumnailUrl);
-    }
-
-    [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void SetUserOnlineStatusCorrectly(bool isOnline)
+    public void ConfigureEntryCorrectly(bool isOnline)
     {
         // Arrange
-        channelMemberEntryComponent.model.isOnline = !isOnline;
+        ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+        {
+            userId = "testId",
+            userName = "testName",
+            thumnailUrl = "testUri",
+            isOnline = isOnline
+        };
 
         // Act
-        channelMemberEntryComponent.SetUserOnlineStatus(isOnline);
+        channelMemberEntryComponent.Configure(testModel);
 
         // Assert
-        Assert.AreEqual(isOnline, channelMemberEntryComponent.model.isOnline);
+        Assert.AreEqual(testModel, channelMemberEntryComponent.model);
+        Assert.AreEqual(testModel.userName, channelMemberEntryComponent.nameLabel.text);
         Assert.AreEqual(isOnline, channelMemberEntryComponent.onlineMark.activeSelf);
         Assert.AreEqual(!isOnline, channelMemberEntryComponent.offlineMark.activeSelf);
     }

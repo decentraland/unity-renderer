@@ -37,7 +37,6 @@ public class ChannelMembersComponentViewShould
 
         // Assert
         Assert.AreEqual(0, experienceRowComponent.memberList.Count());
-        Assert.IsTrue(experienceRowComponent.isLayoutDirty);
         Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
     }
 
@@ -77,8 +76,6 @@ public class ChannelMembersComponentViewShould
 
         // Assert
         Assert.IsTrue(experienceRowComponent.memberList.Contains(testId));
-        Assert.IsTrue(experienceRowComponent.isLayoutDirty);
-        Assert.IsTrue(experienceRowComponent.isSortDirty);
         Assert.AreEqual($"Results ({1})", experienceRowComponent.resultsHeaderLabel.text);
     }
 

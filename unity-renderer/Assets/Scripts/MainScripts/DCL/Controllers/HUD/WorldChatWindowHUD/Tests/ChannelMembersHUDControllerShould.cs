@@ -3,6 +3,7 @@ using DCL.Chat.HUD;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
 
 public class ChannelMembersHUDControllerShould
 {
@@ -40,8 +41,7 @@ public class ChannelMembersHUDControllerShould
         channelMembersHUDController.SetChannelId(testId);
 
         // Assert
-        Assert.AreEqual(testId, channelMembersHUDController.currentChannelId);
-        Assert.AreEqual(ChannelMembersHUDController.LOAD_PAGE_SIZE, channelMembersHUDController.lastLimitRequested);
+        Assert.AreEqual(testId, channelMembersHUDController.CurrentChannelId);
     }
 
     [Test]
@@ -49,33 +49,40 @@ public class ChannelMembersHUDControllerShould
     [TestCase(false)]
     public void SetVisibilityCorrectly(bool isVisible)
     {
-        // Arrange
-        channelMembersHUDController.isVisible = !isVisible;
-
         // Act
         channelMembersHUDController.SetVisibility(isVisible);
 
         // Assert
-        Assert.AreEqual(isVisible, channelMembersHUDController.isVisible);
-
-        if (!isVisible)
+        if (isVisible)
+        {
+            channelMembersComponentView.Received(1).ClearSearchInput();
+            channelMembersComponentView.Received(1).Show();
+            channelMembersComponentView.Received(1).ClearAllEntries();
+            channelMembersComponentView.Received(1).ShowLoading();
+            chatController.Received(1).GetChannelInfo(Arg.Any<string[]>());
+            chatController.Received(1).GetChannelMembers(Arg.Any<string>(), 0, 0);
+        }
+        else
+        {
             channelMembersComponentView.Received(1).Hide();
+        }
     }
 
     [Test]
     public void LoadMembersCorrectly()
     {
         // Act
-        channelMembersHUDController.LoadMembers();
+        string testChannelId = "testId";
+        channelMembersHUDController.SetChannelId(testChannelId);
+        channelMembersHUDController.SetVisibility(true);
 
         // Assert
         channelMembersComponentView.Received(1).ClearSearchInput();
-        Assert.IsFalse(channelMembersHUDController.isSearching);
         channelMembersComponentView.Received(1).Show();
         channelMembersComponentView.Received(1).ClearAllEntries();
         channelMembersComponentView.Received(1).ShowLoading();
         chatController.Received(1).GetChannelInfo(Arg.Any<string[]>());
-        chatController.Received(1).GetChannelMembers(channelMembersHUDController.currentChannelId, channelMembersHUDController.lastLimitRequested, 0);
+        chatController.Received(1).GetChannelMembers(testChannelId, 30, 0);
     }
 
     [Test]
@@ -84,32 +91,31 @@ public class ChannelMembersHUDControllerShould
     public void SearchMembersCorrectly(string textToSearch)
     {
         // Act
-        channelMembersHUDController.SearchMembers(textToSearch);
+        string testChannelId = "testId";
+        channelMembersHUDController.SetChannelId(testChannelId);
+        channelMembersHUDController.SetVisibility(true);
+        channelMembersComponentView.OnSearchUpdated += Raise.Event<Action<string>>(textToSearch);
 
         // Assert
-        channelMembersComponentView.Received(1).ClearAllEntries();
+        channelMembersComponentView.Received().ClearAllEntries();
         channelMembersComponentView.Received(1).HideLoadingMore();
-        channelMembersComponentView.Received(1).ShowLoading();
-        Assert.AreEqual(!string.IsNullOrEmpty(textToSearch), channelMembersHUDController.isSearching);
+        channelMembersComponentView.Received().ShowLoading();
         if (string.IsNullOrEmpty(textToSearch))
         {
-            chatController.Received(1).GetChannelMembers(channelMembersHUDController.currentChannelId, channelMembersHUDController.lastLimitRequested, 0);
+            chatController.Received().GetChannelMembers(testChannelId, 30, 0);
             channelMembersComponentView.Received(1).HideResultsHeader();
         }
         else
         {
-            chatController.Received(1).GetChannelMembers(channelMembersHUDController.currentChannelId, ChannelMembersHUDController.LOAD_PAGE_SIZE, 0, textToSearch);
+            chatController.Received(1).GetChannelMembers(testChannelId, 30, 0, textToSearch);
             channelMembersComponentView.Received(1).ShowResultsHeader();
         }
     }
 
     [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void UpdateChannelMembersCorrectly(bool isSearching)
+    public void UpdateChannelMembersCorrectly()
     {
         // Arrange
-        channelMembersHUDController.isSearching = isSearching;
         channelMembersComponentView.Configure().IsActive.Returns(info => true);
 
         string testChannelId = "testChannelId";
@@ -145,32 +151,32 @@ public class ChannelMembersHUDControllerShould
         };
 
         // Act
-        channelMembersHUDController.UpdateChannelMembers(testChannelId, testChannelMembers);
+        channelMembersHUDController.SetChannelId("testId");
+        channelMembersHUDController.SetVisibility(true);
+        chatController.OnUpdateChannelMembers += Raise.Event<Action<string, ChannelMember[]>>(testChannelId, testChannelMembers);
 
         // Assert
         channelMembersComponentView.Received(1).HideLoading();
         userProfileBridge.Received(testChannelMembers.Length).GetByName(Arg.Any<string>());
         channelMembersComponentView.Received(testChannelMembers.Length).Set(Arg.Any<ChannelMemberEntryModel>());
-
-        if (isSearching)
-            channelMembersComponentView.Received(1).HideLoadingMore();
-        else
-            channelMembersComponentView.Received(1).ShowLoadingMore();
+        channelMembersComponentView.Received(1).ShowLoadingMore();
     }
 
     [Test]
     public void LoadMoreMembersCorrectly()
     {
         // Arrange
-        channelMembersHUDController.isSearching = false;
+        channelMembersComponentView.ClearSearchInput();
         channelMembersComponentView.Configure().EntryCount.Returns(info => 5);
 
         // Act
-        channelMembersHUDController.LoadMoreMembers();
+        channelMembersHUDController.SetChannelId("testId");
+        channelMembersHUDController.SetVisibility(true);
+        channelMembersHUDController.loadStartedTimestamp = DateTime.MinValue;
+        channelMembersComponentView.OnRequestMoreMembers += Raise.Event<Action>();
 
         // Assert
         channelMembersComponentView.Received(1).HideLoadingMore();
-        chatController.Received(1).GetChannelMembers(Arg.Any<string>(), ChannelMembersHUDController.LOAD_PAGE_SIZE, channelMembersComponentView.EntryCount);
-        Assert.AreEqual(ChannelMembersHUDController.LOAD_PAGE_SIZE + channelMembersComponentView.EntryCount, channelMembersHUDController.lastLimitRequested);
+        chatController.Received(1).GetChannelMembers(Arg.Any<string>(), 30, channelMembersComponentView.EntryCount);
     }
 }

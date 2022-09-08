@@ -8,20 +8,21 @@ namespace DCL.Chat.HUD
     public class ChannelMembersHUDController : IDisposable
     {
         private const int LOAD_TIMEOUT = 2;
-        internal const int LOAD_PAGE_SIZE = 30;
+        private const int LOAD_PAGE_SIZE = 30;
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 5;
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
         private IChannelMembersComponentView view;
-        private DateTime loadStartedTimestamp = DateTime.MinValue;
+        internal DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource reloadingCancellationToken = new CancellationTokenSource();
-        internal string currentChannelId;
-        internal int lastLimitRequested;
-        internal bool isSearching;
-        internal bool isVisible;
+        private string currentChannelId;
+        private int lastLimitRequested;
+        private bool isSearching;
+        private bool isVisible;
 
         public IChannelMembersComponentView View => view;
+        public string CurrentChannelId => currentChannelId;
 
         public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController, IUserProfileBridge userProfileBridge)
         {
@@ -72,7 +73,7 @@ namespace DCL.Chat.HUD
             }
         }
 
-        internal void LoadMembers()
+        private void LoadMembers()
         {
             ClearListeners();
 
@@ -97,7 +98,7 @@ namespace DCL.Chat.HUD
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
 
-        internal void SearchMembers(string searchText)
+        private void SearchMembers(string searchText)
         {
             loadStartedTimestamp = DateTime.Now;
             view.ClearAllEntries();
@@ -124,7 +125,7 @@ namespace DCL.Chat.HUD
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
 
-        internal void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
+        private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
             if (!view.IsActive) return;
             view.HideLoading();
@@ -162,7 +163,7 @@ namespace DCL.Chat.HUD
             }
         }
 
-        internal void LoadMoreMembers()
+        private void LoadMoreMembers()
         {
             if (IsLoading() || isSearching) return;
             loadStartedTimestamp = DateTime.Now;
@@ -212,7 +213,5 @@ namespace DCL.Chat.HUD
             if (cancellationToken.IsCancellationRequested) return;
             view.HideLoading();
         }
-
-        internal virtual IChannelMembersComponentView CreateView() => ChannelMembersComponentView.Create();
     }
 }
