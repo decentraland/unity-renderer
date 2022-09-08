@@ -28,6 +28,7 @@ namespace DCL.Chat.HUD
         private readonly ISocialAnalytics socialAnalytics;
         private readonly List<string> directMessagesAlreadyRequested = new List<string>();
         private ChatHUDController chatHudController;
+        private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
@@ -65,6 +66,8 @@ namespace DCL.Chat.HUD
             view.OnClose += Hide;
             view.OnRequireMoreMessages += RequestOldConversations;
             view.OnLeaveChannel += LeaveChannel;
+            view.OnShowMembersList += ShowMembersList;
+            view.OnHideMembersList += HideMembersList;
 
             if (notificationPanelTransform.Get() == null)
             {
@@ -82,11 +85,14 @@ namespace DCL.Chat.HUD
             chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnAddMessage += HandleMessageReceived;
             chatController.OnChannelLeft += HandleChannelLeft;
+            chatController.OnChannelUpdated += HandleChannelUpdated;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += ActivatePreviewMode;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+
+            channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -102,6 +108,8 @@ namespace DCL.Chat.HUD
 
         public void Setup(string channelId)
         {
+            channelMembersHUDController.SetChannelId(channelId);
+
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
 
             this.channelId = channelId;
@@ -142,6 +150,7 @@ namespace DCL.Chat.HUD
             }
             else
             {
+                channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
                 View.Hide();
             }
@@ -165,6 +174,7 @@ namespace DCL.Chat.HUD
             {
                 chatController.OnAddMessage -= HandleMessageReceived;
                 chatController.OnChannelLeft -= HandleChannelLeft;
+                chatController.OnChannelUpdated -= HandleChannelUpdated;
             }
 
             if (mouseCatcher != null)
@@ -184,6 +194,7 @@ namespace DCL.Chat.HUD
             
             hideLoadingCancellationToken.Dispose();
             deactivatePreviewCancellationToken.Dispose();
+            channelMembersHUDController.Dispose();
         }
 
         private async UniTaskVoid ReloadAllChats()
@@ -395,5 +406,18 @@ namespace DCL.Chat.HUD
             if (channelId != this.channelId) return;
             OnPressBack?.Invoke();
         }
+
+        private void HandleChannelUpdated(Channels.Channel updatedChannel)
+        {
+            if (updatedChannel.ChannelId != channelId)
+                return;
+
+            var channel = chatController.GetAllocatedChannel(channelId);
+            View.Setup(new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, updatedChannel.MemberCount));
+        }
+
+        private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
+
+        private void HideMembersList() => channelMembersHUDController.SetVisibility(false);
     }
 }

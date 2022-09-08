@@ -34,7 +34,8 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
-    
+    public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
+
     public int TotalUnseenMessages { get; private set; }
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
 
@@ -119,32 +120,17 @@ public class ChatController : MonoBehaviour, IChatController
         OnMuteChannelError?.Invoke(msg.channelId, msg.message);
     }
 
-    public void JoinOrCreateChannel(string channelId)
-    {
-        throw new NotImplementedException();
-    }
+    public void JoinOrCreateChannel(string channelId) => WebInterface.JoinOrCreateChannel(channelId);
 
     public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
 
-    public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetChannelMessages(string channelId, int limit, long fromTimestamp) => WebInterface.GetChannelMessages(channelId, limit, fromTimestamp);
 
-    public void GetJoinedChannels(int limit, int skip)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetJoinedChannels(int limit, int skip) => WebInterface.GetJoinedChannels(limit, skip);
 
-    public void GetChannels(int limit, int skip, string name)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetChannels(int limit, int skip, string name) => WebInterface.GetChannels(limit, skip, name);
 
-    public void GetChannels(int limit, int skip)
-    {
-        throw new NotImplementedException();
-    }
+    public void GetChannels(int limit, int skip) => WebInterface.GetChannels(limit, skip, string.Empty);
 
     public void MuteChannel(string channelId)
     {
@@ -246,6 +232,14 @@ public class ChatController : MonoBehaviour, IChatController
         }
     }
 
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateChannelMembers(string payload)
+    {
+        var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
+        OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
+    }
+
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public void MarkMessagesAsSeen(string userId)
@@ -280,6 +274,12 @@ public class ChatController : MonoBehaviour, IChatController
             .Where(x => (x.sender == userId || x.recipient == userId) && x.messageType == ChatMessage.Type.PRIVATE)
             .ToList();
     }
+
+    public void GetChannelInfo(string[] channelIds) => WebInterface.GetChannelInfo(channelIds);
+
+    public void GetChannelMembers(string channelId, int limit, int skip, string name) => WebInterface.GetChannelMembers(channelId, limit, skip, name);
+
+    public void GetChannelMembers(string channelId, int limit, int skip) => WebInterface.GetChannelMembers(channelId, limit, skip, string.Empty);
 
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()

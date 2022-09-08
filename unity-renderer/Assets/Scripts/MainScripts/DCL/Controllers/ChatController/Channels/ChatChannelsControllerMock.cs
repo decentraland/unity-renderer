@@ -82,6 +82,12 @@ namespace DCL.Chat.Channels
             remove => controller.OnMuteChannelError -= value;
         }
 
+        public event Action<string, ChannelMember[]> OnUpdateChannelMembers
+        {
+            add => controller.OnUpdateChannelMembers += value;
+            remove => controller.OnUpdateChannelMembers -= value;
+        }
+
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
         public ChatChannelsControllerMock(
@@ -628,6 +634,73 @@ Invite others to join by quoting the channel name in other chats or include it a
                 };
                 controller.UpdateTotalUnseenMessages(JsonUtility.ToJson(totalUnseenMessagesPayload));
             }
+        }
+
+        public void GetChannelInfo(string[] channelIds) =>
+            GetFakeChannelInfo(channelIds).Forget();
+
+        private async UniTask GetFakeChannelInfo(string[] channelIds)
+        {
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            foreach (string channelId in channelIds)
+            {
+                var msg = new ChannelInfoPayload
+                {
+                    joined = true,
+                    channelId = channelId,
+                    muted = false,
+                    memberCount = Random.Range(0, 100),
+                    unseenMessages = 0
+                };
+                controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+            }
+        }
+
+        public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
+            GetFakeChannelMembers(channelId, limit, skip, name).Forget();
+
+        public void GetChannelMembers(string channelId, int limit, int skip) =>
+            GetFakeChannelMembers(channelId, limit, skip, "").Forget();
+
+        private async UniTask GetFakeChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            List<string> members = new List<string>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var profile = new UserProfileModel
+                {
+                    userId = $"{channelId.Substring(0, 3)}_member{i + 1}",
+                    name = $"{channelId.Substring(0, 3)}_member{i + 1}",
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/seed/{i}/256" }
+                };
+
+                userProfileController.AddUserProfileToCatalog(profile);
+                members.Add(profile.userId);
+            }
+
+            await UniTask.Delay(Random.Range(40, 1000));
+
+            List<ChannelMember> membersToUpdate = new List<ChannelMember>();
+            for (var i = skip; i < skip + limit && i < members.Count; i++)
+            {
+                var userId = members[i];
+                if (!userId.Contains(name) && !string.IsNullOrEmpty(name)) continue;
+
+                membersToUpdate.Add(new ChannelMember
+                {
+                    userId = userId,
+                    isOnline = Random.Range(0, 2) == 0
+                });
+            }
+
+            var msg = new UpdateChannelMembersPayload
+            {
+                channelId = channelId,
+                members = membersToUpdate.ToArray()
+            };
+            controller.UpdateChannelMembers(JsonUtility.ToJson(msg));
         }
     }
 }
