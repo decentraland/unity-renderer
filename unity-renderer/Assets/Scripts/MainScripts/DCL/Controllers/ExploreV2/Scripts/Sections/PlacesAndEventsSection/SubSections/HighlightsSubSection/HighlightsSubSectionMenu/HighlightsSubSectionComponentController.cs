@@ -270,12 +270,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
@@ -286,12 +288,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         view.ShowEventModal(eventModel);
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
@@ -343,6 +347,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         view.HidePlaceModal();
         view.HideEventModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
     }
 }

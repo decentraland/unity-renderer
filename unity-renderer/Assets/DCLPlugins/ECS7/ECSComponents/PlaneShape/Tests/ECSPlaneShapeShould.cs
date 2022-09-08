@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -17,6 +19,7 @@ namespace DCL.ECSComponents.Test
         private IParcelScene scene;
         private ECSPlaneShapeComponentHandler planeShapeComponentHandler;
         private GameObject gameObject;
+        private IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
 
         [SetUp]
         protected void SetUp()
@@ -24,7 +27,8 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            planeShapeComponentHandler = new ECSPlaneShapeComponentHandler(DataStore.i.ecs7);
+            texturizableInternalComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
+            planeShapeComponentHandler = new ECSPlaneShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -50,6 +54,9 @@ namespace DCL.ECSComponents.Test
 
             // Act
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            var meshesInfo = planeShapeComponentHandler.meshesInfo;
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
+                Arg.Is<InternalTexturizable>(x => meshesInfo.renderers.All(r => x.renderers.Contains(r))));            
 
             // Assert
             Assert.IsNotNull(planeShapeComponentHandler.meshesInfo);
@@ -61,12 +68,15 @@ namespace DCL.ECSComponents.Test
             // Arrange
             PBPlaneShape model = new PBPlaneShape();
             planeShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            texturizableInternalComponent.ClearReceivedCalls();
 
             // Act
             planeShapeComponentHandler.OnComponentRemoved(scene, entity);
 
             // Assert
             Assert.IsNull(planeShapeComponentHandler.meshesInfo);
+            texturizableInternalComponent.Received(1).PutFor(scene, entity, 
+                Arg.Is<InternalTexturizable>(x => x.renderers.Count == 0));
         }
         
         [Test]

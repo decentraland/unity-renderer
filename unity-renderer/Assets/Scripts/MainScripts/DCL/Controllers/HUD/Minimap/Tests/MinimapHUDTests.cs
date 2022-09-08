@@ -57,6 +57,15 @@ namespace Tests
             var view = controller.view;
             Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
+        
+        [Test]
+        public void MinimapHUD_ReportScene()
+        {
+            controller.ToggleOptions();
+            controller.view.reportSceneButton.onClick.Invoke();
+            
+            Assert.IsFalse(controller.view.sceneOptionsPanel.activeSelf);
+        }
 
         [Test]
         public void MinimapHUD_SetPlayerCoordinatesVector2()

@@ -35,23 +35,20 @@ namespace DCL.Controllers
         const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
 
         private Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo;
-        private HashSet<Renderer> invalidRenderers;
+        private HashSet<Bounds> invalidObjects;
 
         public SceneBoundsFeedbackStyle_RedBox()
         {
             invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
-            invalidRenderers = new HashSet<Renderer>();
+            invalidObjects = new HashSet<Bounds>();
         }
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
             if (isInsideBoundaries)
-            {
                 RemoveInvalidMeshEffect(meshesInfo);
-                return;
-            }
-
-            AddInvalidMeshEffect(meshesInfo);
+            else
+                AddInvalidMeshEffect(meshesInfo);
         }
 
         public void CleanFeedback()
@@ -64,7 +61,7 @@ namespace DCL.Controllers
             }
 
             invalidMeshesInfo.Clear();
-            invalidRenderers.Clear();
+            invalidObjects.Clear();
         }
 
         void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
@@ -86,9 +83,19 @@ namespace DCL.Controllers
             {
                 for (int i = 0; i < renderers.Length; i++)
                 {
-                    if (invalidRenderers.Contains(renderers[i]))
-                        invalidRenderers.Remove(renderers[i]);
+                    Bounds target = renderers[i].bounds;
+                    
+                    if (invalidObjects.Contains(target))
+                        invalidObjects.Remove(target);
                 }
+            }
+            
+            foreach (Collider collider in meshesInfo.colliders)
+            {
+                Bounds target = collider.bounds;
+                
+                if (invalidObjects.Contains(target))
+                    invalidObjects.Remove(target);
             }
 
             invalidMeshesInfo[meshesInfo.innerGameObject].ResetAll();
@@ -117,25 +124,40 @@ namespace DCL.Controllers
 
             for (int i = 0; i < entityRenderers.Length; i++)
             {
-                if (invalidRenderers.Contains(entityRenderers[i]))
+                Bounds target = entityRenderers[i].bounds;
+                
+                if (invalidObjects.Contains(target))
                     continue;
 
-                var box = PutBoxAroundRenderer(entityRenderers[i], meshesInfo.innerGameObject.transform);
+                var box = PutBoxAroundObject(target, meshesInfo.innerGameObject.transform);
 
                 invalidMeshInfo.wireframeObjects.Add(box);
-                invalidRenderers.Add(entityRenderers[i]);
+                invalidObjects.Add(target);
+            }
+            
+            foreach (Collider collider in meshesInfo.colliders)
+            {
+                Bounds target = collider.bounds;
+                
+                if (invalidObjects.Contains(target))
+                    continue;
+
+                var box = PutBoxAroundObject(target, meshesInfo.innerGameObject.transform);
+
+                invalidMeshInfo.wireframeObjects.Add(box);
+                invalidObjects.Add(target);
             }
 
             invalidMeshesInfo.Add(meshesInfo.innerGameObject, invalidMeshInfo);
         }
 
-        private GameObject PutBoxAroundRenderer(Renderer target, Transform parent)
+        private GameObject PutBoxAroundObject(Bounds target, Transform parent)
         {
             // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
             // overload because we need to set the position and scale before parenting, to deal with scaled objects)
             GameObject wireframeObject = Object.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
-            wireframeObject.transform.position = target.bounds.center;
-            wireframeObject.transform.localScale = target.bounds.size * 1.01f;
+            wireframeObject.transform.position = target.center;
+            wireframeObject.transform.localScale = target.size * 1.01f;
             wireframeObject.transform.SetParent(parent);
             return wireframeObject;
         }

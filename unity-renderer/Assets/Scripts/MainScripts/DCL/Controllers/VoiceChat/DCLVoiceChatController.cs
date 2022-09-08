@@ -1,6 +1,8 @@
 using UnityEngine;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
 
 namespace DCL
 {
@@ -47,6 +49,12 @@ namespace DCL
         void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
 
         void EnableVoiceChat(bool enable) { CommonScriptableObjects.voiceChatDisabled.Set(!enable); }
+
+        public void VoiceChatStatus(string voiceChatStatusPayload)
+        {
+            VoiceChatStatusPayload voiceChatStatus = JsonConvert.DeserializeObject<VoiceChatStatusPayload>(voiceChatStatusPayload);
+            DataStore.i.voiceChat.isJoinedToVoiceChat.Set(voiceChatStatus.isConnected);
+        }
 
         private void IsVoiceChatRecordingChanged(KeyValuePair<bool, bool> current, KeyValuePair<bool, bool> previous)
         {
@@ -118,5 +126,11 @@ namespace DCL
                 firstTimeVoiceRecorded = false;
             }
         }
+    }
+
+    [Serializable]
+    public class VoiceChatStatusPayload
+    {
+        public bool isConnected;
     }
 }

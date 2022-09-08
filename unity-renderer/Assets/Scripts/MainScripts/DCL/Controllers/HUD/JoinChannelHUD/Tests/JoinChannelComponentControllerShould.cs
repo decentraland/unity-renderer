@@ -3,6 +3,9 @@ using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using SocialFeaturesAnalytics;
+using UnityEngine;
 
 public class JoinChannelComponentControllerShould
 {
@@ -10,18 +13,30 @@ public class JoinChannelComponentControllerShould
     private IJoinChannelComponentView joinChannelComponentView;
     private IChatController chatController;
     private DataStore_Channels channelsDataStore;
+    private DataStore dataStore;
+    private StringVariable currentPlayerInfoCardId;
+    private ISocialAnalytics socialAnalytics;
 
     [SetUp]
     public void SetUp()
     {
         joinChannelComponentView = Substitute.For<IJoinChannelComponentView>();
         chatController = Substitute.For<IChatController>();
-        channelsDataStore = new DataStore_Channels();
-        joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController, channelsDataStore);
+        dataStore = new DataStore();
+        channelsDataStore = dataStore.channels;
+        currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
+        joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
+            dataStore,
+            socialAnalytics,
+            currentPlayerInfoCardId);
     }
 
     [TearDown]
-    public void TearDown() { joinChannelComponentController.Dispose(); }
+    public void TearDown()
+    {
+        joinChannelComponentController.Dispose();
+    }
 
     [Test]
     public void InitializeCorrectly()
@@ -69,5 +84,31 @@ public class JoinChannelComponentControllerShould
         chatController.Received(1).JoinOrCreateChannel(testChannelId);
         joinChannelComponentView.Received(1).Hide();
         Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
+    }
+
+    [Test]
+    public void TrackChannelLinkClickWhenCancel()
+    {
+        const string channelId = "channelId";
+        dataStore.HUDs.visibleTaskbarPanels.Set(new HashSet<string> {"PrivateChatChannel"});
+        channelsDataStore.currentJoinChannelModal.Set(channelId, true);
+        channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        
+        joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
+
+        socialAnalytics.Received(1).SendChannelLinkClicked(channelId, false, ChannelLinkSource.Chat);
+    }
+    
+    [Test]
+    public void TrackChannelLinkClickWhenConfirm()
+    {
+        const string channelId = "channelId";
+        currentPlayerInfoCardId.Set("userId");
+        channelsDataStore.currentJoinChannelModal.Set(channelId, true);
+        channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        
+        joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(channelId);
+
+        socialAnalytics.Received(1).SendChannelLinkClicked(channelId, true, ChannelLinkSource.Profile);
     }
 }

@@ -1,5 +1,6 @@
 using DCL.Components;
 using DCL.Configuration;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
@@ -58,8 +59,8 @@ namespace DCL
 
         protected virtual void InitializeDataStore()
         {
-            DataStore.i.textureConfig.gltfMaxSize.Set(512);
-            DataStore.i.textureConfig.generalMaxSize.Set(2048);
+            DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettings.GLTF_TEX_MAX_SIZE_WEB);
+            DataStore.i.textureConfig.generalMaxSize.Set(TextureCompressionSettings.GENERAL_TEX_MAX_SIZE_WEB);
             DataStore.i.avatarConfig.useHologramAvatar.Set(true);
         }
 

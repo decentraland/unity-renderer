@@ -89,6 +89,9 @@ namespace DCL.SettingsPanelHUD
 
             DataStore.i.screen.size.OnChange += ScreenSizeChanged;
             ScreenSizeChanged(DataStore.i.screen.size.Get(), Vector2Int.zero);
+            
+            //WorldPreviewWindow is not being used at the moment. If we decide to reuse it, remove this activation
+            worldPreviewWindowTransform.gameObject.SetActive(false);
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
@@ -197,11 +200,11 @@ namespace DCL.SettingsPanelHUD
 
         public void SetWorldPreviewActive(bool isActive)
         {
-            isActive = false;
-
+            //WorldPreviewWindow is not being used at the moment. Leaving this code here
+            //in case we decide to reuse it someday.
+            return;
             worldPreviewWindowTransform.gameObject.SetActive(isActive);
             DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(DataStore.i.exploreV2.isOpen.Get() && !isActive);
         }
 
         private void OpenAction_OnTriggered(DCLAction_Trigger action)

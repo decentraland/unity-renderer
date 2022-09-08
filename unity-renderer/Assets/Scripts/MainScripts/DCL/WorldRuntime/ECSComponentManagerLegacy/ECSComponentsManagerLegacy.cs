@@ -432,7 +432,7 @@ namespace DCL
             }
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity, classId == CLASS_ID_COMPONENT.TRANSFORM);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();

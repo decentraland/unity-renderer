@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -9,9 +10,10 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public PlaneShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public PlaneShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalTexturizable> texturizableInternalComponent)
         {
-            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceComponent(componentId, PlaneShapeSerializer.Deserialize, () => new ECSPlaneShapeComponentHandler(DataStore.i.ecs7, texturizableInternalComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBPlaneShape>(componentId, PlaneShapeSerializer.Serialize);
 
             this.factory = factory;

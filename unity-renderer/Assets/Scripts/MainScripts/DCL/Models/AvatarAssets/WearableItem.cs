@@ -200,7 +200,13 @@ public class WearableItem
 
     public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
 
-    public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
+    public bool IsCollectible()
+    {
+        if (id == null)
+            return false;
+
+        return !id.StartsWith("urn:decentraland:off-chain:base-avatars:");
+    }
 
     public bool IsSkin() => data.category == WearableLiterals.Categories.SKIN;
 

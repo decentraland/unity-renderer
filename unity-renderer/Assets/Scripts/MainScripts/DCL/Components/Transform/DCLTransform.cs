@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Net.Configuration;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -21,7 +21,7 @@ namespace DCL.Components
                 return DCLTransform.model;
             }
         }
-
+        
         public static Model model = new Model();
 
         public void Cleanup() { }
@@ -56,6 +56,8 @@ namespace DCL.Components
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
+
+                entity.gameObject.transform.CapGlobalValuesToMax();
             }
         }
 
@@ -67,5 +69,7 @@ namespace DCL.Components
         public BaseModel GetModel() => DCLTransform.model;
         public int GetClassId() => (int) CLASS_ID_COMPONENT.TRANSFORM;
         public void UpdateOutOfBoundariesState(bool enable) { }
+        
+        
     }
 }

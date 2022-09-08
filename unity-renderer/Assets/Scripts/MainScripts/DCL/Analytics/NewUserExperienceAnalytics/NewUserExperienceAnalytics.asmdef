@@ -1,0 +1,21 @@
+{
+    "name": "NewUserExperienceAnalytics",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4e6796037298c492ea25360846f48fc3",
+        "GUID:0663fad624d836944b40ae27c3414652",
+        "GUID:2ac9dcbe2d83f4e4e8718930a56a2791",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:dffbb581f2650ea4990781f603ac258a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

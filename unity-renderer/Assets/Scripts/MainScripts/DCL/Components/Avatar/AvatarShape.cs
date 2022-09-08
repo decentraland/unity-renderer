@@ -53,6 +53,7 @@ namespace DCL
         private CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
+        private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
 
         public override string componentName => "avatarShape";
 
@@ -78,7 +79,7 @@ namespace DCL
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
             return new Avatar(
-                new AvatarCurator(new WearableItemResolver()),
+                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
                 visibility,
@@ -96,7 +97,7 @@ namespace DCL
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             return new AvatarWithHologram(
                     baseAvatar,
-                    new AvatarCurator(new WearableItemResolver()),
+                    new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                     new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                     animator,
                     visibility,
@@ -110,6 +111,7 @@ namespace DCL
         {
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
+            currentActiveModifiers ??= new BaseRefCounter<AvatarModifierAreaID>();
         }
 
         private void PlayerClicked()
@@ -130,8 +132,8 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
-
-            ApplyHidePassportModifier();
+            
+            DisablePassport();
 
             var model = (AvatarModel) newModel;
 
@@ -166,12 +168,19 @@ namespace DCL
             var wearableItems = model.wearables.ToList();
             wearableItems.Add(model.bodyShape);
 
-            //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
-
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
+                HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
+                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                //here we add emote ids to both new and old emote loading flow to merge the results later
+                //because some users might have emotes as wearables and others only as emotes
+                foreach (var emoteId in embeddedEmoteIds)
+                {
+                    emotes.Add(emoteId);
+                    wearableItems.Add(emoteId);
+                }
+
                 //TODO Add Collider to the AvatarSystem
                 //TODO Without this the collider could get triggered disabling the avatar container,
                 // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
@@ -186,7 +195,7 @@ namespace DCL
                     playerName.SetName(model.name);
                     playerName.Show(true);
                 }
-                avatar.Load(wearableItems, new AvatarSettings
+                avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     playerName = model.name,
                     bodyshapeId = model.bodyShape,
@@ -225,7 +234,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            RemoveHidePassportModifier();
+            EnablePasssport();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
@@ -343,33 +352,60 @@ namespace DCL
 
         public void ApplyHideAvatarModifier()
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
-            onPointerDown.gameObject.SetActive(false);
-            playerNameContainer.SetActive(false);
-            stickersControllers.ToggleHideArea(true);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(false);
+                playerNameContainer.SetActive(false);
+                stickersControllers.ToggleHideArea(true);
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
         }
 
         public void RemoveHideAvatarModifier()
         {
-            avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
-            onPointerDown.gameObject.SetActive(true);
-            playerNameContainer.SetActive(true);
-            stickersControllers.ToggleHideArea(false);
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
+            {
+                avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+                onPointerDown.gameObject.SetActive(true);
+                playerNameContainer.SetActive(true);
+                stickersControllers.ToggleHideArea(false);
+            }
         }
         
         public void ApplyHidePassportModifier()
         {
-            if (onPointerDown.collider == null)
-                return;
-
-            onPointerDown.SetPassportEnabled(false);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                DisablePassport();
+            }
+            currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
+        
         public void RemoveHidePassportModifier()
+        {
+            currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
+            {
+                EnablePasssport();
+            }
+        }
+
+        private void EnablePasssport()
         {
             if (onPointerDown.collider == null)
                 return;
 
             onPointerDown.SetPassportEnabled(true);
+        }
+
+        private void DisablePassport()
+        {
+            if (onPointerDown.collider == null)
+                return;
+
+            onPointerDown.SetPassportEnabled(false);
         }
 
         public override void Cleanup()

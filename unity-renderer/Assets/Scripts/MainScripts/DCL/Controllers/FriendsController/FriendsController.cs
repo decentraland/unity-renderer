@@ -25,7 +25,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
     public int TotalFriendCount { get; private set; }
-    public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;  
+    public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
     public int TotalReceivedFriendRequestCount { get; private set; }
     public int TotalSentFriendRequestCount { get; private set; }
     public int TotalFriendsWithDirectMessagesCount { get; private set; }
@@ -149,7 +149,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         var msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
 
         TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
-        
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
         OnInitialized?.Invoke();
     }
 
@@ -158,15 +158,11 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public void AddFriends(string json)
     {
         var msg = JsonUtility.FromJson<AddFriendsPayload>(json);
-        
+
         TotalFriendCount = msg.totalFriends;
         OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
-
-        foreach (var friendId in msg.friends)
-        {
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                {action = FriendshipAction.APPROVED, userId = friendId});
-        }
+        
+        AddFriends(msg.friends);
     }
 
     // called by kernel
@@ -174,11 +170,11 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public void AddFriendRequests(string json)
     {
         var msg = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
-        
+
         TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
         TotalSentFriendRequestCount = msg.totalSentFriendRequests;
         OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
-        
+
         foreach (var userId in msg.requestedFrom)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -198,21 +194,10 @@ public class FriendsController : MonoBehaviour, IFriendsController
     {
         var friendsWithDMs = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
         TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
+        
+        AddFriends(friendsWithDMs.currentFriendsWithDirectMessages.Select(messages => messages.userId));
+
         OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
-    }
-
-    private void UpdateUserStatus(UserStatus newUserStatus)
-    {
-        if (!friends.ContainsKey(newUserStatus.userId))
-        {
-            friends.Add(newUserStatus.userId, newUserStatus);
-        }
-        else
-        {
-            friends[newUserStatus.userId] = newUserStatus;
-        }
-
-        OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
     }
 
     // called by kernel
@@ -228,6 +213,47 @@ public class FriendsController : MonoBehaviour, IFriendsController
         newUserStatus.friendshipStatus = friends[newUserStatus.userId].friendshipStatus;
 
         UpdateUserStatus(newUserStatus);
+    }
+    
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateFriendshipStatus(string json)
+    {
+        FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
+        UpdateFriendshipStatus(msg);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalFriendRequests(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalFriendRequestsPayload>(json);
+        TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
+        TotalSentFriendRequestCount = msg.totalSentRequests;
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalFriends(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalFriendsPayload>(json);
+        TotalFriendCount = msg.totalFriends;
+        OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
+    }
+    
+    private void UpdateUserStatus(UserStatus newUserStatus)
+    {
+        if (!friends.ContainsKey(newUserStatus.userId))
+        {
+            friends.Add(newUserStatus.userId, newUserStatus);
+        }
+        else
+        {
+            friends[newUserStatus.userId] = newUserStatus;
+        }
+
+        OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
     }
 
     private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
@@ -256,33 +282,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
             friends.Remove(userId);
 
         OnUpdateFriendship?.Invoke(userId, msg.action);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateFriendshipStatus(string json)
-    {
-        FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
-        UpdateFriendshipStatus(msg);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateTotalFriendRequests(string json)
-    {
-        var msg = JsonUtility.FromJson<UpdateTotalFriendRequestsPayload>(json);
-        TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
-        TotalSentFriendRequestCount = msg.totalSentRequests;
-        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
-    }
-
-    // called by kernel
-    [UsedImplicitly]
-    public void UpdateTotalFriends(string json)
-    {
-        var msg = JsonUtility.FromJson<UpdateTotalFriendsPayload>(json);
-        TotalFriendCount = msg.totalFriends;
-        OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
     }
 
     private bool ItsAnOutdatedUpdate(string userId, FriendshipStatus friendshipStatus)
@@ -314,6 +313,15 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
         return FriendshipStatus.NOT_FRIEND;
     }
+    
+    private void AddFriends(IEnumerable<string> friendIds)
+    {
+        foreach (var friendId in friendIds)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                {action = FriendshipAction.APPROVED, userId = friendId});
+        }
+    }
 
     [ContextMenu("Change user stats to online")]
     public void FakeOnlineFriend()
@@ -328,7 +336,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
             friendshipStartedTime = friend.friendshipStartedTime
         });
     }
-    
+
     [ContextMenu("Force initialization")]
     public void ForceInitialization()
     {

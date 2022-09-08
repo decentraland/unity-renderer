@@ -9,7 +9,8 @@
         "Unity.TextMeshPro",
         "DataStore",
         "ChatController",
-        "BaseVariable"
+        "BaseVariable",
+        "SocialAnalytics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

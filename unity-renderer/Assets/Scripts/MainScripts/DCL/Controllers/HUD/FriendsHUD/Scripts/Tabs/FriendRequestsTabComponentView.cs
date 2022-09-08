@@ -16,6 +16,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private const float NOTIFICATIONS_DURATION = 3;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
     private const int CREATION_AMOUNT_PER_FRAME = 5;
+    private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -259,6 +260,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void SendFriendRequest(string friendUserName)
     {
+        friendUserName = friendUserName.Trim()
+            .Replace("\n", "")
+            .Replace("\r", "");
         if (string.IsNullOrEmpty(friendUserName)) return;
 
         searchBar.ClearSearch();
@@ -386,7 +390,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         if (!loadMoreEntriesContainer.activeInHierarchy) return;
         
-        if (position.y < 0.005f && lastScrollPosition.y >= 0.005f)
+        if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
         {
             if (requireMoreEntriesRoutine != null)
                 StopCoroutine(requireMoreEntriesRoutine);

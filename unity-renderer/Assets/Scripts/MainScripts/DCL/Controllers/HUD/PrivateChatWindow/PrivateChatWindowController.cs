@@ -28,7 +28,6 @@ public class PrivateChatWindowController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
-    internal readonly List<string> directMessagesAlreadyRequested = new List<string>();
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
@@ -36,6 +35,8 @@ public class PrivateChatWindowController : IHUD
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
+    private bool shouldRequestMessages;
 
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     internal BaseVariable<UnityEngine.Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
@@ -110,14 +111,8 @@ public class PrivateChatWindowController : IHUD
 
         ConversationUserId = newConversationUserId;
         conversationProfile = newConversationUserProfile;
-
-        var userStatus = friendsController.GetUserStatus(ConversationUserId);
-
-        View.Setup(newConversationUserProfile,
-            userStatus.presence == PresenceStatus.ONLINE,
-            userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
-
-        ReloadAllChats().Forget();
+        chatHudController.ClearAllEntries();
+        shouldRequestMessages = true;
     }
 
     public void SetVisibility(bool visible)
@@ -138,12 +133,14 @@ public class PrivateChatWindowController : IHUD
                     userStatus.presence == PresenceStatus.ONLINE,
                     userProfileBridge.GetOwn().IsBlocked(ConversationUserId));
 
-                if (!directMessagesAlreadyRequested.Contains(ConversationUserId))
+                if (shouldRequestMessages)
                 {
                     RequestPrivateMessages(
                         ConversationUserId,
                         USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
                         null);
+                    
+                    shouldRequestMessages = false;
                 }
             }
 
@@ -192,23 +189,6 @@ public class PrivateChatWindowController : IHUD
         }
     }
 
-    private async UniTaskVoid ReloadAllChats()
-    {
-        chatHudController.ClearAllEntries();
-
-        const int entriesPerFrame = 10;
-        var list = chatController.GetAllocatedEntries();
-        if (list.Count == 0) return;
-
-        for (var i = list.Count - 1; i >= 0; i--)
-        {
-            var message = list[i];
-            if (i != 0 && i % entriesPerFrame == 0) await UniTask.NextFrame();
-            if (!IsMessageFomCurrentConversation(message)) continue;
-            chatHudController.AddChatMessage(message, spamFiltering: false, limitMaxEntries: false);
-        }
-    }
-
     private void HandleSendChatMessage(ChatMessage message)
     {
         if (string.IsNullOrEmpty(conversationProfile.userName))
@@ -252,8 +232,11 @@ public class PrivateChatWindowController : IHUD
 
         if (View.IsActive)
         {
-            // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
-            MarkUserChatMessagesAsRead();
+            markMessagesAsSeenCancellationToken.Cancel();
+            markMessagesAsSeenCancellationToken = new CancellationTokenSource();
+            // since there could be many messages coming in a row, avoid making the call instantly for each message
+            // instead make just one call after the iteration finishes
+            MarkMessagesAsSeenDelayed(markMessagesAsSeenCancellationToken.Token).Forget();
         }
 
         View?.SetLoadingMessagesActive(false);
@@ -264,13 +247,14 @@ public class PrivateChatWindowController : IHUD
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
-        if (currentState.Equals(ChatWindowVisualState.NONE_VISIBLE))
+        switch (currentState)
         {
-            ActivatePreview();
-        }
-        else if (currentState.Equals(ChatWindowVisualState.PREVIEW_MODE))
-        {
-            WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
+            case ChatWindowVisualState.NONE_VISIBLE:
+                ActivatePreview();
+                break;
+            case ChatWindowVisualState.PREVIEW_MODE:
+                WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
+                break;
         }
     }
 
@@ -296,6 +280,13 @@ public class PrivateChatWindowController : IHUD
 
     private void MarkUserChatMessagesAsRead() =>
         chatController.MarkMessagesAsSeen(ConversationUserId);
+    
+    private async UniTask MarkMessagesAsSeenDelayed(CancellationToken cancellationToken)
+    {
+        await UniTask.NextFrame(cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        MarkUserChatMessagesAsRead();
+    }
 
     private void HandleInputFieldSelected()
     {
@@ -436,7 +427,6 @@ public class PrivateChatWindowController : IHUD
     {
         View?.SetLoadingMessagesActive(true);
         chatController.GetPrivateMessages(userId, limit, fromMessageId);
-        directMessagesAlreadyRequested.Add(userId);
         WaitForRequestTimeOutThenHideLoadingFeedback().Forget();
     }
 
@@ -446,15 +436,10 @@ public class PrivateChatWindowController : IHUD
 
         var currentPrivateMessages = chatController.GetPrivateAllocatedEntriesByUser(ConversationUserId);
 
-        if (currentPrivateMessages.Count <= 0) return;
-
         var oldestMessageId = currentPrivateMessages
             .OrderBy(x => x.timestamp)
             .Select(x => x.messageId)
             .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(oldestMessageId))
-            return;
 
         chatController.GetPrivateMessages(
             ConversationUserId,

@@ -14,7 +14,7 @@ namespace Tests.AvatarModifierAreaFeedback
    
         private AvatarModifierAreaFeedbackController hudController;
         private IAvatarModifierAreaFeedbackView hudView;
-        private BaseRefCounter<AvatarAreaWarningID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
+        private BaseRefCounter<AvatarModifierAreaID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
 
         [SetUp]
         public void SetUp()

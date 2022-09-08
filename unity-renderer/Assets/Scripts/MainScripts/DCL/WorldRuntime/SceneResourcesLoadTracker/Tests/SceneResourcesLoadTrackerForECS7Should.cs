@@ -1,6 +1,7 @@
 using System.Collections;
 using DCL;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -39,7 +40,7 @@ namespace Tests
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
             resourcesLoadTracker.Track(sceneData.id);
-            hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7);
+            hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7, Substitute.For<IInternalECSComponent<InternalTexturizable>>());
         }
 
         [TearDown]

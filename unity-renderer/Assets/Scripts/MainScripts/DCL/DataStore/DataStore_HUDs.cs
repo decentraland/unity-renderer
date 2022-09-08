@@ -26,7 +26,7 @@ namespace DCL
         public readonly BaseVariable<Transform> topNotificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
         public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
-        public readonly BaseRefCounter<AvatarAreaWarningID> avatarAreaWarnings = new BaseRefCounter<AvatarAreaWarningID>();
+        public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
