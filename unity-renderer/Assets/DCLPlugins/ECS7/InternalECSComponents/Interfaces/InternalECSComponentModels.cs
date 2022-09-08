@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using DCL.ECSComponents;
 using UnityEngine;
+using RaycastHit = UnityEngine.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
 {
@@ -20,5 +22,21 @@ namespace DCL.ECS7.InternalComponents
     public class InternalColliders
     {
         public IList<Collider> colliders = new List<Collider>();
+    }
+
+    public class InternalInputEventResults
+    {
+        public class EventData
+        {
+            public ActionButton button;
+            public RaycastHit hit;
+            public PointerEventType type;
+            public int timestamp;
+            public float analog;
+        }
+
+        public Queue<EventData> events;
+        public bool dirty;
+        public int lastTimestamp;
     }
 }
