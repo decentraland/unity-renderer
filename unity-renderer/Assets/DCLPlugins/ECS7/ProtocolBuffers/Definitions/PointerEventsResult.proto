@@ -3,7 +3,7 @@
 import "common/id.proto";
 import "RaycastResult.proto";
 import "PointerEvents.proto";
-option (ecs_component_id) = 1065;
+option (ecs_component_id) = 1063;
 import "common/ActionButton.proto";
 
 // the renderer will set this component to the root entity once per frame with all the events

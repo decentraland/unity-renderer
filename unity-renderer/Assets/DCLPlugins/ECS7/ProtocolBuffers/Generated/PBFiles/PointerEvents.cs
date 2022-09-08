@@ -25,24 +25,23 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNQb2ludGVyRXZlbnRzLnByb3RvEhBkZWNlbnRyYWxhbmQuZWNzGhljb21t",
-            "b24vQWN0aW9uQnV0dG9uLnByb3RvIsEBCg5QQlBvaW50ZXJFdmVudBIiCgZi",
-            "dXR0b24YASABKA4yDS5BY3Rpb25CdXR0b25IAIgBARIXCgpob3Zlcl90ZXh0",
-            "GAIgASgJSAGIAQESGQoMbWF4X2Rpc3RhbmNlGAMgASgCSAKIAQESGgoNc2hv",
-            "d19mZWVkYmFjaxgEIAEoCEgDiAEBQgkKB19idXR0b25CDQoLX2hvdmVyX3Rl",
-            "eHRCDwoNX21heF9kaXN0YW5jZUIQCg5fc2hvd19mZWVkYmFjayKBAQoTUEJQ",
-            "b2ludGVyRXZlbnRFbnRyeRI1CglldmVudFR5cGUYASABKA4yIi5kZWNlbnRy",
-            "YWxhbmQuZWNzLlBvaW50ZXJFdmVudFR5cGUSMwoJZXZlbnRJbmZvGAIgASgL",
-            "MiAuZGVjZW50cmFsYW5kLmVjcy5QQlBvaW50ZXJFdmVudCJPCg9QQlBvaW50",
-            "ZXJFdmVudHMSPAoNcG9pbnRlckV2ZW50cxgBIAMoCzIlLmRlY2VudHJhbGFu",
-            "ZC5lY3MuUEJQb2ludGVyRXZlbnRFbnRyeSpGChBQb2ludGVyRXZlbnRUeXBl",
-            "EgYKAlVQEAASCAoERE9XThABEg8KC0hPVkVSX0VOVEVSEAISDwoLSE9WRVJf",
-            "TEVBVkUQA0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "b24vQWN0aW9uQnV0dG9uLnByb3RvIoYDCg9QQlBvaW50ZXJFdmVudHMSPgoN",
+            "cG9pbnRlckV2ZW50cxgBIAMoCzInLmRlY2VudHJhbGFuZC5lY3MuUEJQb2lu",
+            "dGVyRXZlbnRzLkVudHJ5GrcBCgRJbmZvEiIKBmJ1dHRvbhgBIAEoDjINLkFj",
+            "dGlvbkJ1dHRvbkgAiAEBEhcKCmhvdmVyX3RleHQYAiABKAlIAYgBARIZCgxt",
+            "YXhfZGlzdGFuY2UYAyABKAJIAogBARIaCg1zaG93X2ZlZWRiYWNrGAQgASgI",
+            "SAOIAQFCCQoHX2J1dHRvbkINCgtfaG92ZXJfdGV4dEIPCg1fbWF4X2Rpc3Rh",
+            "bmNlQhAKDl9zaG93X2ZlZWRiYWNrGnkKBUVudHJ5EjUKCWV2ZW50VHlwZRgB",
+            "IAEoDjIiLmRlY2VudHJhbGFuZC5lY3MuUG9pbnRlckV2ZW50VHlwZRI5Cgll",
+            "dmVudEluZm8YAiABKAsyJi5kZWNlbnRyYWxhbmQuZWNzLlBCUG9pbnRlckV2",
+            "ZW50cy5JbmZvKkYKEFBvaW50ZXJFdmVudFR5cGUSBgoCVVAQABIICgRET1dO",
+            "EAESDwoLSE9WRVJfRU5URVIQAhIPCgtIT1ZFUl9MRUFWRRADQhSqAhFEQ0wu",
+            "RUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::ActionButtonReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PointerEventType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvent), global::DCL.ECSComponents.PBPointerEvent.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventEntry), global::DCL.ECSComponents.PBPointerEventEntry.Parser, new[]{ "EventType", "EventInfo" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents), global::DCL.ECSComponents.PBPointerEvents.Parser, new[]{ "PointerEvents" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents), global::DCL.ECSComponents.PBPointerEvents.Parser, new[]{ "PointerEvents" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Info), global::DCL.ECSComponents.PBPointerEvents.Types.Info.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Entry), global::DCL.ECSComponents.PBPointerEvents.Types.Entry.Parser, new[]{ "EventType", "EventInfo" }, null, null, null, null)})
           }));
     }
     #endregion
@@ -59,606 +58,6 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
-  public sealed partial class PBPointerEvent : pb::IMessage<PBPointerEvent>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<PBPointerEvent> _parser = new pb::MessageParser<PBPointerEvent>(() => new PBPointerEvent());
-    private pb::UnknownFieldSet _unknownFields;
-    private int _hasBits0;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<PBPointerEvent> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::DCL.ECSComponents.PointerEventsReflection.Descriptor.MessageTypes[0]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEvent() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEvent(PBPointerEvent other) : this() {
-      _hasBits0 = other._hasBits0;
-      button_ = other.button_;
-      hoverText_ = other.hoverText_;
-      maxDistance_ = other.maxDistance_;
-      showFeedback_ = other.showFeedback_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEvent Clone() {
-      return new PBPointerEvent(this);
-    }
-
-    /// <summary>Field number for the "button" field.</summary>
-    public const int ButtonFieldNumber = 1;
-    private global::ActionButton button_;
-    /// <summary>
-    /// default=ActionButton.ANY
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::ActionButton Button {
-      get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::ActionButton.Pointer; } }
-      set {
-        _hasBits0 |= 1;
-        button_ = value;
-      }
-    }
-    /// <summary>Gets whether the "button" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasButton {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "button" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearButton() {
-      _hasBits0 &= ~1;
-    }
-
-    /// <summary>Field number for the "hover_text" field.</summary>
-    public const int HoverTextFieldNumber = 2;
-    private string hoverText_;
-    /// <summary>
-    /// default='Interact'
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string HoverText {
-      get { return hoverText_ ?? ""; }
-      set {
-        hoverText_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "hover_text" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasHoverText {
-      get { return hoverText_ != null; }
-    }
-    /// <summary>Clears the value of the "hover_text" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearHoverText() {
-      hoverText_ = null;
-    }
-
-    /// <summary>Field number for the "max_distance" field.</summary>
-    public const int MaxDistanceFieldNumber = 3;
-    private float maxDistance_;
-    /// <summary>
-    /// default=10
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float MaxDistance {
-      get { if ((_hasBits0 & 2) != 0) { return maxDistance_; } else { return 0F; } }
-      set {
-        _hasBits0 |= 2;
-        maxDistance_ = value;
-      }
-    }
-    /// <summary>Gets whether the "max_distance" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMaxDistance {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "max_distance" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMaxDistance() {
-      _hasBits0 &= ~2;
-    }
-
-    /// <summary>Field number for the "show_feedback" field.</summary>
-    public const int ShowFeedbackFieldNumber = 4;
-    private bool showFeedback_;
-    /// <summary>
-    /// default=true
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool ShowFeedback {
-      get { if ((_hasBits0 & 4) != 0) { return showFeedback_; } else { return false; } }
-      set {
-        _hasBits0 |= 4;
-        showFeedback_ = value;
-      }
-    }
-    /// <summary>Gets whether the "show_feedback" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasShowFeedback {
-      get { return (_hasBits0 & 4) != 0; }
-    }
-    /// <summary>Clears the value of the "show_feedback" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearShowFeedback() {
-      _hasBits0 &= ~4;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as PBPointerEvent);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(PBPointerEvent other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Button != other.Button) return false;
-      if (HoverText != other.HoverText) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
-      if (ShowFeedback != other.ShowFeedback) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (HasButton) hash ^= Button.GetHashCode();
-      if (HasHoverText) hash ^= HoverText.GetHashCode();
-      if (HasMaxDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
-      if (HasShowFeedback) hash ^= ShowFeedback.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (HasButton) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Button);
-      }
-      if (HasHoverText) {
-        output.WriteRawTag(18);
-        output.WriteString(HoverText);
-      }
-      if (HasMaxDistance) {
-        output.WriteRawTag(29);
-        output.WriteFloat(MaxDistance);
-      }
-      if (HasShowFeedback) {
-        output.WriteRawTag(32);
-        output.WriteBool(ShowFeedback);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasButton) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Button);
-      }
-      if (HasHoverText) {
-        output.WriteRawTag(18);
-        output.WriteString(HoverText);
-      }
-      if (HasMaxDistance) {
-        output.WriteRawTag(29);
-        output.WriteFloat(MaxDistance);
-      }
-      if (HasShowFeedback) {
-        output.WriteRawTag(32);
-        output.WriteBool(ShowFeedback);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (HasButton) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
-      }
-      if (HasHoverText) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
-      }
-      if (HasMaxDistance) {
-        size += 1 + 4;
-      }
-      if (HasShowFeedback) {
-        size += 1 + 1;
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(PBPointerEvent other) {
-      if (other == null) {
-        return;
-      }
-      if (other.HasButton) {
-        Button = other.Button;
-      }
-      if (other.HasHoverText) {
-        HoverText = other.HoverText;
-      }
-      if (other.HasMaxDistance) {
-        MaxDistance = other.MaxDistance;
-      }
-      if (other.HasShowFeedback) {
-        ShowFeedback = other.ShowFeedback;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            Button = (global::ActionButton) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            HoverText = input.ReadString();
-            break;
-          }
-          case 29: {
-            MaxDistance = input.ReadFloat();
-            break;
-          }
-          case 32: {
-            ShowFeedback = input.ReadBool();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Button = (global::ActionButton) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            HoverText = input.ReadString();
-            break;
-          }
-          case 29: {
-            MaxDistance = input.ReadFloat();
-            break;
-          }
-          case 32: {
-            ShowFeedback = input.ReadBool();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  public sealed partial class PBPointerEventEntry : pb::IMessage<PBPointerEventEntry>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<PBPointerEventEntry> _parser = new pb::MessageParser<PBPointerEventEntry>(() => new PBPointerEventEntry());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<PBPointerEventEntry> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::DCL.ECSComponents.PointerEventsReflection.Descriptor.MessageTypes[1]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEventEntry() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEventEntry(PBPointerEventEntry other) : this() {
-      eventType_ = other.eventType_;
-      eventInfo_ = other.eventInfo_ != null ? other.eventInfo_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBPointerEventEntry Clone() {
-      return new PBPointerEventEntry(this);
-    }
-
-    /// <summary>Field number for the "eventType" field.</summary>
-    public const int EventTypeFieldNumber = 1;
-    private global::DCL.ECSComponents.PointerEventType eventType_ = global::DCL.ECSComponents.PointerEventType.Up;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PointerEventType EventType {
-      get { return eventType_; }
-      set {
-        eventType_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "eventInfo" field.</summary>
-    public const int EventInfoFieldNumber = 2;
-    private global::DCL.ECSComponents.PBPointerEvent eventInfo_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBPointerEvent EventInfo {
-      get { return eventInfo_; }
-      set {
-        eventInfo_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as PBPointerEventEntry);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(PBPointerEventEntry other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (EventType != other.EventType) return false;
-      if (!object.Equals(EventInfo, other.EventInfo)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (EventType != global::DCL.ECSComponents.PointerEventType.Up) hash ^= EventType.GetHashCode();
-      if (eventInfo_ != null) hash ^= EventInfo.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) EventType);
-      }
-      if (eventInfo_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(EventInfo);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) EventType);
-      }
-      if (eventInfo_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(EventInfo);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) EventType);
-      }
-      if (eventInfo_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(EventInfo);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(PBPointerEventEntry other) {
-      if (other == null) {
-        return;
-      }
-      if (other.EventType != global::DCL.ECSComponents.PointerEventType.Up) {
-        EventType = other.EventType;
-      }
-      if (other.eventInfo_ != null) {
-        if (eventInfo_ == null) {
-          EventInfo = new global::DCL.ECSComponents.PBPointerEvent();
-        }
-        EventInfo.MergeFrom(other.EventInfo);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            EventType = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            if (eventInfo_ == null) {
-              EventInfo = new global::DCL.ECSComponents.PBPointerEvent();
-            }
-            input.ReadMessage(EventInfo);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            EventType = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            if (eventInfo_ == null) {
-              EventInfo = new global::DCL.ECSComponents.PBPointerEvent();
-            }
-            input.ReadMessage(EventInfo);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
   public sealed partial class PBPointerEvents : pb::IMessage<PBPointerEvents>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -673,7 +72,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::DCL.ECSComponents.PointerEventsReflection.Descriptor.MessageTypes[2]; }
+      get { return global::DCL.ECSComponents.PointerEventsReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -705,12 +104,12 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "pointerEvents" field.</summary>
     public const int PointerEventsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::DCL.ECSComponents.PBPointerEventEntry> _repeated_pointerEvents_codec
-        = pb::FieldCodec.ForMessage(10, global::DCL.ECSComponents.PBPointerEventEntry.Parser);
-    private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEventEntry> pointerEvents_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEventEntry>();
+    private static readonly pb::FieldCodec<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> _repeated_pointerEvents_codec
+        = pb::FieldCodec.ForMessage(10, global::DCL.ECSComponents.PBPointerEvents.Types.Entry.Parser);
+    private readonly pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> pointerEvents_ = new pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEventEntry> PointerEvents {
+    public pbc::RepeatedField<global::DCL.ECSComponents.PBPointerEvents.Types.Entry> PointerEvents {
       get { return pointerEvents_; }
     }
 
@@ -834,6 +233,614 @@ namespace DCL.ECSComponents {
       }
     }
     #endif
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the PBPointerEvents message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static partial class Types {
+      public sealed partial class Info : pb::IMessage<Info>
+      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          , pb::IBufferMessage
+      #endif
+      {
+        private static readonly pb::MessageParser<Info> _parser = new pb::MessageParser<Info>(() => new Info());
+        private pb::UnknownFieldSet _unknownFields;
+        private int _hasBits0;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pb::MessageParser<Info> Parser { get { return _parser; } }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::DCL.ECSComponents.PBPointerEvents.Descriptor.NestedTypes[0]; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Info() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Info(Info other) : this() {
+          _hasBits0 = other._hasBits0;
+          button_ = other.button_;
+          hoverText_ = other.hoverText_;
+          maxDistance_ = other.maxDistance_;
+          showFeedback_ = other.showFeedback_;
+          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Info Clone() {
+          return new Info(this);
+        }
+
+        /// <summary>Field number for the "button" field.</summary>
+        public const int ButtonFieldNumber = 1;
+        private global::ActionButton button_;
+        /// <summary>
+        /// default=ActionButton.ANY
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::ActionButton Button {
+          get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::ActionButton.Pointer; } }
+          set {
+            _hasBits0 |= 1;
+            button_ = value;
+          }
+        }
+        /// <summary>Gets whether the "button" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasButton {
+          get { return (_hasBits0 & 1) != 0; }
+        }
+        /// <summary>Clears the value of the "button" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearButton() {
+          _hasBits0 &= ~1;
+        }
+
+        /// <summary>Field number for the "hover_text" field.</summary>
+        public const int HoverTextFieldNumber = 2;
+        private string hoverText_;
+        /// <summary>
+        /// default='Interact'
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string HoverText {
+          get { return hoverText_ ?? ""; }
+          set {
+            hoverText_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+        /// <summary>Gets whether the "hover_text" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasHoverText {
+          get { return hoverText_ != null; }
+        }
+        /// <summary>Clears the value of the "hover_text" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearHoverText() {
+          hoverText_ = null;
+        }
+
+        /// <summary>Field number for the "max_distance" field.</summary>
+        public const int MaxDistanceFieldNumber = 3;
+        private float maxDistance_;
+        /// <summary>
+        /// default=10
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public float MaxDistance {
+          get { if ((_hasBits0 & 2) != 0) { return maxDistance_; } else { return 0F; } }
+          set {
+            _hasBits0 |= 2;
+            maxDistance_ = value;
+          }
+        }
+        /// <summary>Gets whether the "max_distance" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasMaxDistance {
+          get { return (_hasBits0 & 2) != 0; }
+        }
+        /// <summary>Clears the value of the "max_distance" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearMaxDistance() {
+          _hasBits0 &= ~2;
+        }
+
+        /// <summary>Field number for the "show_feedback" field.</summary>
+        public const int ShowFeedbackFieldNumber = 4;
+        private bool showFeedback_;
+        /// <summary>
+        /// default=true
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool ShowFeedback {
+          get { if ((_hasBits0 & 4) != 0) { return showFeedback_; } else { return false; } }
+          set {
+            _hasBits0 |= 4;
+            showFeedback_ = value;
+          }
+        }
+        /// <summary>Gets whether the "show_feedback" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasShowFeedback {
+          get { return (_hasBits0 & 4) != 0; }
+        }
+        /// <summary>Clears the value of the "show_feedback" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearShowFeedback() {
+          _hasBits0 &= ~4;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override bool Equals(object other) {
+          return Equals(other as Info);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool Equals(Info other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          if (Button != other.Button) return false;
+          if (HoverText != other.HoverText) return false;
+          if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
+          if (ShowFeedback != other.ShowFeedback) return false;
+          return Equals(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override int GetHashCode() {
+          int hash = 1;
+          if (HasButton) hash ^= Button.GetHashCode();
+          if (HasHoverText) hash ^= HoverText.GetHashCode();
+          if (HasMaxDistance) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
+          if (HasShowFeedback) hash ^= ShowFeedback.GetHashCode();
+          if (_unknownFields != null) {
+            hash ^= _unknownFields.GetHashCode();
+          }
+          return hash;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void WriteTo(pb::CodedOutputStream output) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          output.WriteRawMessage(this);
+        #else
+          if (HasButton) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) Button);
+          }
+          if (HasHoverText) {
+            output.WriteRawTag(18);
+            output.WriteString(HoverText);
+          }
+          if (HasMaxDistance) {
+            output.WriteRawTag(29);
+            output.WriteFloat(MaxDistance);
+          }
+          if (HasShowFeedback) {
+            output.WriteRawTag(32);
+            output.WriteBool(ShowFeedback);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(output);
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+          if (HasButton) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) Button);
+          }
+          if (HasHoverText) {
+            output.WriteRawTag(18);
+            output.WriteString(HoverText);
+          }
+          if (HasMaxDistance) {
+            output.WriteRawTag(29);
+            output.WriteFloat(MaxDistance);
+          }
+          if (HasShowFeedback) {
+            output.WriteRawTag(32);
+            output.WriteBool(ShowFeedback);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(ref output);
+          }
+        }
+        #endif
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public int CalculateSize() {
+          int size = 0;
+          if (HasButton) {
+            size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
+          }
+          if (HasHoverText) {
+            size += 1 + pb::CodedOutputStream.ComputeStringSize(HoverText);
+          }
+          if (HasMaxDistance) {
+            size += 1 + 4;
+          }
+          if (HasShowFeedback) {
+            size += 1 + 1;
+          }
+          if (_unknownFields != null) {
+            size += _unknownFields.CalculateSize();
+          }
+          return size;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(Info other) {
+          if (other == null) {
+            return;
+          }
+          if (other.HasButton) {
+            Button = other.Button;
+          }
+          if (other.HasHoverText) {
+            HoverText = other.HoverText;
+          }
+          if (other.HasMaxDistance) {
+            MaxDistance = other.MaxDistance;
+          }
+          if (other.HasShowFeedback) {
+            ShowFeedback = other.ShowFeedback;
+          }
+          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(pb::CodedInputStream input) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          input.ReadRawMessage(this);
+        #else
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+                break;
+              case 8: {
+                Button = (global::ActionButton) input.ReadEnum();
+                break;
+              }
+              case 18: {
+                HoverText = input.ReadString();
+                break;
+              }
+              case 29: {
+                MaxDistance = input.ReadFloat();
+                break;
+              }
+              case 32: {
+                ShowFeedback = input.ReadBool();
+                break;
+              }
+            }
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+                break;
+              case 8: {
+                Button = (global::ActionButton) input.ReadEnum();
+                break;
+              }
+              case 18: {
+                HoverText = input.ReadString();
+                break;
+              }
+              case 29: {
+                MaxDistance = input.ReadFloat();
+                break;
+              }
+              case 32: {
+                ShowFeedback = input.ReadBool();
+                break;
+              }
+            }
+          }
+        }
+        #endif
+
+      }
+
+      public sealed partial class Entry : pb::IMessage<Entry>
+      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          , pb::IBufferMessage
+      #endif
+      {
+        private static readonly pb::MessageParser<Entry> _parser = new pb::MessageParser<Entry>(() => new Entry());
+        private pb::UnknownFieldSet _unknownFields;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pb::MessageParser<Entry> Parser { get { return _parser; } }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::DCL.ECSComponents.PBPointerEvents.Descriptor.NestedTypes[1]; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Entry() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Entry(Entry other) : this() {
+          eventType_ = other.eventType_;
+          eventInfo_ = other.eventInfo_ != null ? other.eventInfo_.Clone() : null;
+          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public Entry Clone() {
+          return new Entry(this);
+        }
+
+        /// <summary>Field number for the "eventType" field.</summary>
+        public const int EventTypeFieldNumber = 1;
+        private global::DCL.ECSComponents.PointerEventType eventType_ = global::DCL.ECSComponents.PointerEventType.Up;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::DCL.ECSComponents.PointerEventType EventType {
+          get { return eventType_; }
+          set {
+            eventType_ = value;
+          }
+        }
+
+        /// <summary>Field number for the "eventInfo" field.</summary>
+        public const int EventInfoFieldNumber = 2;
+        private global::DCL.ECSComponents.PBPointerEvents.Types.Info eventInfo_;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::DCL.ECSComponents.PBPointerEvents.Types.Info EventInfo {
+          get { return eventInfo_; }
+          set {
+            eventInfo_ = value;
+          }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override bool Equals(object other) {
+          return Equals(other as Entry);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool Equals(Entry other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          if (EventType != other.EventType) return false;
+          if (!object.Equals(EventInfo, other.EventInfo)) return false;
+          return Equals(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override int GetHashCode() {
+          int hash = 1;
+          if (EventType != global::DCL.ECSComponents.PointerEventType.Up) hash ^= EventType.GetHashCode();
+          if (eventInfo_ != null) hash ^= EventInfo.GetHashCode();
+          if (_unknownFields != null) {
+            hash ^= _unknownFields.GetHashCode();
+          }
+          return hash;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void WriteTo(pb::CodedOutputStream output) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          output.WriteRawMessage(this);
+        #else
+          if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) EventType);
+          }
+          if (eventInfo_ != null) {
+            output.WriteRawTag(18);
+            output.WriteMessage(EventInfo);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(output);
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+          if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) EventType);
+          }
+          if (eventInfo_ != null) {
+            output.WriteRawTag(18);
+            output.WriteMessage(EventInfo);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(ref output);
+          }
+        }
+        #endif
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public int CalculateSize() {
+          int size = 0;
+          if (EventType != global::DCL.ECSComponents.PointerEventType.Up) {
+            size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) EventType);
+          }
+          if (eventInfo_ != null) {
+            size += 1 + pb::CodedOutputStream.ComputeMessageSize(EventInfo);
+          }
+          if (_unknownFields != null) {
+            size += _unknownFields.CalculateSize();
+          }
+          return size;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(Entry other) {
+          if (other == null) {
+            return;
+          }
+          if (other.EventType != global::DCL.ECSComponents.PointerEventType.Up) {
+            EventType = other.EventType;
+          }
+          if (other.eventInfo_ != null) {
+            if (eventInfo_ == null) {
+              EventInfo = new global::DCL.ECSComponents.PBPointerEvents.Types.Info();
+            }
+            EventInfo.MergeFrom(other.EventInfo);
+          }
+          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(pb::CodedInputStream input) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          input.ReadRawMessage(this);
+        #else
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+                break;
+              case 8: {
+                EventType = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
+                break;
+              }
+              case 18: {
+                if (eventInfo_ == null) {
+                  EventInfo = new global::DCL.ECSComponents.PBPointerEvents.Types.Info();
+                }
+                input.ReadMessage(EventInfo);
+                break;
+              }
+            }
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+                break;
+              case 8: {
+                EventType = (global::DCL.ECSComponents.PointerEventType) input.ReadEnum();
+                break;
+              }
+              case 18: {
+                if (eventInfo_ == null) {
+                  EventInfo = new global::DCL.ECSComponents.PBPointerEvents.Types.Info();
+                }
+                input.ReadMessage(EventInfo);
+                break;
+              }
+            }
+          }
+        }
+        #endif
+
+      }
+
+    }
+    #endregion
 
   }
 

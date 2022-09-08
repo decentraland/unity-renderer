@@ -1,7 +1,7 @@
 ﻿syntax = "proto3";
 
 import "common/id.proto";
-option (ecs_component_id) = 1162;
+option (ecs_component_id) = 1064;
 import "common/Vector3.proto";
 
 message PBRaycastResult {
