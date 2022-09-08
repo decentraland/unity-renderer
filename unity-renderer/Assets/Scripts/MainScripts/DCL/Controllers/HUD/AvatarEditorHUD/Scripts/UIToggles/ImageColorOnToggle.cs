@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ImageColorOnToggle : UIToggle
+[RequireComponent(typeof(UIOnToggleUpdater))]
+public class ImageColorOnToggle : MonoBehaviour, IUIToggleBehavior
 {
     [SerializeField] private Image targetImage;
 
@@ -9,5 +10,5 @@ public class ImageColorOnToggle : UIToggle
 
     [SerializeField] private Color offColor;
 
-    protected override void OnValueChanged(bool isOn) => targetImage.color = isOn ? onColor : offColor;
+    public void Toggle(bool isOn) => targetImage.color = isOn ? onColor : offColor;
 }

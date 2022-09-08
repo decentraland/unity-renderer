@@ -1,7 +1,8 @@
 ﻿using TMPro;
 using UnityEngine;
 
-public class TMPColorOnToggle : UIToggle
+[RequireComponent(typeof(UIOnToggleUpdater))]
+public class TMPColorOnToggle : MonoBehaviour, IUIToggleBehavior
 {
     [SerializeField] private TextMeshProUGUI targetText;
 
@@ -9,5 +10,5 @@ public class TMPColorOnToggle : UIToggle
 
     [SerializeField] private Color offColor;
 
-    protected override void OnValueChanged(bool isOn) => targetText.color = isOn ? onColor : offColor;
+    public void Toggle(bool isOn) => targetText.color = isOn ? onColor : offColor;
 }

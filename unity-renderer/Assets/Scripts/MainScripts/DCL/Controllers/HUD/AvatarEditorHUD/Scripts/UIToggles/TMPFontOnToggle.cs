@@ -1,12 +1,14 @@
 ﻿using TMPro;
+using UnityEngine;
 
-public class TMPFontOnToggle : UIToggle
+[RequireComponent(typeof(UIOnToggleUpdater))]
+public class TMPFontOnToggle : MonoBehaviour, IUIToggleBehavior
 {
-    public TextMeshProUGUI targetText;
+    [SerializeField] private TextMeshProUGUI targetText;
 
-    public TMP_FontAsset onFont;
+    [SerializeField] private TMP_FontAsset onFont;
 
-    public TMP_FontAsset offFont;
+    [SerializeField] private TMP_FontAsset offFont;
 
-    protected override void OnValueChanged(bool isOn) => targetText.font = isOn ? onFont : offFont;
+    public void Toggle(bool isOn) => targetText.font = isOn ? onFont : offFont;
 }
