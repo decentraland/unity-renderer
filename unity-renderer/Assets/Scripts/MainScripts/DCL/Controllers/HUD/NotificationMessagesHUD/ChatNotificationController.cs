@@ -32,6 +32,7 @@ public class ChatNotificationController : IHUD
         this.mainChatNotificationView = mainChatNotificationView;
         this.topNotificationView = topNotificationView;
         mainChatNotificationView.OnResetFade += ResetFadeOut;
+        topNotificationView.OnResetFade += ResetFadeOut;
         mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
         ownUserProfile = userProfileBridge.GetOwn();
         chatController.OnAddMessage += HandleMessageAdded;
@@ -69,6 +70,9 @@ public class ChatNotificationController : IHUD
     public void ResetFadeOut(bool fadeOutAfterDelay = false)
     {
         mainChatNotificationView.ShowNotifications();
+        if(topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            topNotificationView.ShowNotification();
+
         fadeOutCT.Cancel();
         fadeOutCT = new CancellationTokenSource();
 
@@ -92,6 +96,9 @@ public class ChatNotificationController : IHUD
             return;
 
         mainChatNotificationView.HideNotifications();
+
+        if(topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            topNotificationView.HideNotification();
     }
 
     private UserProfile ExtractRecipient(ChatMessage message) =>

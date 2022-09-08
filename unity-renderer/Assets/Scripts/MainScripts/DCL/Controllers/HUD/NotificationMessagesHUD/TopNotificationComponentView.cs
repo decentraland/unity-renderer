@@ -18,6 +18,8 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
 
+    public event Action<bool> OnResetFade;
+
     //This structure is temporary for the first integration of the top notification, it will change when further defined
     private float normalContentXPos = 111;
     private float offsetContentXPos;
@@ -56,12 +58,14 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
             PopulatePrivateNotification(message, username, profilePicture);
             chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+            OnResetFade?.Invoke(true);
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
             PopulatePublicNotification(message, username);
             chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+            OnResetFade?.Invoke(true);
         }
     }
 
