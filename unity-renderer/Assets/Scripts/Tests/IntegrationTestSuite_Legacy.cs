@@ -114,6 +114,12 @@ public class IntegrationTestSuite_Legacy
         Environment.Dispose();
 
         yield return null;
+        
+        NotificationScriptableObjects.UnloadAll();
+        AudioScriptableObjects.UnloadAll();
+        CommonScriptableObjects.UnloadAll();
+        
+        yield return null;
 
         GameObject[] gos = Object.FindObjectsOfType<GameObject>(true);
 

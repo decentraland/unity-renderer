@@ -27,13 +27,13 @@ namespace Tests
         public void SendPointerEventResult()
         {
             // Arrange
-            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter,pointerEventsQueue);
+            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter);
 
             pointerEventsQueue.Enqueue(CreatePointerEvent());
-            
+
             // Act
             update.Invoke();
-            
+
             // Assert
             componentsWriter.Received(1)
                             .PutComponent(
@@ -42,34 +42,34 @@ namespace Tests
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
         }
-        
+
         [Test]
         public void ClearPointerEventResult()
         {
             // Arrange
-            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter,pointerEventsQueue);
+            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter);
 
             pointerEventsQueue.Enqueue(CreatePointerEvent());
-            
+
             // Act
             update.Invoke();
-            
+
             // Assert
             Assert.AreEqual(0, pointerEventsQueue.Count);
         }
-        
+
         [Test]
         public void GroupPointerEventResultOfTheSameScene()
         {
             // Arrange
-            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter,pointerEventsQueue);
+            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter);
 
             pointerEventsQueue.Enqueue(CreatePointerEvent());
             pointerEventsQueue.Enqueue(CreatePointerEvent());
-            
+
             // Act
             update.Invoke();
-            
+
             // Assert
             componentsWriter.Received(1)
                             .PutComponent(
@@ -78,7 +78,7 @@ namespace Tests
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
         }
-        
+
         [Test]
         public void DontSendIfThereIsNoPendingPointerEvents()
         {
@@ -89,14 +89,14 @@ namespace Tests
                 currentPointerEventsQueue = new Queue<PointerEvent>(),
                 componentsWriter = componentsWriter
             };
-            
+
             state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
             state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
             state.currentPointerEventsQueue.Enqueue(CreatePointerEvent());
 
             // Act
             ECSPointerEventResolverSystem.LateUpdate(state);
-            
+
             // Assert
             componentsWriter.Received(0)
                             .PutComponent(
@@ -105,7 +105,7 @@ namespace Tests
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
         }
-        
+
         [Test]
         public void RemoveOlderPointerEventsWhen()
         {
@@ -119,7 +119,7 @@ namespace Tests
 
             var firstPointerEvent = CreatePointerEvent(SCENE_ID, ActionButton.Backward);
             pointerEventsQueue.Enqueue(firstPointerEvent);
-            
+
             for (int i = 0; i < ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT; i++)
             {
                 pointerEventsQueue.Enqueue(CreatePointerEvent());
@@ -127,7 +127,7 @@ namespace Tests
 
             // Act
             ECSPointerEventResolverSystem.LateUpdate(state);
-            
+
             // Assert
             componentsWriter.Received(1)
                             .PutComponent(
@@ -135,26 +135,26 @@ namespace Tests
                                 SpecialEntityId.SCENE_ROOT_ENTITY,
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
-            
+
             Assert.IsFalse(state.currentPointerEventsQueue.Contains(firstPointerEvent));
-            Assert.AreEqual(state.currentPointerEventsQueue.Count,ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT );
+            Assert.AreEqual(state.currentPointerEventsQueue.Count, ECSPointerEventResolverSystem.MAX_AMOUNT_OF_POINTER_EVENTS_SENT);
         }
-        
+
         [Test]
         public void SeparateInTwoDifferentsComponentsIfDifferentScenes()
         {
             // Arrange
             string newSceneId = "NewScene";
-            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter,pointerEventsQueue);
+            var update = ECSPointerEventResolverSystem.CreateSystem(componentsWriter);
 
             pointerEventsQueue.Enqueue(CreatePointerEvent());
-            
+
             var pointerEventScene2 = CreatePointerEvent(newSceneId);
             pointerEventsQueue.Enqueue(pointerEventScene2);
-            
+
             // Act
             update.Invoke();
-            
+
             // Assert
             componentsWriter.Received(1)
                             .PutComponent(
@@ -162,7 +162,7 @@ namespace Tests
                                 SpecialEntityId.SCENE_ROOT_ENTITY,
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>());
-            
+
             componentsWriter.Received(1)
                             .PutComponent(
                                 newSceneId,
@@ -171,7 +171,6 @@ namespace Tests
                                 Arg.Any<PBPointerEventsResult>());
 
         }
-
 
         private PointerEvent CreatePointerEvent(string sceneId = SCENE_ID, ActionButton actionButton = ActionButton.Action3)
         {

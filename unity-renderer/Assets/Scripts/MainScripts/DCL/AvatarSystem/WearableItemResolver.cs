@@ -86,10 +86,12 @@ namespace AvatarSystem
                 return promise.value;
 
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                //No disposing required
-                throw;
+                wearablesRetrieved.Remove(wearableId);
+                
+                UnityEngine.Debug.LogError($"Resolve wearable OperationCanceledException: {ex.Message} {ex.StackTrace}");
+                return null;
             }
             finally
             {

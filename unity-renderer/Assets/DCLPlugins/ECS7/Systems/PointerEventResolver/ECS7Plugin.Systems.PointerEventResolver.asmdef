@@ -1,5 +1,5 @@
 {
-    "name": "DCL.ECS7Plugin.Systems.PointerEventResolver",
+    "name": "ECS7Plugin.Systems.PointerEventResolver",
     "rootNamespace": "",
     "references": [
         "GUID:7eb48a6a47db4795bdee44a726fa8338",

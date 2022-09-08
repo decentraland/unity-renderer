@@ -1,5 +1,4 @@
 ﻿using DCL;
-using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSComponents.OnPointerUp;
 using DCL.ECSRuntime;
@@ -13,11 +12,11 @@ namespace DCLPlugins.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private int componentId;
 
-        public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, ECSContext context)
+        public OnPointerUpRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             factory.AddOrReplaceComponent(componentId,
                 OnPointerUpSerializer.Deserialize,
-                () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7, context));
+                () => new OnPointerUpComponentHandler(componentWriter, DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBOnPointerUp>(componentId, OnPointerUpSerializer.Serialize);
 
             this.factory = factory;

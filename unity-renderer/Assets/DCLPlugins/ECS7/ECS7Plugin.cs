@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCLPlugins.ECSComponents.Events;
 
 namespace DCL.ECS7
 {
@@ -22,6 +20,8 @@ namespace DCL.ECS7
 
         public ECS7Plugin()
         {
+            DataStore.i.ecs7.isEcs7Enabled = true;
+
             sceneController = Environment.i.world.sceneController;
 
             componentsFactory = new ECSComponentsFactory();
@@ -31,16 +31,15 @@ namespace DCL.ECS7
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
+            componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
+
             SystemsContext systemsContext = new SystemsContext(componentWriter,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
-                new Queue<PointerEvent>(26));
+                (ECSComponent<PBOnPointerDown>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_DOWN),
+                (ECSComponent<PBOnPointerUp>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_UP));
 
-            ECSContext context = new ECSContext(systemsContext);
-
-            componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents, context);
-
-            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate, context.systemsContext);
+            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate, systemsContext);
 
             canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
 

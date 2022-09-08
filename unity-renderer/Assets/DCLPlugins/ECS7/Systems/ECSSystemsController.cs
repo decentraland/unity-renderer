@@ -5,6 +5,7 @@ using DCLPlugins.ECS7.Systems.PointerEventResolver;
 using ECSSystems.CameraSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
+using ECSSystems.PointerInputSystem;
 using ECS7System = System.Action;
 
 public class ECSSystemsController : IDisposable
@@ -31,7 +32,15 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSPointerEventResolverSystem.CreateSystem(context.componentWriter, context.pendingResolvingPointerEvents),
+            ECSPointerInputSystem.CreateSystem(
+                context.componentWriter,
+                context.componentGroups.pointerDownGroup,
+                context.componentGroups.pointerUpGroup,
+                context.internalEcsComponents.onPointerColliderComponent,
+                context.pointerDownComponent,
+                context.pointerUpComponent,
+                DataStore.i.ecs7, DataStore.i.Get<DataStore_Cursor>()),
+            ECSPointerEventResolverSystem.CreateSystem(context.componentWriter),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };

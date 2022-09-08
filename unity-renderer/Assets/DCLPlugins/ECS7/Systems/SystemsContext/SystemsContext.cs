@@ -1,22 +1,24 @@
-using System.Collections.Generic;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCLPlugins.ECSComponents.Events;
 
 public readonly struct SystemsContext
 {
     public readonly IECSComponentWriter componentWriter;
     public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups componentGroups;
-    public readonly Queue<PointerEvent> pendingResolvingPointerEvents;
+    public readonly ECSComponent<PBOnPointerDown> pointerDownComponent;
+    public readonly ECSComponent<PBOnPointerUp> pointerUpComponent;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
-        Queue<PointerEvent> pendingResolvingPointerEvents)
+        ECSComponent<PBOnPointerDown> pointerDownComponent,
+        ECSComponent<PBOnPointerUp> pointerUpComponent)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
-        this.pendingResolvingPointerEvents = pendingResolvingPointerEvents;
+        this.pointerDownComponent = pointerDownComponent;
+        this.pointerUpComponent = pointerUpComponent;
     }
 }

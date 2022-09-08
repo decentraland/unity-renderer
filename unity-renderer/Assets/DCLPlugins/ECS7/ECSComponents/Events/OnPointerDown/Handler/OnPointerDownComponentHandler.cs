@@ -1,7 +1,6 @@
 ﻿using DCL;
 using DCL.Components;
 using DCL.Controllers;
-using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -14,23 +13,21 @@ namespace DCLPlugins.ECSComponents.OnPointerDown
         private PointerInputRepresentation representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
-        private ECSContext context;
 
         private bool isAdded = false;
 
-        public OnPointerDownComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore, ECSContext context)
+        public OnPointerDownComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore)
         {
-            this.context = context;
             this.dataStore = dataStore;
             this.componentWriter = componentWriter;
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            if(representantion != null)
+            if (representantion != null)
                 representantion.Dispose();
-            
-            representantion = new PointerInputRepresentation(entity, dataStore, PointerEventType.Down, componentWriter, new OnPointerEventHandler(), context.systemsContext.pendingResolvingPointerEvents);
+
+            representantion = new PointerInputRepresentation(entity, dataStore, PointerEventType.Down, componentWriter, new OnPointerEventHandler(), null);
             isAdded = false;
         }
 

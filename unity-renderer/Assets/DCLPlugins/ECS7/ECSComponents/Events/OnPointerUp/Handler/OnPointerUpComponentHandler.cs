@@ -1,6 +1,5 @@
 ﻿using DCL.Components;
 using DCL.Controllers;
-using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCLPlugins.ECSComponents.Events;
@@ -12,13 +11,11 @@ namespace DCL.ECSComponents.OnPointerUp
         private PointerInputRepresentation representantion;
         private IECSComponentWriter componentWriter;
         private DataStore_ECS7 dataStore;
-        private ECSContext context;
 
         private bool isAdded = false;
 
-        public OnPointerUpComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore, ECSContext context)
+        public OnPointerUpComponentHandler(IECSComponentWriter componentWriter, DataStore_ECS7 dataStore)
         {
-            this.context = context;
             this.dataStore = dataStore;
             this.componentWriter = componentWriter;
         }
@@ -28,7 +25,7 @@ namespace DCL.ECSComponents.OnPointerUp
             if (representantion != null)
                 representantion.Dispose();
 
-            representantion = new PointerInputRepresentation(entity, dataStore, PointerEventType.Up, componentWriter, new OnPointerEventHandler(), context.systemsContext.pendingResolvingPointerEvents);
+            representantion = new PointerInputRepresentation(entity, dataStore, PointerEventType.Up, componentWriter, new OnPointerEventHandler(), null);
             isAdded = false;
         }
 

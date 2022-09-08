@@ -1,5 +1,6 @@
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -14,6 +15,16 @@ namespace DCL.ECSComponents
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
         private PBMeshCollider prevModel;
 
+        private readonly IInternalECSComponent<InternalColliders> pointerColliderComponent;
+        private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
+
+        public MeshColliderHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
+            IInternalECSComponent<InternalColliders> physicColliderComponent)
+        {
+            this.pointerColliderComponent = pointerColliderComponent;
+            this.physicColliderComponent = physicColliderComponent;
+        }
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             colliderGameObject = new GameObject("MeshCollider");
@@ -23,6 +34,8 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            pointerColliderComponent.RemoveCollider(scene, entity, collider);
+            physicColliderComponent.RemoveCollider(scene, entity, collider);
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
             Object.Destroy(colliderGameObject);
         }
@@ -38,6 +51,8 @@ namespace DCL.ECSComponents
 
             if (shouldUpdateMesh)
             {
+                pointerColliderComponent.RemoveCollider(scene, entity, collider);
+                physicColliderComponent.RemoveCollider(scene, entity, collider);
                 Object.Destroy(collider);
                 collider = null;
 
@@ -45,6 +60,7 @@ namespace DCL.ECSComponents
             }
 
             SetColliderLayer(model);
+            SetInternalColliderComponents(scene, entity, model);
         }
 
         private void CreateCollider(PBMeshCollider model)
@@ -110,6 +126,31 @@ namespace DCL.ECSComponents
             else if (collider != null)
             {
                 colliderGameObject.SetActive(false);
+            }
+        }
+
+        private void SetInternalColliderComponents(IParcelScene scene, IDCLEntity entity, PBMeshCollider model)
+        {
+            const int physicsLayer = (int)ColliderLayer.Physics;
+            const int pointerLayer = (int)ColliderLayer.Pointer;
+            int colliderLayer = model.GetColliderLayer();
+
+            if ((colliderLayer & pointerLayer) == pointerLayer)
+            {
+                pointerColliderComponent.AddCollider(scene, entity, collider);
+            }
+            else
+            {
+                pointerColliderComponent.RemoveCollider(scene, entity, collider);
+            }
+
+            if ((colliderLayer & physicsLayer) == physicsLayer)
+            {
+                physicColliderComponent.AddCollider(scene, entity, collider);
+            }
+            else
+            {
+                physicColliderComponent.RemoveCollider(scene, entity, collider);
             }
         }
     }

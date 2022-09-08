@@ -23,11 +23,11 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             public readonly Dictionary<string, PBPointerEventsResult> scenesDict = new Dictionary<string, PBPointerEventsResult>();
         }
 
-        public static Action CreateSystem(IECSComponentWriter componentsWriter, Queue<PointerEvent> pointerEventsQueue)
+        public static Action CreateSystem(IECSComponentWriter componentsWriter)
         {
             var state = new State()
             {
-                pendingPointerEventsQueue = pointerEventsQueue,
+                pendingPointerEventsQueue = null,
                 currentPointerEventsQueue = new Queue<PointerEvent>(MAX_AMOUNT_OF_POINTER_EVENTS_SENT),
                 componentsWriter = componentsWriter
             };
@@ -45,7 +45,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
             var pointerEventsQueue = state.currentPointerEventsQueue;
             var scenesDict = state.scenesDict;
             Queue<PointerEvent> newPointerEventsQueue = new Queue<PointerEvent>(MAX_AMOUNT_OF_POINTER_EVENTS_SENT);
-            
+
             // If we have more pointerEvents than the max amount that we should send, we remove the olds ones
             int queueCount = pendingPointerEventsQueue.Count + pointerEventsQueue.Count;
             int amountOfItemsToRemove = queueCount - MAX_AMOUNT_OF_POINTER_EVENTS_SENT;
@@ -96,7 +96,7 @@ namespace DCLPlugins.ECS7.Systems.PointerEventResolver
         private static void ResolvePointerEvent(PointerEvent rawPointerevent, State state, ref Queue<PointerEvent> newPointerEventsQueue)
         {
             newPointerEventsQueue.Enqueue(rawPointerevent);
-            
+
             // If the scene hasn't been added, we create it
             if (!state.scenesDict.TryGetValue(rawPointerevent.sceneId, out PBPointerEventsResult eventsResult))
                 eventsResult = new PBPointerEventsResult();
