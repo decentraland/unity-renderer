@@ -8,7 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Blur_Baked_Distrortion_v4
-  m_Shader: {fileID: -6465566751694194690, guid: 1cd96573c7d43c54289984f3727afe89, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: ee64d966c2abe984da639f4323cb59bd,
+    type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -65,6 +66,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _RoughnessBaked:
         m_Texture: {fileID: 2800000, guid: 143891ab4859bb344bcc50ad4d4227b0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleReflectedCubemap_c1a4c5b7c3634fafb007b5f592e31d8f_Cube_1:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleReflectedCubemap_c448a33b605043b09508ec09c1513f07_Cube_1:
