@@ -105,6 +105,8 @@ namespace DCL.Emotes
 
                 var loadResultTuple = await UniTask.WhenAny(newEmoteTask, oldEmoteTask);
                 var emote = loadResultTuple.winArgumentIndex == 0 ? loadResultTuple.result1 : loadResultTuple.result2;
+                if (emote == null)
+                    emote = loadResultTuple.winArgumentIndex == 0 ? await oldEmoteTask : await newEmoteTask;
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
