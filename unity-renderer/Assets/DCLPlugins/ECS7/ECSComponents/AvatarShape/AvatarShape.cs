@@ -176,10 +176,7 @@ namespace DCL.ECSComponents
             var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             HashSet<string> emotes = new HashSet<string>();
-            if (DataStore.i.emotes.newFlowEnabled.Get())
-            {
-                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-            }
+            emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {

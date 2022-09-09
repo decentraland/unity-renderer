@@ -18,10 +18,17 @@ namespace DCL
         public readonly BaseVariable<bool> isEmotesCustomizationSelected = new BaseVariable<bool>(false);
         public readonly BaseCollection<string> currentLoadedEmotes = new BaseCollection<string>();
 
-        public void FilterOutNotOwnedEquippedEmotes(IEnumerable<WearableItem> emotes)
+        public void UnequipMissingEmotes(IEnumerable<WearableItem> emotes)
         {
-            var filtered = equippedEmotes.Get().Where(x => emotes.Any(y => x.id == y.id) ).ToArray();
-            equippedEmotes.Set(filtered);
+            var setOfIds = new HashSet<string>();
+            foreach (var emote in emotes)
+                setOfIds.Add(emote.id);
+            
+            for (int i = 0; i < equippedEmotes.Count(); i++)
+            {
+                if (equippedEmotes[i] != null && !setOfIds.Contains(equippedEmotes[i].id))
+                    equippedEmotes[i] = null;
+            }
         }
     }
 }

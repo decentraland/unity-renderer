@@ -27,6 +27,12 @@ namespace DCL.Components
             this.entity = entity;
             eventColliders.Initialize(entity);
         }
+        
+        public void UpdateCollidersEnabledBasedOnRenderers(IDCLEntity entity)
+        {
+            this.entity = entity;
+            eventColliders.UpdateCollidersEnabledBasedOnRenderers(entity);
+        }
 
         public void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText)
         {
@@ -62,7 +68,7 @@ namespace DCL.Components
         }
     }
 
-    public class OnPointerEvent : UUIDComponent, IPointerInputEvent
+    public class OnPointerEvent : UUIDComponent, IPointerInputEvent, IOutOfSceneBoundariesHandler
     {
         public static bool enableInteractionHoverFeedback = true;
 
@@ -109,6 +115,8 @@ namespace DCL.Components
 
             entity.OnShapeUpdated -= SetEventColliders;
             entity.OnShapeUpdated += SetEventColliders;
+            
+            DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
         public WebInterface.ACTION_BUTTON GetActionButton()
@@ -167,6 +175,8 @@ namespace DCL.Components
             if (entity != null)
                 entity.OnShapeUpdated -= SetEventColliders;
 
+            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+            
             pointerEventHandler.Dispose();
         }
 
@@ -177,6 +187,11 @@ namespace DCL.Components
         public virtual PointerInputEventType GetEventType()
         {
             return PointerInputEventType.NONE;
+        }
+
+        public void UpdateOutOfBoundariesState(bool enable)
+        {
+            pointerEventHandler.UpdateCollidersEnabledBasedOnRenderers(entity);
         }
     }
 }
