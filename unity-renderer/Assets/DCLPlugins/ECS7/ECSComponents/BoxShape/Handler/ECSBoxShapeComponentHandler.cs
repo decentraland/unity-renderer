@@ -54,14 +54,14 @@ namespace DCL.ECSComponents
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
-                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                    dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>
                 {
-                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                    dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                 };
             
-                dataStore.AddPendingResource(scene.sceneData.id, model);
+                dataStore.AddPendingResource(scene.sceneData.sceneNumber, model);
                 AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromisePrimitive);
             }
 
@@ -74,7 +74,7 @@ namespace DCL.ECSComponents
             texturizableInternalComponent.AddRenderers(scene, entity, meshesInfo?.renderers);
 
             // Note: We should add the rendereable to the data store and dispose when it not longer exists
-            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.id, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
+            rendereable = ECSComponentsUtils.AddRendereableToDataStore(scene.sceneData.sceneNumber, entity.entityId, mesh, entity.gameObject, meshesInfo.renderers);
         }
 
         internal void DisposeMesh(IDCLEntity entity,IParcelScene scene)
@@ -86,9 +86,9 @@ namespace DCL.ECSComponents
                 ECSComponentsUtils.DisposeMeshInfo(meshesInfo);
             }
             if(rendereable != null)
-                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id,rendereable);
+                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.sceneNumber,rendereable);
             if(lastModel != null)
-                dataStore.RemovePendingResource(scene.sceneData.id, lastModel);
+                dataStore.RemovePendingResource(scene.sceneData.sceneNumber, lastModel);
             
             meshesInfo = null;
             rendereable = null;

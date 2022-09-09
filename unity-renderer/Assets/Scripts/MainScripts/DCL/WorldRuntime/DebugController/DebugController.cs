@@ -202,7 +202,7 @@ namespace DCL
                 debugView.SetSceneDebugPanel();
             }
 
-            bool enablePrevewSceneLimitWarning = !string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId);
+            bool enablePrevewSceneLimitWarning = current.debugConfig.sceneLimitsWarningSceneNumber >= 0;
             if (enablePrevewSceneLimitWarning && previewSceneLimitsWarning == null)
             {
                 previewSceneLimitsWarning = new PreviewSceneLimitsWarning(Environment.i.world.state);

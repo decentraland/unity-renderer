@@ -43,7 +43,7 @@ namespace DCL.ECSComponents.Test
             entity.Configure().gameObject.Returns(gameObject);
             
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
             
             componentHandler.OnComponentCreated(scene, entity);

@@ -35,7 +35,7 @@ namespace DCL.ECSComponents.Test
             entity.gameObject.Returns(gameObject);
             entity.meshesInfo.Returns(meshesInfo);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
             
             textShapeComponentHandler.OnComponentCreated(scene, entity);

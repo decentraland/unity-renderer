@@ -55,7 +55,10 @@ namespace RPC.Services
                         }
                         queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
                         queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                        queuedMessage.sceneId = messages.SceneId;
+                        
+                        // TODO: We need to re-build CRDTManyMessages protobuf class to include sceneNumber insdead of SceneId
+                        // queuedMessage.sceneNumber = messages.sceneNumber;
+                        
                         queuedMessage.payload = crdtMessage;
 
                         context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);

@@ -153,7 +153,7 @@ public class NativeBridgeCommunication : IKernelCommunication
                 id = queryId,
                 raycastType = raycastType,
                 ray = ray,
-                sceneId = currentSceneId
+                sceneNumber = currentSceneNumber
             }
         };
 
@@ -314,7 +314,6 @@ public class NativeBridgeCommunication : IKernelCommunication
             message = new QueuedSceneMessage_Scene();
         }
 
-        message.sceneId = currentSceneId;
         message.sceneNumber = currentSceneNumber;
         message.tag = currentTag;
         message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;

@@ -32,14 +32,15 @@ namespace DCL.ECSComponents
             
             // If it is a smart wearable, we don't look up to see if the scene has change since the scene is global
             if(!scene.isPersistent)
-                CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
+                CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
+            
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
             settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
 
             isRendererActive = CommonScriptableObjects.rendererState.Get();
-            isInsideScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -67,7 +68,7 @@ namespace DCL.ECSComponents
         private void Dispose()
         {
             if(!scene.isPersistent)
-                CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
+                CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
@@ -115,9 +116,9 @@ namespace DCL.ECSComponents
             return isInsideScene && isRendererActive;
         }
 
-        private void OnSceneChanged(string sceneId, string prevSceneId)
+        private void OnSceneChanged(int sceneNumber, int prevSceneNumber)
         {
-            isInsideScene = sceneId == scene.sceneData.id;
+            isInsideScene = sceneNumber == scene.sceneData.sceneNumber;
             ConditionsToPlayChanged();
         }
 

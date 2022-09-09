@@ -88,7 +88,7 @@ namespace DCL.ECSComponents
             if (ECSTransformUtils.IsCircularParenting(scene, entity, parentId))
             {
                 Debug.LogError($"cyclic parenting found for entity {entity.entityId} " +
-                               $"parenting to {parentId} at scene {scene.sceneData.id} ({scene.sceneData.basePosition})");
+                               $"parenting to {parentId} at scene {scene.sceneData.sceneNumber} ({scene.sceneData.basePosition})");
                 return;
             }
 
@@ -112,7 +112,7 @@ namespace DCL.ECSComponents
         {
             // If player is not at the scene that triggered this event
             // we'll ignore it
-            if (scene.sceneData.id != worldState.GetCurrentSceneId())
+            if (scene.sceneData.sceneNumber != worldState.GetCurrentSceneNumber())
             {
                 return false;
             }

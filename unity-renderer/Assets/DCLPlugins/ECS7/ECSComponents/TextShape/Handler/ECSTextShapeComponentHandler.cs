@@ -84,7 +84,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         else
         {
             lastFontUsed = model.Font;
-            dataStore.AddPendingResource(scene.sceneData.id, model);
+            dataStore.AddPendingResource(scene.sceneData.sceneNumber, model);
             promise = new AssetPromise_Font(model.Font);
             promise.OnSuccessEvent += assetFont =>
             {
@@ -105,7 +105,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private void RemoveModelFromPending(IParcelScene scene)
     {
         if (currentModel != null)
-            dataStore.RemovePendingResource(scene.sceneData.id, currentModel);
+            dataStore.RemovePendingResource(scene.sceneData.sceneNumber, currentModel);
 
         currentModel = null;
     }

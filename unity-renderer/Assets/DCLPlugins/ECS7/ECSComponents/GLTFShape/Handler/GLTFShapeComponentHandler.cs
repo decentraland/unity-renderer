@@ -94,21 +94,21 @@ namespace DCL.ECSComponents
                     
                     // Apply the model for visibility, collision and event pointer
                     ApplyModel(model);
-                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                    dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                     dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
                     
                 }, (wrapper, exception) =>
                 {
-                    dataStore.RemovePendingResource(scene.sceneData.id, model);
+                    dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                 });
             }
             else
             {
 #if UNITY_EDITOR
-                Debug.LogWarning($"LoadableShape '{model.Src}' not found in scene '{scene.sceneData.id}' mappings");
+                Debug.LogWarning($"LoadableShape '{model.Src}' not found in scene '{scene.sceneData.sceneNumber}' mappings");
 #endif
             }
-            dataStore.AddPendingResource(scene.sceneData.id, model);
+            dataStore.AddPendingResource(scene.sceneData.sceneNumber, model);
         }
         
         internal void ApplyModel(PBGLTFShape model)
@@ -127,9 +127,9 @@ namespace DCL.ECSComponents
             if (entity != null)
                 dataStore.RemoveShapeReady(entity.entityId);
             if (rendereable != null)
-                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.id, rendereable);
+                ECSComponentsUtils.RemoveRendereableFromDataStore( scene.sceneData.sceneNumber, rendereable);
             if (model != null)
-                dataStore.RemovePendingResource(scene.sceneData.id, model);
+                dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
 
             meshesInfo = null;
             rendereable = null;

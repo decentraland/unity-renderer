@@ -151,7 +151,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         ILand land = new ILand();
-        land.sceneId = "ds";
+        // land.sceneNumber = "ds";
 
         //Act
         biwBridge.StartIsolatedMode(land);

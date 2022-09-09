@@ -32,9 +32,9 @@ namespace DCL
             }
         }
         
-        public static void AddPendingResource( this DataStore_ECS7 self, string sceneId, object model )
+        public static void AddPendingResource( this DataStore_ECS7 self, int sceneNumber, object model )
         {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
+            if (self.pendingSceneResources.TryGetValue(sceneNumber, out BaseRefCountedCollection<object> pendingResoruces))
             {
                 pendingResoruces.IncreaseRefCount(model);
             }
@@ -42,13 +42,13 @@ namespace DCL
             {
                 BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
                 newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
+                self.pendingSceneResources.Add(sceneNumber, newCountedCollection);
             }
         }
 
-        public static void RemovePendingResource( this DataStore_ECS7 self, string sceneId, object model)
+        public static void RemovePendingResource( this DataStore_ECS7 self, int sceneNumber, object model)
         {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
+            if (self.pendingSceneResources.TryGetValue(sceneNumber, out BaseRefCountedCollection<object> pendingResoruces))
             {
                 pendingResoruces.DecreaseRefCount(model);
             }

@@ -38,7 +38,8 @@ namespace DCL.Helpers
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
 
-        public static string CreateSceneMessage(string sceneId, string tag, string method, string payload) { return $"{sceneId}\t{method}\t{payload}\t{tag}\n"; }
+        // TODO: how was this "test message" supposedly working before with sceneID???
+        public static string CreateSceneMessage(int sceneNumber, string tag, string method, string payload) { return $"{sceneNumber}\t{method}\t{payload}\t{tag}\n"; }
 
         static int entityCounter = 513;
         static int disposableIdCounter = 123;
@@ -1024,7 +1025,7 @@ namespace DCL.Helpers
             Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.height);
         }
 
-        public static IEnumerator TestUIClickEventPropagation(string sceneId, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIClickEventPropagation(int sceneNumber, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
         {
             string srcOnClick = model.onClick;
             bool srcIsPointerBlocker = model.isPointerBlocker;
@@ -1032,7 +1033,7 @@ namespace DCL.Helpers
             model.isPointerBlocker = true;
             model.onClick = "UUIDFakeEventId";
 
-            yield return TestUIClickEventPropagation(sceneId, model.onClick, uiObject, callback);
+            yield return TestUIClickEventPropagation(sceneNumber, model.onClick, uiObject, callback);
 
             model.isPointerBlocker = srcIsPointerBlocker;
             model.onClick = srcOnClick;
@@ -1040,7 +1041,7 @@ namespace DCL.Helpers
             yield return null;
         }
 
-        public static IEnumerator TestUIClickEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIClickEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1054,7 +1055,7 @@ namespace DCL.Helpers
             onClickEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onClickEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1076,7 +1077,7 @@ namespace DCL.Helpers
                 callback(eventTriggered);
         }
 
-        public static IEnumerator TestUIOnPointerDownEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIOnPointerDownEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1090,7 +1091,7 @@ namespace DCL.Helpers
             onPointerDownEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1112,7 +1113,7 @@ namespace DCL.Helpers
                 callback(eventTriggered);
         }
 
-        public static IEnumerator TestUIOnPointerUpEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIOnPointerUpEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1126,7 +1127,7 @@ namespace DCL.Helpers
             onPointerUpEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1327,14 +1328,14 @@ namespace DCL.Helpers
                 data.parcels = new Vector2Int[] { data.basePosition };
             }
 
-            if (string.IsNullOrEmpty(data.id))
+            if (data.sceneNumber < 0)
             {
-                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+                data.sceneNumber = 666;
             }
 
-            if (Environment.i.world.state.ContainsScene(data.id))
+            if (Environment.i.world.state.ContainsScene(data.sceneNumber))
             {
-                Environment.i.world.state.GetScene(data.id);
+                Environment.i.world.state.GetScene(data.sceneNumber);
             }
 
             var go = new GameObject();
@@ -1346,8 +1347,8 @@ namespace DCL.Helpers
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
 
-            Environment.i.world.state.AddScene(data.id, newScene);
-            Environment.i.world.state.ForceCurrentScene(data.id);
+            Environment.i.world.state.AddScene(newScene);
+            Environment.i.world.state.ForceCurrentScene(data.sceneNumber);
 
             return newScene;
         }

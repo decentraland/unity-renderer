@@ -36,7 +36,7 @@ namespace DCL
         public CustomYieldInstruction msgYieldInstruction;
 
         public MessagingBusType type;
-        public string debugTag;
+        public int debugSceneNumber;
 
         public MessagingController owner;
         private IMessagingControllersManager manager;
@@ -202,7 +202,7 @@ namespace DCL
                         if (!(m is QueuedSceneMessage_Scene sceneMessage))
                             continue;
                         
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.SCENE_MESSAGE - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.SCENE_MESSAGE - sceneNumber: {m.sceneNumber}");
 
                         if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                         {
@@ -236,21 +236,21 @@ namespace DCL
 
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.LOAD_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.LOAD_PARCEL - sceneNumber: {m.sceneNumber}");
                         
                         handler.LoadParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UNLOAD_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UNLOAD_PARCEL - sceneNumber: {m.sceneNumber}");
                         
-                        handler.UnloadParcelSceneExecute(m.message);
+                        handler.UnloadParcelSceneExecute(m.sceneNumber);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UPDATE_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UPDATE_PARCEL - sceneId: {m.sceneId}, sceneNumber: {m.sceneNumber}");
+                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UPDATE_PARCEL - sceneNumber: {m.sceneNumber}");
                         
                         handler.UpdateParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
@@ -324,7 +324,7 @@ namespace DCL
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
-            string finalTag = WorldStateUtils.TryToGetSceneCoordsID(bus.debugTag);
+            string finalTag = WorldStateUtils.TryToGetSceneCoordsFromSceneNumber(bus.debugSceneNumber);
 
             if (logType)
             {

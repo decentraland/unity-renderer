@@ -79,12 +79,12 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
         scene.CreateEntity(1);
-        mainController.sceneToEditId = scene.sceneData.id;
+        // mainController.sceneToEditId = scene.sceneData.sceneNumber;
 
         // Act
         mainController.StartFlow(builderScene, "source");
         scene.CreateEntity(2);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
 
         // Assert
         Assert.AreEqual(SceneManager.State.SCENE_LOADED, mainController.currentState );
@@ -100,7 +100,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 
         mainController.StartFlowFromLandWithPermission(scene, "Test");
         scene.CreateEntity(2);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
 
         // Act
         mainController.ExitEditMode();
@@ -114,7 +114,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     {
         // Arrange
         scene.CreateEntity(1);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
         DataStore.i.player.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
         // Act
@@ -172,7 +172,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.sceneToEdit = builderScene;
         var mockedScene = Substitute.For<IParcelScene>();
         mockedScene.Configure().sceneData.Returns(scene.sceneData);
-        mainController.sceneToEditId = scene.sceneData.id;
+        // mainController.sceneToEditId = scene.sceneData.sceneNumber;
 
         // Act
         mainController.NewSceneAdded(mockedScene);
@@ -236,7 +236,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
         mainController.sceneToEdit = Substitute.For<IBuilderScene>();
-        mainController.sceneToEdit.scene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { id = "Test id" });
+        // mainController.sceneToEdit.scene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { sceneNumber = "Test id" });
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);

@@ -40,7 +40,7 @@ namespace DCL.Components
             if (!string.IsNullOrEmpty(ownerModel.onClick) &&
                 eventData.pointerPressRaycast.gameObject == childHookRectTransform.gameObject)
             {
-                WebInterface.ReportOnClickEvent(owner.scene.sceneData.id, ownerModel.onClick);
+                WebInterface.ReportOnClickEvent(owner.scene.sceneData.sceneNumber, ownerModel.onClick);
             }
         }
     }

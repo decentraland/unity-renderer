@@ -24,7 +24,7 @@ namespace DCL
         static string queryDumpStr;
 #endif
 
-        public static bool DecodePayloadChunk(string payload, out string sceneId, out int sceneNumber, out string message, out string tag,
+        public static bool DecodePayloadChunk(string payload, out int sceneNumber, out string message, out string tag,
             out PB_SendSceneMessage sendSceneMessage)
         {
 #if UNITY_EDITOR
@@ -33,7 +33,6 @@ namespace DCL
             byte[] bytes = System.Convert.FromBase64String(payload);
 
             sendSceneMessage = DCL.Interface.PB_SendSceneMessage.Parser.ParseFrom(bytes);
-            sceneId = sendSceneMessage.SceneId;
             sceneNumber = sendSceneMessage.SceneNumber;
             tag = sendSceneMessage.Tag;
 
@@ -88,11 +87,10 @@ namespace DCL
             return true;
         }
 
-        public static void DecodeSceneMessage(string sceneId, int sceneNumber, string method, string tag,
+        public static void DecodeSceneMessage(int sceneNumber, string method, string tag,
             PB_SendSceneMessage sendSceneMessage, ref QueuedSceneMessage_Scene queuedMessage)
         {
             queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-            queuedMessage.sceneId = sceneId;
             queuedMessage.sceneNumber = sceneNumber;
             queuedMessage.method = method;
             queuedMessage.tag = tag;

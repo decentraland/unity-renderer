@@ -169,7 +169,7 @@ namespace DCL.Components
             else
             {
 #if UNITY_EDITOR
-                Debug.LogWarning($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
+                Debug.LogWarning($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.sceneNumber}' mappings");
 #endif
                 failed = true;
             }

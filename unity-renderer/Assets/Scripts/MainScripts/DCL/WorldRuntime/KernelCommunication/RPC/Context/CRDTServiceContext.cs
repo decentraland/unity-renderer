@@ -6,7 +6,7 @@ namespace RPC.Context
 {
     public class CRDTServiceContext
     {
-        public readonly Dictionary<string, CRDTProtocol> scenesOutgoingCrdts = new Dictionary<string, CRDTProtocol>(24);
+        public readonly Dictionary<int, CRDTProtocol> scenesOutgoingCrdts = new Dictionary<int, CRDTProtocol>(24);
         public IMessageQueueHandler messageQueueHandler;
     }
 }

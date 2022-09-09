@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using Ray = UnityEngine.Ray;
@@ -86,13 +87,12 @@ namespace DCL
                 PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
 
             bool uiIsBlocking = false;
-            string currentSceneId = worldState.GetCurrentSceneId();
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
 
-            bool validCurrentSceneId = !string.IsNullOrEmpty(currentSceneId);
-            bool validCurrentScene = validCurrentSceneId && worldState.ContainsScene(currentSceneId);
+            bool validCurrentScene = currentSceneNumber >= 0 && worldState.ContainsScene(currentSceneNumber);
 
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
-            if (didHit && validCurrentSceneId && validCurrentScene)
+            if (didHit && validCurrentScene)
             {
                 DataStore_World worldData = DataStore.i.Get<DataStore_World>();
                 GraphicRaycaster raycaster = worldData.currentRaycaster.Get();
@@ -376,15 +376,15 @@ namespace DCL
         {
             IWorldState worldState = Environment.i.world.state;
 
-            string currentSceneId = worldState.GetCurrentSceneId();
-            if (string.IsNullOrEmpty(currentSceneId))
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
+            if (currentSceneNumber < 0)
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
             // Raycast for global pointer events
-            worldState.TryGetScene(currentSceneId, out var loadedScene);
+            worldState.TryGetScene(currentSceneNumber, out var loadedScene);
 
             RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,
                 loadedScene);
@@ -411,23 +411,20 @@ namespace DCL
                 pointerInputUpEvent = null;
             }
 
-            ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer,
-                currentSceneId);
+            ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentSceneNumber);
 
             // Raycast for global pointer events (for each PE scene)
             List<string> currentPortableExperienceIds = DataStore.i.Get<DataStore_World>().portableExperienceIds.Get().ToList();
-
             for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
-                if (worldState.TryGetScene(currentPortableExperienceIds[i], out var portableScene))
+                IParcelScene pexSene = worldState.GetPortableExperienceScene(currentPortableExperienceIds[i]); 
+                if (pexSene != null)
                 {
-                    raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer,
-                        portableScene);
-
+                    raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, pexSene);
                     raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
                     ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer,
-                        currentPortableExperienceIds[i]);
+                        pexSene.sceneData.sceneNumber);
                 }
             }
         }
@@ -437,13 +434,13 @@ namespace DCL
         {
             IWorldState worldState = Environment.i.world.state;
 
-            string currentSceneId = worldState.GetCurrentSceneId();
-            if (string.IsNullOrEmpty(currentSceneId))
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
+            if (currentSceneNumber < 0)
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
-            worldState.TryGetScene(currentSceneId, out var loadedScene);
+            worldState.TryGetScene(currentSceneNumber, out var loadedScene);
 
             // Raycast for pointer event components
             RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, loadedScene);
@@ -499,23 +496,21 @@ namespace DCL
                 lastPointerDownEventHitInfo = raycastInfoPointerEventLayer.hitInfo;
             }
 
-            ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentSceneId);
+            ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentSceneNumber);
 
             // Raycast for global pointer events (for each PE scene)
-            IEnumerable<string> currentPortableExperienceIds = DataStore.i.world.portableExperienceIds.Get();
-
-            foreach (var pexId in currentPortableExperienceIds)
+            IEnumerable<string> currentPortableExperienceSceneIds = DataStore.i.world.portableExperienceIds.Get();
+            foreach (var pexSceneId in currentPortableExperienceSceneIds)
             {
-                if (worldState.TryGetScene(pexId, out var portableScene))
+                IParcelScene pexSene = worldState.GetPortableExperienceScene(pexSceneId);
+                if (pexSene != null)
                 {
-                    raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, portableScene);
+                    raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, pexSene);
 
                     raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
-                    ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer,
-                        pexId);
-                }
-                
+                    ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, pexSene.sceneData.sceneNumber);
+                }                
             }
         }
 
@@ -524,7 +519,7 @@ namespace DCL
             bool useRaycast,
             RaycastHitInfo raycastGlobalLayerHitInfo,
             RaycastResultInfo raycastInfoGlobalLayer,
-            string sceneId)
+            int sceneNumber)
         {
             if (useRaycast && raycastGlobalLayerHitInfo.isValid)
             {
@@ -543,7 +538,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.point,
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
-                    sceneId,
+                    sceneNumber,
                     entityId,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
@@ -551,7 +546,7 @@ namespace DCL
             else
             {
                 WebInterface.ReportGlobalPointerUpEvent(buttonId, raycastInfoGlobalLayer.ray, Vector3.zero,
-                    Vector3.zero, 0, sceneId);
+                    Vector3.zero, 0, sceneNumber);
             }
         }
 
@@ -560,7 +555,7 @@ namespace DCL
             bool useRaycast,
             RaycastHitInfo raycastGlobalLayerHitInfo,
             RaycastResultInfo raycastInfoGlobalLayer,
-            string sceneId)
+            int sceneNumber)
         {
             if (useRaycast && raycastGlobalLayerHitInfo.isValid)
             {
@@ -579,7 +574,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo.hit.point,
                     raycastGlobalLayerHitInfo.hit.normal,
                     raycastGlobalLayerHitInfo.hit.distance,
-                    sceneId,
+                    sceneNumber,
                     entityId,
                     colliderInfo.meshName,
                     isHitInfoValid: true);
@@ -587,7 +582,7 @@ namespace DCL
             else
             {
                 WebInterface.ReportGlobalPointerDownEvent(buttonId, raycastInfoGlobalLayer.ray, Vector3.zero,
-                    Vector3.zero, 0, sceneId);
+                    Vector3.zero, 0, sceneNumber);
             }
         }
 

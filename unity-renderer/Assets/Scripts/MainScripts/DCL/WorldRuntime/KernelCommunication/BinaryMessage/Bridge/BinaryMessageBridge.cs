@@ -9,7 +9,7 @@ namespace DCL.CRDT
         [Serializable]
         public class Message
         {
-            public string sceneId;
+            public int sceneNumber;
             public string data;
         }
 
@@ -22,9 +22,8 @@ namespace DCL.CRDT
             Message msg = JsonUtility.FromJson<Message>(message);
 
             byte[] bytes = Convert.FromBase64String(msg.data);
-            string sceneId = msg.sceneId;
 
-            binaryMessageProcessor.Process(sceneId, bytes);
+            binaryMessageProcessor.Process(msg.sceneNumber, bytes);
         }
     }
 }

@@ -74,20 +74,20 @@ namespace DCL.ECS7.Tests
             var initialParcelScene = Substitute.For<IParcelScene>();
             initialParcelScene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
             {
-                id = "Oldscene"
+                sceneNumber = 1
             });
             var finalParcelScene = Substitute.For<IParcelScene>();
             finalParcelScene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
             {
-                id = "Newscene"
+                sceneNumber = 2
             });
             
             var initialSceneDataContainer = new UISceneDataContainer();
             var finalSceneDataContainer = new UISceneDataContainer();
             
-            var loadedScenes = new Dictionary<string, IParcelScene>();
-            loadedScenes.Add("Oldscene", initialParcelScene);
-            loadedScenes.Add("Newscene", finalParcelScene);
+            var loadedScenes = new Dictionary<int, IParcelScene>();
+            loadedScenes.Add(1, initialParcelScene);
+            loadedScenes.Add(2, finalParcelScene);
             
             dataStoreEcs7.scenes.Add(initialParcelScene);
             dataStoreEcs7.scenes.Add(finalParcelScene);
@@ -98,7 +98,7 @@ namespace DCL.ECS7.Tests
             canvasPainter.framesCounter = 9999;
 
             worldState.Configure().GetLoadedScenes().Returns(loadedScenes);
-            worldState.Configure().GetCurrentSceneId().Returns("Newscene");
+            worldState.Configure().GetCurrentSceneNumber().Returns(2);
             
             // Act
             canvasPainter.Update();

@@ -8,23 +8,23 @@ namespace DCL
 {
     public interface IWorldState : ISceneHandler, IService
     {
-        string GetCurrentSceneId();
-        IEnumerable<KeyValuePair<string, IParcelScene>> GetLoadedScenes();
+        int GetCurrentSceneNumber();
+        IEnumerable<KeyValuePair<int, IParcelScene>> GetLoadedScenes();
         List<IParcelScene> GetGlobalScenes();
-        bool TryGetScene(string id, out IParcelScene scene);
-        bool TryGetScene<T>(string id, out T scene) where T : class, IParcelScene;
+        bool TryGetScene(int sceneNumber, out IParcelScene scene);
+        bool TryGetScene<T>(int sceneNumber, out T scene) where T : class, IParcelScene;
         IParcelScene GetScene(Vector2Int coords);
-        IParcelScene GetScene(string id);
-        bool ContainsScene(string id);
+        IParcelScene GetScene(int sceneNumber);
+        IParcelScene GetPortableExperienceScene(string sceneId);
+        bool ContainsScene(int sceneNumber);
         LoadWrapper GetLoaderForEntity(IDCLEntity entity);
         T GetOrAddLoaderForEntity<T>(IDCLEntity entity) where T : LoadWrapper, new();
         void RemoveLoaderForEntity(IDCLEntity entity);
-        string GetSceneIdByCoords(Vector2Int coords);
+        int GetSceneNumberByCoords(Vector2Int coords);
         List<IParcelScene> GetScenesSortedByDistance();
         void SortScenesByDistance(Vector2Int position);
-        void AddScene(string id, IParcelScene newScene);
-        void RemoveScene(string id);
-        void AddGlobalScene(string sceneId, IParcelScene newScene);
-        void ForceCurrentScene(string sceneDataID);
+        void AddScene(IParcelScene newScene);
+        void RemoveScene(int sceneNumber);
+        void ForceCurrentScene(int sceneNumber);
     }
 }

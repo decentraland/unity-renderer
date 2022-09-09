@@ -28,7 +28,7 @@ namespace Tests
             // Configure Scene
             parcelScene = Substitute.For<IParcelScene>();
             var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "IdTest";
+            sceneData.sceneNumber = 666;
             parcelScene.Configure().sceneData.Returns(sceneData);
             
             // Configure entity
@@ -39,7 +39,7 @@ namespace Tests
             
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
-            resourcesLoadTracker.Track(sceneData.id);
+            resourcesLoadTracker.Track(sceneData.sceneNumber);
             hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7, Substitute.For<IInternalECSComponent<InternalTexturizable>>());
         }
 

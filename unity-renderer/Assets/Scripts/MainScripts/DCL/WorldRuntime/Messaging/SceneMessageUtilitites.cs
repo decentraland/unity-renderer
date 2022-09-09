@@ -31,10 +31,10 @@ public class SceneMessageUtilities
         return true;
     }
 
-    public static QueuedSceneMessage_Scene DecodeSceneMessage(string sceneId, string message, string tag)
+    public static QueuedSceneMessage_Scene DecodeSceneMessage(int sceneNumber, string message, string tag)
     {
         var queuedMessage = new QueuedSceneMessage_Scene()
-            {type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message, tag = tag};
+            {type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneNumber = sceneNumber, message = message, tag = tag};
 
         var queuedMessageSeparatorIndex = queuedMessage.message.IndexOf('\t');
 

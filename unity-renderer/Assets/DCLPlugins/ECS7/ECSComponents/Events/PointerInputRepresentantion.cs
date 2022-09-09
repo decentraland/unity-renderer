@@ -104,7 +104,7 @@ namespace DCLPlugins.ECSComponents
                         
                         PBOnPointerDownResult downPayload = ProtoConvertUtils.GetPointerDownResultModel(button, meshName, ray, hit);
                         downPayload.Timestamp = GetLamportTimestamp();
-                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
+                        componentWriter.PutComponent(scene.sceneData.sceneNumber, entityId, componentId,
                             downPayload);
                         break;
                     case PointerInputEventType.UP:
@@ -112,7 +112,7 @@ namespace DCLPlugins.ECSComponents
                         
                         PBOnPointerUpResult payload = ProtoConvertUtils.GetPointerUpResultModel(button, meshName, ray, hit);
                         payload.Timestamp = GetLamportTimestamp();
-                        componentWriter.PutComponent(scene.sceneData.id, entityId, componentId,
+                        componentWriter.PutComponent(scene.sceneData.sceneNumber, entityId, componentId,
                             payload);
                         break;
                 }

@@ -27,7 +27,7 @@ namespace DCL.Components
                 string meshName = pointerEventHandler.GetMeshName(hit.collider);
                 string entityId = Environment.i.world.sceneController.entityIdHelper.GetOriginalId(entity.entityId);
 
-                WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, pointerEventModel.uuid,
+                WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.sceneNumber, pointerEventModel.uuid,
                     entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
         }

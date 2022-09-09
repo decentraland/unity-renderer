@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.Models
 {
@@ -8,6 +9,7 @@ namespace DCL.Models
     public struct CreateGlobalSceneMessage
     {
         public string id;
+        public int sceneNumber;
         public string name;
         public string baseUrl;
         public List<ContentServerUtils.MappingPair> contents;
@@ -27,8 +29,11 @@ namespace DCL.Models
         public class UnityParcelScene
         {
             public static bool VERBOSE = false;
+            
+            // We can't get rid of this string id since it's used for mapping portable experience ids to their wearables...
             public string id;
-            // public int number;
+            
+            public int sceneNumber;
             public string baseUrl;
             public string baseUrlBundles;
 

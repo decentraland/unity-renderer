@@ -121,8 +121,10 @@ public static class CommonScriptableObjects
     private static QuaternionVariable movingPlatformRotationDeltaValue;
     public static QuaternionVariable movingPlatformRotationDelta => GetOrLoad(ref movingPlatformRotationDeltaValue, "ScriptableObjects/MovingPlatformRotationDelta");
 
-    private static StringVariable sceneIDValue;
-    public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+    // private static StringVariable sceneIDValue;
+    // public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+    private static IntVariable sceneNumbervalue;
+    public static IntVariable sceneNumber => GetOrLoad(ref sceneNumbervalue, "ScriptableObjects/SceneNumber");
 
     private static FloatVariable minimapZoomValue;
     public static FloatVariable minimapZoom => GetOrLoad(ref minimapZoomValue, "ScriptableObjects/MinimapZoom");

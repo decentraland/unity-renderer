@@ -15,7 +15,7 @@ namespace DCL.ECS7.UI
     
     public class UIDataContainer : IUIDataContainer
     {
-        public readonly BaseDictionary<string, UISceneDataContainer> sceneData = new BaseDictionary<string, UISceneDataContainer>();
+        public readonly BaseDictionary<int, UISceneDataContainer> sceneData = new BaseDictionary<int, UISceneDataContainer>();
 
         public void AddUIComponent(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
@@ -38,17 +38,15 @@ namespace DCL.ECS7.UI
         }
 
         public UISceneDataContainer GetDataContainer(IParcelScene scene)
-        {
-            var sceneId = scene.sceneData.id;
-            
-            if(sceneData.TryGetValue(sceneId, out UISceneDataContainer sceneDataContainer))
+        {            
+            if(sceneData.TryGetValue(scene.sceneData.sceneNumber, out UISceneDataContainer sceneDataContainer))
             {
                 return sceneDataContainer;
             }
             else
             {
                 UISceneDataContainer newSceneDataContainer = new UISceneDataContainer();
-                sceneData[sceneId] = newSceneDataContainer;
+                sceneData[scene.sceneData.sceneNumber] = newSceneDataContainer;
                 return newSceneDataContainer;
             }
         }

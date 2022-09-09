@@ -14,17 +14,17 @@ namespace KernelCommunication
             this.messageQueueHanlder = messageQueueHanlder;
         }
 
-        public void Process(string sceneId, IntPtr messageIntPtr, int messageLength)
+        public void Process(int sceneNumber, IntPtr messageIntPtr, int messageLength)
         {
-            Process(sceneId, KernelBinaryMessageDeserializer.Deserialize(messageIntPtr, messageLength));
+            Process(sceneNumber, KernelBinaryMessageDeserializer.Deserialize(messageIntPtr, messageLength));
         }
 
-        public void Process(string sceneId, byte[] message)
+        public void Process(int sceneNumber, byte[] message)
         {
-            Process(sceneId, KernelBinaryMessageDeserializer.Deserialize(message));
+            Process(sceneNumber, KernelBinaryMessageDeserializer.Deserialize(message));
         }
 
-        private void Process(string sceneId, IEnumerator<object> deserializer)
+        private void Process(int sceneNumber, IEnumerator<object> deserializer)
         {
             using (var iterator = deserializer)
             {
@@ -32,13 +32,13 @@ namespace KernelCommunication
                 {
                     if (iterator.Current is CRDTMessage crdtMessage)
                     {
-                        OnCRDTMessage(sceneId, crdtMessage);
+                        OnCRDTMessage(sceneNumber, crdtMessage);
                     }
                 }
             }
         }
 
-        private void OnCRDTMessage(string sceneId, CRDTMessage message)
+        private void OnCRDTMessage(int sceneNumber, CRDTMessage message)
         {
             var sceneMessagesPool = messageQueueHanlder.sceneMessagesPool;
             if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
@@ -47,7 +47,7 @@ namespace KernelCommunication
             }
             queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
             queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-            queuedMessage.sceneId = sceneId;
+            queuedMessage.sceneNumber = sceneNumber;
             queuedMessage.payload = message;
 
             messageQueueHanlder.EnqueueSceneMessage(queuedMessage);
