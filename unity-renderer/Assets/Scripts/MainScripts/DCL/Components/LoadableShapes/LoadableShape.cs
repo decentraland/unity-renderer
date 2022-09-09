@@ -182,7 +182,7 @@ namespace DCL.Components
             if (loadable != null)
                 loadable.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
 
-            ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
+            ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.entityId.Equals(726016) ,entity.meshesInfo.renderers);
             
             if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
                 entity.meshesInfo.animation.enabled = model.visible && entity.isInsideSceneBoundaries;

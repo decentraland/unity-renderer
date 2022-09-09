@@ -327,15 +327,6 @@ namespace UnityGLTF
                     OnPerformanceFinish?.Invoke(Time.realtimeSinceStartup - profiling);
                 }
 
-                MaterialTransitionController[] matTransitions = CreatedObject.GetComponentsInChildren<MaterialTransitionController>(true);
-
-                if (matTransitions != null && matTransitions.Length > 0)
-                {
-                    //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions), cancellationToken: token);
-
-                }
-
                 if (!importSkeleton)
                 {
                     foreach (var skeleton in skeletonGameObjects)
@@ -378,22 +369,6 @@ namespace UnityGLTF
 
                 }
             }
-        }
-        private static bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
-        {
-            bool finishedTransition = true;
-
-            for (int i = 0; i < matTransitions.Length; i++)
-            {
-                if (matTransitions[i] != null)
-                {
-                    finishedTransition = false;
-
-                    break;
-                }
-            }
-
-            return finishedTransition;
         }
 
         /// <summary>
@@ -1653,8 +1628,8 @@ namespace UnityGLTF
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
             {
-                var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController, cancellationToken);
+                renderer.enabled = false;
+                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, null, cancellationToken);
             }
             else
             {

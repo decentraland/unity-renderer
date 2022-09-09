@@ -51,7 +51,7 @@ namespace DCL.Components
 
             if (visibilityDirty)
             {
-                ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
+                ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.entityId.Equals(726016),entity.meshesInfo.renderers);
                 visibilityDirty = false;
             }
 
@@ -92,20 +92,10 @@ namespace DCL.Components
 
             meshFilter.sharedMesh = currentMesh;
 
-            if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
-            {
-                MaterialTransitionController transition = entity.meshRootGameObject.AddComponent<MaterialTransitionController>();
-                Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
-                transition.delay = 0;
-                transition.useHologram = false;
-                transition.fadeThickness = 20;
-                transition.OnDidFinishLoading(finalMaterial);
-
-                transition.onFinishedLoading += () => { OnShapeFinishedLoading(entity); };
-            }
-            else
+            if (!Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {
                 meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
+
             }
 
             visibilityDirty = true;

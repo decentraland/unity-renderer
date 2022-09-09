@@ -89,7 +89,7 @@ public static class ECSComponentsUtils
 
         for (var i = 0; i < meshRenderers.Length; i++)
         {
-            meshRenderers[i].enabled = shouldBeVisible;
+            meshRenderers[i].enabled = false;
 
             if (meshRenderers[i].transform.childCount > 0)
             {

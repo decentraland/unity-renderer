@@ -74,6 +74,13 @@ public class MaterialTransitionController : MonoBehaviour
         {
             material = newMaterials[i];
 
+            if (material == null)
+            {
+                Debug.Log("ENTRE A UN CASO ROTO");
+                state = State.FINISHED;
+                return;
+            }
+
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
@@ -200,7 +207,7 @@ public class MaterialTransitionController : MonoBehaviour
 
             case State.SHOWING_LOADED:
             {
-                currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
+                currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.05f;
                 currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
                 UpdateCullYValueHologram();

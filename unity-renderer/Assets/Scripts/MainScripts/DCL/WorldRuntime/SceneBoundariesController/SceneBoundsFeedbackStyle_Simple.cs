@@ -21,7 +21,8 @@ namespace DCL.Controllers
                 if (meshesInfo.renderers[i] == null)
                     continue;
 
-                if (isInsideBoundaries == meshesInfo.renderers[i].enabled)
+                if (isInsideBoundaries == meshesInfo.renderers[i].enabled 
+                    || meshesInfo.renderers[i].gameObject.GetComponent<MaterialTransitionController>())
                     continue;
 
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
