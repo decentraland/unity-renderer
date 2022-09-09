@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Chat;
-using DCL.Interface;
 using DCL.Friends.WebApi;
 using DCL.Interface;
-using DCL;
 using SocialFeaturesAnalytics;
 using Channel = DCL.Chat.Channels.Channel;
 
@@ -29,7 +28,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private int hiddenDMs;
     private string currentSearch = "";
@@ -95,7 +94,8 @@ public class WorldChatWindowController : IHUD
             channel.Description,
             channel.LastMessageTimestamp,
             channel.Joined,
-            channel.MemberCount);
+            channel.MemberCount,
+            false);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
         view.ShowChannelsLoading();
 
@@ -475,7 +475,7 @@ public class WorldChatWindowController : IHUD
         }
         
         var channelId = channel.ChannelId;
-        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount);
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount, channel.Muted);
         
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);

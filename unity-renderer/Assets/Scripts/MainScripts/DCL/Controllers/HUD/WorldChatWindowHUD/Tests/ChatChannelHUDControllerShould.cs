@@ -107,5 +107,21 @@ namespace DCL.Chat.HUD
             
             socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_ID, 3, "chat");
         }
+
+        [Test]
+        public void MuteChannel()
+        {
+            view.OnMuteChanged += Raise.Event<Action<bool>>(true);
+            
+            chatController.Received(1).MuteChannel(CHANNEL_ID);
+        }
+        
+        [Test]
+        public void UnmuteChannel()
+        {
+            view.OnMuteChanged += Raise.Event<Action<bool>>(false);
+            
+            chatController.Received(1).UnmuteChannel(CHANNEL_ID);
+        }
     }
 }

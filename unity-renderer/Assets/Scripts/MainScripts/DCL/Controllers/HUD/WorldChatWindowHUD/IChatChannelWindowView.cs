@@ -10,9 +10,13 @@ namespace DCL.Chat.HUD
         event Action OnBack;
         event Action OnRequireMoreMessages;
         event Action OnLeaveChannel;
+        event Action OnShowMembersList;
+        event Action OnHideMembersList;
+        event Action<bool> OnMuteChanged; 
 
         bool IsActive { get; }
         IChatHUDComponentView ChatHUD { get; }
+        IChannelMembersComponentView ChannelMembersHUD { get; }
         RectTransform Transform { get; }
         bool IsFocused { get; }
 

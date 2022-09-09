@@ -17,6 +17,7 @@ public class ChatController_Mock : IChatController
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
+    public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
 
     public int TotalUnseenMessages { get; }
 
@@ -64,7 +65,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public void GetChannelMessages(string channelId, int limit, long fromTimestamp)
+    public void GetChannelMessages(string channelId, int limit, string fromMessageId)
     {
     }
 
@@ -81,6 +82,10 @@ public class ChatController_Mock : IChatController
     }
 
     public void MuteChannel(string channelId)
+    {
+    }
+
+    public void UnmuteChannel(string channelId)
     {
     }
 
@@ -101,6 +106,18 @@ public class ChatController_Mock : IChatController
     public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
     
     public void CreateChannel(string channelId)
+    {
+    }
+
+    public void GetChannelInfo(string[] channelIds)
+    {
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+    }
+
+    public void GetChannelMembers(string channelId, int limit, int skip)
     {
     }
 }

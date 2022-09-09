@@ -794,6 +794,56 @@ namespace DCL.Interface
         {
             public string channelId;
         }
+        
+        public struct MuteChannelPayload
+        {
+            public string channelId;
+            public bool muted;
+        }
+
+        [Serializable]
+        private class JoinOrCreateChannelPayload
+        {
+            public string channelId;
+        }
+
+        [Serializable]
+        private class GetChannelMessagesPayload
+        {
+            public string channelId;
+            public int limit;
+            public string from;
+        }
+
+        [Serializable]
+        private class GetJoinedChannelsPayload
+        {
+            public int limit;
+            public int skip;
+        }
+
+        [Serializable]
+        private class GetChannelsPayload
+        {
+            public int limit;
+            public int skip;
+            public string name;
+        }
+
+        [Serializable]
+        private class GetChannelInfoPayload
+        {
+            public string[] channelIds;
+        }
+
+        [Serializable]
+        private class GetChannelMembersPayload
+        {
+            public string channelId;
+            public int limit;
+            public int skip;
+            public string userName;
+        }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
@@ -1788,6 +1838,71 @@ namespace DCL.Interface
             SendMessage("CreateChannel", new CreateChannelPayload
             {
                 channelId = channelId
+            });
+        }
+
+        public static void JoinOrCreateChannel(string channelId)
+        {
+            SendMessage("JoinOrCreateChannel", new JoinOrCreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void GetChannelMessages(string channelId, int limit, string fromMessageId)
+        {
+            SendMessage("GetChannelMessages", new GetChannelMessagesPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                from = fromMessageId
+            });
+        }
+
+        public static void GetJoinedChannels(int limit, int skip)
+        {
+            SendMessage("GetJoinedChannels", new GetJoinedChannelsPayload
+            {
+                limit = limit,
+                skip = skip
+            });
+        }
+
+        public static void GetChannels(int limit, int skip, string name)
+        {
+            SendMessage("GetChannels", new GetChannelsPayload
+            {
+                limit = limit,
+                skip = skip,
+                name = name
+            });
+        }
+
+        public static void GetChannelInfo(string[] channelIds)
+        {
+            SendMessage("GetChannelInfo", new GetChannelInfoPayload
+            {
+                channelIds = channelIds
+            });
+        }
+
+        public static void GetChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            SendMessage("GetChannelMembers", new GetChannelMembersPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                skip = skip,
+                userName = name
+            });
+        }
+
+        public static void MuteChannel(string channelId, bool muted)
+        {
+            SendMessage("MuteChannel", new MuteChannelPayload
+            {
+                channelId = channelId,
+                muted = muted
             });
         }
     }
