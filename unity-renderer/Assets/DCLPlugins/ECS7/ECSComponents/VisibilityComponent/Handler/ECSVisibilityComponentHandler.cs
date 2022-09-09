@@ -26,15 +26,5 @@ namespace DCL.ECSComponents
             var internalModel = new InternalVisibility() { visible = model.GetVisible(), dirty = true };
             visibilityInternalComponent.PutFor(scene, entity, internalModel);
         }
-        
-        private void SetVisibility(IDCLEntity entity, bool visible)
-        {
-            MeshesInfo meshesInfo = entity.meshesInfo;
-            
-            ShapeRepresentation shape = meshesInfo.currentShape as ShapeRepresentation;
-            shape?.UpdateModel(visible, shape.HasCollisions());
-            
-            ECSComponentsUtils.ConfigurePrimitiveShapeVisibility(entity.gameObject, visible, meshesInfo.renderers);
-        }
     }
 }
