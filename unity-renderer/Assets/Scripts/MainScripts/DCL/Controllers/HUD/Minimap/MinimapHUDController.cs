@@ -132,12 +132,12 @@ public class MinimapHUDController : IHUD
         if (playerCoords == homeCoords)
         {
             if (!isOn)
-                locationController.SetHomeScene($"0,0");
+                locationController.SetHomeScene(new Vector2(0,0));
         }
         else
         { 
             if(isOn)
-                locationController.SetHomeScene($"{coords.x},{coords.y}");
+                locationController.SetHomeScene(new Vector2(coords.x,coords.y));
         }
     }
 
