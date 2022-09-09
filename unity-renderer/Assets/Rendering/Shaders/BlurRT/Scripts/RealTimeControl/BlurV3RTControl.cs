@@ -36,6 +36,8 @@ public class BlurV3RTControl : MonoBehaviour
     [SerializeField] private Slider _IorOpacityVolumeSlider;
     // Box Blur Opacity slider
     [SerializeField] private Slider _BoxBlurOpacitySlider;
+    // cam depth opacity slider
+    [SerializeField] private Slider _CamDepthAmountSlider;
 
     [Space]
 
@@ -55,7 +57,10 @@ public class BlurV3RTControl : MonoBehaviour
     [SerializeField] private string _IorVerName = "_IorVer";
     [SerializeField] private string _IorOpacityVolumeName = "_IorOpacityVolume";
     [SerializeField] private string _BoxBlurOpacityName = "_BoxBlurOpacity";
-    
+
+    [Space]
+    [SerializeField] private string _CamDepthAmountName = "_CamDepthAmount";
+
 
 
 
@@ -114,6 +119,9 @@ public class BlurV3RTControl : MonoBehaviour
         // box blur opacity
         _blurMaterial.SetFloat(_BoxBlurOpacityName, _BoxBlurOpacitySlider.value);
 
+        // cam depth amount
+        _blurMaterial.SetFloat(_CamDepthAmountName, _CamDepthAmountSlider.value);
+
 
     }
 
@@ -134,6 +142,8 @@ public class BlurV3RTControl : MonoBehaviour
         _IorOpacityVolumeSlider.value = 1f;
         _BoxBlurOpacitySlider.value = 1f;
 
+        _CamDepthAmountSlider.value = 0.5f;
+
         // set default values to the shader properties
 
         _blurMaterial.SetFloat(_DistrortionPowerName, 0);
@@ -148,7 +158,9 @@ public class BlurV3RTControl : MonoBehaviour
         _blurMaterial.SetFloat(_IorVerName, 0.01706193f);
         _blurMaterial.SetFloat(_IorOpacityVolumeName, 1f);
         _blurMaterial.SetFloat(_BoxBlurOpacityName, 1f);
-        
+
+        _blurMaterial.SetFloat(_CamDepthAmountName, 0.5f);
+
     }
 
     // on disable
