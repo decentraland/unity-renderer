@@ -28,6 +28,7 @@ namespace DCL.ECSComponents
         private readonly MaterialRegister materialRegister;
         private readonly MeshRendererRegister meshRendererRegister;
         private readonly MeshColliderRegister meshColliderRegister;
+        private readonly VisibilityComponentRegister visibilityComponentRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -62,6 +63,7 @@ namespace DCL.ECSComponents
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
             meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
+            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);
@@ -97,6 +99,7 @@ namespace DCL.ECSComponents
             materialRegister.Dispose();
             meshRendererRegister.Dispose();
             meshColliderRegister.Dispose();
+            visibilityComponentRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();
