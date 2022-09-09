@@ -217,14 +217,7 @@ namespace WebGLSupport
         Rect GetScreenCoordinates(RectTransform uiElement)
         {
             var worldCorners = new Vector3[4];
-            UnityEngine.Vector3[] worldCornersConverted = new UnityEngine.Vector3[]
-            {
-                new UnityEngine.Vector3(worldCorners[0].X, worldCorners[0].Y, worldCorners[0].Z),
-                new UnityEngine.Vector3(worldCorners[1].X, worldCorners[1].Y, worldCorners[1].Z),
-                new UnityEngine.Vector3(worldCorners[2].X, worldCorners[2].Y, worldCorners[2].Z),
-                new UnityEngine.Vector3(worldCorners[3].X, worldCorners[3].Y, worldCorners[3].Z),
-            };
-            uiElement.GetWorldCorners(worldCornersConverted);
+            uiElement.GetWorldCorners(worldCorners);
 
             // try to support RenderMode:WorldSpace
             var canvas = uiElement.GetComponentInParent<Canvas>();
@@ -234,20 +227,20 @@ namespace WebGLSupport
                 var camera = canvas.worldCamera;
                 if (!camera) camera = Camera.main;
 
-                for (var i = 0; i < worldCornersConverted.Length; i++)
+                for (var i = 0; i < worldCorners.Length; i++)
                 {
-                    worldCornersConverted[i] = camera.WorldToScreenPoint(worldCornersConverted[i]);
+                    worldCorners[i] = camera.WorldToScreenPoint(worldCorners[i]);
                 }
             }
 
-            var min = new UnityEngine.Vector3(float.MaxValue, float.MaxValue);
-            var max = new UnityEngine.Vector3(float.MinValue, float.MinValue);
-            for (var i = 0; i < worldCornersConverted.Length; i++)
+            var min = new Vector3(float.MaxValue, float.MaxValue);
+            var max = new Vector3(float.MinValue, float.MinValue);
+            for (var i = 0; i < worldCorners.Length; i++)
             {
-                min.x = Mathf.Min(min.x, worldCornersConverted[i].x);
-                min.y = Mathf.Min(min.y, worldCornersConverted[i].y);
-                max.x = Mathf.Max(max.x, worldCornersConverted[i].x);
-                max.y = Mathf.Max(max.y, worldCornersConverted[i].y);
+                min.x = Mathf.Min(min.x, worldCorners[i].x);
+                min.y = Mathf.Min(min.y, worldCorners[i].y);
+                max.x = Mathf.Max(max.x, worldCorners[i].x);
+                max.y = Mathf.Max(max.y, worldCorners[i].y);
             }
 
             return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
