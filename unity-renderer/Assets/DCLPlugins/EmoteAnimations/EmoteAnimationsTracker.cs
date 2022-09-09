@@ -100,8 +100,11 @@ namespace DCL.Emotes
 
             try
             {
-                var emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct) ?? 
-                                       await wearableItemResolver.Resolve(emoteId, ct);
+                var newEmoteTask = emotesCatalogService.RequestEmoteAsync(emoteId, ct);
+                var oldEmoteTask = wearableItemResolver.Resolve(emoteId, ct);
+
+                var loadResultTuple = await UniTask.WhenAny(newEmoteTask, oldEmoteTask);
+                var emote = loadResultTuple.winArgumentIndex == 0 ? loadResultTuple.result1 : loadResultTuple.result2;
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
