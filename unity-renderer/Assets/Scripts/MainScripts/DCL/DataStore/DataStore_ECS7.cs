@@ -1,27 +1,26 @@
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.UI;
-using DCL.Helpers;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace DCL
 {
     public class DataStore_ECS7
     {
-        public readonly struct PointerEvent
+        public class PointerEvent
         {
-            public readonly int buttonId;
-            public readonly RaycastResultInfo rayResult;
-            public readonly bool isButtonDown;
+            public int buttonId = 0;
+            public bool isButtonDown = false;
+            public bool hasValue = false;
+        }
 
-            public PointerEvent(int buttonId, bool isButtonDown, RaycastResultInfo rayResult)
-            {
-                this.buttonId = buttonId;
-                this.isButtonDown = isButtonDown;
-                this.rayResult = rayResult;
-            }
+        public class RaycastEvent
+        {
+            public RaycastHit hit;
+            public Ray ray;
+            public bool didHit;
+            public bool hasValue = false;
         }
 
         public readonly BaseList<IParcelScene> scenes = new BaseList<IParcelScene>();
@@ -30,7 +29,7 @@ namespace DCL
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public IUIDataContainer uiDataContainer = new UIDataContainer();
         public bool isEcs7Enabled = false;
-        public PointerEvent? lastPointerInputEvent = null;
-        public RaycastHit? lastPointerRayHit = null;
+        public PointerEvent lastPointerInputEvent = new PointerEvent();
+        public RaycastEvent lastPointerRayHit = new RaycastEvent();
     }
 }

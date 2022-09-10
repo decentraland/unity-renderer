@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
 using UnityEngine;
-using RaycastHit = UnityEngine.RaycastHit;
+using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
 {

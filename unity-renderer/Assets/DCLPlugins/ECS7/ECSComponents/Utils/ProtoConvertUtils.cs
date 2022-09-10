@@ -1,11 +1,10 @@
-using System;
 using DCL.CameraTool;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public static class ProtoConvertUtils 
+    public static class ProtoConvertUtils
     {
         public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray, HitInfo rawHit)
         {
@@ -21,6 +20,30 @@ namespace DCL.ECSComponents
             return hit;
         }
 
+        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray,
+            UnityEngine.RaycastHit raycastHit, bool isValidEntity = true)
+        {
+            var ret = new RaycastHit
+            {
+                Length = raycastHit.distance,
+                Origin = UnityVectorToPBVector(ray.origin),
+                Position = UnityVectorToPBVector(raycastHit.point),
+                NormalHit = UnityVectorToPBVector(raycastHit.normal),
+                Direction = UnityVectorToPBVector(ray.direction)
+            };
+
+            if (isValidEntity)
+            {
+                ret.EntityId = entityId;
+            }
+            if (!string.IsNullOrEmpty(meshName))
+            {
+                ret.MeshName = meshName;
+            }
+
+            return ret;
+        }
+
         public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original)
         {
             Vector3 vector = new Vector3();
@@ -29,7 +52,7 @@ namespace DCL.ECSComponents
             vector.Z = original.z;
             return vector;
         }
-        
+
         public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original)
         {
             UnityEngine.Vector3 vector = new UnityEngine.Vector3();
@@ -38,7 +61,7 @@ namespace DCL.ECSComponents
             vector.z = original.Z;
             return vector;
         }
-        
+
         public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
         {
             switch (mode)
