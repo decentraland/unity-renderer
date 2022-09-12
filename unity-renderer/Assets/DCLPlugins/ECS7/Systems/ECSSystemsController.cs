@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-using DCLPlugins.ECS7.Systems.PointerEventResolver;
 using ECSSystems.CameraSystem;
+using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
@@ -38,7 +38,7 @@ public class ECSSystemsController : IDisposable
                 context.internalEcsComponents.inputEventResultsComponent,
                 Environment.i.world.state,
                 DataStore.i.ecs7),
-            //ECSPointerEventResolverSystem.CreateSystem(context.componentWriter),
+            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };
