@@ -50,16 +50,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_a24b9fe615da48e9bad3a9db7e248eaa: 2500
+    - Vector1_c99fb4502370459a9213d3d68796e68a: 0.025
     - _ColorMask: 15
-    - _GridThickness: 0.5
+    - _GridOffset: 0.9
+    - _GridOpacity: 0.2
+    - _GridThickness: 0.25
     - _HighlightRotation: 10
     - _HighlightThickness: 2
+    - _SobelGridOffset: 2500
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Zoom: 0.44
+    - _ThicknessOffset: 2000
+    - _Zoom: 1
     m_Colors:
     - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
         a: 1}
