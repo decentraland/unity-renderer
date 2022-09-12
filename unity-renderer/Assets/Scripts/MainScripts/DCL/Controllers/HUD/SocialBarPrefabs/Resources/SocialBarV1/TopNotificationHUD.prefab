@@ -52,6 +52,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   chatNotificationComponentView: {fileID: 9063049889030303323}
+  notificationsImage: {fileID: 21300000, guid: 19ab9974b241b40c6904521d492b8328, type: 3}
+  isShowingNotification: 0
 --- !u!225 &2700259136045117502
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -715,7 +717,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 37.559998, y: 0}
+  m_AnchoredPosition: {x: 38.379997, y: 0}
   m_SizeDelta: {x: 0, y: 14.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2434868330415027881
@@ -1288,7 +1290,7 @@ MonoBehaviour:
   model:
     maxHeaderCharacters: 30
     maxContentCharacters: 32
-    maxSenderCharacters: 10
+    maxSenderCharacters: 11
     message: Test shorter
     time: 12:33
     messageHeader: '#asdasd'
@@ -1304,6 +1306,7 @@ MonoBehaviour:
   - {r: 0.9843137, g: 0.78039217, b: 0.05882353, a: 1}
   - {r: 0.9882353, g: 0.39607844, b: 1, a: 1}
   - {r: 0.03529412, g: 0.5921569, b: 1, a: 1}
+  shouldAnimateFocus: 1
   notificationTargetId: 
 --- !u!114 &1103127886671198530
 MonoBehaviour:
@@ -1510,6 +1513,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 87bf14092660947eb9909d5772886279,
         type: 3}
+    - target: {fileID: 5573392751968575400, guid: 4849d2ed3b5a18948bf3cd46256869a4,
+        type: 3}
+      propertyPath: m_Maskable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6302203761313059702, guid: 4849d2ed3b5a18948bf3cd46256869a4,
         type: 3}
       propertyPath: m_Pivot.x

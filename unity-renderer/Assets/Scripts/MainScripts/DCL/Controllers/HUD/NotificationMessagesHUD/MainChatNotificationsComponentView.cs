@@ -202,7 +202,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         chatNotificationComponentView.SetIsPrivate(true);
         chatNotificationComponentView.SetMessage(message.body);
         chatNotificationComponentView.SetNotificationHeader("Private message");
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
         chatNotificationComponentView.SetNotificationTargetId(message.sender);
         if (profilePicture != null)
             chatNotificationComponentView.SetImage(profilePicture);
@@ -218,7 +218,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
 
         chatNotificationComponentView.SetNotificationTargetId(channelId);
         chatNotificationComponentView.SetNotificationHeader(channelName);
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
     }
 
     private void ClickedOnNotification(string targetId)

@@ -18,6 +18,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     public event Action<string> OnClickedNotification;
 
     [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
+    [SerializeField] private Sprite notificationsImage;
 
     public event Action<bool> OnResetFade;
 
@@ -43,6 +44,9 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         offsetHeaderXPos = normalHeaderXPos - X_OFFSET;
         chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
         notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
+        chatNotificationComponentView.shouldAnimateFocus = false;
+        chatNotificationComponentView.SetImage(notificationsImage, false);
+        chatNotificationComponentView.SetIsPrivate(true);
     }
 
     public Transform GetPanelTransform()
@@ -134,18 +138,14 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     private void PopulatePrivateNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
-        chatNotificationComponentView.SetIsPrivate(true);
         chatNotificationComponentView.SetMessage(message.body);
         chatNotificationComponentView.SetNotificationHeader("Private message");
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
         chatNotificationComponentView.SetNotificationTargetId(message.sender);
-        if (profilePicture != null)
-            chatNotificationComponentView.SetImage(profilePicture);
     }
 
     private void PopulatePublicNotification(ChatMessage message, string username = null)
     {
-        chatNotificationComponentView.SetIsPrivate(false);
         chatNotificationComponentView.SetMessage(message.body);
 
         var channelId = string.IsNullOrEmpty(message.recipient) ? "nearby" : message.recipient;
@@ -153,16 +153,15 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
         chatNotificationComponentView.SetNotificationTargetId(channelId);
         chatNotificationComponentView.SetNotificationHeader(channelName);
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
     }
 
     private void PopulateMultipleNotification()
     {
-        chatNotificationComponentView.SetIsPrivate(false);
-        chatNotificationComponentView.SetMessage($"You have {stackedNotifications} notifications");
-        chatNotificationComponentView.SetNotificationTargetId("notificationPanel");
-        chatNotificationComponentView.SetNotificationHeader("");
-        chatNotificationComponentView.SetNotificationSender("");
+        chatNotificationComponentView.SetMessage("");
+        chatNotificationComponentView.SetNotificationTargetId("conversationList");
+        chatNotificationComponentView.SetNotificationHeader("CHAT NOTIFICATIONS");
+        chatNotificationComponentView.SetNotificationSender($"{stackedNotifications} messages");
     }
 
     public override void Show(bool instant = false)

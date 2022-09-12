@@ -35,9 +35,11 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] private Color[] channelColors;
 
     public event Action<string> OnClickedNotification;
+    public bool shouldAnimateFocus = true;
     public string notificationTargetId;
     private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
     private float startingXPosition;
+    private Image backgroundImage;
 
     public void Configure(ChatNotificationMessageComponentModel newModel)
     {
@@ -50,6 +52,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         base.Awake();
         button?.onClick.AddListener(()=>OnClickedNotification?.Invoke(notificationTargetId));
         startingXPosition = messageContainerTransform.anchoredPosition.x;
+        backgroundImage = imageBackground.GetComponent<Image>();
         RefreshControl();
     }
 
@@ -63,13 +66,15 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public override void OnFocus()
     {
         base.OnFocus();
-        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition + 5, messageContainerTransform.anchoredPosition.y);
+        if(shouldAnimateFocus)
+            messageContainerTransform.anchoredPosition = new Vector2(startingXPosition + 5, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
-        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition, messageContainerTransform.anchoredPosition.y);
+        if(shouldAnimateFocus)
+            messageContainerTransform.anchoredPosition = new Vector2(startingXPosition, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void Hide(bool instant = false)
@@ -143,7 +148,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {   
         model.messageSender = sender;
         if (sender.Length <= maxSenderCharacters)
-            notificationSender.text = $"{sender}:";
+            notificationSender.text = $"{sender}";
         else
             notificationSender.text = $"{sender.Substring(0, maxSenderCharacters)}:";
 
@@ -164,13 +169,31 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         ForceUIRefresh();
     }
 
-    public void SetImage(string uri)
+    public void SetImage(string uri, bool activateBackground = true)
     {
         if (!isPrivate)
             return;
 
+        image.SetImage((Sprite)null);
+        var tempColor = backgroundImage.color;
+        tempColor.a = activateBackground ? 1.0f : 0.01f;
+        backgroundImage.color = tempColor;
         model.imageUri = uri;
         image.SetImage(uri);
+        ForceUIRefresh();
+    }
+
+    public void SetImage(Sprite icon, bool activateBackground = true)
+    {
+        if (!isPrivate)
+            return;
+
+        image.SetImage((Sprite)null);
+        var tempColor = backgroundImage.color;
+        tempColor.a = activateBackground ? 1.0f : 0.01f;
+        backgroundImage.color = tempColor;
+        image.SetImage(icon);
+        ForceUIRefresh();
     }
 
     public void SetPositionOffset(float xPosHeader, float xPosContent)
