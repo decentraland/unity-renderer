@@ -164,7 +164,7 @@ Material:
     - _ColorMode: 0
     - _Cull: 2
     - _CullYPlane: 0
-    - _Cutoff: 0.634
+    - _Cutoff: 0.605
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DistortionBlend: 0.5

@@ -30,7 +30,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9ae95f298490a7b4d816251d4e2555d7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Control:
@@ -151,7 +151,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaClip: 0
+    - _AlphaClip: 1
     - _BaseMapUVs: 0
     - _Blend: 0
     - _BlendOp: 0
@@ -164,7 +164,7 @@ Material:
     - _ColorMode: 0
     - _Cull: 2
     - _CullYPlane: 0
-    - _Cutoff: 0.634
+    - _Cutoff: 0.582
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DistortionBlend: 0.5
@@ -180,7 +180,7 @@ Material:
     - _FadeThickness: 5
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
-    - _GlossMapScale: 0.148
+    - _GlossMapScale: 0.345
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HeightTransition: 0
@@ -197,7 +197,7 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _Smoothness: 0.507
+    - _Smoothness: 0.815
     - _Smoothness0: 0.5
     - _Smoothness1: 0.5
     - _Smoothness2: 0.5
@@ -212,7 +212,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0, g: 0.64498204, b: 0.990566, a: 1}
+    - _BaseColor: {r: 0, g: 0.64498204, b: 0.99056596, a: 0}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
