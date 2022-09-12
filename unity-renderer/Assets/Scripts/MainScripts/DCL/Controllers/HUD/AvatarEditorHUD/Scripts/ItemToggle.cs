@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using TMPro;
@@ -11,8 +10,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 {
     private static readonly int LOADING_ANIMATOR_TRIGGER_LOADED = Animator.StringToHash("Loaded");
 
-    public event System.Action<ItemToggle> OnClicked;
-    public event System.Action<ItemToggle> OnSellClicked;
+    public event Action<ItemToggle> OnClicked;
+    public event Action<ItemToggle> OnSellClicked;
 
     public WearableItem wearableItem { get; private set; }
 
@@ -24,11 +23,9 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
+    [SerializeField] internal GameObject root;
 
     private bool selectedValue;
-
-    private string loadedThumbnailURL;
-    private AssetPromise_Texture loadedThumbnailPromise;
 
     private AvatarEditorHUDView view;
 
@@ -72,8 +69,10 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
     }
 
-    public virtual void Initialize(WearableItem w, bool isSelected, int amount)
+    public virtual void Initialize(WearableItem w, bool isSelected, int amount, NFTItemToggleSkin skin)
     {
+        root.gameObject.SetActive(true);
+
         wearableItem = w;
         selected = isSelected;
         amountContainer.gameObject.SetActive(amount > 1);
@@ -117,27 +116,10 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesReplacedByFunc = function;
 
-    private void OnThumbnailReady(Asset_Texture texture)
-    {
-        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
-
-        if (thumbnail.sprite != null)
-            Destroy(thumbnail.sprite);
-
-        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
-
-        if (view != null)
-        {
-            if (view.avatarEditorCanvas.enabled)
-                AudioScriptableObjects.listItemAppear.Play(true);
-        }
-    }
-
     private void OnEnable() { GetThumbnail(); }
 
     protected virtual void OnDestroy()
     {
-        ForgetThumbnail();
         OnClicked = null;
     }
 
@@ -146,25 +128,29 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private void GetThumbnail()
     {
         string url = wearableItem?.ComposeThumbnailUrl();
-
-        if (url == loadedThumbnailURL)
-        {
-            SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
-            return;
-        }
-
+        
         if (wearableItem == null || string.IsNullOrEmpty(url))
         {
             SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
             return;
         }
 
-        loadedThumbnailURL = url;
-        var newLoadedThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
-        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
-        loadedThumbnailPromise = newLoadedThumbnailPromise;
+        ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
     }
+    
+    private void OnThumbnailReady(Asset_Texture texture)
+    {
+        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
 
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out var wasCreated);
+
+        if (view != null && wasCreated)
+        {
+            if (view.avatarEditorCanvas.enabled)
+                AudioScriptableObjects.listItemAppear.Play(true);
+        }
+    }
+    
     private void SetLoadingAnimationTrigger(int id)
     {
         if (!loadingAnimator.isInitialized || loadingAnimator.runtimeAnimatorController == null)
@@ -172,11 +158,14 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         loadingAnimator.SetTrigger(id);
     }
-
-    private void ForgetThumbnail()
+    
+    public void Hide()
     {
-        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
-        loadedThumbnailURL = null;
-        loadedThumbnailPromise = null;
+        root.gameObject.SetActive(false);
+    }
+    public void SetCallbacks(Action<ItemToggle> toggleClicked, Action<ItemToggle> sellClicked)
+    {
+        OnClicked = toggleClicked;
+        OnSellClicked = sellClicked;
     }
 }

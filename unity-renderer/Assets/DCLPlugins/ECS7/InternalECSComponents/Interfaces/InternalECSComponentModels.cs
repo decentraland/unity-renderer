@@ -24,6 +24,18 @@ namespace DCL.ECS7.InternalComponents
         public IList<Collider> colliders = new List<Collider>();
     }
 
+    public class InternalRenderers
+    {
+        public IList<Renderer> renderers = new List<Renderer>();
+        public bool dirty = true;
+    }
+
+    public class InternalVisibility
+    {
+        public bool visible = true;
+        public bool dirty = true;
+    }
+
     public class InternalInputEventResults
     {
         public class EventData
@@ -38,5 +50,5 @@ namespace DCL.ECS7.InternalComponents
         public Queue<EventData> events;
         public bool dirty;
         public int lastTimestamp;
-    }
+    }    
 }

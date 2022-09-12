@@ -24,7 +24,8 @@ namespace Tests
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(100);
             texturizableComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
-            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent);
+
+            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent, Substitute.For<IInternalECSComponent<InternalRenderers>>());
         }
 
         [TearDown]

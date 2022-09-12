@@ -57,6 +57,7 @@ namespace DCL
 
         public MapSceneIcon scenesOfInterestIconPrefab;
         public GameObject userIconPrefab;
+        public GameObject homePointIconPrefab;
         public UserMarkerObject globalUserMarkerPrefab;
 
         public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
@@ -67,6 +68,7 @@ namespace DCL
 
         private Vector2Int lastClickedCursorMapCoords;
         private Pool usersInfoPool;
+        private RectTransform homePointIcon;
 
         private bool parcelHighlightEnabledValue = false;
         private bool otherPlayersIconsEnabled = true;
@@ -93,6 +95,7 @@ namespace DCL
         private Vector2Int lastSelectedLand;
         private Vector3 lastPlayerPosition = new Vector3(float.NegativeInfinity, 0, float.NegativeInfinity);
         private BaseVariable<Vector3> playerWorldPosition = DataStore.i.player.playerWorldPosition;
+        private BaseVariable<Vector2Int> homePointCoordinates = DataStore.i.HUDs.homePoint;
 
         private bool isInitialized = false;
 
@@ -111,6 +114,8 @@ namespace DCL
                 return;
 
             isInitialized = true;
+            
+            InitializeHomePointIcon();
             EnsurePools();
             atlas.InitializeChunks();
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
@@ -118,6 +123,8 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             otherPlayers.OnRemoved += OnOtherPlayerRemoved;
+            homePointCoordinates.OnChange += MoveHomePointIcon;
+            MoveHomePointIcon(homePointCoordinates.Get(), new Vector2Int());
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -132,6 +139,21 @@ namespace DCL
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+        }
+
+        private void MoveHomePointIcon(Vector2Int current, Vector2Int previous)
+        {
+            homePointIcon.anchoredPosition = MapUtils.CoordsToPosition(new Vector3(current.x, current.y, 0));
+        }
+
+        private void InitializeHomePointIcon()
+        {
+            homePointIcon = GameObject.Instantiate(homePointIconPrefab).GetComponent<RectTransform>();
+            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, false);
+            homePointIcon.anchoredPosition = new Vector2(0,0);
+            homePointIcon.transform.localPosition = new Vector3(homePointIcon.transform.localPosition.x, homePointIcon.transform.localPosition.y, 0);
+            homePointIcon.localScale = new Vector3(2,2,2);
+            homePointIcon.transform.SetAsFirstSibling();
         }
 
         private void EnsurePools()
@@ -193,6 +215,7 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded -= OnOtherPlayersAdded;
             otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
+            homePointCoordinates.OnChange -= MoveHomePointIcon;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
