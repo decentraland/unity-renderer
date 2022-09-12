@@ -39,8 +39,6 @@ namespace Tests
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
 
-            var componentGroups = new ComponentGroups(componentsManager);
-
             worldState = Substitute.For<IWorldState>();
             worldState.ContainsScene(Arg.Any<string>()).Returns(true);
 
