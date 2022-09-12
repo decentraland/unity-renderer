@@ -10,37 +10,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public interface IOnPointerEventHandler
-    {
-        /// <summary>
-        /// This set the feedback state of the UI view 
-        /// </summary>
-        /// <param name="showFeedback"></param>
-        /// <param name="hoverState"></param>
-        /// <param name="button"></param>
-        /// <param name="hoverText"></param>
-        void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText);
-        
-        /// <summary>
-        /// This will setup the collider for an specific entity
-        /// </summary>
-        /// <param name="entity"></param>
-        void SetColliders(IDCLEntity entity);
-        
-        /// <summary>
-        /// This will return the mesh name of the passed Collider
-        /// </summary>
-        /// <param name="collider"></param>
-        /// <returns></returns>
-        string GetMeshName(Collider collider);
-        
-        /// <summary>
-        /// This dispose the class
-        /// </summary>
-        void Dispose();
-    }
-    
-    public class OnPointerEventHandler : IDisposable, IOnPointerEventHandler
+    public class OnPointerEventHandler : IDisposable
     {
         public static bool enableInteractionHoverFeedback = true;
         public OnPointerEventColliders eventColliders { get; private set; }
