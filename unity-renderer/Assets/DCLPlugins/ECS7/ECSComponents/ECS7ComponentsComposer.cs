@@ -1,6 +1,7 @@
 using System;
 using DCL.ECS7;
 using DCL.ECSRuntime;
+using DCL.Helpers;
 using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
@@ -26,6 +27,8 @@ namespace DCL.ECSComponents
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
         private readonly MaterialRegister materialRegister;
+        private readonly RaycastRegister raycastRegister;
+        private readonly RaycastResultRegister raycastResultRegister;
         private readonly MeshRendererRegister meshRendererRegister;
         private readonly MeshColliderRegister meshColliderRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
@@ -61,6 +64,8 @@ namespace DCL.ECSComponents
             avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
+            raycastRegister = new RaycastRegister(ComponentID.RAYCAST, componentsFactory, componentsWriter, internalComponents);
+            raycastResultRegister = new RaycastResultRegister(ComponentID.RAYCAST_RESULT, componentsFactory, componentsWriter);
             meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
@@ -97,6 +102,8 @@ namespace DCL.ECSComponents
             avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             materialRegister.Dispose();
+            raycastRegister.Dispose();
+            raycastResultRegister.Dispose();
             meshRendererRegister.Dispose();
             meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
