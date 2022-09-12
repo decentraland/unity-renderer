@@ -128,6 +128,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ConfigureOhterUIDependencies();
 
         isInitialized.Set(true);
+        
+        view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        
     }
 
     internal void InitializePlacesAndEventsSection()
@@ -145,13 +152,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             exploreV2Analytics.SendStartMenuSectionVisibility(currentOpenSection, false);
 
         currentOpenSection = section;
-
-        if (currentOpenSection == ExploreSection.Backpack)
-        {
-            view.ConfigureEncapsulatedSection(
-                ExploreSection.Backpack,
-                DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        }
 
         placesAndEventsVisible.Set(currentOpenSection == ExploreSection.Explore);
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
@@ -318,9 +318,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal void IsNavMapInitializedChanged(bool current, bool previous)
     {
         view.SetSectionActive(ExploreSection.Map, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
     }
 
     internal void NavmapVisibleChanged(bool current, bool previous)
@@ -354,9 +351,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal void IsBuilderInitializedChanged(bool current, bool previous)
     {
         view.SetSectionActive(ExploreSection.Builder, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
     }
 
     internal void BuilderVisibleChanged(bool current, bool previous)
@@ -390,9 +384,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal void IsQuestInitializedChanged(bool current, bool previous)
     {
         view.SetSectionActive(ExploreSection.Quest, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
     }
 
     internal void QuestVisibleChanged(bool current, bool previous)
@@ -426,9 +417,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal void IsSettingsPanelInitializedChanged(bool current, bool previous)
     {
         view.SetSectionActive(ExploreSection.Settings, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
     }
 
     internal void SettingsVisibleChanged(bool current, bool previous)

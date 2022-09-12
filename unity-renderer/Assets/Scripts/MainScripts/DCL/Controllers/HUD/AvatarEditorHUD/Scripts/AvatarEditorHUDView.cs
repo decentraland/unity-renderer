@@ -242,7 +242,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         collectiblesItemSelector.OnItemClicked += controller.WearableClicked;
         collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
-        collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
         skinColorSelector.OnColorSelectorChange += controller.SkinColorClicked;
         eyeColorPickerComponent.OnColorChanged += controller.EyesColorClicked;
@@ -391,7 +390,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         string collectionName = GetWearableCollectionName(wearableItem);
 
-        selectorsByCategory[wearableItem.data.category].AddItemToggle(
+        selectorsByCategory[wearableItem.data.category].AddWearable(
             wearableItem,
             collectionName,
             amount,
@@ -400,7 +399,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
-            collectiblesItemSelector.AddItemToggle(
+            collectiblesItemSelector.AddWearable(
                 wearableItem,
                 collectionName,
                 amount,
@@ -448,9 +447,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             return;
         }
 
-        selectorsByCategory[wearableItem.data.category].RemoveItemToggle(wearableItem.id);
+        selectorsByCategory[wearableItem.data.category].RemoveWearable(wearableItem.id);
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
-            collectiblesItemSelector.RemoveItemToggle(wearableItem.id);
+            collectiblesItemSelector.RemoveWearable(wearableItem.id);
     }
 
     public void RemoveAllWearables()
@@ -459,11 +458,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         {
             while (enumerator.MoveNext())
             {
-                enumerator.Current.Value.RemoveAllItemToggle();
+                enumerator.Current.Value.RemoveAllWearables();
             }
         }
 
-        collectiblesItemSelector.RemoveAllItemToggle();
+        collectiblesItemSelector.RemoveAllWearables();
     }
 
     private void OnRandomizeButton()
@@ -541,7 +540,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         {
             collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
             collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
-            collectiblesItemSelector.OnRetryClicked -= controller.RetryLoadOwnedWearables;
         }
 
         if (skinColorSelector != null)
@@ -572,11 +570,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         
         clickBlocker.OnClicked -= ClickBlockerClicked;
     }
-
-    public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
-
-    public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
-
+    
     public void SetAsFullScreenMenuMode(Transform parentTransform)
     {
         if (parentTransform == null)
