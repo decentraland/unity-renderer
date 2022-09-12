@@ -16,6 +16,7 @@ public interface IChatController
     event Action<string, int> OnUserUnseenMessagesUpdated;
     event Action<string, int> OnChannelUnseenMessagesUpdated;
     event Action<string, ChannelMember[]> OnUpdateChannelMembers;
+    event Action<string, Channel[]> OnChannelSearchResult;
 
     int TotalUnseenMessages { get; }
 
@@ -29,8 +30,8 @@ public interface IChatController
     void LeaveChannel(string channelId);
     void GetChannelMessages(string channelId, int limit, string fromMessageId);
     void GetJoinedChannels(int limit, int skip);
-    void GetChannels(int limit, int skip, string name);
-    void GetChannels(int limit, int skip);
+    void GetChannelsByName(int limit, string name);
+    void GetChannels(int limit, string paginationToken = null);
     void MuteChannel(string channelId);
     void UnmuteChannel(string channelId);
     Channel GetAllocatedChannel(string channelId);

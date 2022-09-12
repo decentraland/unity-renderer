@@ -88,6 +88,8 @@ namespace DCL.Chat.Channels
             remove => controller.OnUpdateChannelMembers -= value;
         }
 
+        public event Action<string, Channel[]> OnChannelSearchResult;
+
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
         public ChatChannelsControllerMock(
@@ -200,11 +202,11 @@ namespace DCL.Chat.Channels
             }
         }
 
-        public void GetChannels(int limit, int skip, string name) =>
-            GetFakeChannels(limit, skip, name).Forget();
+        public void GetChannelsByName(int limit, string name) =>
+            SearchFakeChannels(limit, name).Forget();
 
-        public void GetChannels(int limit, int skip) =>
-            GetFakeChannels(limit, skip, "").Forget();
+        public void GetChannels(int limit, string paginationToken) =>
+            SearchFakeChannels(limit, "").Forget();
 
         public void MuteChannel(string channelId) => MuteFakeChannel(channelId, true).Forget();
         
@@ -555,7 +557,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
         }
         
-        private async UniTask GetFakeChannels(int limit, int skip, string name)
+        private async UniTask SearchFakeChannels(int limit, string name)
         {
             await UniTask.Delay(Random.Range(40, 1000));
 
@@ -576,7 +578,9 @@ Invite others to join by quoting the channel name in other chats or include it a
                 "music-festival"
             };
 
-            for (var i = skip; i < skip + limit && i < ids.Length; i++)
+            var channelPayloads = new List<ChannelInfoPayload>();
+
+            for (var i = 0; i < limit && i < ids.Length; i++)
             {
                 var channelId = ids[i];
                 if (!channelId.StartsWith(name) && !string.IsNullOrEmpty(name)) continue;
@@ -589,8 +593,17 @@ Invite others to join by quoting the channel name in other chats or include it a
                     memberCount = Random.Range(0, 16),
                     unseenMessages = 0
                 };
-                controller.UpdateChannelInfo(JsonUtility.ToJson(msg));
+                
+                channelPayloads.Add(msg);
             }
+
+            var payload = new ChannelSearchResultsPayload
+            {
+                channels = channelPayloads.ToArray(),
+                since = Guid.NewGuid().ToString()
+            };
+            
+            controller.UpdateChannelSearchResults(JsonUtility.ToJson(payload));
         }
         
         private void SendNearbyDescriptionMessage()

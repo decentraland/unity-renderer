@@ -59,7 +59,7 @@ namespace DCL.Chat.HUD
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
 
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace DCL.Chat.HUD
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
 
-            var channel = new Channel("channel", 15, 11, false, false, "desc", 0);
+            var channel = new Channel("channel", 15, 11, false, false, "desc");
             chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(channel);
 
             view.Received(1).HideLoading();
@@ -82,7 +82,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(false);
 
             chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
-                new Channel("channel", 15, 11, false, false, "desc", 0));
+                new Channel("channel", 15, 11, false, false, "desc"));
 
             view.DidNotReceiveWithAnyArgs().Set(default);
         }
@@ -93,6 +93,7 @@ namespace DCL.Chat.HUD
             view.EntryCount.Returns(16);
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
+            chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", Array.Empty<Channel>());
 
             // must wait at least 2 seconds to keep loading channels since the last time requested
             yield return new WaitForSeconds(3);
@@ -102,7 +103,7 @@ namespace DCL.Chat.HUD
             view.OnRequestMoreChannels += Raise.Event<Action>();
 
             view.Received(1).HideLoadingMore();
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 16);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, "page1");
         }
 
         [UnityTest]
@@ -123,7 +124,7 @@ namespace DCL.Chat.HUD
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
             socialAnalytics.Received(1).SendChannelSearch(searchText);
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0, searchText);
+            chatController.Received(1).GetChannelsByName(SearchChannelsWindowController.LOAD_PAGE_SIZE, searchText);
         }
         
         [UnityTest]
@@ -141,7 +142,7 @@ namespace DCL.Chat.HUD
 
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE);
         }
 
         [Test]

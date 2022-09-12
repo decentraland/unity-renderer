@@ -19,6 +19,7 @@ namespace DCL.Chat.HUD
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
+        private string paginationToken;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
         public ISearchChannelsWindowView View => view;
@@ -28,7 +29,8 @@ namespace DCL.Chat.HUD
         public event Action OnOpenChannelCreation;
         public event Action<string> OnOpenChannelLeave;
 
-        public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher,
+        public SearchChannelsWindowController(IChatController chatController,
+            IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics)
         {
@@ -83,14 +85,15 @@ namespace DCL.Chat.HUD
                 view.OnJoinChannel += HandleJoinChannel;
                 view.OnLeaveChannel += HandleLeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
-                chatController.OnChannelUpdated += ShowChannel;
+                chatController.OnChannelSearchResult += ShowRequestedChannels;
                 
                 view.Show();
                 view.ClearAllEntries();
                 view.ShowLoading();
                 
                 loadStartedTimestamp = DateTime.Now;
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0);
+                paginationToken = null;
+                chatController.GetChannels(LOAD_PAGE_SIZE);
                 
                 loadingCancellationToken.Cancel();
                 loadingCancellationToken = new CancellationTokenSource();
@@ -112,15 +115,16 @@ namespace DCL.Chat.HUD
         private void SearchChannels(string searchText)
         {
             loadStartedTimestamp = DateTime.Now;
+            paginationToken = null;
             view.ClearAllEntries();
             view.HideLoadingMore();
             view.ShowLoading();
             
             if (string.IsNullOrEmpty(searchText))
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0);
+                chatController.GetChannels(LOAD_PAGE_SIZE);
             else
             {
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0, searchText);
+                chatController.GetChannelsByName(LOAD_PAGE_SIZE, searchText);
                 socialAnalytics.SendChannelSearch(searchText);
             }
 
@@ -128,13 +132,16 @@ namespace DCL.Chat.HUD
             loadingCancellationToken = new CancellationTokenSource();
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
-
-        private void ShowChannel(Channel channel)
+        
+        private void ShowRequestedChannels(string paginationToken, Channel[] channels)
         {
-            if (!view.IsActive) return;
             view.HideLoading();
             view.ShowLoadingMore();
-            view.Set(channel);
+            
+            this.paginationToken = paginationToken;
+
+            foreach (var channel in channels)
+                view.Set(channel);
         }
 
         private void LoadMoreChannels()
@@ -142,7 +149,7 @@ namespace DCL.Chat.HUD
             if (IsLoading()) return;
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
-            chatController.GetChannels(LOAD_PAGE_SIZE, view.EntryCount);
+            chatController.GetChannels(LOAD_PAGE_SIZE, paginationToken);
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
@@ -153,7 +160,7 @@ namespace DCL.Chat.HUD
         
         private void ClearListeners()
         {
-            chatController.OnChannelUpdated -= ShowChannel;
+            chatController.OnChannelSearchResult -= ShowRequestedChannels;
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
             view.OnBack -= HandleViewBacked;

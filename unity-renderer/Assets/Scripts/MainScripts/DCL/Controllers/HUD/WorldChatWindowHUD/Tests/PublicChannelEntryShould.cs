@@ -22,7 +22,7 @@ public class PublicChannelEntryShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 4, false));
+        view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 4, false));
         view.nameLabel.text = "#nearby";
         Assert.IsFalse(view.muteNotificationsToggle.isOn);
         Assert.AreEqual("4 members", view.memberCountLabel.text);
@@ -42,7 +42,7 @@ public class PublicChannelEntryShould
     [Test]
     public void ConfigureAsMuted()
     {
-        view.Configure(new PublicChatEntryModel("nearby", "nearby", 0, true, 0, true));
+        view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 0, true));
         Assert.IsTrue(view.muteNotificationsToggle.isOn);
     }
 }

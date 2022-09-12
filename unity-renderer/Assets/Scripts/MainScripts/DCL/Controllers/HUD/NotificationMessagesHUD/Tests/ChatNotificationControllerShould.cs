@@ -47,7 +47,7 @@ namespace DCL.Chat.HUD.NotificationMessages
         public void FilterNotificationWhenChannelIsMuted()
         {
             chatController.GetAllocatedChannel("mutedChannel").Returns(new Channel("mutedChannel", 0, 3, true,
-                true, "", 0));
+                true, ""));
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
                 ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"});

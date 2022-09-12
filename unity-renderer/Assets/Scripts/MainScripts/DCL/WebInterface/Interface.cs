@@ -832,7 +832,7 @@ namespace DCL.Interface
         private class GetChannelsPayload
         {
             public int limit;
-            public int skip;
+            public string since;
             public string name;
         }
 
@@ -1887,12 +1887,12 @@ namespace DCL.Interface
             });
         }
 
-        public static void GetChannels(int limit, int skip, string name)
+        public static void GetChannels(int limit, string since, string name)
         {
             SendMessage("GetChannels", new GetChannelsPayload
             {
                 limit = limit,
-                skip = skip,
+                since = since,
                 name = name
             });
         }
