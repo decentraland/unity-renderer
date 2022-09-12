@@ -24,83 +24,83 @@ namespace DCL.ECSComponents {
     static UiTransformReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFVaVRyYW5zZm9ybS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyKsEAoNUEJV",
-            "aVRyYW5zZm9ybRIOCgZwYXJlbnQYTyABKAMSNwoNcG9zaXRpb25fdHlwZRgB",
-            "IAEoDjIgLmRlY2VudHJhbGFuZC5lY3MuWUdQb3NpdGlvblR5cGUSMAoNYWxp",
-            "Z25fY29udGVudBgCIAEoDjIZLmRlY2VudHJhbGFuZC5lY3MuWUdBbGlnbhIu",
-            "CgthbGlnbl9pdGVtcxgDIAEoDjIZLmRlY2VudHJhbGFuZC5lY3MuWUdBbGln",
-            "bhItCgphbGlnbl9zZWxmGAQgASgOMhkuZGVjZW50cmFsYW5kLmVjcy5ZR0Fs",
-            "aWduEjkKDmZsZXhfZGlyZWN0aW9uGAUgASgOMiEuZGVjZW50cmFsYW5kLmVj",
-            "cy5ZR0ZsZXhEaXJlY3Rpb24SKwoJZmxleF93cmFwGAYgASgOMhguZGVjZW50",
-            "cmFsYW5kLmVjcy5ZR1dyYXASNAoPanVzdGlmeV9jb250ZW50GAcgASgOMhsu",
-            "ZGVjZW50cmFsYW5kLmVjcy5ZR0p1c3RpZnkSLgoIb3ZlcmZsb3cYCCABKA4y",
-            "HC5kZWNlbnRyYWxhbmQuZWNzLllHT3ZlcmZsb3cSLAoHZGlzcGxheRgJIAEo",
-            "DjIbLmRlY2VudHJhbGFuZC5lY3MuWUdEaXNwbGF5EjAKCWRpcmVjdGlvbhgK",
-            "IAEoDjIdLmRlY2VudHJhbGFuZC5lY3MuWUdEaXJlY3Rpb24SDAoEZmxleBgL",
-            "IAEoAhIxCg9mbGV4X2Jhc2lzX3VuaXQYDSABKA4yGC5kZWNlbnRyYWxhbmQu",
-            "ZWNzLllHVW5pdBISCgpmbGV4X2Jhc2lzGA4gASgCEhEKCWZsZXhfZ3JvdxgP",
-            "IAEoAhITCgtmbGV4X3NocmluaxgQIAEoAhIsCgp3aWR0aF91bml0GBEgASgO",
-            "MhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQSDQoFd2lkdGgYEiABKAISLQoL",
-            "aGVpZ2h0X3VuaXQYEyABKA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBIO",
-            "CgZoZWlnaHQYFCABKAISMAoObWluX3dpZHRoX3VuaXQYFSABKA4yGC5kZWNl",
-            "bnRyYWxhbmQuZWNzLllHVW5pdBIRCgltaW5fd2lkdGgYFiABKAISMQoPbWlu",
-            "X2hlaWdodF91bml0GBcgASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQS",
-            "EgoKbWluX2hlaWdodBgYIAEoAhIwCg5tYXhfd2lkdGhfdW5pdBgfIAEoDjIY",
-            "LmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhEKCW1heF93aWR0aBggIAEoAhIx",
-            "Cg9tYXhfaGVpZ2h0X3VuaXQYISABKA4yGC5kZWNlbnRyYWxhbmQuZWNzLllH",
-            "VW5pdBISCgptYXhfaGVpZ2h0GCIgASgCEjQKEnBvc2l0aW9uX2xlZnRfdW5p",
-            "dBgpIAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhUKDXBvc2l0aW9u",
-            "X2xlZnQYKiABKAISMwoRcG9zaXRpb25fdG9wX3VuaXQYKyABKA4yGC5kZWNl",
-            "bnRyYWxhbmQuZWNzLllHVW5pdBIUCgxwb3NpdGlvbl90b3AYLCABKAISNQoT",
-            "cG9zaXRpb25fcmlnaHRfdW5pdBgtIAEoDjIYLmRlY2VudHJhbGFuZC5lY3Mu",
-            "WUdVbml0EhYKDnBvc2l0aW9uX3JpZ2h0GC4gASgCEjYKFHBvc2l0aW9uX2Jv",
-            "dHRvbV91bml0GC8gASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQSFwoP",
-            "cG9zaXRpb25fYm90dG9tGDAgASgCEjIKEG1hcmdpbl9sZWZ0X3VuaXQYMyAB",
-            "KA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBITCgttYXJnaW5fbGVmdBg0",
-            "IAEoAhIxCg9tYXJnaW5fdG9wX3VuaXQYNSABKA4yGC5kZWNlbnRyYWxhbmQu",
-            "ZWNzLllHVW5pdBISCgptYXJnaW5fdG9wGDYgASgCEjMKEW1hcmdpbl9yaWdo",
-            "dF91bml0GDcgASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQSFAoMbWFy",
-            "Z2luX3JpZ2h0GDggASgCEjQKEm1hcmdpbl9ib3R0b21fdW5pdBg5IAEoDjIY",
-            "LmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhUKDW1hcmdpbl9ib3R0b20YOiAB",
-            "KAISMwoRcGFkZGluZ19sZWZ0X3VuaXQYPSABKA4yGC5kZWNlbnRyYWxhbmQu",
-            "ZWNzLllHVW5pdBIUCgxwYWRkaW5nX2xlZnQYPiABKAISMgoQcGFkZGluZ190",
-            "b3BfdW5pdBg/IAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhMKC3Bh",
-            "ZGRpbmdfdG9wGEAgASgCEjQKEnBhZGRpbmdfcmlnaHRfdW5pdBhBIAEoDjIY",
-            "LmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhUKDXBhZGRpbmdfcmlnaHQYQiAB",
-            "KAISNQoTcGFkZGluZ19ib3R0b21fdW5pdBhDIAEoDjIYLmRlY2VudHJhbGFu",
-            "ZC5lY3MuWUdVbml0EhYKDnBhZGRpbmdfYm90dG9tGEQgASgCEhMKC2JvcmRl",
-            "cl9sZWZ0GEggASgCEhIKCmJvcmRlcl90b3AYSiABKAISFAoMYm9yZGVyX3Jp",
-            "Z2h0GEwgASgCEhUKDWJvcmRlcl9ib3R0b20YTiABKAJKBAgoEClKBAhHEEhK",
-            "BAhJEEpKBAhLEExKBAhNEE4qYgoOWUdQb3NpdGlvblR5cGUSGAoUWUdQb3Np",
-            "dGlvblR5cGVTdGF0aWMQABIaChZZR1Bvc2l0aW9uVHlwZVJlbGF0aXZlEAES",
-            "GgoWWUdQb3NpdGlvblR5cGVBYnNvbHV0ZRACKrEBCgdZR0FsaWduEg8KC1lH",
-            "QWxpZ25BdXRvEAASFAoQWUdBbGlnbkZsZXhTdGFydBABEhEKDVlHQWxpZ25D",
-            "ZW50ZXIQAhISCg5ZR0FsaWduRmxleEVuZBADEhIKDllHQWxpZ25TdHJldGNo",
-            "EAQSEwoPWUdBbGlnbkJhc2VsaW5lEAUSFwoTWUdBbGlnblNwYWNlQmV0d2Vl",
-            "bhAGEhYKEllHQWxpZ25TcGFjZUFyb3VuZBAHKlEKBllHVW5pdBITCg9ZR1Vu",
-            "aXRVbmRlZmluZWQQABIPCgtZR1VuaXRQb2ludBABEhEKDVlHVW5pdFBlcmNl",
-            "bnQQAhIOCgpZR1VuaXRBdXRvEAMqTQoLWUdEaXJlY3Rpb24SFgoSWUdEaXJl",
-            "Y3Rpb25Jbmhlcml0EAASEgoOWUdEaXJlY3Rpb25MVFIQARISCg5ZR0RpcmVj",
-            "dGlvblJUTBACKoUBCg9ZR0ZsZXhEaXJlY3Rpb24SGQoVWUdGbGV4RGlyZWN0",
-            "aW9uQ29sdW1uEAASIAocWUdGbGV4RGlyZWN0aW9uQ29sdW1uUmV2ZXJzZRAB",
-            "EhYKEllHRmxleERpcmVjdGlvblJvdxACEh0KGVlHRmxleERpcmVjdGlvblJv",
-            "d1JldmVyc2UQAypBCgZZR1dyYXASEAoMWUdXcmFwTm9XcmFwEAASDgoKWUdX",
-            "cmFwV3JhcBABEhUKEVlHV3JhcFdyYXBSZXZlcnNlEAIqnQEKCVlHSnVzdGlm",
-            "eRIWChJZR0p1c3RpZnlGbGV4U3RhcnQQABITCg9ZR0p1c3RpZnlDZW50ZXIQ",
-            "ARIUChBZR0p1c3RpZnlGbGV4RW5kEAISGQoVWUdKdXN0aWZ5U3BhY2VCZXR3",
-            "ZWVuEAMSGAoUWUdKdXN0aWZ5U3BhY2VBcm91bmQQBBIYChRZR0p1c3RpZnlT",
-            "cGFjZUV2ZW5seRAFKk8KCllHT3ZlcmZsb3cSFQoRWUdPdmVyZmxvd1Zpc2li",
-            "bGUQABIUChBZR092ZXJmbG93SGlkZGVuEAESFAoQWUdPdmVyZmxvd1Njcm9s",
-            "bBACKjEKCVlHRGlzcGxheRIRCg1ZR0Rpc3BsYXlGbGV4EAASEQoNWUdEaXNw",
-            "bGF5Tm9uZRABKqMBCgZZR0VkZ2USDgoKWUdFZGdlTGVmdBAAEg0KCVlHRWRn",
-            "ZVRvcBABEg8KC1lHRWRnZVJpZ2h0EAISEAoMWUdFZGdlQm90dG9tEAMSDwoL",
-            "WUdFZGdlU3RhcnQQBBINCglZR0VkZ2VFbmQQBRIUChBZR0VkZ2VIb3Jpem9u",
-            "dGFsEAYSEgoOWUdFZGdlVmVydGljYWwQBxINCglZR0VkZ2VBbGwQCEIUqgIR",
-            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ChFVaVRyYW5zZm9ybS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcyK+EAoNUEJV",
+            "aVRyYW5zZm9ybRIOCgZwYXJlbnQYTyABKAUSEAoIcmlnaHRfb2YYUCABKAUS",
+            "NwoNcG9zaXRpb25fdHlwZRgBIAEoDjIgLmRlY2VudHJhbGFuZC5lY3MuWUdQ",
+            "b3NpdGlvblR5cGUSMAoNYWxpZ25fY29udGVudBgCIAEoDjIZLmRlY2VudHJh",
+            "bGFuZC5lY3MuWUdBbGlnbhIuCgthbGlnbl9pdGVtcxgDIAEoDjIZLmRlY2Vu",
+            "dHJhbGFuZC5lY3MuWUdBbGlnbhItCgphbGlnbl9zZWxmGAQgASgOMhkuZGVj",
+            "ZW50cmFsYW5kLmVjcy5ZR0FsaWduEjkKDmZsZXhfZGlyZWN0aW9uGAUgASgO",
+            "MiEuZGVjZW50cmFsYW5kLmVjcy5ZR0ZsZXhEaXJlY3Rpb24SKwoJZmxleF93",
+            "cmFwGAYgASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1dyYXASNAoPanVzdGlm",
+            "eV9jb250ZW50GAcgASgOMhsuZGVjZW50cmFsYW5kLmVjcy5ZR0p1c3RpZnkS",
+            "LgoIb3ZlcmZsb3cYCCABKA4yHC5kZWNlbnRyYWxhbmQuZWNzLllHT3ZlcmZs",
+            "b3cSLAoHZGlzcGxheRgJIAEoDjIbLmRlY2VudHJhbGFuZC5lY3MuWUdEaXNw",
+            "bGF5EjAKCWRpcmVjdGlvbhgKIAEoDjIdLmRlY2VudHJhbGFuZC5lY3MuWUdE",
+            "aXJlY3Rpb24SDAoEZmxleBgLIAEoAhIxCg9mbGV4X2Jhc2lzX3VuaXQYDSAB",
+            "KA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBISCgpmbGV4X2Jhc2lzGA4g",
+            "ASgCEhEKCWZsZXhfZ3JvdxgPIAEoAhITCgtmbGV4X3NocmluaxgQIAEoAhIs",
+            "Cgp3aWR0aF91bml0GBEgASgOMhguZGVjZW50cmFsYW5kLmVjcy5ZR1VuaXQS",
+            "DQoFd2lkdGgYEiABKAISLQoLaGVpZ2h0X3VuaXQYEyABKA4yGC5kZWNlbnRy",
+            "YWxhbmQuZWNzLllHVW5pdBIOCgZoZWlnaHQYFCABKAISMAoObWluX3dpZHRo",
+            "X3VuaXQYFSABKA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBIRCgltaW5f",
+            "d2lkdGgYFiABKAISMQoPbWluX2hlaWdodF91bml0GBcgASgOMhguZGVjZW50",
+            "cmFsYW5kLmVjcy5ZR1VuaXQSEgoKbWluX2hlaWdodBgYIAEoAhIwCg5tYXhf",
+            "d2lkdGhfdW5pdBgfIAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhEK",
+            "CW1heF93aWR0aBggIAEoAhIxCg9tYXhfaGVpZ2h0X3VuaXQYISABKA4yGC5k",
+            "ZWNlbnRyYWxhbmQuZWNzLllHVW5pdBISCgptYXhfaGVpZ2h0GCIgASgCEjQK",
+            "EnBvc2l0aW9uX2xlZnRfdW5pdBgpIAEoDjIYLmRlY2VudHJhbGFuZC5lY3Mu",
+            "WUdVbml0EhUKDXBvc2l0aW9uX2xlZnQYKiABKAISMwoRcG9zaXRpb25fdG9w",
+            "X3VuaXQYKyABKA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBIUCgxwb3Np",
+            "dGlvbl90b3AYLCABKAISNQoTcG9zaXRpb25fcmlnaHRfdW5pdBgtIAEoDjIY",
+            "LmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhYKDnBvc2l0aW9uX3JpZ2h0GC4g",
+            "ASgCEjYKFHBvc2l0aW9uX2JvdHRvbV91bml0GC8gASgOMhguZGVjZW50cmFs",
+            "YW5kLmVjcy5ZR1VuaXQSFwoPcG9zaXRpb25fYm90dG9tGDAgASgCEjIKEG1h",
+            "cmdpbl9sZWZ0X3VuaXQYMyABKA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5p",
+            "dBITCgttYXJnaW5fbGVmdBg0IAEoAhIxCg9tYXJnaW5fdG9wX3VuaXQYNSAB",
+            "KA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBISCgptYXJnaW5fdG9wGDYg",
+            "ASgCEjMKEW1hcmdpbl9yaWdodF91bml0GDcgASgOMhguZGVjZW50cmFsYW5k",
+            "LmVjcy5ZR1VuaXQSFAoMbWFyZ2luX3JpZ2h0GDggASgCEjQKEm1hcmdpbl9i",
+            "b3R0b21fdW5pdBg5IAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhUK",
+            "DW1hcmdpbl9ib3R0b20YOiABKAISMwoRcGFkZGluZ19sZWZ0X3VuaXQYPSAB",
+            "KA4yGC5kZWNlbnRyYWxhbmQuZWNzLllHVW5pdBIUCgxwYWRkaW5nX2xlZnQY",
+            "PiABKAISMgoQcGFkZGluZ190b3BfdW5pdBg/IAEoDjIYLmRlY2VudHJhbGFu",
+            "ZC5lY3MuWUdVbml0EhMKC3BhZGRpbmdfdG9wGEAgASgCEjQKEnBhZGRpbmdf",
+            "cmlnaHRfdW5pdBhBIAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhUK",
+            "DXBhZGRpbmdfcmlnaHQYQiABKAISNQoTcGFkZGluZ19ib3R0b21fdW5pdBhD",
+            "IAEoDjIYLmRlY2VudHJhbGFuZC5lY3MuWUdVbml0EhYKDnBhZGRpbmdfYm90",
+            "dG9tGEQgASgCEhMKC2JvcmRlcl9sZWZ0GEggASgCEhIKCmJvcmRlcl90b3AY",
+            "SiABKAISFAoMYm9yZGVyX3JpZ2h0GEwgASgCEhUKDWJvcmRlcl9ib3R0b20Y",
+            "TiABKAJKBAgoEClKBAhHEEhKBAhJEEpKBAhLEExKBAhNEE4qYgoOWUdQb3Np",
+            "dGlvblR5cGUSGAoUWUdQb3NpdGlvblR5cGVTdGF0aWMQABIaChZZR1Bvc2l0",
+            "aW9uVHlwZVJlbGF0aXZlEAESGgoWWUdQb3NpdGlvblR5cGVBYnNvbHV0ZRAC",
+            "KrEBCgdZR0FsaWduEg8KC1lHQWxpZ25BdXRvEAASFAoQWUdBbGlnbkZsZXhT",
+            "dGFydBABEhEKDVlHQWxpZ25DZW50ZXIQAhISCg5ZR0FsaWduRmxleEVuZBAD",
+            "EhIKDllHQWxpZ25TdHJldGNoEAQSEwoPWUdBbGlnbkJhc2VsaW5lEAUSFwoT",
+            "WUdBbGlnblNwYWNlQmV0d2VlbhAGEhYKEllHQWxpZ25TcGFjZUFyb3VuZBAH",
+            "KlEKBllHVW5pdBITCg9ZR1VuaXRVbmRlZmluZWQQABIPCgtZR1VuaXRQb2lu",
+            "dBABEhEKDVlHVW5pdFBlcmNlbnQQAhIOCgpZR1VuaXRBdXRvEAMqTQoLWUdE",
+            "aXJlY3Rpb24SFgoSWUdEaXJlY3Rpb25Jbmhlcml0EAASEgoOWUdEaXJlY3Rp",
+            "b25MVFIQARISCg5ZR0RpcmVjdGlvblJUTBACKoUBCg9ZR0ZsZXhEaXJlY3Rp",
+            "b24SGQoVWUdGbGV4RGlyZWN0aW9uQ29sdW1uEAASIAocWUdGbGV4RGlyZWN0",
+            "aW9uQ29sdW1uUmV2ZXJzZRABEhYKEllHRmxleERpcmVjdGlvblJvdxACEh0K",
+            "GVlHRmxleERpcmVjdGlvblJvd1JldmVyc2UQAypBCgZZR1dyYXASEAoMWUdX",
+            "cmFwTm9XcmFwEAASDgoKWUdXcmFwV3JhcBABEhUKEVlHV3JhcFdyYXBSZXZl",
+            "cnNlEAIqnQEKCVlHSnVzdGlmeRIWChJZR0p1c3RpZnlGbGV4U3RhcnQQABIT",
+            "Cg9ZR0p1c3RpZnlDZW50ZXIQARIUChBZR0p1c3RpZnlGbGV4RW5kEAISGQoV",
+            "WUdKdXN0aWZ5U3BhY2VCZXR3ZWVuEAMSGAoUWUdKdXN0aWZ5U3BhY2VBcm91",
+            "bmQQBBIYChRZR0p1c3RpZnlTcGFjZUV2ZW5seRAFKk8KCllHT3ZlcmZsb3cS",
+            "FQoRWUdPdmVyZmxvd1Zpc2libGUQABIUChBZR092ZXJmbG93SGlkZGVuEAES",
+            "FAoQWUdPdmVyZmxvd1Njcm9sbBACKjEKCVlHRGlzcGxheRIRCg1ZR0Rpc3Bs",
+            "YXlGbGV4EAASEQoNWUdEaXNwbGF5Tm9uZRABKqMBCgZZR0VkZ2USDgoKWUdF",
+            "ZGdlTGVmdBAAEg0KCVlHRWRnZVRvcBABEg8KC1lHRWRnZVJpZ2h0EAISEAoM",
+            "WUdFZGdlQm90dG9tEAMSDwoLWUdFZGdlU3RhcnQQBBINCglZR0VkZ2VFbmQQ",
+            "BRIUChBZR0VkZ2VIb3Jpem9udGFsEAYSEgoOWUdFZGdlVmVydGljYWwQBxIN",
+            "CglZR0VkZ2VBbGwQCEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGDirection), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom", "BorderLeft", "BorderTop", "BorderRight", "BorderBottom" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "RightOf", "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom", "BorderLeft", "BorderTop", "BorderRight", "BorderBottom" }, null, null, null, null)
           }));
     }
     #endregion
@@ -220,6 +220,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiTransform(PBUiTransform other) : this() {
       parent_ = other.parent_;
+      rightOf_ = other.rightOf_;
       positionType_ = other.positionType_;
       alignContent_ = other.alignContent_;
       alignItems_ = other.alignItems_;
@@ -286,13 +287,25 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 79;
-    private long parent_;
+    private int parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Parent {
+    public int Parent {
       get { return parent_; }
       set {
         parent_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "right_of" field.</summary>
+    public const int RightOfFieldNumber = 80;
+    private int rightOf_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int RightOf {
+      get { return rightOf_; }
+      set {
+        rightOf_ = value;
       }
     }
 
@@ -975,6 +988,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Parent != other.Parent) return false;
+      if (RightOf != other.RightOf) return false;
       if (PositionType != other.PositionType) return false;
       if (AlignContent != other.AlignContent) return false;
       if (AlignItems != other.AlignItems) return false;
@@ -1037,7 +1051,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Parent != 0L) hash ^= Parent.GetHashCode();
+      if (Parent != 0) hash ^= Parent.GetHashCode();
+      if (RightOf != 0) hash ^= RightOf.GetHashCode();
       if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) hash ^= PositionType.GetHashCode();
       if (AlignContent != global::DCL.ECSComponents.YGAlign.Auto) hash ^= AlignContent.GetHashCode();
       if (AlignItems != global::DCL.ECSComponents.YGAlign.Auto) hash ^= AlignItems.GetHashCode();
@@ -1331,9 +1346,13 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(245, 4);
         output.WriteFloat(BorderBottom);
       }
-      if (Parent != 0L) {
+      if (Parent != 0) {
         output.WriteRawTag(248, 4);
-        output.WriteInt64(Parent);
+        output.WriteInt32(Parent);
+      }
+      if (RightOf != 0) {
+        output.WriteRawTag(128, 5);
+        output.WriteInt32(RightOf);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -1565,9 +1584,13 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(245, 4);
         output.WriteFloat(BorderBottom);
       }
-      if (Parent != 0L) {
+      if (Parent != 0) {
         output.WriteRawTag(248, 4);
-        output.WriteInt64(Parent);
+        output.WriteInt32(Parent);
+      }
+      if (RightOf != 0) {
+        output.WriteRawTag(128, 5);
+        output.WriteInt32(RightOf);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -1579,8 +1602,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Parent != 0L) {
-        size += 2 + pb::CodedOutputStream.ComputeInt64Size(Parent);
+      if (Parent != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Parent);
+      }
+      if (RightOf != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(RightOf);
       }
       if (PositionType != global::DCL.ECSComponents.YGPositionType.Static) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) PositionType);
@@ -1759,8 +1785,11 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Parent != 0L) {
+      if (other.Parent != 0) {
         Parent = other.Parent;
+      }
+      if (other.RightOf != 0) {
+        RightOf = other.RightOf;
       }
       if (other.PositionType != global::DCL.ECSComponents.YGPositionType.Static) {
         PositionType = other.PositionType;
@@ -2163,7 +2192,11 @@ namespace DCL.ECSComponents {
             break;
           }
           case 632: {
-            Parent = input.ReadInt64();
+            Parent = input.ReadInt32();
+            break;
+          }
+          case 640: {
+            RightOf = input.ReadInt32();
             break;
           }
         }
@@ -2402,7 +2435,11 @@ namespace DCL.ECSComponents {
             break;
           }
           case 632: {
-            Parent = input.ReadInt64();
+            Parent = input.ReadInt32();
+            break;
+          }
+          case 640: {
+            RightOf = input.ReadInt32();
             break;
           }
         }
