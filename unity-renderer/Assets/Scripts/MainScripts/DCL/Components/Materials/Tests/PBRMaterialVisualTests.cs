@@ -56,8 +56,8 @@ public class PBRMaterialVisualTests : VisualTestsBase
 
         LoadWrapper loader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => loader.alreadyLoaded);
-
-        yield return VisualTestUtils.TakeSnapshot("PBRMaterialVisualTests_StandardConfigurations", camera);
+        
+        //yield return VisualTestUtils.TakeSnapshot("PBRMaterialVisualTests_StandardConfigurations", camera);
     }
 
     [UnityTest, VisualTest]

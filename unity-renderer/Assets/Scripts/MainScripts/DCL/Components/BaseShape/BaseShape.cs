@@ -56,16 +56,6 @@ namespace DCL.Components
             if (meshGameObject == null)
                 return;
 
-            if (!shouldBeVisible)
-            {
-                MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
-
-                for (var i = 0; i < materialTransitionControllers.Length; i++)
-                {
-                    Object.Destroy(materialTransitionControllers[i]);
-                }
-            }
-
             if (meshRenderers == null)
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
@@ -77,7 +67,7 @@ namespace DCL.Components
 
                 if (shouldBeVisible && meshRenderers[i].sharedMaterial != null)
                 {
-                    MaterialTransitionController transition =  meshRenderers[i].gameObject.AddComponent<MaterialTransitionController>();
+                    MaterialTransitionController transition =  meshRenderers[i].gameObject.GetOrCreateComponent<MaterialTransitionController>();
                     transition.delay = 0;
                     transition.useHologram = false;
                     transition.OnDidFinishLoading(meshRenderers[i].sharedMaterial);

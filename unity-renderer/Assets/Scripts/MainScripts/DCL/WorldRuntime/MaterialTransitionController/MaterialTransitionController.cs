@@ -306,4 +306,8 @@ public class MaterialTransitionController : MonoBehaviour
             transition.OnDidFinishLoading(finalMaterial);
         }
     }
+    public void ForceStop()
+    {
+        state = State.FINISHED;
+    }
 }

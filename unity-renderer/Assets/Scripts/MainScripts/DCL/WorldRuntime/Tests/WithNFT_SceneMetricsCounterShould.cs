@@ -23,6 +23,7 @@ public class WithNFT_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetri
         var entity = TestUtils.CreateSceneEntity(scene);
 
         TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(0, 0, 0)});
+       
 
         var componentModel = new NFTShape.Model()
         {
@@ -41,8 +42,9 @@ public class WithNFT_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetri
         yield return null;
 
         Assert.That(scene.metricsCounter.currentCount.textures, Is.EqualTo(3));
-        Assert.That(scene.metricsCounter.currentCount.materials, Is.EqualTo(6));
+        Assert.That(scene.metricsCounter.currentCount.materials, Is.EqualTo(4));
         Assert.That(scene.metricsCounter.currentCount.bodies, Is.EqualTo(4));
         Assert.That(scene.metricsCounter.currentCount.meshes, Is.EqualTo(4));
     }
+    
 }

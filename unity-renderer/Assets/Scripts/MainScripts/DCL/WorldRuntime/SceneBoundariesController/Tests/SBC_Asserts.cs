@@ -314,7 +314,7 @@ namespace SceneBoundariesCheckerTests
         {
             long entityId = 11;
             TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-
+            
             yield return null;
             yield return null;
             AssertMeshesAndCollidersValidState(scene.entities[entityId].meshesInfo, true);
@@ -332,9 +332,10 @@ namespace SceneBoundariesCheckerTests
             // Move parent object to surpass the scene boundaries
             var transformModel = new DCLTransform.Model { position = new Vector3(18, 1, 18) };
             TestUtils.SetEntityTransform(scene, scene.entities[entityId], transformModel);
+                        
+            yield return null;
+            yield return null;
 
-            yield return null;
-            yield return null;
             AssertMeshesAndCollidersValidState(scene.entities[childEntityId].meshesInfo, false);
         }
 
@@ -421,7 +422,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return null;
             yield return null;
-
+            
             // Check onpointer event collider got enabled
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
             Assert.IsTrue(onPointerEventCollider.enabled);
@@ -477,6 +478,7 @@ namespace SceneBoundariesCheckerTests
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
+            yield return null;
             yield return null;
 
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);

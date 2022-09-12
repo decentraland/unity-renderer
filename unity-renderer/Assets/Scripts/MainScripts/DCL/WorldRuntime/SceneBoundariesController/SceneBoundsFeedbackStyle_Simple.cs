@@ -21,9 +21,16 @@ namespace DCL.Controllers
                 if (meshesInfo.renderers[i] == null)
                     continue;
 
-                if (isInsideBoundaries == meshesInfo.renderers[i].enabled 
-                    || meshesInfo.renderers[i].gameObject.GetComponent<MaterialTransitionController>())
+                if (isInsideBoundaries == meshesInfo.renderers[i].enabled)
                     continue;
+
+                //We add a check to stop the material transition controller in case its there and
+                //needs to be turned off
+                MaterialTransitionController mtcController = meshesInfo.renderers[i].GetComponent<MaterialTransitionController>();
+                if (!isInsideBoundaries && mtcController)
+                {
+                    mtcController.ForceStop();
+                }
 
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
 

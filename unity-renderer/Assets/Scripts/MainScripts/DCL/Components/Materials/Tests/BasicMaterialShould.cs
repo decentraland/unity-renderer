@@ -96,7 +96,14 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         yield return null;
 
         Assert.IsTrue(entity.meshRootGameObject != null);
-        Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
+
+        MeshRenderer meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
+        Assert.IsTrue(meshRenderer != null);
+        
+        //Check if it already has MaterialTransitionController and wait till it has finished
+        Assert.IsTrue(meshRenderer.GetComponent<MaterialTransitionController>() != null, "Has material transition controller attached");
+        yield return new WaitUntil(() => meshRenderer.GetComponent<MaterialTransitionController>() == null);
+        
         Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
     }
 
@@ -129,6 +136,10 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         {
             Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
 
+            //Check if it already has MaterialTransitionController and wait till it has finished
+            Assert.IsTrue(meshRenderer.GetComponent<MaterialTransitionController>() != null, "Has material transition controller attached");
+            yield return new WaitUntil(() => meshRenderer.GetComponent<MaterialTransitionController>() == null);
+            
             Assert.AreEqual(meshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
         }
 
@@ -173,6 +184,11 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         // Check if material attached correctly
         {
             Assert.IsTrue(firstMeshRenderer != null, "MeshRenderer must exist");
+            
+            //Check if it already has MaterialTransitionController and wait till it has finished
+            Assert.IsTrue(firstMeshRenderer.GetComponent<MaterialTransitionController>() != null, "Has material transition controller attached");
+            yield return new WaitUntil(() => firstMeshRenderer.GetComponent<MaterialTransitionController>() == null);
+            
             Assert.AreEqual(firstMeshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
 
             Assert.IsTrue(secondMeshRenderer != null, "MeshRenderer must exist");
@@ -211,6 +227,10 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         // Check if material initialized correctly
         {
             Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
+            
+            //Check if it already has MaterialTransitionController and wait till it has finished
+            Assert.IsTrue(meshRenderer.GetComponent<MaterialTransitionController>() != null, "Has material transition controller attached");
+            yield return new WaitUntil(() => meshRenderer.GetComponent<MaterialTransitionController>() == null);
 
             var assignedMaterial = meshRenderer.sharedMaterial;
             Assert.IsTrue(meshRenderer != null, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");

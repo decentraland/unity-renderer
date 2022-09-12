@@ -357,8 +357,15 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         yield return null;
 
         Assert.IsTrue(entity.meshRootGameObject != null);
-        Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
-        Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
+        
+        MeshRenderer meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
+        Assert.IsTrue(meshRenderer != null);
+        
+        //Check if it already has MaterialTransitionController and wait till it has finished
+        Assert.IsTrue(meshRenderer.GetComponent<MaterialTransitionController>() != null, "Has material transition controller attached");
+        yield return new WaitUntil(() => meshRenderer.GetComponent<MaterialTransitionController>() == null);
+        
+        Assert.AreEqual(meshRenderer.sharedMaterial, mat.material);
     }
 
     [UnityTest]
