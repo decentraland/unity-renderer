@@ -104,6 +104,7 @@ public class IntegrationTestSuite_Legacy
 
         yield return TearDown_LegacySystems();
         DataStore.Clear();
+        ThumbnailsManager.Clear();
         TearDown_Memory();
 
         if (MapRenderer.i != null)
@@ -127,7 +128,7 @@ public class IntegrationTestSuite_Legacy
         {
             Object.Destroy(go);
         }
-
+        
         yield return null;
     }
 

@@ -6,4 +6,6 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalMaterial> materialComponent { get; }
     IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
+    IInternalECSComponent<InternalRenderers> renderersComponent { get; }
+    IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
 }
