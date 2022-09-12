@@ -21,14 +21,14 @@ namespace DCL.ECSComponents
         }
 
         public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray,
-            UnityEngine.RaycastHit raycastHit, bool isValidEntity = true)
+            float hitDistance, UnityEngine.Vector3 hitPoint, UnityEngine.Vector3 hitNormal, bool isValidEntity = true)
         {
             var ret = new RaycastHit
             {
-                Length = raycastHit.distance,
+                Length = hitDistance,
                 Origin = UnityVectorToPBVector(ray.origin),
-                Position = UnityVectorToPBVector(raycastHit.point),
-                NormalHit = UnityVectorToPBVector(raycastHit.normal),
+                Position = UnityVectorToPBVector(hitPoint),
+                NormalHit = UnityVectorToPBVector(hitNormal),
                 Direction = UnityVectorToPBVector(ray.direction)
             };
 

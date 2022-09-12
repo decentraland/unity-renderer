@@ -17,7 +17,15 @@ namespace DCL
 
         public class RaycastEvent
         {
-            public RaycastHit hit;
+            public class Hit
+            {
+                public float distance;
+                public Vector3 normal;
+                public Vector3 point;
+                public Collider collider;
+            }
+
+            public Hit hit = new Hit();
             public Ray ray;
             public bool didHit;
             public bool hasValue = false;

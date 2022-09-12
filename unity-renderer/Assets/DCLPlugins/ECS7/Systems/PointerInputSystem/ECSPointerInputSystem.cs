@@ -7,7 +7,6 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
-using RaycastHit = UnityEngine.RaycastHit;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -67,7 +66,7 @@ namespace ECSSystems.PointerInputSystem
             bool isPointerDown = currentPointerInput.hasValue && currentPointerInput.isButtonDown;
             bool isPointerUp = state.isLastInputPointerDown && currentPointerInput.hasValue && !currentPointerInput.isButtonDown;
 
-            RaycastHit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
+            DataStore_ECS7.RaycastEvent.Hit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
             Ray raycastRay = state.dataStoreEcs7.lastPointerRayHit.ray;
 
             IECSReadOnlyComponentData<InternalColliders> colliderData = isHit
@@ -102,10 +101,9 @@ namespace ECSSystems.PointerInputSystem
                         analog = 1,
                         button = (ActionButton)currentPointerInput.buttonId,
                         hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                            raycastRay, raycastHit),
+                            raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                         type = PointerEventType.Down
                     });
-                    Debug.Log($"pointerdown {colliderData.entity.entityId}");
                     break;
 
                 case InputHitType.PointerUp:
@@ -121,10 +119,9 @@ namespace ECSSystems.PointerInputSystem
                             analog = 1,
                             button = (ActionButton)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                                raycastRay, raycastHit),
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.Up
                         });
-                        Debug.Log($"pointerup {lastInputDownData.entity.entityId}");
                     }
                     // did it hit different entity as pointer down hit?
                     else if (validInputDownExist)
@@ -139,10 +136,9 @@ namespace ECSSystems.PointerInputSystem
                                 analog = 1,
                                 button = (ActionButton)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
-                                    raycastRay, raycastHit, false),
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
                                 type = PointerEventType.Up
                             });
-                            Debug.Log($"pointerup {lastInputDownData.entity.entityId}");
                         }
                     }
                     state.lastInputDown.hasValue = false;
@@ -157,7 +153,8 @@ namespace ECSSystems.PointerInputSystem
                     // was other entity previously hovered?
                     if (isPreviouslyHoveredEntity && isHoveringNewEntity)
                     {
-                        bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneId);
+                        bool isValidScene = colliderData.scene.sceneData.id == state.lastInputHover.sceneId
+                                            || state.worldState.ContainsScene(state.lastInputHover.sceneId);
 
                         if (isValidScene)
                         {
@@ -166,10 +163,9 @@ namespace ECSSystems.PointerInputSystem
                                 analog = 1,
                                 button = (ActionButton)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
-                                    raycastRay, raycastHit),
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                                 type = PointerEventType.HoverLeave
                             });
-                            Debug.Log($"hoverexit {state.lastInputHover.entity.entityId}");
                         }
                     }
 
@@ -186,10 +182,9 @@ namespace ECSSystems.PointerInputSystem
                             analog = 1,
                             button = (ActionButton)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                                raycastRay, raycastHit),
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.HoverEnter
                         });
-                        Debug.Log($"hoverenter {colliderData.entity.entityId}");
                     }
                     break;
             }
@@ -209,10 +204,9 @@ namespace ECSSystems.PointerInputSystem
                                 analog = 1,
                                 button = (ActionButton)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
-                                    raycastRay, raycastHit, false),
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
                                 type = PointerEventType.Up
                             });
-                            Debug.Log($"pointerup {state.lastInputDown.entity.entityId}");
                         }
                     }
 
@@ -229,10 +223,9 @@ namespace ECSSystems.PointerInputSystem
                             analog = 1,
                             button = (ActionButton)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
-                                raycastRay, raycastHit),
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.HoverLeave
                         });
-                        Debug.Log($"hoverexit {state.lastInputHover.entity.entityId}");
                     }
                     state.lastInputHover.hasValue = false;
                 }

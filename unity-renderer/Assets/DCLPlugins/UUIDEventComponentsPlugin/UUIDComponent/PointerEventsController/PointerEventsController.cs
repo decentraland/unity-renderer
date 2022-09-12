@@ -111,7 +111,10 @@ namespace DCL
 
             if (dataStoreEcs7.isEcs7Enabled)
             {
-                dataStoreEcs7.lastPointerRayHit.hit = hitInfo;
+                dataStoreEcs7.lastPointerRayHit.hit.collider = hitInfo.collider;
+                dataStoreEcs7.lastPointerRayHit.hit.point = hitInfo.point;
+                dataStoreEcs7.lastPointerRayHit.hit.normal = hitInfo.normal;
+                dataStoreEcs7.lastPointerRayHit.hit.distance = hitInfo.distance;
                 dataStoreEcs7.lastPointerRayHit.didHit = didHit;
                 dataStoreEcs7.lastPointerRayHit.ray = ray;
                 dataStoreEcs7.lastPointerRayHit.hasValue = true;
