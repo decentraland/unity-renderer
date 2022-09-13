@@ -18,10 +18,20 @@ public enum AvatarAnimation
     FALL,
 }
 
+public static class AvatarAnimationExtensions
+{
+    public static bool ShouldLoop(this AvatarAnimation avatarAnimation)
+    {
+        return avatarAnimation == AvatarAnimation.RUN ||
+               avatarAnimation == AvatarAnimation.IDLE ||
+               avatarAnimation == AvatarAnimation.FALL ||
+               avatarAnimation == AvatarAnimation.WALK;
+    }
+}
+
 public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnimator
 {
     const float IDLE_TRANSITION_TIME = 0.2f;
-    const float STRAFE_TRANSITION_TIME = 0.25f;
     const float RUN_TRANSITION_TIME = 0.15f;
     const float WALK_TRANSITION_TIME = 0.15f;
     const float JUMP_TRANSITION_TIME = 0.01f;
@@ -31,15 +41,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float OTHER_PLAYER_MOVE_THRESHOLD = 0.07f;
 
     const float AIR_EXIT_TRANSITION_TIME = 0.2f;
-    const float GROUND_BLENDTREE_TRANSITION_TIME = 0.15f;
-
-    const float RUN_SPEED_THRESHOLD = 0.05f;
-    const float WALK_SPEED_THRESHOLD = 0.03f;
 
     const float ELEVATION_OFFSET = 0.6f;
     const float RAY_OFFSET_LENGTH = 3.0f;
-
-    const float MAX_VELOCITY = 6.25f;
 
     // Time it takes to determine if a character is grounded when vertical velocity is 0
     const float FORCE_GROUND_TIME = 0.05f;
@@ -282,6 +286,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
+        
 
         if (movementSpeed > runMinSpeed)
         {
@@ -307,7 +312,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         if (latestAnimation == avatarAnimation)
             return;
-
+        
+        animation.wrapMode = avatarAnimation.ShouldLoop() ? WrapMode.Loop : WrapMode.Once;
         animation.CrossFade(animationName, runTransitionTime, playMode);
         latestAnimation = avatarAnimation;
     }
@@ -370,7 +376,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (exitTransitionStarted)
         {
-            animation.wrapMode = WrapMode.Default;
             animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
             
             bb.expressionTriggerId = null;
