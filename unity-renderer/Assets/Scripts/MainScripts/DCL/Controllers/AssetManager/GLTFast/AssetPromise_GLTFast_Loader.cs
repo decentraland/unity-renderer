@@ -2,6 +2,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GLTFast;
+using GLTFast.Materials;
 using UnityEngine;
 
 // Disable async call not being awaited warning
@@ -9,7 +10,10 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_GLTFast : AssetPromise_WithUrl<Asset_GLTFast>
+    /// <summary>
+    /// Do not use this class directly to instantiate a new GLTF, use AssetPromise_GLTFast_Instance instead
+    /// </summary>
+    public class AssetPromise_GLTFast_Loader : AssetPromise_WithUrl<Asset_GLTFast_Loader>
     {
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
@@ -27,7 +31,7 @@ namespace DCL
         private static IDeferAgent deferAgent;
         private GLTFImportLogger gltfImportLogger;
 
-        public AssetPromise_GLTFast(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
+        public AssetPromise_GLTFast_Loader(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
             : base(contentUrl, hash)
         {
             this.contentProvider = contentProvider;
@@ -86,7 +90,7 @@ namespace DCL
             {
                 string url = contentProvider.baseUrl + hash;
 
-                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, null, gltfImportLogger);
+                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, new GLTFastMaterialGenerator(), gltfImportLogger);
 
                 var gltfastSettings = new ImportSettings
                 {

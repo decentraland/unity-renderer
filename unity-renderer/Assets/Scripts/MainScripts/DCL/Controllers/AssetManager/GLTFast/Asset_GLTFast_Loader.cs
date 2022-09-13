@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class Asset_GLTFast : Asset
+    public class Asset_GLTFast_Loader : Asset
     {
         public GltfImport gltfImport;
         public void Setup(GltfImport importer)

@@ -50,7 +50,7 @@ namespace DCL.Components
         ContentProvider contentProvider;
 
         AssetPromise_GLTF gltfPromise;
-        AssetPromise_GLTFast_GameObject gltfastPromise;
+        AssetPromise_GLTFast_Instance gltfastPromise;
         AssetPromise_AB_GameObject abPromise;
 
 #if UNITY_EDITOR
@@ -296,12 +296,12 @@ namespace DCL.Components
                 return;
             }
 
-            gltfastPromise = new AssetPromise_GLTFast_GameObject(targetUrl, hash, Environment.i.platform.webRequest, contentProvider)
+            gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash, Environment.i.platform.webRequest, contentProvider)
             {
                 settings = settings
             };
 
-            gltfastPromise.OnSuccessEvent += (Asset_GLTFast_GameObject x) =>
+            gltfastPromise.OnSuccessEvent += (Asset_GLTFast_Instance x) =>
             {
 #if UNITY_EDITOR
                 x.container.name = GLTFAST_GO_NAME_PREFIX + x.container.name;

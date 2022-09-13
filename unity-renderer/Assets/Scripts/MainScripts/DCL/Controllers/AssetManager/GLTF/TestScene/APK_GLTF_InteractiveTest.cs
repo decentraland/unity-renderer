@@ -11,7 +11,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     AssetPromiseKeeper_GLTF keeper;
     private WebRequestController webRequestController;
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
-    List<AssetPromise_GLTFast_GameObject> promiseList2 = new List<AssetPromise_GLTFast_GameObject>();
+    List<AssetPromise_GLTFast_Instance> promiseList2 = new List<AssetPromise_GLTFast_Instance>();
 
     private int counter = 0;
     private bool automatedMode = false;
@@ -59,7 +59,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     void GenerateGLTFast(string url)
     {
         Debug.Log(url);
-        AssetPromise_GLTFast_GameObject promise2 = new AssetPromise_GLTFast_GameObject(url, url, webRequestController);
+        AssetPromise_GLTFast_Instance promise2 = new AssetPromise_GLTFast_Instance(url, url, webRequestController);
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);

@@ -7,12 +7,12 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class Asset_GLTFast_GameObject : Asset_WithPoolableContainer
+    public class Asset_GLTFast_Instance : Asset_WithPoolableContainer
     {
-        internal AssetPromise_GLTFast ownerPromise;
+        internal AssetPromise_GLTFast_Loader ownerPromise;
         public sealed override GameObject container { get; set; }
 
-        public Asset_GLTFast_GameObject()
+        public Asset_GLTFast_Instance()
         {
             container = new GameObject("GLTFast Container")
             {

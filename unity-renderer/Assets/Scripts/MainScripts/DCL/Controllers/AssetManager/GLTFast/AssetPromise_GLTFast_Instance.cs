@@ -7,15 +7,15 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class AssetPromise_GLTFast_GameObject : AssetPromise_WithUrl<Asset_GLTFast_GameObject>
+    public class AssetPromise_GLTFast_Instance : AssetPromise_WithUrl<Asset_GLTFast_Instance>
     {
         private readonly IWebRequestController webRequestController;
         private readonly ContentProvider contentProvider;
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
-        AssetPromise_GLTFast subPromise;
+        AssetPromise_GLTFast_Loader subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_GLTFast_GameObject(string contentUrl, string hash, IWebRequestController webRequestController, ContentProvider contentProvider = null) : base(contentUrl, hash)
+        public AssetPromise_GLTFast_Instance(string contentUrl, string hash, IWebRequestController webRequestController, ContentProvider contentProvider = null) : base(contentUrl, hash)
         {
             this.webRequestController = webRequestController;
             this.contentProvider = contentProvider ?? new ContentProvider_Dummy();
@@ -84,8 +84,9 @@ namespace DCL
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
+            // Since GLTFast give us an "instantiator" we create another asset promise to create the main and only instantiator for this object
             PerformanceAnalytics.ABTracker.TrackLoading();
-            subPromise = new AssetPromise_GLTFast(contentUrl, hash, webRequestController, contentProvider);
+            subPromise = new AssetPromise_GLTFast_Loader(contentUrl, hash, webRequestController, contentProvider);
             bool success = false;
             Exception loadingException = null;
             subPromise.OnSuccessEvent += (x) => success = true;
@@ -156,7 +157,7 @@ namespace DCL
             return parentName || transformName;
         }
 
-        protected override Asset_GLTFast_GameObject GetAsset(object id)
+        protected override Asset_GLTFast_Instance GetAsset(object id)
         {
             if (settings.forceNewInstance)
             {
