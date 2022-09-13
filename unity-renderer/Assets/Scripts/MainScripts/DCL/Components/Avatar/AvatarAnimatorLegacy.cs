@@ -338,13 +338,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool ownPlayer)
     {
         float timeTillEnd = animationState.length - animationState.time;
-        if (timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME)
-        {
-            return ownPlayer ? dclCharacterController.isMovingByUserInput : 
-                Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-        }
-
-        return false;
+        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME;
+        bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
+        return isAnimationOver || isMoving;
     }
 
     private static bool ExpressionAirTransitionCondition(BlackBoard bb)
@@ -360,7 +356,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
         bool exitTransitionStarted = false;
-
         if (ExpressionAirTransitionCondition(bb))
         {
             currentState = State_Air;
