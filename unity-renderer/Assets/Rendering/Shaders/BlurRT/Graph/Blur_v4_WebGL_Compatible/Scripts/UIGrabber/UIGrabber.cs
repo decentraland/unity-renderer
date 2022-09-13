@@ -53,7 +53,10 @@ public class UIGrabber : MonoBehaviour
         }
 
         // Get Dimensions of first active ui element that blur will be applied to
-        GetDimensions();
+        //GetDimensionsFirstActiveElement();
+
+        // Get dimensions of ui canvas
+        ResetCameraToCanvas();
     }
 
     // check if ui element is active and has a rect transform
@@ -69,8 +72,37 @@ public class UIGrabber : MonoBehaviour
         }
     }
 
+    // get dimensions of ui canvas
+    public void ResetCameraToCanvas()
+    {
+        float _offset = 0.12f;
+        // new cam position - offset
+        Vector3 newCamPos = new Vector3(_ui.transform.position.x, _ui.transform.position.y, (_ui.transform.position.z - _offset));
+        
+        // rest camera position to canvas
+        _uiCamera.transform.position = newCamPos;
+
+        // MatchCameraSizeToCanvas
+        MatchCameraSizeToCanvas();
+    }
+
+    // match camera size to canvas size
+    public void MatchCameraSizeToCanvas()
+    {
+        // get canvas rect transform
+        RectTransform canvasRectTransform = _ui.GetComponent<RectTransform>();
+
+        // get canvas width and height
+        float canvasWidth = canvasRectTransform.rect.width;
+        float canvasHeight = canvasRectTransform.rect.height;
+        float canvasScale = canvasRectTransform.localScale.x;
+
+        // set camera size to canvas width and height
+        _uiCamera.orthographicSize = (canvasWidth * canvasScale) / 2;
+    }
+
     // take dimensions of first active ui element
-    public Vector2 GetDimensions()
+    public Vector2 GetDimensionsFirstActiveElement()
     {
         foreach (CanvasRenderer element in _uiElements)
         {
