@@ -37,7 +37,6 @@ public class ProfileHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    private BaseVariable<bool> nameOrDescriptionJustSaved =>  DataStore.i.exploreV2.nameOrDescriptionJustSaved;
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
         this.userProfileBridge = userProfileBridge;
@@ -49,7 +48,6 @@ public class ProfileHUDController : IHUD
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
-        DataStore.i.exploreV2.profileCardIsOpen.OnChange += ClearDirtyState;
 
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
@@ -95,13 +93,6 @@ public class ProfileHUDController : IHUD
 
         DataStore.i.exploreV2.isInitialized.OnChange += ExploreV2Changed;
         ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
-    }
-    private void ClearDirtyState(bool current, bool previous)
-    {
-        if (!current)
-        {
-            nameOrDescriptionJustSaved.Set(false);
-        }
     }
 
     protected virtual GameObject GetViewPrefab()
@@ -161,7 +152,6 @@ public class ProfileHUDController : IHUD
 
         view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
         DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
-        DataStore.i.exploreV2.profileCardIsOpen.OnChange -= ClearDirtyState;
 
         DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
@@ -229,7 +219,6 @@ public class ProfileHUDController : IHUD
         }
 
         userProfileBridge.SaveUnverifiedName(newName);
-        nameOrDescriptionJustSaved.Set(true);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
@@ -247,7 +236,6 @@ public class ProfileHUDController : IHUD
         view.SetDescription(description);
         view.ActivateDescriptionEditionMode(false);
         userProfileBridge.SaveDescription(description);
-        nameOrDescriptionJustSaved.Set(true);
     }
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)

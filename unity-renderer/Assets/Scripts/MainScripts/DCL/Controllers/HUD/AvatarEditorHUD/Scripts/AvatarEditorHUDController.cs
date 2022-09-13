@@ -359,7 +359,7 @@ public class AvatarEditorHUDController : IHUD
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
 
-        if (DataStore.i.exploreV2.nameOrDescriptionJustSaved.Get())
+        if (avatarIsDirty)
             return;
 
         view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
@@ -904,11 +904,11 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!current && avatarIsDirty)
         {
+            avatarIsDirty = false;
+            
             LoadUserProfile(userProfile, true);
 
             emotesCustomizationComponentController.RestoreEmoteSlots();
-
-            avatarIsDirty = false;
         }
     }
 
