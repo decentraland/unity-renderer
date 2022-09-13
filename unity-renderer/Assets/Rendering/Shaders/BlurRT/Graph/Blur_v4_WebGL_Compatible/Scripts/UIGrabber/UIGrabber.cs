@@ -11,12 +11,21 @@ public class UIGrabber : MonoBehaviour
     [Header("Render Texture")]
     [SerializeField] private RenderTexture _renderTexture;
 
-    // list for ui elements
-    [SerializeField] private List<CanvasRenderer> _uiElements = new List<CanvasRenderer>();
+    [Space]
+
+    [Header("Render Texture to Texture2D")]
+    [SerializeField] private Texture2D _grabbedRTTexture2D;
+
+    [Space]
 
     [Header("Debug")]
 
     [SerializeField] private bool _debug = false;
+
+    // list for ui elements
+    [SerializeField] private List<CanvasRenderer> _uiElements = new List<CanvasRenderer>();
+
+    
 
     private void Awake()
     {
@@ -99,7 +108,46 @@ public class UIGrabber : MonoBehaviour
 
         // set camera size to canvas width and height
         _uiCamera.orthographicSize = (canvasWidth * canvasScale) / 2;
+
+        // Grab Render Texture
+        //GrabRenderTexture();
+
+        _grabbedRTTexture2D = toTexture2D(_renderTexture);
     }
+
+
+    Texture2D toTexture2D(RenderTexture rTex)
+    {
+        Texture2D tex = new Texture2D(512, 512, TextureFormat.RGB24, false);
+        // ReadPixels looks at the active RenderTexture.
+        RenderTexture.active = rTex;
+        tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
+        tex.Apply();
+        return tex;
+    }
+    
+    // grab render texture to a texture
+    public void GrabRenderTexture()
+    {
+        // get render texture
+        RenderTexture renderTexture = _uiCamera.targetTexture;
+
+        // create new texture2D
+        _grabbedRTTexture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, true);
+
+        // read pixels from render texture
+        //RenderTexture.active = renderTexture;
+        //_grabbedRTTexture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        //_grabbedRTTexture2D.Apply();
+
+        // set render texture to null
+        RenderTexture.active = null;
+
+        Graphics.Blit(_grabbedRTTexture2D , renderTexture);
+    }
+
+
+
 
     // take dimensions of first active ui element
     public Vector2 GetDimensionsFirstActiveElement()
