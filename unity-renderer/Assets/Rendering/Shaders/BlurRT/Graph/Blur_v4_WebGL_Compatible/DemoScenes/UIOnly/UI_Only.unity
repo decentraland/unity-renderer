@@ -1158,6 +1158,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a03c6eae0918e543b7ea74ffb0f363b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ui: {fileID: 654232135}
+  _uiCamera: {fileID: 1860971961}
+  _renderTexture: {fileID: 8400000, guid: 4de8e7b611a269644bf581f97ae330d4, type: 2}
+  _uiElements:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &2111910576
 GameObject:
   m_ObjectHideFlags: 0
