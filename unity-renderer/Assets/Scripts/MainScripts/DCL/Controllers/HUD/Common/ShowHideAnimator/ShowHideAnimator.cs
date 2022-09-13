@@ -1,20 +1,20 @@
-using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 public class ShowHideAnimator : MonoBehaviour
 {
-    public event System.Action<ShowHideAnimator> OnWillFinishHide;
-    public event System.Action<ShowHideAnimator> OnWillFinishStart;
 
     public bool hideOnEnable = true;
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
     public string visibleParam = "visible";
 
-    public bool isVisible => animator.GetBool(visibleParamHash);
-
     private Animator animatorValue;
+
+    private int? visibleParamHashValue = null;
+
+    public bool isVisible => animator.GetBool(visibleParamHash);
 
     private Animator animator
     {
@@ -29,8 +29,6 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
-    private int? visibleParamHashValue = null;
-
     private int visibleParamHash
     {
         get
@@ -41,6 +39,16 @@ public class ShowHideAnimator : MonoBehaviour
             return visibleParamHashValue.Value;
         }
     }
+
+    private void OnEnable()
+    {
+        if ( hideOnEnable )
+        {
+            Hide(true);
+        }
+    }
+    public event System.Action<ShowHideAnimator> OnWillFinishHide;
+    public event System.Action<ShowHideAnimator> OnWillFinishStart;
 
     public void Show(bool instant = false)
     {
@@ -74,13 +82,6 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
+    [UsedImplicitly]
     public void AnimEvent_ShowFinished() { OnWillFinishStart?.Invoke(this); }
-
-    private void OnEnable()
-    {
-        if ( hideOnEnable )
-        {
-            Hide(true);
-        }
-    }
 }

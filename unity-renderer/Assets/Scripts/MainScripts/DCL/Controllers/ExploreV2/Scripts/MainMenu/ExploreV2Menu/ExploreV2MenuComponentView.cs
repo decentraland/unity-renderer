@@ -1,25 +1,11 @@
-using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
-    /// <summary>
-    /// It will be triggered when the close button is clicked.
-    /// </summary>
-    event Action<bool> OnCloseButtonPressed;
-
-    /// <summary>
-    /// It will be triggered when a section is open.
-    /// </summary>
-    event Action<ExploreSection> OnSectionOpen;
-
-    /// <summary>
-    /// It will be triggered after the show animation has finished.
-    /// </summary>
-    event Action OnAfterShowAnimation;
 
     /// <summary>
     /// Real viewer component.
@@ -80,6 +66,20 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Transform used to positionate the profile section tooltips.
     /// </summary>
     RectTransform currentProfileCardTooltipReference { get; }
+    /// <summary>
+    /// It will be triggered when the close button is clicked.
+    /// </summary>
+    event Action<bool> OnCloseButtonPressed;
+
+    /// <summary>
+    /// It will be triggered when a section is open.
+    /// </summary>
+    event Action<ExploreSection> OnSectionOpen;
+
+    /// <summary>
+    /// It will be triggered after the show animation has finished.
+    /// </summary>
+    event Action OnAfterShowAnimation;
 
     /// <summary>
     /// Shows/Hides the game object of the explore menu.
@@ -127,6 +127,9 @@ public interface IExploreV2MenuComponentView : IDisposable
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
+
+    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
+    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
     [Header("Assets References")]
     [SerializeField] internal RealmSelectorComponentView realmSelectorModalPrefab;
 
@@ -147,9 +150,34 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     [Header("Tutorial References")]
     [SerializeField] internal RectTransform profileCardTooltipReference;
+    private DataStore_Camera cameraDataStore;
+    internal HUDCanvasCameraModeController hudCanvasCameraModeController;
 
-    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
-    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
+    internal RectTransform profileCardRectTranform;
+    internal RealmSelectorComponentView realmSelectorModal;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
+        realmSelectorModal = ConfigureRealmSelectorModal();
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+    }
+
+    public override void Start()
+    {
+        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
+
+        DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
+        IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
+
+        ConfigureCloseButton();
+    }
+
+    public override void Update() { CheckIfProfileCardShouldBeClosed(); }
+
+    public void OnDestroy() { hudCanvasCameraModeController?.Dispose(); }
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
@@ -167,56 +195,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action<bool> OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
     public event Action OnAfterShowAnimation;
-
-    internal RectTransform profileCardRectTranform;
-    internal RealmSelectorComponentView realmSelectorModal;
-    internal HUDCanvasCameraModeController hudCanvasCameraModeController;
-    private DataStore_Camera cameraDataStore;
-
-    public override void Awake()
-    {
-        base.Awake();
-
-        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
-        realmSelectorModal = ConfigureRealmSelectorModal();
-        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
-    }
-
-    public void OnDestroy()
-    {
-        hudCanvasCameraModeController?.Dispose();
-    }
-
-    public override void Start()
-    {
-        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
-
-        DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
-        IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
-
-        ConfigureCloseButton();
-    }
-
-    private void IsInitialized_OnChange(bool current, bool previous)
-    {
-        if (!current)
-            return;
-
-        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
-        StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
-    }
-
-    public override void Update() { CheckIfProfileCardShouldBeClosed(); }
-
-    public override void RefreshControl()
-    {
-        placesAndEventsSection.RefreshControl();
-        backpackSection.RefreshControl();
-        mapSection.RefreshControl();
-        builderSection.RefreshControl();
-        questSection.RefreshControl();
-        settingsSection.RefreshControl();
-    }
 
     public override void Dispose()
     {
@@ -264,7 +242,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void OnAfterShowAnimationCompleted()
     {
-        if(!DataStore.i.exploreV2.isOpen.Get())
+        if (!DataStore.i.exploreV2.isOpen.Get())
             return;
 
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
@@ -311,6 +289,27 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionView?.EncapsulateFeature(featureConfiguratorFlag);
     }
 
+    public void ShowRealmSelectorModal() { realmSelectorModal.Show(); }
+
+    private void IsInitialized_OnChange(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+        StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
+    }
+
+    public override void RefreshControl()
+    {
+        placesAndEventsSection.RefreshControl();
+        backpackSection.RefreshControl();
+        mapSection.RefreshControl();
+        builderSection.RefreshControl();
+        questSection.RefreshControl();
+        settingsSection.RefreshControl();
+    }
+
     public IEnumerator CreateSectionSelectorMappingsAfterDelay()
     {
         yield return null;
@@ -326,6 +325,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            {
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Explore, false);
                                OnSectionOpen?.Invoke(ExploreSection.Explore);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Explore)}Section.Show()");
                            }
                        });
 
@@ -337,6 +337,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                                backpackSection.Show();
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack, false);
                                OnSectionOpen?.Invoke(ExploreSection.Backpack);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Backpack)}Section.Show()");
                            }
                            else
                                backpackSection.Hide();
@@ -350,6 +351,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                                mapSection.Show();
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Map, false);
                                OnSectionOpen?.Invoke(ExploreSection.Map);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Map)}Section.Show()");
+                               // Debug.Log(DataStore.i.exploreV2.configureMapInFullscreenMenu.Get().name, DataStore.i.exploreV2.configureMapInFullscreenMenu.Get().gameObject);
                            }
                            else
                                mapSection.Hide();
@@ -363,6 +366,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                                builderSection.Show();
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder, false);
                                OnSectionOpen?.Invoke(ExploreSection.Builder);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Builder)}Section.Show()");
                            }
                            else
                                builderSection.Hide();
@@ -376,6 +380,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                                questSection.Show();
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Quest, false);
                                OnSectionOpen?.Invoke(ExploreSection.Quest);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Quest)}Section.Show()");
                            }
                            else
                                questSection.Hide();
@@ -389,6 +394,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                                settingsSection.Show();
                                DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Settings, false);
                                OnSectionOpen?.Invoke(ExploreSection.Settings);
+                               Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {nameof(ExploreSection.Settings)}Section.Show()");
                            }
                            else
                                settingsSection.Hide();
@@ -428,7 +434,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             return;
 
         cameraDataStore ??= DataStore.i.camera;
-        
+
         if (Input.GetMouseButton(0) &&
             !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
             !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
@@ -458,8 +464,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         return realmSelectorModal;
     }
-
-    public void ShowRealmSelectorModal() { realmSelectorModal.Show(); }
 
     internal static ExploreV2MenuComponentView Create()
     {
