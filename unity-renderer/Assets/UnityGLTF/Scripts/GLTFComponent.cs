@@ -277,7 +277,8 @@ namespace UnityGLTF
                     if (DataStore.i.common.isApplicationQuitting.Get())
                         return;
 #endif
-
+                    
+                    Debug.LogError($" GLTFComponent Loading Exception {e.Message} {e.StackTrace}");
                     Debug.LogException(e);
                 }
                 finally
