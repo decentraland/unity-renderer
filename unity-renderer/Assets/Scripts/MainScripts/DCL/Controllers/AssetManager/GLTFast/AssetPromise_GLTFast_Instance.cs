@@ -11,14 +11,16 @@ namespace DCL
     {
         private readonly IWebRequestController webRequestController;
         private readonly ContentProvider contentProvider;
-        public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
-        AssetPromise_GLTFast_Loader subPromise;
-        Coroutine loadingCoroutine;
+        private readonly AssetPromiseSettings_Rendering settings;
+        private AssetPromise_GLTFast_Loader subPromise;
+        private Coroutine loadingCoroutine;
 
-        public AssetPromise_GLTFast_Instance(string contentUrl, string hash, IWebRequestController webRequestController, ContentProvider contentProvider = null) : base(contentUrl, hash)
+        public AssetPromise_GLTFast_Instance(string contentUrl, string hash, IWebRequestController webRequestController, ContentProvider contentProvider = null, AssetPromiseSettings_Rendering settings = default) 
+            : base(contentUrl, hash)
         {
             this.webRequestController = webRequestController;
             this.contentProvider = contentProvider ?? new ContentProvider_Dummy();
+            this.settings = settings;
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
@@ -69,7 +71,7 @@ namespace DCL
             }
 
             if (asset != null)
-                UnityEngine.Object.Destroy(asset.container);
+                Object.Destroy(asset.container);
 
             AssetPromiseKeeper_GLTFast.i.Forget(subPromise);
         }
@@ -82,13 +84,16 @@ namespace DCL
                 return $"subPromise == null? state = {state}";
         }
 
-        public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
+        private IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
+            PerformanceAnalytics.GLTFTracker.TrackLoading();
+            
             // Since GLTFast give us an "instantiator" we create another asset promise to create the main and only instantiator for this object
-            PerformanceAnalytics.ABTracker.TrackLoading();
             subPromise = new AssetPromise_GLTFast_Loader(contentUrl, hash, webRequestController, contentProvider);
+            
             bool success = false;
             Exception loadingException = null;
+            
             subPromise.OnSuccessEvent += (x) => success = true;
             subPromise.OnFailEvent += ( ab,  exception) =>
             {
@@ -126,21 +131,21 @@ namespace DCL
             {
                 PerformanceAnalytics.GLTFTracker.TrackFailed();
                 loadingException ??= new Exception($"GLTFast sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}");
-                Debug.LogException(loadingException);
                 OnFail?.Invoke(loadingException);
             }
         }
         
+        /// <summary>
+        /// Our GLTFs come with visible colliders that we should get rid of, this is a requirement for our systems
+        /// </summary>
+        /// <param name="rootGameObject"></param>
+        /// <returns></returns>
         private IEnumerator RemoveColliderRenderers(Transform rootGameObject)
         {
             Utils.InverseTransformChildTraversal<Renderer>(renderer =>
             {
                 if (IsCollider(renderer.transform))
                 {
-                    if (renderer.name.Contains("meteor"))
-                    {
-                        Debug.Log("<color=red>THIS IS WHERE THE RENDERER GETS DELETED</color>");
-                    }
                     Object.Destroy(renderer);
                 }
             }, rootGameObject.transform);
@@ -167,6 +172,10 @@ namespace DCL
             {
                 return base.GetAsset(id);
             }
+        }
+        public void OverrideInitialPosition(Vector3 pos)
+        {
+            settings.initialLocalPosition = pos;
         }
     }
 

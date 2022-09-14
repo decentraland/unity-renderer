@@ -296,10 +296,7 @@ namespace DCL.Components
                 return;
             }
 
-            gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash, Environment.i.platform.webRequest, contentProvider)
-            {
-                settings = settings
-            };
+            gltfastPromise = new AssetPromise_GLTFast_Instance(targetUrl, hash, Environment.i.platform.webRequest, contentProvider, settings);
 
             gltfastPromise.OnSuccessEvent += (Asset_GLTFast_Instance x) =>
             {

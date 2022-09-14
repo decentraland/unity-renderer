@@ -15,29 +15,23 @@ namespace DCL
     /// </summary>
     public class AssetPromise_GLTFast_Loader : AssetPromise_WithUrl<Asset_GLTFast_Loader>
     {
-        public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
-
-        public static int concurrentRequests = 0;
-        
-        bool requestRegistered = false;
-
         private readonly ContentProvider contentProvider;
-        private readonly string fileName;
         private readonly string assetDirectoryPath;
         private readonly GLTFastDownloadProvider gltFastDownloadProvider;
         private readonly CancellationTokenSource cancellationSource;
 
-
+        private readonly GLTFastMaterialGenerator gltFastMaterialGenerator;
+        private readonly ConsoleLogger consoleLogger;
+        
         private static IDeferAgent deferAgent;
-        private GLTFImportLogger gltfImportLogger;
 
-        public AssetPromise_GLTFast_Loader(  string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
+        public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null) 
             : base(contentUrl, hash)
         {
             this.contentProvider = contentProvider;
-            fileName = contentUrl.Substring(contentUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
 
+            // TODO: Inject this, somehow
             if (deferAgent == null)
             {
                 var agentObject = new GameObject("GLTFastDeferAgent");
@@ -46,7 +40,8 @@ namespace DCL
             
             gltFastDownloadProvider = new GLTFastDownloadProvider(requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
-            gltfImportLogger = new GLTFImportLogger();
+            gltFastMaterialGenerator = new GLTFastMaterialGenerator();
+            consoleLogger = new ConsoleLogger();
         }
 
         protected override void OnBeforeLoadOrReuse(){}
@@ -89,8 +84,8 @@ namespace DCL
             try
             {
                 string url = contentProvider.baseUrl + hash;
-
-                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, null, gltfImportLogger);
+                
+                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, gltFastMaterialGenerator, consoleLogger);
 
                 var gltfastSettings = new ImportSettings
                 {
@@ -110,7 +105,7 @@ namespace DCL
                 
                 if (!success)
                 {
-                    OnFail?.Invoke(new Exception(gltfImportLogger.GetLastError()));
+                    OnFail?.Invoke(new Exception($"[GLTFast] Failed to load asset {url}"));
                 }
                 else
                 {
@@ -120,6 +115,7 @@ namespace DCL
             }
             catch (Exception e)
             {
+                Debug.LogException(e);
                 OnFail?.Invoke(e);
             }
         }

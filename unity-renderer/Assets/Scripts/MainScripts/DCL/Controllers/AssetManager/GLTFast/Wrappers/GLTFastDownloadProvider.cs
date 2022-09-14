@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GLTFast.Loading;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL
 {
+    /// <summary>
+    /// With this class we replace all of GLTFast web requests with our own
+    /// </summary>
     internal class GLTFastDownloadProvider : IDownloadProvider, IDisposable
     {
         readonly IWebRequestController webRequestController;
@@ -34,6 +38,11 @@ namespace DCL
                 await Task.Yield();
             }
 
+            if (!wrapper.success)
+            {
+                Debug.LogError("[GLTFast WebRequest Failed] " + asyncOp.asyncOp.webRequest.url);
+            }
+
             return wrapper;
         }
 
@@ -55,6 +64,11 @@ namespace DCL
                 await Task.Yield();
             }
 
+            if (!wrapper.success)
+            {
+                Debug.LogError("[WebRequest Failed] " + asyncOp.asyncOp.webRequest.url);
+            }
+            
             return wrapper;
         }
         public void Dispose()

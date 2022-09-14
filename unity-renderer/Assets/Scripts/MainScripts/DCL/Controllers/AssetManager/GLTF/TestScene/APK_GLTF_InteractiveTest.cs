@@ -21,16 +21,16 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     private string[] urls = new string[]
     {
-        /*"/GLB/TrunkSeparatedTextures/Trunk.glb",
+        //"/GLB/TrunkSeparatedTextures/Trunk.glb",
         "/GLB/Lantern/Lantern.glb",
-        "/GLB/DamagedHelmet/DamagedHelmet.glb",
+        /*"/GLB/DamagedHelmet/DamagedHelmet.glb",
         "/GLB/Trevor/Trevor.glb",
         "/GLB/vertex-anim.glb",
         "/GLB/draco-compressor.glb",
         "/GLB/cube_vertexcolor.glb",*/
-        
+        /*
         "/GLB/avatar-sitting/male/ch1_crowdV5.glb",
-        "/GLB/avatar-sitting/female/ch2_crowdV5.glb",
+        "/GLB/avatar-sitting/female/ch2_crowdV5.glb",*/
     };
     private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 
@@ -63,7 +63,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);
-        promise2.settings.initialLocalPosition = pos;
+        promise2.OverrideInitialPosition(pos);
         keeper2.Keep(promise2);
         promiseList2.Add(promise2);
     }

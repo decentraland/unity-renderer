@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL;
+using GLTFast;
 using GLTFast.Loading;
 
 namespace DCL
@@ -18,12 +19,9 @@ namespace DCL
         public void Reset() => asyncOp.Reset();
         public object Current => asyncOp.Current;
         
-        
-        // Note (Kinerius) Totally not stolen from GltfGlobals since it was protected
-        internal const uint GLB_MAGIC = 0x46546c67;
         public static bool IsGltfBinary(byte[] data) {
-            var magic = BitConverter.ToUInt32( data, 0 );
-            return magic == GLB_MAGIC;
+            var gltfBinarySignature = BitConverter.ToUInt32( data, 0 );
+            return gltfBinarySignature == GltfGlobals.GLB_MAGIC;
         }
         public void Dispose()
         {
