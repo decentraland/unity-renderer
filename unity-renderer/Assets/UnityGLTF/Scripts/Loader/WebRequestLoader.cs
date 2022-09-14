@@ -101,7 +101,9 @@ namespace UnityGLTF.Loader
 
             if (!asyncOp.isSucceded)
             {
-                Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
+                Debug.LogError($"{asyncOp.webRequest.error} -" +
+                               $" {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}" +
+                               $" operation isDone={asyncOp.isDone} isDisposed={asyncOp.isDisposed}");
                 errorMessage = $"{asyncOp.webRequest.error}";
                 error = true;
             }
