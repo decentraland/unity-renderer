@@ -19,8 +19,10 @@ namespace DCL.Chat.HUD
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
+        private string paginationToken;
+        private string searchText;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private bool isSearching;
+        private bool isSearchingByName;
 
         public ISearchChannelsWindowView View => view;
 
@@ -29,7 +31,8 @@ namespace DCL.Chat.HUD
         public event Action OnOpenChannelCreation;
         public event Action<string> OnOpenChannelLeave;
 
-        public SearchChannelsWindowController(IChatController chatController, IMouseCatcher mouseCatcher,
+        public SearchChannelsWindowController(IChatController chatController,
+            IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics)
         {
@@ -84,14 +87,15 @@ namespace DCL.Chat.HUD
                 view.OnJoinChannel += HandleJoinChannel;
                 view.OnLeaveChannel += HandleLeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
-                chatController.OnChannelUpdated += ShowChannel;
+                chatController.OnChannelSearchResult += ShowRequestedChannels;
                 
                 view.Show();
                 view.ClearAllEntries();
                 view.ShowLoading();
                 
                 loadStartedTimestamp = DateTime.Now;
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0);
+                paginationToken = null;
+                chatController.GetChannels(LOAD_PAGE_SIZE);
                 
                 loadingCancellationToken.Cancel();
                 loadingCancellationToken = new CancellationTokenSource();
@@ -113,18 +117,19 @@ namespace DCL.Chat.HUD
         private void SearchChannels(string searchText)
         {
             loadStartedTimestamp = DateTime.Now;
+            paginationToken = null;
             view.ClearAllEntries();
             view.HideLoadingMore();
             view.ShowLoading();
             view.HideResultsHeader();
-
-            isSearching = !string.IsNullOrEmpty(searchText);
-
-            if (!isSearching)
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0);
+            this.searchText = searchText;
+            isSearchingByName = !string.IsNullOrEmpty(searchText);
+            
+            if (!isSearchingByName)
+                chatController.GetChannels(LOAD_PAGE_SIZE);
             else
             {
-                chatController.GetChannels(LOAD_PAGE_SIZE, 0, searchText);
+                chatController.GetChannelsByName(LOAD_PAGE_SIZE, searchText);
                 socialAnalytics.SendChannelSearch(searchText);
             }
 
@@ -132,14 +137,15 @@ namespace DCL.Chat.HUD
             loadingCancellationToken = new CancellationTokenSource();
             WaitTimeoutThenHideLoading(loadingCancellationToken.Token).Forget();
         }
-
-        private void ShowChannel(Channel channel)
+        
+        private void ShowRequestedChannels(string paginationToken, Channel[] channels)
         {
-            if (!view.IsActive) return;
-            view.HideLoading();
-            view.Set(channel);
+            this.paginationToken = paginationToken;
 
-            if (isSearching)
+            foreach (var channel in channels)
+                view.Set(channel);
+            
+            if (isSearchingByName)
             {
                 view.HideLoadingMore();
 
@@ -149,17 +155,21 @@ namespace DCL.Chat.HUD
                     view.HideResultsHeader();
             }
             else
-            {
                 view.ShowLoadingMore();
-            }
         }
 
         private void LoadMoreChannels()
         {
-            if (IsLoading() || isSearching) return;
+            if (IsLoading()) return;
+            if (string.IsNullOrEmpty(paginationToken)) return;
+            
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
-            chatController.GetChannels(LOAD_PAGE_SIZE, view.EntryCount);
+            
+            if (string.IsNullOrEmpty(searchText))
+                chatController.GetChannels(LOAD_PAGE_SIZE, paginationToken);
+            else
+                chatController.GetChannelsByName(LOAD_PAGE_SIZE, searchText, paginationToken);
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;
@@ -170,7 +180,7 @@ namespace DCL.Chat.HUD
         
         private void ClearListeners()
         {
-            chatController.OnChannelUpdated -= ShowChannel;
+            chatController.OnChannelSearchResult -= ShowRequestedChannels;
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
             view.OnBack -= HandleViewBacked;

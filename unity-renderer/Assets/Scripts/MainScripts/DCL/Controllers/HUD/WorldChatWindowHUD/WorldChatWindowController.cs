@@ -92,7 +92,6 @@ public class WorldChatWindowController : IHUD
         var channel = chatController.GetAllocatedChannel(ChatUtils.NEARBY_CHANNEL_ID);
         publicChannels[ChatUtils.NEARBY_CHANNEL_ID] = new PublicChatModel(ChatUtils.NEARBY_CHANNEL_ID, channel.Name,
             channel.Description,
-            channel.LastMessageTimestamp,
             channel.Joined,
             channel.MemberCount,
             false);
@@ -475,7 +474,7 @@ public class WorldChatWindowController : IHUD
         }
         
         var channelId = channel.ChannelId;
-        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp, channel.Joined, channel.MemberCount, channel.Muted);
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.Joined, channel.MemberCount, channel.Muted);
         
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);

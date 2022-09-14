@@ -82,7 +82,7 @@ namespace DCL.Chat.HUD
 
         private void GivenPublicChatEntry()
         {
-            view.Set(new PublicChatEntryModel("chan", "chan", 0, true, 2, false));
+            view.Set(new PublicChatEntryModel("chan", "chan", true, 2, false));
         }
 
         private void GivenPrivateChatEntry()

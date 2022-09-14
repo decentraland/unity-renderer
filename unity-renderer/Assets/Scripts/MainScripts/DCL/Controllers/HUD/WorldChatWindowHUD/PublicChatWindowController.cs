@@ -97,7 +97,6 @@ public class PublicChatWindowController : IHUD
         View.Configure(new PublicChatModel(this.channelId,
             channel.Name,
             channel.Description,
-            channel.LastMessageTimestamp,
             channel.Joined,
             channel.MemberCount,
             false));
