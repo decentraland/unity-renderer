@@ -102,7 +102,7 @@ namespace UnityGLTF.Loader
             if (!asyncOp.isSucceded)
             {
                 Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
-                errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
+                errorMessage = $"{asyncOp.webRequest.error}";
                 error = true;
             }
 
