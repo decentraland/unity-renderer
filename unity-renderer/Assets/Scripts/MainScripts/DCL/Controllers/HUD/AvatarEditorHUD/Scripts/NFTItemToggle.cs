@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class NFTItemToggle : ItemToggle
 {
     [SerializeField] internal NFTItemInfo nftItemInfo;
+    [SerializeField] internal Image rarityImage;
     [SerializeField] internal Button infoButton;
     [SerializeField] internal Button closeInfoButton;
     [SerializeField] internal Button sellButton;
@@ -24,11 +25,19 @@ public class NFTItemToggle : ItemToggle
         sellButton.onClick.AddListener(CallOnSellClicked);
     }
 
-    public override void Initialize(WearableItem w, bool isSelected, int amount)
+    public override void Initialize(WearableItem w, bool isSelected, int amount, NFTItemToggleSkin skin)
     {
-        base.Initialize(w, isSelected, amount);
+        base.Initialize(w, isSelected, amount, skin);
+        
         nftItemInfo.SetModel(NFTItemInfo.Model.FromWearableItem(wearableItem));
         smartItemBadge.SetActive(w.IsSmart());
+        
+        nftItemInfo.SetSkin(w.rarity, skin);
+        rarityImage.color = skin.backgroundColor;
+        rarityImage.gameObject.SetActive(!skin.isBase);
+        infoButton.gameObject.SetActive(w.IsCollectible());
+
+        HideInfo();
     }
 
     protected override void SetSelection(bool isSelected)

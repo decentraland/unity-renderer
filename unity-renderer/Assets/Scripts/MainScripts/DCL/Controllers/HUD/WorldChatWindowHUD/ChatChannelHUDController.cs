@@ -425,7 +425,7 @@ namespace DCL.Chat.HUD
 
         private PublicChatModel ToPublicChatModel(Channel channel)
         {
-            return new PublicChatModel(channelId, channel.Name, channel.Description, channel.LastMessageTimestamp,
+            return new PublicChatModel(channelId, channel.Name, channel.Description,
                 channel.Joined, channel.MemberCount, channel.Muted);
         }
     }

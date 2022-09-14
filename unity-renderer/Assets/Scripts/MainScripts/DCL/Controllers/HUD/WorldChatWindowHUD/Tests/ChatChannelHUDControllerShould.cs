@@ -34,7 +34,7 @@ namespace DCL.Chat.HUD
             
             chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedChannel(CHANNEL_ID)
-                .Returns(new Channel(CHANNEL_ID, 4, 12, true, false, "desc", 0));
+                .Returns(new Channel(CHANNEL_ID, 4, 12, true, false, "desc"));
             chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
             dataStore = new DataStore();

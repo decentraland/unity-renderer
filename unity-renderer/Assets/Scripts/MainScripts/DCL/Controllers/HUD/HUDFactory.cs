@@ -21,7 +21,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDController();
+                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController());
                 break;
             case HUDElementID.PROFILE_HUD:
                 hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());

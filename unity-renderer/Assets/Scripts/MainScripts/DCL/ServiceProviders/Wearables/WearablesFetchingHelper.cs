@@ -27,7 +27,7 @@ namespace DCL.Helpers
             yield return Environment.i.platform.webRequest.Get(
                 url: GetCollectionsFetchURL(),
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
+                timeout: 60,
                 disposeOnCompleted: false,
                 OnFail: (webRequest) =>
                 {
@@ -99,7 +99,7 @@ namespace DCL.Helpers
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
+                timeout: 60,
                 disposeOnCompleted: false,
                 OnFail: (webRequest) =>
                 {
@@ -131,7 +131,7 @@ namespace DCL.Helpers
             Environment.i.platform.webRequest.Get(
                 url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
+                timeout: 60,
                 OnFail: (webRequest) =>
                 {
                     promiseResult.Reject($"Request error! third party collections couldn't be fetched! -- {webRequest.webRequest.error}");

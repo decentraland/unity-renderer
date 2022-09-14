@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL.Chat.Channels;
 using NUnit.Framework;
 using UnityEngine;
@@ -42,7 +42,7 @@ namespace DCL.Chat.HUD
         public void ShowChannel()
         {
             view.Show();
-            view.Set(new Channel("bleh", 7, 4, false, false, "desc", 0));
+            view.Set(new Channel("bleh", 7, 4, false, false, "desc"));
             
             Assert.AreEqual(1, view.channelList.Count());
             Assert.AreEqual("Results (1)", view.resultsHeaderLabel.text);
@@ -56,7 +56,7 @@ namespace DCL.Chat.HUD
         public void ShowJoinedChannel()
         {
             view.Show();
-            view.Set(new Channel("bleh", 7, 4, true, false, "desc", 0));
+            view.Set(new Channel("bleh", 7, 4, true, false, "desc"));
             
             Assert.AreEqual(1, view.channelList.Count());
             Assert.AreEqual("Results (1)", view.resultsHeaderLabel.text);
@@ -77,9 +77,9 @@ namespace DCL.Chat.HUD
         public void ShowManyChannels()
         {
             view.Show();
-            view.Set(new Channel("bleh", 7, 4, false, false, "desc", 0));
-            view.Set(new Channel("foo", 2, 9, false, false, "desc", 0));
-            view.Set(new Channel("bar", 0, 5, false, false, "desc", 0));
+            view.Set(new Channel("bleh", 7, 4, false, false, "desc"));
+            view.Set(new Channel("foo", 2, 9, false, false, "desc"));
+            view.Set(new Channel("bar", 0, 5, false, false, "desc"));
             
             Assert.AreEqual(3, view.channelList.Count());
             Assert.AreEqual("Results (3)", view.resultsHeaderLabel.text);
@@ -121,7 +121,7 @@ namespace DCL.Chat.HUD
             var triggeredSearch = "";
             view.OnSearchUpdated += s => triggeredSearch = s;
             view.searchBar.SubmitSearch(text);
-            view.Set(new Channel(text, 1, 42, false, false, "desc", 0));
+            view.Set(new Channel(text, 1, 42, false, false, "desc"));
             
             Assert.AreEqual(text, triggeredSearch);
             Assert.AreEqual(text, view.searchBar.Text);
@@ -137,7 +137,7 @@ namespace DCL.Chat.HUD
             view.OnSearchUpdated += s => triggeredSearch = s;
             
             view.ClearSearchInput();
-            view.Set(new Channel("bleh", 1, 42, false, false, "desc", 0));
+            view.Set(new Channel("bleh", 1, 42, false, false, "desc"));
             
             Assert.AreEqual("", triggeredSearch);
             Assert.AreEqual("", view.searchBar.Text);
@@ -174,11 +174,27 @@ namespace DCL.Chat.HUD
         }
 
         [Test]
+        public void ShowResultsHeaderContainer()
+        {
+            view.ShowResultsHeader();
+
+            Assert.IsTrue(view.resultsHeaderLabelContainer.activeSelf);
+        }
+
+        [Test]
+        public void HideResultsHeaderContainer()
+        {
+            view.HideResultsHeader();
+
+            Assert.IsFalse(view.resultsHeaderLabelContainer.activeSelf);
+        }
+
+        [Test]
         public void TriggerLeaveChannel()
         {
             var leaveChannelId = "";
             view.OnLeaveChannel += s => leaveChannelId = s; 
-            view.Set(new Channel("bleh", 7, 4, true, false, "desc", 0));
+            view.Set(new Channel("bleh", 7, 4, true, false, "desc"));
             
             view.channelList.Get("bleh").leaveButton.onClick.Invoke();
             

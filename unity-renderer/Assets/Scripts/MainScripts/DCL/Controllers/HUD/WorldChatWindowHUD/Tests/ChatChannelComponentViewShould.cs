@@ -10,7 +10,7 @@ namespace DCL.Chat.HUD
         public void SetUp()
         {
             view = ChatChannelComponentView.Create();
-            view.Setup(new PublicChatModel("channelId", "name", "desc", 0, true, 5, false));
+            view.Setup(new PublicChatModel("channelId", "name", "desc", true, 5, false));
         }
 
         [TearDown]
