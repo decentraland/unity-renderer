@@ -90,7 +90,7 @@ namespace DCL
             {
                 string url = contentProvider.baseUrl + hash;
 
-                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, new GLTFastMaterialGenerator(), gltfImportLogger);
+                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, null, gltfImportLogger);
 
                 var gltfastSettings = new ImportSettings
                 {
