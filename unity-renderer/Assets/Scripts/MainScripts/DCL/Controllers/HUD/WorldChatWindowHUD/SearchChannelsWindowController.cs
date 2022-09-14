@@ -122,6 +122,7 @@ namespace DCL.Chat.HUD
             view.HideLoadingMore();
             view.ShowLoading();
             view.HideResultsHeader();
+            view.HideCreateChannelOnSearch();
             this.searchText = searchText;
             isSearchingByName = !string.IsNullOrEmpty(searchText);
             
@@ -150,9 +151,15 @@ namespace DCL.Chat.HUD
                 view.HideLoadingMore();
 
                 if (view.EntryCount > 0)
+                {
                     view.ShowResultsHeader();
+                    view.ShowCreateChannelOnSearch();
+                }
                 else
+                {
                     view.HideResultsHeader();
+                    view.HideCreateChannelOnSearch();
+                }
             }
             else
                 view.ShowLoadingMore();

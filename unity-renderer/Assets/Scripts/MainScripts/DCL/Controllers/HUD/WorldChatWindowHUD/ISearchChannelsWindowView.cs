@@ -28,5 +28,7 @@ namespace DCL.Chat.HUD
         void HideLoadingMore();
         void ShowResultsHeader();
         void HideResultsHeader();
+        void ShowCreateChannelOnSearch();
+        void HideCreateChannelOnSearch();
     }
 }
