@@ -22,7 +22,7 @@ namespace DCL.Chat.HUD
         private string paginationToken;
         private string searchText;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private bool isSearching;
+        private bool isSearchingByName;
 
         public ISearchChannelsWindowView View => view;
 
@@ -123,9 +123,9 @@ namespace DCL.Chat.HUD
             view.ShowLoading();
             view.HideResultsHeader();
             this.searchText = searchText;
-            isSearching = !string.IsNullOrEmpty(searchText);
+            isSearchingByName = !string.IsNullOrEmpty(searchText);
             
-            if (!isSearching)
+            if (!isSearchingByName)
                 chatController.GetChannels(LOAD_PAGE_SIZE);
             else
             {
@@ -148,7 +148,7 @@ namespace DCL.Chat.HUD
             foreach (var channel in channels)
                 view.Set(channel);
             
-            if (isSearching)
+            if (isSearchingByName)
             {
                 view.HideLoadingMore();
 
