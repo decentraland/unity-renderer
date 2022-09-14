@@ -140,9 +140,6 @@ namespace DCL.Chat.HUD
         
         private void ShowRequestedChannels(string paginationToken, Channel[] channels)
         {
-            view.HideLoading();
-            view.ShowLoadingMore();
-            
             this.paginationToken = paginationToken;
 
             foreach (var channel in channels)

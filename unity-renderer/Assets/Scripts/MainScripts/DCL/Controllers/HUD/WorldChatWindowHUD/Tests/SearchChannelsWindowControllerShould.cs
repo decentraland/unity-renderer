@@ -67,11 +67,11 @@ namespace DCL.Chat.HUD
         {
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
+            view.ClearReceivedCalls();
 
             var channel = new Channel("channel", 15, 11, false, false, "desc");
             chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", new[] {channel});
 
-            view.Received(1).HideLoading();
             view.Received(1).ShowLoadingMore();
             view.Received(1).Set(Arg.Is<Channel>(c => c.Equals(channel)));
         }
