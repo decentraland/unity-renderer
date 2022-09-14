@@ -24,6 +24,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
+    [SerializeField] internal ToggleComponentView setHomeScene;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
@@ -47,6 +48,7 @@ public class MinimapHUDView : MonoBehaviour
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         toggleSceneUI.OnSelectedChanged += (isOn, id, name) => controller.ToggleSceneUI(isOn);
         reportSceneButton.onClick.AddListener(ReportScene);
+        setHomeScene.OnSelectedChanged += (isOn, id, name) => SetHomeScene(isOn);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
 
         if (mouseCatcher != null)
@@ -68,7 +70,12 @@ public class MinimapHUDView : MonoBehaviour
         controller.ReportScene();
         controller.ToggleOptions();
     }
-    
+
+    private void SetHomeScene(bool isOn)
+    {
+        controller.SetHomeScene(isOn);
+    }
+
     internal void OnMouseLocked() 
     {
         sceneOptionsPanel.SetActive(false);
@@ -79,6 +86,11 @@ public class MinimapHUDView : MonoBehaviour
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<MinimapHUDView>();
         view.Initialize(controller);
         return view;
+    }
+
+    internal void UpdateSetHomePanel(bool isHome)
+    {
+        setHomeScene.SetIsOnWithoutNotify(isHome);
     }
 
     internal void UpdateData(MinimapHUDModel model)

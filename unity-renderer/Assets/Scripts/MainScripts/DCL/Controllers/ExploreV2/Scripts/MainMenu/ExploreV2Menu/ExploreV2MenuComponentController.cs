@@ -129,7 +129,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isInitialized.Set(true);
         
-        view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+        //view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
@@ -152,6 +152,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             exploreV2Analytics.SendStartMenuSectionVisibility(currentOpenSection, false);
 
         currentOpenSection = section;
+
+        if (currentOpenSection == ExploreSection.Backpack)
+        {
+            view.ConfigureEncapsulatedSection(
+                ExploreSection.Backpack,
+                DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+        }
 
         placesAndEventsVisible.Set(currentOpenSection == ExploreSection.Explore);
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);

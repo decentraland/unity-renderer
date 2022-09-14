@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1062;
+import "common/ActionButton.proto";
+
+enum PointerEventType {
+  UP = 0;
+  DOWN = 1;
+  HOVER_ENTER = 2;
+  HOVER_LEAVE = 3;
+}
+
+message PBPointerEvents {
+  message Info {
+    optional ActionButton button = 1; // default=ActionButton.ANY
+    optional string hover_text = 2; // default='Interact'
+    optional float max_distance = 3; // default=10
+    optional bool show_feedback = 4; // default=true
+  }
+
+  message Entry {
+    PointerEventType eventType = 1;
+    Info eventInfo = 2;
+  }
+
+  repeated Entry pointerEvents = 1;
+}
