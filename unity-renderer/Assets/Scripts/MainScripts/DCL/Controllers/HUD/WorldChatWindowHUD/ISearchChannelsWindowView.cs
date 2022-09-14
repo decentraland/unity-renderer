@@ -26,5 +26,7 @@ namespace DCL.Chat.HUD
         void HideLoading();
         void ShowLoadingMore();
         void HideLoadingMore();
+        void ShowResultsHeader();
+        void HideResultsHeader();
     }
 }

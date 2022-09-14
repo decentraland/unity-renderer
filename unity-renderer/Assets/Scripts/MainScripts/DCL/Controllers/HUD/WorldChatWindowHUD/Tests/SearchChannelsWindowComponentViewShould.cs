@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL.Chat.Channels;
 using NUnit.Framework;
 using UnityEngine;
@@ -171,6 +171,22 @@ namespace DCL.Chat.HUD
             view.HideLoadingMore();
             
             Assert.IsFalse(view.loadMoreContainer.activeSelf);
+        }
+
+        [Test]
+        public void ShowResultsHeaderContainer()
+        {
+            view.ShowResultsHeader();
+
+            Assert.IsTrue(view.resultsHeaderLabelContainer.activeSelf);
+        }
+
+        [Test]
+        public void HideResultsHeaderContainer()
+        {
+            view.HideResultsHeader();
+
+            Assert.IsFalse(view.resultsHeaderLabelContainer.activeSelf);
         }
 
         [Test]
