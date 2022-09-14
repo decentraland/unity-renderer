@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using UnityEngine;
+using RaycastHit = UnityEngine.RaycastHit;
 
 namespace ECSSystems.PointerInputSystem
 {

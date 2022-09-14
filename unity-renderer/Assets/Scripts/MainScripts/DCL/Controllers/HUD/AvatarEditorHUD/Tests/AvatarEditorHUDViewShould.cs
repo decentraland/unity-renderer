@@ -108,13 +108,10 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
-
-            Assert.IsTrue(selector.itemToggles.ContainsKey(wearableId));
-            var itemToggle = selector.itemToggles[wearableId];
-            Assert.NotNull(itemToggle.wearableItem);
-
-            Assert.AreEqual(wearableId, itemToggle.wearableItem.id);
-            Assert.IsFalse(itemToggle.gameObject.activeSelf);
+            
+            Assert.IsTrue(selector.availableWearables.Count(w => w.Item.id == wearableId) == 0);
+            Assert.IsTrue(!selector.itemToggles.ContainsKey(wearableId));
+            Assert.IsTrue(selector.totalWearables.ContainsKey(wearableId));
         }
 
         [Test]
@@ -143,7 +140,8 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
+            // changed from itemToggles from totalWearables since this wearable cant be used by the test avatar ( female )
+            Assert.IsTrue(controller.myView.collectiblesItemSelector.totalWearables.ContainsKey(wearableId));
         }
 
         [Test]
@@ -159,7 +157,7 @@ namespace AvatarEditorHUD_Tests
             var selector = controller.myView.selectorsByCategory[dummyItem.data.category];
             var itemToggleObject = selector.itemToggles[dummyItem.id].gameObject;
 
-            var originalName = selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
+            var originalName = "";//selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
 
             Assert.IsTrue(
                 itemToggleObject.name
@@ -192,7 +190,7 @@ namespace AvatarEditorHUD_Tests
                 email = "mail",
                 avatar = new AvatarModel()
                 {
-                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    bodyShape = WearableLiterals.BodyShapes.MALE,
                     wearables = new List<string>() { },
                 }
             });
@@ -216,7 +214,7 @@ namespace AvatarEditorHUD_Tests
                 email = "mail",
                 avatar = new AvatarModel()
                 {
-                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    bodyShape = WearableLiterals.BodyShapes.MALE,
                     wearables = new List<string>() { },
                 }
             });
@@ -243,7 +241,7 @@ namespace AvatarEditorHUD_Tests
                 email = "mail",
                 avatar = new AvatarModel()
                 {
-                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    bodyShape = WearableLiterals.BodyShapes.MALE,
                     wearables = new List<string>() { },
                 }
             });

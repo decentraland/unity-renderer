@@ -4,5 +4,7 @@ public enum InternalECSComponentsId
     TEXTURIZABLE = 2,
     MATERIAL = 3,
     COLLIDER_POINTER = 4,
-    COLLIDER_PHYSICAL = 5
+    COLLIDER_PHYSICAL = 5,
+    RENDERERS = 6,
+    VISIBILITY = 7
 }

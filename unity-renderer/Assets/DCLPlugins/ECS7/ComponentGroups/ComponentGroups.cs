@@ -8,6 +8,7 @@ public readonly struct ComponentGroups : IComponentGroups
     public IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> texturizableGroup { get; }
     public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup { get; }
     public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup { get; }
+    public IECSReadOnlyComponentsGroup<InternalRenderers, InternalVisibility> visibilityGroup { get; }
 
     public ComponentGroups(ECSComponentsManager componentsManager)
     {
@@ -19,5 +20,8 @@ public readonly struct ComponentGroups : IComponentGroups
 
         pointerUpGroup = componentsManager.CreateComponentGroup<InternalColliders, PBOnPointerUp>
             ((int)InternalECSComponentsId.COLLIDER_POINTER, ComponentID.ON_POINTER_UP);
+        
+        visibilityGroup = componentsManager.CreateComponentGroup<InternalRenderers, InternalVisibility>
+            ((int)InternalECSComponentsId.RENDERERS, (int)InternalECSComponentsId.VISIBILITY);
     }
 }
