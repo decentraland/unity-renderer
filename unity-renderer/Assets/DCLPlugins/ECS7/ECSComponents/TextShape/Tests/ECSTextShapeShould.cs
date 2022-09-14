@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using DCL.Controllers;
 using DCL.ECSRuntime;
-using DCL.Interface;
 using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
