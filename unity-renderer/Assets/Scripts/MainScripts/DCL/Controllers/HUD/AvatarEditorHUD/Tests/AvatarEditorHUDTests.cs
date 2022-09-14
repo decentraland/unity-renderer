@@ -11,7 +11,9 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, IAnalytics analytics) : base(featureFlags, analytics)
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, 
+            IAnalytics analytics) 
+            : base(featureFlags, analytics)
         {
         }
 

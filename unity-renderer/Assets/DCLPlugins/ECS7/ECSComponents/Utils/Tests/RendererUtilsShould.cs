@@ -32,7 +32,7 @@ public class RendererUtilsShould
         // Arrange
         IDCLEntity entity = Substitute.For<IDCLEntity>();
         MeshesInfo meshesInfo = new MeshesInfo();
-        meshesInfo.colliders = new List<Collider>();
+        meshesInfo.colliders = new HashSet<Collider>();
         entity.Configure().meshesInfo.Returns(meshesInfo);
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();

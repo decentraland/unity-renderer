@@ -1,43 +1,40 @@
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DCL;
 using UnityEngine;
 using UnityEngine.UI;
+#pragma warning disable CS4014
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
 public class ItemSelector : MonoBehaviour
 {
-    private const string DECENTRALAND_COLLECTION_ID = "Decentraland";
+    private const int MIN_SCREEN_SIZE = 200;
+    private const int AVATAR_MARGIN = 450;
+    private const float ASPECT_RATIO_PER_COLUMN = 0.15f;
+    private const int TOTAL_ROWS_OF_ITEMS = 3;
+    private const int MIN_AMOUNT_OF_COLUMNS = 3;
 
-    [SerializeField]
-    internal ItemToggleFactory itemToggleFactory;
+    [SerializeField] internal UIPageSelector pageSelector;
+    [SerializeField] internal ItemToggleContainer itemToggleContainer;
 
-    [SerializeField]
-    internal CollectionGroup collectionGroupPrefab;
+    public event Action<string> OnItemClicked;
+    public event Action<string> OnSellClicked;
 
-    [SerializeField]
-    internal RectTransform content;
-
-    [SerializeField]
-    internal GameObject loadingSpinner;
-
-    [SerializeField]
-    internal GameObject loadingRetry;
-
-    [SerializeField]
-    internal Button loadingRetryButton;
-
-    public event System.Action<string> OnItemClicked;
-    public event System.Action<string> OnSellClicked;
-    public event System.Action OnRetryClicked;
-
-    internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
-    internal Dictionary<string, CollectionGroup> currentCollectionGroups = new Dictionary<string, CollectionGroup>();
+    internal readonly Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
+    internal readonly Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
+    internal List<WearableSettings> availableWearables = new List<WearableSettings>();
+    internal readonly List<string> selectedItems = new List<string>();
 
     private string currentBodyShape;
+    private int maxVisibleWearables = 9;
+    private int lastPage;
+    
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private void Awake()
     {
@@ -46,78 +43,134 @@ public class ItemSelector : MonoBehaviour
             OnItemClicked = null;
         };
 
-        loadingRetryButton.onClick.AddListener(RetryLoading);
+        pageSelector.OnValueChanged += UpdateWearableList;
+        DataStore.i.screen.size.OnChange += OnScreenSizeChanged;
     }
 
-    private void OnDestroy() { loadingRetryButton.onClick.RemoveListener(RetryLoading); }
+    private void OnEnable()
+    {
+        CheckScreenSize();
+    }
 
-    public void AddItemToggle(
+    private void OnDestroy()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+
+    private void OnScreenSizeChanged(Vector2Int current, Vector2Int previous)
+    {
+        CheckScreenSize();
+    }
+    
+    private void CheckScreenSize()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+        cancellationTokenSource = new CancellationTokenSource();
+        CheckScreenSizeAsync(cancellationTokenSource.Token);
+    }
+
+    private async UniTask CheckScreenSizeAsync(CancellationToken cancellationToken)
+    {
+        try {
+            RectTransform rt = (RectTransform)transform;
+            LayoutRebuilder.MarkLayoutForRebuild(rt);
+
+            await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, cancellationToken);
+            
+            cancellationToken.ThrowIfCancellationRequested();
+        
+            var rect = rt.rect;
+            var width = Mathf.Max(rect.width, MIN_SCREEN_SIZE);
+            float itemAndSpaceSize = 130 + 32f;
+            var columns =  Mathf.Max(Mathf.CeilToInt(width / itemAndSpaceSize), MIN_AMOUNT_OF_COLUMNS);
+            
+            maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * columns;
+
+            SetupWearablePagination();
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private void SetupWearablePagination()
+    {
+        itemToggleContainer.Setup(maxVisibleWearables);
+        pageSelector.Setup(GetMaxPages());
+        UpdateWearableList(lastPage);
+    }
+
+    private int GetMaxPages() => Mathf.CeilToInt(availableWearables.Count / (float)maxVisibleWearables);
+    
+    private void UpdateWearableList( int page )
+    {
+        lastPage = page;
+        itemToggles.Clear();
+        for (int itemToggleIndex = 0; itemToggleIndex < maxVisibleWearables; itemToggleIndex++)
+        {
+            var baseIndex = page * maxVisibleWearables;
+            var wearableIndex = itemToggleIndex + baseIndex;
+
+            if (wearableIndex < availableWearables.Count)
+            {
+                WearableSettings wearableSettings = availableWearables[wearableIndex];
+                var item = wearableSettings.Item;
+                var itemToggle = itemToggleContainer.LoadItem(itemToggleIndex, wearableSettings);
+                itemToggle.SetCallbacks(ToggleClicked, SellClicked);
+                itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
+
+                if (selectedItems.Contains(item.id))
+                    itemToggle.selected = true;
+
+                itemToggles[item.id] = itemToggle;
+            }
+            else
+            {
+                itemToggleContainer.HideItem(itemToggleIndex);
+            }
+        }
+    }
+
+    public void AddWearable(
         WearableItem item,
         string collectionName,
         int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
         Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
     {
-        CollectionGroup collectionGroup;
-        if (item.IsFromThirdPartyCollection)
-            collectionGroup = CreateCollectionGroupIfNeeded(item.ThirdPartyCollectionId, collectionName);
-        else
-            collectionGroup = CreateCollectionGroupIfNeeded(DECENTRALAND_COLLECTION_ID, DECENTRALAND_COLLECTION_ID);
-
         if (item == null)
             return;
-        if (itemToggles.ContainsKey(item.id))
+        
+        if (totalWearables.ContainsKey(item.id))
             return;
+        
+        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
+        totalWearables.Add(item.id, wearableSettings);
 
-        ItemToggle newToggle;
-        if (item.IsCollectible())
+        if (item.SupportsBodyShape(currentBodyShape) || item.data.category == WearableLiterals.Categories.BODY_SHAPE)
         {
-            newToggle = itemToggleFactory.CreateItemToggleFromRarity(item.rarity, collectionGroup.itemContainer);
-            newToggle.transform.SetAsFirstSibling();
+            availableWearables.Add(wearableSettings);
         }
-        else
-        {
-            newToggle = itemToggleFactory.CreateBaseWearable(collectionGroup.itemContainer);
-        }
-
-        newToggle.Initialize(item, false, amount);
-        newToggle.SetHideOtherWerablesToastStrategy(hideOtherWearablesToastStrategy);
-        newToggle.SetReplaceOtherWearablesToastStrategy(replaceOtherWearablesToastStrategy);
-        newToggle.OnClicked += ToggleClicked;
-        newToggle.OnSellClicked += SellClicked;
-        newToggle.collectionId = collectionGroup.collectionId;
-        itemToggles.Add(item.id, newToggle);
-
-        bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
-        newToggle.gameObject.SetActive(active);
     }
 
-    public void RemoveItemToggle(string itemID)
+    public void RemoveWearable(string itemID)
     {
         if (string.IsNullOrEmpty(itemID))
             return;
 
-        ItemToggle toggle = GetItemToggleByID(itemID);
-        if (toggle == null)
-            return;
-
+        totalWearables.Remove(itemID);
         itemToggles.Remove(itemID);
-        Destroy(toggle.gameObject);
-        RemoveCollectionGroupIfNeeded(toggle.collectionId);
+
+        RefreshAvailableWearables();
     }
 
-    public void RemoveAllItemToggle()
+    public void RemoveAllWearables()
     {
-        using (var it = itemToggles.GetEnumerator())
-        {
-            while (it.MoveNext())
-            {
-                Destroy(it.Current.Value.gameObject);
-                RemoveCollectionGroupIfNeeded(it.Current.Value.collectionId);
-            }
-        }
-
+        totalWearables.Clear();
+        availableWearables.Clear();
         itemToggles.Clear();
+
+        UpdateSelectorLayout();
     }
 
     public void SetBodyShape(string bodyShape)
@@ -126,26 +179,23 @@ public class ItemSelector : MonoBehaviour
             return;
 
         currentBodyShape = bodyShape;
-        ShowCompatibleWithBodyShape();
+        RefreshAvailableWearables();
     }
 
-    public void UpdateSelectorLayout() { Utils.ForceUpdateLayout(content); }
-
-    private void ShowCompatibleWithBodyShape()
+    public void UpdateSelectorLayout()
     {
-        using (Dictionary<string, ItemToggle>.Enumerator iterator = itemToggles.GetEnumerator())
-        {
-            while (iterator.MoveNext())
-            {
-                ItemToggle current = iterator.Current.Value;
-                bool active = current.wearableItem.SupportsBodyShape(currentBodyShape);
-                current.gameObject.SetActive(active);
-            }
-        }
+        SetupWearablePagination();
+    }
+
+    private void RefreshAvailableWearables()
+    {
+        availableWearables = totalWearables.Values.Where(w => w.Item.SupportsBodyShape(currentBodyShape)).ToList();
+        SetupWearablePagination();
     }
 
     public void Select(string itemID)
     {
+        selectedItems.Add(itemID);
         ItemToggle toggle = GetItemToggleByID(itemID);
         if (toggle != null)
             toggle.selected = true;
@@ -153,6 +203,11 @@ public class ItemSelector : MonoBehaviour
 
     public void SetWearableLoadingSpinner(string wearableID, bool isActive)
     {
+        if (totalWearables.ContainsKey(wearableID))
+        {
+            totalWearables[wearableID].isLoading = isActive;
+        }
+        
         ItemToggle toggle = GetItemToggleByID(wearableID);
         if (toggle != null)
             toggle.SetLoadingSpinner(isActive);
@@ -160,6 +215,7 @@ public class ItemSelector : MonoBehaviour
 
     public void Unselect(string itemID)
     {
+        selectedItems.Remove(itemID);
         ItemToggle toggle = GetItemToggleByID(itemID);
         if (toggle != null)
             toggle.selected = false;
@@ -167,6 +223,7 @@ public class ItemSelector : MonoBehaviour
 
     public void UnselectAll()
     {
+        selectedItems.Clear();
         using (var iterator = itemToggles.GetEnumerator())
         {
             while (iterator.MoveNext())
@@ -185,49 +242,5 @@ public class ItemSelector : MonoBehaviour
         if (string.IsNullOrEmpty(itemID))
             return null;
         return itemToggles.ContainsKey(itemID) ? itemToggles[itemID] : null;
-    }
-
-    public void ShowLoading(bool isActive)
-    {
-        loadingSpinner.SetActive(isActive);
-        loadingSpinner.transform.SetAsLastSibling();
-    }
-
-    public void ShowRetryLoading(bool isActive)
-    {
-        loadingRetry.SetActive(isActive);
-        loadingRetry.transform.SetAsLastSibling();
-    }
-
-    private void RetryLoading() { OnRetryClicked?.Invoke(); }
-
-    private CollectionGroup CreateCollectionGroupIfNeeded(string collectionId, string collectionName)
-    {
-        if (currentCollectionGroups.ContainsKey(collectionId))
-            return currentCollectionGroups[collectionId];
-
-        CollectionGroup newCollectionGroup = Instantiate(collectionGroupPrefab, content);
-        newCollectionGroup.Configure(collectionId, collectionName);
-        currentCollectionGroups.Add(collectionId, newCollectionGroup);
-
-        if (collectionId == DECENTRALAND_COLLECTION_ID)
-            newCollectionGroup.transform.SetAsFirstSibling();
-        else
-            newCollectionGroup.transform.SetAsLastSibling();
-
-        return newCollectionGroup;
-    }
-
-    private bool RemoveCollectionGroupIfNeeded(string collectionId)
-    {
-        currentCollectionGroups.TryGetValue(collectionId, out CollectionGroup collectionGroupToRemove);
-        if (collectionGroupToRemove != null && itemToggles.Count(x => x.Value.collectionId == collectionId) == 0)
-        {
-            currentCollectionGroups.Remove(collectionId);
-            Destroy(collectionGroupToRemove.gameObject);
-            return true;
-        }
-
-        return false;
     }
 }

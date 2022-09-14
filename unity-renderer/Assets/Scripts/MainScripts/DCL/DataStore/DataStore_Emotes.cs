@@ -9,5 +9,6 @@ namespace DCL
         public readonly BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesOnUse = new BaseRefCountedCollection<(string bodyshapeId, string emoteId)>();
         public readonly BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> animations = new BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip>();
 
+
     }
 }

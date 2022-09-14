@@ -56,7 +56,8 @@ public class ECS7TestEntity : IDCLEntity
     }
     IParcelScene IDCLEntity.scene { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     bool IDCLEntity.markedForCleanup { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    bool IDCLEntity.isInsideBoundaries { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    bool IDCLEntity.isInsideSceneOuterBoundaries { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    bool IDCLEntity.isInsideSceneBoundaries { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     Dictionary<long, IDCLEntity> IDCLEntity.children => throw new NotImplementedException();
     IDCLEntity IDCLEntity.parent => throw new NotImplementedException();
     Action<IDCLEntity> IDCLEntity.OnShapeUpdated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

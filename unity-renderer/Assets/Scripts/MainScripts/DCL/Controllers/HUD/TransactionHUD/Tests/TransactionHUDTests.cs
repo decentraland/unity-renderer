@@ -1,27 +1,31 @@
 using NUnit.Framework;
 using System.Collections;
 using DCL;
+using DCL.Helpers;
 using UnityEngine.TestTools;
 using DCL.TransactionHUDModel;
 
 namespace Tests
 {
-    public class TransactionHUDTests
+    public class TransactionHUDTests : IntegrationTestSuite
     {
         private TransactionHUDController controller;
 
-        [SetUp]
-        protected void SetUp()
+        protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
             MainSceneFactory.CreateBridges();
+
+            TestUtils.CreateTestScene();
             
             controller = new TransactionHUDController();
             controller.Initialize();
         }
-
-        [TearDown]
-        protected void TearDown()
+        
+        protected override IEnumerator TearDown()
         {
+            yield return base.TearDown();
+
             controller.Dispose();
         }
 

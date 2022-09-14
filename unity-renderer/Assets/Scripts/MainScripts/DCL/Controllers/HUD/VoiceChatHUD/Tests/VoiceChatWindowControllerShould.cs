@@ -354,13 +354,13 @@ public class VoiceChatWindowControllerShould
         switch (voiceChatAllow)
         {
             case VoiceChatAllow.ALL_USERS:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(0);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(0);
                 break;
             case VoiceChatAllow.VERIFIED_ONLY:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(1);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(1);
                 break;
             case VoiceChatAllow.FRIENDS_ONLY:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(2);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(2);
                 break;
         }
 

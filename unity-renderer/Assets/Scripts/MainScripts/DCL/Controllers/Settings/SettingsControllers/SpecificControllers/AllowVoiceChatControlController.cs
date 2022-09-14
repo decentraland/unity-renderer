@@ -12,6 +12,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             int newIntValue = (int)newValue;
             currentGeneralSettings.voiceChatAllow = (GeneralSettings.VoiceChatAllow)newIntValue;
+            ApplySettings();
             Settings.i.ApplyVoiceChatSettings();
         }
     }

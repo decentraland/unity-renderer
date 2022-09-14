@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests
 {
@@ -24,7 +26,8 @@ namespace Tests
             crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
 
             scene.crdtExecutor.Returns(crdtExecutor);
-            worldState.loadedScenes.Add(SCENE_ID, scene);
+            scene.GetParcels().Returns(new HashSet<Vector2Int>());
+            worldState.AddScene(SCENE_ID, scene);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
                 Substitute.For<ISceneController>(), DataStore.i.rpcContext.context);
@@ -120,7 +123,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.EXECUTE_LOCALLY);
             crdtWriteSystem.LateUpdate();
 
-            crdtExecutor.Received(1).ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.Received(1).ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
             crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
 
             CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
@@ -138,7 +141,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.WRITE_STATE_LOCALLY);
             crdtWriteSystem.LateUpdate();
 
-            crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(Arg.Any<CRDTMessage>());
+            crdtExecutor.DidNotReceive().ExecuteWithoutStoringState(ENTITY_ID, COMPONENT_ID, Arg.Any<object>());
             crdtExecutor.DidNotReceive().Execute(Arg.Any<CRDTMessage>());
 
             CRDTMessage message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);

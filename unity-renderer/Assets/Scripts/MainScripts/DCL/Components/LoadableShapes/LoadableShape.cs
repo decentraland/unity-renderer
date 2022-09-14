@@ -163,7 +163,7 @@ namespace DCL.Components
 
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-                loadableShape.initialVisibility = entity.isInsideBoundaries;
+                loadableShape.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
@@ -180,17 +180,17 @@ namespace DCL.Components
             var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
             if (loadable != null)
-                loadable.initialVisibility = entity.isInsideBoundaries;
+                loadable.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
 
-            ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
+            ConfigureVisibility(entity.meshRootGameObject, model.visible && entity.isInsideSceneBoundaries, entity.meshesInfo.renderers);
             
             if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
-                entity.meshesInfo.animation.enabled = model.visible;
+                entity.meshesInfo.animation.enabled = model.visible && entity.isInsideSceneBoundaries;
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity)
         {
-            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions && entity.isInsideSceneBoundaries, true, entity, CalculateCollidersLayer(model));
         }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)

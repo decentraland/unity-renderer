@@ -31,7 +31,7 @@ namespace DCL.Models
         public IShape currentShape;
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
-        public List<Collider> colliders = new List<Collider>();
+        public HashSet<Collider> colliders = new HashSet<Collider>();
         public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;
@@ -102,7 +102,7 @@ namespace DCL.Models
 
         public void RecalculateBounds()
         {   
-            if (renderers == null || renderers.Length == 0)
+            if ((renderers == null || renderers.Length == 0) && colliders.Count == 0)
             {
                 mergedBoundsValue = new Bounds();
                 return;
@@ -112,7 +112,7 @@ namespace DCL.Models
             lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
             lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
 
-            mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers);
+            mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers, colliders);
         }
 
         public void CleanReferences()

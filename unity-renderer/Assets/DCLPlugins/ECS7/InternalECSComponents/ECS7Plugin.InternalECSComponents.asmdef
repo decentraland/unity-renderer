@@ -1,0 +1,24 @@
+{
+    "name": "ECS7Plugin.InternalECSComponents",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:9b110c16a6b8f4d54ae0f56af2163334",
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:f8a3a0af3ed28474c885e04c605a7962",
+        "GUID:a871c50d0a774d2b8594d36cb4766e5e",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:ac62e852826a4b36aeb22931dad73edb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

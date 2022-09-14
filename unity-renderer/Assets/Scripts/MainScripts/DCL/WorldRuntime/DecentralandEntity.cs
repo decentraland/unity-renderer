@@ -11,7 +11,10 @@ namespace DCL.Models
     {
         public IParcelScene scene { get; set; }
         public bool markedForCleanup { get; set; } = false;
-        public bool isInsideBoundaries { get; set; } = false;
+
+        // We let the SceneBoundsChecker update these values later
+        public bool isInsideSceneOuterBoundaries { get; set; } = true;
+        public bool isInsideSceneBoundaries { get; set; } = true;
 
         public Dictionary<long, IDCLEntity> children { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IDCLEntity parent { get; private set; }

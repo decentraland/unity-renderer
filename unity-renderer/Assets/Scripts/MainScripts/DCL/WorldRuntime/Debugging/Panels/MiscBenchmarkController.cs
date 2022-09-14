@@ -144,7 +144,7 @@ namespace DCL
                 int materialCount = 0;
                 int meshesCount = 0;
 
-                var loadedScenes = Environment.i.world.state.loadedScenes;
+                var loadedScenes = Environment.i.world.state.GetLoadedScenes();
 
                 foreach (var v in loadedScenes)
                 {

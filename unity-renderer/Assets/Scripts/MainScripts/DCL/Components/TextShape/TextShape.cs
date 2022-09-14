@@ -82,14 +82,6 @@ namespace DCL.Components
             {
                 transform.forward = mainCamera.transform.forward;
             }
-            
-            var opacity = cachedModel.visible ? cachedModel.opacity : 0;
-            var totalSize = cachedModel.fontSize;
-            var totalScale = text.transform.lossyScale.sqrMagnitude;
-            bool isVisible = opacity > 0 && totalSize > 0 && totalScale > 0;
-            
-            text.enabled = isVisible;
-            meshRenderer.enabled = isVisible;
         }
 
         new public Model GetModel() { return cachedModel; }
@@ -110,7 +102,6 @@ namespace DCL.Components
             }
 
             DCLFont.SetFontFromComponent(scene, model.font, text);
-            
             
             ApplyModelChanges(text, model);
             

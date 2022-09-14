@@ -33,6 +33,7 @@ public class IntegrationTestSuite_Legacy
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
         //              like this.
+        CommonScriptableObjects.allUIHidden.Set(false);
         CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         CommonScriptableObjects.rendererState.Set(true);
 
@@ -103,6 +104,7 @@ public class IntegrationTestSuite_Legacy
 
         yield return TearDown_LegacySystems();
         DataStore.Clear();
+        ThumbnailsManager.Clear();
         TearDown_Memory();
 
         if (MapRenderer.i != null)
@@ -113,6 +115,12 @@ public class IntegrationTestSuite_Legacy
         Environment.Dispose();
 
         yield return null;
+        
+        NotificationScriptableObjects.UnloadAll();
+        AudioScriptableObjects.UnloadAll();
+        CommonScriptableObjects.UnloadAll();
+        
+        yield return null;
 
         GameObject[] gos = Object.FindObjectsOfType<GameObject>(true);
 
@@ -120,7 +128,7 @@ public class IntegrationTestSuite_Legacy
         {
             Object.Destroy(go);
         }
-
+        
         yield return null;
     }
 

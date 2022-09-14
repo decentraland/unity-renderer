@@ -12,7 +12,6 @@ public class AvatarReporterControllerShould
     private IAvatarReporterController reporterController;
     private IWorldState worldState;
     private Dictionary<string, IParcelScene> scenes;
-    private Dictionary<Vector2Int, string> sceneByCoords;
 
     [SetUp]
     public void SetUp()
@@ -30,10 +29,10 @@ public class AvatarReporterControllerShould
         });
 
         scenes = new Dictionary<string, IParcelScene>() { { "scene0", scene0 } };
-        sceneByCoords = new Dictionary<Vector2Int, string> { { Vector2Int.zero, "scene0" } };
 
-        worldState.loadedScenes.Returns(scenes);
-        worldState.loadedScenesByCoordinate.Returns(sceneByCoords);
+        worldState.GetLoadedScenes().Returns(scenes);
+        worldState.GetSceneIdByCoords(Vector2Int.zero).Returns("scene0");
+        worldState.GetSceneIdByCoords(Arg.Is<Vector2Int>(v => v != Vector2Int.zero)).Returns(default(string));
     }
 
     [Test]
@@ -110,7 +109,7 @@ public class AvatarReporterControllerShould
         });
 
         scenes.Add(sceneId, loadScene);
-        sceneByCoords.Add(scenePos, sceneId);
+        worldState.GetSceneIdByCoords(scenePos).Returns(sceneId);
 
         reporterController.ReportAvatarPosition(position);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneId);
@@ -126,17 +125,19 @@ public class AvatarReporterControllerShould
         var loadScene = Substitute.For<IParcelScene>();
         Vector2Int position = new Vector2Int(1, 0);
 
+        string sceneId = "sceneLoaded";
+
         loadScene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = "sceneLoaded",
+            id = sceneId,
             parcels = new[] { position }
         });
 
-        scenes.Add("sceneLoaded", loadScene);
-        sceneByCoords.Add(position, "sceneLoaded");
-
+        scenes.Add(sceneId, loadScene);
+        worldState.GetSceneIdByCoords(position).Returns(sceneId);
+        
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "sceneLoaded");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneId);
     }
 
     [Test]

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "common/id.proto";
+option (ecs_component_id) = 1018;
+
+message PBMeshRenderer {
+    message BoxMesh {
+        repeated float uvs = 1;
+    }
+
+    message CylinderMesh {
+        optional float radius_top = 1; // default=1.0
+        optional float radius_bottom = 2; // default=1.0
+    }
+
+    message PlaneMesh {
+        repeated float uvs = 1;
+    }
+
+    message SphereMesh {
+    }
+
+    oneof mesh {
+        BoxMesh box = 1;
+        SphereMesh sphere = 2;
+        CylinderMesh cylinder = 3;
+        PlaneMesh plane = 4;
+    }
+}

@@ -30,7 +30,6 @@ namespace Tests
         public void SetUp()
         {
             worldState = Substitute.For<IWorldState>();
-            worldState.loadedScenes.Returns(loadedScenes);
 
             sceneController = Substitute.For<ISceneController>();
             updateEventHandler = Substitute.For<IUpdateEventHandler>();
@@ -331,6 +330,9 @@ namespace Tests
             scene.entities.Returns(entities[id]);
 
             sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
+            
+            worldState.GetLoadedScenes().Returns(loadedScenes);
+            worldState.TryGetScene(id, out Arg.Any<IParcelScene>()).Returns(param => param[1] = scene);
 
             return scene;
         }

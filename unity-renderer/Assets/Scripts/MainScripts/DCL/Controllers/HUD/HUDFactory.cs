@@ -19,7 +19,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDController();
+                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController());
                 break;
             case HUDElementID.PROFILE_HUD:
                 hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
@@ -133,7 +133,8 @@ public class HUDFactory : IHUDFactory
                 hudElement = new QuestsTrackerHUDController();
                 break;
             case HUDElementID.SIGNUP:
-                hudElement = new SignupHUDController();
+                var analytics = Environment.i.platform.serviceProviders.analytics;
+                hudElement = new SignupHUDController(analytics);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;

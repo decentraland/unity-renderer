@@ -34,7 +34,8 @@ public class AvatarEditorHUDController : IHUD
     public bool bypassUpdateAvatarPreview = false;
 
     internal UserProfile userProfile;
-    internal IAnalytics analytics;
+    internal readonly IAnalytics analytics;
+    internal readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
@@ -82,9 +83,12 @@ public class AvatarEditorHUDController : IHUD
     {
         this.featureFlags = featureFlags;
         this.analytics = analytics;
+        this.newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
     }
 
-    public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
+    public void Initialize(UserProfile userProfile, 
+        BaseDictionary<string, WearableItem> catalog, 
+        bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
@@ -141,15 +145,27 @@ public class AvatarEditorHUDController : IHUD
     {
         if (this.catalog != null)
         {
-            this.catalog.OnAdded -= AddWearable;
-            this.catalog.OnRemoved -= RemoveWearable;
+            this.catalog.OnAdded -= OnAdditionalWearableAdded;
+            this.catalog.OnRemoved -= OnAdditionalWearableRemoved;
         }
 
         this.catalog = catalog;
 
         ProcessCatalog(this.catalog);
-        this.catalog.OnAdded += AddWearable;
-        this.catalog.OnRemoved += RemoveWearable;
+        this.catalog.OnAdded += OnAdditionalWearableAdded;
+        this.catalog.OnRemoved += OnAdditionalWearableRemoved;
+    }
+    
+    private void OnAdditionalWearableRemoved(string s, WearableItem item)
+    {
+        RemoveWearable(s, item); 
+        view.RefreshSelectorsSize();
+    }
+    
+    private void OnAdditionalWearableAdded(string id, WearableItem item)
+    {
+        AddWearable(id, item); 
+        view.RefreshSelectorsSize();
     }
 
     private void LoadUserProfile(UserProfile userProfile)
@@ -168,8 +184,6 @@ public class AvatarEditorHUDController : IHUD
             string.IsNullOrEmpty(userProfile.userId))
             return;
 
-        view.ShowCollectiblesLoadingSpinner(true);
-        view.ShowCollectiblesLoadingRetry(false);
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
@@ -184,7 +198,6 @@ public class AvatarEditorHUDController : IHUD
                              {
                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
                              }
-                             view.ShowCollectiblesLoadingSpinner(false);
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
                              loadingWearables = false;
                          })
@@ -206,8 +219,6 @@ public class AvatarEditorHUDController : IHUD
                                      destroyOnFinish = true
                                  });
 
-                                 view.ShowCollectiblesLoadingSpinner(false);
-                                 view.ShowCollectiblesLoadingRetry(true);
                                  Debug.LogError(error);
                                  loadingWearables = false;
                              }
@@ -288,7 +299,6 @@ public class AvatarEditorHUDController : IHUD
                     timer = 10f,
                     destroyOnFinish = true
                 });
-                view.ShowCollectiblesLoadingRetry(true);
             }
         }
     }
@@ -729,7 +739,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void OnAvatarEditorVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
-    public void SetVisibility_Internal(bool visible)
+    private void SetVisibility_Internal(bool visible)
     {
         bool isSignUpFlow = DataStore.i.common.isSignUpFlow.Get();
         if (!visible && view.isOpen)
@@ -857,8 +867,12 @@ public class AvatarEditorHUDController : IHUD
 
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
+        
         if (DataStore.i.common.isSignUpFlow.Get())
+        {
             DataStore.i.HUDs.signupVisible.Set(true);
+            newUserExperienceAnalytics.AvatarEditSuccessNux();
+        }
 
         
         avatarIsDirty = false;

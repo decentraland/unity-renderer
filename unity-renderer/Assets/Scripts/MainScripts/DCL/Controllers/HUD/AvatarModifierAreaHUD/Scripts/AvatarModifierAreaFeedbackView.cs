@@ -16,7 +16,7 @@ namespace DCL.AvatarModifierAreaFeedback
 
         private const string PATH = "_AvatarModifierAreaFeedbackHUD";
         private const string PATH_TO_WARNING_MESSAGE = "_WarningMessageAreaFeedbackHUD";
-        private BaseRefCounter<AvatarAreaWarningID> avatarAreaWarningsCounter;
+        private BaseRefCounter<AvatarModifierAreaID> avatarAreaWarningsCounter;
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
         
@@ -26,7 +26,7 @@ namespace DCL.AvatarModifierAreaFeedback
        
         internal bool isVisible;
         internal AvatarModifierAreaFeedbackState currentState;
-        internal Dictionary<AvatarAreaWarningID, GameObject> warningMessagesDictionary;
+        internal Dictionary<AvatarModifierAreaID, GameObject> warningMessagesDictionary;
         internal CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
 
         private string msgOutAnimationTrigger = "MsgOut";
@@ -42,15 +42,15 @@ namespace DCL.AvatarModifierAreaFeedback
             hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         }
 
-        public void SetUp(BaseRefCounter<AvatarAreaWarningID> avatarAreaWarnings)
+        public void SetUp(BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings)
         {
             avatarAreaWarningsCounter = avatarAreaWarnings;
             avatarAreaWarningsCounter.OnAdded += AddedNewWarning;
             avatarAreaWarningsCounter.OnRemoved += RemovedWarning;
 
-            warningMessagesDictionary = new Dictionary<AvatarAreaWarningID, GameObject>();
+            warningMessagesDictionary = new Dictionary<AvatarModifierAreaID, GameObject>();
             
-            foreach (AvatarAreaWarningID warningMessageEnum in Enum.GetValues(typeof(AvatarAreaWarningID)))
+            foreach (AvatarModifierAreaID warningMessageEnum in Enum.GetValues(typeof(AvatarModifierAreaID)))
             {
                 GameObject newWarningMessage = Instantiate(Resources.Load<GameObject>(PATH_TO_WARNING_MESSAGE), warningContainer);
                 newWarningMessage.GetComponent<TMP_Text>().text = GetWarningMessage(warningMessageEnum);
@@ -59,7 +59,7 @@ namespace DCL.AvatarModifierAreaFeedback
             }  
         }
 
-        private void RemovedWarning(AvatarAreaWarningID obj)
+        private void RemovedWarning(AvatarModifierAreaID obj)
         {
             warningMessagesDictionary[obj].gameObject.SetActive(false);
             if (avatarAreaWarningsCounter.Count().Equals(0))
@@ -67,7 +67,7 @@ namespace DCL.AvatarModifierAreaFeedback
                 Hide();
             }
         }
-        private void AddedNewWarning(AvatarAreaWarningID obj)
+        private void AddedNewWarning(AvatarModifierAreaID obj)
         {
             warningMessagesDictionary[obj].gameObject.SetActive(true);
             Show();
@@ -149,13 +149,13 @@ namespace DCL.AvatarModifierAreaFeedback
 			hudCanvasCameraModeController?.Dispose();
         }
         
-        private string GetWarningMessage(AvatarAreaWarningID idToSet)
+        private string GetWarningMessage(AvatarModifierAreaID idToSet)
         {
             switch (idToSet)
             {
-                case AvatarAreaWarningID.HIDE_AVATAR:
+                case AvatarModifierAreaID.HIDE_AVATAR:
                     return "\u2022  The avatars are hidden";
-                case AvatarAreaWarningID.DISABLE_PASSPORT:
+                case AvatarModifierAreaID.DISABLE_PASSPORT:
                     return "\u2022  Your passport is disable for\n    other players";
                 default:
                     throw new NotImplementedException();

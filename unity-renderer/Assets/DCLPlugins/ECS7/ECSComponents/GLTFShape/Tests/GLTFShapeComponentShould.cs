@@ -55,7 +55,7 @@ namespace DCL.ECSComponents.Test
             PBGLTFShape model = new PBGLTFShape();
             componentHandler.meshesInfo = new MeshesInfo();
             componentHandler.meshesInfo.meshRootGameObject = entity.gameObject;
-            componentHandler.meshesInfo.colliders = new List<Collider>();
+            componentHandler.meshesInfo.colliders = new HashSet<Collider>();
 
             // Act
             componentHandler.OnComponentModelUpdated(scene, entity, model);

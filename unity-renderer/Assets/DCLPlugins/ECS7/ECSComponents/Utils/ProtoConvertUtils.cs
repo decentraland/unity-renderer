@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using DCL.CameraTool;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -60,29 +59,34 @@ namespace DCL.ECSComponents
             return vector;
         }
         
-        public static CameraTool.CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
+        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
         {
             switch (mode)
             {
                 case CameraModeValue.FirstPerson:
-                    return CameraTool.CameraMode.ModeId.FirstPerson;
+                    return CameraMode.ModeId.FirstPerson;
                 case CameraModeValue.ThirdPerson:
-                    return CameraTool.CameraMode.ModeId.ThirdPerson;
+                    return CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }
         }
 
-        public static CameraModeValue UnityEnumToPBCameraEnum(CameraTool.CameraMode.ModeId mode)
+        public static CameraModeValue UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
         {
             switch (mode)
             {
-                case CameraTool.CameraMode.ModeId.FirstPerson:
+                case CameraMode.ModeId.FirstPerson:
                     return CameraModeValue.FirstPerson;
-                case CameraTool.CameraMode.ModeId.ThirdPerson:
+                case CameraMode.ModeId.ThirdPerson:
                 default:
                     return CameraModeValue.ThirdPerson;
             }
+        }
+
+        public static Color ToUnityColor(this Color3 color)
+        {
+            return new Color(color.R, color.G, color.B);
         }
     }
 }

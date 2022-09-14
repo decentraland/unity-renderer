@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
+using NSubstitute;
 
 namespace Tests
 {
@@ -14,7 +15,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new MinimapHUDController();
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>());
             controller.Initialize();
         }
 
@@ -56,6 +57,15 @@ namespace Tests
             controller.UpdateSceneName(sceneName);
             var view = controller.view;
             Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
+        }
+        
+        [Test]
+        public void MinimapHUD_ReportScene()
+        {
+            controller.ToggleOptions();
+            controller.view.reportSceneButton.onClick.Invoke();
+            
+            Assert.IsFalse(controller.view.sceneOptionsPanel.activeSelf);
         }
 
         [Test]

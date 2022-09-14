@@ -417,9 +417,15 @@ namespace DCL.Interface
             public string userId;
             public string name;
         }
-        
+
         [Serializable]
         private class SendReportScenePayload
+        {
+            public string sceneId;
+        }
+
+        [Serializable]
+        private class SetHomeScenePayload
         {
             public string sceneId;
         }
@@ -940,6 +946,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }
 
+        // TODO: Add sceneNumber to this response
         private static void ReportRaycastResult<T, P>(string sceneId, string queryId, string queryType, P payload) where T : RaycastResponse<P>, new() where P : RaycastHitInfo
         {
             T response = new T();
@@ -1307,6 +1314,14 @@ namespace DCL.Interface
             });
         }
 
+        public static void SetHomeScene(string sceneID)
+        {
+            SendMessage("SetHomeScene", new SetHomeScenePayload
+            {
+                sceneId = sceneID
+            });
+        }
+
         public static void SendReportPlayer(string playerId, string playerName)
         {
             SendMessage("ReportPlayer", new SendReportPlayerPayload
@@ -1530,6 +1545,11 @@ namespace DCL.Interface
             searchEnsOwnerPayload.maxResults = maxResults;
 
             SendMessage("SearchENSOwner", searchEnsOwnerPayload);
+        }
+
+        public static void RequestHomeCoordinates()
+        {
+            SendMessage("RequestHomeCoordinates");
         }
 
         public static void RequestUserProfile(string userId)

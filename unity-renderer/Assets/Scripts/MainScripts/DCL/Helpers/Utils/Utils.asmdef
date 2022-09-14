@@ -1,24 +1,25 @@
 {
-  "name": "Utils",
-  "rootNamespace": "",
-  "references": [
-    "GUID:6055be8ebefd69e48b49212b09b47b2f",
-    "GUID:cc6bfabbfe87b7949aa248893f89ce37",
-    "GUID:760a1d365aad58044916992b072cf2a6",
-    "GUID:16ad09a45a70eac4fa3ab1c6650ae7ae",
-    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-    "GUID:ee6523961ef177343ad763fcd55c7c46",
-    "GUID:f51ebe6a0ceec4240a699833d6309b23",
-    "GUID:e9cee4050cfa5534d9b26e2782df20be",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "Utils",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:16ad09a45a70eac4fa3ab1c6650ae7ae",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

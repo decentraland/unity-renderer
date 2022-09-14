@@ -87,7 +87,7 @@ public class ComponentCrdtWriteSystem : IDisposable
             }
             else if (message.writeType.HasFlag(ECSComponentWriteType.EXECUTE_LOCALLY))
             {
-                scene.crdtExecutor.ExecuteWithoutStoringState(crdt);
+                scene.crdtExecutor.ExecuteWithoutStoringState(crdt.key1, crdt.key2, crdt.data);
             }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))

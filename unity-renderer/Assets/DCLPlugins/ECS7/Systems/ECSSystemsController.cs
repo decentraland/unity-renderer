@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-using DCL.ECSRuntime;
 using ECSSystems.CameraSystem;
+using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
+using ECSSystems.VisibilitySystem;
+using ECSSystems.PointerInputSystem;
 using ECS7System = System.Action;
 
 public class ECSSystemsController : IDisposable
@@ -13,7 +15,7 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
 
-    public ECSSystemsController(IUpdateEventHandler updateEventHandler, IECSComponentWriter componentWriter, ECS7System componentWriteSystem)
+    public ECSSystemsController(IUpdateEventHandler updateEventHandler, ECS7System componentWriteSystem, SystemsContext context)
     {
         this.updateEventHandler = updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
@@ -23,13 +25,25 @@ public class ECSSystemsController : IDisposable
 
         updateSystems = new ECS7System[]
         {
-            ECSTransformParentingSystem.Update
+            ECSTransformParentingSystem.Update,
+            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
+                context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
+            ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
+                context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent)
         };
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSCameraEntitySystem.CreateSystem(componentWriter),
-            ECSPlayerTransformSystem.CreateSystem(componentWriter)
+            ECSPointerInputSystem.CreateSystem(
+                context.componentWriter,
+                context.componentGroups.pointerDownGroup,
+                context.componentGroups.pointerUpGroup,
+                context.internalEcsComponents.onPointerColliderComponent,
+                context.pointerDownComponent,
+                context.pointerUpComponent,
+                DataStore.i.ecs7, DataStore.i.Get<DataStore_Cursor>()),
+            ECSCameraEntitySystem.CreateSystem(context.componentWriter),
+            ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };
     }
 
