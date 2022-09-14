@@ -244,7 +244,7 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void GetJoinedChannels(int limit, int skip) => WebInterface.GetJoinedChannels(limit, skip);
 
-    public void GetChannelsByName(int limit, string name) => WebInterface.GetChannels(limit, null, name);
+    public void GetChannelsByName(int limit, string name, string paginationToken = null) => WebInterface.GetChannels(limit, paginationToken, name);
 
     public void GetChannels(int limit, string paginationToken) => WebInterface.GetChannels(limit, paginationToken, string.Empty);
 

@@ -69,7 +69,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
 
             var channel = new Channel("channel", 15, 11, false, false, "desc");
-            chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(channel);
+            chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", new[] {channel});
 
             view.Received(1).HideLoading();
             view.Received(1).ShowLoadingMore();
@@ -93,7 +93,8 @@ namespace DCL.Chat.HUD
             view.EntryCount.Returns(16);
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
-            chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", Array.Empty<Channel>());
+            chatController.OnChannelSearchResult +=
+                Raise.Event<Action<string, Channel[]>>("page1", Array.Empty<Channel>());
 
             // must wait at least 2 seconds to keep loading channels since the last time requested
             yield return new WaitForSeconds(3);
@@ -105,12 +106,33 @@ namespace DCL.Chat.HUD
             view.Received(1).HideLoadingMore();
             chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, "page1");
         }
+        
+        [UnityTest]
+        public IEnumerator LoadMoreChannelsByName()
+        {
+            view.EntryCount.Returns(16);
+            view.IsActive.Returns(true);
+            controller.SetVisibility(true);
+            view.OnSearchUpdated += Raise.Event<Action<string>>("woah");
+            chatController.OnChannelSearchResult +=
+                Raise.Event<Action<string, Channel[]>>("pagebyname1", Array.Empty<Channel>());
+
+            // must wait at least 2 seconds to keep loading channels since the last time requested
+            yield return new WaitForSeconds(3);
+            view.ClearReceivedCalls();
+            chatController.ClearReceivedCalls();
+
+            view.OnRequestMoreChannels += Raise.Event<Action>();
+
+            view.Received(1).HideLoadingMore();
+            chatController.Received(1).GetChannelsByName(SearchChannelsWindowController.LOAD_PAGE_SIZE, "woah", "pagebyname1");
+        }
 
         [UnityTest]
         public IEnumerator SearchChannels()
         {
             const string searchText = "bleh";
-            
+
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
 
@@ -126,7 +148,7 @@ namespace DCL.Chat.HUD
             socialAnalytics.Received(1).SendChannelSearch(searchText);
             chatController.Received(1).GetChannelsByName(SearchChannelsWindowController.LOAD_PAGE_SIZE, searchText);
         }
-        
+
         [UnityTest]
         public IEnumerator LoadFirstPageChannelsWhenClearingTheSearch()
         {
@@ -151,11 +173,11 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
 
             view.OnJoinChannel += Raise.Event<Action<string>>("channelId");
-            
+
             chatController.Received(1).JoinOrCreateChannel("channelId");
             Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
-        
+
         [Test]
         public void LeaveChannel()
         {
@@ -163,12 +185,9 @@ namespace DCL.Chat.HUD
 
             string testChannelId = "channelId";
             string channelToLeave = "";
-            controller.OnOpenChannelLeave += channelId =>
-            {
-                channelToLeave = channelId;
-            };
+            controller.OnOpenChannelLeave += channelId => { channelToLeave = channelId; };
             view.OnLeaveChannel += Raise.Event<Action<string>>(testChannelId);
-            
+
             Assert.AreEqual(channelToLeave, testChannelId);
             Assert.AreEqual(ChannelLeaveSource.Search, dataStore.channels.channelLeaveSource.Get());
         }
@@ -181,7 +200,7 @@ namespace DCL.Chat.HUD
             controller.OnOpenChannelCreation += () => called = true;
 
             view.OnCreateChannel += Raise.Event<Action>();
-            
+
             Assert.IsTrue(called);
             Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }

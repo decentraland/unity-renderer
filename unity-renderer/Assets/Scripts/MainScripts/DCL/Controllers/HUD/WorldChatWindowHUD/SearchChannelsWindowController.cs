@@ -20,6 +20,7 @@ namespace DCL.Chat.HUD
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
         private string paginationToken;
+        private string searchText;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
         public ISearchChannelsWindowView View => view;
@@ -119,6 +120,7 @@ namespace DCL.Chat.HUD
             view.ClearAllEntries();
             view.HideLoadingMore();
             view.ShowLoading();
+            this.searchText = searchText;
             
             if (string.IsNullOrEmpty(searchText))
                 chatController.GetChannels(LOAD_PAGE_SIZE);
@@ -147,9 +149,15 @@ namespace DCL.Chat.HUD
         private void LoadMoreChannels()
         {
             if (IsLoading()) return;
+            if (string.IsNullOrEmpty(paginationToken)) return;
+            
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
-            chatController.GetChannels(LOAD_PAGE_SIZE, paginationToken);
+            
+            if (string.IsNullOrEmpty(searchText))
+                chatController.GetChannels(LOAD_PAGE_SIZE, paginationToken);
+            else
+                chatController.GetChannelsByName(LOAD_PAGE_SIZE, searchText, paginationToken);
         }
 
         private bool IsLoading() => (DateTime.Now - loadStartedTimestamp).TotalSeconds < LOAD_TIMEOUT;

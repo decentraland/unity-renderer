@@ -70,7 +70,7 @@ public class ChatController_Mock : IChatController
     {
     }
 
-    public void GetChannelsByName(int limit, string name)
+    public void GetChannelsByName(int limit, string name, string paginationToken = null)
     {
     }
 

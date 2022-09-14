@@ -88,7 +88,11 @@ namespace DCL.Chat.Channels
             remove => controller.OnUpdateChannelMembers -= value;
         }
 
-        public event Action<string, Channel[]> OnChannelSearchResult;
+        public event Action<string, Channel[]> OnChannelSearchResult
+        {
+            add => controller.OnChannelSearchResult += value;
+            remove => controller.OnChannelSearchResult -= value;
+        }
 
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
 
@@ -202,7 +206,7 @@ namespace DCL.Chat.Channels
             }
         }
 
-        public void GetChannelsByName(int limit, string name) =>
+        public void GetChannelsByName(int limit, string name, string paginationToken = null) =>
             SearchFakeChannels(limit, name).Forget();
 
         public void GetChannels(int limit, string paginationToken) =>

@@ -30,7 +30,7 @@ public interface IChatController
     void LeaveChannel(string channelId);
     void GetChannelMessages(string channelId, int limit, string fromMessageId);
     void GetJoinedChannels(int limit, int skip);
-    void GetChannelsByName(int limit, string name);
+    void GetChannelsByName(int limit, string name, string paginationToken = null);
     void GetChannels(int limit, string paginationToken = null);
     void MuteChannel(string channelId);
     void UnmuteChannel(string channelId);
