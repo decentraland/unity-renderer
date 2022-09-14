@@ -414,6 +414,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (!string.IsNullOrEmpty(expressionTriggerId))
             {
                 animation.Stop(expressionTriggerId);
+                latestAnimation = AvatarAnimation.IDLE;
             }
             
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
