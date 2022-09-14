@@ -1,0 +1,24 @@
+﻿syntax = "proto3";
+
+import "common/id.proto";
+import "common/Vector3.proto";
+
+option (ecs_component_id) = 1068;
+
+message PBRaycastResult {
+  int32 timestamp = 1;
+  Vector3 origin = 2;
+  Vector3 direction = 3;
+  repeated RaycastHit hits = 4;
+}
+
+// Position will be relative to the scene  
+message RaycastHit {
+  Vector3 position = 1;
+  Vector3 origin = 2;
+  Vector3 direction = 3;
+  Vector3 normal_hit = 4;
+  float length = 5;
+  optional string mesh_name = 6;
+  optional int64 entity_id = 7;
+}

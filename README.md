@@ -133,6 +133,7 @@ If the local WebGL build always fails with the error `System.ComponentModel.Win3
 - [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
   - For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
 - [How to create new components for ECS7](docs/ecs7-component-creation.md)
+- [How to modify the Renderer Protocol](docs/how-to-renderer-protocol.md)
 
 ## Setup CircleCI
 

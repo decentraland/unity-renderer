@@ -8,18 +8,19 @@ namespace DCL
 {
     public class AssetPromise_Texture : AssetPromise<Asset_Texture>
     {
-        const TextureWrapMode DEFAULT_WRAP_MODE = TextureWrapMode.Clamp;
-        const FilterMode DEFAULT_FILTER_MODE = FilterMode.Bilinear;
         private const string PLAIN_BASE64_PROTOCOL = "data:text/plain;base64,";
+        private const TextureWrapMode DEFAULT_WRAP_MODE = TextureWrapMode.Clamp;
+        private const FilterMode DEFAULT_FILTER_MODE = FilterMode.Bilinear;
 
-        string url;
-        string idWithTexSettings;
-        string idWithDefaultTexSettings;
-        TextureWrapMode wrapMode;
-        FilterMode filterMode;
-        bool storeDefaultTextureInAdvance = false;
-        bool storeTexAsNonReadable = false;
+        private readonly string idWithTexSettings;
+        private readonly string idWithDefaultTexSettings;
+        private readonly TextureWrapMode wrapMode;
+        private readonly FilterMode filterMode;
+        private readonly bool storeDefaultTextureInAdvance = false;
+        private readonly bool storeTexAsNonReadable = false;
         private readonly int maxTextureSize;
+        
+        public string url { get; }
 
         WebRequestAsyncOperation webRequestOp = null;
 
