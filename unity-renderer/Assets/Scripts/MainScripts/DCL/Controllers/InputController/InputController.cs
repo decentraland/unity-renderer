@@ -240,7 +240,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleWorldChat:
                     if (allUIHidden)
                         break;
-                    InputProcessor.FromKey(action, KeyCode.Return, modifiers: InputProcessor.Modifier.None);
+                    InputProcessor.FromKey(action, KeyCode.Return, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleUIVisibility:
                     InputProcessor.FromKey(action, KeyCode.U, modifiers: InputProcessor.Modifier.None);

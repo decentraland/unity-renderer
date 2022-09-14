@@ -138,9 +138,10 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     {
         meshRenderer.enabled = false;
         animation.Stop();
+        const float REVEALED_POSITION = -10;
         foreach (Material m in _materials)
         {
-            m.SetVector("_RevealPosition", new Vector3(0, -2.5f, 0));
+            m.SetVector("_RevealPosition", new Vector3(0, REVEALED_POSITION, 0));
         }
         _ghostMaterial.SetVector("_RevealPosition", new Vector3(0, 2.5f, 0));
         DisableParticleEffects();

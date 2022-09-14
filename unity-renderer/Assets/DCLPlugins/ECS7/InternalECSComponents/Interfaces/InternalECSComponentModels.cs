@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using DCL.ECSComponents;
 using UnityEngine;
+using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
 {
@@ -33,4 +35,20 @@ namespace DCL.ECS7.InternalComponents
         public bool visible = true;
         public bool dirty = true;
     }
+
+    public class InternalInputEventResults
+    {
+        public class EventData
+        {
+            public ActionButton button;
+            public RaycastHit hit;
+            public PointerEventType type;
+            public int timestamp;
+            public float analog;
+        }
+
+        public Queue<EventData> events;
+        public bool dirty;
+        public int lastTimestamp;
+    }    
 }
