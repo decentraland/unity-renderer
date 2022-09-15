@@ -21,11 +21,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue)
         {
             int value = (int)newValue;
-            if (value == Settings.i.qualitySettingsPresets.Length)
-                return;
-
-            QualitySettings preset = Settings.i.qualitySettingsPresets[value];
-            currentQualitySetting = preset;
+            if (value != Settings.i.qualitySettingsPresets.Length)
+                currentQualitySetting = Settings.i.qualitySettingsPresets[value];
         }
 
         private void SetupQualityPresetLabels(params string[] customs)
