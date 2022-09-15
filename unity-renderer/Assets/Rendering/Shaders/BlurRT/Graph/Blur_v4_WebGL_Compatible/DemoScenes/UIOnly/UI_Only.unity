@@ -634,10 +634,10 @@ MonoBehaviour:
   m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    x: -0.01
+    y: 0.21
+    width: 1.02
+    height: 0.57
 --- !u!222 &555860453
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -729,9 +729,9 @@ MonoBehaviour:
   m_UVRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.22
     width: 1
-    height: 1
+    height: 0.55
 --- !u!222 &561208205
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1513,7 +1513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
+  m_RequiresOpaqueTextureOption: 1
   m_CameraType: 0
   m_Cameras: []
   m_RendererIndex: -1
