@@ -108,8 +108,7 @@ public class JumpInButton : MonoBehaviour
     private void JumpIn()
     {
         OnClick?.Invoke();
-        //DataStore.i.rpcContext.context.teleportContext.queueMessages()
-        WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
+        DataStore.i.rpcContext.context.teleportContext.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName);
         socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
     }
 }
