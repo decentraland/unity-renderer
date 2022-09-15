@@ -1,6 +1,6 @@
-using DCL;
 using System;
 using System.Collections;
+using DCL;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,14 +12,14 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     bool isVisible { get; }
 
     /// <summary>
-    /// It will be triggered when UI Component is focused.
-    /// </summary>
-    event Action<bool> onFocused;
-
-    /// <summary>
     /// It will inform if the UI Component is focused or not.
     /// </summary>
     bool isFocused { get; }
+
+    /// <summary>
+    /// It will be triggered when UI Component is focused.
+    /// </summary>
+    event Action<bool> onFocused;
 
     /// <summary>
     /// It is called at the beginning of the UI component lifecycle.
@@ -79,7 +79,7 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig<T> where T: BaseComponentModel
+public interface IComponentModelConfig<T> where T : BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
@@ -91,10 +91,16 @@ public interface IComponentModelConfig<T> where T: BaseComponentModel
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     internal BaseComponentModel baseModel;
+    private bool isDestroyed = false;
     internal ShowHideAnimator showHideAnimator;
 
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+        Dispose();
+    }
+
     public virtual bool isVisible { get; private set; }
-    private bool isDestroyed = false;
 
     public event Action<bool> onFocused;
     public bool isFocused { get; private set; }
@@ -150,18 +156,23 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose()
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
-        if (!isDestroyed)
-            Destroy(gameObject);
+        DestroyInternal(gameObject);
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
     public virtual void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
-    private void OnDestroy()
+    protected void DestroyInternal(object obj)
     {
-        isDestroyed = true;
-        Dispose();
+        if (isDestroyed)
+            return;
+
+#if !UNITY_EDITOR
+        Destroy(gameObject);
+#else
+        DestroyImmediate(gameObject);
+#endif
     }
 
     internal void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
