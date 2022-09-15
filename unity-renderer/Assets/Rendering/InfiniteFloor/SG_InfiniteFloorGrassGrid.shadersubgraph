@@ -7,6 +7,9 @@
             "m_Id": "e01f7c264af944fdb8bcea2d35ae3001"
         },
         {
+            "m_Id": "622ed4642c4445d194b78ad6759b208d"
+        },
+        {
             "m_Id": "575137a8a58748d1a0e062a00216bbe5"
         },
         {
@@ -200,6 +203,9 @@
         },
         {
             "m_Id": "98ef4302d6f242329024c3c0a628f93f"
+        },
+        {
+            "m_Id": "04d234e0b8ef4470b8c9c64108324e35"
         }
     ],
     "m_GroupDatas": [
@@ -236,6 +242,20 @@
                     "m_Id": "402cb8a3f7e14efe9bec4fb9d388ef3a"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "04d234e0b8ef4470b8c9c64108324e35"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "fa7d9eda42a2476d8bb6e4f49d05d7bc"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -528,20 +548,6 @@
             "m_InputSlot": {
                 "m_Node": {
                     "m_Id": "479d5e5f38be495d982aed56501420aa"
-                },
-                "m_SlotId": 0
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "52488d6c363c4718ba57d4134b05c7ee"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "fa7d9eda42a2476d8bb6e4f49d05d7bc"
                 },
                 "m_SlotId": 0
             }
@@ -1114,6 +1120,41 @@
     "m_Value": 0.75,
     "m_DefaultValue": 0.5,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "04d234e0b8ef4470b8c9c64108324e35",
+    "m_Group": {
+        "m_Id": "f43904eb0ea4484ab581e3c4e3cf61fc"
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -779.0000610351563,
+            "y": -363.0,
+            "width": 127.0,
+            "height": 34.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "4b0dc343860a4cf3b11c47b934dde849"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "622ed4642c4445d194b78ad6759b208d"
+    }
 }
 
 {
@@ -2725,6 +2766,27 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
+    "m_ObjectId": "4b0dc343860a4cf3b11c47b934dde849",
+    "m_Id": 0,
+    "m_DisplayName": "WorldPos",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "4c9638b35b5246299d186b35d1dd6062",
     "m_Id": 0,
@@ -2868,10 +2930,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -797.0000610351563,
-            "y": -363.0,
+            "x": -985.0000610351563,
+            "y": -362.0,
             "width": 145.0,
-            "height": 130.0
+            "height": 129.00001525878907
         }
     },
     "m_Slots": [
@@ -3294,6 +3356,29 @@
         "w": 0.0
     },
     "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty",
+    "m_ObjectId": "622ed4642c4445d194b78ad6759b208d",
+    "m_Guid": {
+        "m_GuidSerialized": "d3c58e36-672e-4902-af9f-b87162a5be39"
+    },
+    "m_Name": "WorldPos",
+    "m_DefaultReferenceName": "Vector2_622ed4642c4445d194b78ad6759b208d",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
@@ -4693,8 +4778,8 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -797.0000610351563,
-            "y": -233.0,
-            "width": 146.00001525878907,
+            "y": -329.0,
+            "width": 145.0,
             "height": 34.0
         }
     },
