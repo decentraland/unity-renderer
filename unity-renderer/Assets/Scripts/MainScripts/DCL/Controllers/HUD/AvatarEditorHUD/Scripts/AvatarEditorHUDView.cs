@@ -101,11 +101,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal GameObject loadingSpinnerGameObject;
 
     [Header("Collectibles")]
-    [SerializeField]
-    internal GameObject web3Container;
-
-    [SerializeField]
-    internal GameObject noWeb3Container;
+    [SerializeField] internal GameObject web3Container;
+    [SerializeField] internal GameObject noWeb3Container;
+    [SerializeField] private GameObject collectiblesEmptyListContainer;
 
     [Header("Skins")]
     
@@ -632,6 +630,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         skinsPopulatedListContainer.SetActive(show);
         skinsEmptyListContainer.SetActive(!show);
         skinsConnectWalletButtonContainer.SetActive(show);
+    }
+
+    public void ShowCollectiblesPopulatedList(bool show)
+    {
+        collectiblesEmptyListContainer.SetActive(!show);
     }
 
     public void SetThirdPartyCollectionsVisibility(bool visible) =>

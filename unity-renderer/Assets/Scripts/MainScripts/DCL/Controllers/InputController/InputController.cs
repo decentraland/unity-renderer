@@ -468,6 +468,10 @@ public class InputController : MonoBehaviour
         for (var i = 0; i < holdActions.Length; i++)
         {
             var action = holdActions[i];
+            
+            if (action.isHoldBlocked != null && action.isHoldBlocked.Get())
+                continue;
+            
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
@@ -552,6 +556,10 @@ public class InputController : MonoBehaviour
         for (var i = 0; i < measurableActions.Length; i++)
         {
             var action = measurableActions[i];
+            
+            if (action.isMeasurableBlocked != null && action.isMeasurableBlocked.Get())
+                continue;
+            
             switch (action.GetDCLAction())
             {
                 case DCLAction_Measurable.CharacterXAxis:
