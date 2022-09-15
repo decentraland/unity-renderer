@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 213563372}
   - component: {fileID: 213563371}
   - component: {fileID: 213563370}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: UI_Blurred_Projector (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -585,7 +585,7 @@ GameObject:
   - component: {fileID: 555860453}
   - component: {fileID: 555860454}
   - component: {fileID: 555860452}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: UI_Blurred_Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -679,7 +679,7 @@ GameObject:
   - component: {fileID: 561208205}
   - component: {fileID: 561208206}
   - component: {fileID: 561208204}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: UI_Blurred_Projector (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1047,7 +1047,7 @@ GameObject:
   - component: {fileID: 836304855}
   - component: {fileID: 836304854}
   - component: {fileID: 836304856}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: UI_Tab_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
