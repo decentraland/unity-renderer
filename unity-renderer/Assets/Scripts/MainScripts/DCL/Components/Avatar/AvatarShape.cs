@@ -415,7 +415,9 @@ namespace DCL
             playerName?.Hide(true);
             if (player != null)
             {
-                otherPlayers.Remove(player.id);
+                // AvatarShape used from the SDK doesn't register the avatars in 'otherPlayers'
+                if(!string.IsNullOrEmpty(player.id))
+                    otherPlayers.Remove(player.id);
                 player = null;
             }
 
