@@ -199,6 +199,7 @@ public class AvatarEditorHUDController : IHUD
                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
                              }
                              view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
+                             view.ShowCollectiblesPopulatedList(ownedWearables.Any(item => item.IsCollectible()));
                              loadingWearables = false;
                          })
                          .Catch((error) =>
