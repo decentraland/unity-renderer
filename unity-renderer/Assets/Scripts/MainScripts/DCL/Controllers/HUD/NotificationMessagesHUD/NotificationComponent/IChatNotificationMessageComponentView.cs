@@ -44,13 +44,7 @@ public interface IChatNotificationMessageComponentView
     /// Set the notification player icon if isPrivate is true.
     /// </summary>
     /// <param name="uri">Uri of the image. Null for hide the icon.</param>
-    void SetImage(string uri, bool activateBackground = true);
-
-    /// <summary>
-    /// Set the notification player icon if isPrivate is true.
-    /// </summary>
-    /// <param name="image">Sprite of the image. Null for hide the icon.</param>
-    void SetImage(Sprite image, bool activateBackground = true);
+    void SetImage(string uri);
 
     /// <summary>
     /// Set the notification maximum content characters.

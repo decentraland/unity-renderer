@@ -45,7 +45,6 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
         notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
         chatNotificationComponentView.shouldAnimateFocus = false;
-        chatNotificationComponentView.SetImage(notificationsImage, false);
         chatNotificationComponentView.SetIsPrivate(true);
     }
 
@@ -138,6 +137,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     private void PopulatePrivateNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
+        chatNotificationComponentView.SetIsPrivate(true);
         chatNotificationComponentView.SetMessage(message.body);
         chatNotificationComponentView.SetNotificationHeader("Private message");
         chatNotificationComponentView.SetNotificationSender($"{username}:");
@@ -146,6 +146,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     private void PopulatePublicNotification(ChatMessage message, string username = null)
     {
+        chatNotificationComponentView.SetIsPrivate(false);
         chatNotificationComponentView.SetMessage(message.body);
 
         var channelId = string.IsNullOrEmpty(message.recipient) ? "nearby" : message.recipient;
@@ -162,6 +163,7 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         chatNotificationComponentView.SetNotificationTargetId("conversationList");
         chatNotificationComponentView.SetNotificationHeader("CHAT NOTIFICATIONS");
         chatNotificationComponentView.SetNotificationSender($"{stackedNotifications} messages");
+        chatNotificationComponentView.SetIsMultipleNotifications();
     }
 
     public override void Show(bool instant = false)

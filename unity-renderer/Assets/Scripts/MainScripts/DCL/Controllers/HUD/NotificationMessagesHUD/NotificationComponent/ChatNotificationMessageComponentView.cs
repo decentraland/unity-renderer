@@ -20,6 +20,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal TMP_Text notificationTimestamp;
     [SerializeField] internal ImageComponentView image;
     [SerializeField] internal GameObject imageBackground;
+    [SerializeField] internal GameObject multiNotificationBackground;
     [SerializeField] internal GameObject firstSeparator;
     [SerializeField] internal GameObject secondSeparator;
     [SerializeField] internal bool isPrivate;
@@ -32,6 +33,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal ChatNotificationMessageComponentModel model;
     [SerializeField] private Color privateColor;
     [SerializeField] private Color publicColor;
+    [SerializeField] private Color standardColor;
     [SerializeField] private Color[] channelColors;
 
     public event Action<string> OnClickedNotification;
@@ -155,6 +157,14 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         ForceUIRefresh();
     }
 
+    public void SetIsMultipleNotifications()
+    {
+        imageBackground.SetActive(false);
+        multiNotificationBackground.SetActive(true);
+        notificationHeader.color = standardColor;
+        ForceUIRefresh();
+    }
+
     public void SetIsPrivate(bool isPrivate)
     {
         model.isPrivate = isPrivate;
@@ -162,6 +172,9 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         imageBackground.SetActive(isPrivate);
         firstSeparator.SetActive(isPrivate);
         secondSeparator.SetActive(isPrivate);
+        if(multiNotificationBackground != null)
+            multiNotificationBackground.SetActive(false);
+            
         if (isPrivate)
             notificationHeader.color = privateColor;
         else
@@ -169,30 +182,14 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         ForceUIRefresh();
     }
 
-    public void SetImage(string uri, bool activateBackground = true)
+    public void SetImage(string uri)
     {
         if (!isPrivate)
             return;
 
         image.SetImage((Sprite)null);
-        var tempColor = backgroundImage.color;
-        tempColor.a = activateBackground ? 1.0f : 0.01f;
-        backgroundImage.color = tempColor;
         model.imageUri = uri;
         image.SetImage(uri);
-        ForceUIRefresh();
-    }
-
-    public void SetImage(Sprite icon, bool activateBackground = true)
-    {
-        if (!isPrivate)
-            return;
-
-        image.SetImage((Sprite)null);
-        var tempColor = backgroundImage.color;
-        tempColor.a = activateBackground ? 1.0f : 0.01f;
-        backgroundImage.color = tempColor;
-        image.SetImage(icon);
         ForceUIRefresh();
     }
 
