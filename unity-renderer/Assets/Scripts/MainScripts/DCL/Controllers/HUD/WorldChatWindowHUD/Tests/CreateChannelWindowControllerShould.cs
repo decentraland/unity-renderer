@@ -177,5 +177,34 @@ namespace DCL.Chat.HUD
             
             view.Received(1).Hide();
         }
+
+        [Test]
+        public void ShowTooShortError()
+        {
+            chatController.GetAllocatedChannel(Arg.Any<string>()).Returns((Channel) null);
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+
+            view.OnChannelNameUpdated += Raise.Event<Action<string>>("df");
+            
+            view.Received(1).ShowTooShortError();
+            view.Received(1).DisableCreateButton();
+        }
+        
+        [TestCase("cha nnel")]
+        [TestCase("cha$nnel")]
+        [TestCase("channel_")]
+        [TestCase("#channel")]
+        public void ShowFormatError(string name)
+        {
+            chatController.GetAllocatedChannel(Arg.Any<string>()).Returns((Channel) null);
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+
+            view.OnChannelNameUpdated += Raise.Event<Action<string>>(name);
+            
+            view.Received(1).ShowWrongFormatError();
+            view.Received(1).DisableCreateButton();
+        }
     }
 }

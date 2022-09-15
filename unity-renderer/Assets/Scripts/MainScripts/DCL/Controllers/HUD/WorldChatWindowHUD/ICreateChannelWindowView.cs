@@ -20,5 +20,7 @@ namespace DCL.Chat.HUD
         void ClearInputText();
         void Dispose();
         void FocusInputField();
+        void ShowWrongFormatError();
+        void ShowTooShortError();
     }
 }
