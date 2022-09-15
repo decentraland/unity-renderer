@@ -23,11 +23,13 @@ Rendered components (any 'Shape' component), that are outside their scene bounda
 - [Normal mode (Production) feedback style](https://github.com/decentraland/unity-renderer/blob/d73b9ba97aca772740e8fd437c914a7101d15770/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsFeedbackStyle_Simple.cs)
 
 ### Entity actions that trigger being added to the SBC checking
-- When an entity is created
-- When a shape is updated
-- 
-- When any of the affected components are attached to the entity
-- 
+- [When an entity is created](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L366)
+- [When an entity shape is updated](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L373)
+- [When an entity is enparented to the camera](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L509)
+- [When an entity is reparented to the avatar](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L528)
+- [When an entity is normally reparented](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L557)
+- [When any affected component implementing the `IOutOfSceneBoundariesHandler` interface is attached to the entity](https://github.com/decentraland/unity-renderer/blob/1fc852690b414b51e9f70dc1c812f2a9427a2b79/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ECSComponentManagerLegacy/ECSComponentsManagerLegacy.cs#L435) 
+- [When the `AvatarAttachHandler` starts its entity update](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/Components/AvatarAttach/AvatarAttachHandler.cs#L141) 
 
 #### Regular-shaped scenes
 
