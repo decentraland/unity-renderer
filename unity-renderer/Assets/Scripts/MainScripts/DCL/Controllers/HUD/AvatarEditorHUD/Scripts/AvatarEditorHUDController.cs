@@ -58,7 +58,7 @@ public class AvatarEditorHUDController : IHUD
     private bool ownedWearablesAlreadyLoaded = false;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
-    private bool avatarIsDirty = false;
+    internal bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
     private float lastTimeOwnedEmotesChecked = float.MinValue;
     internal bool collectionsAlreadyLoaded = false;
@@ -363,6 +363,9 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
+            return;
+
+        if (avatarIsDirty)
             return;
 
         view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
@@ -907,11 +910,11 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!current && avatarIsDirty)
         {
+            avatarIsDirty = false;
+            
             LoadUserProfile(userProfile, true);
 
             emotesCustomizationComponentController.RestoreEmoteSlots();
-
-            avatarIsDirty = false;
         }
     }
 
