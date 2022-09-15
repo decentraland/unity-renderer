@@ -1,4 +1,5 @@
 using System;
+using DCL;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using TMPro;
@@ -107,6 +108,7 @@ public class JumpInButton : MonoBehaviour
     private void JumpIn()
     {
         OnClick?.Invoke();
+        //DataStore.i.rpcContext.context.teleportContext.queueMessages()
         WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
         socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
     }

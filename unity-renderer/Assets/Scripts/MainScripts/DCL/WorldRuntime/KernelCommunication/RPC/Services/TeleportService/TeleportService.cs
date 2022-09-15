@@ -12,8 +12,6 @@ namespace RPC.Services
         private static readonly UniTask<Teleport.Types.FromKernel.Types.TeleportResponse> defaultTeleportResponse = UniTask.FromResult(new Teleport.Types.FromKernel.Types.TeleportResponse());
         private static readonly UniTask<Teleport.Types.FromKernel.Types.RequestTeleportResponse> defaultRequestTeleportResponse = UniTask.FromResult(new Teleport.Types.FromKernel.Types.RequestTeleportResponse());
 
-        public static readonly Queue<Teleport.Types.FromRenderer> queueMessages = new Queue<Teleport.Types.FromRenderer>();
-        
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             TeleportService<RPCContext>.RegisterService(
@@ -26,7 +24,7 @@ namespace RPC.Services
 
         public static void JumpIn(int x, int y, string serverName)
         {
-            queueMessages.Enqueue(new Teleport.Types.FromRenderer()
+            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
             {
                 JumpIn = { ParcelX = x, ParcelY = y, Realm = serverName }
             });
@@ -34,7 +32,7 @@ namespace RPC.Services
         
         public static void TeleportTo(int x, int y)
         {
-            queueMessages.Enqueue(new Teleport.Types.FromRenderer()
+            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
             {
                 TeleportTo = { X = x, Y = y }
             });
@@ -42,7 +40,7 @@ namespace RPC.Services
         
         public static void TeleportToCrowd()
         {
-            queueMessages.Enqueue(new Teleport.Types.FromRenderer()
+            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
             {
                 TeleportToCrowd = {}
             });
@@ -50,7 +48,7 @@ namespace RPC.Services
                 
         public static void TeleportToMagic()
         {
-            queueMessages.Enqueue(new Teleport.Types.FromRenderer()
+            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
             {
                 TeleportToMagic = {}
             });
@@ -63,9 +61,9 @@ namespace RPC.Services
         {
             while (true)
             {
-                if (queueMessages.Count > 0)
+                if (context.teleportContext.queueMessages.Count > 0)
                 {
-                    Teleport.Types.FromRenderer message = queueMessages.Dequeue();
+                    Teleport.Types.FromRenderer message = context.teleportContext.queueMessages.Dequeue();
                     yield return message;
                 }
                 else
