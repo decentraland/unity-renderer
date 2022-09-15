@@ -57,7 +57,11 @@ namespace DCL.Components
             var loadableShape = Environment.i.world.state.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
-            loadableShape.initialVisibility = model.visible && entity.isInsideSceneBoundaries;
+            
+            bool initialVisibility = model.visible;
+            if (!DataStore.i.debugConfig.isDebugMode.Get())
+                initialVisibility &= entity.isInsideSceneBoundaries;
+            loadableShape.initialVisibility = initialVisibility;
 
             loadableShape.withCollisions = model.withCollisions && entity.isInsideSceneBoundaries;
             loadableShape.backgroundColor = model.color;

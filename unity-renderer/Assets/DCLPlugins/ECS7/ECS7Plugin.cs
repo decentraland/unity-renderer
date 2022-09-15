@@ -20,6 +20,8 @@ namespace DCL.ECS7
 
         public ECS7Plugin()
         {
+            DataStore.i.ecs7.isEcs7Enabled = true;
+
             sceneController = Environment.i.world.sceneController;
 
             componentsFactory = new ECSComponentsFactory();
@@ -31,8 +33,13 @@ namespace DCL.ECS7
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
 
-            SystemsContext systemsContext = new SystemsContext(componentWriter, internalEcsComponents, new ComponentGroups(componentsManager));
-            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate, systemsContext);
+            SystemsContext systemsContext = new SystemsContext(componentWriter,
+                internalEcsComponents,
+                new ComponentGroups(componentsManager),
+                (ECSComponent<PBOnPointerDown>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_DOWN),
+                (ECSComponent<PBOnPointerUp>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_UP));
+
+            systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 
             canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
 
