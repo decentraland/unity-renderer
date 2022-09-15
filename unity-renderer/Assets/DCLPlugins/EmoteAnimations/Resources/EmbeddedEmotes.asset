@@ -175,7 +175,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: hammer
     baseUrl: 
     baseUrlBundles: 
@@ -197,7 +197,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: tik
     baseUrl: 
     baseUrlBundles: 
