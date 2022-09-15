@@ -65,7 +65,7 @@ namespace DCL.Camera
             DataStore.i.camera.hudsCamera.Set(hudsCamera);
             DataStore.i.camera.transform.Set(cameraTransform);
 
-            SetCameraEnabledState(false);
+            SetCameraEnabledState(CommonScriptableObjects.rendererState.Get());
 
             CommonScriptableObjects.cameraBlocked.OnChange += CameraBlocked_OnChange;
 
