@@ -1483,8 +1483,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 18
-    m_Right: 18
+    m_Left: 13
+    m_Right: 13
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
@@ -2063,7 +2063,7 @@ PrefabInstance:
     - target: {fileID: 8158256326675281976, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -36
+      value: -26
       objectReference: {fileID: 0}
     - target: {fileID: 8158256326675281976, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
