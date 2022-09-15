@@ -344,9 +344,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool ownPlayer)
     {
         float timeTillEnd = animationState.length - animationState.time;
-        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME;
+        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
         bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-        return (!bb.shouldLoop && isAnimationOver) || isMoving;
+        return isAnimationOver || isMoving;
     }
 
     private static bool ExpressionAirTransitionCondition(BlackBoard bb)
