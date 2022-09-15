@@ -12,7 +12,7 @@ namespace DCL.SettingsCommon
 
         private AudioSettings defaultAudioSettings = new AudioSettings
         {
-            outputDevice = "Default output",
+            outputDevice = 0,
             masterVolume = 1f,
             voiceChatVolume = 1f,
             avatarSFXVolume = 1f,

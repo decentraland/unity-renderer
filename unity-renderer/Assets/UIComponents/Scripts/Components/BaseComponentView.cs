@@ -163,15 +163,15 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
-    protected void DestroyInternal(object obj)
+    protected void DestroyInternal(UnityEngine.Object obj)
     {
         if (isDestroyed)
             return;
 
 #if !UNITY_EDITOR
-        Destroy(gameObject);
+        Destroy(obj);
 #else
-        DestroyImmediate(gameObject);
+        DestroyImmediate(obj);
 #endif
     }
 
