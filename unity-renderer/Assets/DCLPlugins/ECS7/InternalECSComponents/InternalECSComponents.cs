@@ -6,10 +6,9 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
-
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     public IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
-
+    public IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
     public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
 
@@ -50,6 +49,12 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null);
+
+        inputEventResultsComponent = new InternalECSComponent<InternalInputEventResults>(
+            InternalECSComponentsId.INPUT_EVENTS_RESULT,
+            componentsManager,
+            componentsFactory,
+            null);            
     }
 
     public void Dispose()
@@ -59,5 +64,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         onPointerColliderComponent.Dispose();
         physicColliderComponent.Dispose();
         renderersComponent.Dispose();
+        inputEventResultsComponent.Dispose();
     }
 }
