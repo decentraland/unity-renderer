@@ -38,7 +38,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float FALL_TRANSITION_TIME = 0.5f;
     const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
     const float EXPRESSION_ENTER_TRANSITION_TIME = 0.1f;
-    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.07f;
+    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.02f;
 
     const float AIR_EXIT_TRANSITION_TIME = 0.2f;
 
