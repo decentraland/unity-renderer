@@ -226,7 +226,12 @@ public class DCLCharacterController : MonoBehaviour
     public void Teleport(string teleportPayload)
     {
         var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
-        dataStorePlayer.lastTeleportPosition.Set(payload, notifyEvent: true);
+        Teleport(payload);
+    }
+    
+    public void Teleport(Vector3 newPosition)
+    {
+        dataStorePlayer.lastTeleportPosition.Set(newPosition, notifyEvent: true);
     }
     
     private void Teleport(Vector3 newPosition, Vector3 prevPosition)

@@ -32,6 +32,7 @@ namespace RPC
         {
             return BuildServer(context, transport)
                    .RegisterService(CRDTServiceImpl.RegisterService)
+                   .RegisterService(TeleportServiceImpl.RegisterService)
                    .Build();
         }
 
