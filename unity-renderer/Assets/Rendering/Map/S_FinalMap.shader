@@ -26,7 +26,7 @@ Shader "Custom/S_FinalMap"
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
 
-                [HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
+        [HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
         [HideInInspector]_Stencil("Stencil ID", Float) = 0
         [HideInInspector]_StencilOp("Stencil Operation", Float) = 0
         [HideInInspector]_StencilWriteMask("Stencil Write Mask", Float) = 255
@@ -255,7 +255,7 @@ void Unity_Add_float2(float2 A, float2 B, out float2 Out)
 }
 
 // 7b6d5a90df0cb86d20ecea9cb96d928e
-#include "Assets/Rendering/Map/V5/MapV5.hlsl"
+#include "Assets/Rendering/Map/MapV5.hlsl"
 
 void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
 {
@@ -357,7 +357,7 @@ void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_36
 }
 
 // 18883b1713183b9c39d0c16e2b5ea8f4
-#include "Assets/Rendering/Map/V5/MapMerger.hlsl"
+#include "Assets/Rendering/Map/MapMerger.hlsl"
 
     // Graph Vertex
     struct VertexDescription
@@ -688,7 +688,7 @@ void Unity_Add_float2(float2 A, float2 B, out float2 Out)
 }
 
 // 7b6d5a90df0cb86d20ecea9cb96d928e
-#include "Assets/Rendering/Map/V5/MapV5.hlsl"
+#include "Assets/Rendering/Map/MapV5.hlsl"
 
 void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
 {
@@ -790,7 +790,7 @@ void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_36
 }
 
 // 18883b1713183b9c39d0c16e2b5ea8f4
-#include "Assets/Rendering/Map/V5/MapMerger.hlsl"
+#include "Assets/Rendering/Map/MapMerger.hlsl"
 
     // Graph Vertex
     struct VertexDescription
