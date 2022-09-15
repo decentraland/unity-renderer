@@ -8,9 +8,19 @@ namespace DCL.SettingsCommon
         const string QUALITY_SETTINGS_KEY = "Settings.Quality";
         const string GENERAL_SETTINGS_KEY = "Settings.General";
         const string AUDIO_SETTINGS_KEY = "Settings.Audio";
-
-        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
         private string audioMixerPath = "AudioMixer";
+
+        private AudioSettings defaultAudioSettings = new AudioSettings
+        {
+            outputDevice = "Default output",
+            masterVolume = 1f,
+            voiceChatVolume = 1f,
+            avatarSFXVolume = 1f,
+            uiSFXVolume = 1f,
+            sceneSFXVolume = 1f,
+            musicVolume = 1f,
+            chatSFXEnabled = true
+        };
 
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
@@ -31,28 +41,7 @@ namespace DCL.SettingsCommon
             firstPersonCameraFOV = 60
         };
 
-        private AudioSettings defaultAudioSettings = new AudioSettings
-        {
-            masterVolume = 1f,
-            voiceChatVolume = 1f,
-            avatarSFXVolume = 1f,
-            uiSFXVolume = 1f,
-            sceneSFXVolume = 1f,
-            musicVolume = 1f,
-            chatSFXEnabled = true
-        };
-
-        public DefaultSettingsFactory WithDefaultGeneralSettings(GeneralSettings settings)
-        {
-            defaultGeneralSettings = settings;
-            return this;
-        }
-
-        public DefaultSettingsFactory WithGraphicsQualitySettingsPresetPath(string path)
-        {
-            graphicsQualitySettingsPresetPath = path;
-            return this;
-        }
+        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
 
         public Settings Build()
         {
@@ -64,6 +53,18 @@ namespace DCL.SettingsCommon
                 CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
                 CreateGeneralSettingsRepository(),
                 CreateAudioSettingsRepository());
+        }
+
+        public DefaultSettingsFactory WithDefaultGeneralSettings(GeneralSettings settings)
+        {
+            defaultGeneralSettings = settings;
+            return this;
+        }
+
+        public DefaultSettingsFactory WithGraphicsQualitySettingsPresetPath(string path)
+        {
+            graphicsQualitySettingsPresetPath = path;
+            return this;
         }
 
         private ProxySettingsRepository<AudioSettings> CreateAudioSettingsRepository()

@@ -5,6 +5,7 @@ namespace DCL.SettingsCommon
     [Serializable]
     public struct AudioSettings
     {
+        public string outputDevice;
         public float masterVolume;
         public float voiceChatVolume;
         public float avatarSFXVolume;
