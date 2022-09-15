@@ -60,8 +60,11 @@ namespace AvatarSystem
                         emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
                         
                         foreach(var otherEmote in moreEmotes)
-                            if (otherEmote != null && loadedEmotesFilter.Contains(otherEmote.id))
+                            if (otherEmote != null)
                             {
+                                if (loadedEmotesFilter.Contains(otherEmote.id))
+                                    continue;
+                                
                                 emotes.Add(otherEmote);
                             }
                     }

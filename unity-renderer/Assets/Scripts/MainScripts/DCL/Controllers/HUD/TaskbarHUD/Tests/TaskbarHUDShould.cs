@@ -65,7 +65,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddWorldChatWindowProperly()
     {
         var chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, "", 0));
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, ""));
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
@@ -111,7 +111,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddPrivateChatWindow(privateChatController);
 
         var chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, "", 0));
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, ""));
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,

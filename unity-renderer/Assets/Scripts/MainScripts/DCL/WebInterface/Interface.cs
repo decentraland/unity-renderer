@@ -417,9 +417,15 @@ namespace DCL.Interface
             public string userId;
             public string name;
         }
-        
+
         [Serializable]
         private class SendReportScenePayload
+        {
+            public string sceneId;
+        }
+
+        [Serializable]
+        private class SetHomeScenePayload
         {
             public string sceneId;
         }
@@ -826,7 +832,7 @@ namespace DCL.Interface
         private class GetChannelsPayload
         {
             public int limit;
-            public int skip;
+            public string since;
             public string name;
         }
 
@@ -1446,6 +1452,14 @@ namespace DCL.Interface
             });
         }
 
+        public static void SetHomeScene(string sceneID)
+        {
+            SendMessage("SetHomeScene", new SetHomeScenePayload
+            {
+                sceneId = sceneID
+            });
+        }
+
         public static void SendReportPlayer(string playerId, string playerName)
         {
             SendMessage("ReportPlayer", new SendReportPlayerPayload
@@ -1671,6 +1685,11 @@ namespace DCL.Interface
             SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
 
+        public static void RequestHomeCoordinates()
+        {
+            SendMessage("RequestHomeCoordinates");
+        }
+
         public static void RequestUserProfile(string userId)
         {
             stringPayload.value = userId;
@@ -1868,12 +1887,12 @@ namespace DCL.Interface
             });
         }
 
-        public static void GetChannels(int limit, int skip, string name)
+        public static void GetChannels(int limit, string since, string name)
         {
             SendMessage("GetChannels", new GetChannelsPayload
             {
                 limit = limit,
-                skip = skip,
+                since = since,
                 name = name
             });
         }

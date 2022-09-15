@@ -59,7 +59,7 @@ namespace DCL.Chat.HUD
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
 
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE);
         }
 
         [Test]
@@ -67,11 +67,11 @@ namespace DCL.Chat.HUD
         {
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
+            view.ClearReceivedCalls();
 
-            var channel = new Channel("channel", 15, 11, false, false, "desc", 0);
-            chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(channel);
+            var channel = new Channel("channel", 15, 11, false, false, "desc");
+            chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", new[] {channel});
 
-            view.Received(1).HideLoading();
             view.Received(1).ShowLoadingMore();
             view.Received(1).Set(Arg.Is<Channel>(c => c.Equals(channel)));
         }
@@ -82,7 +82,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(false);
 
             chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
-                new Channel("channel", 15, 11, false, false, "desc", 0));
+                new Channel("channel", 15, 11, false, false, "desc"));
 
             view.DidNotReceiveWithAnyArgs().Set(default);
         }
@@ -93,6 +93,8 @@ namespace DCL.Chat.HUD
             view.EntryCount.Returns(16);
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
+            chatController.OnChannelSearchResult +=
+                Raise.Event<Action<string, Channel[]>>("page1", Array.Empty<Channel>());
 
             // must wait at least 2 seconds to keep loading channels since the last time requested
             yield return new WaitForSeconds(3);
@@ -102,14 +104,35 @@ namespace DCL.Chat.HUD
             view.OnRequestMoreChannels += Raise.Event<Action>();
 
             view.Received(1).HideLoadingMore();
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 16);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, "page1");
+        }
+        
+        [UnityTest]
+        public IEnumerator LoadMoreChannelsByName()
+        {
+            view.EntryCount.Returns(16);
+            view.IsActive.Returns(true);
+            controller.SetVisibility(true);
+            view.OnSearchUpdated += Raise.Event<Action<string>>("woah");
+            chatController.OnChannelSearchResult +=
+                Raise.Event<Action<string, Channel[]>>("pagebyname1", Array.Empty<Channel>());
+
+            // must wait at least 2 seconds to keep loading channels since the last time requested
+            yield return new WaitForSeconds(3);
+            view.ClearReceivedCalls();
+            chatController.ClearReceivedCalls();
+
+            view.OnRequestMoreChannels += Raise.Event<Action>();
+
+            view.Received(1).HideLoadingMore();
+            chatController.Received(1).GetChannelsByName(SearchChannelsWindowController.LOAD_PAGE_SIZE, "woah", "pagebyname1");
         }
 
         [UnityTest]
         public IEnumerator SearchChannels()
         {
             const string searchText = "bleh";
-            
+
             view.IsActive.Returns(true);
             controller.SetVisibility(true);
 
@@ -123,9 +146,9 @@ namespace DCL.Chat.HUD
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
             socialAnalytics.Received(1).SendChannelSearch(searchText);
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0, searchText);
+            chatController.Received(1).GetChannelsByName(SearchChannelsWindowController.LOAD_PAGE_SIZE, searchText);
         }
-        
+
         [UnityTest]
         public IEnumerator LoadFirstPageChannelsWhenClearingTheSearch()
         {
@@ -141,7 +164,7 @@ namespace DCL.Chat.HUD
 
             view.Received(1).ClearAllEntries();
             view.Received(1).ShowLoading();
-            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, 0);
+            chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE);
         }
 
         [Test]
@@ -150,11 +173,11 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
 
             view.OnJoinChannel += Raise.Event<Action<string>>("channelId");
-            
+
             chatController.Received(1).JoinOrCreateChannel("channelId");
             Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }
-        
+
         [Test]
         public void LeaveChannel()
         {
@@ -162,12 +185,9 @@ namespace DCL.Chat.HUD
 
             string testChannelId = "channelId";
             string channelToLeave = "";
-            controller.OnOpenChannelLeave += channelId =>
-            {
-                channelToLeave = channelId;
-            };
+            controller.OnOpenChannelLeave += channelId => { channelToLeave = channelId; };
             view.OnLeaveChannel += Raise.Event<Action<string>>(testChannelId);
-            
+
             Assert.AreEqual(channelToLeave, testChannelId);
             Assert.AreEqual(ChannelLeaveSource.Search, dataStore.channels.channelLeaveSource.Get());
         }
@@ -180,7 +200,7 @@ namespace DCL.Chat.HUD
             controller.OnOpenChannelCreation += () => called = true;
 
             view.OnCreateChannel += Raise.Event<Action>();
-            
+
             Assert.IsTrue(called);
             Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
         }

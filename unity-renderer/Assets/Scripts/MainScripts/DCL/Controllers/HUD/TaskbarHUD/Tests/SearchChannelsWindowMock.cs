@@ -60,4 +60,20 @@ public class SearchChannelsWindowMock : MonoBehaviour, ISearchChannelsWindowView
     public void HideLoadingMore()
     {
     }
+
+    public void ShowResultsHeader()
+    {
+    }
+
+    public void HideResultsHeader()
+    {
+    }
+
+    public void ShowCreateChannelOnSearch()
+    {
+    }
+
+    public void HideCreateChannelOnSearch()
+    {
+    }
 }
