@@ -332,6 +332,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         yield return dclTexture.routine;
 
+
         PBRMaterial mat = TestUtils.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
             CLASS_ID.PBR_MATERIAL,
             new PBRMaterial.Model
@@ -355,6 +356,8 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         TestUtils.SharedComponentAttach(shape, entity);
         
         yield return null;
+        yield return new WaitUntil(() => entity.meshRootGameObject.GetComponent<MaterialTransitionController>() == null);
+
 
         Assert.IsTrue(entity.meshRootGameObject != null);
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);

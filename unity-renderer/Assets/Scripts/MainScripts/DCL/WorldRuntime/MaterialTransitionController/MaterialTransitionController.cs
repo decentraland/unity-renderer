@@ -22,7 +22,7 @@ public class MaterialTransitionController : MonoBehaviour
     Material loadingMaterial;
 
     [System.NonSerialized] public float delay = 0.5f;
-    [System.NonSerialized] public bool useHologram = true;
+    [System.NonSerialized] public bool useHologram = false;
     [System.NonSerialized] public float fadeThickness = 10;
     [System.NonSerialized] public System.Action onFinishedLoading;
 
@@ -73,6 +73,12 @@ public class MaterialTransitionController : MonoBehaviour
         for (int i = 0; i < newMaterials.Length; i++)
         {
             material = newMaterials[i];
+
+            if (material == null)
+            {
+                state = State.FINISHED;
+                return;
+            }
 
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
@@ -135,10 +141,9 @@ public class MaterialTransitionController : MonoBehaviour
             return;
         }
 
-        tr.enabled = false;
-
         if (useHologram)
         {
+            tr.enabled = false;
             InitHologram();
         }
 
@@ -263,7 +268,7 @@ public class MaterialTransitionController : MonoBehaviour
         }
     }
 
-    public void OnDidFinishLoading(Material finishMaterial)
+    public void OnDidFinishLoading(Material finishMaterial, bool prepareFX = false)
     {
         finalMaterials = new Material[] {finishMaterial};
         materialReady = true;

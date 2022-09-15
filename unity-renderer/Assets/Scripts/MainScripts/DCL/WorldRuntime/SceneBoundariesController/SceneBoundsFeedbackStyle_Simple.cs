@@ -15,6 +15,8 @@ namespace DCL.Controllers
 
             if (meshesInfo?.currentShape != null && !meshesInfo.currentShape.IsVisible())
                 return;
+            
+            
 
             for (int i = 0; i < meshesInfo.renderers.Length; i++)
             {
@@ -24,6 +26,11 @@ namespace DCL.Controllers
                 if (isInsideBoundaries == meshesInfo.renderers[i].enabled)
                     continue;
 
+                if (meshesInfo.renderers[i].GetComponent<MaterialTransitionController>() && !isInsideBoundaries)
+                {
+                    Object.Destroy(meshesInfo.renderers[i].GetComponent<MaterialTransitionController>());
+                }
+                
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
 
                 if (isInsideBoundaries && disabledRenderers.Contains(meshesInfo.renderers[i]))

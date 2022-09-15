@@ -73,7 +73,25 @@ namespace DCL.Components
 
             for (var i = 0; i < meshRenderers.Length; i++)
             {
-                meshRenderers[i].enabled = shouldBeVisible;
+                if (shouldBeVisible)
+                {
+                    if (meshRenderers[i].sharedMaterial != null)
+                    {
+                        MaterialTransitionController transition =
+                            meshRenderers[i].gameObject.AddComponent<MaterialTransitionController>();
+                        transition.delay = 0;
+                        transition.useHologram = false;
+                        transition.OnDidFinishLoading(meshRenderers[i].sharedMaterial, true);
+                    }
+                    else
+                    {
+                        meshRenderers[i].enabled = true;
+                    }
+                }
+                else
+                {
+                    meshRenderers[i].enabled = false;
+                }
 
                 if (meshRenderers[i].transform.childCount > 0)
                 {

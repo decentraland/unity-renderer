@@ -151,6 +151,9 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             
             yield return null;
+            yield return null;
+            yield return null;
+
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
         }
         
@@ -185,11 +188,18 @@ namespace SceneBoundariesCheckerTests
             yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             
             yield return null;
+            yield return null;
+            yield return null;
+
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
             
             yield return null;
+            yield return null;
+            yield return null;
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             
+            yield return null;
+            yield return null;
             yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
@@ -471,14 +481,18 @@ namespace SceneBoundariesCheckerTests
 
             LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
-
+            yield return null;
+            yield return null;
+            yield return null;
+            
             AssertMeshesAndCollidersValidState(entity.meshesInfo, false);
 
             // Move object to surpass the scene boundaries
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
-
+            yield return null;
+            yield return null;
             AssertMeshesAndCollidersValidState(entity.meshesInfo, true);
         }
 

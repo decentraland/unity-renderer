@@ -62,7 +62,7 @@ namespace DCL
             for (int i = 0; i < renderersCount; i++)
             {
                 Renderer renderer = renderers[i];
-                renderer.enabled = visibleFlags != VisibleFlags.INVISIBLE;
+                renderer.enabled = false;
             }
         }
     }

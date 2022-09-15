@@ -96,6 +96,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         yield return null;
 
         Assert.IsTrue(entity.meshRootGameObject != null);
+        yield return new WaitUntil(() => entity.meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>().Length.Equals(0));
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
         Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
     }
@@ -120,6 +121,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
+        yield return new WaitUntil(() => scene.entities[entityId].meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>().Length.Equals(0));
+
         var meshRenderer = scene.entities[entityId].meshRootGameObject.GetComponent<MeshRenderer>();
         var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;
 
@@ -131,7 +134,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
             Assert.AreEqual(meshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
         }
-
+        
         // Remove material
         materialComponent.DetachFrom(scene.entities[entityId]);
 
@@ -153,6 +156,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         Assert.IsTrue(scene.entities[firstEntityId].meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+        
+        yield return new WaitUntil(() => scene.entities[firstEntityId].meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>().Length.Equals(0));
 
         // Create 2nd entity and attach same material to it
         TestUtils.InstantiateEntityWithShape(scene, secondEntityId, CLASS_ID.BOX_SHAPE, Vector3.zero);
@@ -163,6 +168,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         Assert.IsTrue(scene.entities[secondEntityId].meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+        
+        yield return new WaitUntil(() => scene.entities[secondEntityId].meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>().Length.Equals(0));
 
         var firstMeshRenderer = scene.entities[firstEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
         var secondMeshRenderer = scene.entities[secondEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
@@ -202,6 +209,8 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         var meshObject = scene.entities[entityId].meshRootGameObject;
         Assert.IsTrue(meshObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+        
+        yield return new WaitUntil(() => scene.entities[entityId].meshRootGameObject.GetComponent<MaterialTransitionController>() == null);
 
         var meshRenderer = meshObject.GetComponent<MeshRenderer>();
         var materialComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(materialID) as BasicMaterial;

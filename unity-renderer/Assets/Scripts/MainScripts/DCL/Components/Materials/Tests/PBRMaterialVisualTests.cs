@@ -56,6 +56,8 @@ public class PBRMaterialVisualTests : VisualTestsBase
 
         LoadWrapper loader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => loader.alreadyLoaded);
+        
+        yield return new WaitUntil(() => entity.meshRootGameObject.GetComponentsInChildren<MaterialTransitionController>().Length.Equals(0));
 
         yield return VisualTestUtils.TakeSnapshot("PBRMaterialVisualTests_StandardConfigurations", camera);
     }

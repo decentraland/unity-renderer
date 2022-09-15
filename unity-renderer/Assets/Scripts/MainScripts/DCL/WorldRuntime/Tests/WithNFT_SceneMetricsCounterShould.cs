@@ -37,11 +37,14 @@ public class WithNFT_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetri
 
         LoadWrapper shapeLoader = Environment.i.world.state.GetLoaderForEntity(entity);
         yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
-
+        foreach (Renderer componentsInChild in entity.meshRootGameObject.GetComponentsInChildren<Renderer>())
+        {
+            componentsInChild.enabled = true;
+        }
         yield return null;
 
         Assert.That(scene.metricsCounter.currentCount.textures, Is.EqualTo(3));
-        Assert.That(scene.metricsCounter.currentCount.materials, Is.EqualTo(6));
+        Assert.That(scene.metricsCounter.currentCount.materials, Is.EqualTo(4));
         Assert.That(scene.metricsCounter.currentCount.bodies, Is.EqualTo(4));
         Assert.That(scene.metricsCounter.currentCount.meshes, Is.EqualTo(4));
     }
