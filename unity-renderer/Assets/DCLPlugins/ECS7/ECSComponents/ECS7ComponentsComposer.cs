@@ -1,7 +1,6 @@
 using System;
 using DCL.ECS7;
 using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
@@ -18,8 +17,6 @@ namespace DCL.ECSComponents
         private readonly GLTFShapeRegister gltfRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
-        private readonly OnPointerDownRegister pointerDownRegister;
-        private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
         private readonly BillboardRegister billboardRegister;
         private readonly AvatarShapeRegister avatarShapeRegister;
@@ -38,8 +35,7 @@ namespace DCL.ECSComponents
         private readonly UITextRegister uiTextRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
-        private readonly OnPointerDownResultRegister pointerDownResultRegister;
-        private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly PointerEventResultRegister pointerEventResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
 
@@ -55,8 +51,6 @@ namespace DCL.ECSComponents
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
             gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
-            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
-            pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter);
@@ -75,8 +69,7 @@ namespace DCL.ECSComponents
             uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
 
             // Components without a handler
-            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
-            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
@@ -97,8 +90,6 @@ namespace DCL.ECSComponents
             animatorRegister.Dispose();
             avatarAttachRegister.Dispose();
             avatarModifierAreaRegister.Dispose();
-            pointerDownRegister.Dispose();
-            pointerUpRegister.Dispose();
             avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             materialRegister.Dispose();
@@ -113,8 +104,7 @@ namespace DCL.ECSComponents
             uiTextRegister.Dispose();
 
             // Components without a handler
-            pointerDownResultRegister.Dispose();
-            pointerUpResultRegister.Dispose();
+            pointerEventResultRegister.Dispose();
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
         }
