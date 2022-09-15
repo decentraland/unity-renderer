@@ -22,38 +22,6 @@ namespace RPC.Services
             );
         }
 
-        public static void JumpIn(int x, int y, string serverName)
-        {
-            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
-            {
-                JumpIn = { ParcelX = x, ParcelY = y, Realm = serverName }
-            });
-        }
-        
-        public static void TeleportTo(int x, int y)
-        {
-            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
-            {
-                TeleportTo = { X = x, Y = y }
-            });
-        }
-        
-        public static void TeleportToCrowd()
-        {
-            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
-            {
-                TeleportToCrowd = {}
-            });
-        }
-                
-        public static void TeleportToMagic()
-        {
-            DataStore.i.rpcContext.context.teleportContext.queueMessages.Enqueue(new Teleport.Types.FromRenderer()
-            {
-                TeleportToMagic = {}
-            });
-        }
-
         private static IEnumerator<Teleport.Types.FromRenderer> OnMessage(Teleport.Types.FromRenderer.Types.StreamRequest request, RPCContext context)
         {
             while (true)
