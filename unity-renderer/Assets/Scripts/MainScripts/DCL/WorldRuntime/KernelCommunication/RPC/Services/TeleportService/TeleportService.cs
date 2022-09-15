@@ -53,10 +53,7 @@ namespace RPC.Services
                 TeleportToMagic = {}
             });
         }
-        
-        // TODO:
-        // - Hacer un helper para esto
-        // - Como lo hariamos con Context?
+
         private static IEnumerator<Teleport.Types.FromRenderer> OnMessage(Teleport.Types.FromRenderer.Types.StreamRequest request, RPCContext context)
         {
             while (true)

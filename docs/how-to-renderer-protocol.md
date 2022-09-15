@@ -51,7 +51,7 @@ After that, just run `npm run build` and the Renderer Protocol will be re-genera
 
 ## RPC
 
-The Renderer works as a `RPC Server` that is connected by the Kernel, the `RPC Client`.
+The Renderer works as a `RPC Server` and the Kernel as the `RPC Client` which connects to it.
 
 > **_NOTE:_**  You can read the following articles to understand RPC [article 1](https://www.techtarget.com/searchapparchitecture/definition/Remote-Procedure-Call-RPC); [article 2](https://grpc.io/docs/what-is-grpc/introduction/)
 
@@ -75,5 +75,6 @@ And to receive messages, you subscribe the `OnMessage functions` that receives o
 If you want to send multiple messages to the Kernel, you have two options.
 
 #### 1. Create a stream message from the Kernel, to receive all messages you want
+
 
 #### 2. Create an event list and consume that list from the Kernel
