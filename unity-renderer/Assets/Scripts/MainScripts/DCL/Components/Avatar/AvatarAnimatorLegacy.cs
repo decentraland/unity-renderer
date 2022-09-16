@@ -307,6 +307,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             OnUpdateWithDeltaTime(bb.deltaTime);
         }
     }
+
     private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName, 
         float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
     {
@@ -419,7 +420,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
                                     && clipData.loop;
-
+                                    
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }
