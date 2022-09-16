@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveFloor : MonoBehaviour
@@ -11,9 +9,10 @@ public class MoveFloor : MonoBehaviour
 
     void OnWorldReposition(UnityEngine.Vector3 current, UnityEngine.Vector3 previous)
     {
-        transform.position -= current;
+        transform.position = -current;
     }
 
-}
+    void OnDisable() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
+} 
 
 
