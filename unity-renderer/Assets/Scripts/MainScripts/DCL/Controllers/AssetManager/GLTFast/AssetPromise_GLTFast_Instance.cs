@@ -20,7 +20,7 @@ namespace DCL
         {
             this.webRequestController = webRequestController;
             this.contentProvider = contentProvider ?? new ContentProvider_Dummy();
-            this.settings = settings;
+            this.settings = settings ?? new AssetPromiseSettings_Rendering();
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
