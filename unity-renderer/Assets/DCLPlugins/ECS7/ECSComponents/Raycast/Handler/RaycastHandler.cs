@@ -22,7 +22,7 @@ namespace DCLPlugins.ECSComponents.Raycast
         {
             this.componentWriter = componentWriter;
             this.physicsColliderComponent = physicsColliderComponent;
-            raycastLayerMaskTarget = PhysicsLayers.physicsCastLayerMask;
+            raycastLayerMaskTarget = ~(1 << PhysicsLayers.onPointerEventLayer);
         }
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
