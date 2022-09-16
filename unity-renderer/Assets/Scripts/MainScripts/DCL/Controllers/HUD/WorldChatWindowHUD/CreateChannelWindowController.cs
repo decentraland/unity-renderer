@@ -107,9 +107,18 @@ namespace DCL.Chat.HUD
             view.DisableCreateButton();
         }
 
-        private void HandleCreationError(string channelId, string message)
+        private void HandleCreationError(string channelId, ChannelErrorCode errorCode)
         {
-            view.ShowError(message);
+            switch (errorCode)
+            {
+                case ChannelErrorCode.ExceededLimit:
+                    view.ShowChannelsExceededError();
+                    break;
+                case ChannelErrorCode.WrongFormat:
+                    view.ShowWrongFormatError();
+                    break;
+            }
+            
             view.DisableCreateButton();
         }
     }

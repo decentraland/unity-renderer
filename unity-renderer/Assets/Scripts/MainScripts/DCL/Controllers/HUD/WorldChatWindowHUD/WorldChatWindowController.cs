@@ -6,6 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
+using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
@@ -495,7 +496,7 @@ public class WorldChatWindowController : IHUD
         OpenPublicChat(channel.ChannelId);
     }
 
-    private void HandleJoinChannelError(string channelId, string message)
+    private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
     {
     }
 

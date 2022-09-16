@@ -10,10 +10,10 @@ public class ChatController_Mock : IChatController
     public event Action<ChatMessage> OnAddMessage;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
-    public event Action<string, string> OnJoinChannelError;
+    public event Action<string, ChannelErrorCode> OnJoinChannelError;
     public event Action<string> OnChannelLeft;
-    public event Action<string, string> OnChannelLeaveError;
-    public event Action<string, string> OnMuteChannelError;
+    public event Action<string, ChannelErrorCode> OnChannelLeaveError;
+    public event Action<string, ChannelErrorCode> OnMuteChannelError;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     public event Action<string, int> OnChannelUnseenMessagesUpdated;

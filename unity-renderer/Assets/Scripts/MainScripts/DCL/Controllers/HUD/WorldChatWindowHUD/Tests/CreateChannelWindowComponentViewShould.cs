@@ -34,19 +34,6 @@ namespace DCL.Chat.HUD
             Assert.IsFalse(view.gameObject.activeSelf);
         }
 
-        [TestCase("error")]
-        [TestCase("other error")]
-        public void ShowError(string message)
-        {
-            view.ShowError(message);
-            
-            Assert.IsFalse(view.channelExistsContainer.activeSelf);
-            Assert.IsFalse(view.channelExistsWithJoinOptionContainer.activeSelf);
-            Assert.IsTrue(view.genericErrorLabel.gameObject.activeSelf);
-            Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
-            Assert.AreEqual(message, view.genericErrorLabel.text);
-        }
-
         [TestCase(true)]
         [TestCase(false)]
         public void ShowChannelExistsError(bool withJoinOptionEnabled)
@@ -56,7 +43,6 @@ namespace DCL.Chat.HUD
             Assert.AreEqual(!withJoinOptionEnabled, view.channelExistsContainer.activeSelf);
             Assert.AreEqual(withJoinOptionEnabled, view.channelExistsWithJoinOptionContainer.activeSelf);
             Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
-            Assert.IsFalse(view.genericErrorLabel.gameObject.activeSelf);
         }
 
         [Test]
@@ -66,8 +52,27 @@ namespace DCL.Chat.HUD
             
             Assert.IsFalse(view.channelExistsContainer.activeSelf);
             Assert.IsFalse(view.channelExistsWithJoinOptionContainer.activeSelf);
-            Assert.IsFalse(view.genericErrorLabel.gameObject.activeSelf);
             Assert.IsFalse(view.inputFieldErrorBevel.activeSelf);
+        }
+
+        [Test]
+        public void ShowWrongFormatError()
+        {
+            view.ShowWrongFormatError();
+            
+            Assert.IsTrue(view.specialCharactersErrorContainer.activeSelf);
+            Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
+            Assert.AreEqual(view.errorColor, view.channelNameLengthLabel.color);
+        }
+        
+        [Test]
+        public void ShowExceededLimitError()
+        {
+            view.ShowChannelsExceededError();
+            
+            Assert.IsTrue(view.exceededLimitErrorContainer.activeSelf);
+            Assert.IsTrue(view.inputFieldErrorBevel.activeSelf);
+            Assert.AreEqual(view.errorColor, view.channelNameLengthLabel.color);
         }
 
         [Test]

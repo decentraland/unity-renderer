@@ -12,7 +12,6 @@ namespace DCL.Chat.HUD
         RectTransform Transform { get; }
         void Show();
         void Hide();
-        void ShowError(string message);
         void ShowChannelExistsError(bool showJoinChannelOption);
         void ClearError();
         void DisableCreateButton();
@@ -22,5 +21,6 @@ namespace DCL.Chat.HUD
         void FocusInputField();
         void ShowWrongFormatError();
         void ShowTooShortError();
+        void ShowChannelsExceededError();
     }
 }

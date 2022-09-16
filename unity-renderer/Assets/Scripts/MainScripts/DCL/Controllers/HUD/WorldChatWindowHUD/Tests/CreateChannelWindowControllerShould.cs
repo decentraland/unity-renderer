@@ -155,15 +155,28 @@ namespace DCL.Chat.HUD
         }
         
         [Test]
-        public void ShowErrorWhenCannotJoinChannel()
+        public void ShowWrongFormatErrorWhenJoiningChannel()
         {   
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
             
-            chatController.OnJoinChannelError += Raise.Event<Action<string, string>>(
-                "foo", "error!");
+            chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
+                "foo", ChannelErrorCode.WrongFormat);
             
-            view.Received(1).ShowError("error!");
+            view.Received(1).ShowWrongFormatError();
+            view.Received(1).DisableCreateButton();
+        }
+        
+        [Test]
+        public void ShowChannelsExceededWhenJoiningChannel()
+        {   
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+            
+            chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
+                "foo", ChannelErrorCode.ExceededLimit);
+            
+            view.Received(1).ShowChannelsExceededError();
             view.Received(1).DisableCreateButton();
         }
 

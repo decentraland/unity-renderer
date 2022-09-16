@@ -58,7 +58,7 @@ namespace DCL.Chat.Channels
             remove => controller.OnChannelJoined -= value;
         }
 
-        public event Action<string, string> OnJoinChannelError
+        public event Action<string, ChannelErrorCode> OnJoinChannelError
         {
             add => controller.OnJoinChannelError += value;
             remove => controller.OnJoinChannelError -= value;
@@ -70,13 +70,13 @@ namespace DCL.Chat.Channels
             remove => controller.OnChannelLeft -= value;
         }
 
-        public event Action<string, string> OnChannelLeaveError
+        public event Action<string, ChannelErrorCode> OnChannelLeaveError
         {
             add => controller.OnChannelLeaveError += value;
             remove => controller.OnChannelLeaveError -= value;
         }
 
-        public event Action<string, string> OnMuteChannelError
+        public event Action<string, ChannelErrorCode> OnMuteChannelError
         {
             add => controller.OnMuteChannelError += value;
             remove => controller.OnMuteChannelError -= value;
@@ -529,7 +529,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             var mockedPayload = new JoinChannelErrorPayload
             {
                 channelId = joinMessage.Split(' ')[1].Replace("#", ""),
-                message = "There was an error creating the channel."
+                errorCode = (int) ChannelErrorCode.ExceededLimit
             };
 
             return JsonUtility.ToJson(mockedPayload);
