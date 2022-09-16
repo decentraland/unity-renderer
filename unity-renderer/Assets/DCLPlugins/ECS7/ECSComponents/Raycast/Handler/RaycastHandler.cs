@@ -22,6 +22,8 @@ namespace DCLPlugins.ECSComponents.Raycast
         {
             this.componentWriter = componentWriter;
             this.physicsColliderComponent = physicsColliderComponent;
+
+            // Cast all layers except the OnPointerEvent one
             raycastLayerMaskTarget = ~(1 << PhysicsLayers.onPointerEventLayer);
         }
         
