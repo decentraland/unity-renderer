@@ -36,6 +36,8 @@ public class MaterialTransitionController : MonoBehaviour
 
     Renderer targetRendererValue;
 
+    public bool usedForDebuggin;
+
     Renderer targetRenderer
     {
         get
@@ -67,7 +69,9 @@ public class MaterialTransitionController : MonoBehaviour
     public void PopulateTargetRendererWithMaterial(Material[] newMaterials, bool updateCulling = false)
     {
         if (newMaterials == null)
+        {
             return;
+        }
 
         Material material;
         for (int i = 0; i < newMaterials.Length; i++)
@@ -88,7 +92,8 @@ public class MaterialTransitionController : MonoBehaviour
                 material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
         }
 
-        targetRenderer.sharedMaterials = newMaterials;
+        if(targetRenderer)
+            targetRenderer.sharedMaterials = newMaterials;
     }
 
     void UpdateCullYValueFXMaterial()
@@ -234,6 +239,8 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void OnDestroy()
     {
+        PopulateTargetRendererWithMaterial(finalMaterials, true);
+        
         DestroyPlaceholder();
 
         if (loadingMaterialCopies != null)
@@ -263,12 +270,15 @@ public class MaterialTransitionController : MonoBehaviour
         {
             for (int i = 0; i < cullingFXMaterials.Length; i++)
             {
-                Destroy(cullingFXMaterials[i]);
+                if (!cullingFXMaterials[i].Equals(finalMaterials[i]))
+                {
+                    Destroy(cullingFXMaterials[i]);
+                }
             }
         }
     }
 
-    public void OnDidFinishLoading(Material finishMaterial, bool prepareFX = false)
+    public void OnDidFinishLoading(Material finishMaterial)
     {
         finalMaterials = new Material[] {finishMaterial};
         materialReady = true;

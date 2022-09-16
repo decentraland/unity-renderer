@@ -51,7 +51,7 @@ namespace DCL.Components
 
         public virtual bool HasCollisions() { return false; }
 
-        public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
+        public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers, double entityIdForDebug)
         {
             if (meshGameObject == null)
                 return;
@@ -81,7 +81,8 @@ namespace DCL.Components
                             meshRenderers[i].gameObject.AddComponent<MaterialTransitionController>();
                         transition.delay = 0;
                         transition.useHologram = false;
-                        transition.OnDidFinishLoading(meshRenderers[i].sharedMaterial, true);
+                        transition.usedForDebuggin = entityIdForDebug.Equals(517632);
+                        transition.OnDidFinishLoading(meshRenderers[i].sharedMaterial);
                     }
                     else
                     {

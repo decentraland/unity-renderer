@@ -55,7 +55,7 @@ namespace DCL.Components
                 if (!DataStore.i.debugConfig.isDebugMode.Get())
                     shouldBeVisible &= entity.isInsideSceneBoundaries;
                 
-                ConfigureVisibility(entity.meshRootGameObject, shouldBeVisible, entity.meshesInfo.renderers);
+                ConfigureVisibility(entity.meshRootGameObject, shouldBeVisible, entity.meshesInfo.renderers, entity.entityId);
                 visibilityDirty = false;
             }
 
