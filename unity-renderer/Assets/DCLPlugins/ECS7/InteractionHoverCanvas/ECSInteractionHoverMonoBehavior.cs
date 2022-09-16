@@ -10,7 +10,7 @@ public class ECSInteractionHoverMonoBehavior : MonoBehaviour, IECSInteractionHov
     {
         null, "E", "F", null,
         "W", "S", "D", "A",
-        "SPACE", "LSHIFT",
+        "SPACE BAR", "LSHIFT",
         "1", "2", "3", "4"
     };
 
