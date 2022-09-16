@@ -54,7 +54,7 @@ Material:
     - _ColorMask: 15
     - _GridOffset: 0.9
     - _GridOpacity: 0.2
-    - _GridThickness: 0.25
+    - _GridThickness: 0.3
     - _HighlightRotation: 10
     - _HighlightThickness: 2
     - _SobelGridOffset: 2500
@@ -64,7 +64,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _ThicknessOffset: 2000
-    - _Zoom: 4.3
+    - _Zoom: 1.44
     m_Colors:
     - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
         a: 1}
