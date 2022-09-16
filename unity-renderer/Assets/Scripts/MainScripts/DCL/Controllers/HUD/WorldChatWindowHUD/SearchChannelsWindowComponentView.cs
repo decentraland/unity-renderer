@@ -19,6 +19,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal GameObject loadMoreContainer;
+        [SerializeField] internal GameObject loadMoreContent;
         [SerializeField] internal GameObject loadMoreSpinner;
         [SerializeField] internal GameObject createChannelOnSearchContainer;
         [SerializeField] internal GameObject createChannelOnSearchContent;
@@ -92,6 +93,7 @@ namespace DCL.Chat.HUD
             channelList.gameObject.SetActive(false);
             resultsHeaderLabel.gameObject.SetActive(false);
             createChannelOnSearchContent.SetActive(false);
+            loadMoreContent.SetActive(false);
         }
 
         public void Set(Channel channel)
@@ -126,6 +128,7 @@ namespace DCL.Chat.HUD
             channelList.gameObject.SetActive(true);
             resultsHeaderLabel.gameObject.SetActive(true);
             createChannelOnSearchContent.SetActive(true);
+            loadMoreContent.SetActive(true);
         }
 
         public void ShowLoadingMore() => loadMoreContainer.SetActive(true);
