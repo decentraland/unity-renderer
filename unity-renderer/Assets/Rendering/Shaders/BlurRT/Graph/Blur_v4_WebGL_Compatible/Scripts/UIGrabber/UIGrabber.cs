@@ -73,15 +73,16 @@ public class UIGrabber : MonoBehaviour
          * ~(1 << LayerMask.NameToLayer("Transparent"))
          * 
          * render only a spesific layer
-         * 1 << LayerMask.NameToLayer("Transparent")
+         * ~1 << LayerMask.NameToLayer("Transparent")
          * 
          */
         
         if (_uiElements[0].transform.gameObject.activeSelf == false)
         {
             // render everything except the UIBlurred
-            // TODO: bug here MUST CHECK
-            _mainCamComp.cullingMask = ~(1 << LayerMask.NameToLayer("UIBlurred"));
+            // TODO: bug here MUST CHECK as its not working as expected
+            _mainCamComp.cullingMask = ~(1 << LayerMask.NameToLayer("UI"));
+            //_mainCamComp.cullingMask = ~1 << LayerMask.NameToLayer("UI");
         }
 
         if (_isDebug)
@@ -140,7 +141,7 @@ public class UIGrabber : MonoBehaviour
     {
         float _offset = 0.12f;
         // new cam position - offset
-        Vector3 newCamPos = new Vector3(_ui.transform.position.x, _ui.transform.position.y, (_ui.transform.position.z - _offset));
+        UnityEngine.Vector3 newCamPos = new UnityEngine.Vector3(_ui.transform.position.x, _ui.transform.position.y, (_ui.transform.position.z - _offset));
         
         // rest camera position to canvas
         _uiCamera.transform.position = newCamPos;

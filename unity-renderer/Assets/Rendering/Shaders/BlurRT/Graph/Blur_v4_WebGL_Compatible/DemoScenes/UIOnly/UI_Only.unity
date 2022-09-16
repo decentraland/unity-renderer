@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -491,7 +491,7 @@ GameObject:
   - component: {fileID: 555860453}
   - component: {fileID: 555860454}
   - component: {fileID: 555860452}
-  m_Layer: 6
+  m_Layer: 26
   m_Name: UI_Blurred_Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 8400000, guid: ea89e0944213f2a4db87e7b6a0ae5196, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: -0.01
@@ -1331,7 +1331,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
@@ -1571,7 +1570,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 32
   m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 0
   m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
@@ -1680,7 +1678,7 @@ MonoBehaviour:
   _uiCamera: {fileID: 1860971961}
   _mainCamera: {fileID: 1546625361}
   _mainCamComp: {fileID: 0}
-  _renderTexture: {fileID: 8400000, guid: 4de8e7b611a269644bf581f97ae330d4, type: 2}
+  _renderTexture: {fileID: 8400000, guid: ea89e0944213f2a4db87e7b6a0ae5196, type: 2}
   _grabbedRTTexture2D: {fileID: 0}
   _isDebug: 0
   _uiElements:
