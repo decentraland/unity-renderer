@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_InfiniteFloor
-  m_Shader: {fileID: -6465566751694194690, guid: ad2ce2dc8aac5654fb92e62514222ce4,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: 674b9a9156a542d45b31caf7b32f4542, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -76,7 +75,7 @@ Material:
     - _ColorMask: 15
     - _FogFade: 15000
     - _FogIntensity: 1
-    - _GrassGridFade: 15000
+    - _GrassGridFade: 45000
     - _GrassGridThickness: 0.1
     - _GrassGridThicknessVariation: 0.3
     - _GrassGridTiling: 16
@@ -95,7 +94,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _ThicknessOffset: 1500
-    - _Zoom: 8200
+    - _Zoom: 8192
     m_Colors:
     - Color_cd6df74b8fc14dfaa1ce8907510737b8: {r: 0, g: 1.4142135, b: 0.97608465,
         a: 1}
