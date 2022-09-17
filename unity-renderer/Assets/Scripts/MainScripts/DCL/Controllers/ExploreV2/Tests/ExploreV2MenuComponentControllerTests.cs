@@ -1,17 +1,16 @@
+using System.Collections.Generic;
 using DCL;
 using ExploreV2Analytics;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using Variables.RealmsInfo;
 
 public class ExploreV2MenuComponentControllerTests
 {
+    private IExploreV2Analytics exploreV2Analytics;
     private ExploreV2MenuComponentController exploreV2MenuController;
     private IExploreV2MenuComponentView exploreV2MenuView;
-    private IExploreV2Analytics exploreV2Analytics;
 
     [SetUp]
     public void SetUp()
@@ -141,7 +140,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Explore;
 
         // Act
-        exploreV2MenuController.PlacesAndEventsVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Explore);
 
         // Assert
         if (isVisible)
@@ -172,7 +171,8 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Backpack;
 
         // Act
-        exploreV2MenuController.AvatarEditorVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Backpack);
+        ;
 
         // Assert
         if (isVisible)
@@ -202,7 +202,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Map;
 
         // Act
-        exploreV2MenuController.NavmapVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Map);
 
         // Assert
         if (isVisible)
@@ -232,7 +232,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
 
         // Act
-        exploreV2MenuController.BuilderVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Builder);
 
         // Assert
         if (isVisible)
@@ -262,7 +262,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Quest;
 
         // Act
-        exploreV2MenuController.QuestVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Quest);
 
         // Assert
         if (isVisible)
@@ -292,7 +292,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
 
         // Act
-        exploreV2MenuController.SettingsVisibleChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Settings);
 
         // Assert
         if (isVisible)
@@ -356,8 +356,8 @@ public class ExploreV2MenuComponentControllerTests
     public void UpdateAvailableRealmsInfoCorrectly()
     {
         // Arrange
-        RealmModel[] testRealms = 
-        { 
+        RealmModel[] testRealms =
+        {
             new RealmModel
             {
                 serverName = "TestRealm1",

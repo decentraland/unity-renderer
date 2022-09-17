@@ -66,6 +66,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         { ExploreSection.Settings, isSettingsPanelInitialized },
     };
 
+    private Dictionary<BaseVariable<bool>, ExploreSection> SectionVisibleEnumMap => new Dictionary<BaseVariable<bool>, ExploreSection>
+    {
+        { placesAndEventsVisible, ExploreSection.Explore },
+        { avatarEditorVisible, ExploreSection.Backpack },
+        { navmapVisible, ExploreSection.Map },
+        { builderVisible, ExploreSection.Builder },
+        { questVisible, ExploreSection.Quest },
+        { settingsVisible, ExploreSection.Settings },
+    };
+
     public void Initialize()
     {
         mouseCatcher = SceneReferences.i?.mouseCatcher;
@@ -105,35 +115,29 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isPlacesAndEventsSectionInitialized.OnChange += IsPlacesAndEventsSectionInitializedChanged;
         IsPlacesAndEventsSectionInitializedChanged(isPlacesAndEventsSectionInitialized.Get(), false);
-        placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
-        PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
 
         isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         IsAvatarEditorInitializedChanged(isAvatarEditorInitialized.Get(), false);
-        avatarEditorVisible.OnChange += AvatarEditorVisibleChanged;
-        AvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
 
         isNavmapInitialized.OnChange += IsNavMapInitializedChanged;
         IsNavMapInitializedChanged(isNavmapInitialized.Get(), false);
-        navmapVisible.OnChange += NavmapVisibleChanged;
-        NavmapVisibleChanged(navmapVisible.Get(), false);
 
         isBuilderInitialized.OnChange += IsBuilderInitializedChanged;
         IsBuilderInitializedChanged(isBuilderInitialized.Get(), false);
-        builderVisible.OnChange += BuilderVisibleChanged;
-        BuilderVisibleChanged(builderVisible.Get(), false);
 
         isQuestInitialized.OnChange += IsQuestInitializedChanged;
         IsQuestInitializedChanged(isQuestInitialized.Get(), false);
-        questVisible.OnChange += QuestVisibleChanged;
-        QuestVisibleChanged(questVisible.Get(), false);
 
         isSettingsPanelInitialized.OnChange += IsSettingsPanelInitializedChanged;
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
-        settingsVisible.OnChange += SettingsVisibleChanged;
-        SettingsVisibleChanged(settingsVisible.Get(), false);
 
-        ConfigureOhterUIDependencies();
+        foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
+        {
+            sectionVisible.OnChangeWithSenderInfo += OnSectionVisiblityChanged;
+            OnSectionVisiblityChanged(sectionVisible, sectionVisible.Get());
+        }
+
+        ConfigureOtherUIDependencies();
 
         isInitialized.Set(true);
 
@@ -142,7 +146,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
-
     }
 
     public void Dispose()
@@ -153,18 +156,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view?.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
+
         isPlacesAndEventsSectionInitialized.OnChange -= IsPlacesAndEventsSectionInitializedChanged;
-        placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
         isAvatarEditorInitialized.OnChange -= IsAvatarEditorInitializedChanged;
-        avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
         isNavmapInitialized.OnChange -= IsNavMapInitializedChanged;
-        navmapVisible.OnChange -= NavmapVisibleChanged;
         isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
-        builderVisible.OnChange -= BuilderVisibleChanged;
         isQuestInitialized.OnChange -= IsQuestInitializedChanged;
-        questVisible.OnChange -= QuestVisibleChanged;
         isSettingsPanelInitialized.OnChange -= IsSettingsPanelInitializedChanged;
-        settingsVisible.OnChange -= SettingsVisibleChanged;
+
+        foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
+            sectionVisible.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
 
         if (view != null)
         {
@@ -185,12 +186,14 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void SetVisibility(bool visible) { isOpen.Set(visible); }
 
-    internal void PlacesAndEventsVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Explore);
-    internal void AvatarEditorVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Backpack);
-    internal void NavmapVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Map);
-    internal void BuilderVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Builder);
-    internal void QuestVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Quest);
-    internal void SettingsVisibleChanged(bool current, bool _) => SectionVisibilityChanged(current, _, ExploreSection.Settings);
+    private void OnSectionVisiblityChanged(BaseVariable<bool> sender, bool current, bool previous = false) =>
+        SectionVisibilityChanged(current, SectionVisibleEnumMap[sender]);
+
+    internal void IsAvatarEditorInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Backpack, current);
+    internal void IsNavMapInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Map, current);
+    internal void IsBuilderInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Builder, current);
+    internal void IsQuestInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Quest, current);
+    internal void IsSettingsPanelInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Settings, current);
 
     internal void InitializePlacesAndEventsSection()
     {
@@ -279,13 +282,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             InitializePlacesAndEventsSection();
     }
 
-    internal void IsAvatarEditorInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Backpack, current);
-    internal void IsNavMapInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Map, current);
-    internal void IsBuilderInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Builder, current);
-    internal void IsQuestInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Quest, current);
-    internal void IsSettingsPanelInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Settings, current);
-
-    private void SectionVisibilityChanged(bool current, bool _, ExploreSection section)
+    internal void SectionVisibilityChanged(bool current, ExploreSection section, bool _ = false)
     {
         if (!SectionIsInitialized[section].Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
@@ -406,7 +403,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    internal void ConfigureOhterUIDependencies()
+    internal void ConfigureOtherUIDependencies()
     {
         controlsHUDCloseTime = Time.realtimeSinceStartup;
         controlsVisible.OnChange += (current, old) =>
