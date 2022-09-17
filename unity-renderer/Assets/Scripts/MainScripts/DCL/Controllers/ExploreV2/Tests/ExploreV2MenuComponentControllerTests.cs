@@ -140,7 +140,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Explore;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Explore);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Explore, isVisible);
 
         // Assert
         if (isVisible)
@@ -155,7 +155,7 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseIsAvatarEditorInitializedChangedCorrectly(bool isVisible)
     {
         // Act
-        exploreV2MenuController.IsAvatarEditorInitializedChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Backpack, isVisible);
 
         // Assert
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Backpack, isVisible);
@@ -171,7 +171,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Backpack;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Backpack);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Backpack, isVisible);
         ;
 
         // Assert
@@ -187,7 +187,7 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseIsNavMapInitializedChangedCorrectly(bool isVisible)
     {
         // Act
-        exploreV2MenuController.IsNavMapInitializedChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Map, isVisible);
 
         // Assert
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Map, isVisible);
@@ -202,7 +202,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Map;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Map);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Map, isVisible);
 
         // Assert
         if (isVisible)
@@ -217,7 +217,7 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseIsBuilderInitializedChangedCorrectly(bool isVisible)
     {
         // Act
-        exploreV2MenuController.IsBuilderInitializedChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Builder, isVisible);
 
         // Assert
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Builder, isVisible);
@@ -232,7 +232,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Builder);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Builder, isVisible);
 
         // Assert
         if (isVisible)
@@ -247,7 +247,7 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseIsQuestInitializedChangedCorrectly(bool isVisible)
     {
         // Act
-        exploreV2MenuController.IsQuestInitializedChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Quest, isVisible);
 
         // Assert
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Quest, isVisible);
@@ -262,7 +262,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Quest;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Quest);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Quest, isVisible);
 
         // Assert
         if (isVisible)
@@ -277,7 +277,7 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseIsSettingsPanelInitializedChangedCorrectly(bool isVisible)
     {
         // Act
-        exploreV2MenuController.IsSettingsPanelInitializedChanged(isVisible, !isVisible);
+        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Settings, isVisible);
 
         // Assert
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Settings, isVisible);
@@ -292,7 +292,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
 
         // Act
-        exploreV2MenuController.SectionVisibilityChanged(isVisible, ExploreSection.Settings);
+        exploreV2MenuController.SectionVisibilityChanged(ExploreSection.Settings, isVisible);
 
         // Assert
         if (isVisible)

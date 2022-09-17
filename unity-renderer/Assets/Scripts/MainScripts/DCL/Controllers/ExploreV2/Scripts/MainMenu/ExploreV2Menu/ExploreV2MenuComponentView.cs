@@ -237,6 +237,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             Show();
 
             ISectionToggle sectionToGo = sectionSelector.GetSection(DataStore.i.exploreV2.currentSectionIndex.Get());
+
             if (sectionToGo != null && sectionToGo.IsActive())
                 GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
             else
@@ -304,9 +305,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal void RemoveSectionSelectorMappings()
     {
         foreach (int sectionId in Enum.GetValues(typeof(ExploreSection)))
-        {
             sectionSelector.GetSection(sectionId)?.onSelect.RemoveAllListeners();
-        }
     }
 
     internal void ConfigureCloseButton()

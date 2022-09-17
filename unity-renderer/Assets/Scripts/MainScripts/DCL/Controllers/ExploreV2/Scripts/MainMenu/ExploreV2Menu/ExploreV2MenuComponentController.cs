@@ -56,9 +56,19 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
+    private Dictionary<BaseVariable<bool>, ExploreSection> SectionInitializeEnumMap => new Dictionary<BaseVariable<bool>, ExploreSection>
+    {
+        { isPlacesAndEventsSectionInitialized, ExploreSection.Explore },
+        { isAvatarEditorInitialized, ExploreSection.Backpack },
+        { isNavmapInitialized, ExploreSection.Map },
+        { isBuilderInitialized, ExploreSection.Builder },
+        { isQuestInitialized, ExploreSection.Quest },
+        { isSettingsPanelInitialized, ExploreSection.Settings },
+    };
+
     private Dictionary<ExploreSection, BaseVariable<bool>> SectionIsInitialized => new Dictionary<ExploreSection, BaseVariable<bool>>
     {
-        { ExploreSection.Explore, isInitialized },
+        { ExploreSection.Explore, isPlacesAndEventsSectionInitialized },
         { ExploreSection.Backpack, isAvatarEditorInitialized },
         { ExploreSection.Map, isNavmapInitialized },
         { ExploreSection.Builder, isBuilderInitialized },
@@ -113,23 +123,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
-        isPlacesAndEventsSectionInitialized.OnChange += IsPlacesAndEventsSectionInitializedChanged;
-        IsPlacesAndEventsSectionInitializedChanged(isPlacesAndEventsSectionInitialized.Get(), false);
-
-        isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
-        IsAvatarEditorInitializedChanged(isAvatarEditorInitialized.Get(), false);
-
-        isNavmapInitialized.OnChange += IsNavMapInitializedChanged;
-        IsNavMapInitializedChanged(isNavmapInitialized.Get(), false);
-
-        isBuilderInitialized.OnChange += IsBuilderInitializedChanged;
-        IsBuilderInitializedChanged(isBuilderInitialized.Get(), false);
-
-        isQuestInitialized.OnChange += IsQuestInitializedChanged;
-        IsQuestInitializedChanged(isQuestInitialized.Get(), false);
-
-        isSettingsPanelInitialized.OnChange += IsSettingsPanelInitializedChanged;
-        IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
+        foreach (var sectionInitialize in SectionInitializeEnumMap.Keys)
+        {
+            sectionInitialize.OnChangeWithSenderInfo += OnSectionInitializedChanged;
+            OnSectionInitializedChanged(sectionInitialize, sectionInitialize.Get());
+        }
 
         foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
         {
@@ -152,20 +150,24 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
+
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
+
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
 
-        isPlacesAndEventsSectionInitialized.OnChange -= IsPlacesAndEventsSectionInitializedChanged;
-        isAvatarEditorInitialized.OnChange -= IsAvatarEditorInitializedChanged;
-        isNavmapInitialized.OnChange -= IsNavMapInitializedChanged;
-        isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
-        isQuestInitialized.OnChange -= IsQuestInitializedChanged;
-        isSettingsPanelInitialized.OnChange -= IsSettingsPanelInitializedChanged;
+        foreach (var sectionInitialize in SectionInitializeEnumMap.Keys)
+            sectionInitialize.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
 
         foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
             sectionVisible.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
+
+        if (placesAndEventsSectionController != null)
+        {
+            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.Dispose();
+        }
 
         if (view != null)
         {
@@ -176,24 +178,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
-
-        if (placesAndEventsSectionController != null)
-        {
-            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
-            placesAndEventsSectionController.Dispose();
-        }
     }
 
     public void SetVisibility(bool visible) { isOpen.Set(visible); }
 
-    private void OnSectionVisiblityChanged(BaseVariable<bool> sender, bool current, bool previous = false) =>
-        SectionVisibilityChanged(current, SectionVisibleEnumMap[sender]);
+    private void OnSectionInitializedChanged(BaseVariable<bool> sender, bool current, bool _ = false) =>
+        SectionInitializedChanged(SectionInitializeEnumMap[sender], initialized: current);
 
-    internal void IsAvatarEditorInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Backpack, current);
-    internal void IsNavMapInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Map, current);
-    internal void IsBuilderInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Builder, current);
-    internal void IsQuestInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Quest, current);
-    internal void IsSettingsPanelInitializedChanged(bool current, bool previous) => view.SetSectionActive(ExploreSection.Settings, current);
+    internal void SectionInitializedChanged(ExploreSection section, bool initialized, bool _ = false)
+    {
+        view.SetSectionActive(section, initialized);
+
+        if (section == ExploreSection.Explore && initialized)
+            InitializePlacesAndEventsSection();
+    }
+
+    private void OnSectionVisiblityChanged(BaseVariable<bool> sender, bool current, bool previous = false) =>
+        SectionVisibilityChanged(SectionVisibleEnumMap[sender], current);
 
     internal void InitializePlacesAndEventsSection()
     {
@@ -224,6 +225,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         builderVisible.Set(currentOpenSection == ExploreSection.Builder);
         questVisible.Set(currentOpenSection == ExploreSection.Quest);
         settingsVisible.Set(currentOpenSection == ExploreSection.Settings);
+
         profileCardIsOpen.Set(false);
     }
 
@@ -260,6 +262,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         else
         {
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+
             placesAndEventsVisible.Set(false);
             avatarEditorVisible.Set(false);
             profileCardIsOpen.Set(false);
@@ -274,15 +277,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnAfterShowAnimation() => CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
-    internal void IsPlacesAndEventsSectionInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Explore, current);
-
-        if (current)
-            InitializePlacesAndEventsSection();
-    }
-
-    internal void SectionVisibilityChanged(bool current, ExploreSection section, bool _ = false)
+    internal void SectionVisibilityChanged(ExploreSection section, bool current, bool _ = false)
     {
         if (!SectionIsInitialized[section].Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
