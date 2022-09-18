@@ -112,7 +112,7 @@ public class ExploreV2MenuComponentControllerTests
         DataStore.i.common.isTutorialRunning.Set(true);
 
         // Act
-        exploreV2MenuController.IsOpenChanged(isVisible, !isVisible);
+        exploreV2MenuController.SetVisibilityOnOpenChanged(isVisible, !isVisible);
 
         // Assert
         if (isVisible)

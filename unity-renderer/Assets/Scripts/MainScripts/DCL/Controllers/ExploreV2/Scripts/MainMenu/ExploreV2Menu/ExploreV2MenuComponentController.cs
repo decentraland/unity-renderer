@@ -104,12 +104,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.OnSectionOpen += OnSectionOpen;
 
-        isOpen.OnChange += IsOpenChanged;
-        IsOpenChanged(isOpen.Get(), false);
+        isOpen.OnChange += SetVisibilityOnOpenChanged;
+        SetVisibilityOnOpenChanged(isOpen.Get());
 
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
-
 
         foreach (var sectionsVariables in SectionsVariables.Values)
         {
@@ -118,7 +117,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
             sectionsVariables.visibilityVar.OnChangeWithSenderInfo += OnSectionVisiblityChanged;
             OnSectionVisiblityChanged(sectionsVariables.visibilityVar, sectionsVariables.visibilityVar.Get());
-
         }
 
         ConfigureOtherUIDependencies();
@@ -140,13 +138,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
 
-        isOpen.OnChange -= IsOpenChanged;
+        isOpen.OnChange -= SetVisibilityOnOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
 
         foreach (var sectionsVariables in SectionsVariables.Values)
         {
             sectionsVariables.initVar.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
-            sectionsVariables.initVar.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
+            sectionsVariables.visibilityVar.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
         }
 
         if (placesAndEventsSectionController != null)
@@ -199,23 +197,15 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentOpenSection = section;
 
         if (currentOpenSection == ExploreSection.Backpack)
-        {
-            view.ConfigureEncapsulatedSection(
-                ExploreSection.Backpack,
-                DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        }
+            view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
 
-        placesAndEventsVisible.Set(currentOpenSection == ExploreSection.Explore);
-        avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
-        navmapVisible.Set(currentOpenSection == ExploreSection.Map);
-        builderVisible.Set(currentOpenSection == ExploreSection.Builder);
-        questVisible.Set(currentOpenSection == ExploreSection.Quest);
-        settingsVisible.Set(currentOpenSection == ExploreSection.Settings);
+        foreach (var visibilityVar in SectionsByVisiblityVar.Keys)
+            visibilityVar.Set(currentOpenSection == SectionsByVisiblityVar[visibilityVar]);
 
         profileCardIsOpen.Set(false);
     }
 
-    internal void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+    internal void SetVisibilityOnOpenChanged(bool open, bool _ = false) => SetVisibility_Internal(open);
 
     internal void CurrentSectionIndexChanged(int current, int previous)
     {
@@ -249,13 +239,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
 
-            placesAndEventsVisible.Set(false);
-            avatarEditorVisible.Set(false);
+            foreach (var sectionsVariables in SectionsVariables.Values)
+                sectionsVariables.visibilityVar.Set(false);
+
             profileCardIsOpen.Set(false);
-            navmapVisible.Set(false);
-            builderVisible.Set(false);
-            questVisible.Set(false);
-            settingsVisible.Set(false);
         }
 
         view.SetVisible(visible);
@@ -268,27 +255,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (!SectionsVariables[section].initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
+        if (toVisible || currentOpenSection == section)
+            SetSectionTargetVisibility(section, toVisible);
+
         if (toVisible)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
             view.GoToSection(section);
-            exploreV2Analytics.SendStartMenuSectionVisibility(section, true);
-        }
-        else if (currentOpenSection == section)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
+    }
 
-            exploreV2Analytics.SendStartMenuSectionVisibility(section, false);
+    private void SetSectionTargetVisibility(ExploreSection section, bool toVisible)
+    {
+        bool wasInTargetVisibility =  toVisible ^ isOpen.Get();
+
+        if (wasInTargetVisibility)
+        {
+            SetVisibility(toVisible);
+            exploreV2Analytics.SendStartMenuVisibility(toVisible, ExploreUIVisibilityMethod.FromShortcut);
         }
+        exploreV2Analytics.SendStartMenuSectionVisibility(section, toVisible);
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
@@ -369,46 +352,38 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if (DataStore.i.builderInWorld.areShortcutsBlocked.Get())
+        if (DataStore.i.builderInWorld.areShortcutsBlocked.Get() || !isOpen.Get() )
             return;
 
-        if (!fromShortcut)
-        {
-            SetVisibility(false);
-            exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromClick);
-        }
-        else if (isOpen.Get())
-        {
-            SetVisibility(false);
-            exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-        }
+        SetVisibility(false);
+        exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
     }
 
     internal void ConfigureOtherUIDependencies()
     {
         controlsHUDCloseTime = Time.realtimeSinceStartup;
-        controlsVisible.OnChange += (current, old) =>
+        controlsVisible.OnChange += (current, _) =>
         {
             if (!current)
                 controlsHUDCloseTime = Time.realtimeSinceStartup;
         };
 
         emotesHUDCloseTime = Time.realtimeSinceStartup;
-        emotesVisible.OnChange += (current, old) =>
+        emotesVisible.OnChange += (current, _) =>
         {
             if (!current)
                 emotesHUDCloseTime = Time.realtimeSinceStartup;
         };
 
         chatInputHUDCloseTime = Time.realtimeSinceStartup;
-        chatInputVisible.OnChange += (current, old) =>
+        chatInputVisible.OnChange += (current, _) =>
         {
             if (!current)
                 chatInputHUDCloseTime = Time.realtimeSinceStartup;
         };
 
         playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
-        playerInfoCardVisible.OnChange += (current, old) =>
+        playerInfoCardVisible.OnChange += (current, _) =>
         {
             if (!current)
                 playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;

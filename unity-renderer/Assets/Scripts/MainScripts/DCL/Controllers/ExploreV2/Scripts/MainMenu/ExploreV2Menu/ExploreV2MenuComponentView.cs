@@ -295,11 +295,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public override void RefreshControl()
     {
         placesAndEventsSection.RefreshControl();
-        backpackSection.RefreshControl();
-        mapSection.RefreshControl();
-        builderSection.RefreshControl();
-        questSection.RefreshControl();
-        settingsSection.RefreshControl();
+
+        foreach (var section in exploreSectionsById.Keys)
+            exploreSectionsById[section]?.RefreshControl();
     }
 
     internal void RemoveSectionSelectorMappings()
