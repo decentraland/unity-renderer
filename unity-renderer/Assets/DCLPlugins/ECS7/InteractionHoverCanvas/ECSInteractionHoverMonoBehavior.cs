@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class ECSInteractionHoverMonoBehavior : MonoBehaviour, IECSInteractionHoverCanvas
 {
-    [SerializeField] private ECSInteractionHoverTooltipMonoBehavior[] _tooltips;
-    [SerializeField] private Sprite[] _icons;
-    [SerializeField] private ShowHideAnimator _showHideAnimator;
+    [SerializeField] internal ECSInteractionHoverTooltipMonoBehavior[] _tooltips;
+    [SerializeField] internal Sprite[] _icons;
+    [SerializeField] internal ShowHideAnimator _showHideAnimator;
 
-    private readonly string[] inputText = new[]
+    internal readonly string[] inputText = new[]
     {
         null, "E", "F", null,
         "W", "S", "D", "A",

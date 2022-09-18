@@ -4,11 +4,11 @@ using UnityEngine.UI;
 
 public class ECSInteractionHoverTooltipMonoBehavior : MonoBehaviour, ITooltip
 {
-    [SerializeField] private Image _icon;
-    [SerializeField] private TextMeshProUGUI _text;
-    [SerializeField] private TextMeshProUGUI _inputText;
-    [SerializeField] private GameObject _iconGameObject;
-    [SerializeField] private GameObject _inputTextGameObject;
+    [SerializeField] internal Image _icon;
+    [SerializeField] internal TextMeshProUGUI _text;
+    [SerializeField] internal TextMeshProUGUI _inputText;
+    [SerializeField] internal GameObject _iconGameObject;
+    [SerializeField] internal GameObject _inputTextGameObject;
 
     public void SetText(string text)
     {
