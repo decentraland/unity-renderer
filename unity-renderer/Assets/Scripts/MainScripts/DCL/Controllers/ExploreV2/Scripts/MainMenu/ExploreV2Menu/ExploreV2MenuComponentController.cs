@@ -22,6 +22,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal float playerInfoCardHUDCloseTime = 0f;
 
+    private Dictionary<BaseVariable<bool>, ExploreSection> SectionsByInitVar;
+    private Dictionary<BaseVariable<bool>, ExploreSection> SectionsByVisiblityVar;
+
     internal IExploreV2MenuComponentView view;
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -56,38 +59,22 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
-    private Dictionary<BaseVariable<bool>, ExploreSection> SectionInitializeEnumMap => new Dictionary<BaseVariable<bool>, ExploreSection>
-    {
-        { isPlacesAndEventsSectionInitialized, ExploreSection.Explore },
-        { isAvatarEditorInitialized, ExploreSection.Backpack },
-        { isNavmapInitialized, ExploreSection.Map },
-        { isBuilderInitialized, ExploreSection.Builder },
-        { isQuestInitialized, ExploreSection.Quest },
-        { isSettingsPanelInitialized, ExploreSection.Settings },
-    };
-
-    private Dictionary<ExploreSection, BaseVariable<bool>> SectionIsInitialized => new Dictionary<ExploreSection, BaseVariable<bool>>
-    {
-        { ExploreSection.Explore, isPlacesAndEventsSectionInitialized },
-        { ExploreSection.Backpack, isAvatarEditorInitialized },
-        { ExploreSection.Map, isNavmapInitialized },
-        { ExploreSection.Builder, isBuilderInitialized },
-        { ExploreSection.Quest, isQuestInitialized },
-        { ExploreSection.Settings, isSettingsPanelInitialized },
-    };
-
-    private Dictionary<BaseVariable<bool>, ExploreSection> SectionVisibleEnumMap => new Dictionary<BaseVariable<bool>, ExploreSection>
-    {
-        { placesAndEventsVisible, ExploreSection.Explore },
-        { avatarEditorVisible, ExploreSection.Backpack },
-        { navmapVisible, ExploreSection.Map },
-        { builderVisible, ExploreSection.Builder },
-        { questVisible, ExploreSection.Quest },
-        { settingsVisible, ExploreSection.Settings },
-    };
+    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> SectionsVariables =>
+        new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
+        {
+            { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized,  placesAndEventsVisible) },
+            { ExploreSection.Backpack, (isAvatarEditorInitialized,  avatarEditorVisible) },
+            { ExploreSection.Map, (isNavmapInitialized,  navmapVisible) },
+            { ExploreSection.Builder, (isBuilderInitialized,  builderVisible) },
+            { ExploreSection.Quest, (isQuestInitialized,  questVisible) },
+            { ExploreSection.Settings, (isSettingsPanelInitialized,  settingsVisible) },
+        };
 
     public void Initialize()
     {
+        SectionsByInitVar = SectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
+        SectionsByVisiblityVar = SectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
+
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
@@ -123,16 +110,15 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
-        foreach (var sectionInitialize in SectionInitializeEnumMap.Keys)
-        {
-            sectionInitialize.OnChangeWithSenderInfo += OnSectionInitializedChanged;
-            OnSectionInitializedChanged(sectionInitialize, sectionInitialize.Get());
-        }
 
-        foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
+        foreach (var sectionsVariables in SectionsVariables.Values)
         {
-            sectionVisible.OnChangeWithSenderInfo += OnSectionVisiblityChanged;
-            OnSectionVisiblityChanged(sectionVisible, sectionVisible.Get());
+            sectionsVariables.initVar.OnChangeWithSenderInfo += OnSectionInitializedChanged;
+            OnSectionInitializedChanged(sectionsVariables.initVar, sectionsVariables.initVar.Get());
+
+            sectionsVariables.visibilityVar.OnChangeWithSenderInfo += OnSectionVisiblityChanged;
+            OnSectionVisiblityChanged(sectionsVariables.visibilityVar, sectionsVariables.visibilityVar.Get());
+
         }
 
         ConfigureOtherUIDependencies();
@@ -157,11 +143,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
 
-        foreach (var sectionInitialize in SectionInitializeEnumMap.Keys)
-            sectionInitialize.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
-
-        foreach (var sectionVisible in SectionVisibleEnumMap.Keys)
-            sectionVisible.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
+        foreach (var sectionsVariables in SectionsVariables.Values)
+        {
+            sectionsVariables.initVar.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
+            sectionsVariables.initVar.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
+        }
 
         if (placesAndEventsSectionController != null)
         {
@@ -180,10 +166,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    public void SetVisibility(bool visible) { isOpen.Set(visible); }
+    public void SetVisibility(bool visible) => isOpen.Set(visible);
 
-    private void OnSectionInitializedChanged(BaseVariable<bool> sender, bool current, bool _ = false) =>
-        SectionInitializedChanged(SectionInitializeEnumMap[sender], initialized: current);
+    private void OnSectionInitializedChanged(BaseVariable<bool> initVar, bool initialized, bool _ = false) =>
+        SectionInitializedChanged(SectionsByInitVar[initVar], initialized);
 
     internal void SectionInitializedChanged(ExploreSection section, bool initialized, bool _ = false)
     {
@@ -193,8 +179,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             InitializePlacesAndEventsSection();
     }
 
-    private void OnSectionVisiblityChanged(BaseVariable<bool> sender, bool current, bool previous = false) =>
-        SectionVisibilityChanged(SectionVisibleEnumMap[sender], current);
+    private void OnSectionVisiblityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false) =>
+        SetMenuTargetVisibility(SectionsByVisiblityVar[visibilityVar], visible);
 
     internal void InitializePlacesAndEventsSection()
     {
@@ -277,12 +263,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnAfterShowAnimation() => CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
-    internal void SectionVisibilityChanged(ExploreSection section, bool current, bool _ = false)
+    internal void SetMenuTargetVisibility(ExploreSection section, bool toVisible, bool _ = false)
     {
-        if (!SectionIsInitialized[section].Get() || DataStore.i.common.isSignUpFlow.Get())
+        if (!SectionsVariables[section].initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
-        if (current)
+        if (toVisible)
         {
             if (!isOpen.Get())
             {
