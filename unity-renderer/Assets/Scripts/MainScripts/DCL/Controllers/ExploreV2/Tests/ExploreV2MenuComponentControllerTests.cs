@@ -116,7 +116,7 @@ public class ExploreV2MenuComponentControllerTests
 
         // Assert
         if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
+            exploreV2MenuView.Received().GoToSection(ExploreV2MenuComponentController.DEFAULT_SECTION);
         else
         {
             Assert.IsFalse(exploreV2MenuController.placesAndEventsVisible.Get());

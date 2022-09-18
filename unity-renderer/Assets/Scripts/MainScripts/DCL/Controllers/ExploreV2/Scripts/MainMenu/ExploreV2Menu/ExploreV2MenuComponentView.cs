@@ -130,8 +130,6 @@ public interface IExploreV2MenuComponentView : IDisposable
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
-
-    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
     internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
 
     [Header("Assets References")]
@@ -184,8 +182,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public override void Start()
     {
-        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
-
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
         IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
 
@@ -239,7 +235,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             ISectionToggle sectionToGo = sectionSelector.GetSection(DataStore.i.exploreV2.currentSectionIndex.Get());
 
             if (sectionToGo != null && sectionToGo.IsActive())
+            {
+                Debug.Log($"{Time.frameCount} [View.SetVisible({isActive})] GoToSection({(ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get()} where SectionToGo={sectionToGo})");
                 GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
+            }
             else
             {
                 List<ISectionToggle> allSections = sectionSelector.GetAllSections();
@@ -262,9 +261,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void GoToSection(ExploreSection section)
     {
-        if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
-
         sectionSelector.GetSection((int)section)?.SelectToggleWithReset();
 
         AudioScriptableObjects.dialogOpen.Play(true);
@@ -381,7 +377,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                 if (sectionView != null)
                     sectionView.Show();
 
-                DataStore.i.exploreV2.currentSectionIndex.Set((int)sectionId, false);
                 OnSectionOpen?.Invoke(sectionId);
             }
             else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it

@@ -231,8 +231,6 @@ namespace DCL
             if (waitingForFullscreenHUDOpen)
                 return;
 
-            Debug.Log($"[NavmapView] Request to SetVisible. Visible == {visible}");
-
             if (visible)
             {
                 if (CommonScriptableObjects.isFullscreenHUDOpen.Get())
@@ -257,8 +255,6 @@ namespace DCL
             if (!current)
                 return;
 
-            Debug.Log("[NavmapView] IsFullscreenHUDOpen_OnChange");
-
             SetVisibility_Internal(true);
             waitingForFullscreenHUDOpen = false;
         }
@@ -267,8 +263,6 @@ namespace DCL
         {
             if (MapRenderer.i == null)
                 return;
-
-            Debug.Log($"[NavmapView] SetVisibility_Internal to visible = {visible}");
 
             scrollRect.StopMovement();
 

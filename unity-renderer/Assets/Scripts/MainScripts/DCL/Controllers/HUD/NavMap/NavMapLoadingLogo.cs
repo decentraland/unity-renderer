@@ -40,12 +40,9 @@ namespace DCL
 
         private void OnExploreUiVisibilityChange(bool isOpen, bool _)
         {
-            Debug.Log($"[DataStore.i.exploreV2.isOpen] changed to {isOpen}");
-
             if (!isOpen && !sectionsContent.enabled)
             {
                 SetImagesVisibility(visible: true);
-                Debug.Log("enable images");
             }
         }
 

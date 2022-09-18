@@ -11,6 +11,8 @@ using Variables.RealmsInfo;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
+
     internal const float MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU = 0.1f;
     internal readonly List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
     internal float chatInputHUDCloseTime = 0f;
@@ -123,6 +125,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isInitialized.Set(true);
 
+        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
+
         //view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
@@ -233,7 +237,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             mouseCatcher?.UnlockCursor();
 
             if (DataStore.i.common.isTutorialRunning.Get())
-                view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
+                view.GoToSection(DEFAULT_SECTION);
         }
         else
         {
@@ -255,11 +259,21 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (!SectionsVariables[section].initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
-        if (toVisible || currentOpenSection == section)
-            SetSectionTargetVisibility(section, toVisible);
+        Debug.Log($"{Time.frameCount} [Controller] SetMenuTargetVisibility with GoTo visible {section} is {toVisible}");
 
         if (toVisible)
+        {
+            if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
+                DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
+
+            SetSectionTargetVisibility(section, toVisible: true);
+
             view.GoToSection(section);
+        }
+        else if (currentOpenSection == section)
+        {
+            SetSectionTargetVisibility(section, toVisible: false);
+        }
     }
 
     private void SetSectionTargetVisibility(ExploreSection section, bool toVisible)
