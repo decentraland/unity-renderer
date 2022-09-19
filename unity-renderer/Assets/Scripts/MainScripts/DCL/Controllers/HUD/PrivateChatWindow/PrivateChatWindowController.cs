@@ -33,7 +33,6 @@ public class PrivateChatWindowController : IHUD
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
-    private bool skipChatInputTrigger;
     private float lastRequestTime;
     private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
@@ -209,7 +208,6 @@ public class PrivateChatWindowController : IHUD
 
         else
         {
-            skipChatInputTrigger = true;
             chatHudController.ResetInputField(true);
             ActivatePreview();
             return;
@@ -396,14 +394,6 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
-        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-        // chat input trigger is the same key as sending the chat message from the input field
-        if (skipChatInputTrigger)
-        {
-            skipChatInputTrigger = false;
-            return;
-        }
-
         if (!View.IsActive)
             return;
         chatHudController.FocusInputField();

@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System.Collections;
 using DCL.Components;
 using DCL.Controllers;
-using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AvatarSystem;

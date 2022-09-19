@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using DCL;
 using ECSSystems.CameraSystem;
+using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.VisibilitySystem;
 using ECSSystems.PointerInputSystem;
 using ECS7System = System.Action;
+using Environment = DCL.Environment;
 
 public class ECSSystemsController : IDisposable
 {
@@ -15,9 +17,9 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
 
-    public ECSSystemsController(IUpdateEventHandler updateEventHandler, ECS7System componentWriteSystem, SystemsContext context)
+    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
-        this.updateEventHandler = updateEventHandler;
+        this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
@@ -35,13 +37,11 @@ public class ECSSystemsController : IDisposable
         lateUpdateSystems = new ECS7System[]
         {
             ECSPointerInputSystem.CreateSystem(
-                context.componentWriter,
-                context.componentGroups.pointerDownGroup,
-                context.componentGroups.pointerUpGroup,
                 context.internalEcsComponents.onPointerColliderComponent,
-                context.pointerDownComponent,
-                context.pointerUpComponent,
-                DataStore.i.ecs7, DataStore.i.Get<DataStore_Cursor>()),
+                context.internalEcsComponents.inputEventResultsComponent,
+                Environment.i.world.state,
+                DataStore.i.ecs7),
+            ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };

@@ -30,7 +30,6 @@ public class PublicChatChannelController : IHUD
     private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
-    private bool skipChatInputTrigger;
     private string lastPrivateMessageRecipient = string.Empty;
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
@@ -141,7 +140,6 @@ public class PublicChatChannelController : IHUD
         }
         else
         {
-            skipChatInputTrigger = true;
             chatHudController.ResetInputField(true);
             ActivatePreview();
             return;
@@ -350,13 +348,6 @@ public class PublicChatChannelController : IHUD
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
-        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-        // chat input trigger is the same key as sending the chat message from the input field
-        if (skipChatInputTrigger)
-        {
-            skipChatInputTrigger = false;
-            return;
-        }
         if (!View.IsActive) return;
         chatHudController.FocusInputField();
     }
