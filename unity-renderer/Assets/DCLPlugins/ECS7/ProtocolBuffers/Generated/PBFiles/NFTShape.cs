@@ -25,24 +25,23 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5ORlRTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9uL0Nv",
-            "bG9yMy5wcm90byK2BAoKUEJORlRTaGFwZRILCgNzcmMYASABKAkSFQoIYXNz",
-            "ZXRfaWQYAiABKAlIAIgBARJCCgVzdHlsZRgDIAEoDjIuLmRlY2VudHJhbGFu",
-            "ZC5lY3MuUEJORlRTaGFwZS5QaWN0dXJlRnJhbWVTdHlsZUgBiAEBEhsKBWNv",
-            "bG9yGAQgASgLMgcuQ29sb3IzSAKIAQEigQMKEVBpY3R1cmVGcmFtZVN0eWxl",
-            "EgsKB0NsYXNzaWMQABIUChBCYXJvcXVlX09ybmFtZW50EAESFAoQRGlhbW9u",
-            "ZF9Pcm5hbWVudBACEhAKDE1pbmltYWxfV2lkZRADEhAKDE1pbmltYWxfR3Jl",
-            "eRAEEgoKBkJsb2NreRAFEg4KCkdvbGRfRWRnZXMQBhIPCgtHb2xkX0NhcnZl",
-            "ZBAHEg0KCUdvbGRfV2lkZRAIEhAKDEdvbGRfUm91bmRlZBAJEhAKDE1ldGFs",
-            "X01lZGl1bRAKEg4KCk1ldGFsX1dpZGUQCxIOCgpNZXRhbF9TbGltEAwSEQoN",
-            "TWV0YWxfUm91bmRlZBANEggKBFBpbnMQDhIRCg1NaW5pbWFsX0JsYWNrEA8S",
-            "EQoNTWluaW1hbF9XaGl0ZRAQEggKBFRhcGUQERINCglXb29kX1NsaW0QEhIN",
-            "CglXb29kX1dpZGUQExIOCgpXb29kX1R3aWdzEBQSCgoGQ2FudmFzEBUSCAoE",
-            "Tm9uZRAWQgsKCV9hc3NldF9pZEIICgZfc3R5bGVCCAoGX2NvbG9yQhSqAhFE",
-            "Q0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "bG9yMy5wcm90byKSBAoKUEJORlRTaGFwZRILCgNzcmMYASABKAkSQgoFc3R5",
+            "bGUYAiABKA4yLi5kZWNlbnRyYWxhbmQuZWNzLlBCTkZUU2hhcGUuUGljdHVy",
+            "ZUZyYW1lU3R5bGVIAIgBARIbCgVjb2xvchgDIAEoCzIHLkNvbG9yM0gBiAEB",
+            "IoEDChFQaWN0dXJlRnJhbWVTdHlsZRILCgdDbGFzc2ljEAASFAoQQmFyb3F1",
+            "ZV9Pcm5hbWVudBABEhQKEERpYW1vbmRfT3JuYW1lbnQQAhIQCgxNaW5pbWFs",
+            "X1dpZGUQAxIQCgxNaW5pbWFsX0dyZXkQBBIKCgZCbG9ja3kQBRIOCgpHb2xk",
+            "X0VkZ2VzEAYSDwoLR29sZF9DYXJ2ZWQQBxINCglHb2xkX1dpZGUQCBIQCgxH",
+            "b2xkX1JvdW5kZWQQCRIQCgxNZXRhbF9NZWRpdW0QChIOCgpNZXRhbF9XaWRl",
+            "EAsSDgoKTWV0YWxfU2xpbRAMEhEKDU1ldGFsX1JvdW5kZWQQDRIICgRQaW5z",
+            "EA4SEQoNTWluaW1hbF9CbGFjaxAPEhEKDU1pbmltYWxfV2hpdGUQEBIICgRU",
+            "YXBlEBESDQoJV29vZF9TbGltEBISDQoJV29vZF9XaWRlEBMSDgoKV29vZF9U",
+            "d2lncxAUEgoKBkNhbnZhcxAVEggKBE5vbmUQFkIICgZfc3R5bGVCCAoGX2Nv",
+            "bG9yQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "Src", "AssetId", "Style", "Color" }, new[]{ "AssetId", "Style", "Color" }, new[]{ typeof(global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "Src", "Style", "Color" }, new[]{ "Style", "Color" }, new[]{ typeof(global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) }, null, null)
           }));
     }
     #endregion
@@ -86,7 +85,6 @@ namespace DCL.ECSComponents {
     public PBNFTShape(PBNFTShape other) : this() {
       _hasBits0 = other._hasBits0;
       src_ = other.src_;
-      assetId_ = other.assetId_;
       style_ = other.style_;
       color_ = other.color_ != null ? other.color_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -110,32 +108,8 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "asset_id" field.</summary>
-    public const int AssetIdFieldNumber = 2;
-    private string assetId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string AssetId {
-      get { return assetId_ ?? ""; }
-      set {
-        assetId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "asset_id" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasAssetId {
-      get { return assetId_ != null; }
-    }
-    /// <summary>Clears the value of the "asset_id" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearAssetId() {
-      assetId_ = null;
-    }
-
     /// <summary>Field number for the "style" field.</summary>
-    public const int StyleFieldNumber = 3;
+    public const int StyleFieldNumber = 2;
     private global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle style_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -160,7 +134,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "color" field.</summary>
-    public const int ColorFieldNumber = 4;
+    public const int ColorFieldNumber = 3;
     private global::Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -187,7 +161,6 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Src != other.Src) return false;
-      if (AssetId != other.AssetId) return false;
       if (Style != other.Style) return false;
       if (!object.Equals(Color, other.Color)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -198,7 +171,6 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Src.Length != 0) hash ^= Src.GetHashCode();
-      if (HasAssetId) hash ^= AssetId.GetHashCode();
       if (HasStyle) hash ^= Style.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
       if (_unknownFields != null) {
@@ -223,16 +195,12 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasAssetId) {
-        output.WriteRawTag(18);
-        output.WriteString(AssetId);
-      }
       if (HasStyle) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(16);
         output.WriteEnum((int) Style);
       }
       if (color_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(26);
         output.WriteMessage(Color);
       }
       if (_unknownFields != null) {
@@ -249,16 +217,12 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasAssetId) {
-        output.WriteRawTag(18);
-        output.WriteString(AssetId);
-      }
       if (HasStyle) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(16);
         output.WriteEnum((int) Style);
       }
       if (color_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(26);
         output.WriteMessage(Color);
       }
       if (_unknownFields != null) {
@@ -273,9 +237,6 @@ namespace DCL.ECSComponents {
       int size = 0;
       if (Src.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
-      }
-      if (HasAssetId) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(AssetId);
       }
       if (HasStyle) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Style);
@@ -297,9 +258,6 @@ namespace DCL.ECSComponents {
       }
       if (other.Src.Length != 0) {
         Src = other.Src;
-      }
-      if (other.HasAssetId) {
-        AssetId = other.AssetId;
       }
       if (other.HasStyle) {
         Style = other.Style;
@@ -329,15 +287,11 @@ namespace DCL.ECSComponents {
             Src = input.ReadString();
             break;
           }
-          case 18: {
-            AssetId = input.ReadString();
-            break;
-          }
-          case 24: {
+          case 16: {
             Style = (global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) input.ReadEnum();
             break;
           }
-          case 34: {
+          case 26: {
             if (color_ == null) {
               Color = new global::Color3();
             }
@@ -363,15 +317,11 @@ namespace DCL.ECSComponents {
             Src = input.ReadString();
             break;
           }
-          case 18: {
-            AssetId = input.ReadString();
-            break;
-          }
-          case 24: {
+          case 16: {
             Style = (global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) input.ReadEnum();
             break;
           }
-          case 34: {
+          case 26: {
             if (color_ == null) {
               Color = new global::Color3();
             }

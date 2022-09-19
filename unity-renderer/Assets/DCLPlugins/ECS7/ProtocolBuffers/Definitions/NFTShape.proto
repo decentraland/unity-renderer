@@ -33,7 +33,6 @@ message PBNFTShape {
   }
 
   string src = 1;
-  optional string asset_id = 2;
-  optional PictureFrameStyle style = 3;
-  optional Color3 color = 4;
+  optional PictureFrameStyle style = 2;
+  optional Color3 color = 3;
 }
