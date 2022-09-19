@@ -282,9 +282,11 @@ namespace DCL
         {
             if (material == null)
                 return true;
-
-            bool isTransparent = material.HasProperty(ShaderUtils.ZWrite) &&
-                                 (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
+            
+            bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+            bool hasOpaqueName = material.shader.name.ToLower().Contains("opaque");
+            
+            bool isTransparent = !hasOpaqueName || hasZWrite && (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
 
             return !isTransparent;
         }
