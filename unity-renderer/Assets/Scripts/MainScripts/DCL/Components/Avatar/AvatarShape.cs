@@ -203,7 +203,6 @@ namespace DCL
                 Vector3 prevScale = thisTransform.localScale;
                 Vector3 prevPos = thisTransform.localPosition;
                 thisTransform.SetParent(null);
-                thisTransform.localPosition = Vector3.one * 9999;
                 thisTransform.localScale = Vector3.one;
                 
                 avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
