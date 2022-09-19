@@ -12,6 +12,7 @@ namespace DCL.Chat.Channels
 {
     public class ChatChannelsControllerMock : IChatController
     {
+        private const int CHANNEL_LIMIT = 5;
         private readonly ChatController controller;
         private readonly UserProfileController userProfileController;
         private readonly List<string> joinedChannels = new List<string>();
@@ -171,7 +172,11 @@ namespace DCL.Chat.Channels
         {
             currentChannelId = channelId;
             SimulateDelayedResponseFor_JoinOrCreateChannel(channelId)
-                .ContinueWith(() => SendWelcomeMessage(channelId).Forget())
+                .ContinueWith(success =>
+                {
+                    if (success)
+                        SendWelcomeMessage(channelId).Forget();
+                })
                 .Forget();
         }
 
@@ -234,6 +239,12 @@ namespace DCL.Chat.Channels
         private async UniTask SimulateDelayedResponseFor_CreateChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));
+
+            if (joinedChannels.Count >= CHANNEL_LIMIT)
+            {
+                controller.JoinChannelError(CreateMockedDataFor_JoinChannelErrorPayload(channelId));
+                return;
+            }
 
             if (!joinedChannels.Contains(channelId))
                 joinedChannels.Add(channelId);
@@ -524,25 +535,32 @@ Invite others to join by quoting the channel name in other chats or include it a
             return JsonUtility.ToJson(mockedPayload);
         }
 
-        private string CreateMockedDataFor_JoinChannelErrorPayload(string joinMessage)
+        private string CreateMockedDataFor_JoinChannelErrorPayload(string channelId)
         {
             var mockedPayload = new JoinChannelErrorPayload
             {
-                channelId = joinMessage,
+                channelId = channelId,
                 errorCode = (int) ChannelErrorCode.ExceededLimit
             };
 
             return JsonUtility.ToJson(mockedPayload);
         }
         
-        private async UniTask SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
+        private async UniTask<bool> SimulateDelayedResponseFor_JoinOrCreateChannel(string channelId)
         {
             await UniTask.Delay(Random.Range(40, 1000));
 
+            if (joinedChannels.Count >= CHANNEL_LIMIT)
+            {
+                controller.JoinChannelError(CreateMockedDataFor_JoinChannelErrorPayload(channelId));
+                return false;
+            }
+            
             if (!joinedChannels.Contains(channelId))
                 joinedChannels.Add(channelId);
 
             controller.JoinChannelConfirmation(CreateMockedDataFor_ChannelInfoPayload(channelId));
+            return true;
         }
         
         private async UniTask LeaveFakeChannel(string channelId)
