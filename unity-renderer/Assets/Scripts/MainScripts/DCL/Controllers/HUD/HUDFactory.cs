@@ -127,12 +127,15 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    ChatChannelsControllerMock.i);
+                    ChatChannelsControllerMock.i, DataStore.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 hudElement = new LeaveChannelConfirmationWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i);
+                break;
+            case HUDElementID.CHANNELS_LIMIT_REACHED_ERROR:
+                hudElement = new ChannelLimitReachedWindowController(ChannelLimitReachedWindowComponentView.Create());
                 break;
             case HUDElementID.TASKBAR:
                 // TODO (channels): Pass ChatController.i after kernel integration

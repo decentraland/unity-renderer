@@ -37,6 +37,7 @@ public class TaskbarHUDController : IHUD
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
+    private ChannelLimitReachedWindowController channelLimitReachedWindow;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -350,6 +351,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.OnCloseView += OpenPublicChatOnPreviewMode;
         worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
         worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
+        worldChatWindowHud.OnOpenChannelLimitReachedError += OpenChannelLimitReachedModal;
     }
 
     private void OpenPublicChatOnPreviewMode()
@@ -854,6 +856,11 @@ public class TaskbarHUDController : IHUD
         channelLeaveWindow.SetChannelToLeave(channelId);
         channelLeaveWindow.SetVisibility(true);
     }
+    
+    private void OpenChannelLimitReachedModal()
+    {
+        channelLimitReachedWindow.SetVisibility(true);
+    }
 
     public void OpenChannelSearch()
     {
@@ -868,5 +875,13 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(false);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
+    }
+
+    public void AddChannelLimitReached(ChannelLimitReachedWindowController controller)
+    {
+        if (controller.View.Transform.parent == view.fullScreenWindowContainer) return;
+
+        controller.View.Transform.SetParent(view.fullScreenWindowContainer, false);
+        channelLimitReachedWindow = controller;
     }
 }

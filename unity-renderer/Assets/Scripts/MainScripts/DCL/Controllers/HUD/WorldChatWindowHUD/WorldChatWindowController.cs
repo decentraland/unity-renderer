@@ -52,6 +52,7 @@ public class WorldChatWindowController : IHUD
     public event Action OnOpenChannelSearch;
     public event Action OnOpenChannelCreation;
     public event Action<string> OnOpenChannelLeave;
+    public event Action OnOpenChannelLimitReachedError;
 
     public WorldChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -498,6 +499,8 @@ public class WorldChatWindowController : IHUD
 
     private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
     {
+        if (dataStore.channels.isCreationModalVisible.Get()) return;
+        OnOpenChannelLimitReachedError?.Invoke();
     }
 
     private void HandleChannelLeft(string channelId)

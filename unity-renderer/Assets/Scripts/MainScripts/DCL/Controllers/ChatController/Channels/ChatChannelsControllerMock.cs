@@ -528,7 +528,7 @@ Invite others to join by quoting the channel name in other chats or include it a
         {
             var mockedPayload = new JoinChannelErrorPayload
             {
-                channelId = joinMessage.Split(' ')[1].Replace("#", ""),
+                channelId = joinMessage,
                 errorCode = (int) ChannelErrorCode.ExceededLimit
             };
 

@@ -65,8 +65,9 @@ namespace DCL
         CHANNELS_SEARCH = 35,
         CHANNELS_CREATE = 36,
         CHANNELS_LEAVE_CONFIRMATION = 37,
+        CHANNELS_LIMIT_REACHED_ERROR = 38,
 
-        COUNT = 38
+        COUNT = 39
     }
 
     public interface IHUDFactory : IService

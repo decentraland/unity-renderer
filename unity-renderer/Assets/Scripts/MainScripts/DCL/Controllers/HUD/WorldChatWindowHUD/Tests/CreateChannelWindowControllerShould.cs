@@ -15,7 +15,7 @@ namespace DCL.Chat.HUD
         public void SetUp()
         {
             chatController = Substitute.For<IChatController>();
-            controller = new CreateChannelWindowController(chatController);
+            controller = new CreateChannelWindowController(chatController, new DataStore());
             view = Substitute.For<ICreateChannelWindowView>();
             controller.Initialize(view);
         }
