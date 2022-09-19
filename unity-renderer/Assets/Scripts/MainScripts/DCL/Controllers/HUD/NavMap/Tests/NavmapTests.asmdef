@@ -1,32 +1,34 @@
 {
-  "name": "NavmapTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:692b6c9fa5079416bb81826fb3806890",
-    "GUID:e555144732b726c4cba5b0f6337fea75",
-    "GUID:6055be8ebefd69e48b49212b09b47b2f",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:d9a4800ebd3d742459c4760c04abca30",
-    "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
-    "GUID:0e967802b778d404eac1ca5ea340e290",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:bd51ff2b035ce4ab4be7c38c43c88889"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "NavmapTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:692b6c9fa5079416bb81826fb3806890",
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:d9a4800ebd3d742459c4760c04abca30",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+        "GUID:2f3b53e8380cc4aae947b17780173adb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

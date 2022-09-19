@@ -286,6 +286,8 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public override string ToString() { return id; }
 }
 
 [Serializable]
