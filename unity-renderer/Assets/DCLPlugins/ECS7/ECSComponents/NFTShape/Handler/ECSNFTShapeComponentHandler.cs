@@ -59,7 +59,8 @@ namespace DCL.ECSComponents
             // create shape if it does not exist
             if (shapeFrame == null)
             {
-                shapeFrame = factory.InstantiateLoaderController(model.Style);
+                int style = (int)model.GetStyle();
+                shapeFrame = factory.InstantiateLoaderController(style);
                 shapeFrame.gameObject.name = "NFT Shape mesh";
                 shapeFrame.gameObject.transform.SetParent(entity.gameObject.transform);
                 shapeFrame.gameObject.transform.ResetLocalTRS();
