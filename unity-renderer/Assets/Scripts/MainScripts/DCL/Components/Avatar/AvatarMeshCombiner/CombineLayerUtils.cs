@@ -284,9 +284,11 @@ namespace DCL
                 return true;
             
             bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+            
+            // NOTE(Kinerius): Since GLTFast materials doesn't have ZWrite property, we check if the shader name is opaque instead
             bool hasOpaqueName = material.shader.name.ToLower().Contains("opaque");
             
-            bool isTransparent = !hasOpaqueName || hasZWrite && (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
+            bool isTransparent = (!hasZWrite && !hasOpaqueName) || (hasZWrite && (int) material.GetFloat(ShaderUtils.ZWrite) == 0);
 
             return !isTransparent;
         }
