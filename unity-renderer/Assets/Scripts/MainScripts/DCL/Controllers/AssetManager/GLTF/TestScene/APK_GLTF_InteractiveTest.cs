@@ -1,11 +1,11 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityGLTF;
-using GLTFast;
 
+/// <summary>
+/// This class purpose is to test GLTF importer stability, performance, memory consumption and leaks
+/// </summary>
 public class APK_GLTF_InteractiveTest : MonoBehaviour
 {
     AssetPromiseKeeper_GLTF keeper;
@@ -31,7 +31,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         /*
         "/GLB/avatar-sitting/male/ch1_crowdV5.glb",
         "/GLB/avatar-sitting/female/ch2_crowdV5.glb",*/
-        "/GLB/hoodie.glb"
+        "/GLB/wings.glb"
     };
     private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 
@@ -74,11 +74,11 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.A))
         {
-            Create2();
+            CreateWithGLTFast();
         }
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            Create();
+            CreateWithOldGLTFImporter();
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {
@@ -93,7 +93,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         {
             if (create)
             {
-                Create();
+                CreateWithOldGLTFImporter();
             }
             else
             {
@@ -123,7 +123,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         }
         
     }
-    private void Create()
+    private void CreateWithOldGLTFImporter()
     {
         counter++;
         counter %= urls.Length;
@@ -131,12 +131,11 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         Generate(finalUrl);
     }
     
-    private void Create2()
+    private void CreateWithGLTFast()
     {
         counter++;
         counter %= urls.Length;
         string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
-        
         GenerateGLTFast(finalUrl);
     }
 }
