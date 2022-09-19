@@ -15,7 +15,7 @@ namespace Tests
             for (int i = 0; i < frames.Count; i++)
             {
                 Assert.AreEqual(1, frames[i].GetComponentsInChildren<Collider>(true).Length);
-                Assert.AreNotEqual(frames[i].boxCollider.gameObject, frames[i].meshRenderer.gameObject);
+                Assert.IsFalse(frames[i].boxCollider.enabled);
             }
 
             for (int i = 0; i < frames.Count; i++)
