@@ -13,6 +13,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_InputField channelNameInput;
         [SerializeField] internal GameObject channelExistsContainer;
         [SerializeField] internal GameObject channelExistsWithJoinOptionContainer;
+        [SerializeField] internal GameObject specialCharactersErrorContainer;
+        [SerializeField] internal GameObject tooShortErrorContainer;
         [SerializeField] internal TMP_Text genericErrorLabel;
         [SerializeField] internal TMP_Text channelNameLengthLabel;
         [SerializeField] internal GameObject inputFieldErrorBevel;
@@ -62,9 +64,11 @@ namespace DCL.Chat.HUD
         public void ShowError(string message)
         {
             channelExistsContainer.SetActive(false);
+            specialCharactersErrorContainer.SetActive(false);
             channelExistsWithJoinOptionContainer.SetActive(false);
             genericErrorLabel.gameObject.SetActive(true);
             inputFieldErrorBevel.SetActive(true);
+            tooShortErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
             genericErrorLabel.text = message;
         }
@@ -75,6 +79,8 @@ namespace DCL.Chat.HUD
             channelExistsWithJoinOptionContainer.SetActive(showJoinChannelOption);
             inputFieldErrorBevel.SetActive(true);
             genericErrorLabel.gameObject.SetActive(false);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
         }
 
@@ -84,6 +90,8 @@ namespace DCL.Chat.HUD
             channelExistsWithJoinOptionContainer.SetActive(false);
             genericErrorLabel.gameObject.SetActive(false);
             inputFieldErrorBevel.SetActive(false);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
             channelNameLengthLabel.color = lengthLabelOriginalColor;
         }
 
@@ -94,5 +102,27 @@ namespace DCL.Chat.HUD
         public void ClearInputText() => channelNameInput.text = "";
         
         public void FocusInputField() => channelNameInput.Select();
+        
+        public void ShowWrongFormatError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            genericErrorLabel.gameObject.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(true);
+            tooShortErrorContainer.SetActive(false);
+            channelNameLengthLabel.color = errorColor;
+        }
+
+        public void ShowTooShortError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            genericErrorLabel.gameObject.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(true);
+            channelNameLengthLabel.color = errorColor;
+        }
     }
 }

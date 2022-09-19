@@ -81,8 +81,16 @@ namespace DCL.Chat.HUD
             }
             else if (name.Length == 0)
                 view.DisableCreateButton();
-            else if (!nameFormatRegex.IsMatch(name))
+            else if (name.Length < 3)
+            {
+                view.ShowTooShortError();
                 view.DisableCreateButton();
+            }
+            else if (!nameFormatRegex.IsMatch(name))
+            {
+                view.ShowWrongFormatError();
+                view.DisableCreateButton();
+            }
             else
             {
                 view.ClearError();

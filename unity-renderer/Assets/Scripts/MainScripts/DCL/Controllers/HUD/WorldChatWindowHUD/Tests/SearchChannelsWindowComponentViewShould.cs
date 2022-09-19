@@ -105,6 +105,7 @@ namespace DCL.Chat.HUD
             Assert.AreEqual(false, view.channelList.gameObject.activeSelf);
             Assert.AreEqual(false, view.resultsHeaderLabel.gameObject.activeSelf);
             Assert.AreEqual(false, view.createChannelOnSearchContent.activeSelf);
+            Assert.AreEqual(false, view.loadMoreContent.activeSelf);
         }
         
         [Test]
@@ -116,6 +117,7 @@ namespace DCL.Chat.HUD
             Assert.AreEqual(true, view.channelList.gameObject.activeSelf);
             Assert.AreEqual(true, view.resultsHeaderLabel.gameObject.activeSelf);
             Assert.AreEqual(true, view.createChannelOnSearchContent.activeSelf);
+            Assert.AreEqual(true, view.loadMoreContent.activeSelf);
         }
 
         [TestCase("bleh")]
