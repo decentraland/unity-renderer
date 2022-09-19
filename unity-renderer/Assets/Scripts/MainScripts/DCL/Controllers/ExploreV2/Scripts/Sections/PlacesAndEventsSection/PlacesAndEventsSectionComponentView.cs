@@ -46,7 +46,8 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal bool isDefaultSubSectionLoadedByFirstTime = false;
 
-    public override void Start() { CreateSubSectionSelectorMappings(); }
+    public override void Start() =>
+        CreateSubSectionSelectorMappings();
 
     public IHighlightsSubSectionComponentView currentHighlightsSubSectionComponentView => highlightsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;

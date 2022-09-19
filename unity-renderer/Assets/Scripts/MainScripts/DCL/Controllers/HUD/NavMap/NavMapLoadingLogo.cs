@@ -24,7 +24,6 @@ namespace DCL
 
         private void Start()
         {
-
             navMap = navMapSection.GetComponentInChildren<NavmapView>();
             navMap.OnToggle += OnNavMapLoaded;
         }

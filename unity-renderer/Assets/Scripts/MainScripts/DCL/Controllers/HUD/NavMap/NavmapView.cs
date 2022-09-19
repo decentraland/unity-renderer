@@ -31,8 +31,8 @@ namespace DCL
         [SerializeField] internal Image zoomInPlus;
         [SerializeField] internal Image zoomOutMinus;
         [SerializeField] internal AnimationCurve zoomCurve;
-        private Vector3 atlasOriginalPosition;
 
+        private Vector3 atlasOriginalPosition;
         private RectTransform containerRectTransform;
         private int currentZoomLevel;
         private Color disabledColor = new Color(0f, 0f, 0f, 0.5f);
@@ -42,9 +42,7 @@ namespace DCL
         private RectTransform minimapViewport;
 
         private Color normalColor = new Color(0f, 0f, 0f, 1f);
-
         Vector3 previousScaleSize;
-
         private float scale = 1f;
         private float scaleDuration = 0.2f;
 
@@ -113,6 +111,34 @@ namespace DCL
         }
 
         public event Action<bool> OnToggle;
+
+        public void Initialize()
+        {
+            toastView.gameObject.SetActive(false);
+            scrollRect.gameObject.SetActive(false);
+            DataStore.i.HUDs.isNavMapInitialized.Set(true);
+        }
+
+        public void SetExitButtonActive(bool isActive) =>
+            closeButton.gameObject.SetActive(isActive);
+
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+            SetExitButtonActive(false);
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
 
         private void ResetCameraZoom()
         {
@@ -209,14 +235,8 @@ namespace DCL
             isScaling = false;
         }
 
-        private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
-
-        public void Initialize()
-        {
-            toastView.gameObject.SetActive(false);
-            scrollRect.gameObject.SetActive(false);
-            DataStore.i.HUDs.isNavMapInitialized.Set(true);
-        }
+        private void OnNavmapVisibleChanged(bool current, bool previous) =>
+            SetVisible(current);
 
         private void OnExploreChange(bool current, bool previous)
         {
@@ -317,14 +337,14 @@ namespace DCL
             OnToggle?.Invoke(visible);
         }
 
-        void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
+        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
         {
             const string format = "{0},{1}";
             currentSceneCoordsText.text = string.Format(format, current.x, current.y);
             currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
         }
 
-        void TriggerToast(int cursorTileX, int cursorTileY)
+        private void TriggerToast(int cursorTileX, int cursorTileY)
         {
             if (toastView.isOpen)
                 CloseToast();
@@ -335,28 +355,10 @@ namespace DCL
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
 
-        private void CloseToast() { toastView.OnCloseClick(); }
+        private void CloseToast() =>
+            toastView.OnCloseClick();
 
-        public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
-
-        public void SetAsFullScreenMenuMode(Transform parentTransform)
-        {
-            if (parentTransform == null)
-                return;
-
-            transform.SetParent(parentTransform);
-            transform.localScale = Vector3.one;
-            SetExitButtonActive(false);
-
-            RectTransform rectTransform = transform as RectTransform;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            rectTransform.localPosition = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-            rectTransform.offsetMin = Vector2.zero;
-        }
-
-        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { SetAsFullScreenMenuMode(currentParentTransform); }
+        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
+            SetAsFullScreenMenuMode(currentParentTransform);
     }
 }
