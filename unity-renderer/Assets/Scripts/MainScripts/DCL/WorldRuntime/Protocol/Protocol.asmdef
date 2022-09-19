@@ -1,18 +1,19 @@
 {
-  "name": "Protocol",
-  "rootNamespace": "",
-  "references": [
-    "GUID:6e6a87f97192ec947993f360104e75b7",
-    "GUID:a4bf61c057a098f4ca05b539a6d8c0fe",
-    "GUID:fd6e7b9afa95f2e4fad1d12fdffc1434"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "Protocol",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6e6a87f97192ec947993f360104e75b7",
+        "GUID:a4bf61c057a098f4ca05b539a6d8c0fe",
+        "GUID:fd6e7b9afa95f2e4fad1d12fdffc1434",
+        "GUID:74aca8d0fa88642fabc061875471dba2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

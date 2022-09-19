@@ -26,6 +26,7 @@ namespace AvatarEditorHUD_Tests
             Setup_AvatarEditorHUDController();
 
             controller.collectionsAlreadyLoaded = true;
+            controller.avatarIsDirty = false;
             controller.UnequipAllWearables();
             controller.SetVisibility(true);
         }
