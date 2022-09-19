@@ -115,7 +115,8 @@ namespace DCL.ECSComponents
                 shapeFrame.SetImage(info.name, info.imageUrl, nftAsset);
                 nftLoadedScr = scr;
             }
-            catch (TaskCanceledException cancelation) { }
+            catch (TaskCanceledException cancellation) { }
+            catch (OperationCanceledException cancellation) { }
             catch (Exception exception)
             {
                 Debug.LogError(exception);
