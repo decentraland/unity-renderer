@@ -9,7 +9,8 @@ namespace DCL.ECSComponents
         /// The gameObject that represent the frame
         /// </summary>
         GameObject gameObject { get; }
-        
+        Renderer frameRenderer { get; }
+
         /// <summary>
         /// This set the image and creates the HQ Texture handler
         /// </summary>
@@ -64,6 +65,8 @@ namespace DCL.ECSComponents
             SimplexAnalyticalGrad,
             None
         }
+
+        public Renderer frameRenderer => meshRenderer;
 
         private void Awake()
         {

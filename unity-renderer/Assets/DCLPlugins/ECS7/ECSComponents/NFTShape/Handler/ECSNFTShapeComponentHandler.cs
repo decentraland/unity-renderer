@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
@@ -22,12 +23,16 @@ namespace DCL.ECSComponents
         private PBNFTShape prevModel;
 
         private string nftLoadedScr = null;
+        private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
 
-        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, INFTInfoRetriever infoRetriever, INFTAssetRetriever assetRetriever)
+        public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, INFTInfoRetriever infoRetriever,
+            INFTAssetRetriever assetRetriever,
+            IInternalECSComponent<InternalRenderers> renderersComponent)
         {
             this.factory = factory;
             this.infoRetriever = infoRetriever;
             this.assetRetriever = assetRetriever;
+            this.renderersComponent = renderersComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -36,17 +41,17 @@ namespace DCL.ECSComponents
         {
             infoRetriever.Dispose();
             assetRetriever.Dispose();
-            DisposeShapeFrame(shapeFrame);
+            DisposeShapeFrame(scene, entity, shapeFrame, renderersComponent);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
         {
-            bool shouldReloadFrame = shapeFrame != null && prevModel.Style != model.GetStyle();
+            bool shouldReloadFrame = shapeFrame != null && prevModel.GetStyle() != model.GetStyle();
 
             // destroy previous shape if style does not match
             if (shouldReloadFrame)
             {
-                DisposeShapeFrame(shapeFrame);
+                DisposeShapeFrame(scene, entity, shapeFrame, renderersComponent);
                 shapeFrame = null;
                 nftLoadedScr = null;
             }
@@ -58,6 +63,7 @@ namespace DCL.ECSComponents
                 shapeFrame.gameObject.name = "NFT Shape mesh";
                 shapeFrame.gameObject.transform.SetParent(entity.gameObject.transform);
                 shapeFrame.gameObject.transform.ResetLocalTRS();
+                renderersComponent.AddRenderer(scene, entity, shapeFrame.frameRenderer);
             }
 
             if (prevModel == null || !model.Color.Equals(prevModel.Color))
@@ -75,11 +81,13 @@ namespace DCL.ECSComponents
             prevModel = model;
         }
 
-        private static void DisposeShapeFrame(INFTShapeFrame nftFrame)
+        private static void DisposeShapeFrame(IParcelScene scene, IDCLEntity entity,
+            INFTShapeFrame nftFrame, IInternalECSComponent<InternalRenderers> renderersComponent)
         {
             if (nftFrame == null)
                 return;
 
+            renderersComponent.RemoveRenderer(scene, entity, nftFrame.frameRenderer);
             nftFrame.Dispose();
             Object.Destroy(nftFrame.gameObject);
         }
