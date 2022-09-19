@@ -21,6 +21,7 @@ public class BaseVariable<T> : IBaseVariable<T>, IEquatable<T>
 
     public virtual bool Equals(T other) =>
         EqualityComparer<T>.Default.Equals(value, other);
+
     public event ChangeWithSenderInfo<T> OnChangeWithSenderInfo;
 
     public void Set(T newValue, bool notifyEvent)

@@ -260,9 +260,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void GoToSection(ExploreSection section)
     {
-        sectionSelector.GetSection((int)section)
-                       ?
-                       .SelectToggle(reselectIfAlreadyOn: true);
+        sectionSelector.GetSection((int)section)?.SelectToggle(reselectIfAlreadyOn: true);
 
         AudioScriptableObjects.dialogOpen.Play(true);
         AudioScriptableObjects.listItemAppear.ResetPitch();
