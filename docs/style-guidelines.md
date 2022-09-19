@@ -18,3 +18,33 @@ To install it go to the root of your explorer repository and run the following c
 
 ### Rider
 You can find a settings export file in the root of the project called "rider_codeStyleDCLSetting". Bear in mind that the conversion between VS and Rider is not 1 on 1 but it's good enough.
+
+# Naming conventions
+
+Use
+* `PascalCase` - Namespace, Class, Enumerations and Enumerators, Method, Delegate declaration, Event, Property and public Field;
+* `camelCase` - Field, local Variable, methods Parameter;
+* `CAPITALS_SNAKE_CASE` - Constants;
+* `I` in front of Interface name;
+
+```csharp
+namespace MyNamespace                                   // Namespace -> PascalCase
+{
+    public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
+    public delegate void Change<T> (T current);         // Delegate declaration -> PascalCase
+    public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
+    
+    public class MyClass : IInitializable               // Classe -> PascalCase.
+    {
+        public const string ASSET_PATH = "AvatarUI";    // Constant -> CAPITALS_SNAKE_CASE 
+        public int PublicField;                         // public Field -> PascalCase
+        private bool isVisible;                         // Field -> camelCase
+        public bool IsInitialized {get; set;}           // Property -> PascalCase
+        
+        public void Play(float speed)                   // Method -> PascalCase. Method parameter -> camelCase
+        {
+            var animationClip;                          // local variable -> camelCase
+        };              
+    }
+}
+```
