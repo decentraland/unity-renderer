@@ -76,8 +76,8 @@ Material:
     - _FogFade: 15000
     - _FogIntensity: 1
     - _GrassGridFade: 45000
-    - _GrassGridThickness: 0.1
-    - _GrassGridThicknessVariation: 0.3
+    - _GrassGridThickness: 0.04
+    - _GrassGridThicknessVariation: 0.2
     - _GrassGridTiling: 16
     - _GrassGridVariationFrequency: 4
     - _GrassScale: 0.0005
