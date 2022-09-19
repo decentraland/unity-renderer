@@ -55,7 +55,7 @@ Material:
     - _GridOpacity: 0.2
     - _GridThickness: 0.3
     - _HighlightRotation: 10
-    - _HighlightThickness: 2
+    - _HighlightThickness: 0.75
     - _SobelGridOffset: 2000
     - _Stencil: 0
     - _StencilComp: 8
@@ -74,7 +74,7 @@ Material:
     - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighlightColor: {r: 0.47932023, g: 0.44520125, b: 0.16513224, a: 1}
-    - _MousePosition: {r: -55, g: -3, b: 0, a: 0}
+    - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OverlayColor: {r: 0, g: 0.8026962, b: 1, a: 0.48235294}
     - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}

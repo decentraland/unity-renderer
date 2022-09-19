@@ -25,7 +25,6 @@ Shader "Custom/S_FinalMap"
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
-
         [HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
         [HideInInspector]_Stencil("Stencil ID", Float) = 0
         [HideInInspector]_StencilOp("Stencil Operation", Float) = 0
@@ -52,8 +51,8 @@ Shader "Custom/S_FinalMap"
 
         // Render State
         Cull Off
-    Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest[unity_GUIZTestMode] //ZTest LEqual
+        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        ZTest[unity_GUIZTestMode]
         ZWrite Off
 
         Stencil
@@ -257,7 +256,7 @@ void Unity_Add_float2(float2 A, float2 B, out float2 Out)
 // 7b6d5a90df0cb86d20ecea9cb96d928e
 #include "Assets/Rendering/Map/MapV5.hlsl"
 
-void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
+void Unity_Divide_float(float A, float B, out float Out)
 {
     Out = A / B;
 }
@@ -265,6 +264,21 @@ void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
 void Unity_Multiply_float(float A, float B, out float Out)
 {
     Out = A * B;
+}
+
+void Unity_Add_float(float A, float B, out float Out)
+{
+    Out = A + B;
+}
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
+
+void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A / B;
 }
 
 void Unity_Rotate_Degrees_float(float2 UV, float2 Center, float Rotation, out float2 Out)
@@ -327,6 +341,17 @@ struct Bindings_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc
 void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_361221063f124ccab2ad3ec68e1f5d56, float Vector1_238d8cc490904e7288f485eda9e42fb6, float2 Vector2_925ecca986df430e90199f0d05779aec, float2 Vector2_10475809fb3d4358aef5f163b670c39e, Bindings_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc IN, out float4 Out_1)
 {
     Gradient _Gradient_210c51b3f7b04c4897eadb906d891900_Out_0 = NewGradient(0, 4, 2, float4(0.4386287, 0, 1, 0),float4(1, 0.6190026, 0, 0.3329976),float4(1, 0, 0.02109909, 0.6659952),float4(0.4386287, 0, 1, 1),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+    float _Property_1bd1295c62fd4c0987b47df5bb3f886c_Out_0 = Vector1_238d8cc490904e7288f485eda9e42fb6;
+    float _Divide_552b110a488e42fb942243260e9715ea_Out_2;
+    Unity_Divide_float(1, _Property_1bd1295c62fd4c0987b47df5bb3f886c_Out_0, _Divide_552b110a488e42fb942243260e9715ea_Out_2);
+    float _Multiply_8d4830084a9b4376848e539f45b7823a_Out_2;
+    Unity_Multiply_float(_Divide_552b110a488e42fb942243260e9715ea_Out_2, -1, _Multiply_8d4830084a9b4376848e539f45b7823a_Out_2);
+    float _Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2;
+    Unity_Divide_float(_Multiply_8d4830084a9b4376848e539f45b7823a_Out_2, 2, _Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2);
+    float _Add_9e9914512cd747a78c7bf8dd3709f927_Out_2;
+    Unity_Add_float(_Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2, 0.5, _Add_9e9914512cd747a78c7bf8dd3709f927_Out_2);
+    float2 _TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, (_Divide_552b110a488e42fb942243260e9715ea_Out_2.xx), (_Add_9e9914512cd747a78c7bf8dd3709f927_Out_2.xx), _TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3);
     float2 _Property_d796eb97e5d44414a83d93ff09d72dbb_Out_0 = Vector2_10475809fb3d4358aef5f163b670c39e;
     float2 _Add_47d9b3c4d3c64310b77647fc2b95c116_Out_2;
     Unity_Add_float2(_Property_d796eb97e5d44414a83d93ff09d72dbb_Out_0, float2(0.5, 0.5), _Add_47d9b3c4d3c64310b77647fc2b95c116_Out_2);
@@ -342,7 +367,7 @@ void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_36
     float _Multiply_88775923f8e84251bee82776718bd4e5_Out_2;
     Unity_Multiply_float(IN.TimeParameters.x, _Property_f9dc7e6926834a45ad16cff551756ff9_Out_0, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2);
     float2 _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2, _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3);
+    Unity_Rotate_Degrees_float(_TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2, _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3);
     float2 _PolarCoordinates_184b089217934ac883f9473201fdc826_Out_4;
     Unity_PolarCoordinates_float(_Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, 1, 1, _PolarCoordinates_184b089217934ac883f9473201fdc826_Out_4);
     float2 _Add_8ffb3795e959460687a5ab4edefccffa_Out_2;
@@ -485,8 +510,8 @@ Pass
 
         // Render State
         Cull Off
-    Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest[unity_GUIZTestMode] //ZTest LEqual
+        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        ZTest[unity_GUIZTestMode]
         ZWrite Off
 
         Stencil
@@ -690,7 +715,7 @@ void Unity_Add_float2(float2 A, float2 B, out float2 Out)
 // 7b6d5a90df0cb86d20ecea9cb96d928e
 #include "Assets/Rendering/Map/MapV5.hlsl"
 
-void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
+void Unity_Divide_float(float A, float B, out float Out)
 {
     Out = A / B;
 }
@@ -698,6 +723,21 @@ void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
 void Unity_Multiply_float(float A, float B, out float Out)
 {
     Out = A * B;
+}
+
+void Unity_Add_float(float A, float B, out float Out)
+{
+    Out = A + B;
+}
+
+void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
+
+void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A / B;
 }
 
 void Unity_Rotate_Degrees_float(float2 UV, float2 Center, float Rotation, out float2 Out)
@@ -760,6 +800,17 @@ struct Bindings_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc
 void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_361221063f124ccab2ad3ec68e1f5d56, float Vector1_238d8cc490904e7288f485eda9e42fb6, float2 Vector2_925ecca986df430e90199f0d05779aec, float2 Vector2_10475809fb3d4358aef5f163b670c39e, Bindings_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc IN, out float4 Out_1)
 {
     Gradient _Gradient_210c51b3f7b04c4897eadb906d891900_Out_0 = NewGradient(0, 4, 2, float4(0.4386287, 0, 1, 0),float4(1, 0.6190026, 0, 0.3329976),float4(1, 0, 0.02109909, 0.6659952),float4(0.4386287, 0, 1, 1),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+    float _Property_1bd1295c62fd4c0987b47df5bb3f886c_Out_0 = Vector1_238d8cc490904e7288f485eda9e42fb6;
+    float _Divide_552b110a488e42fb942243260e9715ea_Out_2;
+    Unity_Divide_float(1, _Property_1bd1295c62fd4c0987b47df5bb3f886c_Out_0, _Divide_552b110a488e42fb942243260e9715ea_Out_2);
+    float _Multiply_8d4830084a9b4376848e539f45b7823a_Out_2;
+    Unity_Multiply_float(_Divide_552b110a488e42fb942243260e9715ea_Out_2, -1, _Multiply_8d4830084a9b4376848e539f45b7823a_Out_2);
+    float _Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2;
+    Unity_Divide_float(_Multiply_8d4830084a9b4376848e539f45b7823a_Out_2, 2, _Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2);
+    float _Add_9e9914512cd747a78c7bf8dd3709f927_Out_2;
+    Unity_Add_float(_Divide_ac0c4fb9b3f14c8dad34fa1574225e51_Out_2, 0.5, _Add_9e9914512cd747a78c7bf8dd3709f927_Out_2);
+    float2 _TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3;
+    Unity_TilingAndOffset_float(IN.uv0.xy, (_Divide_552b110a488e42fb942243260e9715ea_Out_2.xx), (_Add_9e9914512cd747a78c7bf8dd3709f927_Out_2.xx), _TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3);
     float2 _Property_d796eb97e5d44414a83d93ff09d72dbb_Out_0 = Vector2_10475809fb3d4358aef5f163b670c39e;
     float2 _Add_47d9b3c4d3c64310b77647fc2b95c116_Out_2;
     Unity_Add_float2(_Property_d796eb97e5d44414a83d93ff09d72dbb_Out_0, float2(0.5, 0.5), _Add_47d9b3c4d3c64310b77647fc2b95c116_Out_2);
@@ -775,7 +826,7 @@ void SG_SGMapHighlightGradient_e18ba2c84b9936946bedc864ac8082fc(float Vector1_36
     float _Multiply_88775923f8e84251bee82776718bd4e5_Out_2;
     Unity_Multiply_float(IN.TimeParameters.x, _Property_f9dc7e6926834a45ad16cff551756ff9_Out_0, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2);
     float2 _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2, _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3);
+    Unity_Rotate_Degrees_float(_TilingAndOffset_98e25d2777a2458c9e94f82764d868e6_Out_3, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, _Multiply_88775923f8e84251bee82776718bd4e5_Out_2, _Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3);
     float2 _PolarCoordinates_184b089217934ac883f9473201fdc826_Out_4;
     Unity_PolarCoordinates_float(_Rotate_c6747b48584b422a994eda42cc60c2f9_Out_3, _Divide_ebbc05a3ceac4c7a823a98f6d33f48ea_Out_2, 1, 1, _PolarCoordinates_184b089217934ac883f9473201fdc826_Out_4);
     float2 _Add_8ffb3795e959460687a5ab4edefccffa_Out_2;

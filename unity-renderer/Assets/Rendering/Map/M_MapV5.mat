@@ -56,7 +56,7 @@ Material:
     - _GridOpacity: 0.2
     - _GridThickness: 0.3
     - _HighlightRotation: 10
-    - _HighlightThickness: 2
+    - _HighlightThickness: 10
     - _SobelGridOffset: 2500
     - _Stencil: 0
     - _StencilComp: 8
@@ -64,7 +64,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _ThicknessOffset: 2000
-    - _Zoom: 1.44
+    - _Zoom: 1
     m_Colors:
     - Color_f7a1901521834de5bb5b8d9d8a6c19e8: {r: 0, g: 0.12941177, b: 0.8705883,
         a: 1}
@@ -76,7 +76,7 @@ Material:
     - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighlightColor: {r: 0.47932023, g: 0.44520125, b: 0.16513224, a: 1}
-    - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
+    - _MousePosition: {r: -80, g: 0, b: 0, a: 0}
     - _OverlayColor: {r: 0, g: 0.8026962, b: 1, a: 0.48235294}
     - _Resolution: {r: 1920, g: 1920, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}

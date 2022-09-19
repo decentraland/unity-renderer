@@ -47,6 +47,9 @@ namespace DCL
         public Transform globalUserMarkerContainer;
         public RectTransform playerPositionIcon;
 
+        public Image mapRender;
+        Material mapMaterial;
+
         public static System.Action<int, int> OnParcelClicked;
         public static System.Action OnCursorFarFromParcel;
 
@@ -112,7 +115,7 @@ namespace DCL
 
             isInitialized = true;
             EnsurePools();
-            atlas.InitializeChunks();
+            //atlas.InitializeChunks();
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
@@ -282,6 +285,8 @@ namespace DCL
                 UpdateRendering(Utils.WorldToGridPositionUnclamped(lastPlayerPosition));
             }
 
+            UpdateOutlineThickness();
+
             if (!parcelHighlightEnabled)
                 return;
 
@@ -302,6 +307,10 @@ namespace DCL
             mapPoint -= Vector2.one * OFFSET;
             mapPoint -= (atlas.chunksParent.sizeDelta / 2f);
             cursorMapCoords = Vector2Int.RoundToInt(mapPoint / MapUtils.PARCEL_SIZE);
+
+
+            mapMaterial = mapRender.materialForRendering;
+            mapMaterial.SetVector("_MousePosition", new Vector4(cursorMapCoords.x, cursorMapCoords.y, 0, 0));
         }
 
         bool IsCursorOverMapChunk()
@@ -345,6 +354,32 @@ namespace DCL
             if (Vector2.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
             {
                 OnCursorFarFromParcel?.Invoke();
+            }
+        }
+
+        void UpdateOutlineThickness()
+        {
+            mapMaterial = mapRender.materialForRendering;
+
+            if(scaleFactor > 0.19f && scaleFactor < 0.21f)
+            {
+                mapMaterial.SetFloat("_GridThickness", 0.6f);
+            }
+            else if (scaleFactor > 0.27f && scaleFactor < 0.29f)
+            {
+                mapMaterial.SetFloat("_GridThickness", 0.5f);
+            }
+            else if (scaleFactor > 0.39f && scaleFactor < 0.41f)
+            {
+                mapMaterial.SetFloat("_GridThickness", 0.35f);
+            }
+            else if (scaleFactor > 0.54f && scaleFactor < 0.56f)
+            {
+                mapMaterial.SetFloat("_GridThickness", 0.25f);
+            }
+            else if (scaleFactor > 0.79f && scaleFactor < 0.81f)
+            {
+                mapMaterial.SetFloat("_GridThickness", 0.2f);
             }
         }
 

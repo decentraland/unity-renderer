@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8942118496058878389}
   - component: {fileID: 6912430194178520417}
   - component: {fileID: 7554873806794229404}
-  m_Layer: 5
+  m_Layer: 18
   m_Name: MapRender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 720e9c9a79928b54aa420b105b344761, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -184,7 +184,7 @@ MonoBehaviour:
   overlayContainerPlayers: {fileID: 6100807533600505858}
   globalUserMarkerContainer: {fileID: 3332934504654532118}
   playerPositionIcon: {fileID: 1340394175305253205}
-  mapRenderer: {fileID: 7554873806794229404}
+  mapRender: {fileID: 7554873806794229404}
   scaleFactor: 1
   centeredReferenceParcel: {fileID: 1025416073224921776}
   scenesOfInterestIconPrefab: {fileID: 4461918297282884638, guid: f7b91bf31609c8a43b5dbc0ae70e47ab,
@@ -773,8 +773,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fc0036763a3b3ff4a8aca13bcaea4d6d, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
