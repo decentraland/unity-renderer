@@ -114,7 +114,8 @@ public class ChatNotificationController : IHUD
         else
         {
             mainChatNotificationView.Hide();
-            topNotificationView.Show();
+            if(!visibleTaskbarPanels.Get().Contains("WorldChatPanel"))
+                topNotificationView.Show();
         }
     }
 

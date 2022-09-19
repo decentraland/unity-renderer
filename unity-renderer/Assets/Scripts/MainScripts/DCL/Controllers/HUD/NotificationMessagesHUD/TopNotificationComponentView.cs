@@ -28,6 +28,9 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     private float normalHeaderXPos = 70;
     private float offsetHeaderXPos;
 
+    public bool isShowingNotification = false;
+    int stackedNotifications = 0;
+
     private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource waitCT = new CancellationTokenSource();
     private RectTransform notificationRect;
@@ -52,9 +55,6 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
     {
         return gameObject.transform;
     }
-
-    public bool isShowingNotification = false;
-    int stackedNotifications = 0;
 
     public void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null)
     {
@@ -200,6 +200,9 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
 
     private void ClickedOnNotification(string targetId)
     {
+        HideNotification();
+        isShowingNotification = false;
+        stackedNotifications = 0;
         OnClickedNotification?.Invoke(targetId);
     }
 
