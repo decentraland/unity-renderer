@@ -18,24 +18,24 @@ namespace DCL.ECSComponents
         /// <param name="url"></param>
         /// <param name="nftAsset"></param>
         void SetImage(string name, string url, INFTAsset nftAsset);
-        
+
         /// <summary>
         /// Dispose the frame
         /// </summary>
         void Dispose();
-        
+
         /// <summary>
         /// Show that it has been an error loading the frame
         /// </summary>
         void FailLoading();
-        
+
         /// <summary>
         /// Update the background of the texture so you can set the same background color as the image 
         /// </summary>
         /// <param name="newColor"></param>
-        void UpdateBackgroundColor(UnityEngine.Color newColor);
+        void UpdateBackgroundColor(Color newColor);
     }
-    
+
     public class NFTShapeFrame : MonoBehaviour, INFTShapeFrame
     {
         [SerializeField] internal BoxCollider boxCollider;
@@ -52,10 +52,10 @@ namespace DCL.ECSComponents
         private Material frameMaterial;
         private Material imageMaterial;
         private Material backgroundMaterial;
-        
+
         static readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
         static readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
-        
+
         public enum NoiseType
         {
             ClassicPerlin,
@@ -84,7 +84,7 @@ namespace DCL.ECSComponents
         {
             if (nftAsset.previewAsset != null)
                 SetFrameImage(nftAsset.previewAsset.texture, resizeFrameMesh: true);
-            
+
             loadingSpinnerGameObject.SetActive(false);
             var hqImageHandlerConfig = new NFTShapeHQImageConfig()
             {
@@ -99,7 +99,10 @@ namespace DCL.ECSComponents
             nftAsset.OnTextureUpdate += UpdateTexture;
         }
 
-        public void Update() { hqTextureHandler?.Update(); }
+        public void Update()
+        {
+            hqTextureHandler?.Update();
+        }
 
         public void Dispose()
         {
@@ -114,14 +117,14 @@ namespace DCL.ECSComponents
 #endif
         }
 
-        public void UpdateBackgroundColor(UnityEngine.Color newColor)
+        public void UpdateBackgroundColor(Color newColor)
         {
             if (backgroundMaterial == null)
                 return;
 
             backgroundMaterial.SetColor(COLOR_SHADER_PROPERTY, newColor);
         }
-        
+
         private void SetFrameImage(Texture2D texture, bool resizeFrameMesh = false)
         {
             if (texture == null)
@@ -134,24 +137,24 @@ namespace DCL.ECSComponents
                 float w, h;
                 w = h = 0.5f;
                 if (texture.width > texture.height)
-                    h *= texture.height / (float) texture.width;
+                    h *= texture.height / (float)texture.width;
                 else if (texture.width < texture.height)
-                    w *= texture.width / (float) texture.height;
+                    w *= texture.width / (float)texture.height;
                 UnityEngine.Vector3 newScale = new UnityEngine.Vector3(w, h, 1f);
 
                 meshRenderer.transform.localScale = newScale;
             }
         }
-        
+
         private void UpdateTexture(Texture2D texture)
         {
             if (imageMaterial == null)
                 return;
 
             imageMaterial.SetTexture(BASEMAP_SHADER_PROPERTY, texture);
-            imageMaterial.SetColor(COLOR_SHADER_PROPERTY, UnityEngine.Color.white);
+            imageMaterial.SetColor(COLOR_SHADER_PROPERTY, Color.white);
         }
-        
+
         private void InitializeMaterials()
         {
             Material[] meshMaterials = new Material[materials.Length];
@@ -173,7 +176,7 @@ namespace DCL.ECSComponents
                         break;
                 }
             }
-            
+
             meshRenderer.materials = meshMaterials;
 
             if (frameMaterial == null)
@@ -209,6 +212,6 @@ namespace DCL.ECSComponents
             if (noiseIsFractal)
                 frameMaterial.EnableKeyword("FRACTAL");
         }
-        
+
     }
 }
