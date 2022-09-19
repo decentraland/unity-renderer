@@ -72,26 +72,27 @@ public class TopNotificationComponentView : BaseComponentView, ITopNotifications
         animationCancellationToken = new CancellationTokenSource();
         chatNotificationComponentView.gameObject.SetActive(true);
         if(stackedNotifications > 2){
-            PopulateMultipleNotification();
-            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             OnResetFade?.Invoke(true);
+            PopulateMultipleNotification();
+            chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
+            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
             return;
         }
         stackedNotifications--;
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
+            OnResetFade?.Invoke(true);
             PopulatePrivateNotification(message, username, profilePicture);
             chatNotificationComponentView.SetPositionOffset(normalHeaderXPos, normalContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
-            OnResetFade?.Invoke(true);
             ShowNotificationCooldown();
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
+            OnResetFade?.Invoke(true);
             PopulatePublicNotification(message, username);
             chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
-            OnResetFade?.Invoke(true);
             ShowNotificationCooldown();
         }
     }
