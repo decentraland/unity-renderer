@@ -12,20 +12,12 @@ namespace DCL
         [SerializeField] private Image sectionsContent;
         [SerializeField] private Image radialGradient;
 
-        [SerializeField] private GameObject navMapSection;
-
-        private NavmapView navMap;
-
         private void Awake()
         {
             DataStore.i.HUDs.navmapVisible.OnChange += OnOpeningNavMap;
-            DataStore.i.exploreV2.isOpen.OnChange += OnExploreUiVisibilityChange;
-        }
+            DataStore.i.HUDs.navmapVisible.OnChange += SubscribeToMapRenderer;
 
-        private void Start()
-        {
-            navMap = navMapSection.GetComponentInChildren<NavmapView>();
-            navMap.OnToggle += OnNavMapLoaded;
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreUiVisibilityChange;
         }
 
         private void OnDestroy()
@@ -33,7 +25,13 @@ namespace DCL
             DataStore.i.HUDs.navmapVisible.OnChange -= OnOpeningNavMap;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreUiVisibilityChange;
 
-            navMap.OnToggle -= OnNavMapLoaded;
+            MapRenderer.i.MapVisibilityChanged -= OnNavMapLoaded;
+        }
+
+        private void SubscribeToMapRenderer(bool current, bool previous)
+        {
+            DataStore.i.HUDs.navmapVisible.OnChange -= SubscribeToMapRenderer;
+            MapRenderer.i.MapVisibilityChanged += OnNavMapLoaded;
         }
 
         private void OnExploreUiVisibilityChange(bool isOpen, bool _)

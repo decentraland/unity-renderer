@@ -259,8 +259,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (!SectionsVariables[section].initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
-        Debug.Log($"{Time.frameCount} [Controller] SetMenuTargetVisibility with GoTo visible {section} is {toVisible}");
-
         if (toVisible)
         {
             if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)

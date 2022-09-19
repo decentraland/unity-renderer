@@ -236,7 +236,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
             if (sectionToGo != null && sectionToGo.IsActive())
             {
-                Debug.Log($"{Time.frameCount} [View.SetVisible({isActive})] GoToSection({(ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get()} where SectionToGo={sectionToGo})");
                 GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
             }
             else
@@ -373,8 +372,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
             if (isOn)
             {
-                Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {sectionId}Section.Show()");
-
                 // If not an explorer Section, because we do not Show/Hide it
                 if (sectionView != null)
                     sectionView.Show();
@@ -383,7 +380,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             }
             else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
             {
-                Debug.Log($"{Time.frameCount} [ExploreV2MenuComponentView.CreateSectionSelectorMappings] - {sectionId}Section.Hide()");
                 sectionView.Hide();
             }
         };
