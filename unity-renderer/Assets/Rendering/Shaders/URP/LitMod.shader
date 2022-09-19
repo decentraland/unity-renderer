@@ -7,9 +7,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
 
         [MainTexture] _BaseMap("Albedo", 2D) = "white" {}
         [MainColor] _BaseColor("Color", Color) = (0.5,0.5,0.5,1)
-        // MB
-        //_AlphaTexture("Alpha Texture", 2D) = "white" {}
-        [MainAlphaTexture] _AlphaTexture("Alpha Texture", 2D) = "white" {}
+        _AlphaTexture("Alpha Texture", 2D) = "white" {}
 
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 
@@ -54,9 +52,9 @@ Shader "DCL/Universal Render Pipeline/LitMod"
         [HideInInspector] _ClearCoatSmoothness("_ClearCoatSmoothness", Float) = 0.0
 
         // Blending state
-        [HideInInspector] _Surface("__surface", Float) = 2.0 // MB  0 = Opaque, 1 = Transparent, 2 = Transparent Cutout
-        [HideInInspector] _Blend("__blend", Float) = 1.0  // 0
-        [HideInInspector] _AlphaClip("__clip", Float) = 1.0 // 0
+        [HideInInspector] _Surface("__surface", Float) = 0.0
+        [HideInInspector] _Blend("__blend", Float) = 0.0
+        [HideInInspector] _AlphaClip("__clip", Float) = 0.0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
         [HideInInspector] _DstBlend("__dst", Float) = 0.0
         [HideInInspector] _ZWrite("__zw", Float) = 1.0
@@ -96,9 +94,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        
-        // MB ADDED "RenderType" = "Opaque"
-        Tags{"Queue" = "Transparent" "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
+        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
         LOD 300
 
         // ------------------------------------------------------------------
@@ -108,11 +104,35 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
             Name "ForwardLit"
-            Tags{"LightMode" = "UniversalForward"}
+            
+            // MB Added Tags
+            Tags{
+            "LightMode" = "UniversalForward"
+            "RenderPipeline"="UniversalPipeline"
+            "RenderType"="Transparent"
+            "UniversalMaterialType" = "Lit"
+            "Queue"="Transparent"
+            "ShaderGraphShader"="true"
+            "ShaderGraphTargetId"="UniversalLitSubTarget"
+            }
 
-            Blend[_SrcBlend][_DstBlend]
+            // MB Render State
+                       
+            /*
+            Blend[_SrcBlend][_DstBlend]                 
+            ZWrite[_ZWrite]            
+            Cull[_Cull]
+            */
+            
+            Blend[_SrcBlend][_DstBlend]  
+            //Cull Back
+            //Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+            ZTest LEqual
+            //ZWrite Off
+
             ZWrite[_ZWrite]
             Cull[_Cull]
+            
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -171,12 +191,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
-            // MB Changed include
-            
             #include "LitInput.hlsl"
-            
-            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            
             #include "LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -186,9 +201,21 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             Name "ShadowCaster"
             Tags{"LightMode" = "ShadowCaster"}
 
+            // MB Render State
+            /*
             ZWrite On
             ZTest LEqual
             ColorMask 0
+            Cull[_Cull]
+            */
+            
+            // Render State
+            //Cull Back
+            ZTest LEqual
+            //ZWrite On
+            ColorMask 0
+
+            ZWrite[_ZWrite]
             Cull[_Cull]
 
             HLSLPROGRAM
@@ -226,9 +253,22 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             Name "GBuffer"
             Tags{"LightMode" = "UniversalGBuffer"}
 
+            // MB Render State
+            
+            //Cull Back
+            Blend[_SrcBlend][_DstBlend]  
+            //Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+            ZTest LEqual
+            //ZWrite Off
+
+            ZWrite[_ZWrite]
+            Cull[_Cull]
+            
+            /*
             ZWrite[_ZWrite]
             ZTest LEqual
             Cull[_Cull]
+            */
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -239,8 +279,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             // Material Keywords
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _ALPHATEST_ON
-            // MB Enabled _ALPHAPREMULTIPLY_ON fragment 
-            #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
+            //#pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
@@ -283,12 +322,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma vertex LitGBufferPassVertex
             #pragma fragment LitGBufferPassFragment
 
-            // MB Changed include REVERTED
-           
             #include "LitInput.hlsl"
-            
-            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -417,23 +451,45 @@ Shader "DCL/Universal Render Pipeline/LitMod"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        
-        // MB ADDED "RenderType" = "Opaque"
-        Tags{"RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
+        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
         LOD 300
 
         // ------------------------------------------------------------------
         //  Forward pass. Shades all light in a single pass. GI + emission + Fog
-        Pass
-        {
+        //Pass
+        //{
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
-            Name "ForwardLit"
+            
+            //MB Tags
+            //Name "ForwardLit"
+
+            /*
             Tags{"LightMode" = "UniversalForward"}
 
             Blend [_SrcBlend][_DstBlend]
             ZWrite [_ZWrite]
             Cull [_Cull]
+            */
+
+            
+            Pass
+            {
+                Name "ForwardLit"
+                Tags
+                {
+                    "LightMode" = "UniversalForward"
+                }
+            
+        
+            // Render State
+            //Cull Back
+            Cull [_Cull]
+            //Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+            Blend[_SrcBlend][_DstBlend]  
+            ZTest LEqual
+            //ZWrite Off
+            ZWrite [_ZWrite]
 
             HLSLPROGRAM
             #pragma only_renderers gles gles3 glcore d3d11
@@ -640,11 +696,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            // MB Replaced include REVERTED
             #include "LitInput.hlsl"
-            
-            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }

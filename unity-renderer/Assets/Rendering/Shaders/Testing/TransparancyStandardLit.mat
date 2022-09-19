@@ -10,6 +10,7 @@ Material:
   m_Name: TransparancyStandardLit
   m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_ValidKeywords:
+  - _ALPHATEST_ON
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -154,7 +155,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaClip: 0
+    - _AlphaClip: 1
     - _BaseMapUVs: 0
     - _Blend: 0
     - _BlendOp: 0
@@ -167,7 +168,7 @@ Material:
     - _ColorMode: 0
     - _Cull: 2
     - _CullYPlane: 0
-    - _Cutoff: 0.634
+    - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DistortionBlend: 0.5
