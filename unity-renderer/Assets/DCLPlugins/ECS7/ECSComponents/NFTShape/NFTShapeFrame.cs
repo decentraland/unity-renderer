@@ -1,7 +1,4 @@
-﻿using System;
-using DCL.Components;
-using DCL.Configuration;
-using NFTShape_Internal;
+﻿using NFTShape_Internal;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -9,32 +6,9 @@ namespace DCL.ECSComponents
     public interface INFTShapeFrame
     {
         /// <summary>
-        /// Get the shape that represent the frame
-        /// </summary>
-        IShape shape { get; }
-        
-        /// <summary>
         /// The gameObject that represent the frame
         /// </summary>
         GameObject gameObject { get; }
-        
-        /// <summary>
-        /// Set the visibility of the frame
-        /// </summary>
-        /// <param name="isVisible"></param>
-        void SetVisibility(bool isVisible);
-        
-        /// <summary>
-        /// Enable or disable the collider of the frame
-        /// </summary>
-        /// <param name="withCollision"></param>
-        void SetHasCollisions(bool withCollision);
-
-        /// <summary>
-        /// Enable or disable the pointer events on the frame
-        /// </summary>
-        /// <param name="isPointerBlocker"></param>
-        void SetPointerBlocker(bool isPointerBlocker);
         
         /// <summary>
         /// This set the image and creates the HQ Texture handler
@@ -61,7 +35,7 @@ namespace DCL.ECSComponents
         void UpdateBackgroundColor(UnityEngine.Color newColor);
     }
     
-    public class NFTShapeFrame : MonoBehaviour, IShape, INFTShapeLoaderController, INFTShapeFrame
+    public class NFTShapeFrame : MonoBehaviour, INFTShapeFrame
     {
         [SerializeField] internal BoxCollider boxCollider;
         [SerializeField] internal MeshRenderer meshRenderer;
@@ -97,35 +71,10 @@ namespace DCL.ECSComponents
             meshRenderer.transform.localScale = new UnityEngine.Vector3(0.5f, 0.5f, 1);
             InitializeMaterials();
         }
-        
-        public bool IsVisible() { return gameObject.activeInHierarchy; }
 
-        public bool HasCollisions() { return boxCollider.enabled; }
-        
-        public BoxCollider nftCollider  => boxCollider;
-        
-        public IShape shape => this;
-        
         private void Start()
         {
             loadingSpinnerGameObject.layer = LayerMask.NameToLayer("ViewportCullingIgnored");
-        }
-
-        public void SetVisibility(bool isVisible)
-        {
-            gameObject.SetActive(isVisible);
-        }
-
-        public void SetHasCollisions(bool withCollision)
-        {
-            boxCollider.enabled = withCollision;
-        }
-
-        public void SetPointerBlocker(bool isPointerBlocker)
-        {
-            int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : DCL.Configuration.PhysicsLayers.defaultLayer;
-
-            boxCollider.gameObject.layer = colliderLayer;
         }
 
         public void SetImage(string name, string url, INFTAsset nftAsset)
@@ -136,7 +85,8 @@ namespace DCL.ECSComponents
             loadingSpinnerGameObject.SetActive(false);
             var hqImageHandlerConfig = new NFTShapeHQImageConfig()
             {
-                controller = this,
+                transform = transform,
+                collider = boxCollider,
                 name = name,
                 imageUrl = url,
                 asset = nftAsset
