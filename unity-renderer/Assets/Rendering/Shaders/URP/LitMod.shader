@@ -7,7 +7,9 @@ Shader "DCL/Universal Render Pipeline/LitMod"
 
         [MainTexture] _BaseMap("Albedo", 2D) = "white" {}
         [MainColor] _BaseColor("Color", Color) = (0.5,0.5,0.5,1)
-        _AlphaTexture("Alpha Texture", 2D) = "white" {}
+        // MB
+        //_AlphaTexture("Alpha Texture", 2D) = "white" {}
+        [MainAlphaTexture] _AlphaTexture("Alpha Texture", 2D) = "white" {}
 
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 
@@ -52,9 +54,9 @@ Shader "DCL/Universal Render Pipeline/LitMod"
         [HideInInspector] _ClearCoatSmoothness("_ClearCoatSmoothness", Float) = 0.0
 
         // Blending state
-        [HideInInspector] _Surface("__surface", Float) = 0.0
-        [HideInInspector] _Blend("__blend", Float) = 0.0
-        [HideInInspector] _AlphaClip("__clip", Float) = 0.0
+        [HideInInspector] _Surface("__surface", Float) = 2.0 // MB  0 = Opaque, 1 = Transparent, 2 = Transparent Cutout
+        [HideInInspector] _Blend("__blend", Float) = 1.0  // 0
+        [HideInInspector] _AlphaClip("__clip", Float) = 1.0 // 0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
         [HideInInspector] _DstBlend("__dst", Float) = 0.0
         [HideInInspector] _ZWrite("__zw", Float) = 1.0
@@ -96,7 +98,7 @@ Shader "DCL/Universal Render Pipeline/LitMod"
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
         
         // MB ADDED "RenderType" = "Opaque"
-        Tags{"RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
+        Tags{"Queue" = "Transparent" "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
         LOD 300
 
         // ------------------------------------------------------------------
@@ -169,7 +171,12 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
+            // MB Changed include
+            
             #include "LitInput.hlsl"
+            
+            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            
             #include "LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -232,7 +239,8 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             // Material Keywords
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _ALPHATEST_ON
-            //#pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
+            // MB Enabled _ALPHAPREMULTIPLY_ON fragment 
+            #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
@@ -275,11 +283,11 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma vertex LitGBufferPassVertex
             #pragma fragment LitGBufferPassFragment
 
-            // MB Changed include
+            // MB Changed include REVERTED
            
-            //#include "LitInput.hlsl"
+            #include "LitInput.hlsl"
             
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             ENDHLSL
@@ -632,10 +640,10 @@ Shader "DCL/Universal Render Pipeline/LitMod"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            // MB Replaced include
-            //#include "LitInput.hlsl"
+            // MB Replaced include REVERTED
+            #include "LitInput.hlsl"
             
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            //#include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL

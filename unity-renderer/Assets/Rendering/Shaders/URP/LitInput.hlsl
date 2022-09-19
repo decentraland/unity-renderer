@@ -77,7 +77,7 @@ UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 #define _Surface                UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float  , Metadata__Surface)
 #endif
 
-TEXTURE2D(_AlphaTexture);        SAMPLER(sampler_AlphaTexture);
+TEXTURE2D(_AlphaTexture);       SAMPLER(sampler_AlphaTexture);
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_DetailMask);         SAMPLER(sampler_DetailMask);

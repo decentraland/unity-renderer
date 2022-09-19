@@ -15,14 +15,15 @@ MonoBehaviour:
   version: 4
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Avatar
   m_Shader: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
-  m_ShaderKeywords: 
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -96,8 +97,11 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _DitherFade: 1
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
     - _AddColor: {r: 0.23584905, g: 0.23584905, b: 0.23584905, a: 1}
     - _FresnelIntensity: {r: 0.8705506, g: 0.8705506, b: 0.8705506, a: 1}
