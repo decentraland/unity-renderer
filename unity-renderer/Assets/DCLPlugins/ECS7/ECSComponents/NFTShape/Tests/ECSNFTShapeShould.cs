@@ -1,23 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Controllers;
+using DCL.ECSComponents;
 using DCL.Helpers.NFT;
 using DCL.Models;
 using Google.Protobuf;
 using NFTShape_Internal;
 using NSubstitute;
 using NSubstitute.Extensions;
-using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
-using Tests;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 
-namespace DCL.ECSComponents.Test
+namespace Tests
 {
     public class ECSNFTShapeShould
     {

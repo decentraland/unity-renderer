@@ -63,8 +63,8 @@ namespace DCL.ECSComponents
     
     public class NFTShapeFrame : MonoBehaviour, IShape, INFTShapeLoaderController, INFTShapeFrame
     {
-        [SerializeField] private BoxCollider boxCollider;
-        [SerializeField] private MeshRenderer meshRenderer;
+        [SerializeField] internal BoxCollider boxCollider;
+        [SerializeField] internal MeshRenderer meshRenderer;
         [SerializeField] private GameObject loadingSpinnerGameObject;
         [SerializeField] private NFTShapeMaterial[] materials;
 
