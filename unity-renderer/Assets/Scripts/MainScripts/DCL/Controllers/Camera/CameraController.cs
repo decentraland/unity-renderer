@@ -85,13 +85,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
 
             OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
-
-            if (CommonScriptableObjects.isFullscreenHUDOpen)
-                OnFullscreenUIVisibilityChange(CommonScriptableObjects.isFullscreenHUDOpen.Get(), !CommonScriptableObjects.isFullscreenHUDOpen.Get());
-
-            if (CommonScriptableObjects.isLoadingHUDOpen)
-                OnFullscreenUIVisibilityChange(CommonScriptableObjects.isLoadingHUDOpen.Get(), !CommonScriptableObjects.isLoadingHUDOpen.Get());
-            
+           
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
