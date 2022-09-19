@@ -256,7 +256,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void SetMenuTargetVisibility(ExploreSection section, bool toVisible, bool _ = false)
     {
-        if (!SectionsVariables[section].initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
+        var initVar = section == ExploreSection.Explore ? isInitialized : SectionsVariables[section].initVar;
+
+        if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (toVisible)
@@ -265,7 +267,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
 
             SetSectionTargetVisibility(section, toVisible: true);
-
             view.GoToSection(section);
         }
         else if (currentOpenSection == section)
