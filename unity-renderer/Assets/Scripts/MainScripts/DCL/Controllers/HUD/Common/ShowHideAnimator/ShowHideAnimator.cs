@@ -4,7 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class ShowHideAnimator : MonoBehaviour
 {
-
     public bool hideOnEnable = true;
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
@@ -47,6 +46,7 @@ public class ShowHideAnimator : MonoBehaviour
             Hide(true);
         }
     }
+
     public event System.Action<ShowHideAnimator> OnWillFinishHide;
     public event System.Action<ShowHideAnimator> OnWillFinishStart;
 
@@ -72,6 +72,7 @@ public class ShowHideAnimator : MonoBehaviour
             animator.Update(10);
     }
 
+    [UsedImplicitly]
     public void AnimEvent_HideFinished()
     {
         OnWillFinishHide?.Invoke(this);

@@ -32,12 +32,8 @@ public interface ISectionToggle
     /// <summary>
     /// Invoke the action of selecting the toggle.
     /// </summary>
-    void SelectToggle();
-
-    /// <summary>
-    /// Apply the selection even if the toggle was already off
-    /// </summary>
-    void SelectToggleWithReset();
+    /// <param name="reselectIfAlreadyOn">True for apply the selection even if the toggle was already off.</param>
+    void SelectToggle(bool reselectIfAlreadyOn = false);
 
     /// <summary>
     /// Set the toggle visuals as selected.
@@ -80,11 +76,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
-    private void Awake() { ConfigureDefaultOnSelectAction(); }
+    private void Awake() =>
+        ConfigureDefaultOnSelectAction();
 
-    private void OnEnable() { StartCoroutine(ForceToRefreshToggleState()); }
+    private void OnEnable() =>
+        StartCoroutine(ForceToRefreshToggleState());
 
-    public void OnPointerDown(PointerEventData eventData) { SelectToggle(); }
+    public void OnPointerDown(PointerEventData eventData) =>
+        SelectToggle();
 
     public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
@@ -146,20 +145,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
         ConfigureDefaultOnSelectAction();
     }
 
-    public void SelectToggle()
+    public void SelectToggle(bool reselectIfAlreadyOn = false)
     {
         if (toggle == null)
             return;
 
-        toggle.isOn = true;
-    }
+        if (reselectIfAlreadyOn)
+            toggle.isOn = false;
 
-    public void SelectToggleWithReset()
-    {
-        if (toggle == null)
-            return;
-
-        toggle.isOn = false;
         toggle.isOn = true;
     }
 

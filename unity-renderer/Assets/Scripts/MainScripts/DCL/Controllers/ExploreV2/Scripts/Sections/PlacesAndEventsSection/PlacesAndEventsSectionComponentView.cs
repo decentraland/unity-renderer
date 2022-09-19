@@ -53,7 +53,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
 
     public void GoToSubsection(int subSectionIndex) =>
-        subSectionSelector.GetSection(subSectionIndex)?.SelectToggleWithReset();
+        subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
 
     public void SetActive(bool isActive) =>
         gameObject.SetActive(isActive);
@@ -97,7 +97,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
                               eventsSubSection.gameObject.SetActive(isOn);
                           });
 
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggleWithReset();
+        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
     }
 
     internal void RemoveSectionSelectorMappings()

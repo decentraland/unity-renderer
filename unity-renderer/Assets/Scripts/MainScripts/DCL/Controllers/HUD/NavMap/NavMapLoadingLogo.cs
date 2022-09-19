@@ -13,7 +13,6 @@ namespace DCL
         [SerializeField] private Image radialGradient;
 
         [SerializeField] private GameObject navMapSection;
-        // Debug.Log(DataStore.i.exploreV2.configureMapInFullscreenMenu.Get().name, DataStore.i.exploreV2.configureMapInFullscreenMenu.Get().gameObject);
 
         private NavmapView navMap;
 

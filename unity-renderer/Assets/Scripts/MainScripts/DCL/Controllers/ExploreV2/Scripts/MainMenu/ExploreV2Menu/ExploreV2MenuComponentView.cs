@@ -246,7 +246,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                 {
                     if (section != null && section.IsActive())
                     {
-                        section.SelectToggleWithReset();
+                        section.SelectToggle(reselectIfAlreadyOn: true);
                         break;
                     }
                 }
@@ -261,7 +261,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void GoToSection(ExploreSection section)
     {
-        sectionSelector.GetSection((int)section)?.SelectToggleWithReset();
+        sectionSelector.GetSection((int)section)
+                       ?
+                       .SelectToggle(reselectIfAlreadyOn: true);
 
         AudioScriptableObjects.dialogOpen.Play(true);
         AudioScriptableObjects.listItemAppear.ResetPitch();
