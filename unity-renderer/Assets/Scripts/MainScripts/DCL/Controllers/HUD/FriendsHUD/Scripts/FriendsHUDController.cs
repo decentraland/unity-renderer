@@ -21,6 +21,8 @@ public class FriendsHUDController : IHUD
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
+    private bool isFriendsLoadedForFirstTime;
+    private bool isFriendsRequestsLoadedForFirstTime;
 
     public IFriendsHUDComponentView View { get; private set; }
 
@@ -130,13 +132,12 @@ public class FriendsHUDController : IHUD
     {
         if (visible)
         {
-            View.ClearAll();
             View.Show();
             UpdateNotificationsCounter();
 
-            if (View.IsFriendListActive)
+            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive)
+            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
                 DisplayMoreFriendRequests();
             
             OnOpened?.Invoke();
@@ -157,9 +158,9 @@ public class FriendsHUDController : IHUD
 
         if (View.IsActive())
         {
-            if (View.IsFriendListActive)
+            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive)
+            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
                 DisplayMoreFriendRequests();
         }
         
@@ -395,6 +396,7 @@ public class FriendsHUDController : IHUD
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
+        if (isFriendsLoadedForFirstTime) return;
         DisplayMoreFriends();
     }
 
@@ -403,6 +405,7 @@ public class FriendsHUDController : IHUD
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendsToLoadHint();
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
+        isFriendsLoadedForFirstTime = true;
     }
 
     private void DisplayMoreFriendRequests()
@@ -412,11 +415,13 @@ public class FriendsHUDController : IHUD
         friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestSentCount,
             LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestReceivedCount);
+        isFriendsRequestsLoadedForFirstTime = true;
     }
     
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
+        if (isFriendsRequestsLoadedForFirstTime) return;
         DisplayMoreFriendRequests();
     }
 

@@ -170,7 +170,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         entries.ToList().ForEach(pair => Remove(pair.Key));
         receivedRequestsList.Clear();
         sentRequestsList.Clear();
-        creationQueue.Clear();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }

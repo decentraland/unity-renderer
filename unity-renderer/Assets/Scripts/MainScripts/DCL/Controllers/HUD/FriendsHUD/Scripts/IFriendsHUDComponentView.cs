@@ -55,5 +55,4 @@ public interface IFriendsHUDComponentView
     void FilterFriends(Dictionary<string, FriendEntryModel> friends);
     void ClearFriendFilter();
     void UpdateBlockStatus(string userId, bool blocked);
-    void ClearAll();
 }

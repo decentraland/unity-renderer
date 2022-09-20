@@ -220,12 +220,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         UpdateBlockStatus(blocked, friendRequestsTab.Get(userId));
     }
 
-    public void ClearAll()
-    {
-        friendsTab.Clear();
-        friendRequestsTab.Clear();
-    }
-
     public override void RefreshControl()
     {
         if (model.isLoadingSpinnerActive)
