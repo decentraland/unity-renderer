@@ -15,9 +15,10 @@ public interface IFriendsHUDComponentView
     event Action OnRequireMoreFriends;
     event Action OnRequireMoreFriendRequests;
     event Action<string> OnSearchFriendsRequested;
+    event Action OnFriendListDisplayed;
+    event Action OnRequestListDisplayed;
 
     void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics);
 
@@ -25,6 +26,10 @@ public interface IFriendsHUDComponentView
     RectTransform Transform { get; }
     int FriendCount { get; }
     int FriendRequestCount { get; }
+    int FriendRequestSentCount { get; }
+    int FriendRequestReceivedCount { get; }
+    bool IsFriendListActive { get; }
+    bool IsRequestListActive { get; }
 
     void HideLoadingSpinner();
     void ShowLoadingSpinner();
@@ -41,9 +46,9 @@ public interface IFriendsHUDComponentView
     bool IsActive();
     void ShowRequestSendError(FriendRequestError error);
     void ShowRequestSendSuccess();
-    void ShowMoreFriendsToLoadHint(int pendingFriendsCount);
+    void ShowMoreFriendsToLoadHint(int hiddenCount);
     void HideMoreFriendsToLoadHint();
-    void ShowMoreRequestsToLoadHint(int pendingRequestsCount);
+    void ShowMoreRequestsToLoadHint(int hiddenCount);
     void HideMoreRequestsToLoadHint();
     bool ContainsFriend(string userId);
     bool ContainsFriendRequest(string userId);
