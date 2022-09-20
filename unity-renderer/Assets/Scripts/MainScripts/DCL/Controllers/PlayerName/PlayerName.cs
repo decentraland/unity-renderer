@@ -59,6 +59,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private void Update() { Update(Time.deltaTime); }
 
+    public bool AllRenderersInvisible()
+    {
+        return canvasRenderers != null && canvasRenderers.TrueForAll(r => r.GetAlpha() < 0.01f);
+    }
+
     private void SetRenderersVisible(bool value)
     {
         canvasRenderers.ForEach(c => c.SetAlpha(value ? 1f : 0f));
