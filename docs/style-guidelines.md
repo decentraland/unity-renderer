@@ -19,32 +19,93 @@ To install it go to the root of your explorer repository and run the following c
 ### Rider
 You can find a settings export file in the root of the project called "rider_codeStyleDCLSetting". Bear in mind that the conversion between VS and Rider is not 1 on 1 but it's good enough.
 
-# Naming conventions
-
+# Code conventions
+### Naming conventions
 Use
-* `PascalCase` - Namespace, Class, Enumerations and Enumerators, Method, Delegate declaration, Event, Property and public Field;
+* `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, Property and public Field;
 * `camelCase` - Field, local Variable, methods Parameter;
 * `CAPITALS_SNAKE_CASE` - Constants;
-* `I` in front of Interface name;
-
+* `I` prefix in front of Interface name;
 ```csharp
-namespace MyNamespace                                   // Namespace -> PascalCase
+namespace MyProject                                     // Namespace -> PascalCase
 {
     public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
     public delegate void Change<T> (T current);         // Delegate declaration -> PascalCase
     public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
     
-    public class MyClass : IInitializable               // Classe -> PascalCase.
+    public class MyClass : IInitializable               // Class/Struct -> PascalCase.
     {
         public const string ASSET_PATH = "AvatarUI";    // Constant -> CAPITALS_SNAKE_CASE 
         public int PublicField;                         // public Field -> PascalCase
         private bool isVisible;                         // Field -> camelCase
         public bool IsInitialized {get; set;}           // Property -> PascalCase
         
-        public void Play(float speed)                   // Method -> PascalCase. Method parameter -> camelCase
+        public void Play(float speed)                   // Method -> PascalCase. Method parameters -> camelCase
         {
             var animationClip;                          // local variable -> camelCase
         };              
     }
 }
+```
+Suggestions:
+* `Interface` - try to name it with adjective phrases (`IDamageable`). If it is difficult, then use descriptive noun (`IBaseVariable`) or noun phrase (`IAssetProvider`).
+* `Class`/`Struct` -  name with nouns (`Health`) or noun phrases (`InputService`).
+
+### Ordering conventions
+* `using` go first and placed alphabetically
+* Class members grouped and appears in the following order
+  * Enums, delegates declarations
+  * Fields
+  * Properties
+  * Events
+  * Methods
+  * Nested classes
+* Order inside group:
+  * `public`
+  * `internal`
+  * `protected internal`
+  * `protected`
+  * `private`
+* Fields specifics
+  * Const, static and readonly goes first
+  * Public `[HideInInspector]` and `[NonSerialized]` attribute goes after `public`
+  * `[SerializedFields]` attribute fields goes after all `public`
+* Properties specifics
+  * static and readonly goes first
+  * Property with public `set` and private `get` goes before get-only Property or Property with private `set` and public `get` (considered to be more exposed)
+```csharp
+public const string ASSET_PATH = "AvatarPrefab";                            // Constants group 
+internal const float MIN_TIME = 0.1f;
+private const float MAX_TIMER = 10f;
+
+public static readonly int WaveAnimHash = Animator.StringToHash("Wave");    // Static Read-only group
+private static readonly int danceAnimHash = Animator.StringToHash("Dance");
+
+internal static bool isOpen;                                                // Static group
+protected static bool isAvtive;                                             
+
+public readonly List<int> CachedNumbers = new List<int>();                  // Read-only group
+private readonly List<Section> Sections = new List<Section>();
+
+public int PublicFieldA;                                                    // Public Fields group
+
+[HideInInspector] public int SomeField02;
+[NonSerialized] public int SomeField03;
+
+[SerializedField] internal Animator animator;                               // [SerializedField]'s group
+[SerializedField] private AnimatorClip[] clips[];  
+
+protected float cooldown;                                                   // internal-protected-private Fields group  
+private bool isVisible;                         
+                       
+public bool Property1 { get; set; }                                        // Properties groups  
+public bool Property2 { private get; set; }
+public bool Property3 { get; }
+public bool Property4 { get; private set; }
+
+protected bool Property5 { get; set; }
+private bool Property6 { get; set; }
+
+public event Action Started;                                               // Events group  
+public event Func<float> Completed;
 ```
