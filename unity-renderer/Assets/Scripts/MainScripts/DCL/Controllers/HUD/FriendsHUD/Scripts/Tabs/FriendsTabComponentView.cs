@@ -139,11 +139,11 @@ public class FriendsTabComponentView : BaseComponentView
     public void Clear()
     {
         entries.ToList().ForEach(pair => Remove(pair.Key));
-
         onlineFriendsList.list.Clear();
         offlineFriendsList.list.Clear();
-
         searchResultsFriendList.list.Clear();
+        creationQueue.Clear();
+        
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
