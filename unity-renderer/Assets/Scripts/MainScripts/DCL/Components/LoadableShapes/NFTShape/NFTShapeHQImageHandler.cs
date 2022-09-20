@@ -28,7 +28,7 @@ namespace NFTShape_Internal
 
         public static NFTShapeHQImageHandler Create(NFTShapeHQImageConfig config)
         {
-            if (config.asset == null || config.collider is null || config.transform is null)
+            if (config.asset == null || !config.collider || !config.transform)
             {
                 return null;
             }
@@ -44,7 +44,7 @@ namespace NFTShape_Internal
 
         public void Update()
         {
-            if (hqImageConfig.collider is null)
+            if (!hqImageConfig.collider)
                 return;
 
             if (!isPlayerNear)
@@ -103,7 +103,7 @@ namespace NFTShape_Internal
         {
             isPlayerNear = false;
 
-            if (hqImageConfig.transform is null || hqImageConfig.collider is null)
+            if (!hqImageConfig.transform || !hqImageConfig.collider)
                 return;
 
             var config = DataStore.i.Get<DataStore_NFTShape>();
