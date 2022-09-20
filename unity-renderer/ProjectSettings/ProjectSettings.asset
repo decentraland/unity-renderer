@@ -587,20 +587,20 @@ PlayerSettings:
   blurSplashScreenBackground: 1
   spritePackerPolicy: 
   webGLMemorySize: 512
-  webGLExceptionSupport: 1
+  webGLExceptionSupport: 3
   webGLNameFilesAsHashes: 0
   webGLDataCaching: 0
-  webGLDebugSymbols: 1
+  webGLDebugSymbols: 0
   webGLEmscriptenArgs: ' --profiling-funcs '
   webGLModulesDirectory: 
   webGLTemplate: PROJECT:decentraland
   webGLAnalyzeBuildSize: 1
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 2
+  webGLCompressionFormat: 1
   webGLWasmArithmeticExceptions: 1
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
-  webGLDecompressionFallback: 0
+  webGLDecompressionFallback: 1
   scriptingDefineSymbols:
     : UNITY_POST_PROCESSING_STACK_V2;GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     Android: UNITY_POST_PROCESSING_STACK_V2
@@ -623,7 +623,8 @@ PlayerSettings:
     Standalone: 0
   il2cppCompilerConfiguration:
     WebGL: 2
-  managedStrippingLevel: {}
+  managedStrippingLevel:
+    WebGL: 1
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 1
