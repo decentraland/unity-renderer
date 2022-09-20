@@ -729,11 +729,4 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    private void OnApplicationFocus(bool hasFocus)
-    {
-        if (!hasFocus)
-        {
-            controller.LostFocus();
-        }
-    }
 }

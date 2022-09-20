@@ -55,9 +55,8 @@ public class AvatarEditorHUDController : IHUD
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
     private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
-    private int retryOwnedWearableRequestRetryTime = 60;
+    private int ownedWearableEmotesRequestRetryTime = 60;
     private bool ownedWearablesAlreadyLoaded = false;
-    private bool lostFocus;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     internal bool avatarIsDirty = false;
@@ -141,6 +140,8 @@ public class AvatarEditorHUDController : IHUD
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
+
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -182,11 +183,10 @@ public class AvatarEditorHUDController : IHUD
         if(string.IsNullOrEmpty(userProfile.userId))
             return;
         
-        // If wearables are loaded, we are in wearable cooldown and we haven't lost focus, we dont fetch again owned wearables
-        if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown() && !lostFocus)
+        // If wearables are loaded, we are in wearable cooldown, we dont fetch again owned wearables
+        if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown())
             return;
         
-        lostFocus = false;
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
@@ -232,7 +232,7 @@ public class AvatarEditorHUDController : IHUD
     private void LoadOwnedEmotes()
     {
         //Only check emotes once every 60 seconds
-        if (Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + 60)
+        if (IsEmotesUpdateInCooldown())
             return;
 
         lastTimeOwnedEmotesChecked = Time.realtimeSinceStartup;
@@ -321,7 +321,7 @@ public class AvatarEditorHUDController : IHUD
            .Catch((error) => Debug.LogError(error));
     }
 
-    public void RetryLoadOwnedWearables()
+    public void ReloadOwnedWearablesOnRefocus()
     {
         ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
         LoadOwnedWereables(userProfile);
@@ -832,6 +832,8 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
         emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
+        
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
 
         CleanUp();
     }
@@ -1110,18 +1112,24 @@ public class AvatarEditorHUDController : IHUD
 
     internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
 
-    public void LostFocus()
-    {
-        lostFocus = true;
-    }
-    
     private bool IsWearableUpdateInCooldown()
     {
-        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + retryOwnedWearableRequestRetryTime;
+        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + ownedWearableEmotesRequestRetryTime;
+    }
+    
+    private bool IsEmotesUpdateInCooldown()
+    {
+        return Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + ownedWearableEmotesRequestRetryTime;
     }
     
     private bool AreWearablesAlreadyLoaded()
     {
         return ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0;
+    }
+
+    private void OnApplicationFocus()
+    {
+        lastTimeOwnedWearablesChecked = -ownedWearableEmotesRequestRetryTime;
+        lastTimeOwnedEmotesChecked = -ownedWearableEmotesRequestRetryTime;
     }
 }
