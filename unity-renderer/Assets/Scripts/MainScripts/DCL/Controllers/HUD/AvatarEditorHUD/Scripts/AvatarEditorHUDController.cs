@@ -182,7 +182,7 @@ public class AvatarEditorHUDController : IHUD
         if(string.IsNullOrEmpty(userProfile.userId))
             return;
         
-        // If wearables are loaded, we are in wearable cooldown and we haven't lost focus, we dont fetch owned wearables
+        // If wearables are loaded, we are in wearable cooldown and we haven't lost focus, we dont fetch again owned wearables
         if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown() && !lostFocus)
             return;
         
