@@ -2,7 +2,7 @@
 The main goal of the Scene Boundaries Checking System ([`SceneBoundsChecker` class](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs)) is to make sure that deployed content is only in effect inside the scenes they belong to.
 
 ### Approach
-SDK entities are sent to the `SceneBoundsChecker` ("SBC" from now onwards) at specific moments in their lifecycle so that the SBC can evaluate if they are out of their scene boundaries, flag them and act according to the components they have attached.
+SDK entities are sent to the `SceneBoundsChecker` ("SBC" from now onwards) at specific moments in their lifecycle so that the SBC can evaluate if they are out of their scene boundaries, flag them and act according to the components they have attached. Entities that belong to a global scene (as in the player avatars gloabal scene or any portable experience scene) are not checked as their scene has no boundaries.
 
 The values used to define the 3D space boundaries of a scene are its parcels position (16x16 -> widthXdepth) + the height limitation stated in the [Scene Limits Documentation](https://docs.decentraland.org/development-guide/scene-limitations/), those calculations can be seen [here](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L246).
 
