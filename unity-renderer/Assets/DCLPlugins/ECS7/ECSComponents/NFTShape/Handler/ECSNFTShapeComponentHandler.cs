@@ -67,9 +67,10 @@ namespace DCL.ECSComponents
                 renderersComponent.AddRenderer(scene, entity, shapeFrame.frameRenderer);
             }
 
-            if (prevModel == null || !model.Color.Equals(prevModel.Color))
+            Color3 modelColor = model.GetColor();
+            if (prevModel == null || !modelColor.Equals(prevModel.GetColor()))
             {
-                shapeFrame.UpdateBackgroundColor(new Color(model.Color.R, model.Color.G, model.Color.B, 1));
+                shapeFrame.UpdateBackgroundColor(new Color(modelColor.R, modelColor.G, modelColor.B, 1));
             }
 
             if (!string.IsNullOrEmpty(model.Src) && nftLoadedScr != model.Src)
