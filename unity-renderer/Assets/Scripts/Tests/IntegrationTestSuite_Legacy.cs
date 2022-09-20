@@ -1,14 +1,13 @@
 using DCL;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using DCL.Camera;
 using DCL.CameraTool;
-using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
@@ -54,7 +53,6 @@ public class IntegrationTestSuite_Legacy
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
-        result.Register<ILastReadMessagesService>(() => Substitute.For<ILastReadMessagesService>());
         result.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
 
         result.Register<IServiceProviders>(

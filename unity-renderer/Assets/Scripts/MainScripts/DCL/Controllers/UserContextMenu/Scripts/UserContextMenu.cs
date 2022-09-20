@@ -186,14 +186,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void UnfriendUser()
     {
-        FriendsController.FriendshipUpdateStatusMessage newFriendshipStatusMessage = new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.DELETED
-        };
-
-        FriendsController.i.UpdateFriendshipStatus(newFriendshipStatusMessage);
-        WebInterface.UpdateFriendshipStatus(newFriendshipStatusMessage);
+        FriendsController.i.RemoveFriend(userId);
     }
 
     private void OnAddFriendButtonPressed()
@@ -212,16 +205,7 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.REQUESTED_TO
-        });
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.REQUESTED_TO
-        });
+        FriendsController.i.RequestFriendship(userId);
 
         GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
     }
@@ -235,16 +219,7 @@ public class UserContextMenu : MonoBehaviour
             return;
         }
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.CANCELLED
-        });
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.CANCELLED
-        });
+        FriendsController.i.CancelRequest(userId);
 
         GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }
@@ -328,7 +303,7 @@ public class UserContextMenu : MonoBehaviour
         }
         if ((configFlags & usesFriendsApiFlags) != 0 && FriendsController.i)
         {
-            if (FriendsController.i.friends.TryGetValue(userId, out FriendsController.UserStatus status))
+            if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
             {
                 SetupFriendship(status.friendshipStatus);
             }

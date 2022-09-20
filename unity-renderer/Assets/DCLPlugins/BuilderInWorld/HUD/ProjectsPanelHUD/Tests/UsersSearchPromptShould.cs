@@ -26,9 +26,9 @@ namespace Tests
         public void ShowFriendsCorrectly()
         {
             FriendsController_Mock friendsController = new FriendsController_Mock();
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
 
             var profile = ScriptableObject.CreateInstance<UserProfile>();
             profile.UpdateData(new UserProfileModel() { name = "Temp", userId = "1" });
@@ -55,9 +55,9 @@ namespace Tests
         public void SearchFriendsCorrectly()
         {
             FriendsController_Mock friendsController = new FriendsController_Mock();
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
 
             var profile = ScriptableObject.CreateInstance<UserProfile>();
             profile.UpdateData(new UserProfileModel() { name = "Temp", userId = "1" });
@@ -84,9 +84,9 @@ namespace Tests
         public void ShowIfFriendsIsAddedToRolCorrectly()
         {
             FriendsController_Mock friendsController = new FriendsController_Mock();
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "2", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "3", friendshipStatus = FriendshipStatus.FRIEND });
 
             var profile = ScriptableObject.CreateInstance<UserProfile>();
             profile.UpdateData(new UserProfileModel() { name = "Temp", userId = "1" });
@@ -113,7 +113,7 @@ namespace Tests
         public void TriggerAddButtonCorrectlyOnClick()
         {
             FriendsController_Mock friendsController = new FriendsController_Mock();
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
 
             var profile = ScriptableObject.CreateInstance<UserProfile>();
             profile.UpdateData(new UserProfileModel() { name = "Temptation", userId = "1" });
@@ -137,7 +137,7 @@ namespace Tests
         public void TriggerRemoveButtonCorrectlyOnClick()
         {
             FriendsController_Mock friendsController = new FriendsController_Mock();
-            friendsController.AddFriend(new FriendsController.UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
+            friendsController.AddFriend(new UserStatus() { userId = "1", friendshipStatus = FriendshipStatus.FRIEND });
 
             var profile = ScriptableObject.CreateInstance<UserProfile>();
             profile.UpdateData(new UserProfileModel() { name = "Temptation", userId = "1" });
