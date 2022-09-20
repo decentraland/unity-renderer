@@ -12,7 +12,6 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig<Publi
     [SerializeField] internal UnreadNotificationBadge unreadNotifications;
     
     private IChatController chatController;
-    private ILastReadMessagesService lastReadMessagesService;
 
     public PublicChannelEntryModel Model => model;
 
@@ -29,11 +28,9 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig<Publi
         openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
     }
 
-    public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
     }
 
     public void Configure(PublicChannelEntryModel newModel)
@@ -45,7 +42,7 @@ public class PublicChannelEntry : BaseComponentView, IComponentModelConfig<Publi
     public override void RefreshControl()
     {
         nameLabel.text = $"#{model.name}";
-        unreadNotifications.Initialize(chatController, model.channelId, lastReadMessagesService);
+        unreadNotifications.Initialize(chatController, model.channelId);
     }
 
     [Serializable]

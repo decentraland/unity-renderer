@@ -65,7 +65,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: robot
     baseUrl: 
     baseUrlBundles: 
@@ -175,7 +175,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: hammer
     baseUrl: 
     baseUrlBundles: 
@@ -197,7 +197,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: tik
     baseUrl: 
     baseUrlBundles: 
@@ -219,7 +219,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: tektonik
     baseUrl: 
     baseUrlBundles: 
@@ -263,7 +263,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: handsair
     baseUrl: 
     baseUrlBundles: 
@@ -307,7 +307,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: disco
     baseUrl: 
     baseUrlBundles: 
@@ -373,7 +373,7 @@ MonoBehaviour:
       replaces: []
       hides: []
     emoteDataV0:
-      loop: 0
+      loop: 1
     id: dance
     baseUrl: 
     baseUrlBundles: 
