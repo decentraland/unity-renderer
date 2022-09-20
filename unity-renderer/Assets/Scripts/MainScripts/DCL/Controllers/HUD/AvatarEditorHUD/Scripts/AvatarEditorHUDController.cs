@@ -55,7 +55,9 @@ public class AvatarEditorHUDController : IHUD
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
     private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
+    private int retryOwnedWearableRequestRetryTime = 60;
     private bool ownedWearablesAlreadyLoaded = false;
+    private bool lostFocus;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     internal bool avatarIsDirty = false;
@@ -173,17 +175,19 @@ public class AvatarEditorHUDController : IHUD
         LoadUserProfile(userProfile, false);
         QueryNftCollections(userProfile.userId);
     }
-
+    
     private void LoadOwnedWereables(UserProfile userProfile)
     {
-        // If there is more than 1 minute that we have checked the owned wearables, we try it again
-        // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
-             (ownedWearablesAlreadyLoaded ||
-              ownedWearablesRemainingRequests <= 0)) ||
-            string.IsNullOrEmpty(userProfile.userId))
+        //If there is no userID we dont fetch owned wearabales
+        if(string.IsNullOrEmpty(userProfile.userId))
             return;
-
+        
+        // If there is more than 1 minute that we have checked the owned wearables; or we lost the app focus, we try it again
+        // This is done in order to retrieved the wearables after you has claimed them
+        if (IsWearableUpdateInCooldown() && AreWearablesAlreadyLoaded() && !lostFocus)
+            return;
+        
+        lostFocus = false;
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
@@ -1106,4 +1110,19 @@ public class AvatarEditorHUDController : IHUD
     }
 
     internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
+
+    public void LostFocus()
+    {
+        lostFocus = true;
+    }
+    
+    private bool IsWearableUpdateInCooldown()
+    {
+        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + retryOwnedWearableRequestRetryTime;
+    }
+    
+    private bool AreWearablesAlreadyLoaded()
+    {
+        return ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0;
+    }
 }
