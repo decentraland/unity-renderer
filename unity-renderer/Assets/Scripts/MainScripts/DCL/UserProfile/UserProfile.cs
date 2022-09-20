@@ -25,8 +25,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
-    public string bodySnapshotURL => model.snapshots.body;
-    public string face256SnapshotURL => model.snapshots.face256;
+    public string bodySnapshotURL => model.ComposeCorrectUrl(model.snapshots.body);
+    public string face256SnapshotURL => model.ComposeCorrectUrl(model.snapshots.face256);
+    public string baseUrl => model.baseUrl;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
@@ -64,6 +65,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.name = newModel.name;
         model.email = newModel.email;
         model.description = newModel.description;
+        model.baseUrl = newModel.baseUrl;
         model.avatar.CopyFrom(newModel.avatar);
         model.snapshots = newModel.snapshots;
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
@@ -72,12 +74,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         if (model.snapshots != null && faceSnapshotDirty)
         {
-            this.snapshotObserver.RefreshWithUri(model.snapshots.face256);
+            this.snapshotObserver.RefreshWithUri(model.ComposeCorrectUrl(model.snapshots.face256));
         }
 
         if (model.snapshots != null && bodySnapshotDirty)
         {
-            bodySnapshotObserver.RefreshWithUri(model.snapshots.body);
+            bodySnapshotObserver.RefreshWithUri(model.ComposeCorrectUrl(model.snapshots.body));
         }
 
         OnUpdate?.Invoke(this);
