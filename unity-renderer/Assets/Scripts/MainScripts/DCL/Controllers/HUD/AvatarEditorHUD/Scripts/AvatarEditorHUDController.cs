@@ -182,9 +182,8 @@ public class AvatarEditorHUDController : IHUD
         if(string.IsNullOrEmpty(userProfile.userId))
             return;
         
-        // If there is more than 1 minute that we have checked the owned wearables; or we lost the app focus, we try it again
-        // This is done in order to retrieved the wearables after you has claimed them
-        if (IsWearableUpdateInCooldown() && AreWearablesAlreadyLoaded() && !lostFocus)
+        // If wearables are loaded, we are in wearable cooldown and we haven't lost focus, we dont fetch owned wearables
+        if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown() && !lostFocus)
             return;
         
         lostFocus = false;
