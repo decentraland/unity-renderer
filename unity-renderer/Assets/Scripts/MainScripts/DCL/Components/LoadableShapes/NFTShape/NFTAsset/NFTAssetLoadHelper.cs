@@ -26,13 +26,11 @@ namespace DCL
         protected AssetPromise_Texture imagePromise = null;
         protected AssetPromise_Gif gifPromise = null;
         private CancellationTokenSource tokenSource;
-        private bool tokenDisposed = true;
 
         public async UniTask<INFTAsset> LoadNFTAsset(string url)
         {
             tokenSource = new CancellationTokenSource();
             tokenSource.Token.ThrowIfCancellationRequested();
-            tokenDisposed = false;
             INFTAsset result = null;
             await LoadNFTAsset(url, (nftAsset) =>
             {
@@ -103,12 +101,8 @@ namespace DCL
         public void Dispose()
         {
             UnloadPromises();
-            if (!tokenDisposed)
-            {
-                tokenSource?.Cancel();
-                tokenSource?.Dispose();
-                tokenDisposed = true;
-            }
+            tokenSource?.Cancel();
+            tokenSource?.Dispose();
         }
 
         protected virtual IEnumerator GetHeaders(string url, HashSet<string> headerField,

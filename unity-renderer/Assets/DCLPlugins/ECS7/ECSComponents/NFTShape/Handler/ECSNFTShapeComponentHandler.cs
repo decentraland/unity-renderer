@@ -23,6 +23,8 @@ namespace DCL.ECSComponents
         private PBNFTShape prevModel;
 
         private string nftLoadedScr = null;
+        private bool infoRetrieverDisposed = false;
+        private bool assetRetrieverDisposed = false;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
 
         public ECSNFTShapeComponentHandler(INFTShapeFrameFactory factory, INFTInfoRetriever infoRetriever,
@@ -39,8 +41,14 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            infoRetriever.Dispose();
-            assetRetriever.Dispose();
+            if (!infoRetrieverDisposed)
+            {
+                infoRetriever.Dispose();
+            }
+            if (!assetRetrieverDisposed)
+            {
+                assetRetriever.Dispose();
+            }
             DisposeShapeFrame(scene, entity, shapeFrame, renderersComponent);
         }
 
@@ -75,8 +83,16 @@ namespace DCL.ECSComponents
 
             if (!string.IsNullOrEmpty(model.Src) && nftLoadedScr != model.Src)
             {
-                infoRetriever.Dispose();
-                assetRetriever.Dispose();
+                if (!infoRetrieverDisposed)
+                {
+                    infoRetriever.Dispose();
+                    infoRetrieverDisposed = true;
+                }
+                if (!assetRetrieverDisposed)
+                {
+                    assetRetriever.Dispose();
+                    assetRetrieverDisposed = true;
+                }
                 LoadNFT(model.Src);
             }
 
@@ -98,6 +114,7 @@ namespace DCL.ECSComponents
         {
             try
             {
+                infoRetrieverDisposed = false;
                 NFTInfo info = await infoRetriever.FetchNFTInfo(scr);
 
                 if (info == null)
@@ -106,6 +123,7 @@ namespace DCL.ECSComponents
                     return;
                 }
 
+                assetRetrieverDisposed = false;
                 INFTAsset nftAsset = await assetRetriever.LoadNFTAsset(info.previewImageUrl);
 
                 if (nftAsset == null)
