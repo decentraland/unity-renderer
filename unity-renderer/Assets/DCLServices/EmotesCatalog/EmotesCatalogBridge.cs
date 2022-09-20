@@ -12,7 +12,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
     [Serializable]
     private class AddEmotesResponse
     {
-        public WearableItem[] emotes;
+        public EmoteItem[] emotes;
         public string context;
     }
 
