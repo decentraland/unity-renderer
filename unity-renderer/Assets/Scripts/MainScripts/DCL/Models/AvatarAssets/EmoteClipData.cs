@@ -7,9 +7,10 @@ namespace DCL.Emotes
         public readonly AnimationClip clip;
         public readonly bool loop;
 
-        public EmoteClipData(AnimationClip clip)
+        public EmoteClipData(AnimationClip clip, bool loop = false)
         {
             this.clip = clip;
+            this.loop = loop;
         }
 
         public EmoteClipData(AnimationClip clip, EmoteDataV0 emoteDataV0)
