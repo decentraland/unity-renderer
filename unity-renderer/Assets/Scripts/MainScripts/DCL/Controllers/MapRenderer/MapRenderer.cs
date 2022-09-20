@@ -119,7 +119,6 @@ namespace DCL
             EnsurePools();
             atlas.InitializeChunks();
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
-
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             otherPlayers.OnRemoved += OnOtherPlayerRemoved;
@@ -139,6 +138,7 @@ namespace DCL
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+            GetInfoOfPlazas();
         }
 
         private void MoveHomePointIcon(Vector2Int current, Vector2Int previous)
@@ -385,17 +385,28 @@ namespace DCL
             return false;
         }
 
-        private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        private void GetInfoOfPlazas()
         {
+            CreateFakePOIWithName("Soho Plaza", new Vector2(-82, 0));
+            CreateFakePOIWithName("Vegas Plaza", new Vector2(-61, 62));
+            CreateFakePOIWithName("Forest Plaza", new Vector2(1, 83));
+            CreateFakePOIWithName("Gamer Plaza", new Vector2(82, 1));
+            CreateFakePOIWithName("Asian Plaza", new Vector2(62, -61));
+            CreateFakePOIWithName("Forest Plaza", new Vector2(1, -81));
+            CreateFakePOIWithName("Medieval Plaza", new Vector2(-61, -61));
+        }
+
+        private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {    
             if (!sceneInfo.isPOI)
                 return;
 
             if (scenesOfInterest.Contains(sceneInfo))
                 return;
-
+            
             if (IsEmptyParcel(sceneInfo))
                 return;
-
+                
             scenesOfInterest.Add(sceneInfo);
 
             GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
@@ -428,6 +439,16 @@ namespace DCL
                 icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
+        }
+
+        private void CreateFakePOIWithName(string parcelName, Vector2 position)
+        {
+            GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
+            (go.transform as RectTransform).anchoredPosition = MapUtils.CoordsToPosition(position);
+            MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
+
+            if (icon.title != null)
+                icon.title.text = parcelName.Length > MAX_SCENE_CHARACTER_TITLE ? parcelName.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : parcelName;
         }
 
         public void SetPointOfInterestActive(bool areActive)
