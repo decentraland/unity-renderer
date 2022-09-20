@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -340,6 +340,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
         contextMenuPanel.Show(friendEntry.Model.userId);
+        contextMenuPanel.SetFriendshipContentActive(false);
         friendEntry.Dock(contextMenuPanel);
     }
 
