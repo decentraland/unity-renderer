@@ -74,12 +74,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         if (model.snapshots != null && faceSnapshotDirty)
         {
-            this.snapshotObserver.RefreshWithUri(model.ComposeCorrectUrl(model.snapshots.face256));
+            snapshotObserver.RefreshWithUri(face256SnapshotURL);
         }
 
         if (model.snapshots != null && bodySnapshotDirty)
         {
-            bodySnapshotObserver.RefreshWithUri(model.ComposeCorrectUrl(model.snapshots.body));
+            bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
         }
 
         OnUpdate?.Invoke(this);
