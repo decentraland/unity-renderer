@@ -587,11 +587,12 @@ PlayerSettings:
   blurSplashScreenBackground: 1
   spritePackerPolicy: 
   webGLMemorySize: 512
-  webGLExceptionSupport: 3
+  webGLExceptionSupport: 2
   webGLNameFilesAsHashes: 0
   webGLDataCaching: 0
-  webGLDebugSymbols: 0
-  webGLEmscriptenArgs: ' --profiling-funcs '
+  webGLDebugSymbols: 2
+  webGLEmscriptenArgs: ' --profiling-funcs -s ALLOW_MEMORY_GROWTH=1 -s MAXIMUM_MEMORY=4GB
+    -s ALLOW_MEMORY_GROWTH=1 -s MAXIMUM_MEMORY=4GB '
   webGLModulesDirectory: 
   webGLTemplate: PROJECT:decentraland
   webGLAnalyzeBuildSize: 1
