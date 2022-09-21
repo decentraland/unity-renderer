@@ -91,6 +91,7 @@ namespace AvatarSystem
 
                 status = IAvatar.Status.Loaded;
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
+                PlaySpawnEmote();
             }
             catch (OperationCanceledException)
             {
@@ -124,7 +125,16 @@ namespace AvatarSystem
             visibility.RemoveGlobalConstrain(key);
         }
 
-        public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
+        private void PlaySpawnEmote()
+        {
+            var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
+            PlayEmote("Outfit_Spawn", timestamp);
+        }
+
+        public void PlayEmote(string emoteId, long timestamps)
+        {
+            animator?.PlayEmote(emoteId, timestamps);
+        }
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
 
