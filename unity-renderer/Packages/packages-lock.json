@@ -28,6 +28,13 @@
       "dependencies": {},
       "hash": "31340a3706dda78916910dc2b925756fd3ee0ece"
     },
+    "com.decentraland.webgl-ime-input": {
+      "version": "https://github.com/decentraland/webgl-ime-input.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "a2a6ca338a07e8d1a0a099dcd02e716857124acf"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
