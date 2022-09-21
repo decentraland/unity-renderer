@@ -4,7 +4,7 @@ Shader "S_LoadingSpinner"
     {
         _color01("Color01", Color) = (1, 0, 0.2605209, 1)
         _fillHead("FillHead", Range(0, 1)) = 0.5
-        _fillTail("FillTail", Range(0, 1)) = 0
+        _fillTail("FillTail", Range(0, 1)) = 0.1
         Vector1_3862b5470ce94ed68d6ccd8d5aa57614("Thickness", Range(0, 1)) = 0.15
         [NoScaleOffset]_MainTex("MainTex", 2D) = "white" {}
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
@@ -297,6 +297,11 @@ Shader "S_LoadingSpinner"
 
         // Graph Functions
 
+    void Unity_Clamp_float(float In, float Min, float Max, out float Out)
+    {
+        Out = clamp(In, Min, Max);
+    }
+
     void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
     {
         float2 delta = UV - Center;
@@ -320,7 +325,12 @@ Shader "S_LoadingSpinner"
         Out = A * B;
     }
 
-    void Unity_Add_float(float A, float B, out float Out)
+    void Unity_Subtract_float4(float4 A, float4 B, out float4 Out)
+    {
+        Out = A - B;
+    }
+
+    void Unity_Add_float4(float4 A, float4 B, out float4 Out)
     {
         Out = A + B;
     }
@@ -338,6 +348,11 @@ Shader "S_LoadingSpinner"
     void Unity_OneMinus_float(float In, out float Out)
     {
         Out = 1 - In;
+    }
+
+    void Unity_Add_float(float A, float B, out float Out)
+    {
+        Out = A + B;
     }
 
     void Unity_Rotate_Degrees_float(float2 UV, float2 Center, float Rotation, out float2 Out)
@@ -361,9 +376,59 @@ Shader "S_LoadingSpinner"
         Out = UV;
     }
 
+    void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+    {
+        Out = Predicate ? True : False;
+    }
+
     void Unity_Floor_float(float In, out float Out)
     {
         Out = floor(In);
+    }
+
+    struct Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30
+    {
+        half4 uv0;
+    };
+
+    void SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(float Vector1_aaadcc587b384367b08909fb525fb26d, float Vector1_3e1c52735b2e4d27a6e7bf56ebb50e52, float Boolean_af78085877e144a8b493499b7e0f1c46, Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 IN, out float4 Out_1)
+    {
+        float _Property_137f50ba36ae418a929202d699bc499e_Out_0 = Vector1_3e1c52735b2e4d27a6e7bf56ebb50e52;
+        float _Property_cf25c1bf1067470b95529f4d38f87846_Out_0 = Boolean_af78085877e144a8b493499b7e0f1c46;
+        float _Property_63367afbdb2d448eb8aff4a786030cf0_Out_0 = Vector1_aaadcc587b384367b08909fb525fb26d;
+        float _Add_24434867cef447769badb4bb3879b3b3_Out_2;
+        Unity_Add_float(_Property_63367afbdb2d448eb8aff4a786030cf0_Out_0, 0.5, _Add_24434867cef447769badb4bb3879b3b3_Out_2);
+        float2 _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3;
+        Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3);
+        float _Split_8e18d6de9cfa49498f69e811db060b6f_R_1 = _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3[0];
+        float _Split_8e18d6de9cfa49498f69e811db060b6f_G_2 = _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3[1];
+        float _Split_8e18d6de9cfa49498f69e811db060b6f_B_3 = 0;
+        float _Split_8e18d6de9cfa49498f69e811db060b6f_A_4 = 0;
+        float _OneMinus_5fc0773156204c808a58e9c19e812934_Out_1;
+        Unity_OneMinus_float(_Split_8e18d6de9cfa49498f69e811db060b6f_R_1, _OneMinus_5fc0773156204c808a58e9c19e812934_Out_1);
+        float2 _Vector2_f6556f360a284dbab1d148851cdff07d_Out_0 = float2(_OneMinus_5fc0773156204c808a58e9c19e812934_Out_1, _Split_8e18d6de9cfa49498f69e811db060b6f_G_2);
+        float2 _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4;
+        Unity_PolarCoordinates_float(_Vector2_f6556f360a284dbab1d148851cdff07d_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4);
+        float _Split_bf54a59e944c4401bfb24aa58d76e76d_R_1 = _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4[0];
+        float _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2 = _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4[1];
+        float _Split_bf54a59e944c4401bfb24aa58d76e76d_B_3 = 0;
+        float _Split_bf54a59e944c4401bfb24aa58d76e76d_A_4 = 0;
+        float _Add_097bd1547e3047758ec904d203391d0b_Out_2;
+        Unity_Add_float(_Add_24434867cef447769badb4bb3879b3b3_Out_2, _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2, _Add_097bd1547e3047758ec904d203391d0b_Out_2);
+        float _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2;
+        Unity_Subtract_float(_Add_24434867cef447769badb4bb3879b3b3_Out_2, _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2, _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2);
+        float _Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3;
+        Unity_Branch_float(_Property_cf25c1bf1067470b95529f4d38f87846_Out_0, _Add_097bd1547e3047758ec904d203391d0b_Out_2, _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2, _Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3);
+        float _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1;
+        Unity_Floor_float(_Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3, _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1);
+        float _Multiply_7ef19861976b442aaae43e822cb07c40_Out_2;
+        Unity_Multiply_float(_Property_137f50ba36ae418a929202d699bc499e_Out_0, _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1, _Multiply_7ef19861976b442aaae43e822cb07c40_Out_2);
+        Out_1 = (_Multiply_7ef19861976b442aaae43e822cb07c40_Out_2.xxxx);
+    }
+
+    void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+    {
+        Out = A * B;
     }
 
     void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
@@ -377,9 +442,45 @@ Shader "S_LoadingSpinner"
         Out = saturate((1 - d) / fwidth(d));
     }
 
-    void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+    struct Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6
     {
-        Out = A * B;
+        half4 uv0;
+    };
+
+    void SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(float Vector1_d021bfa5510841c68b0da5eb35c7ef57, float Vector1_001a62ee7d39438b8ddee32fa34d4381, Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 IN, out float Out_1)
+    {
+        float2 _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3;
+        Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3);
+        float _Split_c99ae83b143c4a7e91459920f997ddd5_R_1 = _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3[0];
+        float _Split_c99ae83b143c4a7e91459920f997ddd5_G_2 = _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3[1];
+        float _Split_c99ae83b143c4a7e91459920f997ddd5_B_3 = 0;
+        float _Split_c99ae83b143c4a7e91459920f997ddd5_A_4 = 0;
+        float _OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1;
+        Unity_OneMinus_float(_Split_c99ae83b143c4a7e91459920f997ddd5_R_1, _OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1);
+        float2 _Vector2_b7857123941e4b308bcc03df889a8cc0_Out_0 = float2(_OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1, _Split_c99ae83b143c4a7e91459920f997ddd5_G_2);
+        float _Property_a817896828c949108c7a90e03f6d1087_Out_0 = Vector1_001a62ee7d39438b8ddee32fa34d4381;
+        float _Multiply_e6786901258743b1ad600175b42585d7_Out_2;
+        Unity_Multiply_float(_Property_a817896828c949108c7a90e03f6d1087_Out_0, 360, _Multiply_e6786901258743b1ad600175b42585d7_Out_2);
+        float2 _Rotate_7861e59713c84421bf662882f24d3ee7_Out_3;
+        Unity_Rotate_Degrees_float(_Vector2_b7857123941e4b308bcc03df889a8cc0_Out_0, float2 (0.5, 0.5), _Multiply_e6786901258743b1ad600175b42585d7_Out_2, _Rotate_7861e59713c84421bf662882f24d3ee7_Out_3);
+        float _Property_f58f50f1f6444b6ab7cba6ced2ca75d1_Out_0 = Vector1_d021bfa5510841c68b0da5eb35c7ef57;
+        float _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2;
+        Unity_Multiply_float(_Property_f58f50f1f6444b6ab7cba6ced2ca75d1_Out_0, 0.5, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2);
+        float _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2;
+        Unity_Multiply_float(_Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, -0.5, _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2);
+        float _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2;
+        Unity_Add_float(0.5, _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2, _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2);
+        float2 _Vector2_67c3058fbedd474980b5c708bba63abf_Out_0 = float2(0, _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2);
+        float2 _TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3;
+        Unity_TilingAndOffset_float(_Rotate_7861e59713c84421bf662882f24d3ee7_Out_3, float2 (1, 1), _Vector2_67c3058fbedd474980b5c708bba63abf_Out_0, _TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3);
+        float _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4;
+        Unity_Ellipse_float(_TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4);
+        Out_1 = _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4;
+    }
+
+    void Unity_Saturate_float4(float4 In, out float4 Out)
+    {
+        Out = saturate(In);
     }
 
     // Graph Vertex
@@ -417,6 +518,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Property_7ff1c03310924ee3836050c91f7b71e3_Out_0 = _fillHead;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Property_2b45fd59e1d745beaf0ef81a8b18a41c_Out_0 = _fillTail;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3;
+    Unity_Clamp_float(_Property_7ff1c03310924ee3836050c91f7b71e3_Out_0, _Property_2b45fd59e1d745beaf0ef81a8b18a41c_Out_0, 1, _Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
@@ -457,15 +568,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_DDXY_6da06c77dad94e40803df8ba82245303_Out_1, 0.5, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2;
-    Unity_Subtract_float(_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2);
+    float4 _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2;
+    Unity_Subtract_float4((_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_1434307ef67b463a952ae990b52d0f19_Out_2;
-    Unity_Add_float(_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
+    float4 _Add_1434307ef67b463a952ae990b52d0f19_Out_2;
+    Unity_Add_float4((_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_441455d41e894365b4544ab412ff17da_Out_0 = float2(_Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2, _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
+    float2 _Vector2_441455d41e894365b4544ab412ff17da_Out_0 = float2((_Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2).x, (_Add_1434307ef67b463a952ae990b52d0f19_Out_2).x);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Remap_44ff9bb3e0c44baaab52e11fb31882ad_Out_3;
@@ -476,15 +587,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Saturate_float(_Remap_44ff9bb3e0c44baaab52e11fb31882ad_Out_3, _Saturate_2ce89ed81cfa4d09bbffbd0af1bc9409_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2;
-    Unity_Subtract_float(_Float_cead0e992bc449df8d9dce54181339c6_Out_0, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2);
+    float4 _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2;
+    Unity_Subtract_float4((_Float_cead0e992bc449df8d9dce54181339c6_Out_0.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_61ac46313d39426f9d62990bead131b2_Out_2;
-    Unity_Add_float(_Float_cead0e992bc449df8d9dce54181339c6_Out_0, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Add_61ac46313d39426f9d62990bead131b2_Out_2);
+    float4 _Add_61ac46313d39426f9d62990bead131b2_Out_2;
+    Unity_Add_float4((_Float_cead0e992bc449df8d9dce54181339c6_Out_0.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Add_61ac46313d39426f9d62990bead131b2_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_6fd7dbbacf17437ba05862d85169dead_Out_0 = float2(_Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2, _Add_61ac46313d39426f9d62990bead131b2_Out_2);
+    float2 _Vector2_6fd7dbbacf17437ba05862d85169dead_Out_0 = float2((_Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2).x, (_Add_61ac46313d39426f9d62990bead131b2_Out_2).x);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Remap_03df3856ba5c44f79b7a13415f56162f_Out_3;
@@ -503,231 +614,91 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_Saturate_2ce89ed81cfa4d09bbffbd0af1bc9409_Out_1, _OneMinus_602397fa45324aa89e7b3f2a2f985338_Out_1, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_af98836cbbef446e9aee7df733d10232_Out_0 = _fillHead;
+    Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262;
+    _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262.uv0 = IN.uv0;
+    float4 _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1;
+    SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(_Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, 1, _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262, _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_732244acab914817bb9e15c35801d8c7_Out_2;
-    Unity_Add_float(_Property_af98836cbbef446e9aee7df733d10232_Out_0, 0.5, _Add_732244acab914817bb9e15c35801d8c7_Out_2);
+    float _Property_a5d5680cb3a94bbf86bdedb7384a8d8a_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3);
+    float _Property_672711a1ef644f24803c57c3177839b3_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_R_1 = _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3[0];
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_G_2 = _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3[1];
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_B_3 = 0;
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1;
-    Unity_OneMinus_float(_Split_9fb9c34aa4bf422c9fe5178185c78e26_R_1, _OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_85e2b79a04974d85af6db719a61b2bb1_Out_0 = float2(_OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1, _Split_9fb9c34aa4bf422c9fe5178185c78e26_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4;
-    Unity_PolarCoordinates_float(_Vector2_85e2b79a04974d85af6db719a61b2bb1_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_R_1 = _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4[0];
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_G_2 = _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4[1];
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_B_3 = 0;
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_39339fee8018448fbc97766c1bb5bb4a_Out_2;
-    Unity_Add_float(_Add_732244acab914817bb9e15c35801d8c7_Out_2, _Split_8bafe52b7e234e6fb13814ef126f5947_G_2, _Add_39339fee8018448fbc97766c1bb5bb4a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1;
-    Unity_Floor_float(_Add_39339fee8018448fbc97766c1bb5bb4a_Out_2, _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2;
-    Unity_Multiply_float(_Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1, _Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_e2afa82cdb8042e1bf6338de12a6c804_Out_0 = _fillTail;
+    float _Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3;
+    Unity_Clamp_float(_Property_a5d5680cb3a94bbf86bdedb7384a8d8a_Out_0, 0, _Property_672711a1ef644f24803c57c3177839b3_Out_0, _Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1;
-    Unity_OneMinus_float(_Property_e2afa82cdb8042e1bf6338de12a6c804_Out_0, _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1);
+    Unity_OneMinus_float(_Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3, _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_b93f9ab8c651486db3a3347c4ec23882_Out_2;
-    Unity_Add_float(_OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1, 0.5, _Add_b93f9ab8c651486db3a3347c4ec23882_Out_2);
+    Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11;
+    _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11.uv0 = IN.uv0;
+    float4 _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1;
+    SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(_OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, 0, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_5dba8a67556c48349a348a930402a05a_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_5dba8a67556c48349a348a930402a05a_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_R_1 = _Rotate_5dba8a67556c48349a348a930402a05a_Out_3[0];
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_G_2 = _Rotate_5dba8a67556c48349a348a930402a05a_Out_3[1];
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_B_3 = 0;
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1;
-    Unity_OneMinus_float(_Split_cc8bfb9cc46145c185c3e10ab55d6c70_R_1, _OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_e1d9c1975ecb4328b010268b356dfc39_Out_0 = float2(_OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1, _Split_cc8bfb9cc46145c185c3e10ab55d6c70_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4;
-    Unity_PolarCoordinates_float(_Vector2_e1d9c1975ecb4328b010268b356dfc39_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_R_1 = _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4[0];
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_G_2 = _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4[1];
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_B_3 = 0;
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2;
-    Unity_Subtract_float(_Add_b93f9ab8c651486db3a3347c4ec23882_Out_2, _Split_580906f4c3ae4101bb68014c5a4178f3_G_2, _Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Floor_a7451e3527e043e791a56b948091e193_Out_1;
-    Unity_Floor_float(_Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2, _Floor_a7451e3527e043e791a56b948091e193_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2;
-    Unity_Multiply_float(_Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, _Floor_a7451e3527e043e791a56b948091e193_Out_1, _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
-    Unity_Multiply_float(_Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2, _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2, _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_R_1 = _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3[0];
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_G_2 = _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3[1];
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_B_3 = 0;
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_df5c05a43911445789ad9581c7033e01_Out_1;
-    Unity_OneMinus_float(_Split_90f741b6e2fc4227917d9d7984f4be4d_R_1, _OneMinus_df5c05a43911445789ad9581c7033e01_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_29404d9d688d40e38266e87911225842_Out_0 = float2(_OneMinus_df5c05a43911445789ad9581c7033e01_Out_1, _Split_90f741b6e2fc4227917d9d7984f4be4d_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_46c11fb595824a669fb3c91101bb6966_Out_0 = _fillHead;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2;
-    Unity_Multiply_float(_Property_46c11fb595824a669fb3c91101bb6966_Out_0, 360, _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3;
-    Unity_Rotate_Degrees_float(_Vector2_29404d9d688d40e38266e87911225842_Out_0, float2 (0.5, 0.5), _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2, _Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3);
+    float4 _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
+    Unity_Multiply_float(_SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1, _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2;
-    Unity_Multiply_float(_Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0, 0.5, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2);
+    float _Property_5c413e8f88bb4463a98c98139a9312a9_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2;
-    Unity_Multiply_float(_Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, -0.5, _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2);
+    float _Property_cd882648aaa447d898c35d6ca457b138_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_615a5aaa041f4245be4e0609576bcb95_Out_2;
-    Unity_Add_float(0.5, _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2, _Add_615a5aaa041f4245be4e0609576bcb95_Out_2);
+    float _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3;
+    Unity_Clamp_float(_Property_5c413e8f88bb4463a98c98139a9312a9_Out_0, _Property_cd882648aaa447d898c35d6ca457b138_Out_0, 1, _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_a5dc5a50dd444c22bcfa607a284d4138_Out_0 = float2(0, _Add_615a5aaa041f4245be4e0609576bcb95_Out_2);
+    Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6;
+    _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6.uv0 = IN.uv0;
+    float _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1;
+    SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(_Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0, _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3, _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6, _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3;
-    Unity_TilingAndOffset_float(_Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3, float2 (1, 1), _Vector2_a5dc5a50dd444c22bcfa607a284d4138_Out_0, _TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3);
+    float4 _Add_9afa425d6b4a4484b424ad62e647beac_Out_2;
+    Unity_Add_float4(_Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2, (_SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1.xxxx), _Add_9afa425d6b4a4484b424ad62e647beac_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4;
-    Unity_Ellipse_float(_TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4);
+    float _Property_b709b96791b94b8b9ff4dd5b2d8f9b5a_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_9afa425d6b4a4484b424ad62e647beac_Out_2;
-    Unity_Add_float(_Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2, _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4, _Add_9afa425d6b4a4484b424ad62e647beac_Out_2);
+    float _Property_d3c5646ff5704d228e6a26b2d3f98752_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3);
+    float _Property_21976e95748248d39a26b4d2639a344b_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_R_1 = _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3[0];
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_G_2 = _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3[1];
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_B_3 = 0;
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_A_4 = 0;
+    float _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3;
+    Unity_Clamp_float(_Property_d3c5646ff5704d228e6a26b2d3f98752_Out_0, 0, _Property_21976e95748248d39a26b4d2639a344b_Out_0, _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1;
-    Unity_OneMinus_float(_Split_eafaa39bd1cd4f58ae2887cabe9ddeae_R_1, _OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1);
+    Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b;
+    _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b.uv0 = IN.uv0;
+    float _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1;
+    SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(_Property_b709b96791b94b8b9ff4dd5b2d8f9b5a_Out_0, _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3, _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b, _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_1a8f886502744979bbfc94d61ad2aa8a_Out_0 = float2(_OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1, _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_6ab291f666944af7b11fedf8e0ffaca6_Out_0 = _fillTail;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2;
-    Unity_Multiply_float(_Property_6ab291f666944af7b11fedf8e0ffaca6_Out_0, 360, _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3;
-    Unity_Rotate_Degrees_float(_Vector2_1a8f886502744979bbfc94d61ad2aa8a_Out_0, float2 (0.5, 0.5), _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2, _Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_e7355a66a9e7409b8734b75787393865_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2;
-    Unity_Multiply_float(_Property_e7355a66a9e7409b8734b75787393865_Out_0, 0.5, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_ccff550cec024527b7ebdb1852692247_Out_2;
-    Unity_Multiply_float(_Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, -0.5, _Multiply_ccff550cec024527b7ebdb1852692247_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_16289e60be0e439ab3c1f97df0520a91_Out_2;
-    Unity_Add_float(0.5, _Multiply_ccff550cec024527b7ebdb1852692247_Out_2, _Add_16289e60be0e439ab3c1f97df0520a91_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_d121d160067943c2a454b5fe8bb3456e_Out_0 = float2(0, _Add_16289e60be0e439ab3c1f97df0520a91_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3;
-    Unity_TilingAndOffset_float(_Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3, float2 (1, 1), _Vector2_d121d160067943c2a454b5fe8bb3456e_Out_0, _TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Ellipse_9767eca10871423db0024289beafb443_Out_4;
-    Unity_Ellipse_float(_TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, _Ellipse_9767eca10871423db0024289beafb443_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
-    Unity_Add_float(_Add_9afa425d6b4a4484b424ad62e647beac_Out_2, _Ellipse_9767eca10871423db0024289beafb443_Out_4, _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2);
+    float4 _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
+    Unity_Add_float4(_Add_9afa425d6b4a4484b424ad62e647beac_Out_2, (_SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1.xxxx), _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     #if defined(ENUM_173FCA8E617C4725B6502C6FBE756CEC_SHARP)
-    float _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
+    float4 _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
     #else
-    float _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
+    float4 _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
     #endif
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Saturate_737696eb34c241d6b897441762787779_Out_1;
-    Unity_Saturate_float(_RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0, _Saturate_737696eb34c241d6b897441762787779_Out_1);
+    float4 _Saturate_737696eb34c241d6b897441762787779_Out_1;
+    Unity_Saturate_float4(_RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0, _Saturate_737696eb34c241d6b897441762787779_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     UnityTexture2D _Property_92b3b90fb1c84c859c075f236c70e399_Out_0 = UnityBuildTexture2DStructNoScale(_MainTex);
@@ -741,7 +712,7 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
-    Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
+    Unity_Multiply_float(_Saturate_737696eb34c241d6b897441762787779_Out_1, _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
@@ -816,20 +787,20 @@ Pass
     }
 
         // Render State
-            Cull Off
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-            ZTest[unity_GUIZTestMode]
-            ZWrite Off
+        Cull Off
+        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        ZTest[unity_GUIZTestMode]
+        ZWrite Off
 
-            Stencil
-            {
-              Ref[_Stencil]
-              Comp[_StencilComp]
-              Pass[_StencilOp]
-              ReadMask[_StencilReadMask]
-              WriteMask[_StencilWriteMask]
-            }
-            ColorMask[_ColorMask]
+        Stencil
+        {
+          Ref[_Stencil]
+          Comp[_StencilComp]
+          Pass[_StencilOp]
+          ReadMask[_StencilReadMask]
+          WriteMask[_StencilWriteMask]
+        }
+        ColorMask[_ColorMask]
 
         // Debug
         // <None>
@@ -1076,6 +1047,11 @@ SAMPLER(sampler_MainTex);
 
 // Graph Functions
 
+void Unity_Clamp_float(float In, float Min, float Max, out float Out)
+{
+    Out = clamp(In, Min, Max);
+}
+
 void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
 {
     float2 delta = UV - Center;
@@ -1099,7 +1075,12 @@ void Unity_Multiply_float(float A, float B, out float Out)
     Out = A * B;
 }
 
-void Unity_Add_float(float A, float B, out float Out)
+void Unity_Subtract_float4(float4 A, float4 B, out float4 Out)
+{
+    Out = A - B;
+}
+
+void Unity_Add_float4(float4 A, float4 B, out float4 Out)
 {
     Out = A + B;
 }
@@ -1117,6 +1098,11 @@ void Unity_Saturate_float(float In, out float Out)
 void Unity_OneMinus_float(float In, out float Out)
 {
     Out = 1 - In;
+}
+
+void Unity_Add_float(float A, float B, out float Out)
+{
+    Out = A + B;
 }
 
 void Unity_Rotate_Degrees_float(float2 UV, float2 Center, float Rotation, out float2 Out)
@@ -1140,9 +1126,59 @@ void Unity_Rotate_Degrees_float(float2 UV, float2 Center, float Rotation, out fl
     Out = UV;
 }
 
+void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+{
+    Out = Predicate ? True : False;
+}
+
 void Unity_Floor_float(float In, out float Out)
 {
     Out = floor(In);
+}
+
+struct Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30
+{
+    half4 uv0;
+};
+
+void SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(float Vector1_aaadcc587b384367b08909fb525fb26d, float Vector1_3e1c52735b2e4d27a6e7bf56ebb50e52, float Boolean_af78085877e144a8b493499b7e0f1c46, Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 IN, out float4 Out_1)
+{
+    float _Property_137f50ba36ae418a929202d699bc499e_Out_0 = Vector1_3e1c52735b2e4d27a6e7bf56ebb50e52;
+    float _Property_cf25c1bf1067470b95529f4d38f87846_Out_0 = Boolean_af78085877e144a8b493499b7e0f1c46;
+    float _Property_63367afbdb2d448eb8aff4a786030cf0_Out_0 = Vector1_aaadcc587b384367b08909fb525fb26d;
+    float _Add_24434867cef447769badb4bb3879b3b3_Out_2;
+    Unity_Add_float(_Property_63367afbdb2d448eb8aff4a786030cf0_Out_0, 0.5, _Add_24434867cef447769badb4bb3879b3b3_Out_2);
+    float2 _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3;
+    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3);
+    float _Split_8e18d6de9cfa49498f69e811db060b6f_R_1 = _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3[0];
+    float _Split_8e18d6de9cfa49498f69e811db060b6f_G_2 = _Rotate_6c4160bf69a94b7d8e745a7ef35dde6c_Out_3[1];
+    float _Split_8e18d6de9cfa49498f69e811db060b6f_B_3 = 0;
+    float _Split_8e18d6de9cfa49498f69e811db060b6f_A_4 = 0;
+    float _OneMinus_5fc0773156204c808a58e9c19e812934_Out_1;
+    Unity_OneMinus_float(_Split_8e18d6de9cfa49498f69e811db060b6f_R_1, _OneMinus_5fc0773156204c808a58e9c19e812934_Out_1);
+    float2 _Vector2_f6556f360a284dbab1d148851cdff07d_Out_0 = float2(_OneMinus_5fc0773156204c808a58e9c19e812934_Out_1, _Split_8e18d6de9cfa49498f69e811db060b6f_G_2);
+    float2 _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4;
+    Unity_PolarCoordinates_float(_Vector2_f6556f360a284dbab1d148851cdff07d_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4);
+    float _Split_bf54a59e944c4401bfb24aa58d76e76d_R_1 = _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4[0];
+    float _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2 = _PolarCoordinates_75b99fc82bd84e6a884dddd32e22933e_Out_4[1];
+    float _Split_bf54a59e944c4401bfb24aa58d76e76d_B_3 = 0;
+    float _Split_bf54a59e944c4401bfb24aa58d76e76d_A_4 = 0;
+    float _Add_097bd1547e3047758ec904d203391d0b_Out_2;
+    Unity_Add_float(_Add_24434867cef447769badb4bb3879b3b3_Out_2, _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2, _Add_097bd1547e3047758ec904d203391d0b_Out_2);
+    float _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2;
+    Unity_Subtract_float(_Add_24434867cef447769badb4bb3879b3b3_Out_2, _Split_bf54a59e944c4401bfb24aa58d76e76d_G_2, _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2);
+    float _Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3;
+    Unity_Branch_float(_Property_cf25c1bf1067470b95529f4d38f87846_Out_0, _Add_097bd1547e3047758ec904d203391d0b_Out_2, _Subtract_2be3d3659cc24a4693b18e30af9d213f_Out_2, _Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3);
+    float _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1;
+    Unity_Floor_float(_Branch_9aba1e17f8de4a378062933b4cdf5437_Out_3, _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1);
+    float _Multiply_7ef19861976b442aaae43e822cb07c40_Out_2;
+    Unity_Multiply_float(_Property_137f50ba36ae418a929202d699bc499e_Out_0, _Floor_df80cb102d1a41f8b565c41a47b2449f_Out_1, _Multiply_7ef19861976b442aaae43e822cb07c40_Out_2);
+    Out_1 = (_Multiply_7ef19861976b442aaae43e822cb07c40_Out_2.xxxx);
+}
+
+void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+{
+    Out = A * B;
 }
 
 void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
@@ -1156,9 +1192,45 @@ void Unity_Ellipse_float(float2 UV, float Width, float Height, out float Out)
     Out = saturate((1 - d) / fwidth(d));
 }
 
-void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+struct Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6
 {
-    Out = A * B;
+    half4 uv0;
+};
+
+void SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(float Vector1_d021bfa5510841c68b0da5eb35c7ef57, float Vector1_001a62ee7d39438b8ddee32fa34d4381, Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 IN, out float Out_1)
+{
+    float2 _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3;
+    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3);
+    float _Split_c99ae83b143c4a7e91459920f997ddd5_R_1 = _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3[0];
+    float _Split_c99ae83b143c4a7e91459920f997ddd5_G_2 = _Rotate_399a3128b83c4274ab44c43c14ab0b42_Out_3[1];
+    float _Split_c99ae83b143c4a7e91459920f997ddd5_B_3 = 0;
+    float _Split_c99ae83b143c4a7e91459920f997ddd5_A_4 = 0;
+    float _OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1;
+    Unity_OneMinus_float(_Split_c99ae83b143c4a7e91459920f997ddd5_R_1, _OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1);
+    float2 _Vector2_b7857123941e4b308bcc03df889a8cc0_Out_0 = float2(_OneMinus_71f3a86901e74ade9cab784b480a2d19_Out_1, _Split_c99ae83b143c4a7e91459920f997ddd5_G_2);
+    float _Property_a817896828c949108c7a90e03f6d1087_Out_0 = Vector1_001a62ee7d39438b8ddee32fa34d4381;
+    float _Multiply_e6786901258743b1ad600175b42585d7_Out_2;
+    Unity_Multiply_float(_Property_a817896828c949108c7a90e03f6d1087_Out_0, 360, _Multiply_e6786901258743b1ad600175b42585d7_Out_2);
+    float2 _Rotate_7861e59713c84421bf662882f24d3ee7_Out_3;
+    Unity_Rotate_Degrees_float(_Vector2_b7857123941e4b308bcc03df889a8cc0_Out_0, float2 (0.5, 0.5), _Multiply_e6786901258743b1ad600175b42585d7_Out_2, _Rotate_7861e59713c84421bf662882f24d3ee7_Out_3);
+    float _Property_f58f50f1f6444b6ab7cba6ced2ca75d1_Out_0 = Vector1_d021bfa5510841c68b0da5eb35c7ef57;
+    float _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2;
+    Unity_Multiply_float(_Property_f58f50f1f6444b6ab7cba6ced2ca75d1_Out_0, 0.5, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2);
+    float _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2;
+    Unity_Multiply_float(_Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, -0.5, _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2);
+    float _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2;
+    Unity_Add_float(0.5, _Multiply_35757b763d77403b82a191b6a91b17e9_Out_2, _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2);
+    float2 _Vector2_67c3058fbedd474980b5c708bba63abf_Out_0 = float2(0, _Add_6cb4a86d30b1423e9b6b75ce71a3dcbf_Out_2);
+    float2 _TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3;
+    Unity_TilingAndOffset_float(_Rotate_7861e59713c84421bf662882f24d3ee7_Out_3, float2 (1, 1), _Vector2_67c3058fbedd474980b5c708bba63abf_Out_0, _TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3);
+    float _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4;
+    Unity_Ellipse_float(_TilingAndOffset_1df6dd5b61a34af79c740672d363c60f_Out_3, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, _Multiply_77728f00d9a74e8b9d190cc8317e7599_Out_2, _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4);
+    Out_1 = _Ellipse_cd0353e235654f4c8d74a95959501f93_Out_4;
+}
+
+void Unity_Saturate_float4(float4 In, out float4 Out)
+{
+    Out = saturate(In);
 }
 
 // Graph Vertex
@@ -1196,6 +1268,16 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_G_2 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[1];
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_B_3 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[2];
     float _Split_59fe34c75d414e64ad726de1e5f63fe1_A_4 = _Property_59090694f6954a52b5e6153e0ee8c1be_Out_0[3];
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Property_7ff1c03310924ee3836050c91f7b71e3_Out_0 = _fillHead;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Property_2b45fd59e1d745beaf0ef81a8b18a41c_Out_0 = _fillTail;
+    #endif
+    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
+    float _Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3;
+    Unity_Clamp_float(_Property_7ff1c03310924ee3836050c91f7b71e3_Out_0, _Property_2b45fd59e1d745beaf0ef81a8b18a41c_Out_0, 1, _Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float2 _PolarCoordinates_841781112cf84bd389805bd6983afcd8_Out_4;
@@ -1236,15 +1318,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_DDXY_6da06c77dad94e40803df8ba82245303_Out_1, 0.5, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2;
-    Unity_Subtract_float(_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2);
+    float4 _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2;
+    Unity_Subtract_float4((_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_1434307ef67b463a952ae990b52d0f19_Out_2;
-    Unity_Add_float(_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
+    float4 _Add_1434307ef67b463a952ae990b52d0f19_Out_2;
+    Unity_Add_float4((_Subtract_0f65a36c972844a3900a158bb05718ec_Out_2.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_441455d41e894365b4544ab412ff17da_Out_0 = float2(_Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2, _Add_1434307ef67b463a952ae990b52d0f19_Out_2);
+    float2 _Vector2_441455d41e894365b4544ab412ff17da_Out_0 = float2((_Subtract_c1726a9cdc5d419abfdfbb6aa5c23ad6_Out_2).x, (_Add_1434307ef67b463a952ae990b52d0f19_Out_2).x);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Remap_44ff9bb3e0c44baaab52e11fb31882ad_Out_3;
@@ -1255,15 +1337,15 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Saturate_float(_Remap_44ff9bb3e0c44baaab52e11fb31882ad_Out_3, _Saturate_2ce89ed81cfa4d09bbffbd0af1bc9409_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2;
-    Unity_Subtract_float(_Float_cead0e992bc449df8d9dce54181339c6_Out_0, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2);
+    float4 _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2;
+    Unity_Subtract_float4((_Float_cead0e992bc449df8d9dce54181339c6_Out_0.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_61ac46313d39426f9d62990bead131b2_Out_2;
-    Unity_Add_float(_Float_cead0e992bc449df8d9dce54181339c6_Out_0, _Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2, _Add_61ac46313d39426f9d62990bead131b2_Out_2);
+    float4 _Add_61ac46313d39426f9d62990bead131b2_Out_2;
+    Unity_Add_float4((_Float_cead0e992bc449df8d9dce54181339c6_Out_0.xxxx), (_Multiply_0a7dd19bd7084c4fbd18c009c9794a18_Out_2.xxxx), _Add_61ac46313d39426f9d62990bead131b2_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_6fd7dbbacf17437ba05862d85169dead_Out_0 = float2(_Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2, _Add_61ac46313d39426f9d62990bead131b2_Out_2);
+    float2 _Vector2_6fd7dbbacf17437ba05862d85169dead_Out_0 = float2((_Subtract_0e1461514aca4bbe90575f0e0c8ae176_Out_2).x, (_Add_61ac46313d39426f9d62990bead131b2_Out_2).x);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Remap_03df3856ba5c44f79b7a13415f56162f_Out_3;
@@ -1282,231 +1364,91 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     Unity_Multiply_float(_Saturate_2ce89ed81cfa4d09bbffbd0af1bc9409_Out_1, _OneMinus_602397fa45324aa89e7b3f2a2f985338_Out_1, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_af98836cbbef446e9aee7df733d10232_Out_0 = _fillHead;
+    Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262;
+    _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262.uv0 = IN.uv0;
+    float4 _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1;
+    SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(_Clamp_1d1e5e4c10634750b75bbbd0035a27f5_Out_3, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, 1, _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262, _SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_732244acab914817bb9e15c35801d8c7_Out_2;
-    Unity_Add_float(_Property_af98836cbbef446e9aee7df733d10232_Out_0, 0.5, _Add_732244acab914817bb9e15c35801d8c7_Out_2);
+    float _Property_a5d5680cb3a94bbf86bdedb7384a8d8a_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3);
+    float _Property_672711a1ef644f24803c57c3177839b3_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_R_1 = _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3[0];
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_G_2 = _Rotate_ec60eb5c409548edaa48abe5d2c12f9c_Out_3[1];
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_B_3 = 0;
-    float _Split_9fb9c34aa4bf422c9fe5178185c78e26_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1;
-    Unity_OneMinus_float(_Split_9fb9c34aa4bf422c9fe5178185c78e26_R_1, _OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_85e2b79a04974d85af6db719a61b2bb1_Out_0 = float2(_OneMinus_73079bdf7d90403d943b12ead44370ee_Out_1, _Split_9fb9c34aa4bf422c9fe5178185c78e26_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4;
-    Unity_PolarCoordinates_float(_Vector2_85e2b79a04974d85af6db719a61b2bb1_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_R_1 = _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4[0];
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_G_2 = _PolarCoordinates_95aa4af723134db092c515d2d7ff7e15_Out_4[1];
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_B_3 = 0;
-    float _Split_8bafe52b7e234e6fb13814ef126f5947_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_39339fee8018448fbc97766c1bb5bb4a_Out_2;
-    Unity_Add_float(_Add_732244acab914817bb9e15c35801d8c7_Out_2, _Split_8bafe52b7e234e6fb13814ef126f5947_G_2, _Add_39339fee8018448fbc97766c1bb5bb4a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1;
-    Unity_Floor_float(_Add_39339fee8018448fbc97766c1bb5bb4a_Out_2, _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2;
-    Unity_Multiply_float(_Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, _Floor_2860b0bb5c4c48f6b4998504bc794bfa_Out_1, _Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_e2afa82cdb8042e1bf6338de12a6c804_Out_0 = _fillTail;
+    float _Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3;
+    Unity_Clamp_float(_Property_a5d5680cb3a94bbf86bdedb7384a8d8a_Out_0, 0, _Property_672711a1ef644f24803c57c3177839b3_Out_0, _Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1;
-    Unity_OneMinus_float(_Property_e2afa82cdb8042e1bf6338de12a6c804_Out_0, _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1);
+    Unity_OneMinus_float(_Clamp_1b1e0ae952a3401cbd0d0c6d77cb181d_Out_3, _OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_b93f9ab8c651486db3a3347c4ec23882_Out_2;
-    Unity_Add_float(_OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1, 0.5, _Add_b93f9ab8c651486db3a3347c4ec23882_Out_2);
+    Bindings_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30 _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11;
+    _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11.uv0 = IN.uv0;
+    float4 _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1;
+    SG_SGChargeBarFillMasking_862d3a251357eeb4990975ddf0630a30(_OneMinus_405b992ad2e244728ee493a4d84ebbdf_Out_1, _Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, 0, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_5dba8a67556c48349a348a930402a05a_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_5dba8a67556c48349a348a930402a05a_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_R_1 = _Rotate_5dba8a67556c48349a348a930402a05a_Out_3[0];
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_G_2 = _Rotate_5dba8a67556c48349a348a930402a05a_Out_3[1];
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_B_3 = 0;
-    float _Split_cc8bfb9cc46145c185c3e10ab55d6c70_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1;
-    Unity_OneMinus_float(_Split_cc8bfb9cc46145c185c3e10ab55d6c70_R_1, _OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_e1d9c1975ecb4328b010268b356dfc39_Out_0 = float2(_OneMinus_bb1873687fa048fea73c7e8408ca892d_Out_1, _Split_cc8bfb9cc46145c185c3e10ab55d6c70_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4;
-    Unity_PolarCoordinates_float(_Vector2_e1d9c1975ecb4328b010268b356dfc39_Out_0, float2 (0.5, 0.5), 1, 1, _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_R_1 = _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4[0];
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_G_2 = _PolarCoordinates_72db84af8f5c4fb8bd980f4e4de7ab98_Out_4[1];
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_B_3 = 0;
-    float _Split_580906f4c3ae4101bb68014c5a4178f3_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2;
-    Unity_Subtract_float(_Add_b93f9ab8c651486db3a3347c4ec23882_Out_2, _Split_580906f4c3ae4101bb68014c5a4178f3_G_2, _Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Floor_a7451e3527e043e791a56b948091e193_Out_1;
-    Unity_Floor_float(_Subtract_df1cdd19beb14e0f8f21f37aae93850b_Out_2, _Floor_a7451e3527e043e791a56b948091e193_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2;
-    Unity_Multiply_float(_Multiply_d212f0d8ac86494395fc8d1f4106913d_Out_2, _Floor_a7451e3527e043e791a56b948091e193_Out_1, _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
-    Unity_Multiply_float(_Multiply_db1d5b479d25461981cd82d02522f3c5_Out_2, _Multiply_a97d8f72b11f4440bfabc5b83c64eeda_Out_2, _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_R_1 = _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3[0];
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_G_2 = _Rotate_14e672a08ae1466cbd15c2398b14ccb0_Out_3[1];
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_B_3 = 0;
-    float _Split_90f741b6e2fc4227917d9d7984f4be4d_A_4 = 0;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_df5c05a43911445789ad9581c7033e01_Out_1;
-    Unity_OneMinus_float(_Split_90f741b6e2fc4227917d9d7984f4be4d_R_1, _OneMinus_df5c05a43911445789ad9581c7033e01_Out_1);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_29404d9d688d40e38266e87911225842_Out_0 = float2(_OneMinus_df5c05a43911445789ad9581c7033e01_Out_1, _Split_90f741b6e2fc4227917d9d7984f4be4d_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_46c11fb595824a669fb3c91101bb6966_Out_0 = _fillHead;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2;
-    Unity_Multiply_float(_Property_46c11fb595824a669fb3c91101bb6966_Out_0, 360, _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3;
-    Unity_Rotate_Degrees_float(_Vector2_29404d9d688d40e38266e87911225842_Out_0, float2 (0.5, 0.5), _Multiply_d74222cfaa1f4ed2a9949ac7d8c48e0a_Out_2, _Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3);
+    float4 _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
+    Unity_Multiply_float(_SGChargeBarFillMasking_b4fa74a9347244ab8961fb96f1975262_Out_1, _SGChargeBarFillMasking_1aa102a0524747de9ca143c68f7c0f11_Out_1, _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float _Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2;
-    Unity_Multiply_float(_Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0, 0.5, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2);
+    float _Property_5c413e8f88bb4463a98c98139a9312a9_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2;
-    Unity_Multiply_float(_Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, -0.5, _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2);
+    float _Property_cd882648aaa447d898c35d6ca457b138_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_615a5aaa041f4245be4e0609576bcb95_Out_2;
-    Unity_Add_float(0.5, _Multiply_f03d766f84764f1e895efade34bb1e77_Out_2, _Add_615a5aaa041f4245be4e0609576bcb95_Out_2);
+    float _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3;
+    Unity_Clamp_float(_Property_5c413e8f88bb4463a98c98139a9312a9_Out_0, _Property_cd882648aaa447d898c35d6ca457b138_Out_0, 1, _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_a5dc5a50dd444c22bcfa607a284d4138_Out_0 = float2(0, _Add_615a5aaa041f4245be4e0609576bcb95_Out_2);
+    Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6;
+    _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6.uv0 = IN.uv0;
+    float _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1;
+    SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(_Property_5468e17a0c1f4b3e8c6ba37d7812cc28_Out_0, _Clamp_8e127e83ba944d0e82ed5247cfde69fc_Out_3, _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6, _SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3;
-    Unity_TilingAndOffset_float(_Rotate_308147ec599e413b9040bf4af1b98ebd_Out_3, float2 (1, 1), _Vector2_a5dc5a50dd444c22bcfa607a284d4138_Out_0, _TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3);
+    float4 _Add_9afa425d6b4a4484b424ad62e647beac_Out_2;
+    Unity_Add_float4(_Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2, (_SGChargeBarRoundCorner_2e3a661ab0f541bda9fdb34c9064a3c6_Out_1.xxxx), _Add_9afa425d6b4a4484b424ad62e647beac_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4;
-    Unity_Ellipse_float(_TilingAndOffset_babaa12e12d2477c88d0a972fd00ad02_Out_3, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, _Multiply_07daa50536f64b15908ffc839fdc18af_Out_2, _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4);
+    float _Property_b709b96791b94b8b9ff4dd5b2d8f9b5a_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_9afa425d6b4a4484b424ad62e647beac_Out_2;
-    Unity_Add_float(_Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2, _Ellipse_45ddcd19743f42eabe5bc47fbba9479d_Out_4, _Add_9afa425d6b4a4484b424ad62e647beac_Out_2);
+    float _Property_d3c5646ff5704d228e6a26b2d3f98752_Out_0 = _fillTail;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3;
-    Unity_Rotate_Degrees_float(IN.uv0.xy, float2 (0.5, 0.5), 180, _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3);
+    float _Property_21976e95748248d39a26b4d2639a344b_Out_0 = _fillHead;
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_R_1 = _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3[0];
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_G_2 = _Rotate_85abf48e7a7642a298ae62bd5b69312c_Out_3[1];
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_B_3 = 0;
-    float _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_A_4 = 0;
+    float _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3;
+    Unity_Clamp_float(_Property_d3c5646ff5704d228e6a26b2d3f98752_Out_0, 0, _Property_21976e95748248d39a26b4d2639a344b_Out_0, _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1;
-    Unity_OneMinus_float(_Split_eafaa39bd1cd4f58ae2887cabe9ddeae_R_1, _OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1);
+    Bindings_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6 _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b;
+    _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b.uv0 = IN.uv0;
+    float _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1;
+    SG_SGChargeBarRoundCorner_14512e9ccf11f3e48acef40a0dc3e8d6(_Property_b709b96791b94b8b9ff4dd5b2d8f9b5a_Out_0, _Clamp_0751c1483d864290943e5ff2f83c0582_Out_3, _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b, _SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_1a8f886502744979bbfc94d61ad2aa8a_Out_0 = float2(_OneMinus_97cbd884ea4e439c9795d45e17a706da_Out_1, _Split_eafaa39bd1cd4f58ae2887cabe9ddeae_G_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_6ab291f666944af7b11fedf8e0ffaca6_Out_0 = _fillTail;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2;
-    Unity_Multiply_float(_Property_6ab291f666944af7b11fedf8e0ffaca6_Out_0, 360, _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3;
-    Unity_Rotate_Degrees_float(_Vector2_1a8f886502744979bbfc94d61ad2aa8a_Out_0, float2 (0.5, 0.5), _Multiply_c336baf27c544bf28c5a96d24ff3f91d_Out_2, _Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Property_e7355a66a9e7409b8734b75787393865_Out_0 = Vector1_3862b5470ce94ed68d6ccd8d5aa57614;
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2;
-    Unity_Multiply_float(_Property_e7355a66a9e7409b8734b75787393865_Out_0, 0.5, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Multiply_ccff550cec024527b7ebdb1852692247_Out_2;
-    Unity_Multiply_float(_Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, -0.5, _Multiply_ccff550cec024527b7ebdb1852692247_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_16289e60be0e439ab3c1f97df0520a91_Out_2;
-    Unity_Add_float(0.5, _Multiply_ccff550cec024527b7ebdb1852692247_Out_2, _Add_16289e60be0e439ab3c1f97df0520a91_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _Vector2_d121d160067943c2a454b5fe8bb3456e_Out_0 = float2(0, _Add_16289e60be0e439ab3c1f97df0520a91_Out_2);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float2 _TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3;
-    Unity_TilingAndOffset_float(_Rotate_3568025fdfca4f488b7f1a7e9155908b_Out_3, float2 (1, 1), _Vector2_d121d160067943c2a454b5fe8bb3456e_Out_0, _TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Ellipse_9767eca10871423db0024289beafb443_Out_4;
-    Unity_Ellipse_float(_TilingAndOffset_a032dfbb58b244c59024ec234ae15b70_Out_3, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, _Multiply_62e029343a3745e48a1e522d8dd57952_Out_2, _Ellipse_9767eca10871423db0024289beafb443_Out_4);
-    #endif
-    #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
-    Unity_Add_float(_Add_9afa425d6b4a4484b424ad62e647beac_Out_2, _Ellipse_9767eca10871423db0024289beafb443_Out_4, _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2);
+    float4 _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
+    Unity_Add_float4(_Add_9afa425d6b4a4484b424ad62e647beac_Out_2, (_SGChargeBarRoundCorner_4497b1b03f1f45fb9ca8546d67396b5b_Out_1.xxxx), _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     #if defined(ENUM_173FCA8E617C4725B6502C6FBE756CEC_SHARP)
-    float _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
+    float4 _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Multiply_94cd381760174ca1ab8a7915c124b62a_Out_2;
     #else
-    float _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
+    float4 _RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0 = _Add_e60ffcefc7d640adbc2b0cd63cb6bb87_Out_2;
     #endif
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
-    float _Saturate_737696eb34c241d6b897441762787779_Out_1;
-    Unity_Saturate_float(_RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0, _Saturate_737696eb34c241d6b897441762787779_Out_1);
+    float4 _Saturate_737696eb34c241d6b897441762787779_Out_1;
+    Unity_Saturate_float4(_RoundedCorners_b54e413ee8494e9d9f5ff3608460dcf7_Out_0, _Saturate_737696eb34c241d6b897441762787779_Out_1);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     UnityTexture2D _Property_92b3b90fb1c84c859c075f236c70e399_Out_0 = UnityBuildTexture2DStructNoScale(_MainTex);
@@ -1520,7 +1462,7 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float4 _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2;
-    Unity_Multiply_float((_Saturate_737696eb34c241d6b897441762787779_Out_1.xxxx), _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
+    Unity_Multiply_float(_Saturate_737696eb34c241d6b897441762787779_Out_1, _SampleTexture2D_db4059a956484545adfbe855ead6e884_RGBA_0, _Multiply_83aae9860a96466b9d32a13ab9801b27_Out_2);
     #endif
     #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1)
     float4 _Multiply_095c15108eac4b039bd50b69d7042144_Out_2;
