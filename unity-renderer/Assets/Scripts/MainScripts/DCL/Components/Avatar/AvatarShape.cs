@@ -78,7 +78,7 @@ namespace DCL
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             base.Initialize(scene, entity);
-            DataStore.i.sceneBoundariesChecker.Add(entity,this);
+            DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
         private Avatar GetStandardAvatar()
@@ -131,12 +131,13 @@ namespace DCL
 
         public void OnDestroy()
         {
+            if(entity != null)
+                DataStore.i.sceneBoundariesChecker?.Remove(entity,this);
+            
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
-            
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
