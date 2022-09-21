@@ -439,6 +439,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void PlayEmote(string emoteId, long timestamps)
     {
+        Debug.Log("AAAAA " + emoteId);
         SetExpressionValues(emoteId, timestamps);
     }
 

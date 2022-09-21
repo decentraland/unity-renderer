@@ -111,7 +111,15 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
     void ResetLastClickedWearable() { lastSelectedWearable = null; }
 
-    void OnAvatarAppear(AvatarModel model)
+    private void OnAvatarAppear(bool shouldSkipFeedback, AvatarModel avatarModelToUpdate)
+    {
+        if (!shouldSkipFeedback)
+        {
+            PlayAudio(avatarModelToUpdate);
+        }
+    }
+
+    void PlayAudio(AvatarModel model)
     {
         if (!view.isOpen)
             return;

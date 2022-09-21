@@ -358,9 +358,11 @@ MonoBehaviour:
     expressionTriggerId: 
     expressionTriggerTimestamp: 0
     deltaTime: 0
+    shouldLoop: 0
   target: {fileID: 6705057966129581724}
   runMinSpeed: 6
   walkMinSpeed: 0.1
+  poseClip: {fileID: 7400000, guid: a4023ffbd3afa9e438ade7a2d2645d35, type: 2}
 --- !u!1 &8127486274469708600
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static WearableCollectionsAPIData;
+using Random = System.Random;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -82,9 +83,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     internal ColorPickerComponentView eyeBrowsColorPickerComponent;
 
     [SerializeField]
-    internal GameObject characterPreviewPrefab;
-
-    [SerializeField]
     internal PreviewCameraRotation characterPreviewRotation;
 
     [SerializeField]
@@ -137,22 +135,15 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
     private bool isAvatarDirty;
     private AvatarModel avatarModelToUpdate;
-    private bool updateAvatarShouldSkipAudio;
-
-    public event Action<AvatarModel> OnAvatarAppear;
+    private bool updateAvatarShouldSkipFeedback;
+    public event Action<bool,AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
-
+    
     private void Awake()
     {
         loadingSpinnerGameObject.SetActive(false);
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
-        if (characterPreviewController == null)
-        {
-            characterPreviewController = Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
-            characterPreviewController.name = "_CharacterPreviewController";
-        }
-
         isOpen = false;
         arePanelsInitialized = false;
     }
@@ -171,6 +162,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         foreach (var button in goToMarketplaceButtons)
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
+        characterPreviewController = controller.characterPreviewController;
         characterPreviewController.camera.enabled = false;
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
@@ -356,7 +348,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectiblesItemSelector.UnselectAll();
     }
 
-    public void UpdateAvatarPreview(AvatarModel avatarModel, bool skipAudio)
+    public void UpdateAvatarPreview(AvatarModel avatarModel, bool skipFeedback)
     {
         if (avatarModel?.wearables == null)
             return;
@@ -367,7 +359,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         // Also it updates just once if its called many times in a row
         isAvatarDirty = true;
         avatarModelToUpdate = avatarModel;
-        updateAvatarShouldSkipAudio = skipAudio;
+        updateAvatarShouldSkipFeedback = skipFeedback;
 
         doneButton.interactable = false;
         loadingSpinnerGameObject.SetActive(true);
@@ -681,7 +673,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
-    public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
+    public void ResetPreviewEmote() { 
+        PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
+    }
 
     public void ToggleThirdPartyCollection(string collectionId, bool isOn)
     {
@@ -717,9 +711,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                         doneButton.interactable = true;
 
                     loadingSpinnerGameObject?.SetActive(false);
-
-                    if (!updateAvatarShouldSkipAudio)
-                        OnAvatarAppear?.Invoke(avatarModelToUpdate);
+                    
+                    OnAvatarAppear?.Invoke(updateAvatarShouldSkipFeedback,avatarModelToUpdate);
 
                     ClearWearablesLoadingSpinner();
                     randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
@@ -728,4 +721,5 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             isAvatarDirty = false;
         }
     }
+
 }
