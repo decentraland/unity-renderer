@@ -20,6 +20,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal TMP_Text notificationTimestamp;
     [SerializeField] internal ImageComponentView image;
     [SerializeField] internal GameObject imageBackground;
+    [SerializeField] internal GameObject multiNotificationBackground;
     [SerializeField] internal GameObject firstSeparator;
     [SerializeField] internal GameObject secondSeparator;
     [SerializeField] internal bool isPrivate;
@@ -32,12 +33,15 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] internal ChatNotificationMessageComponentModel model;
     [SerializeField] private Color privateColor;
     [SerializeField] private Color publicColor;
+    [SerializeField] private Color standardColor;
     [SerializeField] private Color[] channelColors;
 
     public event Action<string> OnClickedNotification;
+    public bool shouldAnimateFocus = true;
     public string notificationTargetId;
     private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
     private float startingXPosition;
+    private Image backgroundImage;
 
     public void Configure(ChatNotificationMessageComponentModel newModel)
     {
@@ -50,6 +54,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         base.Awake();
         button?.onClick.AddListener(()=>OnClickedNotification?.Invoke(notificationTargetId));
         startingXPosition = messageContainerTransform.anchoredPosition.x;
+        backgroundImage = imageBackground.GetComponent<Image>();
         RefreshControl();
     }
 
@@ -63,13 +68,15 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public override void OnFocus()
     {
         base.OnFocus();
-        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition + 5, messageContainerTransform.anchoredPosition.y);
+        if(shouldAnimateFocus)
+            messageContainerTransform.anchoredPosition = new Vector2(startingXPosition + 5, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
-        messageContainerTransform.anchoredPosition = new Vector2(startingXPosition, messageContainerTransform.anchoredPosition.y);
+        if(shouldAnimateFocus)
+            messageContainerTransform.anchoredPosition = new Vector2(startingXPosition, messageContainerTransform.anchoredPosition.y);
     }
 
     public override void Hide(bool instant = false)
@@ -143,10 +150,18 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     {   
         model.messageSender = sender;
         if (sender.Length <= maxSenderCharacters)
-            notificationSender.text = $"{sender}:";
+            notificationSender.text = $"{sender}";
         else
             notificationSender.text = $"{sender.Substring(0, maxSenderCharacters)}:";
 
+        ForceUIRefresh();
+    }
+
+    public void SetIsMultipleNotifications()
+    {
+        imageBackground.SetActive(false);
+        multiNotificationBackground.SetActive(true);
+        notificationHeader.color = standardColor;
         ForceUIRefresh();
     }
 
@@ -157,6 +172,9 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         imageBackground.SetActive(isPrivate);
         firstSeparator.SetActive(isPrivate);
         secondSeparator.SetActive(isPrivate);
+        if(multiNotificationBackground != null)
+            multiNotificationBackground.SetActive(false);
+            
         if (isPrivate)
             notificationHeader.color = privateColor;
         else
@@ -169,8 +187,10 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         if (!isPrivate)
             return;
 
+        image.SetImage((Sprite)null);
         model.imageUri = uri;
         image.SetImage(uri);
+        ForceUIRefresh();
     }
 
     public void SetPositionOffset(float xPosHeader, float xPosContent)

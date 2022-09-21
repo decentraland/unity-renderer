@@ -3,7 +3,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using DCL.Helpers;
 using UnityEngine;
+using System;
 
 public class ChatNotificationController : IHUD
 {
@@ -19,6 +21,7 @@ public class ChatNotificationController : IHUD
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
     private UserProfile ownUserProfile;
+    private TimeSpan maxNotificationInterval = new TimeSpan(0, 1, 0);
 
     public ChatNotificationController(DataStore dataStore, IMainChatNotificationsComponentView mainChatNotificationView,
         ITopNotificationsComponentView topNotificationView, IChatController chatController,
@@ -30,6 +33,7 @@ public class ChatNotificationController : IHUD
         this.mainChatNotificationView = mainChatNotificationView;
         this.topNotificationView = topNotificationView;
         mainChatNotificationView.OnResetFade += ResetFadeOut;
+        topNotificationView.OnResetFade += ResetFadeOut;
         mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
         chatController.OnAddMessage += HandleMessageAdded;
         notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
@@ -58,15 +62,22 @@ public class ChatNotificationController : IHUD
         var peerProfile = userProfileBridge.Get(peerId);
         var peerName = peerProfile?.userName ?? peerId;
         var peerProfilePicture = peerProfile?.face256SnapshotURL;
-            
-        mainChatNotificationView.AddNewChatNotification(message, peerName, peerProfilePicture);
-        if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-            topNotificationView.AddNewChatNotification(message, peerName, peerProfilePicture);
+
+        TimeSpan span = Utils.UnixToDateTimeWithTime((ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) - Utils.UnixToDateTimeWithTime(message.timestamp);
+
+        if(span < maxNotificationInterval){
+            mainChatNotificationView.AddNewChatNotification(message, peerName, peerProfilePicture);
+            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewChatNotification(message, peerName, peerProfilePicture);
+        }
     }
 
     public void ResetFadeOut(bool fadeOutAfterDelay = false)
     {
         mainChatNotificationView.ShowNotifications();
+        if(topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            topNotificationView.ShowNotification();
+
         fadeOutCT.Cancel();
         fadeOutCT = new CancellationTokenSource();
 
@@ -90,6 +101,9 @@ public class ChatNotificationController : IHUD
             return;
 
         mainChatNotificationView.HideNotifications();
+
+        if(topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            topNotificationView.HideNotification();
     }
     
     private string ExtractPeerId(ChatMessage message) =>
@@ -107,7 +121,8 @@ public class ChatNotificationController : IHUD
         else
         {
             mainChatNotificationView.Hide();
-            topNotificationView.Show();
+            if(!visibleTaskbarPanels.Get().Contains("WorldChatPanel"))
+                topNotificationView.Show();
         }
     }
 
@@ -116,5 +131,6 @@ public class ChatNotificationController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
         mainChatNotificationView.OnResetFade -= ResetFadeOut;
+        topNotificationView.OnResetFade -= ResetFadeOut;
     }
 }
