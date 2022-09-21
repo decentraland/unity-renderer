@@ -322,6 +322,27 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuView.Received().GoToSection(Arg.Any<ExploreSection>());
     }
 
+    [TestCase(ExploreSection.Backpack)]
+    [TestCase(ExploreSection.Builder)]
+    [TestCase(ExploreSection.Explore)]
+    [TestCase(ExploreSection.Map)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Settings)]
+    public void GoToSectionCorrectly(ExploreSection section)
+    {
+        // Arrange
+        if (section == ExploreSection.Backpack)
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
+        else
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
+
+        // Act
+        exploreV2MenuController.SetMenuTargetVisibility(section, true);
+
+        // Assert
+        Assert.AreEqual((int)section, DataStore.i.exploreV2.currentSectionIndex.Get());
+    }
+
     [Test]
     public void UpdateRealmInfoCorrectly()
     {

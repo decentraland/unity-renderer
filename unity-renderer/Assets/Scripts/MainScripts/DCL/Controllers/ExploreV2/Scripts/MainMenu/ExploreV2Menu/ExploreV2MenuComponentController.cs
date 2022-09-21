@@ -181,8 +181,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             InitializePlacesAndEventsSection();
     }
 
-    private void OnSectionVisiblityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false) =>
+    private void OnSectionVisiblityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
+    {
+        ExploreSection section = SectionsByVisiblityVar[visibilityVar];
+        BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : SectionsVariables[section].initVar;
+
+        if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
+            return;
+
         SetMenuTargetVisibility(SectionsByVisiblityVar[visibilityVar], visible);
+    }
 
     internal void InitializePlacesAndEventsSection()
     {
@@ -256,11 +264,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void SetMenuTargetVisibility(ExploreSection section, bool toVisible, bool _ = false)
     {
-        var initVar = section == ExploreSection.Explore ? isInitialized : SectionsVariables[section].initVar;
-
-        if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
         if (toVisible)
         {
             if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
