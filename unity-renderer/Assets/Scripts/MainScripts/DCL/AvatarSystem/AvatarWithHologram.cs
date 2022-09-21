@@ -27,8 +27,8 @@ namespace AvatarSystem
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
-        
-        static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        private (string emoteId, long timeStamp) pendingEmote;
 
         public AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
@@ -91,7 +91,7 @@ namespace AvatarSystem
 
                 status = IAvatar.Status.Loaded;
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
-                PlaySpawnEmote();
+                PlayPendingEmotes();
             }
             catch (OperationCanceledException)
             {
@@ -125,15 +125,25 @@ namespace AvatarSystem
             visibility.RemoveGlobalConstrain(key);
         }
 
-        private void PlaySpawnEmote()
+        private void PlayPendingEmotes()
         {
-            var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
-            PlayEmote("Outfit_Spawn", timestamp);
+            if (!string.IsNullOrEmpty(pendingEmote.emoteId))
+            {
+                PlayEmote(pendingEmote.emoteId, pendingEmote.timeStamp);
+            }
+            pendingEmote = ("", 0);
         }
 
         public void PlayEmote(string emoteId, long timestamps)
         {
-            animator?.PlayEmote(emoteId, timestamps);
+            if (status.Equals(IAvatar.Status.Idle))
+            {
+                pendingEmote = (emoteId, timestamps);
+            }
+            else
+            {
+                animator?.PlayEmote(emoteId, timestamps);
+            }
         }
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
