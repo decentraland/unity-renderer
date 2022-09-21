@@ -94,7 +94,7 @@ namespace DCL
             Visibility visibility = new Visibility();
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer.gameObject, avatarLOD);
             return new AvatarWithHologram(
                     baseAvatar,
                     new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),

@@ -1,18 +1,12 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using GPUSkinning;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Avatar = AvatarSystem.Avatar;
-using Object = UnityEngine.Object;
+
 namespace Test.AvatarSystem
 {
     public class BaseAvatarShould
@@ -22,7 +16,7 @@ namespace Test.AvatarSystem
         private IBaseAvatarRevealer baseAvatarRevealer;
         private ILOD lod;
 
-        private GameObject container;
+        private GameObject avatarRevealer;
         private GameObject armatureContainer;
 
         [SetUp]
@@ -30,16 +24,16 @@ namespace Test.AvatarSystem
         {
             lod = Substitute.For<ILOD>();
             baseAvatarRevealer = Substitute.For<IBaseAvatarRevealer>();
-            container = new GameObject();
+            avatarRevealer = new GameObject();
             armatureContainer = new GameObject();
-            baseAvatar = new BaseAvatar(container.transform, armatureContainer, lod);
+            baseAvatar = new BaseAvatar(avatarRevealer, lod);
             baseAvatar.avatarRevealer = baseAvatarRevealer;
         }
 
         [Test]
-        public void ReturnArmatureContainer()
+        public void ReturnAvatarRevealerContainer()
         {
-            Assert.AreEqual(baseAvatar.GetHologramContainer(), armatureContainer);
+            Assert.AreEqual(baseAvatar.GetHologramContainer(), avatarRevealer);
         }
 
         [UnityTest]

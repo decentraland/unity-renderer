@@ -10,22 +10,20 @@ namespace AvatarSystem
     {
         public IBaseAvatarRevealer avatarRevealer { get; set; }
         private ILOD lod;
-        private Transform avatarRevealerContainer;
+        private GameObject avatarRevealerContainer;
         private CancellationTokenSource transitionCts = new CancellationTokenSource();
-        
-        public GameObject armatureContainer;
+
         public SkinnedMeshRenderer meshRenderer { get; private set; }
 
-        public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer, ILOD lod) 
+        public BaseAvatar(GameObject avatarRevealerContainer, ILOD lod) 
         {
             this.avatarRevealerContainer = avatarRevealerContainer;
-            this.armatureContainer = armatureContainer;
             this.lod = lod;
         }
 
         public GameObject GetHologramContainer()
         {
-            return avatarRevealerContainer.gameObject;
+            return avatarRevealerContainer;
         }
 
         public SkinnedMeshRenderer GetMainRenderer()
@@ -37,7 +35,7 @@ namespace AvatarSystem
         {
             if (avatarRevealer == null)
             {
-                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
+                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer.transform).GetComponent<BaseAvatarReveal>();
                 avatarRevealer.InjectLodSystem(lod);
             }
             else
