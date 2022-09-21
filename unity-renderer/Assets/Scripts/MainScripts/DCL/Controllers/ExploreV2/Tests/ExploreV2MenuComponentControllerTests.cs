@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL;
 using ExploreV2Analytics;
@@ -341,6 +342,30 @@ public class ExploreV2MenuComponentControllerTests
 
         // Assert
         Assert.AreEqual((int)section, DataStore.i.exploreV2.currentSectionIndex.Get());
+    }
+
+    [TestCase(ExploreSection.Explore)]
+    [TestCase(ExploreSection.Backpack)]
+    [TestCase(ExploreSection.Map)]
+    [TestCase(ExploreSection.Builder)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Settings)]
+    public void ShouldChangeVisibilityVarsOnViewSectionOpen(ExploreSection sectionId)
+    {
+        // Arrange
+        if (sectionId == ExploreSection.Explore)
+            exploreV2MenuController.currentOpenSection = ExploreSection.Backpack ;
+
+        // Act
+        exploreV2MenuView.OnSectionOpen += Raise.Event<Action<ExploreSection>>(sectionId);
+
+        // Assert
+        Assert.AreEqual(sectionId, exploreV2MenuController.currentOpenSection);
+
+        foreach (KeyValuePair<BaseVariable<bool>, ExploreSection> sectionVisiblityVar in exploreV2MenuController.sectionsByVisiblityVar)
+            Assert.IsTrue(sectionVisiblityVar.Key.Get() == (sectionId == sectionVisiblityVar.Value));
+
+        // would be nice to implement: exploreV2MenuView.ReceivedWithAnyArgs(1).GoToSection(default); exploreV2MenuView.Received(1).GoToSection(sectionId);
     }
 
     [Test]

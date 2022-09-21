@@ -23,9 +23,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal MouseCatcher mouseCatcher;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal float playerInfoCardHUDCloseTime = 0f;
-
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
-    private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisiblityVar;
+    internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisiblityVar;
+
+    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables;
 
     internal IExploreV2MenuComponentView view;
 
@@ -61,8 +62,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
-    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables =>
-        new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
+    public void Initialize()
+    {
+        sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized,  placesAndEventsVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized,  avatarEditorVisible) },
@@ -71,9 +73,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Quest, (isQuestInitialized,  questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized,  settingsVisible) },
         };
-
-    public void Initialize()
-    {
         sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
         sectionsByVisiblityVar = sectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
 
