@@ -1782,6 +1782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b34a804476c5243872ffafcab770d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   inputField: {fileID: 590022725704841183}
   chatEntriesContainer: {fileID: 8865446388248603219}
   scrollRect: {fileID: 7716759030322912637}
