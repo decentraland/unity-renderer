@@ -127,7 +127,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(
                     // TODO (channels): Pass ChatController.i after kernel integration
-                    ChatChannelsControllerMock.i);
+                    ChatChannelsControllerMock.i, DataStore.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 hudElement = new LeaveChannelConfirmationWindowController(

@@ -7,15 +7,18 @@ namespace DCL.Chat.HUD
     public class CreateChannelWindowController : IHUD
     {
         private readonly IChatController chatController;
+        private readonly DataStore dataStore;
         private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{3,20}$");
         private ICreateChannelWindowView view;
         private string channelName;
 
         public event Action<string> OnNavigateToChannelWindow;
 
-        public CreateChannelWindowController(IChatController chatController)
+        public CreateChannelWindowController(IChatController chatController,
+            DataStore dataStore)
         {
             this.chatController = chatController;
+            this.dataStore = dataStore;
         }
 
         public ICreateChannelWindowView View => view;
@@ -46,11 +49,13 @@ namespace DCL.Chat.HUD
                 view.OnJoinChannel += HandleJoinChannel;
                 chatController.OnJoinChannelError += HandleCreationError;
                 chatController.OnChannelJoined += HandleChannelJoined;
+                dataStore.channels.isCreationModalVisible.Set(true);
             }
             else
             {
                 UnsubscribeFromEvents();
                 view.Hide();
+                dataStore.channels.isCreationModalVisible.Set(false);
             }
         }
 
@@ -107,9 +112,18 @@ namespace DCL.Chat.HUD
             view.DisableCreateButton();
         }
 
-        private void HandleCreationError(string channelId, string message)
+        private void HandleCreationError(string channelId, ChannelErrorCode errorCode)
         {
-            view.ShowError(message);
+            switch (errorCode)
+            {
+                case ChannelErrorCode.ExceededLimit:
+                    view.ShowChannelsExceededError();
+                    break;
+                case ChannelErrorCode.WrongFormat:
+                    view.ShowWrongFormatError();
+                    break;
+            }
+            
             view.DisableCreateButton();
         }
     }

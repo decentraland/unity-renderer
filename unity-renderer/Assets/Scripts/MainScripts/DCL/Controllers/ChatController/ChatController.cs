@@ -24,10 +24,10 @@ public class ChatController : MonoBehaviour, IChatController
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
-    public event Action<string, string> OnJoinChannelError;
+    public event Action<string, ChannelErrorCode> OnJoinChannelError;
     public event Action<string> OnChannelLeft;
-    public event Action<string, string> OnChannelLeaveError;
-    public event Action<string, string> OnMuteChannelError; 
+    public event Action<string, ChannelErrorCode> OnChannelLeaveError;
+    public event Action<string, ChannelErrorCode> OnMuteChannelError; 
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
@@ -192,7 +192,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void JoinChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-        OnJoinChannelError?.Invoke(msg.channelId, msg.message);
+        OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
     }
 
     // called by kernel
@@ -200,7 +200,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void LeaveChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-        OnChannelLeaveError?.Invoke(msg.channelId, msg.message);
+        OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
     }
 
     // called by kernel
@@ -208,7 +208,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void MuteChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<MuteChannelErrorPayload>(payload);
-        OnMuteChannelError?.Invoke(msg.channelId, msg.message);
+        OnMuteChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
     }
 
     // called by kernel
