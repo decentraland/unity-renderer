@@ -202,6 +202,7 @@ namespace DCL
                 Transform prevParent = thisTransform.parent;
                 Vector3 prevScale = thisTransform.localScale;
                 Vector3 prevPos = thisTransform.localPosition;
+                Quaternion prevRotation = thisTransform.localRotation;
                 thisTransform.SetParent(null, true);
                 thisTransform.localScale = Vector3.one;
                 
@@ -219,6 +220,7 @@ namespace DCL
 
                 // Rollback the reposition of the previous bugfix
                 thisTransform.SetParent(prevParent);
+                thisTransform.localRotation = prevRotation;
                 thisTransform.localScale = prevScale;
                 thisTransform.localPosition = prevPos;
             }
