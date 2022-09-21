@@ -13,7 +13,7 @@ namespace AvatarSystem
 
         void Initialize();
         SkinnedMeshRenderer GetMainRenderer();
-        GameObject GetArmatureContainer();
+        GameObject GetHologramContainer();
         UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);
 
         void CancelTransition();

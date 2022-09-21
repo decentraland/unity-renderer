@@ -23,9 +23,9 @@ namespace AvatarSystem
             this.lod = lod;
         }
 
-        public GameObject GetArmatureContainer()
+        public GameObject GetHologramContainer()
         {
-            return armatureContainer;
+            return avatarRevealerContainer.gameObject;
         }
 
         public SkinnedMeshRenderer GetMainRenderer()

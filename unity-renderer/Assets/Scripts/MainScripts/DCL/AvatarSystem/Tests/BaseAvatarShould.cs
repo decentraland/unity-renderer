@@ -39,7 +39,7 @@ namespace Test.AvatarSystem
         [Test]
         public void ReturnArmatureContainer()
         {
-            Assert.AreEqual(baseAvatar.GetArmatureContainer(), armatureContainer);
+            Assert.AreEqual(baseAvatar.GetHologramContainer(), armatureContainer);
         }
 
         [UnityTest]
