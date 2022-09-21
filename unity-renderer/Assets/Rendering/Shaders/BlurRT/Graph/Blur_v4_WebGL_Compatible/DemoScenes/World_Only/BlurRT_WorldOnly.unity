@@ -1513,6 +1513,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4393425735285037925, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4393425735285037925, guid: 4db069904ba9d4fd18704de950b93f7c,
+        type: 3}
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
@@ -1574,7 +1579,7 @@ PrefabInstance:
     - target: {fileID: 4393425735285037925, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
       propertyPath: m_UseSpriteMesh
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393425735285037925, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
