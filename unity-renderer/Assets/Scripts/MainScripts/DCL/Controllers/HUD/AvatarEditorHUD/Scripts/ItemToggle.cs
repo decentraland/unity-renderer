@@ -18,12 +18,14 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] private GameObject incompatibleWarningPanel;
     [SerializeField] private GameObject hideWarningPanel;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
     [SerializeField] internal GameObject root;
+    [SerializeField] internal Material grayScaleMaterial;
 
     private bool selectedValue;
 
@@ -31,6 +33,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private Func<WearableItem, bool> getEquippedWearablesReplacedByFunc;
     private Func<WearableItem, bool> getEquippedWearablesHiddenBy;
+    private Func<WearableItem, bool> getBodyShapeCompatibility;
 
     public string collectionId { get; set; }
 
@@ -58,7 +61,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         thumbnail.sprite = null;
         warningPanel.SetActive(false);
         hideWarningPanel.SetActive(false);
-
+        incompatibleWarningPanel.SetActive(false);
+        thumbnail.material = grayScaleMaterial;
         if (!EnvironmentSettings.RUNNING_TESTS)
             view = GetComponentInParent<AvatarEditorHUDView>();
     }
@@ -84,8 +88,11 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!ShowReplacementWarningPanel())
-            ShowHidingWarningPanel();
+        if(!ShowIncompatibleWarningPanel())
+        {
+            if (!ShowReplacementWarningPanel())
+                ShowHidingWarningPanel();
+        }
     }
 
     private bool ShowReplacementWarningPanel()
@@ -104,19 +111,34 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         return shouldShow;
     }
 
+    private bool ShowIncompatibleWarningPanel()
+    {
+        if(getBodyShapeCompatibility == null) return false;
+        var shouldShow = getBodyShapeCompatibility(wearableItem);
+        incompatibleWarningPanel.SetActive(shouldShow);
+        return shouldShow;
+    }
+
     public void OnPointerExit(PointerEventData eventData)
     {
         warningPanel.SetActive(false);
         hideWarningPanel.SetActive(false);
+        incompatibleWarningPanel.SetActive(false);
     }
 
     public void SetHideOtherWerablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesHiddenBy = function;
+
+    public void SetBodyShapeCompatibilityStrategy(Func<WearableItem, bool> function) =>
+        getBodyShapeCompatibility = function;
     
     public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesReplacedByFunc = function;
 
-    private void OnEnable() { GetThumbnail(); }
+    private void OnEnable() 
+    { 
+        GetThumbnail(); 
+    }
 
     protected virtual void OnDestroy()
     {
@@ -124,6 +146,18 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     }
 
     protected void CallOnSellClicked() { OnSellClicked?.Invoke(this); }
+
+    private void SetColorScale()
+    {
+        if(getBodyShapeCompatibility != null && wearableItem != null && getBodyShapeCompatibility(wearableItem))
+        {
+            thumbnail.material = grayScaleMaterial;
+        }
+        else
+        {
+            thumbnail.material = null;
+        }
+    }
 
     private void GetThumbnail()
     {
@@ -149,6 +183,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             if (view.avatarEditorCanvas.enabled)
                 AudioScriptableObjects.listItemAppear.Play(true);
         }
+        thumbnail.material = grayScaleMaterial;
+        SetColorScale();
     }
     
     private void SetLoadingAnimationTrigger(int id)

@@ -136,7 +136,8 @@ public class ItemSelector : MonoBehaviour
         string collectionName,
         int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
-        Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
+        Func<WearableItem, bool> replaceOtherWearablesToastStrategy,
+        Func<WearableItem, bool> incompatibleWearableToastStrategy)
     {
         if (item == null)
             return;
@@ -144,10 +145,10 @@ public class ItemSelector : MonoBehaviour
         if (totalWearables.ContainsKey(item.id))
             return;
         
-        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
+        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy, incompatibleWearableToastStrategy);
         totalWearables.Add(item.id, wearableSettings);
 
-        if (item.SupportsBodyShape(currentBodyShape) || item.data.category == WearableLiterals.Categories.BODY_SHAPE)
+        if (item.data.category == WearableLiterals.Categories.BODY_SHAPE)
         {
             availableWearables.Add(wearableSettings);
         }
@@ -189,7 +190,7 @@ public class ItemSelector : MonoBehaviour
 
     private void RefreshAvailableWearables()
     {
-        availableWearables = totalWearables.Values.Where(w => w.Item.SupportsBodyShape(currentBodyShape)).ToList();
+        availableWearables = totalWearables.Values.ToList();
         SetupWearablePagination();
     }
 
