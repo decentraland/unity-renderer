@@ -8,34 +8,27 @@ namespace DCL.Chat.HUD
     {
         private IChannelLimitReachedWindowView view;
         private ChannelLimitReachedWindowController controller;
+        private DataStore dataStore;
 
         [SetUp]
         public void SetUp()
         {
             view = Substitute.For<IChannelLimitReachedWindowView>();
-            controller = new ChannelLimitReachedWindowController(view);
+            dataStore = new DataStore();
+            controller = new ChannelLimitReachedWindowController(view, dataStore);
+            view.ClearReceivedCalls();
         }
 
         [Test]
         public void Show()
         {
-            controller.SetVisibility(true);
+            dataStore.channels.currentChannelLimitReached.Set("channel");
             view.Received(1).Show();
-        }
-
-        [Test]
-        public void Hide()
-        {
-            controller.SetVisibility(false);
-            view.Received(1).Hide();
         }
 
         [Test]
         public void HideWhenViewCloses()
         {
-            controller.SetVisibility(true);
-            view.ClearReceivedCalls();
-            
             view.OnClose += Raise.Event<Action>();
             
             view.Received(1).Hide();

@@ -134,9 +134,6 @@ public class HUDFactory : IHUDFactory
                     // TODO (channels): Pass ChatController.i after kernel integration
                     ChatChannelsControllerMock.i);
                 break;
-            case HUDElementID.CHANNELS_LIMIT_REACHED_ERROR:
-                hudElement = new ChannelLimitReachedWindowController(ChannelLimitReachedWindowComponentView.Create());
-                break;
             case HUDElementID.TASKBAR:
                 // TODO (channels): Pass ChatController.i after kernel integration
                 hudElement = new TaskbarHUDController(ChatChannelsControllerMock.i);

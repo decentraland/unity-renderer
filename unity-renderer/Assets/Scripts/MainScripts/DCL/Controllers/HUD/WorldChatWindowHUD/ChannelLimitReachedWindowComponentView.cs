@@ -1,15 +1,14 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
     public class ChannelLimitReachedWindowComponentView : BaseComponentView, IChannelLimitReachedWindowView
     {
-        [SerializeField] internal Button[] acceptButton;
+        [SerializeField] internal ButtonComponentView[] acceptButton;
         
         public event Action OnClose;
-        public Transform Transform => transform;
+        
         public void Show() => gameObject.SetActive(true);
 
         public void Hide() => gameObject.SetActive(false);

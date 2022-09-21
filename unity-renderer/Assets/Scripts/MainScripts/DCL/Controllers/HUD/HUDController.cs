@@ -98,9 +98,6 @@ public class HUDController : IHUDController
 
     private LeaveChannelConfirmationWindowController channelLeaveHud =>
         GetHUDElement(HUDElementID.CHANNELS_LEAVE_CONFIRMATION) as LeaveChannelConfirmationWindowController;
-    
-    private ChannelLimitReachedWindowController channelLimitReachedHud =>
-        GetHUDElement(HUDElementID.CHANNELS_LIMIT_REACHED_ERROR) as ChannelLimitReachedWindowController;
 
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
@@ -311,13 +308,6 @@ public class HUDController : IHUDController
                     channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
                     channelLeaveHud.SetVisibility(false);
                     taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
-                }
-
-                if (channelLimitReachedHud == null)
-                {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_LIMIT_REACHED_ERROR);
-                    channelLimitReachedHud.SetVisibility(false);
-                    taskbarHud?.AddChannelLimitReached(channelLimitReachedHud);
                 }
 
                 break;

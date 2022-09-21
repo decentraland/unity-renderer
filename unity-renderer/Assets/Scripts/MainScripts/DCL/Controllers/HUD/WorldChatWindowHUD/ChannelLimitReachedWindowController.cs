@@ -1,35 +1,39 @@
+using System;
+
 namespace DCL.Chat.HUD
 {
-    public class ChannelLimitReachedWindowController : IHUD
+    public class ChannelLimitReachedWindowController : IDisposable
     {
         private readonly IChannelLimitReachedWindowView view;
+        private readonly DataStore dataStore;
 
-        public IChannelLimitReachedWindowView View => view;
-
-        public ChannelLimitReachedWindowController(IChannelLimitReachedWindowView view)
+        public ChannelLimitReachedWindowController(IChannelLimitReachedWindowView view,
+            DataStore dataStore)
         {
             this.view = view;
+            view.Hide();
+            view.OnClose += Close;
+            this.dataStore = dataStore;
+            dataStore.channels.currentChannelLimitReached.OnChange += Show;
         }
 
         public void Dispose()
         {
-            view.Dispose();
+            dataStore.channels.currentChannelLimitReached.OnChange -= Show;
+
+            if (view != null)
+            {
+                view.OnClose -= Close;
+                view.Dispose();
+            }
         }
 
-        public void SetVisibility(bool visible)
+        private void Show(string currentChannelId, string previousChannelId)
         {
-            if (visible)
-            {
-                view.OnClose += HandleViewClosed;
-                view.Show();
-            }
-            else
-            {
-                view.OnClose -= HandleViewClosed;
-                view.Hide();
-            }
+            if (string.IsNullOrEmpty(currentChannelId)) return;
+            view.Show();
         }
 
-        private void HandleViewClosed() => SetVisibility(false);
+        private void Close() => view.Hide();
     }
 }
