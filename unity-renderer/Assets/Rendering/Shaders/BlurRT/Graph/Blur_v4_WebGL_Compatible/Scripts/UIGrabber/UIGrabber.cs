@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL;
 
 public class UIGrabber : MonoBehaviour
 {
@@ -12,7 +13,6 @@ public class UIGrabber : MonoBehaviour
     
     [Header("Main Camera")]
     
-    [SerializeField] private GameObject _mainCamera;
     [SerializeField] private Camera _mainCamComp;
 
     [Header("Render Texture")]
@@ -40,7 +40,7 @@ public class UIGrabber : MonoBehaviour
         SetRenderTexture(_renderTexture);
 
         // main camera camera component
-        _mainCamComp = _mainCamera.GetComponent<Camera>();
+        _mainCamComp = DataStore.i.camera.hudsCamera.Get();
 
     }
     // Start is called before the first frame update
@@ -79,6 +79,9 @@ public class UIGrabber : MonoBehaviour
         
         if (_uiElements[0].transform.gameObject.activeSelf == false)
         {
+            _mainCamComp = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+            if(_mainCamComp == null)
+                return;
             // render everything except the UIBlurred
             // TODO: bug here MUST CHECK as its not working as expected
             _mainCamComp.cullingMask = ~(1 << LayerMask.NameToLayer("UI"));
@@ -179,7 +182,9 @@ public class UIGrabber : MonoBehaviour
     public void OccludeUILayer()
     {
         // occlude UI Layer from the main camera
-
+        _mainCamComp = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+        if(_mainCamComp == null)
+            return;
         _mainCamComp.cullingMask = ~(1 << 5);
 
         if (_isDebug == true)
