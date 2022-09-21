@@ -263,8 +263,6 @@ namespace DCL.Controllers
             {
                 SetComponentsInsideBoundariesValidState(entity, false);
                 SetEntityInsideBoundariesState(entity, false);
-                // TODO: Affect AvatarShape
-                Debug.Log("PRAVS - AVATAR SHAPE SHOULD BE DISABLED! 1", entity.gameObject);
             }
 
             if (onlyOuterBoundsCheck)
@@ -273,10 +271,6 @@ namespace DCL.Controllers
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(avatarBounds);
             SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
             SetEntityInsideBoundariesState(entity, isInsideBoundaries);
-            
-            // TODO: Affect AvatarShape
-            if(!isInsideBoundaries)
-                Debug.Log("PRAVS - AVATAR SHAPE SHOULD BE DISABLED! 2", entity.gameObject);
         }
 
         private void SetEntityInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
@@ -305,7 +299,7 @@ namespace DCL.Controllers
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
-
+            
             // 2nd check (submeshes & colliders AABB)
             if (!isInsideBoundaries)
             {
