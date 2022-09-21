@@ -24,8 +24,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal float playerInfoCardHUDCloseTime = 0f;
 
-    private Dictionary<BaseVariable<bool>, ExploreSection> SectionsByInitVar;
-    private Dictionary<BaseVariable<bool>, ExploreSection> SectionsByVisiblityVar;
+    private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
+    private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisiblityVar;
 
     internal IExploreV2MenuComponentView view;
 
@@ -61,7 +61,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
-    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> SectionsVariables =>
+    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables =>
         new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized,  placesAndEventsVisible) },
@@ -74,8 +74,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
-        SectionsByInitVar = SectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
-        SectionsByVisiblityVar = SectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
+        sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
+        sectionsByVisiblityVar = sectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
 
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
@@ -112,7 +112,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
-        foreach (var sectionsVariables in SectionsVariables.Values)
+        foreach (var sectionsVariables in sectionsVariables.Values)
         {
             sectionsVariables.initVar.OnChangeWithSenderInfo += OnSectionInitializedChanged;
             OnSectionInitializedChanged(sectionsVariables.initVar, sectionsVariables.initVar.Get());
@@ -125,7 +125,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isInitialized.Set(true);
 
-        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
+        currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         //view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
@@ -145,7 +145,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         isOpen.OnChange -= SetVisibilityOnOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
 
-        foreach (var sectionsVariables in SectionsVariables.Values)
+        foreach (var sectionsVariables in sectionsVariables.Values)
         {
             sectionsVariables.initVar.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
             sectionsVariables.visibilityVar.OnChangeWithSenderInfo -= OnSectionVisiblityChanged;
@@ -171,7 +171,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void SetVisibility(bool visible) => isOpen.Set(visible);
 
     private void OnSectionInitializedChanged(BaseVariable<bool> initVar, bool initialized, bool _ = false) =>
-        SectionInitializedChanged(SectionsByInitVar[initVar], initialized);
+        SectionInitializedChanged(sectionsByInitVar[initVar], initialized);
 
     internal void SectionInitializedChanged(ExploreSection section, bool initialized, bool _ = false)
     {
@@ -183,13 +183,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     private void OnSectionVisiblityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
     {
-        ExploreSection section = SectionsByVisiblityVar[visibilityVar];
-        BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : SectionsVariables[section].initVar;
+        ExploreSection section = sectionsByVisiblityVar[visibilityVar];
+        BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : sectionsVariables[section].initVar;
 
         if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
-        SetMenuTargetVisibility(SectionsByVisiblityVar[visibilityVar], visible);
+        SetMenuTargetVisibility(sectionsByVisiblityVar[visibilityVar], visible);
     }
 
     internal void InitializePlacesAndEventsSection()
@@ -211,8 +211,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
 
-        foreach (var visibilityVar in SectionsByVisiblityVar.Keys)
-            visibilityVar.Set(currentOpenSection == SectionsByVisiblityVar[visibilityVar]);
+        foreach (var visibilityVar in sectionsByVisiblityVar.Keys)
+            visibilityVar.Set(currentOpenSection == sectionsByVisiblityVar[visibilityVar]);
 
         profileCardIsOpen.Set(false);
     }
@@ -251,7 +251,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
 
-            foreach (var sectionsVariables in SectionsVariables.Values)
+            foreach (var sectionsVariables in sectionsVariables.Values)
                 sectionsVariables.visibilityVar.Set(false);
 
             profileCardIsOpen.Set(false);
@@ -266,8 +266,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         if (toVisible)
         {
-            if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
-                DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
+            if (currentSectionIndex.Get() != (int)section)
+                currentSectionIndex.Set((int)section);
 
             SetSectionTargetVisibility(section, toVisible: true);
             view.GoToSection(section);

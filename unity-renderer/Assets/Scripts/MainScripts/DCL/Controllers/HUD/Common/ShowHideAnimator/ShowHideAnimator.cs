@@ -15,18 +15,7 @@ public class ShowHideAnimator : MonoBehaviour
 
     public bool isVisible => animator.GetBool(visibleParamHash);
 
-    private Animator animator
-    {
-        get
-        {
-            if (animatorValue == null)
-            {
-                animatorValue = GetComponent<Animator>();
-            }
-
-            return animatorValue;
-        }
-    }
+    private Animator animator => animatorValue ??= GetComponent<Animator>();
 
     private int visibleParamHash
     {
@@ -77,12 +66,13 @@ public class ShowHideAnimator : MonoBehaviour
     {
         OnWillFinishHide?.Invoke(this);
 
-        if (disableAfterFadeOut)
+        if (disableAfterFadeOut && gameObject != null)
         {
-            gameObject?.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 
     [UsedImplicitly]
-    public void AnimEvent_ShowFinished() { OnWillFinishStart?.Invoke(this); }
+    public void AnimEvent_ShowFinished() =>
+        OnWillFinishStart?.Invoke(this);
 }
