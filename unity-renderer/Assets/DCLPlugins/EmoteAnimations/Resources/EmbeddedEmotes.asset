@@ -479,17 +479,113 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: backpack_accessories
+    id: Outfit_Upper
     baseUrl: 
     baseUrlBundles: 
     i18n:
     - code: en
       text: Ho Ho Ho!
     thumbnail: 
-    thumbnailSprite: {fileID: 21300000, guid: 08fb89e42a3f7d44e9b2a391aa41aff6, type: 3}
+    thumbnailSprite: {fileID: 0}
     rarity: 
-    description: hohoho
+    description: Outfit_Upper
     issuedId: 0
-    femaleAnimation: {fileID: 7400000, guid: defe11b2aa04cea45bd9e1786ba0ee5f, type: 2}
-    maleAnimation: {fileID: 7400000, guid: defe11b2aa04cea45bd9e1786ba0ee5f, type: 2}
+    femaleAnimation: {fileID: 7400000, guid: 1bb8212a98cf5f545bad214ff4cf7ff4, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 1bb8212a98cf5f545bad214ff4cf7ff4, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Lower
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Lower
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 746ac034348016b4ebe38c05d57dc578, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 746ac034348016b4ebe38c05d57dc578, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Shoes
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Shoes
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 5143f8bfde68233428a37625c03d084d, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 5143f8bfde68233428a37625c03d084d, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Accessories
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Accessories
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: a176aae28b13c934fa051a74f301a45b, type: 2}
+    maleAnimation: {fileID: 7400000, guid: a176aae28b13c934fa051a74f301a45b, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Spawn
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Spawn
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 4dad6af5cd2396c4f8878dd5f995a767, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 4dad6af5cd2396c4f8878dd5f995a767, type: 2}
     dontShowInBackpack: 1
