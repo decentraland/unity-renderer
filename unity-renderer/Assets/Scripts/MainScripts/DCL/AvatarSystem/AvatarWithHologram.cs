@@ -74,7 +74,7 @@ namespace AvatarSystem
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar, linkedCt);
+                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;

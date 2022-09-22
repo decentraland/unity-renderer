@@ -35,7 +35,6 @@ namespace Test.AvatarSystem
         private Loader loader;
         private GameObject container;
         private IAvatarMeshCombinerHelper meshCombiner;
-        private IBaseAvatar baseAvatar;
 
         [SetUp]
         public void SetUp()
@@ -249,10 +248,7 @@ namespace Test.AvatarSystem
             MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
             MockWearableLoaderFactory();
             MockCombinesMesh();
-            MockBaseAvatar();
-
             SkinnedMeshRenderer bonesContainer = CreatePrimitive(container.transform).GetComponent<SkinnedMeshRenderer>();
-            baseAvatar.Configure().GetMainRenderer().Returns(bonesContainer);
 
             await loader.Load(
                 CatalogController.wearableCatalog[FEMALE_ID],
@@ -267,7 +263,7 @@ namespace Test.AvatarSystem
                     hairColor = Color.yellow,
                     skinColor = Color.green
                 },
-                baseAvatar
+                bonesContainer
             );
 
             foreach (KeyValuePair<string, IWearableLoader> load in loader.loaders)
@@ -283,10 +279,6 @@ namespace Test.AvatarSystem
             }
 
         });
-        private void MockBaseAvatar()
-        {
-            baseAvatar = Substitute.For<IBaseAvatar>();
-        }
 
         [UnityTest]
         public IEnumerator UseUpperBodyContainer() => UniTask.ToCoroutine(async () =>
@@ -340,8 +332,6 @@ namespace Test.AvatarSystem
                                  .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
 
             MockCombinesMesh();
-            MockBaseAvatar();
-            baseAvatar.Configure().GetMainRenderer().Returns(meshCombiner.renderer);
 
             await loader.Load(
                 CatalogController.wearableCatalog[FEMALE_ID],
@@ -356,7 +346,7 @@ namespace Test.AvatarSystem
                     hairColor = Color.yellow,
                     skinColor = Color.green
                 },
-                baseAvatar
+                meshCombiner.renderer
             );
             bodyShapeLoader.Received().DisableFacialRenderers();
         });
