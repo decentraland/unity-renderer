@@ -419,7 +419,7 @@ public class AvatarEditorHUDController : IHUD
 
         EnsureWearablesCategoriesNotEmpty();
 
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
         isAvatarPreviewReady = true;
     }
 
@@ -490,31 +490,33 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview(false);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
     }
 
     public void HairColorClicked(Color color)
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
-    protected virtual void UpdateAvatarPreview(bool skipFeedback)
+    protected virtual void UpdateAvatarPreview()
     {
         if (bypassUpdateAvatarPreview)
             return;
@@ -527,7 +529,7 @@ public class AvatarEditorHUDController : IHUD
             modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
         }
 
-        view.UpdateAvatarPreview(modelToUpdate, skipFeedback);
+        view.UpdateAvatarPreview(modelToUpdate);
     }
 
     private void EquipHairColor(Color color)
@@ -715,7 +717,8 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview(false);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
     }
 
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
@@ -1063,7 +1066,7 @@ public class AvatarEditorHUDController : IHUD
         if (!isAvatarPreviewReady)
             return;
 
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
     private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }

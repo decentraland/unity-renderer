@@ -135,8 +135,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
     private bool isAvatarDirty;
     private AvatarModel avatarModelToUpdate;
-    private bool updateAvatarShouldSkipFeedback;
-    public event Action<bool,AvatarModel> OnAvatarAppear;
+    
+    private bool doAvatarFeedback;
+    public event Action<AvatarModel> OnAvatarAppear;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
     
@@ -348,7 +349,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         collectiblesItemSelector.UnselectAll();
     }
 
-    public void UpdateAvatarPreview(AvatarModel avatarModel, bool skipFeedback)
+    public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
         if (avatarModel?.wearables == null)
             return;
@@ -359,10 +360,14 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         // Also it updates just once if its called many times in a row
         isAvatarDirty = true;
         avatarModelToUpdate = avatarModel;
-        updateAvatarShouldSkipFeedback = skipFeedback;
 
         doneButton.interactable = false;
         loadingSpinnerGameObject.SetActive(true);
+    }
+
+    public void AddFeedbackOnAppear()
+    {
+        doAvatarFeedback = true;
     }
 
     public void AddWearable(WearableItem wearableItem, int amount,
@@ -712,8 +717,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
                     loadingSpinnerGameObject?.SetActive(false);
                     
-                    OnAvatarAppear?.Invoke(updateAvatarShouldSkipFeedback,avatarModelToUpdate);
+                    if(doAvatarFeedback)
+                        OnAvatarAppear?.Invoke(avatarModelToUpdate);
 
+                    doAvatarFeedback = false;
                     ClearWearablesLoadingSpinner();
                     randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
                 });

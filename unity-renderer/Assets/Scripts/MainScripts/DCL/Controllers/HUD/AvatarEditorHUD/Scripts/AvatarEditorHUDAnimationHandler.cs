@@ -14,17 +14,16 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         this.characterPreviewController = characterPreviewController;
         this.hudView = hudView;
         hudView.OnAvatarAppear += PlayAvatarAnimation;
-        
+        hudView.OnRandomize += OnClickRandomize;
         for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
         {
             hudView.wearableGridPairs[i].selector.OnItemClicked += OnSelectWearable;
         }
-        hudView.OnRandomize += OnClickRandomize;
     }
     
-    private void PlayAvatarAnimation(bool shouldSkipFeedback, AvatarModel avatarModelToUpdate)
+    private void PlayAvatarAnimation(AvatarModel avatarModelToUpdate)
     {
-        if (!shouldSkipFeedback && !string.IsNullOrEmpty(activeCategory))
+        if (!string.IsNullOrEmpty(activeCategory))
         {
             PlayAnimation(avatarModelToUpdate);
         }
@@ -93,6 +92,7 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
     public void Dispose()
     {
         hudView.OnAvatarAppear -= PlayAvatarAnimation;
+        hudView.OnRandomize -= OnClickRandomize;
         for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
         {
             hudView.wearableGridPairs[i].selector.OnItemClicked -= OnSelectWearable;
