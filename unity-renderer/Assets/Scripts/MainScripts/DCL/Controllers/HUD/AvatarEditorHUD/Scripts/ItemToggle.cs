@@ -62,7 +62,6 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
         hideWarningPanel.SetActive(false);
         incompatibleWarningPanel.SetActive(false);
-        thumbnail.material = grayScaleMaterial;
         if (!EnvironmentSettings.RUNNING_TESTS)
             view = GetComponentInParent<AvatarEditorHUDView>();
     }
@@ -149,9 +148,10 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void SetColorScale()
     {
-        if(getBodyShapeCompatibility != null && wearableItem != null && getBodyShapeCompatibility(wearableItem))
+        if(getBodyShapeCompatibility != null && getBodyShapeCompatibility(wearableItem))
         {
             thumbnail.material = grayScaleMaterial;
+            thumbnail.SetMaterialDirty();
         }
         else
         {
@@ -183,7 +183,6 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             if (view.avatarEditorCanvas.enabled)
                 AudioScriptableObjects.listItemAppear.Play(true);
         }
-        thumbnail.material = grayScaleMaterial;
         SetColorScale();
     }
     

@@ -1073,6 +1073,7 @@ MonoBehaviour:
   loadingAnimator: {fileID: 9208487373140503611}
   amountText: {fileID: 4120279907661310226}
   root: {fileID: 7116621886084181888}
+  grayScaleMaterial: {fileID: 2100000, guid: ae7a50fe785304bc4b38cafd6ad212f3, type: 2}
   nftItemInfo: {fileID: 8469233552029382616}
   rarityImage: {fileID: 2320006326659463345}
   infoButton: {fileID: 6615790855249638015}
