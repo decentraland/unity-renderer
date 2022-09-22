@@ -65,6 +65,16 @@ public class UserContextMenuShould
     }
 
     [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void HideContextMenuProperly(bool isActive)
+    {
+        contextMenu.SetFriendshipContentActive(isActive);
+
+        Assert.AreEqual(isActive, contextMenu.friendshipContainer.activeSelf);
+    }
+
+    [Test]
     public void ClickOnPassportButton()
     {
         bool passportEventInvoked = false;
