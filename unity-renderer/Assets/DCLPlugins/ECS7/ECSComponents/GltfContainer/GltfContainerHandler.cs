@@ -14,8 +14,8 @@ namespace DCL.ECSComponents
     {
         const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
 
-        private RendereableAssetLoadHelper gltfLoader;
-        private GameObject gameObject;
+        internal RendereableAssetLoadHelper gltfLoader;
+        internal GameObject gameObject;
         private IList<Collider> physicColliders;
         private IList<Collider> pointerColliders;
         private IList<Renderer> renderers;
@@ -74,7 +74,10 @@ namespace DCL.ECSComponents
                 for (int i = 0; i < meshFilters.Length; i++)
                 {
                     if (meshFilters[i].gameObject.layer == PhysicsLayers.characterOnlyLayer)
+                    {
+                        physicColliders.Add(meshFilters[i].gameObject.GetComponent<Collider>());
                         continue;
+                    }
 
                     if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
                         continue;
@@ -150,8 +153,8 @@ namespace DCL.ECSComponents
                 dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
             };
 
-            gltfLoader.Load(model.Src);
             dataStoreEcs7.AddPendingResource(scene.sceneData.id, prevLoadedGltf);
+            gltfLoader.Load(model.Src);
         }
 
         private void CleanUp(IParcelScene scene, IDCLEntity entity)
