@@ -31,6 +31,7 @@ Shader "Custom/S_InfiniteFloor"
         _GrassGridColor("GrassGridColor", Color) = (0, 1, 0.7757626, 1)
         [NoScaleOffset]_RoadTexture("RoadTexture", 2D) = "white" {}
         _RoadScale("RoadScale", Float) = 1
+        _RoadFade("RoadFade", Float) = 100
         _Smoothness("Smoothness", Range(0, 1)) = 0
         _Metallic("Metallic", Range(0, 1)) = 0
         _PlayerPosition("PlayerPosition", Vector) = (0, 0, 0, 0)
@@ -305,6 +306,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -520,11 +522,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -578,26 +603,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -608,8 +634,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -655,8 +683,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -818,10 +848,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -1163,6 +1195,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -1378,11 +1411,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -1436,26 +1492,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -1466,8 +1523,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -1513,8 +1572,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -1676,10 +1737,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -1950,6 +2013,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -2224,6 +2288,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -2510,6 +2575,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -2801,6 +2867,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -3016,11 +3083,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -3074,26 +3164,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -3104,8 +3195,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -3151,8 +3244,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -3310,10 +3405,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -3588,6 +3685,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -3803,11 +3901,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -3861,26 +3982,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -3891,8 +4013,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -3938,8 +4062,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -4096,10 +4222,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -4445,6 +4573,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -4660,11 +4789,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -4718,26 +4870,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -4748,8 +4901,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -4795,8 +4950,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -4958,10 +5115,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -5230,6 +5389,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -5503,6 +5663,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -5788,6 +5949,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -6079,6 +6241,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -6294,11 +6457,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -6352,26 +6538,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -6382,8 +6569,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -6429,8 +6618,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -6588,10 +6779,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;
@@ -6867,6 +7060,7 @@ float2 _GrassGridFadePosition;
 float4 _GrassGridColor;
 float4 _RoadTexture_TexelSize;
 float _RoadScale;
+float _RoadFade;
 float _Smoothness;
 float _Metallic;
 float2 _PlayerPosition;
@@ -7082,11 +7276,34 @@ void Unity_Fraction_float2(float2 In, out float2 Out)
     Out = frac(In);
 }
 
+void Unity_Add_float2(float2 A, float2 B, out float2 Out)
+{
+    Out = A + B;
+}
+
+void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
+{
+    float2 delta = UV - Center;
+    float radius = length(delta) * 2 * RadialScale;
+    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
+    Out = float2(radius, angle);
+}
+
+void Unity_Saturate_float(float In, out float Out)
+{
+    Out = saturate(In);
+}
+
+void Unity_Lerp_float(float A, float B, float T, out float Out)
+{
+    Out = lerp(A, B, T);
+}
+
 struct Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e
 {
 };
 
-void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
+void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_a43b69bd63e74b8899664790c597f8c6, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c, float Vector1_8be634a8378a4521b7522d631008fc39, UnityTexture2D Texture2D_d62eae330bc04650b9938434081cf58c_1, float Vector1_1, float Vector1_78a75bc300dd47ee83f8fbd9e84a0cad, float2 Vector2_f975587bc79d4eadbd0807b55a090f9d, float Vector1_e4cafe8cd46043f0ae5392b59d6b03fe, float2 Vector2_7389d8e6e0014c32be011a6864268e6a, float2 Vector2_cf1b396af9b54596bc8052bf3fe215fb, Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e IN, out float Grass_1, out float Road_2)
 {
     UnityTexture2D _Property_96acefdbb4cb45b1a8c08421eaf40edd_Out_0 = Texture2D_d62eae330bc04650b9938434081cf58c;
     float2 _Property_7499b88678ad4a1b9ba21aee14479b4d_Out_0 = Vector2_a43b69bd63e74b8899664790c597f8c6;
@@ -7140,26 +7357,27 @@ void SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(float2 Vector2_
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_G_5 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.g;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_B_6 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.b;
     float _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_A_7 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_RGBA_0.a;
+    float2 _Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0 = Vector2_cf1b396af9b54596bc8052bf3fe215fb;
+    float2 _Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0 = Vector2_7389d8e6e0014c32be011a6864268e6a;
+    float2 _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2;
+    Unity_Multiply_float(_Property_85742fd4a66d4108a5a31fb86cc5929a_Out_0, float2(-1, -1), _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2);
+    float2 _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2;
+    Unity_Add_float2(_Property_01fcc4fd15554fb68dabb74a05a66a91_Out_0, _Multiply_e4b2caca033a4399b132aaa2714e6eb0_Out_2, _Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2);
+    float _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0 = Vector1_e4cafe8cd46043f0ae5392b59d6b03fe;
+    float _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2;
+    Unity_Divide_float(100, _Property_1a5c11cc39f8477e9ffe0b33092b46a2_Out_0, _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2);
+    float2 _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4;
+    Unity_PolarCoordinates_float(_Add_95e357a34a8843e9b2cdca8f9b86539e_Out_2, float2 (0.5, 0.5), _Divide_ec0467a7a4704d64b0c4673dade46108_Out_2, 1, _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4);
+    float _Split_f3387914733a4792b78907a73c898380_R_1 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[0];
+    float _Split_f3387914733a4792b78907a73c898380_G_2 = _PolarCoordinates_ccfc26f734344fef83f4d72b2a2398d3_Out_4[1];
+    float _Split_f3387914733a4792b78907a73c898380_B_3 = 0;
+    float _Split_f3387914733a4792b78907a73c898380_A_4 = 0;
+    float _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1;
+    Unity_Saturate_float(_Split_f3387914733a4792b78907a73c898380_R_1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1);
+    float _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
+    Unity_Lerp_float(_SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4, 1, _Saturate_0a027211636744e89ee7ea5d9329f3d3_Out_1, _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3);
     Grass_1 = _SampleTexture2D_848275d955c947948bfb0a85a0be6dc9_R_4;
-    Road_2 = _SampleTexture2D_323adb48b37a40d9bd6f56190ccae523_R_4;
-}
-
-void Unity_Add_float2(float2 A, float2 B, out float2 Out)
-{
-    Out = A + B;
-}
-
-void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
-{
-    float2 delta = UV - Center;
-    float radius = length(delta) * 2 * RadialScale;
-    float angle = atan2(delta.x, delta.y) * 1.0 / 6.28 * LengthScale;
-    Out = float2(radius, angle);
-}
-
-void Unity_Saturate_float(float In, out float Out)
-{
-    Out = saturate(In);
+    Road_2 = _Lerp_33e77e15fa924e54a8fa663f08dc5993_Out_3;
 }
 
 struct Bindings_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a
@@ -7170,8 +7388,10 @@ void SG_SGInfiniteFloorFog_e920b4f99adf91644a34c593aebc814a(float2 Vector2_311ff
 {
     float2 _Property_70523c283f40499f89e4f7748deff77e_Out_0 = Vector2_311ffee78d314f71a9463e39924ea623;
     float2 _Property_f28b80022c3246688280e0762030829b_Out_0 = Vector2_a57b68e1b4044834933fd8337f0a0577;
+    float2 _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2;
+    Unity_Multiply_float(_Property_f28b80022c3246688280e0762030829b_Out_0, float2(-1, -1), _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2);
     float2 _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2;
-    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Property_f28b80022c3246688280e0762030829b_Out_0, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
+    Unity_Add_float2(_Property_70523c283f40499f89e4f7748deff77e_Out_0, _Multiply_269adcf2851d402aaa5985aaae79d7a3_Out_2, _Add_e90ad347cd4b42c3963540725f4e79d9_Out_2);
     float _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0 = Vector1_7284deecf5d9431d92fc35a123337ff4;
     float _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2;
     Unity_Divide_float(1, _Property_3ba2cfa823cf437fb838caae47d7a32b_Out_0, _Divide_0020e8c897f94e14b92feac87cf71bff_Out_2);
@@ -7217,8 +7437,10 @@ void SG_SGInfiniteFloorGrassGrid_e02aaeaeb785f7c40952cad0ab2a961c(float2 Vector2
     Unity_Saturate_float(_OneMinus_93d7b12b00c64cfab679a13a09941d52_Out_1, _Saturate_98ef4302d6f242329024c3c0a628f93f_Out_1);
     float2 _Property_04d234e0b8ef4470b8c9c64108324e35_Out_0 = Vector2_622ed4642c4445d194b78ad6759b208d;
     float2 _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0 = Vector2_2c998556cbda461d8a0b69199046f9f5;
+    float2 _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2;
+    Unity_Multiply_float(_Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, float2(-1, -1), _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2);
     float2 _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2;
-    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Property_9f2bfb75a4234a568da9f868e1a0172a_Out_0, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
+    Unity_Add_float2(_Property_04d234e0b8ef4470b8c9c64108324e35_Out_0, _Multiply_baf1f08aaa2247ac944eb15555003e59_Out_2, _Add_fa7d9eda42a2476d8bb6e4f49d05d7bc_Out_2);
     float _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0 = Vector1_eb4dbe959ea64ae896f61f72a5d275d0;
     float _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2;
     Unity_Divide_float(100, _Property_8cb0721852734f0bbaf69514761a7bc5_Out_0, _Divide_e1de24cba5b44f829b2937e98a7f5a69_Out_2);
@@ -7375,10 +7597,12 @@ SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
     float _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0 = _RoadScale;
     float _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0 = _Zoom;
     float2 _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0 = _SizeOfTexture;
+    float _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0 = _RoadFade;
+    float2 _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0 = _PlayerPosition;
     Bindings_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1;
     float _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2;
-    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
+    SG_SGInfiniteFloorTextures_63fd93f36b589a74ab03010d32b4816e(_SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_UV_1, _Property_03a2f987be36438cb0f8886babf33c96_Out_0, _Property_3ea8b576653841a7a5a603ef1f120469_Out_0, _Property_fb810e437e704eecbef8ebb2de0b4f87_Out_0, _Property_0232f0c810ad40a48d30cd2b51fe5fdf_Out_0, _Property_6caa425955974bfd86c28c3c1ca33d46_Out_0, _Property_b78f9c5d976c4281958cbf7b418a43a7_Out_0, _Property_b0bea84b765c4ea8b7e39d6456ca430b_Out_0, _Property_bbfe7ca4923b49599e2471ca8eabdabe_Out_0, _SGInfiniteFloorUVZoom_ecd7cad0aa684eeba0ea7a49fefc4e71_WorldUV_3, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Grass_1, _SGInfiniteFloorTextures_ade6262db40e4a86af0fa20271a4d4ac_Road_2);
     float2 _Property_6e6d5f35495f480d98315e5b25970b6b_Out_0 = _SizeOfTexture;
     float _Property_039b41a22968494fb95b7756f155d828_Out_0 = _GrassGridTiling;
     float _Property_98eedb86fc5b4145bc7b65222fede898_Out_0 = _GrassGridThickness;

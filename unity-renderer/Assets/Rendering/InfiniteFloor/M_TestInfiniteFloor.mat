@@ -74,11 +74,11 @@ Material:
     - Vector1_ba9eae2f64304e849fda8473dbdd3a57: 2
     - Vector1_c87711ac559c4306ada261dfe896c46a: 0.02
     - _ColorMask: 15
-    - _FogFade: 15000
-    - _FogIntensity: 0
+    - _FogFade: 10000
+    - _FogIntensity: 1
     - _GrassGridFade: 45000
     - _GrassGridFade_1: 12.4
-    - _GrassGridFarFade: 25
+    - _GrassGridFarFade: 70
     - _GrassGridThickness: 0.04
     - _GrassGridThicknessVariation: 0.05
     - _GrassGridTiling: 4
@@ -89,6 +89,7 @@ Material:
     - _HighlightRotation: 10
     - _HighlightThickness: 0
     - _Metallic: 0
+    - _RoadFade: 50000
     - _RoadScale: 5
     - _Smoothness: 0.2
     - _Stencil: 0
@@ -109,15 +110,15 @@ Material:
     - _Color04: {r: 0.26303354, g: 0.426, b: 0.28876507, a: 1}
     - _Color04_1: {r: 0.21895385, g: 0.109692074, b: 0.27358484, a: 0}
     - _Color05: {r: 0, g: 0.103773594, b: 0.030372756, a: 1}
-    - _ColorDistricts: {r: 0.1372549, g: 0.6784314, b: 0.3510565, a: 1}
-    - _ColorEmpty: {r: 0, g: 0.33962262, b: 0.10303155, a: 1}
+    - _ColorDistricts: {r: 0.38039213, g: 0.6431373, b: 0.38431373, a: 1}
+    - _ColorEmpty: {r: 0.38039213, g: 0.6431373, b: 0.38431373, a: 1}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
     - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorOwnedParcels: {r: 0.7803922, g: 0.93725497, b: 0.3254902, a: 1}
-    - _ColorParcels: {r: 0.20870416, g: 0.6603774, b: 0.28496066, a: 1}
-    - _ColorPlazas: {r: 0.19953719, g: 0.7169812, b: 0.2908508, a: 1}
+    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006044, a: 1}
+    - _ColorParcels: {r: 0.38183996, g: 0.64499986, b: 0.3831529, a: 1}
+    - _ColorPlazas: {r: 0.38039213, g: 0.6431373, b: 0.38431373, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
-    - _GrassGridColor: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
+    - _GrassGridColor: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _GrassVariationRange: {r: 0.5, g: 2.5, b: 0, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
@@ -127,5 +128,5 @@ Material:
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
-    - _UnownedVariationRange: {r: 0.5, g: 2, b: 0, a: 0}
+    - _UnownedVariationRange: {r: 0.6, g: 1.25, b: 0, a: 0}
   m_BuildTextureStacks: []
