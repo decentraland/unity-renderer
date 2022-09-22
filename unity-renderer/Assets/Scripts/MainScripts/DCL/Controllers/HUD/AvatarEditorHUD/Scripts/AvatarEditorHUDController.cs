@@ -1018,7 +1018,10 @@ public class AvatarEditorHUDController : IHUD
 
     private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
     {
-        return !wearable.SupportsBodyShape(model.bodyShape.id);
+        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
+            return false;
+        else
+            return !wearable.SupportsBodyShape(model.bodyShape.id);
     }
 
     private bool IsTryingToReplaceSkin(WearableItem wearable)
