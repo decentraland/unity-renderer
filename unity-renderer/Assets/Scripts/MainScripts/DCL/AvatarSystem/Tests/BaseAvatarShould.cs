@@ -31,9 +31,9 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void ReturnAvatarRevealerContainer()
+        public void ReturnArmatureContainer()
         {
-            Assert.AreEqual(baseAvatar.GetArmatureContainer(), avatarRevealer);
+            Assert.AreEqual(baseAvatar.GetArmatureContainer(), armatureContainer);
         }
 
         [UnityTest]
