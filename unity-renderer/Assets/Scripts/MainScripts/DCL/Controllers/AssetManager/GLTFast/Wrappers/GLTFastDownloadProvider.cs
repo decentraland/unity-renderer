@@ -5,7 +5,7 @@ using GLTFast.Loading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace DCL
+namespace DCL.GLTFast.Wrappers
 {
     /// <summary>
     /// With this class we replace all of GLTFast web requests with our own

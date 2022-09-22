@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using GLTFast;
 using UnityEngine;
 
-namespace GLTFast {
+namespace DCL.GLTFast.Wrappers {
     
     // Note (Kinerius) This is a straight up copy of TimeBudgetPerFrameDeferAgent but it reacts to the renderer being inactive
     [DefaultExecutionOrder(-10)]

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.GLTFast.Wrappers;
 using GLTFast;
-using GLTFast.Materials;
 using UnityEngine;
 
 // Disable async call not being awaited warning
@@ -20,7 +20,7 @@ namespace DCL
         private readonly GLTFastDownloadProvider gltFastDownloadProvider;
         private readonly CancellationTokenSource cancellationSource;
 
-        private readonly GLTFastMaterialGenerator gltFastMaterialGenerator;
+        private readonly IMaterialGenerator gltFastMaterialGenerator;
         private readonly ConsoleLogger consoleLogger;
         
         private static IDeferAgent deferAgent;
@@ -40,7 +40,8 @@ namespace DCL
             
             gltFastDownloadProvider = new GLTFastDownloadProvider(requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
-            gltFastMaterialGenerator = new GLTFastMaterialGenerator();
+            //gltFastMaterialGenerator = new GLTFastMaterialGenerator();
+            gltFastMaterialGenerator = new GLTFastDCLMaterialGenerator("DCL/Universal Render Pipeline/Lit");
             consoleLogger = new ConsoleLogger();
         }
 

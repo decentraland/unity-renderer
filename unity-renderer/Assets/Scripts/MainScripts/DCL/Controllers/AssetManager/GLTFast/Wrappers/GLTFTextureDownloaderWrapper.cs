@@ -3,7 +3,7 @@ using GLTFast.Loading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace DCL
+namespace DCL.GLTFast.Wrappers
 {
     internal class GLTFTextureDownloaderWrapper : ITextureDownload, IDisposable
     {

@@ -3,7 +3,7 @@ using DCL;
 using GLTFast;
 using GLTFast.Loading;
 
-namespace DCL
+namespace DCL.GLTFast.Wrappers
 {
     public class GLTFDownloaderWrapper : IDownload, IDisposable
     {

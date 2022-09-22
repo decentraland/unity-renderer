@@ -3,7 +3,7 @@ using GLTFast;
 using GLTFast.Materials;
 using UnityEngine;
 
-namespace DCL
+namespace DCL.GLTFast.Wrappers
 {
     /// <summary>
     /// With this class we can override the material generation from GLTFast, 
@@ -11,10 +11,9 @@ namespace DCL
     /// </summary>
     internal class GLTFastMaterialGenerator : ShaderGraphMaterialGenerator
     {
-            
         private const float CUSTOM_EMISSIVE_FACTOR = 5f;
 
-        public override Material GenerateMaterial(GLTFast.Schema.Material gltfMaterial, IGltfReadable gltf)
+        public override Material GenerateMaterial(global::GLTFast.Schema.Material gltfMaterial, IGltfReadable gltf)
         {
             Material generatedMaterial = base.GenerateMaterial(gltfMaterial, gltf);
 
