@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -17,11 +18,9 @@ public class PublicChatChannelController : IHUD
     public event Action<bool> OnPreviewModeChanged;
 
     private readonly IChatController chatController;
-    private readonly ILastReadMessagesService lastReadMessagesService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
-    private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
@@ -36,20 +35,16 @@ public class PublicChatChannelController : IHUD
     private UserProfile ownProfile => userProfileBridge.GetOwn();
     
     public PublicChatChannelController(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IUserProfileBridge userProfileBridge,
         DataStore dataStore,
         IProfanityFilter profanityFilter,
-        ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
         InputAction_Trigger toggleChatTrigger)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.userProfileBridge = userProfileBridge;
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
-        this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
         this.toggleChatTrigger = toggleChatTrigger;
     }
@@ -96,7 +91,7 @@ public class PublicChatChannelController : IHUD
         this.channelId = channelId;
 
         // TODO: retrieve data from a channel provider
-        View.Configure(new PublicChatChannelModel(this.channelId, "nearby",
+        View.Configure(new PublicChatChannelModel(this.channelId, ChatUtils.NEARBY_CHANNEL_ID,
             "Talk to the people around you. If you move far away from someone you will lose contact. All whispers will be displayed."));
 
         ReloadAllChats().Forget();
@@ -181,7 +176,7 @@ public class PublicChatChannelController : IHUD
 
         const int entriesPerFrame = 10;
         // TODO: filter entries by channelId
-        var list = chatController.GetEntries();
+        var list = chatController.GetAllocatedEntries();
         if (list.Count == 0) return;
 
         for (var i = list.Count - 1; i >= 0; i--)
@@ -206,7 +201,7 @@ public class PublicChatChannelController : IHUD
         OnPreviewModeChanged?.Invoke(true);
     }
 
-    private void MarkChatMessagesAsRead() => lastReadMessagesService.MarkAllRead(channelId);
+    private void MarkChatMessagesAsRead() => chatController.MarkMessagesAsSeen(channelId);
 
     private void HandleViewClosed() => OnClosed?.Invoke();
 

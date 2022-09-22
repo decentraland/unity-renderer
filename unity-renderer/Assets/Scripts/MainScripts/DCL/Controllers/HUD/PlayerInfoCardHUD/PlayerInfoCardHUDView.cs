@@ -165,7 +165,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     }
 
     public void UpdateFriendshipInteraction(bool canUseFriendButton,
-        FriendsController.UserStatus status)
+        UserStatus status)
     {
         if (status == null)
         {

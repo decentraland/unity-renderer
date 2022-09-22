@@ -14,7 +14,6 @@ public class FriendEntry : FriendEntryBase
     [SerializeField] private Button rowButton;
 
     private IChatController chatController;
-    private ILastReadMessagesService lastReadMessagesService;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
 
@@ -29,19 +28,17 @@ public class FriendEntry : FriendEntryBase
     }
 
     public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
     }
 
     private void Start()
     {
-        unreadNotificationBadge?.Initialize(chatController, Model.userId, lastReadMessagesService);
+        unreadNotificationBadge?.Initialize(chatController, Model.userId);
         jumpInButton.Initialize(friendsController, Model.userId, socialAnalytics);
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }

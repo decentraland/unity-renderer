@@ -69,11 +69,11 @@ internal class FriendsSearchPromptController : IDisposable
 
     private void OnFriendRemoved(string userId) { userViewsHandler.RemoveUserView(userId); }
 
-    private void OnFriendList(Dictionary<string, FriendsController.UserStatus> friendsDictionary)
+    private void OnFriendList(Dictionary<string, UserStatus> friendsDictionary)
     {
         List<UserProfile> profiles = new List<UserProfile>();
 
-        foreach (KeyValuePair<string, FriendsController.UserStatus> keyValuePair in friendsDictionary)
+        foreach (KeyValuePair<string, UserStatus> keyValuePair in friendsDictionary)
         {
             if (keyValuePair.Value.friendshipStatus != FriendshipStatus.FRIEND)
                 continue;
