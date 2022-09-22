@@ -55,7 +55,7 @@ public class AvatarEditorHUDController : IHUD
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
     private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
-    private int ownedWearableEmotesRequestRetryTime = 60;
+    private const int ownedWearableEmotesRequestRetryTime = 60;
     private bool ownedWearablesAlreadyLoaded = false;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
