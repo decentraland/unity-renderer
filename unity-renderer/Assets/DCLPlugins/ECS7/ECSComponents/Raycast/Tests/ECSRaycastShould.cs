@@ -42,7 +42,6 @@ namespace Tests
             entityRaycaster = scene.CreateEntity(512);
             
             entityCollider1 = scene.CreateEntity(513);
-            entityCollider1.gameObject.layer = LayerMask.NameToLayer("OnPointerEvent");
             entityCollider1.gameObject.transform.position = 
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 8));
             var colliderEntity1 =  entityCollider1.gameObject.AddComponent<BoxCollider>();
@@ -51,7 +50,6 @@ namespace Tests
             
             
             entityCollider2 = scene.CreateEntity(514);
-            entityCollider2.gameObject.layer = LayerMask.NameToLayer("OnPointerEvent");
             entityCollider2.gameObject.transform.position = 
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 12));
             var colliderEntity2 = entityCollider2.gameObject.AddComponent<BoxCollider>();

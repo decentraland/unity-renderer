@@ -1,0 +1,18 @@
+{
+    "name": "LazyLoadingFriendsController",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ba9b721ce33233c4da7ff4ef30d25b59",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

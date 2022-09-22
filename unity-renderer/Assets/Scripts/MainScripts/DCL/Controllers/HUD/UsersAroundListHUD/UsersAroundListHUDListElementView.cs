@@ -136,7 +136,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
             return;
         }
 
-        if (FriendsController.i.friends.TryGetValue(userId, out FriendsController.UserStatus status))
+        if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
         {
             SetupFriendship(status.friendshipStatus);
         }
