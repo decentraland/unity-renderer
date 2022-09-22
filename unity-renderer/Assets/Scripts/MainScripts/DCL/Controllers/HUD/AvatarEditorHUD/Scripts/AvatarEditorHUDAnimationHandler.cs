@@ -50,13 +50,13 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         switch (wearable.data.category)
         {
             case WearableLiterals.Categories.FEET:
-                activeCategory = "Outfit_Shoes";
+                activeCategory = GetRandomizedName("Outfit_Shoes_v0",2);
                 break;
             case WearableLiterals.Categories.LOWER_BODY:
-                activeCategory = "Outfit_Lower";
+                activeCategory = GetRandomizedName("Outfit_Lower_v0",2);
                 break;
             case WearableLiterals.Categories.UPPER_BODY:
-                activeCategory = "Outfit_Upper";
+                activeCategory = GetRandomizedName("Outfit_Upper_v0",2);
                 break;
             case "eyewear":
                 activeCategory = "Outfit_Accessories";
@@ -83,6 +83,11 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
                 activeCategory = "";
                 break;
         }
+    }
+
+    private string GetRandomizedName(string baseString, int limit)
+    {
+        return baseString + UnityEngine.Random.Range(1, limit+1);
     }
 
     public void Dispose()

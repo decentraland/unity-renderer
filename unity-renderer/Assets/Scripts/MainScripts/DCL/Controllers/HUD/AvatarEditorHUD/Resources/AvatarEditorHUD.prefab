@@ -3550,8 +3550,6 @@ MonoBehaviour:
   hairColorPickerComponent: {fileID: 6733050965456895549}
   facialHairColorPickerComponent: {fileID: 3234247730794696175}
   eyeBrowsColorPickerComponent: {fileID: 2459573730806547177}
-  characterPreviewPrefab: {fileID: 3569267310167974304, guid: 164e126ce7f309a47b78e9f75cbca418,
-    type: 3}
   characterPreviewRotation: {fileID: 6749458557699296124}
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
@@ -8508,7 +8506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8534,7 +8532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 2
-  m_AspectRatio: 0.5
+  m_AspectRatio: 1
 --- !u!114 &6749458557699296124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12129,7 +12127,7 @@ PrefabInstance:
     - target: {fileID: 555438495136505916, guid: 64db3989e888c4ffaa3213f1189ee958,
         type: 3}
       propertyPath: m_fontSize
-      value: 11.45
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 555438495136505916, guid: 64db3989e888c4ffaa3213f1189ee958,
         type: 3}
@@ -12972,7 +12970,7 @@ PrefabInstance:
     - target: {fileID: 3034530879239878528, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 14.4
+      value: 14.400024
       objectReference: {fileID: 0}
     - target: {fileID: 3034530879239878528, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
@@ -14363,7 +14361,7 @@ PrefabInstance:
     - target: {fileID: 555438495136505916, guid: 64db3989e888c4ffaa3213f1189ee958,
         type: 3}
       propertyPath: m_fontSize
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 555438495136505916, guid: 64db3989e888c4ffaa3213f1189ee958,
         type: 3}

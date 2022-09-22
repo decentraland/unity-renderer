@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
@@ -128,7 +129,7 @@ namespace AvatarSystem
         private void PlaySpawnEmote()
         {
             var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
-            PlayEmote("Outfit_Spawn", timestamp);
+            PlayEmote("Spawn_Pose_v0" + UnityEngine.Random.Range(1,4), timestamp);
         }
 
         public void PlayEmote(string emoteId, long timestamps)
