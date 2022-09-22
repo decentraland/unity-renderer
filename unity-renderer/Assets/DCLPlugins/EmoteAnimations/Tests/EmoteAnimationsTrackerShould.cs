@@ -46,6 +46,8 @@ namespace DCL.Emotes
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void ReactToEquipEmotesIncreasingReference()
         {
             string bodyShapeId = WearableLiterals.BodyShapes.FEMALE;

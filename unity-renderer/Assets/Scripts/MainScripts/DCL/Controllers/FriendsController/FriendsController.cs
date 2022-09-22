@@ -265,7 +265,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
             return;
 
         if (!friends.ContainsKey(userId))
-            friends.Add(userId, new UserStatus());
+            friends.Add(userId, new UserStatus { userId = userId });
 
         if (ItsAnOutdatedUpdate(userId, friendshipStatus))
             return;
