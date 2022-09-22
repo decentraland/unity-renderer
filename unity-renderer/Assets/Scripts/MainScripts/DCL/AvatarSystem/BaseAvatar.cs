@@ -12,18 +12,20 @@ namespace AvatarSystem
         private ILOD lod;
         private GameObject avatarRevealerContainer;
         private CancellationTokenSource transitionCts = new CancellationTokenSource();
+        private GameObject armatureContainer;
 
         public SkinnedMeshRenderer meshRenderer { get; private set; }
 
-        public BaseAvatar(GameObject avatarRevealerContainer, ILOD lod) 
+        public BaseAvatar( GameObject avatarRevealerContainer, GameObject armatureContainer, ILOD lod) 
         {
+            this.armatureContainer = armatureContainer;
             this.avatarRevealerContainer = avatarRevealerContainer;
             this.lod = lod;
         }
 
-        public GameObject GetHologramContainer()
+        public GameObject GetArmatureContainer()
         {
-            return avatarRevealerContainer;
+            return armatureContainer;
         }
 
         public SkinnedMeshRenderer GetMainRenderer()

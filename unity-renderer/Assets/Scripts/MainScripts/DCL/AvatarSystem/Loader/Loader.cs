@@ -39,7 +39,7 @@ namespace AvatarSystem
             await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, IBaseAvatar baseAvatar, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -49,13 +49,13 @@ namespace AvatarSystem
                 status = ILoader.Status.Loading;
                 await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
                 await LoadWearables(wearables, settings, toCleanUp, ct);
-                SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
+                SkinnedMeshRenderer mainRenderer = baseAvatar.GetMainRenderer();
+                SkinnedMeshRenderer skinnedContainer = mainRenderer == null ? bodyshapeLoader.upperBodyRenderer : mainRenderer;
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
                 if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
-
-
+                
                 foreach (IWearableLoader wearableLoader in loaders.Values)
                 {
                     wearableLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones);

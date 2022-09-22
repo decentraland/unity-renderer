@@ -26,14 +26,14 @@ namespace Test.AvatarSystem
             baseAvatarRevealer = Substitute.For<IBaseAvatarRevealer>();
             avatarRevealer = new GameObject();
             armatureContainer = new GameObject();
-            baseAvatar = new BaseAvatar(avatarRevealer, lod);
+            baseAvatar = new BaseAvatar(avatarRevealer, armatureContainer, lod);
             baseAvatar.avatarRevealer = baseAvatarRevealer;
         }
 
         [Test]
         public void ReturnAvatarRevealerContainer()
         {
-            Assert.AreEqual(baseAvatar.GetHologramContainer(), avatarRevealer);
+            Assert.AreEqual(baseAvatar.GetArmatureContainer(), avatarRevealer);
         }
 
         [UnityTest]

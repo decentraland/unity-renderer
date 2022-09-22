@@ -92,7 +92,7 @@ namespace DCL.ECSComponents
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer.gameObject, avatarLOD);
+            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer.gameObject, armatureContainer, avatarLOD);
             avatar = new AvatarWithHologram(
                 baseAvatar,
                 new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),

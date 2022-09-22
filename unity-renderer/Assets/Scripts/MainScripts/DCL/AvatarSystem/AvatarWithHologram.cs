@@ -68,13 +68,13 @@ namespace AvatarSystem
                 baseAvatar.Initialize();
                 // we setup the animator to use the hologram armature so we can animate it before loading the combined avatar
                 // since the avatarContainer is de-parented from the entity
-                animator.Prepare(settings.bodyshapeId, baseAvatar.GetHologramContainer());
+                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
                 }
-                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar.GetMainRenderer(), linkedCt);
+                await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, baseAvatar, linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;

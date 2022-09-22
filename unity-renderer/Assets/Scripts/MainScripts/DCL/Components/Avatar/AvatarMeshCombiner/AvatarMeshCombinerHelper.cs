@@ -110,6 +110,14 @@ namespace DCL
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
             
+            // Deparenting is done to avoid scaling issues, renderers are disabled
+            var bonesContainerTransform = bonesContainer.transform;
+            Transform containerParent = bonesContainerTransform.parent;
+            bonesContainerTransform.SetParent(null);
+            bonesContainerTransform.localPosition = Vector3.zero;
+            bonesContainerTransform.localRotation = Quaternion.identity;
+            bonesContainerTransform.localScale = Vector3.one;
+
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
@@ -144,6 +152,12 @@ namespace DCL
             renderer.skinnedMotionVectors = false;
             renderer.enabled = enableCombinedMesh;
 
+            // reparent
+            bonesContainerTransform.SetParent(containerParent);
+            bonesContainerTransform.localPosition = Vector3.zero;
+            bonesContainerTransform.localRotation = Quaternion.identity;
+            bonesContainerTransform.localScale = Vector3.one;
+            
             if (prepareMeshForGpuSkinning)
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(renderer);
 

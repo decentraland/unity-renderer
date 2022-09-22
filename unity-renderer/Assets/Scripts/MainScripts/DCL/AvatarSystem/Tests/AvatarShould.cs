@@ -103,7 +103,7 @@ namespace Test.AvatarSystem
                       Arg.Any<WearableItem>(),
                       Arg.Any<List<WearableItem>>(),
                       Arg.Any<AvatarSettings>(),
-                      Arg.Any<SkinnedMeshRenderer>(),
+                      Arg.Any<IBaseAvatar>(),
                       Arg.Any<CancellationToken>())
                   .Returns(x => throw new Exception("Loader failed"));
 
