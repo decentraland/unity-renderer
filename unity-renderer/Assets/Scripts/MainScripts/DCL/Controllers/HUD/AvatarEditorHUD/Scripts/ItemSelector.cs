@@ -148,10 +148,7 @@ public class ItemSelector : MonoBehaviour
         WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy, incompatibleWearableToastStrategy);
         totalWearables.Add(item.id, wearableSettings);
 
-        if (item.data.category == WearableLiterals.Categories.BODY_SHAPE)
-        {
-            availableWearables.Add(wearableSettings);
-        }
+        availableWearables.Add(wearableSettings);
     }
 
     public void RemoveWearable(string itemID)
