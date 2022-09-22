@@ -7,8 +7,16 @@ namespace DCL.Emotes
     {
         private readonly EmoteAnimationsTracker emotesAnimationTracker;
 
-        public EmoteAnimationsPlugin() { emotesAnimationTracker = new EmoteAnimationsTracker(DataStore.i.emotes, new EmoteAnimationLoaderFactory(), new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()); }
+        public EmoteAnimationsPlugin()
+        {
+            emotesAnimationTracker = new EmoteAnimationsTracker(DataStore.i.emotes, 
+                new EmoteAnimationLoaderFactory(), new WearableItemResolver(), 
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>());
+        }
 
-        public void Dispose() { emotesAnimationTracker?.Dispose(); }
+        public void Dispose()
+        {
+            emotesAnimationTracker?.Dispose();
+        }
     }
 }
