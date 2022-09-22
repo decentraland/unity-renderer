@@ -11,9 +11,9 @@ Components on entities that are considered outside their respective scene bounda
 #### Entity Evaluation
 When the SBC runs its pass to evaluate all the entities in its collection, they are checked one by one and then removed from the collection (they'll be auto-added again later if the needed actions are executed)
 
-- If the evaluated entity doesn't have a `Shape` component attached, then [its Transform position]() is used for the scene-boundaries evaluation.
-- If the evaluated entity has a Shape component that's not an `AvatarShape`, [the whole mesh merged boundaries (including colliders) min-max points]() are used for the scene-boundaries evaluation.
-- If the evaluated entity has an AvatarShape component then a `Bounds` object is created and resized based on the entity's transform lossy scale, and [that `Bounds` object]() is used as the merged bounds for the scene-boundaries evaluation.
+- If the evaluated entity doesn't have a `Shape` component attached, then [its Transform position](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L233) is used for the scene-boundaries evaluation.
+- If the evaluated entity has a Shape component that's not an `AvatarShape`, [the whole mesh merged boundaries (including colliders) min-max points](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L219) are used for the scene-boundaries evaluation.
+- If the evaluated entity has an AvatarShape component then a `Bounds` object is created and resized based on the entity's transform lossy scale, and [that `Bounds` object](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L259) is used as the merged bounds for the scene-boundaries evaluation.
 
 #### Persistent Entities
 
