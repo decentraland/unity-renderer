@@ -880,7 +880,6 @@ public class AvatarEditorHUDController : IHUD
 
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
-        userProfile.SetAvatarExpression( "Outfit_Spawn", UserProfile.EmoteSource.Backpack);
         
         if (DataStore.i.common.isSignUpFlow.Get())
         {

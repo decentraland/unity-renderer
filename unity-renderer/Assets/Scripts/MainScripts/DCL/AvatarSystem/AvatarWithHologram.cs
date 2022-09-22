@@ -28,7 +28,7 @@ namespace AvatarSystem
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        private (string emoteId, long timeStamp) pendingEmote;
+        static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
@@ -91,7 +91,7 @@ namespace AvatarSystem
 
                 status = IAvatar.Status.Loaded;
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
-                PlayPendingEmotes();
+                PlaySpawnEmote();
             }
             catch (OperationCanceledException)
             {
@@ -125,25 +125,15 @@ namespace AvatarSystem
             visibility.RemoveGlobalConstrain(key);
         }
 
-        private void PlayPendingEmotes()
+        private void PlaySpawnEmote()
         {
-            if (!string.IsNullOrEmpty(pendingEmote.emoteId))
-            {
-                PlayEmote(pendingEmote.emoteId, pendingEmote.timeStamp);
-            }
-            pendingEmote = ("", 0);
+            var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
+            PlayEmote("Outfit_Spawn", timestamp);
         }
 
         public void PlayEmote(string emoteId, long timestamps)
         {
-            if (status.Equals(IAvatar.Status.Idle))
-            {
-                pendingEmote = (emoteId, timestamps);
-            }
-            else
-            {
-                animator?.PlayEmote(emoteId, timestamps);
-            }
+            animator?.PlayEmote(emoteId, timestamps);
         }
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
