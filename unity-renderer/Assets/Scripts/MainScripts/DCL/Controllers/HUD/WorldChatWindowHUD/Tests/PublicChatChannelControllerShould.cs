@@ -4,7 +4,6 @@ using DCL;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
-using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -31,11 +30,9 @@ public class PublicChatChannelControllerShould
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PublicChatChannelController(
             chatController,
-            Substitute.For<ILastReadMessagesService>(),
             userProfileBridge,
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            Substitute.For<ISocialAnalytics>(),
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
 

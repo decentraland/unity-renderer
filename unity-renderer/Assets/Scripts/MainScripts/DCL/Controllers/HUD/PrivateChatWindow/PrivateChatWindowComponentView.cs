@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView, IPointerDownHandler
 {
+    private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.995f;
+    
     [SerializeField] internal Button backButton;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal UserThumbnailComponentView userThumbnail;
@@ -19,6 +21,9 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal UserContextMenu userContextMenu;
     [SerializeField] internal RectTransform userContextMenuReferencePoint;
     [SerializeField] internal Button optionsButton;
+    [SerializeField] internal GameObject messagesLoading;
+    [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal GameObject oldMessagesLoadingContainer;
     [SerializeField] private Model model;
     [SerializeField] internal CanvasGroup[] previewCanvasGroup;
     [SerializeField] private Vector2 previewModeSize;
@@ -27,6 +32,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
+    private bool isPreviewActivated;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -36,6 +42,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         add => userContextMenu.OnUnfriend += value;
         remove => userContextMenu.OnUnfriend -= value;
     }
+
+    public event Action OnRequireMoreMessages;
     public event Action<bool> OnFocused
     {
         add => onFocused += value;
@@ -61,6 +69,14 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         optionsButton.onClick.AddListener(ShowOptions);
         userContextMenu.OnBlock += HandleBlockFromContextMenu;
+        scroll.onValueChanged.AddListener((scrollPos) =>
+        {
+            if (isPreviewActivated)
+                return;
+
+            if (scrollPos.y > REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
+                OnRequireMoreMessages?.Invoke();
+        });
     }
 
     public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
@@ -78,7 +94,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
-            
+
         base.Dispose();
     }
 
@@ -86,7 +102,11 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         if (!this) return;
         if (!gameObject) return;
-        
+
+        isPreviewActivated = true;
+        SetLoadingMessagesActive(false);
+        SetOldMessagesLoadingActive(false);
+
         const float alphaTarget = 0f;
         
         if (!gameObject.activeInHierarchy)
@@ -106,6 +126,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
 
     public void DeactivatePreview()
     {
+        isPreviewActivated = false;
+
         const float alphaTarget = 1f;
         
         if (!gameObject.activeInHierarchy)
@@ -121,6 +143,23 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         
         alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
         ((RectTransform) transform).sizeDelta = originalSize;
+    }
+
+    public void SetLoadingMessagesActive(bool isActive)
+    {
+        if (messagesLoading == null)
+            return;
+
+        messagesLoading.SetActive(isActive);
+    }
+
+    public void SetOldMessagesLoadingActive(bool isActive)
+    {
+        if (oldMessagesLoadingContainer == null)
+            return;
+
+        oldMessagesLoadingContainer.SetActive(isActive);
+        oldMessagesLoadingContainer.transform.SetAsFirstSibling();
     }
 
     public override void RefreshControl()
@@ -146,7 +185,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isUserBlocked = isBlocked
         };
         RefreshControl();
-
+        
         jumpInButton.Initialize(friendsController, profile.userId, socialAnalytics);
     }
 
@@ -170,7 +209,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         model.isUserBlocked = isBlocked;
         RefreshControl();
     }
-    
+
     private IEnumerator SetAlpha(float target, float duration)
     {
         var t = 0f;

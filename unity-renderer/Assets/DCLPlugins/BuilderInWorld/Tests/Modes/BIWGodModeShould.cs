@@ -16,6 +16,7 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWGodModeShould : IntegrationTestSuite_Legacy
 {

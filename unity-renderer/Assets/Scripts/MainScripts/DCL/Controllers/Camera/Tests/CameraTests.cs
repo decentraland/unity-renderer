@@ -59,19 +59,27 @@ namespace CameraController_Test
         }
 
         [UnityTest]
-        public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
+        public IEnumerator ActivateAndDeactivateWithLoadingHUDToggleEvents()
         {
-            RenderingController renderingController = TestUtils.CreateComponentWithGameObject<RenderingController>("RenderingController");
-            renderingController.DeactivateRendering();
+            CommonScriptableObjects.isLoadingHUDOpen.Set(true);
+            yield return null;
             Assert.IsFalse(cameraController.camera.enabled);
 
+            CommonScriptableObjects.isLoadingHUDOpen.Set(false);
             yield return null;
-
-            renderingController.renderingActivatedAckLock.RemoveAllLocks();
-            renderingController.ActivateRendering();
             Assert.IsTrue(cameraController.camera.enabled);
+        }
+        
+        [UnityTest]
+        public IEnumerator ActivateAndDeactivateWithFullscreenHUDToggleEvents()
+        {
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
+            yield return null;
+            Assert.IsFalse(cameraController.camera.enabled);
 
-            Object.Destroy(renderingController.gameObject);
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+            yield return null;
+            Assert.IsTrue(cameraController.camera.enabled);
         }
     }
 }

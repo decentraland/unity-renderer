@@ -1,26 +1,27 @@
 {
-  "name": "ChatControllerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:eb95615676ca6984687c5ae7774d6309",
-    "GUID:6afcac5154f98e846bbd9f27e454b57a",
-    "GUID:1de3566cccb280f4a982c59ad0d08c96",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "ChatControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:eb95615676ca6984687c5ae7774d6309",
+        "GUID:6afcac5154f98e846bbd9f27e454b57a",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
