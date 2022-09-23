@@ -366,9 +366,6 @@ public class AvatarEditorHUDController : IHUD
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
 
-        if (avatarIsDirty)
-            return;
-
         view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
 
         CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
@@ -381,6 +378,10 @@ public class AvatarEditorHUDController : IHUD
         view.SetIsWeb3(userProfile.hasConnectedWeb3);
 
         ProcessCatalog(this.catalog);
+        
+        if (avatarIsDirty)
+            return;
+        
         EquipBodyShape(bodyShape);
         EquipSkinColor(userProfile.avatar.skinColor);
         EquipHairColor(userProfile.avatar.hairColor);
@@ -483,6 +484,7 @@ public class AvatarEditorHUDController : IHUD
         }
 
         UpdateAvatarPreview(false);
+        avatarIsDirty = true;
     }
 
     public void HairColorClicked(Color color)
@@ -583,7 +585,6 @@ public class AvatarEditorHUDController : IHUD
             toReplace.ForEach(UnequipWearable);
             model.wearables.Add(wearable);
             view.EquipWearable(wearable);
-            avatarIsDirty = true;
         }
     }
 
