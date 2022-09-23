@@ -8,7 +8,8 @@ namespace DCLPlugins.ECS7.TestsUtils
         public static PBUiTransform CreatePBUiTransformDefaultModel()
         {
             var model = new PBUiTransform();
-            model.Parent = SpecialEntityId.SCENE_ROOT_ENTITY;
+            // EntityId long to int check
+            model.Parent = (int)SpecialEntityId.SCENE_ROOT_ENTITY;
             model.AlignContent = YGAlign.FlexStart;
             model.AlignSelf = YGAlign.Auto;
             model.AlignItems = YGAlign.Auto;

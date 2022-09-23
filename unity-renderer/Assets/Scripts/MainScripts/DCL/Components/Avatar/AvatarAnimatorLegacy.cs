@@ -18,28 +18,32 @@ public enum AvatarAnimation
     FALL,
 }
 
+public static class AvatarAnimationExtensions
+{
+    public static bool ShouldLoop(this AvatarAnimation avatarAnimation)
+    {
+        return avatarAnimation == AvatarAnimation.RUN ||
+               avatarAnimation == AvatarAnimation.IDLE ||
+               avatarAnimation == AvatarAnimation.FALL ||
+               avatarAnimation == AvatarAnimation.WALK;
+    }
+}
+
 public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnimator
 {
     const float IDLE_TRANSITION_TIME = 0.2f;
-    const float STRAFE_TRANSITION_TIME = 0.25f;
     const float RUN_TRANSITION_TIME = 0.15f;
     const float WALK_TRANSITION_TIME = 0.15f;
     const float JUMP_TRANSITION_TIME = 0.01f;
     const float FALL_TRANSITION_TIME = 0.5f;
     const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
     const float EXPRESSION_ENTER_TRANSITION_TIME = 0.1f;
-    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.07f;
+    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.02f;
 
     const float AIR_EXIT_TRANSITION_TIME = 0.2f;
-    const float GROUND_BLENDTREE_TRANSITION_TIME = 0.15f;
-
-    const float RUN_SPEED_THRESHOLD = 0.05f;
-    const float WALK_SPEED_THRESHOLD = 0.03f;
 
     const float ELEVATION_OFFSET = 0.6f;
     const float RAY_OFFSET_LENGTH = 3.0f;
-
-    const float MAX_VELOCITY = 6.25f;
 
     // Time it takes to determine if a character is grounded when vertical velocity is 0
     const float FORCE_GROUND_TIME = 0.05f;
@@ -282,6 +286,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
+        
 
         if (movementSpeed > runMinSpeed)
         {
@@ -302,12 +307,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             OnUpdateWithDeltaTime(bb.deltaTime);
         }
     }
+
     private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName, 
         float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
     {
         if (latestAnimation == avatarAnimation)
             return;
-
+        
+        animation.wrapMode = avatarAnimation.ShouldLoop() ? WrapMode.Loop : WrapMode.Once;
         animation.CrossFade(animationName, runTransitionTime, playMode);
         latestAnimation = avatarAnimation;
     }
@@ -338,13 +345,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool ownPlayer)
     {
         float timeTillEnd = animationState.length - animationState.time;
-        if (timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME)
-        {
-            return ownPlayer ? dclCharacterController.isMovingByUserInput : 
-                Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-        }
-
-        return false;
+        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
+        bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
+        return isAnimationOver || isMoving;
     }
 
     private static bool ExpressionAirTransitionCondition(BlackBoard bb)
@@ -360,7 +363,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
         bool exitTransitionStarted = false;
-
         if (ExpressionAirTransitionCondition(bb))
         {
             currentState = State_Air;
@@ -375,7 +377,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (exitTransitionStarted)
         {
-            animation.wrapMode = WrapMode.Default;
             animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
             
             bb.expressionTriggerId = null;
@@ -414,11 +415,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (!string.IsNullOrEmpty(expressionTriggerId))
             {
                 animation.Stop(expressionTriggerId);
+                latestAnimation = AvatarAnimation.IDLE;
             }
             
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
                                     && clipData.loop;
-
+                                    
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }

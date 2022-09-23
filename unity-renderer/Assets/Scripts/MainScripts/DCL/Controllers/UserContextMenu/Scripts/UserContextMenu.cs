@@ -122,6 +122,11 @@ public class UserContextMenu : MonoBehaviour
         OnHide?.Invoke();
     }
 
+    /// <summary>
+    /// Shows/Hides the friendship container
+    /// </summary>
+    public void SetFriendshipContentActive(bool isActive) => friendshipContainer.SetActive(isActive);
+
     private void Awake()
     {
         if (!currentPlayerId)

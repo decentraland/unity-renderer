@@ -76,12 +76,17 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
+    private void Awake() =>
+        ConfigureDefaultOnSelectAction();
+
+    private void OnEnable() =>
+        StartCoroutine(ForceToRefreshToggleState());
+
+    public void OnPointerDown(PointerEventData eventData) =>
+        SelectToggle();
+
     public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
-
-    private void Awake() { ConfigureDefaultOnSelectAction(); }
-
-    private void OnEnable() { StartCoroutine(ForceToRefreshToggleState()); }
 
     public SectionToggleModel GetInfo()
     {
@@ -138,11 +143,6 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        SelectToggle();
     }
 
     public void SelectToggle(bool reselectIfAlreadyOn = false)

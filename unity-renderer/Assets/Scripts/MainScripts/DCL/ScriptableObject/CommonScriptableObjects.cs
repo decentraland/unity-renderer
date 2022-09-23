@@ -229,6 +229,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isFullscreenHUDOpenValue;
     public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
+    
+    private static BooleanVariable isLoadingHUDOpenValue;
+    public static BooleanVariable isLoadingHUDOpen => GetOrLoad(ref isLoadingHUDOpenValue, "ScriptableObjects/IsLoadingHUDOpen");
 
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");
@@ -238,6 +241,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
+    
+    private static BooleanVariable userMovementKeysBlockedValue;
+    public static BooleanVariable userMovementKeysBlocked => GetOrLoad(ref userMovementKeysBlockedValue, "ScriptableObjects/UserMovementKeysBlocked");
 
     private static BooleanVariable emailPromptActiveValue;
     public static BooleanVariable emailPromptActive => GetOrLoad(ref emailPromptActiveValue, "ScriptableObjects/EmailPromptActive");
@@ -287,6 +293,7 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(isTaskbarHUDInitializedValue);
         Resources.UnloadAsset(tutorialActiveValue);
         Resources.UnloadAsset(featureKeyTriggersBlockedValue);
+        Resources.UnloadAsset(userMovementKeysBlockedValue);
         Resources.UnloadAsset(emailPromptActiveValue);
         Resources.UnloadAsset(voiceChatDisabledValue);
     }

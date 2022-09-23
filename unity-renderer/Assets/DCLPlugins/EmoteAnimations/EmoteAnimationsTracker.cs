@@ -58,7 +58,7 @@ namespace DCL.Emotes
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.maleAnimation.name = embeddedEmote.id;
                     dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), 5000);
-                    var clipData = new EmoteClipData(embeddedEmote.maleAnimation);
+                    var clipData = new EmoteClipData(embeddedEmote.maleAnimation, embeddedEmote.emoteDataV0);
                     dataStore.animations.Add((MALE, embeddedEmote.id), clipData);
                     loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -69,7 +69,7 @@ namespace DCL.Emotes
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.femaleAnimation.name = embeddedEmote.id;
                     dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), 5000);
-                    var emoteClipData = new EmoteClipData(embeddedEmote.femaleAnimation);
+                    var emoteClipData = new EmoteClipData(embeddedEmote.femaleAnimation, embeddedEmote.emoteDataV0);
                     dataStore.animations.Add((FEMALE, embeddedEmote.id), emoteClipData);
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
@@ -102,14 +102,16 @@ namespace DCL.Emotes
 
             try
             {
-                var emote = await emotesCatalogService.RequestEmoteAsync(emoteId, ct) ?? 
-                                       await wearableItemResolver.Resolve(emoteId, ct);
-
+                var emote = await(emotesCatalogService.RequestEmoteAsync(emoteId, ct));
+                
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
                 await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, ct);
-
-                var emoteClipData = new EmoteClipData(animationLoader.animation, emote.emoteDataV0);
+                EmoteClipData emoteClipData;
+                if(emote is EmoteItem newEmoteItem)
+                    emoteClipData = new EmoteClipData(animationLoader.animation, newEmoteItem.data.loop);
+                else
+                    emoteClipData = new EmoteClipData(animationLoader.animation, emote.emoteDataV0);
 
                 dataStore.animations.Add((bodyShapeId, emoteId), emoteClipData);
             }
