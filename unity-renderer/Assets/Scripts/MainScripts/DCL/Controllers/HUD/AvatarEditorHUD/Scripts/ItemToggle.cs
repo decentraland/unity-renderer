@@ -25,6 +25,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
     [SerializeField] internal GameObject root;
+    [SerializeField] private GameObject disabledOverlay;
     [SerializeField] internal Material grayScaleMaterial;
 
     private bool selectedValue;
@@ -152,10 +153,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         {
             thumbnail.material = grayScaleMaterial;
             thumbnail.SetMaterialDirty();
+            disabledOverlay.SetActive(true);
         }
         else
         {
             thumbnail.material = null;
+            disabledOverlay.SetActive(false);
         }
     }
 
