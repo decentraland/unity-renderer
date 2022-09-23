@@ -27,6 +27,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] internal GameObject root;
     [SerializeField] private GameObject disabledOverlay;
     [SerializeField] internal Material grayScaleMaterial;
+    [SerializeField] internal Button selectButton;
 
     private bool selectedValue;
 
@@ -158,11 +159,13 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             thumbnail.material = grayScaleMaterial;
             thumbnail.SetMaterialDirty();
             disabledOverlay.SetActive(true);
+            selectButton.interactable = false;
         }
         else
         {
             thumbnail.material = null;
             disabledOverlay.SetActive(false);
+            selectButton.interactable = true;
         }
     }
 
