@@ -1,135 +1,165 @@
 ﻿using System;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL
 {
     public class ABDetectorTracker : IDisposable
     {
-        private readonly DebugConfig _debugConfig;
-        private int _abCount = 0;
-        private int _gltfCount = 0;
-        private readonly Dictionary<Renderer, Material[]> _rendererDict  = new Dictionary<Renderer, Material[]>();
+        private const string FromAssetBundleTag = "FromAssetBundle";
+        private const string AbDetectorMaterialsPrefabName = "AbDetectorMaterials";
+        
+        private readonly DebugConfig debugConfig;
+        private readonly Dictionary<Renderer, Material[]> rendererDict  = 
+            new Dictionary<Renderer, Material[]>();
+        private readonly Multimap<IParcelScene, Renderer> parcelToRendererMultimap = 
+            new Multimap<IParcelScene, Renderer>();
+
+        private ABDetectorMaterialsHolder abDetectorMaterialsHolder;
 
         public ABDetectorTracker(DebugConfig debugConfig)
         {
-            this._debugConfig = debugConfig;
+            this.debugConfig = debugConfig;
             
             debugConfig.showGlobalABDetectionLayer.OnChange += OnGlobalABDetectionChanged;
             debugConfig.showSceneABDetectionLayer.OnChange += OnSceneABDetectionChanged;
         }
+        
+        public void Dispose()
+        {
+            debugConfig.showGlobalABDetectionLayer.OnChange -= OnGlobalABDetectionChanged;
+            debugConfig.showSceneABDetectionLayer.OnChange -= OnSceneABDetectionChanged;
+        }
+        
+        private static IParcelScene FindSceneForPlayer()
+        {
+            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
+            {
+                if (WorldStateUtils.IsCharacterInsideScene(scene))
+                    return scene;
+            }
+
+            return null;
+        }
+
+        private void LoadMaterialsIfNeeded()
+        {
+            if (abDetectorMaterialsHolder == null)
+            {
+                abDetectorMaterialsHolder = Resources.Load<GameObject>
+                        (AbDetectorMaterialsPrefabName)
+                    .GetComponent<ABDetectorMaterialsHolder>();
+            }
+        }
 
         private void OnGlobalABDetectionChanged(bool current, bool previous)
         {
+            LoadMaterialsIfNeeded();
+            
             if (current)
             {
-                RemoveDetectionPaintingForCurrentScene();
-                ApplyGlobalDetectionPainting();
+                RemoveABDetectionPaintingForCurrentScene();
+                ApplyGlobalABDetectionPainting();
             }
             else
             {
-                RemoveDetectionPaintingForCurrentScene();
-                RemoveGlobalDetectionPainting();
+                RemoveABDetectionPaintingForCurrentScene();
+                RemoveGlobalABDetectionPainting();
             }
         }
 
         private void OnSceneABDetectionChanged(bool current, bool previous)
         {
+            LoadMaterialsIfNeeded();
+            
             if (current)
             {
-                ApplyDetectionPaintingForCurrentScene();
+                ApplyABDetectionPaintingForCurrentScene();
             }
             else
             {
-                RemoveDetectionPaintingForCurrentScene();
+                RemoveABDetectionPaintingForCurrentScene();
             }
         }
 
-        private void ApplyGlobalDetectionPainting()
+        private void ApplyGlobalABDetectionPainting()
         {
-            _abCount = 0;
-            _gltfCount = 0;
             var gameObjects = GameObject.FindObjectsOfType(typeof(GameObject));
             foreach (var gameObject in gameObjects)
             {
                 var converted = (GameObject) gameObject;
                 if (converted.transform.parent == null)
                 {
-                    ChangeMaterials(converted.transform);
+                    ApplyMaterials(converted.transform);
                 }
             }
         }
 
-        private void ChangeMaterials(Transform someTransform)
+        private void RemoveGlobalABDetectionPainting()
         {
-            // if (someTransform.childCount > 0)
-            // {
-            //     for (int i = 0; i < someTransform.childCount; i++)
-            //     {
-            //         var childTransform = someTransform.GetChild(i).transform;
-            //         if (childTransform.gameObject.name.Contains("GLTF Shape"))
-            //         {
-            //             var childGameObject = childTransform.GetChild(0).gameObject;
-            //             if (childGameObject.name.Contains("AB: ") && !childGameObject.name.Contains("GLTF: "))
-            //             {
-            //                 var renderers = childGameObject.GetComponentsInChildren<Renderer>(true);
-            //       
-            //                 foreach (Renderer renderer in renderers)
-            //                 {
-            //                     if(!_rendererDict.ContainsKey(renderer))
-            //                         _rendererDict.Add(renderer,renderer.materials);
-            //                     
-            //                     renderer.material = abMaterial;
-            //                 }
-            //                 
-            //                 _abCount++;
-            //             }
-            //             else
-            //             {
-            //                 var renderers = childGameObject.GetComponentsInChildren<Renderer>(true);
-            //                 foreach (Renderer renderer in renderers)
-            //                 {
-            //                     if(!_rendererDict.ContainsKey(renderer))
-            //                         _rendererDict.Add(renderer,renderer.materials);
-            //                     
-            //                     renderer.material = gltfMaterial;
-            //                 }
-            //             
-            //                 _gltfCount++;
-            //             }
-            //         }
-            //         else
-            //         {
-            //             ChangeMaterials(childTransform);
-            //         }
-            //     }
-            // }
-            //
-            // text.text = "GLTFs: " + gltfCount + "    AB: " + abCount;
-        }
-
-        private void RemoveGlobalDetectionPainting()
-        {
-            
+            foreach (KeyValuePair<Renderer,Material[]> keyValuePair in rendererDict)
+            {
+                keyValuePair.Key.materials = keyValuePair.Value;
+            }
+        
+            rendererDict.Clear();
+            parcelToRendererMultimap.Clear();
         }
         
-        private void ApplyDetectionPaintingForCurrentScene()
+        private void ApplyABDetectionPaintingForCurrentScene()
         {
-            
+            var currentScene = FindSceneForPlayer();
+            ApplyMaterials(currentScene.GetSceneTransform(), currentScene);
         }
         
-        private void RemoveDetectionPaintingForCurrentScene()
+        private void RemoveABDetectionPaintingForCurrentScene()
         {
-            
+            var currentScene = FindSceneForPlayer();
+            if (parcelToRendererMultimap.ContainsKey(currentScene))
+            {
+                foreach (var renderer in parcelToRendererMultimap.GetValues(currentScene))
+                {
+                    if (rendererDict.TryGetValue(renderer, out var materials))
+                    {
+                        renderer.materials = materials;
+                    }
+                }
+            }
         }
 
-      
-
-
-        public void Dispose()
+        private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null)
         {
-            _debugConfig.showGlobalABDetectionLayer.OnChange -= OnGlobalABDetectionChanged;
-            _debugConfig.showSceneABDetectionLayer.OnChange -= OnSceneABDetectionChanged;
+            if (someTransform.childCount > 0)
+            {
+                for (int i = 0; i < someTransform.childCount; i++)
+                {
+                    var childTransform = someTransform.GetChild(i).transform;
+                    if (childTransform.gameObject.name.Contains("GLTF Shape"))
+                    {
+                        var childGameObject = childTransform.GetChild(0).gameObject;
+                        var renderers = childGameObject.
+                            GetComponentsInChildren<Renderer>(true);
+                  
+                        foreach (Renderer renderer in renderers)
+                        {
+                            rendererDict[renderer] = renderer.materials;
+
+                            if (optionalParcelScene != null)
+                            {
+                                parcelToRendererMultimap.Add(optionalParcelScene, renderer);
+                            }
+                            
+                            renderer.material = renderer.tag.Equals(FromAssetBundleTag) ? 
+                            abDetectorMaterialsHolder.ABMaterial : abDetectorMaterialsHolder.GLTFMaterial;
+                        }
+                    }
+                    else
+                    {
+                        ApplyMaterials(childTransform, optionalParcelScene);
+                    }
+                }
+            }
         }
     }
 }
