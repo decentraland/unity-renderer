@@ -81,7 +81,7 @@ public class PrivateChatWindowController : IHUD
             view.OnClickOverWindow += HandleViewClicked;
         }
         if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += ActivatePreview;
+            mouseCatcher.OnMouseLock += Hide;
 
         view.OnRequireMoreMessages += RequestOldConversations;
 

@@ -89,7 +89,7 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
             if (mouseCatcher != null)
-                mouseCatcher.OnMouseLock += ActivatePreviewMode;
+                mouseCatcher.OnMouseLock += Hide;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
@@ -311,6 +311,7 @@ namespace DCL.Chat.HUD
 
         public void ActivatePreviewMode()
         {
+            SetVisiblePanelList(false);
             View?.ActivatePreview();
             chatHudController?.ActivatePreview();
             OnPreviewModeChanged?.Invoke(true);
