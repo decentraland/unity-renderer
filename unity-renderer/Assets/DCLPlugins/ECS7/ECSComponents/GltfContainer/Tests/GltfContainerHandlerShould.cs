@@ -63,6 +63,7 @@ namespace Tests
             handler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_GLTF.i.Cleanup();
+            PoolManager.i.Dispose();
         }
 
         [UnityTest]
