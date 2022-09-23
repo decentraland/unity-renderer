@@ -8,6 +8,7 @@ void Merger_float(
     Out = Out * RandomTilingMixed;
 
     Out = lerp(ColorPlaza, Out, MapColor.r);
+    Out = lerp(Out, ColorEmpty, MapColor.a);
 
     Out = Out * GrassTexture;
     Out = Out + Out * ColorGrassGrid * GrassGrid * (1 - MapOutline);
@@ -18,8 +19,6 @@ void Merger_float(
     temp = temp + temp * ColorGrassGrid * GrassGrid * (1 - MapOutline);
 
     Out = lerp(Out, temp, MapColor.b);
-
-    Out = lerp(Out, ColorEmpty, MapColor.a);
 
     Out = Out + Out * ColorGrid.a * MapOutline; 
 

@@ -74,11 +74,12 @@ Material:
     - Vector1_ba9eae2f64304e849fda8473dbdd3a57: 2
     - Vector1_c87711ac559c4306ada261dfe896c46a: 0.02
     - _ColorMask: 15
-    - _FogFade: 10000
+    - _FogFade: 7500
     - _FogIntensity: 1
-    - _GrassGridFade: 45000
+    - _GrassGridFade: 4500
     - _GrassGridFade_1: 12.4
-    - _GrassGridFarFade: 70
+    - _GrassGridFarFade: 3500
+    - _GrassGridIntenseFade: 3000
     - _GrassGridThickness: 0.04
     - _GrassGridThicknessVariation: 0.05
     - _GrassGridTiling: 4
@@ -89,7 +90,7 @@ Material:
     - _HighlightRotation: 10
     - _HighlightThickness: 0
     - _Metallic: 0
-    - _RoadFade: 50000
+    - _RoadFade: 5000
     - _RoadScale: 5
     - _Smoothness: 0.2
     - _Stencil: 0
