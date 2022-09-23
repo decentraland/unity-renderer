@@ -36,28 +36,6 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [Test]
-    [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
-    [TestCase(ExploreSection.Explore)]
-    [TestCase(ExploreSection.Map)]
-    [TestCase(ExploreSection.Quest)]
-    [TestCase(ExploreSection.Settings)]
-    public void GoToSectionCorrectly(ExploreSection section)
-    {
-        // Arrange
-        if (section == ExploreSection.Backpack)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
-        else
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
-
-        // Act
-        exploreV2MenuComponent.GoToSection(section);
-
-        // Assert
-        Assert.AreEqual((int)section, DataStore.i.exploreV2.currentSectionIndex.Get());
-    }
-
-    [Test]
     [TestCase(ExploreSection.Backpack, true)]
     [TestCase(ExploreSection.Builder, true)]
     [TestCase(ExploreSection.Explore, true)]
@@ -98,7 +76,6 @@ public class ExploreV2MenuComponentViewTests
         Assert.IsTrue(featureConfiguratorFlag.Get());
     }
 
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
@@ -117,7 +94,6 @@ public class ExploreV2MenuComponentViewTests
         exploreV2MenuComponent.sectionSelector.GetSection(sectionIndex).onSelect.Invoke(true);
 
         // Assert
-        Assert.AreEqual(sectionIndex, (int)DataStore.i.exploreV2.currentSectionIndex.Get());
         Assert.AreEqual(sectionIndex, (int)sectionSelected);
     }
 
