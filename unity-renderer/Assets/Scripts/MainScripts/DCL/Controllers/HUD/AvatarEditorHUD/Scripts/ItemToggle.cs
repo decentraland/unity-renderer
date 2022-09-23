@@ -88,35 +88,39 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(!ShowIncompatibleWarningPanel())
+        incompatibleWarningPanel.SetActive(false);
+        warningPanel.SetActive(false);
+        hideWarningPanel.SetActive(false);
+        if(IsIncompatible())
         {
-            if (!ShowReplacementWarningPanel())
-                ShowHidingWarningPanel();
+            incompatibleWarningPanel.SetActive(true);
+        }
+        else if(IsReplacingWearables())
+        {
+            warningPanel.SetActive(true);
+        }
+        else if(IsHidingWearables())
+        {
+            hideWarningPanel.SetActive(true);
         }
     }
 
-    private bool ShowReplacementWarningPanel()
-    {
-        if (getEquippedWearablesReplacedByFunc == null) return false;
-        var shouldShow = getEquippedWearablesReplacedByFunc(wearableItem);
-        warningPanel.SetActive(shouldShow);
-        return shouldShow;
-    }
-    
-    private bool ShowHidingWarningPanel()
-    {
-        if (getEquippedWearablesHiddenBy == null) return false;
-        var shouldShow = getEquippedWearablesHiddenBy(wearableItem);
-        hideWarningPanel.SetActive(shouldShow);
-        return shouldShow;
-    }
-
-    private bool ShowIncompatibleWarningPanel()
+    private bool IsIncompatible()
     {
         if(getBodyShapeCompatibility == null) return false;
-        var shouldShow = getBodyShapeCompatibility(wearableItem);
-        incompatibleWarningPanel.SetActive(shouldShow);
-        return shouldShow;
+        return getBodyShapeCompatibility(wearableItem);
+    }
+
+    private bool IsReplacingWearables()
+    {
+        if (getEquippedWearablesReplacedByFunc == null) return false;
+        return getEquippedWearablesReplacedByFunc(wearableItem);
+    }
+
+    private bool IsHidingWearables()
+    {
+        if (getEquippedWearablesHiddenBy == null) return false;
+        return getEquippedWearablesHiddenBy(wearableItem);
     }
 
     public void OnPointerExit(PointerEventData eventData)
