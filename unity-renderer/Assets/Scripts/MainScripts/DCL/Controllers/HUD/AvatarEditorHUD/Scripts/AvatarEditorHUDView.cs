@@ -137,7 +137,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     private AvatarModel avatarModelToUpdate;
     
     private bool doAvatarFeedback;
-    public event Action<AvatarModel> OnAvatarAppear;
+    public event Action<AvatarModel> OnAvatarAppearFeedback;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
     
@@ -718,7 +718,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                     loadingSpinnerGameObject?.SetActive(false);
                     
                     if(doAvatarFeedback)
-                        OnAvatarAppear?.Invoke(avatarModelToUpdate);
+                        OnAvatarAppearFeedback?.Invoke(avatarModelToUpdate);
 
                     doAvatarFeedback = false;
                     ClearWearablesLoadingSpinner();

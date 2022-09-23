@@ -111,7 +111,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
     void ResetLastClickedWearable() { lastSelectedWearable = null; }
 
-    private void OnAvatarAppear(AvatarModel avatarModelToUpdate)
+    private void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
     {
         PlayAudio(avatarModelToUpdate);
     }
@@ -226,7 +226,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
             view.eyeColorPickerComponent.OnColorChanged += OnEyeColorChanged;
             view.skinColorSelector.OnColorSelectorChange += OnSkinColorChanged;
             view.hairColorPickerComponent.OnColorChanged += OnHairColorChanged;
-            view.OnAvatarAppear += OnAvatarAppear;
+            view.OnAvatarAppearFeedback += AvatarAppearFeedback;
         }
         else
         {
@@ -239,7 +239,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
             view.eyeColorPickerComponent.OnColorChanged -= OnEyeColorChanged;
             view.skinColorSelector.OnColorSelectorChange -= OnSkinColorChanged;
             view.hairColorPickerComponent.OnColorChanged -= OnHairColorChanged;
-            view.OnAvatarAppear -= OnAvatarAppear;
+            view.OnAvatarAppearFeedback -= AvatarAppearFeedback;
         }
     }
 }
