@@ -30,12 +30,12 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-
     private int hiddenDMs;
     private string currentSearch = "";
     private DateTime channelsRequestTimestamp;
     private bool areDMsRequestedByFirstTime;
     private bool isRequestingFriendsWithDMs;
+    private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
@@ -463,6 +463,9 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+        hideLoadingCancellationToken?.Cancel();
+        hideLoadingCancellationToken = new CancellationTokenSource();
+        HideSearchLoadingWhenTimeout(hideLoadingCancellationToken.Token).Forget();
     }
 
     private void HandleChannelUpdated(Channel channel)
@@ -514,4 +517,11 @@ public class WorldChatWindowController : IHUD
     private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
 
     private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
+    
+    private async UniTask HideSearchLoadingWhenTimeout(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        view.HideSearchLoading();
+    }
 }
