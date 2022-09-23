@@ -36,10 +36,10 @@ namespace AvatarSystem
         public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth,
             List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
-            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, ((IBaseAvatar)null).GetMainRenderer(), ct);
+            await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer mainRenderer, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesContainer = null, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -49,7 +49,7 @@ namespace AvatarSystem
                 status = ILoader.Status.Loading;
                 await LoadBodyshape(settings, bodyshape, eyes, eyebrows, mouth, toCleanUp, ct);
                 await LoadWearables(wearables, settings, toCleanUp, ct);
-                SkinnedMeshRenderer skinnedContainer = mainRenderer == null ? bodyshapeLoader.upperBodyRenderer : mainRenderer;
+                SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
                 if (status == ILoader.Status.Failed_Major)

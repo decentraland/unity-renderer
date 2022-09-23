@@ -17,5 +17,7 @@ namespace AvatarSystem
         UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);
 
         void CancelTransition();
+
+        public GameObject GetAvatarRevealerContainer();
     }
 }

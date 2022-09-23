@@ -68,7 +68,7 @@ namespace AvatarSystem
                 baseAvatar.Initialize();
                 // we setup the animator to use the hologram armature so we can animate it before loading the combined avatar
                 // since the avatarContainer is de-parented from the entity
-                animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
+                animator.Prepare(settings.bodyshapeId, baseAvatar.GetAvatarRevealerContainer());
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {

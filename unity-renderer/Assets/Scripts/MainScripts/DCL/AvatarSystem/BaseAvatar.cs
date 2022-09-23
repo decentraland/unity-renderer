@@ -22,6 +22,11 @@ namespace AvatarSystem
             this.avatarRevealerContainer = avatarRevealerContainer;
             this.lod = lod;
         }
+        
+        public GameObject GetAvatarRevealerContainer()
+        {
+            return avatarRevealerContainer;
+        }
 
         public GameObject GetArmatureContainer()
         {
