@@ -55,11 +55,11 @@ namespace DCL
             var data = JsonUtility.FromJson<DetectABsPayload>(payload);
             if (data.forCurrentScene)
             {
-                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn);
+                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn, notifyEvent:true);
             }
             else
             {
-                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn);
+                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn, notifyEvent:true);
             }
         }
 
