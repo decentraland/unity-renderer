@@ -7,7 +7,9 @@ namespace DCL
         
         public ABDetectorPlugin()
         {
-            abDetectorTracker = new ABDetectorTracker(DataStore.i.debugConfig);
+            var dataStore = DataStore.i;
+            var worldState = Environment.i.world.state;
+            abDetectorTracker = new ABDetectorTracker(dataStore.debugConfig, dataStore.player, worldState);
         }
         
         public void Dispose()

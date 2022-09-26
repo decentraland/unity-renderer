@@ -11,16 +11,21 @@ namespace DCL
         private const string AB_DETECTOR_MATERIALS_PREFAB_NAME = "AbDetectorMaterials";
         
         private readonly DebugConfig debugConfig;
+        private readonly DataStore_Player player;
+
         private readonly Dictionary<Renderer, Material[]> rendererDict  = 
             new Dictionary<Renderer, Material[]>();
         private readonly Multimap<IParcelScene, Renderer> parcelToRendererMultimap = 
             new Multimap<IParcelScene, Renderer>();
 
         private ABDetectorMaterialsHolder abDetectorMaterialsHolder;
+        private readonly IWorldState worldState;
 
-        public ABDetectorTracker(DebugConfig debugConfig)
+        public ABDetectorTracker(DebugConfig debugConfig, DataStore_Player player, IWorldState worldState)
         {
             this.debugConfig = debugConfig;
+            this.player = player;
+            this.worldState = worldState;
             
             debugConfig.showGlobalABDetectionLayer.OnChange += OnGlobalABDetectionChanged;
             debugConfig.showSceneABDetectionLayer.OnChange += OnSceneABDetectionChanged;
@@ -32,13 +37,12 @@ namespace DCL
             debugConfig.showSceneABDetectionLayer.OnChange -= OnSceneABDetectionChanged;
         }
         
-        private static IParcelScene FindSceneForPlayer()
+        private IParcelScene FindSceneForPlayer()
         {
-            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
-            {
-                if (WorldStateUtils.IsCharacterInsideScene(scene))
-                    return scene;
-            }
+            var currentPos = player.playerGridPosition.Get();
+            if (worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), 
+                    out IParcelScene resultScene))
+                return resultScene;
 
             return null;
         }

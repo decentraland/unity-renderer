@@ -11,7 +11,12 @@ namespace DCL
 
         public IEnumerable<KT> Keys
         {
-            get { return map.Keys.Select(key => key); }
+            get { return map.Keys; }
+        }
+
+        public IEnumerable<VT> AllValues
+        {
+            get { return map.Values.SelectMany(list => list); }
         }
 
         public int Count
@@ -38,11 +43,6 @@ namespace DCL
 
                 return count;
             }
-        }
-
-        public IEnumerable<VT> AllValues
-        {
-            get { return map.Values.SelectMany(list => list); }
         }
         
         public IEnumerable<VT> GetValues(KT key)
