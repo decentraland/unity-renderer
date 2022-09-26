@@ -1550,7 +1550,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: 80a5335081aee654384f230da08318d3, type: 2}
+      objectReference: {fileID: 2100000, guid: f9361b9230b423f478237bac129fd7d6, type: 2}
     - target: {fileID: 4393425735285037925, guid: 4db069904ba9d4fd18704de950b93f7c,
         type: 3}
       propertyPath: m_FillAmount
