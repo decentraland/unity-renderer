@@ -985,6 +985,7 @@ public class AvatarEditorHUDController : IHUD
 
                 view.BlockCollectionsDropdown(false);
                 LoadUserProfile(userProfile, true);
+                view.RefreshSelectorsSize();
             })
             .Catch((error) =>
             {
