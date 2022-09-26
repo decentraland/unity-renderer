@@ -7,8 +7,8 @@ namespace DCL
 {
     public class ABDetectorTracker : IDisposable
     {
-        private const string FromAssetBundleTag = "FromAssetBundle";
-        private const string AbDetectorMaterialsPrefabName = "AbDetectorMaterials";
+        private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
+        private const string AB_DETECTOR_MATERIALS_PREFAB_NAME = "AbDetectorMaterials";
         
         private readonly DebugConfig debugConfig;
         private readonly Dictionary<Renderer, Material[]> rendererDict  = 
@@ -48,7 +48,7 @@ namespace DCL
             if (abDetectorMaterialsHolder == null)
             {
                 abDetectorMaterialsHolder = Resources.Load<GameObject>
-                        (AbDetectorMaterialsPrefabName)
+                        (AB_DETECTOR_MATERIALS_PREFAB_NAME)
                     .GetComponent<ABDetectorMaterialsHolder>();
             }
         }
@@ -150,7 +150,7 @@ namespace DCL
                                 parcelToRendererMultimap.Add(optionalParcelScene, renderer);
                             }
                             
-                            renderer.material = renderer.tag.Equals(FromAssetBundleTag) ? 
+                            renderer.material = renderer.tag.Equals(FROM_ASSET_BUNDLE_TAG) ? 
                             abDetectorMaterialsHolder.ABMaterial : abDetectorMaterialsHolder.GLTFMaterial;
                         }
                     }

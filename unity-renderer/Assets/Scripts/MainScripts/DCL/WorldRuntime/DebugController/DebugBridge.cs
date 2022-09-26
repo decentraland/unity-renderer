@@ -27,7 +27,6 @@ namespace DCL
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
-        private double _lastTimeDetectABsCalled;
 
         public void Setup(IDebugController debugController)
         {
@@ -53,20 +52,14 @@ namespace DCL
 
         public void DetectABs(string payload)
         {
-            var time = Time.timeSinceLevelLoad;
-            if (time - 1.0 < _lastTimeDetectABsCalled)
+            var data = JsonUtility.FromJson<DetectABsPayload>(payload);
+            if (data.forCurrentScene)
             {
-                var data = JsonUtility.FromJson<DetectABsPayload>(payload);
-                if (data.forCurrentScene)
-                {
-                    DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn);
-                }
-                else
-                {
-                    DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn);
-                }
-
-                _lastTimeDetectABsCalled = time;
+                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn);
+            }
+            else
+            {
+                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn);
             }
         }
 

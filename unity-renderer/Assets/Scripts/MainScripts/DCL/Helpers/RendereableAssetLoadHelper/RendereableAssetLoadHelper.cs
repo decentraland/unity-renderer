@@ -14,7 +14,7 @@ namespace DCL.Components
             DEFAULT
         }
         
-        private const string FromAssetBundleTag = "FromAssetBundle";
+        private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
 
         public static bool VERBOSE = false;
 
@@ -180,7 +180,7 @@ namespace DCL.Components
 
                 foreach (var someRenderer in r.renderers)
                 {
-                    someRenderer.tag = FromAssetBundleTag;
+                    someRenderer.tag = FROM_ASSET_BUNDLE_TAG;
                 }
 
                 OnSuccessWrapper(r, OnSuccess);
