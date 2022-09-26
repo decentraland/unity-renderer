@@ -300,7 +300,17 @@
             "m_Id": "f4c8f1cc24984ae6a6dd8904e413fa4c"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "46b71c08d03f422c88ab259c7448852d"
+        },
+        {
+            "m_Id": "23fd019b9baf4276a0be046fc6c248f0"
+        },
+        {
+            "m_Id": "3c8f1b648f7f4851b4d3eb720bd07c5e"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -2510,6 +2520,26 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "23fd019b9baf4276a0be046fc6c248f0",
+    "m_Title": "Higher Settings",
+    "m_Content": "isRounded == True\nisLowerCornersOnly == False\nisUpperCornersOnly == True\nisAllCorners == False\n\nrectWidth = 1\nRectHeight = 2\nrectRadius = 0.1",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -9.0,
+        "y": 3533.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
     "m_ObjectId": "2401a7dfa57d4f5aa36d272031330a54",
     "m_Id": 4,
@@ -2969,6 +2999,26 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "3c8f1b648f7f4851b4d3eb720bd07c5e",
+    "m_Title": "Full Corners Settings",
+    "m_Content": "isRounded == True\nisLowerCornersOnly == False\nisUpperCornersOnly == False\nisAllCorners == True\n\nrectWidth = 1\nRectHeight = 1.5\nrectRadius = 1",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": 8.0,
+        "y": 4401.0,
+        "width": 200.0,
+        "height": 192.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.LerpNode",
     "m_ObjectId": "3cca9d495003437f8709e8967b3b6eba",
     "m_Group": {
@@ -3252,6 +3302,26 @@
     },
     "m_Property": {
         "m_Id": "42489bcafa0c42ab9f3e9bb85e5e20fb"
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "46b71c08d03f422c88ab259c7448852d",
+    "m_Title": "Lower Settings",
+    "m_Content": "isRounded == True\nisLowerCornersOnly == True\nisUpperCornersOnly == False\nisAllCorners == False\n\nrectWidth = 1\nRectHeight = 1\nrectRadius = 0.1",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -20.0,
+        "y": 2794.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
     }
 }
 
