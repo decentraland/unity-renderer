@@ -15,12 +15,13 @@ public class SceneControllerBridge : MonoBehaviour
 
     IEnumerator AnalyzeLoadingHUDState(string sceneId)
     {
-        if(DataStore.i.HUDs.loadingHUD.fadeIn.Get())
+        if(DataStore.i.HUDs.loadingHUD.invokedTeleport.Get())
         {
             yield return new UnityEngine.WaitUntil(() => CommonScriptableObjects.isLoadingHUDOpen.Get());
 
         }
         Environment.i.world.sceneController.UnloadScene(sceneId);
+        DataStore.i.HUDs.loadingHUD.invokedTeleport.Set(false);
     }
 
     public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }

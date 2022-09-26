@@ -1469,17 +1469,28 @@ namespace DCL.Interface
 
         public static void GoTo(int x, int y)
         {
+            Environment.i.world.teleportController.Teleport(x,y);
             gotoEvent.x = x;
             gotoEvent.y = y;
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void GoToCrowd() { SendMessage("GoToCrowd"); }
+        public static void GoToCrowd()
+        {
+            Environment.i.world.teleportController.Teleport(0,0);
+            SendMessage("GoToCrowd");
+        }
 
-        public static void GoToMagic() { SendMessage("GoToMagic"); }
+        public static void GoToMagic()
+        {
+            Environment.i.world.teleportController.Teleport(0,0);
+            SendMessage("GoToMagic");
+        }
 
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
+            Environment.i.world.teleportController.Teleport(x,y);
+
             jumpInPayload.realm.serverName = serverName;
             jumpInPayload.realm.layer = layerName;
 
