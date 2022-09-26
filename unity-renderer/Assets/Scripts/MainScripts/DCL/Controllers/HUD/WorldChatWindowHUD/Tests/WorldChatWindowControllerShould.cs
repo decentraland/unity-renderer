@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Friends.WebApi;
 using DCL.Interface;
@@ -97,14 +97,10 @@ public class WorldChatWindowControllerShould
             {
                 userId = FRIEND_ID,
                 presence = PresenceStatus.ONLINE,
-                friendshipStatus = FriendshipStatus.FRIEND
+                friendshipStatus = FriendshipStatus.NOT_FRIEND
             });
 
-        Received.InOrder(() =>
-        {
-            view.SetPrivateChat(Arg.Is<PrivateChatModel>(p => !p.isOnline));
-            view.SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.isOnline));
-        });
+        Received.InOrder(() => view.RemovePrivateChat(FRIEND_ID);
     }
 
     [TestCase(FriendshipStatus.REQUESTED_TO)]
