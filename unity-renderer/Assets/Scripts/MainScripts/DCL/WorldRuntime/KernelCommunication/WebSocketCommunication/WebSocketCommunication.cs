@@ -24,7 +24,7 @@ public class WebSocketCommunication : IKernelCommunication
 
     WebSocketServer ws;
 
-    public WebSocketCommunication(bool withSSL = false, int startPort = 7666, int endPort = 5100)
+    public WebSocketCommunication(bool withSSL = false, int startPort = 7666, int endPort = 7800)
     {
         InitMessageTypeToBridgeName();
 
