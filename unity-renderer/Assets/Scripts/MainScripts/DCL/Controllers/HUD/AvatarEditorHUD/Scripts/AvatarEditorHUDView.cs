@@ -199,11 +199,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         if (arePanelsInitialized)
             return;
 
+        InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
         for (int i = 0; i < navigationInfos.Length; i++)
         {
             InitializeNavigationInfo(navigationInfos[i]);
         }
-        InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
         
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
         arePanelsInitialized = true;
