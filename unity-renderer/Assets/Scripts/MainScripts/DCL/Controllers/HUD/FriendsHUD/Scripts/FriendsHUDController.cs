@@ -13,6 +13,7 @@ public class FriendsHUDController : IHUD
     private const int MAX_SEARCHED_FRIENDS = 100;
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
+    private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
     private readonly DataStore dataStore;
     private readonly IFriendsController friendsController;
     private readonly IUserProfileBridge userProfileBridge;
@@ -138,6 +139,9 @@ public class FriendsHUDController : IHUD
             View.Show();
             UpdateNotificationsCounter();
 
+            foreach (var friend in onlineFriends)
+                View.Set(friend.Key, friend.Value);
+
             if (View.IsFriendListActive)
                 DisplayMoreFriends();
             else if (View.IsRequestListActive)
@@ -243,10 +247,17 @@ public class FriendsHUDController : IHUD
                 friend.blocked = IsUserBlocked(userId);
                 friends[userId] = friend;
                 View.Set(userId, friend);
+
+                if (status.presence == PresenceStatus.ONLINE)
+                    onlineFriends[userId] = friend;
+                else
+                    onlineFriends.Remove(userId);
+
                 break;
             case FriendshipStatus.NOT_FRIEND:
                 View.Remove(userId);
                 friends.Remove(userId);
+                onlineFriends.Remove(userId);
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)

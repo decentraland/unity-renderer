@@ -38,8 +38,14 @@ public class FriendEntry : FriendEntryBase
 
     private void Start()
     {
-        unreadNotificationBadge?.Initialize(chatController, Model.userId);
-        jumpInButton.Initialize(friendsController, Model.userId, socialAnalytics);
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
+    }
+
+    public override void Populate(FriendEntryModel model)
+    {
+        base.Populate(model);
+
+        unreadNotificationBadge?.Initialize(chatController, model.userId);
+        jumpInButton.Initialize(friendsController, model.userId, socialAnalytics);
     }
 }
