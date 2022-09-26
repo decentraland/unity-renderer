@@ -16,6 +16,7 @@ public class FriendsTabComponentView : BaseComponentView
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const string FRIEND_ENTRIES_POOL_NAME_PREFIX = "FriendEntriesPool_";
     private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
+    private const float MIN_TIME_TO_REQUIRE_MORE_ENTRIES = 0.5f;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -50,6 +51,7 @@ public class FriendsTabComponentView : BaseComponentView
     private bool isSearchMode;
     private Vector2 lastScrollPosition = Vector2.one;
     private Coroutine requireMoreEntriesRoutine;
+    private float cleanedByLastTime;
 
     public Dictionary<string, FriendEntry> Entries => entries;
     public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
@@ -138,12 +140,12 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Clear()
     {
+        cleanedByLastTime = Time.realtimeSinceStartup;
+        scroll.verticalNormalizedPosition = 1f;
         creationQueue.Clear();
         entries.ToList().ForEach(pair => Remove(pair.Key));
-
         onlineFriendsList.list.Clear();
         offlineFriendsList.list.Clear();
-
         searchResultsFriendList.list.Clear();
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
@@ -429,7 +431,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     private void RequestMoreEntries(Vector2 position)
     {
-        if (!loadMoreEntriesContainer.activeInHierarchy) return;
+        if (!loadMoreEntriesContainer.activeInHierarchy ||
+            (Time.realtimeSinceStartup - cleanedByLastTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
         
         if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
         {
