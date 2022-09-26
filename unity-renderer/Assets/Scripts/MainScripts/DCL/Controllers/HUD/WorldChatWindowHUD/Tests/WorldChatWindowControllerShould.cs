@@ -100,7 +100,7 @@ public class WorldChatWindowControllerShould
                 friendshipStatus = FriendshipStatus.NOT_FRIEND
             });
 
-        Received.InOrder(() => view.RemovePrivateChat(FRIEND_ID);
+        Received.InOrder(() => view.RemovePrivateChat(FRIEND_ID));
     }
 
     [TestCase(FriendshipStatus.REQUESTED_TO)]
