@@ -36,6 +36,7 @@ public class FriendsTabComponentView : BaseComponentView
     [Header("Load More Entries")]
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesSpinner;
 
     private readonly Dictionary<string, FriendEntryModel> creationQueue =
         new Dictionary<string, FriendEntryModel>();
@@ -51,7 +52,7 @@ public class FriendsTabComponentView : BaseComponentView
     private bool isSearchMode;
     private Vector2 lastScrollPosition = Vector2.one;
     private Coroutine requireMoreEntriesRoutine;
-    private float cleanedByLastTime;
+    private float loadMoreEntriesRestrictionTime;
 
     public Dictionary<string, FriendEntry> Entries => entries;
     public int Count => entries.Count + creationQueue.Keys.Count(s => !entries.ContainsKey(s));
@@ -140,7 +141,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     public void Clear()
     {
-        cleanedByLastTime = Time.realtimeSinceStartup;
+        HideMoreFriendsLoadingSpinner();
+        loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
         scroll.verticalNormalizedPosition = 1f;
         creationQueue.Clear();
         entries.ToList().ForEach(pair => Remove(pair.Key));
@@ -317,6 +319,10 @@ public class FriendsTabComponentView : BaseComponentView
         UpdateLayout();
     }
 
+    private void ShowMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(true);
+
+    private void HideMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(false);
+
     private void HandleSearchInputChanged(string search) => OnSearchRequested?.Invoke(search);
 
     private void SetQueuedEntries()
@@ -329,6 +335,8 @@ public class FriendsTabComponentView : BaseComponentView
             creationQueue.Remove(pair.Key);
             Set(pair.Key, pair.Value);
         }
+
+        HideMoreFriendsLoadingSpinner();
     }
 
     private void FetchProfilePicturesForVisibleEntries()
@@ -432,14 +440,18 @@ public class FriendsTabComponentView : BaseComponentView
     private void RequestMoreEntries(Vector2 position)
     {
         if (!loadMoreEntriesContainer.activeInHierarchy ||
-            (Time.realtimeSinceStartup - cleanedByLastTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
-        
+            loadMoreEntriesSpinner.activeInHierarchy ||
+            (Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+
         if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
         {
             if (requireMoreEntriesRoutine != null)
                 StopCoroutine(requireMoreEntriesRoutine);
-            
+
+            ShowMoreFriendsLoadingSpinner();
             requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+
+            loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
         }
 
         lastScrollPosition = position;

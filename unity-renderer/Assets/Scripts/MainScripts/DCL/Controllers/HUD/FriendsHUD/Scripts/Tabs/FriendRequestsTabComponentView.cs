@@ -44,6 +44,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [Header("Load More Entries")]
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesSpinner;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -55,7 +56,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private bool isLayoutDirty;
     private Vector2 lastScrollPosition = Vector2.one;
     private Coroutine requireMoreEntriesRoutine;
-    private float cleanedByLastTime;
+    private float loadMoreEntriesRestrictionTime;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
@@ -169,7 +170,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public void Clear()
     {
-        cleanedByLastTime = Time.realtimeSinceStartup;
+        HideMoreFriendsLoadingSpinner();
+        loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
         scroll.verticalNormalizedPosition = 1f;
         creationQueue.Clear();
         entries.ToList().ForEach(pair => Remove(pair.Key));
@@ -302,7 +304,11 @@ public class FriendRequestsTabComponentView : BaseComponentView
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }
-    
+
+    private void ShowMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(true);
+
+    private void HideMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(false);
+
     private void UpdateEmptyOrFilledState()
     {
         emptyStateContainer.SetActive(entries.Count == 0);
@@ -390,19 +396,25 @@ public class FriendRequestsTabComponentView : BaseComponentView
             creationQueue.Remove(pair.Key);
             Set(pair.Key, pair.Value);
         }
+
+        HideMoreFriendsLoadingSpinner();
     }
 
     private void RequestMoreEntries(Vector2 position)
     {
         if (!loadMoreEntriesContainer.activeInHierarchy ||
-            (Time.realtimeSinceStartup - cleanedByLastTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
-        
+            loadMoreEntriesSpinner.activeInHierarchy ||
+            (Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+
         if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
         {
             if (requireMoreEntriesRoutine != null)
                 StopCoroutine(requireMoreEntriesRoutine);
-            
+
+            ShowMoreFriendsLoadingSpinner();
             requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+
+            loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
         }
 
         lastScrollPosition = position;
