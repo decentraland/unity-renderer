@@ -71,7 +71,11 @@ public class PlayerNameShould : MonoBehaviour
         playerName.targetAlpha = 0;
         playerName.Update(float.MaxValue);
 
-        Assert.IsTrue(playerName.AllRenderersInvisible());
+        var canvasRenderers = playerName.canvasRenderers;
+        Assert.IsTrue(canvasRenderers != null 
+                      && canvasRenderers.
+                          TrueForAll(r => 
+                              r.GetAlpha() < 0.01f));
     }
 
     [Test]

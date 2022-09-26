@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+[assembly: InternalsVisibleTo("PlayerNameTests")]
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
 {
@@ -24,6 +27,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] internal Image background;
     [SerializeField] internal Transform pivot;
     [SerializeField] internal Animator talkingAnimator;
+    
     [SerializeField] internal List<CanvasRenderer> canvasRenderers;
 
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
@@ -58,11 +62,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
 
     private void Update() { Update(Time.deltaTime); }
-
-    public bool AllRenderersInvisible()
-    {
-        return canvasRenderers != null && canvasRenderers.TrueForAll(r => r.GetAlpha() < 0.01f);
-    }
 
     private void SetRenderersVisible(bool value)
     {
