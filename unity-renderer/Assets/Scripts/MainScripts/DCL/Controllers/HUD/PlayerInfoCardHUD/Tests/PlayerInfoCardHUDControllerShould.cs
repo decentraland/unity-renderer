@@ -241,7 +241,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 
     private void GivenFriendshipStatus(string userId, FriendshipStatus status)
     {
-        var friendStatus = new FriendsController.UserStatus
+        var friendStatus = new UserStatus
         {
             userId = userId,
             friendshipStatus = status

@@ -32,14 +32,13 @@ namespace DCL.Tutorial
 
                 if (tutorialController.hudController.friendsHud != null)
                 {
-                    tutorialController.hudController.friendsHud.OnFriendsOpened += FriendsHud_OnFriendsOpened;
-                    tutorialController.hudController.friendsHud.OnFriendsClosed += FriendsHud_OnFriendsClosed;
+                    tutorialController.hudController.friendsHud.OnOpened += FriendsHud_OnFriendsOpened;
+                    tutorialController.hudController.friendsHud.OnClosed += FriendsHud_OnFriendsClosed;
                 }
 
                 if (voiceChatAction != null)
                 {
                     voiceChatAction.OnStarted += VoiceChatAction_OnStarted;
-                    voiceChatAction.OnFinished += VoiceChatAction_OnFinished;
                 }
             }
         }
@@ -60,14 +59,13 @@ namespace DCL.Tutorial
 
                 if (tutorialController.hudController.friendsHud != null)
                 {
-                    tutorialController.hudController.friendsHud.OnFriendsOpened -= FriendsHud_OnFriendsOpened;
-                    tutorialController.hudController.friendsHud.OnFriendsClosed -= FriendsHud_OnFriendsClosed;
+                    tutorialController.hudController.friendsHud.OnOpened -= FriendsHud_OnFriendsOpened;
+                    tutorialController.hudController.friendsHud.OnClosed -= FriendsHud_OnFriendsClosed;
                 }
 
                 if (voiceChatAction != null)
                 {
                     voiceChatAction.OnStarted -= VoiceChatAction_OnStarted;
-                    voiceChatAction.OnFinished -= VoiceChatAction_OnFinished;
                 }
             }
         }
@@ -92,12 +90,18 @@ namespace DCL.Tutorial
 
         internal void FriendsHud_OnFriendsOpened() { SocialFeatureIsOpen(true); }
 
-        internal void FriendsHud_OnFriendsClosed() { SocialFeatureIsOpen(false); }
+        internal void FriendsHud_OnFriendsClosed()
+        {
+            SocialFeatureIsOpen(false);
+            isRelatedFeatureActived = false;
+        }
 
-        internal void VoiceChatAction_OnStarted(DCLAction_Hold action) { SocialFeatureIsOpen(true); }
-
-        internal void VoiceChatAction_OnFinished(DCLAction_Hold action) { SocialFeatureIsOpen(false); }
-
+        internal void VoiceChatAction_OnStarted(DCLAction_Hold action)
+        {
+            SocialFeatureIsOpen(true);
+            isRelatedFeatureActived = false;
+        }
+        
         private void SocialFeatureIsOpen(bool isOpen)
         {
             if (isOpen)
@@ -105,10 +109,6 @@ namespace DCL.Tutorial
                 isRelatedFeatureActived = true;
                 stepIsFinished = true;
                 tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-            }
-            else if (isRelatedFeatureActived)
-            {
-                isRelatedFeatureActived = false;
             }
         }
     }

@@ -1,19 +1,25 @@
 {
     "name": "FriendsControllerTests",
+    "rootNamespace": "",
     "references": [
         "GUID:1de3566cccb280f4a982c59ad0d08c96",
         "GUID:8d96da0320f084d8b9ece3f20ebe7240",
-        "GUID:ba9b721ce33233c4da7ff4ef30d25b59"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:ba9b721ce33233c4da7ff4ef30d25b59",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

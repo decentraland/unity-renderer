@@ -1,6 +1,5 @@
 ﻿using DCL.Controllers;
 using DCL.Emotes;
-using DCL.Helpers;
 using DCL.Rendering;
 using UnityEngine;
 
@@ -38,11 +37,6 @@ namespace DCL
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
-            result.Register<ILastReadMessagesService>(() => new LastReadMessagesService(
-                CommonScriptableObjects.lastReadChatMessages,
-                ChatController.i,
-                new DefaultPlayerPrefs(),
-                new UserProfileWebInterfaceBridge()));
 
             return result;
         }

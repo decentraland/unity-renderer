@@ -61,6 +61,8 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
             });
+            
+            controller.avatarIsDirty = false;
         }
 
         [UnityTearDown]
