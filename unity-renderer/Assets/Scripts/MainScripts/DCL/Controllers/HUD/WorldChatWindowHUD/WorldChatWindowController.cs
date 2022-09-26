@@ -142,20 +142,7 @@ public class WorldChatWindowController : IHUD
 
     private void HandleFriendshipUpdated(string userId, FriendshipAction friendship)
     {
-        if (friendship == FriendshipAction.APPROVED)
-        {
-            var profile = userProfileBridge.Get(userId);
-            if (profile == null) return;
-
-            view.SetPrivateChat(new PrivateChatModel
-            {
-                user = profile,
-                isBlocked = ownUserProfile.IsBlocked(userId),
-                isOnline = friendsController.GetUserStatus(userId) is {presence: PresenceStatus.ONLINE},
-                recentMessage = lastPrivateMessages.ContainsKey(userId) ? lastPrivateMessages[userId] : null
-            });
-        }
-        else
+        if (friendship != FriendshipAction.APPROVED)
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
@@ -167,19 +154,7 @@ public class WorldChatWindowController : IHUD
         if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
 
-        if (status.friendshipStatus == FriendshipStatus.FRIEND)
-        {
-            var profile = recipientsFromPrivateChats[userId];
-
-            view.SetPrivateChat(new PrivateChatModel
-            {
-                user = profile,
-                recentMessage = lastPrivateMessages[userId],
-                isBlocked = ownUserProfile.IsBlocked(userId),
-                isOnline = status.presence == PresenceStatus.ONLINE
-            });
-        }
-        else
+        if (status.friendshipStatus != FriendshipStatus.FRIEND)
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
