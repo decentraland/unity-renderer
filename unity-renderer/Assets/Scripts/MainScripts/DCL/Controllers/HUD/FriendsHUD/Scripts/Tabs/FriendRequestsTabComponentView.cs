@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,6 +167,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public void Clear()
     {
+        creationQueue.Clear();
         entries.ToList().ForEach(pair => Remove(pair.Key));
         receivedRequestsList.Clear();
         sentRequestsList.Clear();
@@ -340,6 +341,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
         contextMenuPanel.Show(friendEntry.Model.userId);
+        contextMenuPanel.SetFriendshipContentActive(false);
         friendEntry.Dock(contextMenuPanel);
     }
 
