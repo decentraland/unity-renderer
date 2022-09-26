@@ -31,6 +31,7 @@ namespace DCL
         public class LoadingHUD
         {
             public readonly BaseVariable<bool> visible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> invokedTeleport = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> fadeIn = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> fadeOut = new BaseVariable<bool>(false);
             public readonly BaseVariable<string> message = new BaseVariable<string>(null);

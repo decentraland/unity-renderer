@@ -33,6 +33,7 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
+            result.Register<ITeleportController>(() => new TeleportController());
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

@@ -1,5 +1,7 @@
 using DCL.Interface;
 using System.Diagnostics.CodeAnalysis;
+using DCL;
+using Unity.Profiling;
 using UnityEngine;
 
 [ExcludeFromCodeCoverage]
@@ -23,9 +25,9 @@ public class JumpInAction : MonoBehaviour
     internal void JumpIn()
     {
         if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
+            Environment.i.world.teleportController.Teleport(coords.x,coords.y);
         else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+            Environment.i.world.teleportController.JumpIn(coords.x,coords.y,serverName, layerName);
     }
 
     private void OnDestroy()
