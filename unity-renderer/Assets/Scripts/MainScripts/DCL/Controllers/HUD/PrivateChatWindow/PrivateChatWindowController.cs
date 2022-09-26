@@ -17,7 +17,7 @@ public class PrivateChatWindowController : IHUD
 
     public IPrivateChatComponentView View { get; private set; }
     
-    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE, PREVIEW_MODE }
+    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE }
     private const int FADEOUT_DELAY = 30000;
 
 
@@ -172,7 +172,7 @@ public class PrivateChatWindowController : IHUD
             chatController.OnAddMessage -= HandleMessageReceived;
 
         if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock -= ActivatePreview;
+            mouseCatcher.OnMouseLock -= Hide;
 
         toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
@@ -207,14 +207,6 @@ public class PrivateChatWindowController : IHUD
             chatHudController.FocusInputField();
         }
 
-        else
-        {
-            skipChatInputTrigger = true;
-            chatHudController.ResetInputField(true);
-            ActivatePreview();
-            return;
-        }
-
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";
 
@@ -242,26 +234,19 @@ public class PrivateChatWindowController : IHUD
         View?.SetLoadingMessagesActive(false);
         View?.SetOldMessagesLoadingActive(false);
 
-        deactivatePreviewCancellationToken.Cancel();
-        deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
-
-        switch (currentState)
-        {
-            case ChatWindowVisualState.NONE_VISIBLE:
-                ActivatePreview();
-                break;
-            case ChatWindowVisualState.PREVIEW_MODE:
-                WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
-                break;
-        }
     }
 
     private void Hide()
     {
         SetVisibility(false);
         OnClosed?.Invoke();
+    }
+
+    private void Show()
+    {
+        SetVisibility(true);
     }
 
     private void HandlePressBack() => OnBack?.Invoke();
@@ -290,9 +275,7 @@ public class PrivateChatWindowController : IHUD
 
     private void HandleInputFieldSelected()
     {
-        deactivatePreviewCancellationToken.Cancel();
-        deactivatePreviewCancellationToken = new CancellationTokenSource();
-        DeactivatePreview();
+        Show();
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
         //MarkUserChatMessagesAsRead();
     }
@@ -301,15 +284,12 @@ public class PrivateChatWindowController : IHUD
     {
         if (View.IsFocused)
             return;
-        WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
     }
 
     private void HandleViewFocused(bool focused)
     {
         if (focused)
         {
-            deactivatePreviewCancellationToken.Cancel();
-            deactivatePreviewCancellationToken = new CancellationTokenSource();
             deactivateFadeOutCancellationToken.Cancel();
             deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
@@ -325,13 +305,7 @@ public class PrivateChatWindowController : IHUD
 
             if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
             {
-                WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
                 return;
-            }
-
-            if (currentState.Equals(ChatWindowVisualState.PREVIEW_MODE))
-            {
-                WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
             }
         }
     }
@@ -341,16 +315,6 @@ public class PrivateChatWindowController : IHUD
         if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
             return;
         DeactivatePreview();
-    }
-
-    private async UniTaskVoid WaitThenActivatePreview(CancellationToken cancellationToken)
-    {
-        await UniTask.Delay(3000, cancellationToken: cancellationToken);
-        await UniTask.SwitchToMainThread(cancellationToken);
-        if (cancellationToken.IsCancellationRequested)
-            return;
-        currentState = ChatWindowVisualState.PREVIEW_MODE;
-        ActivatePreview();
     }
 
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
@@ -365,26 +329,17 @@ public class PrivateChatWindowController : IHUD
         currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
 
-    public void ActivatePreview()
-    {
-        SetVisiblePanelList(false);
-        View.ActivatePreview();
-        chatHudController.ActivatePreview();
-        currentState = ChatWindowVisualState.PREVIEW_MODE;
-        WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
-        OnPreviewModeChanged?.Invoke(true);
-    }
-
     public void ActivatePreviewOnMessages()
     {
+        Debug.Log("Activate preview on messages");
         SetVisiblePanelList(false);
         chatHudController.ActivatePreview();
-        currentState = ChatWindowVisualState.PREVIEW_MODE;
         OnPreviewModeChanged?.Invoke(true);
     }
 
     public void DeactivatePreview()
     {
+        Debug.Log("Deactivate preview");
         SetVisiblePanelList(true);
         deactivatePreviewCancellationToken.Cancel();
         deactivatePreviewCancellationToken = new CancellationTokenSource();

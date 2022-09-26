@@ -201,7 +201,6 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.ActivatePreview();
         
         view.Received(1).ActivatePreview();
         internalChatView.Received(1).ActivatePreview();

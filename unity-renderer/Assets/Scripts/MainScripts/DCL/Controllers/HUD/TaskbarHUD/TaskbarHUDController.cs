@@ -288,8 +288,6 @@ public class TaskbarHUDController : IHUD
         {
             if (chatToggleTargetWindow == publicChatWindow)
                 publicChatWindow.ActivatePreview();
-            else if (chatToggleTargetWindow == privateChatWindow)
-                privateChatWindow.ActivatePreview();
             else if (chatToggleTargetWindow == channelChatWindow)
                 channelChatWindow.ActivatePreviewMode();
             else
