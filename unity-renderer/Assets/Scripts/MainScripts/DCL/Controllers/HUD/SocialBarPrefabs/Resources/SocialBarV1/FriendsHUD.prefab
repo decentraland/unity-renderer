@@ -1240,6 +1240,7 @@ GameObject:
   - component: {fileID: 4734421834313782664}
   - component: {fileID: 292775996523307202}
   - component: {fileID: 6233277873412415102}
+  - component: {fileID: 5277851557522261504}
   m_Layer: 5
   m_Name: Spinner Container
   m_TagString: Untagged
@@ -1306,6 +1307,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &5277851557522261504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933096059089960218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &2048823373913115732
 GameObject:
   m_ObjectHideFlags: 0
@@ -4265,6 +4279,7 @@ GameObject:
   - component: {fileID: 5305306698334853271}
   - component: {fileID: 7357367605058975824}
   - component: {fileID: 6704571361304800375}
+  - component: {fileID: 6441266261312826603}
   m_Layer: 5
   m_Name: SearchBarContainer
   m_TagString: Untagged
@@ -4330,6 +4345,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6441266261312826603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4755709739126264458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &5130945181587526701
 GameObject:
   m_ObjectHideFlags: 0
@@ -5536,7 +5564,6 @@ MonoBehaviour:
   model:
     isOnlineFriendsExpanded: 1
     isOfflineFriendsExpanded: 1
-    listByOnlineStatus: 0
   viewport: {fileID: 2828657937425296497}
   scroll: {fileID: 8156331471709598437}
   loadMoreEntriesContainer: {fileID: 6609162879917375590}
@@ -6011,6 +6038,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4390991547821790840}
+  - component: {fileID: 3022170444161743428}
   m_Layer: 5
   m_Name: LoadMoreFriendsContainer
   m_TagString: Untagged
@@ -6039,6 +6067,19 @@ RectTransform:
   m_AnchoredPosition: {x: 205, y: -138}
   m_SizeDelta: {x: 410, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3022170444161743428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342758938988184109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &6394483515070372651
 GameObject:
   m_ObjectHideFlags: 0
@@ -6423,6 +6464,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1073610685618930073}
+  - component: {fileID: 1433099475888148418}
   m_Layer: 5
   m_Name: LoadMoreFriendsContainer
   m_TagString: Untagged
@@ -6451,6 +6493,19 @@ RectTransform:
   m_AnchoredPosition: {x: 205, y: -94}
   m_SizeDelta: {x: 410, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1433099475888148418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6609162879917375590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &6649166646200030936
 GameObject:
   m_ObjectHideFlags: 0
@@ -7658,7 +7713,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6282617482485509537
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11915,6 +11970,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SearchBar
       objectReference: {fileID: 0}
+    - target: {fileID: 4396177028397422529, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 80fd6498fe1574f469d9b080a353fe7e, type: 2}
     - target: {fileID: 4431540776692317878, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_SizeDelta.x
