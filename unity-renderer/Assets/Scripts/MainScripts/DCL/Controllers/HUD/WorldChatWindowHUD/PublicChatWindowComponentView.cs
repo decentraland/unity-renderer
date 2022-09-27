@@ -12,8 +12,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal ChatHUDView chatView;
     [SerializeField] internal PublicChatModel model;
-    [SerializeField] internal CanvasGroup[] previewCanvasGroup;
-    [SerializeField] internal Vector2 previewModeSize;
     
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
@@ -31,8 +29,6 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
     public bool IsFocused => isFocused;
-
-    public bool IsInPreviewMode { get; private set; }
 
     public static PublicChatWindowComponentView Create()
     {
@@ -64,23 +60,23 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void ActivatePreview()
     {
+        Debug.Log("aaa");
         Hide();
     }
 
     public void ActivatePreviewInstantly()
     {
+        Debug.Log("bbb");
         Hide();
     }
 
     public void DeactivatePreview()
     {
-        IsInPreviewMode = false;
+        Debug.Log("ccc");
         const float alphaTarget = 1f;
         
         if (!gameObject.activeInHierarchy)
         {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
             
             return;
         }
@@ -102,13 +98,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         {
             t += Time.deltaTime;
             
-            foreach (var group in previewCanvasGroup)
-                group.alpha = Mathf.Lerp(group.alpha, target, t / duration);
-            
             yield return null;
         }
-
-        foreach (var group in previewCanvasGroup)
-            group.alpha = target;
     }
 }

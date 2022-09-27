@@ -169,7 +169,6 @@ public class PublicChatChannelControllerShould
     {
         var isPreviewMode = false;
         controller.SetVisibility(true);
-        controller.DeactivatePreview();
 
         Assert.IsFalse(isPreviewMode);
     }

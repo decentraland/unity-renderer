@@ -61,7 +61,6 @@ public class PublicChatWindowController : IHUD
         if (notificationPanelTransform.Get() == null)
         {
             view.OnFocused += HandleViewFocused;
-            View.OnClickOverWindow += HandleViewClicked;
         }
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += Hide;
@@ -122,7 +121,6 @@ public class PublicChatWindowController : IHUD
         if (View != null)
         {
             View.OnFocused -= HandleViewFocused;
-            View.OnClickOverWindow -= HandleViewClicked; 
             View.Dispose();
         }
     }
@@ -227,7 +225,7 @@ public class PublicChatWindowController : IHUD
 
     private void HandleInputFieldSelected()
     {
-        DeactivatePreview();
+        
     }
 
     private void HandleInputFieldDeselected()
@@ -252,13 +250,6 @@ public class PublicChatWindowController : IHUD
         }
     }
     
-    private void HandleViewClicked()
-    {
-        if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
-            return;
-        DeactivatePreview();
-    }
-    
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
         if (notificationPanelTransform.Get() == null)
@@ -273,16 +264,6 @@ public class PublicChatWindowController : IHUD
     public void Hide()
     {
         SetVisibility(false);
-    }
-
-    public void DeactivatePreview()
-    {
-        SetVisiblePanelList(true);
-        deactivateFadeOutCancellationToken.Cancel();
-        deactivateFadeOutCancellationToken = new CancellationTokenSource();
-        
-        chatHudController.DeactivatePreview();
-        currentState = ChatWindowVisualState.INPUT_MODE;
     }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)

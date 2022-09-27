@@ -97,35 +97,4 @@ public class PublicChatChannelComponentViewShould
         
         Assert.IsFalse(focused);
     }
-
-    [UnityTest]
-    public IEnumerator ActivatePreview()
-    {
-        view.ActivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
-    }
-    
-    [UnityTest]
-    public IEnumerator DeactivatePreview()
-    {
-        view.DeactivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(1f, canvas.alpha);
-    }
-    
-    [Test]
-    public void ActivatePreviewInstantly()
-    {
-        view.ActivatePreviewInstantly();
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
-    }
 }
