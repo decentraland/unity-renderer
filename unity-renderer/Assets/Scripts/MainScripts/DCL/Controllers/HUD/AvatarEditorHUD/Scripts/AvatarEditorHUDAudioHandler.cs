@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Categories = WearableLiterals.Categories;
-using Random = UnityEngine.Random;
 using Rarity = WearableLiterals.ItemRarity;
 
 public class AvatarEditorHUDAudioHandler : MonoBehaviour
