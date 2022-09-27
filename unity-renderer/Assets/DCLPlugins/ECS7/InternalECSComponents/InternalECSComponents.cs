@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
+    public Action writeInternalComponentsSystem { get; }
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
@@ -14,47 +16,62 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
+        IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
+
+        writeInternalComponentsSystem = WriteSystem(scheduledWrite);
+
         texturizableComponent = new InternalECSComponent<InternalTexturizable>(
             InternalECSComponentsId.TEXTURIZABLE,
             componentsManager,
             componentsFactory,
-            () => new InternalTexturizableHandler(() => texturizableComponent));
+            () => new RemoveOnConditionHandler<InternalTexturizable>(
+                () => texturizableComponent, model => model.renderers.Count == 0),
+            scheduledWrite);
 
         materialComponent = new InternalECSComponent<InternalMaterial>(
             InternalECSComponentsId.MATERIAL,
             componentsManager,
             componentsFactory,
-            () => new InternalMaterialHandler());
+            null,
+            scheduledWrite);
 
         onPointerColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_POINTER,
             componentsManager,
             componentsFactory,
-            null);
+            () => new RemoveOnConditionHandler<InternalColliders>(
+                () => onPointerColliderComponent, model => model.colliders.Count == 0),
+            scheduledWrite);
 
         physicColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_PHYSICAL,
             componentsManager,
             componentsFactory,
-            null);
+            () => new RemoveOnConditionHandler<InternalColliders>(
+                () => physicColliderComponent, model => model.colliders.Count == 0),
+            scheduledWrite);
 
         renderersComponent = new InternalECSComponent<InternalRenderers>(
             InternalECSComponentsId.RENDERERS,
             componentsManager,
             componentsFactory,
-            null);
-        
+            () => new RemoveOnConditionHandler<InternalRenderers>(
+                () => renderersComponent, model => model.renderers.Count == 0),
+            scheduledWrite);
+
         visibilityComponent = new InternalECSComponent<InternalVisibility>(
             InternalECSComponentsId.VISIBILITY,
             componentsManager,
             componentsFactory,
-            null);
+            null,
+            scheduledWrite);
 
         inputEventResultsComponent = new InternalECSComponent<InternalInputEventResults>(
             InternalECSComponentsId.INPUT_EVENTS_RESULT,
             componentsManager,
             componentsFactory,
-            null);            
+            null,
+            scheduledWrite);
     }
 
     public void Dispose()
@@ -65,5 +82,56 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         physicColliderComponent.Dispose();
         renderersComponent.Dispose();
         inputEventResultsComponent.Dispose();
+    }
+
+    private static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
+    {
+        IList<InternalComponent> dirtyComponents = new List<InternalComponent>(50);
+        IList<InternalComponentWriteData> delayedRemovals = new List<InternalComponentWriteData>(50);
+
+        return () =>
+        {
+            for (int i = 0; i < delayedRemovals.Count; i++)
+            {
+                var writeData = delayedRemovals[i];
+                writeData.scene?.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
+            }
+            delayedRemovals.Clear();
+
+            for (int i = 0; i < dirtyComponents.Count; i++)
+            {
+                dirtyComponents[i]._dirty = false;
+            }
+            dirtyComponents.Clear();
+
+            for (int i = 0; i < scheduledWrite.Count; i++)
+            {
+                var writeData = scheduledWrite[i];
+                if (writeData.scene != null)
+                {
+                    InternalComponent data = writeData.data;
+                    if (data != null)
+                    {
+                        data._dirty = true;
+                        dirtyComponents.Add(data);
+                    }
+                    else
+                    {
+                        bool isDelayedRemoval = i > 0
+                                                && scheduledWrite[i - 1].scene == writeData.scene
+                                                && scheduledWrite[i - 1].entityId == writeData.entityId
+                                                && scheduledWrite[i - 1].componentId == writeData.componentId
+                                                && scheduledWrite[i - 1].data != null;
+                        if (isDelayedRemoval)
+                        {
+                            delayedRemovals.Add(writeData);
+                            continue;
+                        }
+                    }
+                    writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, data);
+                }
+            }
+            scheduledWrite.Clear();
+        };
     }
 }

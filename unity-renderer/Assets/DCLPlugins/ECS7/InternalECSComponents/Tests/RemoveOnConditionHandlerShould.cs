@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class InternalTexturizableHandlerShould
+    public class RemoveOnConditionHandlerShould
     {
-        private InternalTexturizableHandler handler;
+        private RemoveOnConditionHandler<InternalTexturizable> handler;
         private IInternalECSComponent<InternalTexturizable> component;
         private IDCLEntity entity;
         private IParcelScene scene;
@@ -18,7 +18,8 @@ namespace Tests
         public void SetUp()
         {
             component = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
-            handler = new InternalTexturizableHandler(()=> component);
+            handler = new RemoveOnConditionHandler<InternalTexturizable>(
+                () => component, m => m.renderers.Count == 0);
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
         }
@@ -31,18 +32,18 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
             component.Received(1).RemoveFor(scene, entity);
         }
-        
+
         [Test]
         public void NotRemoveComponentWhenNoRenderers()
         {
             GameObject go = new GameObject();
             Renderer renderer = go.AddComponent<MeshRenderer>();
-            
+
             InternalTexturizable model = new InternalTexturizable();
             model.renderers.Add(renderer);
             handler.OnComponentModelUpdated(scene, entity, model);
             component.DidNotReceive().RemoveFor(Arg.Any<IParcelScene>(), Arg.Any<IDCLEntity>());
-            
+
             Object.DestroyImmediate(go);
         }
     }

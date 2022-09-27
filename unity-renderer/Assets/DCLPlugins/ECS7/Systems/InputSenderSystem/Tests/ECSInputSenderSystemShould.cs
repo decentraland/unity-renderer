@@ -96,7 +96,6 @@ namespace Tests
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             var model = compData.model;
-            model.dirty = false;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
 
