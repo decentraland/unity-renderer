@@ -7,13 +7,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Interface;
 using DCL.Friends.WebApi;
+using UnityEngine;
 
 public class WorldChatWindowController : IHUD
 {
     private const int MAX_SEARCHED_CHANNELS = 100;
-    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD = 50;
-    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE = 20;
-    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
+    private const int DMS_PAGE_SIZE = 30;
+    private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 30;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
@@ -28,6 +28,7 @@ public class WorldChatWindowController : IHUD
     private string currentSearch = "";
     private bool areDMsRequestedByFirstTime;
     private bool isRequestingFriendsWithDMs;
+    private int lastSkipForDMs;
     private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
@@ -108,9 +109,8 @@ public class WorldChatWindowController : IHUD
 
             if (friendsController.IsInitialized && !areDMsRequestedByFirstTime)
             {
-                RequestFriendsWithDirectMessages(
-                    USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
-                    0);
+                RequestFriendsWithDirectMessages();
+                lastSkipForDMs += DMS_PAGE_SIZE;
                 RequestUnreadMessages();
             }
         }
@@ -122,9 +122,8 @@ public class WorldChatWindowController : IHUD
     {
         if (view.IsActive && !areDMsRequestedByFirstTime)
         {
-            RequestFriendsWithDirectMessages(
-                USER_DM_ENTRIES_TO_REQUEST_FOR_INITIAL_LOAD,
-                0);
+            RequestFriendsWithDirectMessages();
+            lastSkipForDMs += DMS_PAGE_SIZE;
             RequestUnreadMessages();
         }
         else
@@ -214,7 +213,6 @@ public class WorldChatWindowController : IHUD
 
         UpdateMoreChannelsToLoadHint();
         view.HidePrivateChatsLoading();
-        view.HideMoreChatsLoading();
         view.HideSearchLoading();
 
         if (!string.IsNullOrEmpty(currentSearch))
@@ -296,14 +294,14 @@ public class WorldChatWindowController : IHUD
             !string.IsNullOrEmpty(currentSearch))
             return;
 
-        RequestFriendsWithDirectMessages(
-            USER_DM_ENTRIES_TO_REQUEST_FOR_SHOW_MORE,
-            view.PrivateChannelsCount);
+        RequestFriendsWithDirectMessages();
     }
 
     internal void UpdateMoreChannelsToLoadHint()
     {
-        hiddenDMs = friendsController.TotalFriendsWithDirectMessagesCount - view.PrivateChannelsCount;
+        hiddenDMs = Mathf.Clamp(friendsController.TotalFriendsWithDirectMessagesCount - lastSkipForDMs,
+            0,
+            friendsController.TotalFriendsWithDirectMessagesCount);
 
         if (hiddenDMs <= 0 || !string.IsNullOrEmpty(currentSearch))
             View.HideMoreChatsToLoadHint();
@@ -311,7 +309,7 @@ public class WorldChatWindowController : IHUD
             View.ShowMoreChatsToLoadHint(hiddenDMs);
     }
 
-    private void RequestFriendsWithDirectMessages(int limit, int skip)
+    private void RequestFriendsWithDirectMessages()
     {
         isRequestingFriendsWithDMs = true;
 
@@ -320,10 +318,9 @@ public class WorldChatWindowController : IHUD
             view.ShowPrivateChatsLoading();
             view.HideMoreChatsToLoadHint();
         }
-        else
-            view.ShowMoreChatsLoading();
 
-        friendsController.GetFriendsWithDirectMessages(limit, skip);
+        friendsController.GetFriendsWithDirectMessages(DMS_PAGE_SIZE, lastSkipForDMs);
+        lastSkipForDMs += DMS_PAGE_SIZE;
         areDMsRequestedByFirstTime = true;
     }
 

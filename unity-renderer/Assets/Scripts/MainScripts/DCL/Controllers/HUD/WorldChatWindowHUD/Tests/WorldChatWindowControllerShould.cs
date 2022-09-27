@@ -338,7 +338,6 @@ public class WorldChatWindowControllerShould
         view.OnRequireMorePrivateChats += Raise.Event<Action>();
 
         friendsController.Received(1).GetFriendsWithDirectMessages(20, 42);
-        view.Received(1).ShowMoreChatsLoading();
     }
 
     [Test]

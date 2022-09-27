@@ -445,18 +445,22 @@ public class FriendsHUDController : IHUD
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
     {
-        if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
+        if (lastSkipForFriendRequests >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
-            View.ShowMoreRequestsToLoadHint(friendsController.TotalFriendRequestCount - View.FriendRequestCount);
+            View.ShowMoreRequestsToLoadHint(Mathf.Clamp(friendsController.TotalFriendRequestCount - lastSkipForFriendRequests,
+                0,
+                friendsController.TotalFriendRequestCount));
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
-        if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
+        if (lastSkipForFriends >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            View.ShowMoreFriendsToLoadHint(friendsController.TotalFriendCount - View.FriendCount);
+            View.ShowMoreFriendsToLoadHint(Mathf.Clamp(friendsController.TotalFriendCount - lastSkipForFriends,
+                0,
+                friendsController.TotalFriendCount));
     }
 
     private void SearchFriends(string search)

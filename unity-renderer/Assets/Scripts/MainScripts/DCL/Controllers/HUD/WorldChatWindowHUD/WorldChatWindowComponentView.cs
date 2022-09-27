@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
@@ -10,6 +11,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 {
     private const int CREATION_AMOUNT_PER_FRAME = 5;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
+    private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
+    private const float MIN_TIME_TO_REQUIRE_MORE_ENTRIES = 0.5f;
 
     [SerializeField] internal CollapsablePublicChannelListComponentView publicChannelList;
     [SerializeField] internal CollapsableDirectChatListComponentView directChatList;
@@ -37,6 +40,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     private int currentAvatarSnapshotIndex;
     private bool isLoadingPrivateChannels;
     private bool isSearchMode;
+    private Vector2 lastScrollPosition;
+    private float loadMoreEntriesRestrictionTime;
+    private Coroutine requireMoreEntriesRoutine;
 
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
@@ -68,11 +74,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
-        scroll.onValueChanged.AddListener((scrollPos) =>
-        {
-            if (scrollPos.y < 0.005f)
-                OnRequireMorePrivateChats?.Invoke();
-        });
+        scroll.onValueChanged.AddListener(RequestMorePrivateChats);
         UpdateHeaders();
     }
 
@@ -309,6 +311,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             creationQueue.Remove(userId);
             Set(model);
         }
+        
+        HideMoreChatsLoading();
     }
 
     private void FetchProfilePicturesForVisibleEntries()
@@ -326,5 +330,31 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
         if (currentAvatarSnapshotIndex >= directChatList.Entries.Count)
             currentAvatarSnapshotIndex = 0;
+    }
+
+    private void RequestMorePrivateChats(Vector2 position)
+    {
+        if (!loadMoreEntriesContainer.activeInHierarchy ||
+            loadMoreEntriesLoading.activeInHierarchy ||
+            Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+
+        if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
+        {
+            if (requireMoreEntriesRoutine != null)
+                StopCoroutine(requireMoreEntriesRoutine);
+
+            ShowMoreChatsLoading();
+            requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+
+            loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
+        }
+
+        lastScrollPosition = position;
+    }
+    
+    private IEnumerator WaitThenRequireMoreEntries()
+    {
+        yield return new WaitForSeconds(1f);
+        OnRequireMorePrivateChats?.Invoke();
     }
 }
