@@ -195,53 +195,23 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ActivatePreviewModeWhenMouseIsLocked()
+    public void HideWhenMouseIsLocked()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
         
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Hide();
     }
 
     [Test]
-    public void DeactivatePreviewMode()
+    public void ActivatePanel()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
         
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [Test]
-    public void DeactivatePreviewModeWhenInputFieldIsSelected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
-        
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [UnityTest]
-    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        view.IsFocused.Returns(false);
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
-        yield return new WaitForSeconds(4f);
-        
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Show();
     }
 
     [Test]

@@ -98,32 +98,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         base.Dispose();
     }
 
-    public void ActivatePreview()
-    {
-        if (!this) return;
-        if (!gameObject) return;
-
-        isPreviewActivated = true;
-        SetLoadingMessagesActive(false);
-        SetOldMessagesLoadingActive(false);
-
-        const float alphaTarget = 0f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = previewModeSize;
-    }
-
     public void SetLoadingMessagesActive(bool isActive)
     {
         if (messagesLoading == null)

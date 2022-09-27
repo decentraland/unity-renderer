@@ -540,7 +540,6 @@ public class TaskbarHUDController : IHUD
         privateChatWindow = controller;
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
-        controller.OnPreviewModeChanged += HandlePrivateChannelPreviewMode;
     }
 
     public void AddPublicChatChannel(PublicChatWindowController controller)

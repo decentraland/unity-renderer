@@ -43,7 +43,6 @@ public class PrivateChatWindowController : IHUD
 
     public event Action OnBack;
     public event Action OnClosed;
-    public event Action<bool> OnPreviewModeChanged;
 
     public PrivateChatWindowController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
