@@ -33,17 +33,17 @@ public class ECSSystemsController : IDisposable
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
-                context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent)
-        };
-
-        lateUpdateSystems = new ECS7System[]
-        {
+                context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
             ECSPointerInputSystem.CreateSystem(
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.internalEcsComponents.inputEventResultsComponent,
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
+        };
+
+        lateUpdateSystems = new ECS7System[]
+        {
             ECSCameraEntitySystem.CreateSystem(context.componentWriter),
             ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
         };
@@ -57,11 +57,15 @@ public class ECSSystemsController : IDisposable
 
     private void Update()
     {
+        componentWriteSystem.Invoke();
+
         int count = updateSystems.Count;
         for (int i = 0; i < count; i++)
         {
             updateSystems[i].Invoke();
         }
+
+        internalComponentWriteSystem.Invoke();
     }
 
     private void LateUpdate()
@@ -71,7 +75,5 @@ public class ECSSystemsController : IDisposable
         {
             lateUpdateSystems[i].Invoke();
         }
-        internalComponentWriteSystem.Invoke();
-        componentWriteSystem.Invoke();
     }
 }
