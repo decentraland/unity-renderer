@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-[assembly: InternalsVisibleTo("PlayerNameTests")]
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
 {
