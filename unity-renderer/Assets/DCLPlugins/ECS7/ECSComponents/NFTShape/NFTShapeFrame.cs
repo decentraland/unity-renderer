@@ -1,7 +1,4 @@
-﻿using System;
-using DCL.Components;
-using DCL.Configuration;
-using NFTShape_Internal;
+﻿using NFTShape_Internal;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -9,33 +6,11 @@ namespace DCL.ECSComponents
     public interface INFTShapeFrame
     {
         /// <summary>
-        /// Get the shape that represent the frame
-        /// </summary>
-        IShape shape { get; }
-        
-        /// <summary>
         /// The gameObject that represent the frame
         /// </summary>
         GameObject gameObject { get; }
-        
-        /// <summary>
-        /// Set the visibility of the frame
-        /// </summary>
-        /// <param name="isVisible"></param>
-        void SetVisibility(bool isVisible);
-        
-        /// <summary>
-        /// Enable or disable the collider of the frame
-        /// </summary>
-        /// <param name="withCollision"></param>
-        void SetHasCollisions(bool withCollision);
+        Renderer frameRenderer { get; }
 
-        /// <summary>
-        /// Enable or disable the pointer events on the frame
-        /// </summary>
-        /// <param name="isPointerBlocker"></param>
-        void SetPointerBlocker(bool isPointerBlocker);
-        
         /// <summary>
         /// This set the image and creates the HQ Texture handler
         /// </summary>
@@ -43,28 +18,28 @@ namespace DCL.ECSComponents
         /// <param name="url"></param>
         /// <param name="nftAsset"></param>
         void SetImage(string name, string url, INFTAsset nftAsset);
-        
+
         /// <summary>
         /// Dispose the frame
         /// </summary>
         void Dispose();
-        
+
         /// <summary>
         /// Show that it has been an error loading the frame
         /// </summary>
         void FailLoading();
-        
+
         /// <summary>
         /// Update the background of the texture so you can set the same background color as the image 
         /// </summary>
         /// <param name="newColor"></param>
-        void UpdateBackgroundColor(UnityEngine.Color newColor);
+        void UpdateBackgroundColor(Color newColor);
     }
-    
-    public class NFTShapeFrame : MonoBehaviour, IShape, INFTShapeLoaderController, INFTShapeFrame
+
+    public class NFTShapeFrame : MonoBehaviour, INFTShapeFrame
     {
-        [SerializeField] private BoxCollider boxCollider;
-        [SerializeField] private MeshRenderer meshRenderer;
+        [SerializeField] internal BoxCollider boxCollider;
+        [SerializeField] internal MeshRenderer meshRenderer;
         [SerializeField] private GameObject loadingSpinnerGameObject;
         [SerializeField] private NFTShapeMaterial[] materials;
 
@@ -77,10 +52,10 @@ namespace DCL.ECSComponents
         private Material frameMaterial;
         private Material imageMaterial;
         private Material backgroundMaterial;
-        
+
         static readonly int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
         static readonly int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
-        
+
         public enum NoiseType
         {
             ClassicPerlin,
@@ -91,52 +66,30 @@ namespace DCL.ECSComponents
             None
         }
 
+        public Renderer frameRenderer => meshRenderer;
+
         private void Awake()
         {
             // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
             meshRenderer.transform.localScale = new UnityEngine.Vector3(0.5f, 0.5f, 1);
             InitializeMaterials();
         }
-        
-        public bool IsVisible() { return gameObject.activeInHierarchy; }
 
-        public bool HasCollisions() { return boxCollider.enabled; }
-        
-        public BoxCollider nftCollider  => boxCollider;
-        
-        public IShape shape => this;
-        
         private void Start()
         {
             loadingSpinnerGameObject.layer = LayerMask.NameToLayer("ViewportCullingIgnored");
-        }
-
-        public void SetVisibility(bool isVisible)
-        {
-            gameObject.SetActive(isVisible);
-        }
-
-        public void SetHasCollisions(bool withCollision)
-        {
-            boxCollider.enabled = withCollision;
-        }
-
-        public void SetPointerBlocker(bool isPointerBlocker)
-        {
-            int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : DCL.Configuration.PhysicsLayers.defaultLayer;
-
-            boxCollider.gameObject.layer = colliderLayer;
         }
 
         public void SetImage(string name, string url, INFTAsset nftAsset)
         {
             if (nftAsset.previewAsset != null)
                 SetFrameImage(nftAsset.previewAsset.texture, resizeFrameMesh: true);
-            
+
             loadingSpinnerGameObject.SetActive(false);
             var hqImageHandlerConfig = new NFTShapeHQImageConfig()
             {
-                controller = this,
+                transform = transform,
+                collider = boxCollider,
                 name = name,
                 imageUrl = url,
                 asset = nftAsset
@@ -146,7 +99,10 @@ namespace DCL.ECSComponents
             nftAsset.OnTextureUpdate += UpdateTexture;
         }
 
-        public void Update() { hqTextureHandler?.Update(); }
+        public void Update()
+        {
+            hqTextureHandler?.Update();
+        }
 
         public void Dispose()
         {
@@ -161,14 +117,14 @@ namespace DCL.ECSComponents
 #endif
         }
 
-        public void UpdateBackgroundColor(UnityEngine.Color newColor)
+        public void UpdateBackgroundColor(Color newColor)
         {
             if (backgroundMaterial == null)
                 return;
 
             backgroundMaterial.SetColor(COLOR_SHADER_PROPERTY, newColor);
         }
-        
+
         private void SetFrameImage(Texture2D texture, bool resizeFrameMesh = false)
         {
             if (texture == null)
@@ -181,24 +137,24 @@ namespace DCL.ECSComponents
                 float w, h;
                 w = h = 0.5f;
                 if (texture.width > texture.height)
-                    h *= texture.height / (float) texture.width;
+                    h *= texture.height / (float)texture.width;
                 else if (texture.width < texture.height)
-                    w *= texture.width / (float) texture.height;
+                    w *= texture.width / (float)texture.height;
                 UnityEngine.Vector3 newScale = new UnityEngine.Vector3(w, h, 1f);
 
                 meshRenderer.transform.localScale = newScale;
             }
         }
-        
+
         private void UpdateTexture(Texture2D texture)
         {
             if (imageMaterial == null)
                 return;
 
             imageMaterial.SetTexture(BASEMAP_SHADER_PROPERTY, texture);
-            imageMaterial.SetColor(COLOR_SHADER_PROPERTY, UnityEngine.Color.white);
+            imageMaterial.SetColor(COLOR_SHADER_PROPERTY, Color.white);
         }
-        
+
         private void InitializeMaterials()
         {
             Material[] meshMaterials = new Material[materials.Length];
@@ -220,7 +176,7 @@ namespace DCL.ECSComponents
                         break;
                 }
             }
-            
+
             meshRenderer.materials = meshMaterials;
 
             if (frameMaterial == null)
@@ -256,6 +212,6 @@ namespace DCL.ECSComponents
             if (noiseIsFractal)
                 frameMaterial.EnableKeyword("FRACTAL");
         }
-        
+
     }
 }
