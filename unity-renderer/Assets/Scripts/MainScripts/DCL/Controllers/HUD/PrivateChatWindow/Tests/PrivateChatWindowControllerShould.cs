@@ -195,19 +195,6 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ActivatePreviewMode()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-        controller.SetVisibility(true);
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
     public void ActivatePreviewModeWhenMouseIsLocked()
     {
         var isPreviewMode = false;
@@ -217,8 +204,6 @@ public class PrivateChatWindowControllerShould
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
         
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 
@@ -229,10 +214,7 @@ public class PrivateChatWindowControllerShould
         controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.DeactivatePreview();
         
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
         Assert.IsFalse(isPreviewMode);
     }
 
@@ -245,8 +227,6 @@ public class PrivateChatWindowControllerShould
 
         internalChatView.OnInputFieldSelected += Raise.Event<Action>();
         
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
         Assert.IsFalse(isPreviewMode);
     }
 
@@ -261,8 +241,6 @@ public class PrivateChatWindowControllerShould
         internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
         yield return new WaitForSeconds(4f);
         
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 

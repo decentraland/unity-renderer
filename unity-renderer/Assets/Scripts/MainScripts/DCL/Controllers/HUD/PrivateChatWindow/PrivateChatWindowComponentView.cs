@@ -124,27 +124,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         ((RectTransform) transform).sizeDelta = previewModeSize;
     }
 
-    public void DeactivatePreview()
-    {
-        isPreviewActivated = false;
-
-        const float alphaTarget = 1f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = originalSize;
-    }
-
     public void SetLoadingMessagesActive(bool isActive)
     {
         if (messagesLoading == null)

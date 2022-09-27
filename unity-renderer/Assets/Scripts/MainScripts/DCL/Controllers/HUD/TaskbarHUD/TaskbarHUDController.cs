@@ -278,16 +278,15 @@ public class TaskbarHUDController : IHUD
             chatBackWindow = publicChatWindow;
             var openedWindow = OpenLastActiveChatWindow(chatToggleTargetWindow);
             if (openedWindow == publicChatWindow)
-                publicChatWindow.DeactivatePreview();
+                publicChatWindow.SetVisibility(true);
             else if (openedWindow == privateChatWindow)
-                privateChatWindow.DeactivatePreview();
+                privateChatWindow.SetVisibility(true);
             else if (openedWindow == channelChatWindow)
-                channelChatWindow.DeactivatePreviewMode();
+                channelChatWindow.SetVisibility(true);
         }
         else
         {
             CloseAnyChatWindow();
-            OpenPublicChatOnPreviewMode();
         }
 
         OnAnyTaskbarButtonClicked?.Invoke();

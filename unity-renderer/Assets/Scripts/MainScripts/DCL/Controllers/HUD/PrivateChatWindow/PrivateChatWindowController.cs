@@ -77,7 +77,6 @@ public class PrivateChatWindowController : IHUD
         if (notificationPanelTransform.Get() == null)
         {
             view.OnFocused += HandleViewFocused;
-            view.OnClickOverWindow += HandleViewClicked;
         }
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += Hide;
@@ -183,7 +182,6 @@ public class PrivateChatWindowController : IHUD
             View.OnUnfriend -= Unfriend;
             View.OnFocused -= HandleViewFocused;
             View.OnRequireMoreMessages -= RequestOldConversations;
-            View.OnClickOverWindow -= HandleViewClicked;
             View.Dispose();
         }
     }
@@ -294,13 +292,6 @@ public class PrivateChatWindowController : IHUD
         }
     }
 
-    private void HandleViewClicked()
-    {
-        if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
-            return;
-        DeactivatePreview();
-    }
-
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
         if (notificationPanelTransform.Get() == null)
@@ -311,18 +302,6 @@ public class PrivateChatWindowController : IHUD
             return;
         chatHudController.FadeOutMessages();
         currentState = ChatWindowVisualState.NONE_VISIBLE;
-    }
-
-    public void DeactivatePreview()
-    {
-        SetVisiblePanelList(true);
-        deactivateFadeOutCancellationToken.Cancel();
-        deactivateFadeOutCancellationToken = new CancellationTokenSource();
-
-        View.DeactivatePreview();
-        chatHudController.DeactivatePreview();
-        OnPreviewModeChanged?.Invoke(false);
-        currentState = ChatWindowVisualState.INPUT_MODE;
     }
 
     private void SetVisiblePanelList(bool visible)
