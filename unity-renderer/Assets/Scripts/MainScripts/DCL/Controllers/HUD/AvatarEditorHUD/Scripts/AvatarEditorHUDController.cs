@@ -65,6 +65,7 @@ public class AvatarEditorHUDController : IHUD
     private float prevRenderScale = 1.0f;
     private bool isAvatarPreviewReady;
     private List<string> thirdPartyWearablesLoaded = new List<string>();
+    private List<string> thirdPartyCollectionsActive = new List<string>();
     private CancellationTokenSource loadEmotesCTS = new CancellationTokenSource();
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
@@ -638,6 +639,10 @@ public class AvatarEditorHUDController : IHUD
                 if (iterator.Current.Value.IsEmote())
                     continue;
 
+                if (iterator.Current.Value.IsFromThirdPartyCollection 
+                    && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
+                    continue;
+                        
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
@@ -971,7 +976,7 @@ public class AvatarEditorHUDController : IHUD
             {
                 wearables = wearables.Where(x => x.ThirdPartyCollectionId == collectionId).ToArray();
                 if (wearables.Count().Equals(0)) view.ShowNoItemOfWearableCollectionWarning();
-
+                thirdPartyCollectionsActive.Add(collectionId);
                 foreach (var wearable in wearables)
                 {
                     if (!userProfile.ContainsInInventory(wearable.id))
@@ -1002,6 +1007,7 @@ public class AvatarEditorHUDController : IHUD
             .Select(item => item.id)
             .ToList();
         CatalogController.i.Remove(wearablesToRemove);
+        thirdPartyCollectionsActive.Remove(collectionId);
 
         foreach (string wearableId in wearablesToRemove)
         {
