@@ -416,18 +416,20 @@ public class FriendsHUDController : IHUD
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
-        ShowOrHideMoreFriendsToLoadHint();
+        
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
 
         // We are not handling properly the case when the friends are not fetched correctly from server.
         // 'lastSkipForFriends' will have an invalid value.
         lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
+        
+        ShowOrHideMoreFriendsToLoadHint();
     }
 
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
-        ShowOrHideMoreFriendRequestsToLoadHint();
+        
         friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
@@ -435,6 +437,8 @@ public class FriendsHUDController : IHUD
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
+        
+        ShowOrHideMoreFriendRequestsToLoadHint();
     }
     
     private void DisplayFriendRequestsIfAnyIsLoaded()

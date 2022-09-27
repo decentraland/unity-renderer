@@ -110,7 +110,6 @@ public class WorldChatWindowController : IHUD
             if (friendsController.IsInitialized && !areDMsRequestedByFirstTime)
             {
                 RequestFriendsWithDirectMessages();
-                lastSkipForDMs += DMS_PAGE_SIZE;
                 RequestUnreadMessages();
             }
         }
@@ -297,7 +296,7 @@ public class WorldChatWindowController : IHUD
         RequestFriendsWithDirectMessages();
     }
 
-    internal void UpdateMoreChannelsToLoadHint()
+    private void UpdateMoreChannelsToLoadHint()
     {
         hiddenDMs = Mathf.Clamp(friendsController.TotalFriendsWithDirectMessagesCount - lastSkipForDMs,
             0,

@@ -292,21 +292,36 @@ public class WorldChatWindowControllerShould
     }
 
     [Test]
-    [TestCase(10)]
-    [TestCase(5)]
-    public void UpdateMoreChannelsToLoadHintCorrectly(int currentPrivateChannelsCount)
+    public void ShowMoreChannelsToLoadHintCorrectly()
     {
         controller.Initialize(view);
-        int totalFriends = 10;
-        friendsController.TotalFriendsWithDirectMessagesCount.Returns(totalFriends);
-        view.PrivateChannelsCount.Returns(currentPrivateChannelsCount);
+        friendsController.TotalFriendsWithDirectMessagesCount.Returns(40);
 
-        controller.UpdateMoreChannelsToLoadHint();
-
-        if (totalFriends - currentPrivateChannelsCount == 0)
-            view.Received(1).HideMoreChatsToLoadHint();
-        else
-            view.Received(1).ShowMoreChatsToLoadHint(totalFriends - currentPrivateChannelsCount);
+        controller.SetVisibility(true);
+        friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
+            new List<FriendWithDirectMessages>
+            {
+                new FriendWithDirectMessages {userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6}
+            });
+        
+        view.Received(1).ShowMoreChatsToLoadHint(10);
+    }
+    
+    [Test]
+    public void HideMoreChannelsToLoadHintCorrectly()
+    {
+        controller.Initialize(view);
+        friendsController.TotalFriendsWithDirectMessagesCount.Returns(26);
+        controller.SetVisibility(true);
+        view.ClearReceivedCalls();
+        
+        friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
+            new List<FriendWithDirectMessages>
+            {
+                new FriendWithDirectMessages {userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6}
+            });
+        
+        view.Received(1).HideMoreChatsToLoadHint();
     }
 
     [Test]
@@ -315,7 +330,7 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
         controller.SetVisibility(true);
 
-        friendsController.Received(1).GetFriendsWithDirectMessages(50, 0);
+        friendsController.Received(1).GetFriendsWithDirectMessages(30, 0);
         view.Received(1).ShowPrivateChatsLoading();
         view.Received(1).HideMoreChatsToLoadHint();
     }
@@ -325,7 +340,7 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view);
         controller.SetVisibility(true);
-        view.PrivateChannelsCount.Returns(42);
+        friendsController.TotalFriendsWithDirectMessagesCount.Returns(42);
         view.ClearReceivedCalls();
         friendsController.ClearReceivedCalls();
 
@@ -337,7 +352,7 @@ public class WorldChatWindowControllerShould
 
         view.OnRequireMorePrivateChats += Raise.Event<Action>();
 
-        friendsController.Received(1).GetFriendsWithDirectMessages(20, 42);
+        friendsController.Received(1).GetFriendsWithDirectMessages(30, 30);
     }
 
     [Test]

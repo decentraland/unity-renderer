@@ -263,13 +263,18 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual("hello", search);
     }
 
-    [Test]
-    public void TriggerRequestMorePrivateChats()
+    [UnityTest]
+    public IEnumerator TriggerRequestMorePrivateChats()
     {
         var called = false;
+        view.HideMoreChatsLoading();
+        view.ShowMoreChatsToLoadHint(2);
         view.OnRequireMorePrivateChats += () => called = true;
 
+        view.scroll.onValueChanged.Invoke(Vector2.one);
         view.scroll.onValueChanged.Invoke(Vector2.zero);
+
+        yield return new WaitForSeconds(1.1f);
 
         Assert.IsTrue(called);
     }
