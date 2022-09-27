@@ -163,7 +163,12 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     {
         avatar.PlayEmote(id, timestamp);
 
-        DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+        bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+        if (!found)
+        {
+            var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
+            emotesCatalog.TryGetLoadedEmote(id, out emoteItem);
+        }
 
         if (emoteItem != null)
         {

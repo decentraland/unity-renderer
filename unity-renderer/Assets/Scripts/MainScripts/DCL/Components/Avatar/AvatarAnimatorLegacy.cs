@@ -38,7 +38,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float FALL_TRANSITION_TIME = 0.5f;
     const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
     const float EXPRESSION_ENTER_TRANSITION_TIME = 0.1f;
-    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.07f;
+    const float OTHER_PLAYER_MOVE_THRESHOLD = 0.02f;
 
     const float AIR_EXIT_TRANSITION_TIME = 0.2f;
 
@@ -307,6 +307,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             OnUpdateWithDeltaTime(bb.deltaTime);
         }
     }
+
     private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName, 
         float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
     {
@@ -344,7 +345,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         bool ownPlayer)
     {
         float timeTillEnd = animationState.length - animationState.time;
-        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME;
+        bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
         bool isMoving = ownPlayer ? dclCharacterController.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
         return isAnimationOver || isMoving;
     }
@@ -419,7 +420,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) 
                                     && clipData.loop;
-
+                                    
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }

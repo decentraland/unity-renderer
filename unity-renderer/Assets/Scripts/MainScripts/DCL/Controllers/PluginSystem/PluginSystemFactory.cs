@@ -44,12 +44,15 @@ namespace DCL
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
-            pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur");
+            pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
+            
+            //TODO ANTON make feature flag if needed
+            pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
