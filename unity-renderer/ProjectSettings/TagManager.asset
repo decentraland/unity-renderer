@@ -8,6 +8,7 @@ TagManager:
   - MiniMapCamera
   - Voxel
   - FromAssetBundle
+  - FromRawGLTF
   layers:
   - Default
   - TransparentFX
