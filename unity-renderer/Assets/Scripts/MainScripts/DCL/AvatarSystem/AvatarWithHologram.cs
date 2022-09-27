@@ -29,8 +29,6 @@ namespace AvatarSystem
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         public AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
             this.baseAvatar = baseAvatar;
@@ -92,7 +90,6 @@ namespace AvatarSystem
 
                 status = IAvatar.Status.Loaded;
                 await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
-                PlaySpawnEmote();
             }
             catch (OperationCanceledException)
             {
@@ -124,12 +121,6 @@ namespace AvatarSystem
         public void RemoveVisibilityConstrain(string key)
         {
             visibility.RemoveGlobalConstrain(key);
-        }
-
-        private void PlaySpawnEmote()
-        {
-            var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
-            PlayEmote("Spawn_Pose_v01", timestamp);
         }
 
         public void PlayEmote(string emoteId, long timestamps)
