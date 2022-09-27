@@ -129,7 +129,7 @@ namespace AvatarSystem
         private void PlaySpawnEmote()
         {
             var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
-            PlayEmote("Spawn_Pose_v0" + UnityEngine.Random.Range(1,4), timestamp);
+            PlayEmote("Spawn_Pose_v01", timestamp);
         }
 
         public void PlayEmote(string emoteId, long timestamps)

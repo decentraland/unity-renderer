@@ -44,39 +44,37 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
     private void OnSelectWearable(string wearableId)
     {
         CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
-
-        
         switch (wearable.data.category)
         {
             case WearableLiterals.Categories.FEET:
                 activeCategory = GetRandomizedName("Outfit_Shoes_v0",2);
                 break;
             case WearableLiterals.Categories.LOWER_BODY:
-                activeCategory = GetRandomizedName("Outfit_Lower_v0",2);
+                activeCategory = GetRandomizedName("Outfit_Lower_v0",3);
                 break;
             case WearableLiterals.Categories.UPPER_BODY:
-                activeCategory = GetRandomizedName("Outfit_Upper_v0",2);
+                activeCategory = GetRandomizedName("Outfit_Upper_v0",3);
                 break;
             case "eyewear":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "tiara":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "earring":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "hat":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "top_head":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "helmet":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             case "mask":
-                activeCategory = "Outfit_Accessories";
+                activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
             default:
                 activeCategory = "";
