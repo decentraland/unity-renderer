@@ -286,15 +286,8 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            if (chatToggleTargetWindow == publicChatWindow)
-                publicChatWindow.ActivatePreview();
-            else if (chatToggleTargetWindow == channelChatWindow)
-                channelChatWindow.ActivatePreviewMode();
-            else
-            {
-                CloseAnyChatWindow();
-                OpenPublicChatOnPreviewMode();
-            }
+            CloseAnyChatWindow();
+            OpenPublicChatOnPreviewMode();
         }
 
         OnAnyTaskbarButtonClicked?.Invoke();
@@ -361,7 +354,6 @@ public class TaskbarHUDController : IHUD
 
         chatToggleTargetWindow = publicChatWindow;
         publicChatWindow.SetVisibility(true, false);
-        publicChatWindow.ActivatePreviewModeInstantly();
 
         view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
@@ -570,7 +562,6 @@ public class TaskbarHUDController : IHUD
         publicChatWindow = controller;
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
-        controller.OnPreviewModeChanged += HandlePublicChannelPreviewModeChanged;
     }
 
     private void HandlePublicChannelPreviewModeChanged(bool isPreviewMode)

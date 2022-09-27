@@ -64,36 +64,12 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public void ActivatePreview()
     {
-        IsInPreviewMode = true;
-        const float alphaTarget = 0f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = previewModeSize;
+        Hide();
     }
 
     public void ActivatePreviewInstantly()
     {
-        IsInPreviewMode = true;
-
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        const float alphaTarget = 0f;
-        foreach (var group in previewCanvasGroup)
-            group.alpha = alphaTarget;
-
-        ((RectTransform) transform).sizeDelta = previewModeSize;
+        Hide();
     }
 
     public void DeactivatePreview()

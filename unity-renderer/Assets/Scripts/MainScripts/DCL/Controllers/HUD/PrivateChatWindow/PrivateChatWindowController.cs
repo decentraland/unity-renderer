@@ -33,7 +33,6 @@ public class PrivateChatWindowController : IHUD
     private bool skipChatInputTrigger;
     private float lastRequestTime;
     private ChatWindowVisualState currentState;
-    private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
     private bool shouldRequestMessages;
@@ -292,21 +291,6 @@ public class PrivateChatWindowController : IHUD
         {
             deactivateFadeOutCancellationToken.Cancel();
             deactivateFadeOutCancellationToken = new CancellationTokenSource();
-
-            if (currentState.Equals(ChatWindowVisualState.NONE_VISIBLE))
-            {
-                ActivatePreviewOnMessages();
-            }
-        }
-        else
-        {
-            if (chatHudController.IsInputSelected)
-                return;
-
-            if (currentState.Equals(ChatWindowVisualState.INPUT_MODE))
-            {
-                return;
-            }
         }
     }
 
@@ -329,20 +313,9 @@ public class PrivateChatWindowController : IHUD
         currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
 
-    public void ActivatePreviewOnMessages()
-    {
-        Debug.Log("Activate preview on messages");
-        SetVisiblePanelList(false);
-        chatHudController.ActivatePreview();
-        OnPreviewModeChanged?.Invoke(true);
-    }
-
     public void DeactivatePreview()
     {
-        Debug.Log("Deactivate preview");
         SetVisiblePanelList(true);
-        deactivatePreviewCancellationToken.Cancel();
-        deactivatePreviewCancellationToken = new CancellationTokenSource();
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
 

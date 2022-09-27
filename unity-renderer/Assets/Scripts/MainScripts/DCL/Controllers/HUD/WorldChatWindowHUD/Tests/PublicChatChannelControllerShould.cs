@@ -111,14 +111,11 @@ public class PublicChatChannelControllerShould
     public void ResetInputFieldAndActivatePreviewWhenIsInvalidMessage()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         
         internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
             {body = "", messageType = ChatMessage.Type.PUBLIC, recipient = TEST_USER_ID});
         
         internalChatView.Received(1).ResetInputField(true);
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 
@@ -142,12 +139,8 @@ public class PublicChatChannelControllerShould
     public void ActivatePreviewModeInstantly()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
-        controller.ActivatePreviewModeInstantly();
 
-        view.Received(1).ActivatePreviewInstantly();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 
@@ -155,12 +148,8 @@ public class PublicChatChannelControllerShould
     public void ActivatePreviewMode()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
-        controller.ActivatePreview();
-
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
+        
         Assert.IsTrue(isPreviewMode);
     }
 
@@ -168,13 +157,10 @@ public class PublicChatChannelControllerShould
     public void ActivatePreviewModeWhenMouseIsLocked()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
 
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 
@@ -182,12 +168,9 @@ public class PublicChatChannelControllerShould
     public void DeactivatePreviewMode()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
         controller.DeactivatePreview();
 
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
         Assert.IsFalse(isPreviewMode);
     }
 
@@ -195,12 +178,9 @@ public class PublicChatChannelControllerShould
     public void DeactivatePreviewModeWhenInputFieldIsSelected()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
 
         internalChatView.OnInputFieldSelected += Raise.Event<Action>();
 
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
         Assert.IsFalse(isPreviewMode);
     }
 
@@ -208,14 +188,11 @@ public class PublicChatChannelControllerShould
     public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
     {
         var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         view.IsFocused.Returns(false);
 
         internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
         yield return new WaitForSeconds(4f);
 
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
         Assert.IsTrue(isPreviewMode);
     }
 

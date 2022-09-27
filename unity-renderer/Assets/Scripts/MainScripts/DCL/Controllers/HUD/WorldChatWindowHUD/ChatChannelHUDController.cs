@@ -313,7 +313,6 @@ namespace DCL.Chat.HUD
         {
             SetVisiblePanelList(false);
             View?.ActivatePreview();
-            chatHudController?.ActivatePreview();
             OnPreviewModeChanged?.Invoke(true);
         }
 
