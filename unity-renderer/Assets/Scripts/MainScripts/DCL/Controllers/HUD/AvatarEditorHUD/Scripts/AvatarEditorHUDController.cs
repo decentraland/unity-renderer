@@ -27,7 +27,6 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
     internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
-    private const int OWNED_WEARABLES_REFRESH_TIME = 60;
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
@@ -65,7 +64,7 @@ public class AvatarEditorHUDController : IHUD
     internal bool collectionsAlreadyLoaded = false;
     private float prevRenderScale = 1.0f;
     private bool isAvatarPreviewReady;
-    private List<WearableItem> thirdPartyWearablesLoaded = new List<WearableItem>();
+    private List<string> thirdPartyWearablesLoaded = new List<string>();
     private List<string> thirdPartyCollectionsActive = new List<string>();
     private CancellationTokenSource loadEmotesCTS = new CancellationTokenSource();
 
@@ -180,7 +179,7 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + OWNED_WEARABLES_REFRESH_TIME &&
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
              (ownedWearablesAlreadyLoaded ||
               ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
@@ -192,17 +191,14 @@ public class AvatarEditorHUDController : IHUD
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
-                             ownedWearables = ownedWearables.Concat(thirdPartyWearablesLoaded).ToArray();
                              ownedWearablesAlreadyLoaded = true;
                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly 
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
                              LoadUserProfile(userProfile, true);
                              if (userProfile != null && userProfile.avatar != null)
                              {
                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
                              }
-                             view.ShowSkinPopulatedList(ownedWearables.Any(item => item.IsSkin()));
-                             view.ShowCollectiblesPopulatedList(ownedWearables.Any(item => item.IsCollectible()));
                              loadingWearables = false;
                          })
                          .Catch((error) =>
@@ -634,6 +630,8 @@ public class AvatarEditorHUDController : IHUD
     {
         wearablesByCategory.Clear();
         view.RemoveAllWearables();
+        bool hasSkin = false;
+        bool hasCollectible = false;
         using (var iterator = catalog.Get().GetEnumerator())
         {
             while (iterator.MoveNext())
@@ -646,9 +644,12 @@ public class AvatarEditorHUDController : IHUD
                     continue;
                         
                 AddWearable(iterator.Current.Key, iterator.Current.Value);
+                hasSkin = iterator.Current.Value.IsSkin() || hasSkin;
+                hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
             }
         }
-
+        view.ShowSkinPopulatedList(hasSkin);
+        view.ShowCollectiblesPopulatedList(hasCollectible);
         view.RefreshSelectorsSize();
     }
 
@@ -985,14 +986,14 @@ public class AvatarEditorHUDController : IHUD
                     {
                         userProfile.AddToInventory(wearable.id);
                         
-                        if (!thirdPartyWearablesLoaded.Contains(wearable))
-                            thirdPartyWearablesLoaded.Add(wearable);
+                        if (!thirdPartyWearablesLoaded.Contains(wearable.id))
+                            thirdPartyWearablesLoaded.Add(wearable.id);
                     }
                 }
 
                 view.BlockCollectionsDropdown(false);
-                lastTimeOwnedWearablesChecked = -OWNED_WEARABLES_REFRESH_TIME;
-                LoadOwnedWereables(userProfile);
+                LoadUserProfile(userProfile, true);
+                view.RefreshSelectorsSize();
             })
             .Catch((error) =>
             {
@@ -1005,14 +1006,16 @@ public class AvatarEditorHUDController : IHUD
     {
         var wearablesToRemove = CatalogController.i.Wearables.GetValues()
             .Where(wearable => !userProfile.HasEquipped(wearable.id)
-                               && wearable.ThirdPartyCollectionId == collectionId);
-            
-        CatalogController.i.Remove(wearablesToRemove.Select(item => item.id).ToList());
+                               && wearable.ThirdPartyCollectionId == collectionId)
+            .Select(item => item.id)
+            .ToList();
+        CatalogController.i.Remove(wearablesToRemove);
         thirdPartyCollectionsActive.Remove(collectionId);
-        foreach (WearableItem wearableToRemove in wearablesToRemove)
+
+        foreach (string wearableId in wearablesToRemove)
         {
-            userProfile.RemoveFromInventory(wearableToRemove.id);
-            thirdPartyWearablesLoaded.Remove(wearableToRemove);
+            userProfile.RemoveFromInventory(wearableId);
+            thirdPartyWearablesLoaded.Remove(wearableId);
         }
 
         LoadUserProfile(userProfile, true);
