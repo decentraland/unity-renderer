@@ -16,18 +16,19 @@ public class ECSSystemsController : IDisposable
     private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
+    private readonly ECS7System internalComponentWriteSystem;
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
+        this.internalComponentWriteSystem = context.internalEcsComponents.writeInternalComponentsSystem;
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
         updateSystems = new ECS7System[]
         {
-            context.internalEcsComponents.writeInternalComponentsSystem,
             ECSTransformParentingSystem.Update,
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
@@ -70,6 +71,7 @@ public class ECSSystemsController : IDisposable
         {
             lateUpdateSystems[i].Invoke();
         }
+        internalComponentWriteSystem.Invoke();
         componentWriteSystem.Invoke();
     }
 }

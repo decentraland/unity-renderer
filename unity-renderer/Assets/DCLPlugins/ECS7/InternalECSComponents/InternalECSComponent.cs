@@ -49,6 +49,8 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T : Intern
 
     public void PutFor(IParcelScene scene, long entityId, T model)
     {
+        model._dirty = true;
+        scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, model);
         scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, model));
     }
 
@@ -61,9 +63,14 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T : Intern
     {
         if (defaultModel != null)
         {
-            scheduledWrite.Add(new InternalComponentWriteData(scene, entity.entityId, componentId, defaultModel));
+            defaultModel._dirty = true;
+            scene.crdtExecutor.ExecuteWithoutStoringState(entity.entityId, componentId, defaultModel);
+            scheduledWrite.Add(new InternalComponentWriteData(scene, entity.entityId, componentId, null));
         }
-        scheduledWrite.Add(new InternalComponentWriteData(scene, entity.entityId, componentId, null));
+        else
+        {
+            scene.crdtExecutor.ExecuteWithoutStoringState(entity.entityId, componentId, null);
+        }
     }
 
     public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)

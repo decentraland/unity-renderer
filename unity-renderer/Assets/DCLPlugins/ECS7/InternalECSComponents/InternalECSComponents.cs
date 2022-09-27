@@ -86,49 +86,22 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
     private static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
     {
-        IList<InternalComponent> dirtyComponents = new List<InternalComponent>(50);
-        IList<InternalComponentWriteData> delayedRemovals = new List<InternalComponentWriteData>(50);
-
         return () =>
         {
-            for (int i = 0; i < delayedRemovals.Count; i++)
-            {
-                var writeData = delayedRemovals[i];
-                writeData.scene?.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
-            }
-            delayedRemovals.Clear();
-
-            for (int i = 0; i < dirtyComponents.Count; i++)
-            {
-                dirtyComponents[i]._dirty = false;
-            }
-            dirtyComponents.Clear();
-
             for (int i = 0; i < scheduledWrite.Count; i++)
             {
                 var writeData = scheduledWrite[i];
-                if (writeData.scene != null)
+                if (writeData.scene == null)
+                    continue;
+
+                InternalComponent data = writeData.data;
+                if (data != null)
                 {
-                    InternalComponent data = writeData.data;
-                    if (data != null)
-                    {
-                        data._dirty = true;
-                        dirtyComponents.Add(data);
-                    }
-                    else
-                    {
-                        bool isDelayedRemoval = i > 0
-                                                && scheduledWrite[i - 1].scene == writeData.scene
-                                                && scheduledWrite[i - 1].entityId == writeData.entityId
-                                                && scheduledWrite[i - 1].componentId == writeData.componentId
-                                                && scheduledWrite[i - 1].data != null;
-                        if (isDelayedRemoval)
-                        {
-                            delayedRemovals.Add(writeData);
-                            continue;
-                        }
-                    }
-                    writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, data);
+                    data._dirty = false;
+                }
+                else
+                {
+                    writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
                 }
             }
             scheduledWrite.Clear();

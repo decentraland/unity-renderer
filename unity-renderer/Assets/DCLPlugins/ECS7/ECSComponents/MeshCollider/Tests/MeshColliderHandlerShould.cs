@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using DCL.ECS7.InternalComponents;
@@ -24,6 +25,9 @@ namespace Tests
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
 
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentsFactory, null, new List<InternalComponentWriteData>());
+
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             handler = new MeshColliderHandler(internalComponents.onPointerColliderComponent,
@@ -32,6 +36,8 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1101);
+
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
@@ -214,7 +220,6 @@ namespace Tests
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
                 CollisionMask = (int)ColliderLayer.Physics
             });
-            internalComponents.writeInternalComponentsSystem();
 
             BoxCollider boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
 
@@ -228,7 +233,6 @@ namespace Tests
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
                 CollisionMask = (int)ColliderLayer.Pointer
             });
-            internalComponents.writeInternalComponentsSystem();
 
             boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
 
@@ -242,7 +246,6 @@ namespace Tests
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
                 CollisionMask = (int)ColliderLayer.Pointer | (int)ColliderLayer.Physics
             });
-            internalComponents.writeInternalComponentsSystem();
 
             boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
 
@@ -253,7 +256,6 @@ namespace Tests
 
             // remove component, internal colliders should be removed too
             handler.OnComponentRemoved(scene, entity);
-            internalComponents.writeInternalComponentsSystem();
             yield return null;
 
             Assert.IsFalse(handler.colliderGameObject);

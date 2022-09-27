@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -31,7 +32,12 @@ namespace Tests
             entity = scene.CreateEntity(100);
             texturizableComponent = internalComponent.texturizableComponent;
 
-            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent, Substitute.For<IInternalECSComponent<InternalRenderers>>());
+            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
+                Substitute.For<IInternalECSComponent<InternalRenderers>>());
+
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, manager, factory, null, new List<InternalComponentWriteData>());
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
@@ -75,16 +81,14 @@ namespace Tests
             handler.OnComponentCreated(scene, entity);
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return null;
-            internalComponent.writeInternalComponentsSystem();
 
             Renderer renderer = entity.gameObject.GetComponentInChildren<Renderer>();
             Assert.IsTrue(texturizableComponent.GetFor(scene, entity).model.renderers.Contains(renderer));
 
             handler.OnComponentRemoved(scene, entity);
             yield return null;
-            internalComponent.writeInternalComponentsSystem();
 
-            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).model.renderers.Count == 0);
+            Assert.IsNull(texturizableComponent.GetFor(scene, entity));
         }
 
         [UnityTest]
