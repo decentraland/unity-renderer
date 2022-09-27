@@ -141,8 +141,7 @@ namespace DCL
                     var childTransform = someTransform.GetChild(i).transform;
                     if (childTransform.gameObject.name.Contains("GLTF Shape"))
                     {
-                        var childGameObject = childTransform.GetChild(0).gameObject;
-                        var renderers = childGameObject.
+                        var renderers = childTransform.
                             GetComponentsInChildren<Renderer>(true);
                   
                         foreach (Renderer renderer in renderers)
