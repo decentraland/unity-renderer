@@ -289,6 +289,7 @@ public class FriendsTabComponentView : BaseComponentView
         onlineFriendsList.Hide();
         searchResultsFriendList.Show();
 
+        UpdateCounterLabel();
         HideMoreFriendsToLoadHint();
         UpdateLayout();
     }
