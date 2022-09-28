@@ -1,4 +1,5 @@
-﻿using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+﻿using DCL.Interface;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
@@ -18,8 +19,12 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue)
         {
             currentAudioSettings.outputDevice = (int)newValue;
+
             ApplySettings();
             Settings.i.ChangeAudioDevicesSettings();
         }
+
+        [ContextMenu(nameof(SetAudioDeviceToKernel))]
+        private void SetAudioDeviceToKernel() => WebInterface.SetOutputAudioDevice("new device");
     }
 }

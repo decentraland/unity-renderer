@@ -764,7 +764,13 @@ namespace DCL.Interface
             public string userId;
             public FriendshipAction action;
         }
-        
+
+        [Serializable]
+        public class SetOutputAudioDevicePayload
+        {
+            public string device;
+        }
+
         public enum FriendshipAction
         {
             NONE,
@@ -1778,6 +1784,14 @@ namespace DCL.Interface
         public static void UpdateMemoryUsage()
         {
             SendMessage("UpdateMemoryUsage");
+        }
+
+        public static void SetOutputAudioDevice(string newDevice)
+        {
+            SendMessage(nameof(SetOutputAudioDevice), new SetOutputAudioDevicePayload
+            {
+                device = newDevice
+            });
         }
     }
 }
