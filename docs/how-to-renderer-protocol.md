@@ -47,7 +47,7 @@ message Teleport {
 }
 ```
 
-After that, just run `npm run build` and the Renderer Protocol will be re-generated.
+After that, just run `npm run build-renderer-protocol` and the Renderer Protocol will be re-generated.
 
 ## RPC
 
