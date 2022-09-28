@@ -1,0 +1,25 @@
+{
+    "name": "DCL.Plugins.ECSInteractionHoverCanvas.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2b778ade28fd4a69a45d40363418eb19",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
