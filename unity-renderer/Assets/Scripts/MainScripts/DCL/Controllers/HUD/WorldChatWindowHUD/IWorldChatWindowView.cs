@@ -12,7 +12,6 @@ public interface IWorldChatWindowView
 
     RectTransform Transform { get; }
     bool IsActive { get; }
-    int PrivateChannelsCount { get; }
 
     void Initialize(IChatController chatController);
     void Show();

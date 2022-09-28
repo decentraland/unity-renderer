@@ -52,7 +52,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeInHierarchy;
-    public int PrivateChannelsCount => directChatList.Count() + creationQueue.Keys.Count(s => !directChatList.Contains(s));
 
     public static WorldChatWindowComponentView Create()
     {

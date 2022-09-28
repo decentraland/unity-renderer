@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using NSubstitute;
@@ -66,7 +66,6 @@ public class WorldChatWindowComponentViewShould
         GivenPrivateChat(userId);
 
         Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(1, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
 
@@ -74,7 +73,6 @@ public class WorldChatWindowComponentViewShould
         yield return null;
 
         Assert.AreEqual(1, view.directChatList.Count());
-        Assert.AreEqual(1, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (1)", view.directChatsHeaderLabel.text);
@@ -91,7 +89,6 @@ public class WorldChatWindowComponentViewShould
         yield return null;
         
         Assert.AreEqual(2, view.directChatList.Count());
-        Assert.AreEqual(2, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (2)", view.directChatsHeaderLabel.text);
@@ -112,7 +109,6 @@ public class WorldChatWindowComponentViewShould
         view.RemovePrivateChat(userId);
 
         Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(0, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.IsNull(view.directChatList.Get(userId));
@@ -150,7 +146,6 @@ public class WorldChatWindowComponentViewShould
         yield return null;
 
         Assert.AreEqual(1, view.directChatList.Count());
-        Assert.AreEqual(1, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (1)", view.directChatsHeaderLabel.text);
@@ -166,7 +161,6 @@ public class WorldChatWindowComponentViewShould
         GivenPublicChannel(channelId, "nearby");
 
         Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(0, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.IsNotNull(view.publicChannelList.Get(channelId));
@@ -179,7 +173,6 @@ public class WorldChatWindowComponentViewShould
         GivenPublicChannel("nfts", "nfts");
 
         Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(0, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(2, view.publicChannelList.Count());
         Assert.IsNotNull(view.publicChannelList.Get("nearby"));
@@ -207,7 +200,6 @@ public class WorldChatWindowComponentViewShould
         yield return null;
 
         Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(0, view.PrivateChannelsCount);
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.IsNotNull(view.publicChannelList.Get(channelId));
@@ -330,10 +322,9 @@ public class WorldChatWindowComponentViewShould
 
         yield return null;
         
-        Assert.AreEqual(0, view.directChatList.Count());
-        Assert.AreEqual(0, view.PrivateChannelsCount);
+        Assert.AreEqual(3, view.directChatList.Count());
         Assert.AreEqual(3, view.searchResultsList.Count());
-        Assert.AreEqual(0, view.publicChannelList.Count());
+        Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.AreEqual("Results (3)", view.searchResultsHeaderLabel.text);
         Assert.IsNotNull(view.searchResultsList.Get("genio"));
         Assert.IsNotNull(view.searchResultsList.Get("pepe"));
@@ -353,7 +344,6 @@ public class WorldChatWindowComponentViewShould
         view.DisableSearchMode();
         
         Assert.AreEqual(3, view.directChatList.Count());
-        Assert.AreEqual(3, view.PrivateChannelsCount);
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (3)", view.directChatsHeaderLabel.text);
         Assert.IsNotNull(view.directChatList.Get("genio"));

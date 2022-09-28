@@ -216,7 +216,6 @@ public class WorldChatWindowControllerShould
     public void UpdatePrivateChatWhenTooManyEntries()
     {
         GivenFriend(FRIEND_ID, PresenceStatus.ONLINE);
-        view.PrivateChannelsCount.Returns(999999);
         view.ContainsPrivateChannel(FRIEND_ID).Returns(true);
 
         controller.Initialize(view);
