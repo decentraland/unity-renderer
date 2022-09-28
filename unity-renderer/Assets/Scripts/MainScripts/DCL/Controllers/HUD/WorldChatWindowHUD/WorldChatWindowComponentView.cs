@@ -296,6 +296,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
 
     private void FetchProfilePicturesForVisibleEntries()
     {
+        if (isSearchMode) return;
+        
         foreach (var entry in directChatList.Entries.Values.Skip(currentAvatarSnapshotIndex)
                      .Take(AVATAR_SNAPSHOTS_PER_FRAME))
         {

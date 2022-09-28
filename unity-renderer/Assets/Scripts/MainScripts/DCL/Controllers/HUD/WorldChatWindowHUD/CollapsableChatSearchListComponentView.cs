@@ -54,6 +54,7 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     public void Set(PrivateChatEntry.PrivateChatEntryModel model)
     {
         directChatList.Set(model.userId, model);
+        directChatList.Get(model.userId).EnableAvatarSnapshotFetching();
         UpdateEmptyState();
     }
     
