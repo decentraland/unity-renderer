@@ -590,7 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 0.28235295}
+  m_Color: {r: 0.9254902, g: 0.92156863, b: 0.92941177, a: 0.5294118}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -982,6 +982,7 @@ MonoBehaviour:
   root: {fileID: 5016301162546812661}
   disabledOverlay: {fileID: 2240783485261397063}
   grayScaleMaterial: {fileID: 2100000, guid: ae7a50fe785304bc4b38cafd6ad212f3, type: 2}
+  selectButton: {fileID: 0}
 --- !u!114 &4264371991600695318
 MonoBehaviour:
   m_ObjectHideFlags: 0
