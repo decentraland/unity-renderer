@@ -44,8 +44,7 @@ const regex = new RegExp(/option *\(ecs_component_id\) *= *([0-9]+) *;/)
 
 const getComponentId = (text: string): string | null => {
   const res = text.match(regex)
-  if (res && res.length >= 1)
-    return res[1]
+  if (res && res.length >= 1) return res[1]
   return null
 }
 
@@ -78,7 +77,7 @@ function generateComponentsEnum(components: ComponentData[]) {
 
 async function preProcessComponents() {
   const protoFiles = glob.sync(
-    path.resolve(componentsPreProccessInputPath, '**/*.proto'),
+    normalizePath(path.resolve(componentsPreProccessInputPath, '**/*.proto')),
   )
   const components: ComponentData[] = []
 
