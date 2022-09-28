@@ -7,8 +7,10 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.VisibilitySystem;
+using UnityEngine;
 using ECS7System = System.Action;
 using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class ECSSystemsController : IDisposable
 {
@@ -17,12 +19,18 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentWriteSystem;
+    private readonly GameObject hoverCanvas;
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
         this.internalComponentWriteSystem = context.internalEcsComponents.writeInternalComponentsSystem;
+
+        var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
+        hoverCanvas = Object.Instantiate(canvas);
+        hoverCanvas.name = "_ECSInteractionHoverCanvas";
+        IECSInteractionHoverCanvas interactionHoverCanvas = hoverCanvas.GetComponent<IECSInteractionHoverCanvas>();
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -37,6 +45,8 @@ public class ECSSystemsController : IDisposable
             ECSPointerInputSystem.CreateSystem(
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.internalEcsComponents.inputEventResultsComponent,
+                context.pointerEvents,
+                interactionHoverCanvas,
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
@@ -53,6 +63,7 @@ public class ECSSystemsController : IDisposable
     {
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        Object.Destroy(hoverCanvas);
     }
 
     private void Update()
