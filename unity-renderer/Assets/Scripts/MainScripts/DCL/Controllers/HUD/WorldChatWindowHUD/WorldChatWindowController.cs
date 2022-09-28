@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Interface;
 using DCL.Friends.WebApi;
@@ -26,7 +28,7 @@ public class WorldChatWindowController : IHUD
     private string currentSearch = "";
     private bool areDMsRequestedByFirstTime;
     private bool isRequestingFriendsWithDMs;
-
+    private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
 
@@ -354,7 +356,17 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+        hideLoadingCancellationToken?.Cancel();
+        hideLoadingCancellationToken = new CancellationTokenSource();
+        HideSearchLoadingWhenTimeout(hideLoadingCancellationToken.Token).Forget();
     }
 
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
+
+    private async UniTask HideSearchLoadingWhenTimeout(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        view.HideSearchLoading();
+    }
 }

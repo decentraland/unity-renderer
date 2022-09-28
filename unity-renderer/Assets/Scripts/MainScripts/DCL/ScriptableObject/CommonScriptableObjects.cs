@@ -221,6 +221,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isFullscreenHUDOpenValue;
     public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
+    
+    private static BooleanVariable isLoadingHUDOpenValue;
+    public static BooleanVariable isLoadingHUDOpen => GetOrLoad(ref isLoadingHUDOpenValue, "ScriptableObjects/IsLoadingHUDOpen");
 
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");

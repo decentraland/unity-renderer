@@ -25,17 +25,23 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5ORlRTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9uL0Nv",
-            "bG9yMy5wcm90byKOAgoKUEJORlRTaGFwZRIcCg93aXRoX2NvbGxpc2lvbnMY",
-            "ASABKAhIAIgBARIfChJpc19wb2ludGVyX2Jsb2NrZXIYAiABKAhIAYgBARIU",
-            "Cgd2aXNpYmxlGAMgASgISAKIAQESCwoDc3JjGAQgASgJEhUKCGFzc2V0X2lk",
-            "GAUgASgJSAOIAQESEgoFc3R5bGUYBiABKAVIBIgBARIbCgVjb2xvchgHIAEo",
-            "CzIHLkNvbG9yM0gFiAEBQhIKEF93aXRoX2NvbGxpc2lvbnNCFQoTX2lzX3Bv",
-            "aW50ZXJfYmxvY2tlckIKCghfdmlzaWJsZUILCglfYXNzZXRfaWRCCAoGX3N0",
-            "eWxlQggKBl9jb2xvckIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "bG9yMy5wcm90byKSBAoKUEJORlRTaGFwZRILCgNzcmMYASABKAkSQgoFc3R5",
+            "bGUYAiABKA4yLi5kZWNlbnRyYWxhbmQuZWNzLlBCTkZUU2hhcGUuUGljdHVy",
+            "ZUZyYW1lU3R5bGVIAIgBARIbCgVjb2xvchgDIAEoCzIHLkNvbG9yM0gBiAEB",
+            "IoEDChFQaWN0dXJlRnJhbWVTdHlsZRILCgdDbGFzc2ljEAASFAoQQmFyb3F1",
+            "ZV9Pcm5hbWVudBABEhQKEERpYW1vbmRfT3JuYW1lbnQQAhIQCgxNaW5pbWFs",
+            "X1dpZGUQAxIQCgxNaW5pbWFsX0dyZXkQBBIKCgZCbG9ja3kQBRIOCgpHb2xk",
+            "X0VkZ2VzEAYSDwoLR29sZF9DYXJ2ZWQQBxINCglHb2xkX1dpZGUQCBIQCgxH",
+            "b2xkX1JvdW5kZWQQCRIQCgxNZXRhbF9NZWRpdW0QChIOCgpNZXRhbF9XaWRl",
+            "EAsSDgoKTWV0YWxfU2xpbRAMEhEKDU1ldGFsX1JvdW5kZWQQDRIICgRQaW5z",
+            "EA4SEQoNTWluaW1hbF9CbGFjaxAPEhEKDU1pbmltYWxfV2hpdGUQEBIICgRU",
+            "YXBlEBESDQoJV29vZF9TbGltEBISDQoJV29vZF9XaWRlEBMSDgoKV29vZF9U",
+            "d2lncxAUEgoKBkNhbnZhcxAVEggKBE5vbmUQFkIICgZfc3R5bGVCCAoGX2Nv",
+            "bG9yQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "WithCollisions", "IsPointerBlocker", "Visible", "Src", "AssetId", "Style", "Color" }, new[]{ "WithCollisions", "IsPointerBlocker", "Visible", "AssetId", "Style", "Color" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "Src", "Style", "Color" }, new[]{ "Style", "Color" }, new[]{ typeof(global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) }, null, null)
           }));
     }
     #endregion
@@ -78,11 +84,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBNFTShape(PBNFTShape other) : this() {
       _hasBits0 = other._hasBits0;
-      withCollisions_ = other.withCollisions_;
-      isPointerBlocker_ = other.isPointerBlocker_;
-      visible_ = other.visible_;
       src_ = other.src_;
-      assetId_ = other.assetId_;
       style_ = other.style_;
       color_ = other.color_ != null ? other.color_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -94,92 +96,8 @@ namespace DCL.ECSComponents {
       return new PBNFTShape(this);
     }
 
-    /// <summary>Field number for the "with_collisions" field.</summary>
-    public const int WithCollisionsFieldNumber = 1;
-    private bool withCollisions_;
-    /// <summary>
-    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool WithCollisions {
-      get { if ((_hasBits0 & 1) != 0) { return withCollisions_; } else { return false; } }
-      set {
-        _hasBits0 |= 1;
-        withCollisions_ = value;
-      }
-    }
-    /// <summary>Gets whether the "with_collisions" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasWithCollisions {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "with_collisions" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearWithCollisions() {
-      _hasBits0 &= ~1;
-    }
-
-    /// <summary>Field number for the "is_pointer_blocker" field.</summary>
-    public const int IsPointerBlockerFieldNumber = 2;
-    private bool isPointerBlocker_;
-    /// <summary>
-    /// @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool IsPointerBlocker {
-      get { if ((_hasBits0 & 2) != 0) { return isPointerBlocker_; } else { return false; } }
-      set {
-        _hasBits0 |= 2;
-        isPointerBlocker_ = value;
-      }
-    }
-    /// <summary>Gets whether the "is_pointer_blocker" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasIsPointerBlocker {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "is_pointer_blocker" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearIsPointerBlocker() {
-      _hasBits0 &= ~2;
-    }
-
-    /// <summary>Field number for the "visible" field.</summary>
-    public const int VisibleFieldNumber = 3;
-    private bool visible_;
-    /// <summary>
-    /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Visible {
-      get { if ((_hasBits0 & 4) != 0) { return visible_; } else { return false; } }
-      set {
-        _hasBits0 |= 4;
-        visible_ = value;
-      }
-    }
-    /// <summary>Gets whether the "visible" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasVisible {
-      get { return (_hasBits0 & 4) != 0; }
-    }
-    /// <summary>Clears the value of the "visible" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearVisible() {
-      _hasBits0 &= ~4;
-    }
-
     /// <summary>Field number for the "src" field.</summary>
-    public const int SrcFieldNumber = 4;
+    public const int SrcFieldNumber = 1;
     private string src_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -190,39 +108,15 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "asset_id" field.</summary>
-    public const int AssetIdFieldNumber = 5;
-    private string assetId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string AssetId {
-      get { return assetId_ ?? ""; }
-      set {
-        assetId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "asset_id" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasAssetId {
-      get { return assetId_ != null; }
-    }
-    /// <summary>Clears the value of the "asset_id" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearAssetId() {
-      assetId_ = null;
-    }
-
     /// <summary>Field number for the "style" field.</summary>
-    public const int StyleFieldNumber = 6;
-    private int style_;
+    public const int StyleFieldNumber = 2;
+    private global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle style_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Style {
-      get { if ((_hasBits0 & 8) != 0) { return style_; } else { return 0; } }
+    public global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle Style {
+      get { if ((_hasBits0 & 1) != 0) { return style_; } else { return global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle.Classic; } }
       set {
-        _hasBits0 |= 8;
+        _hasBits0 |= 1;
         style_ = value;
       }
     }
@@ -230,17 +124,17 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasStyle {
-      get { return (_hasBits0 & 8) != 0; }
+      get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "style" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearStyle() {
-      _hasBits0 &= ~8;
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "color" field.</summary>
-    public const int ColorFieldNumber = 7;
+    public const int ColorFieldNumber = 3;
     private global::Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -266,11 +160,7 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (WithCollisions != other.WithCollisions) return false;
-      if (IsPointerBlocker != other.IsPointerBlocker) return false;
-      if (Visible != other.Visible) return false;
       if (Src != other.Src) return false;
-      if (AssetId != other.AssetId) return false;
       if (Style != other.Style) return false;
       if (!object.Equals(Color, other.Color)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -280,11 +170,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasWithCollisions) hash ^= WithCollisions.GetHashCode();
-      if (HasIsPointerBlocker) hash ^= IsPointerBlocker.GetHashCode();
-      if (HasVisible) hash ^= Visible.GetHashCode();
       if (Src.Length != 0) hash ^= Src.GetHashCode();
-      if (HasAssetId) hash ^= AssetId.GetHashCode();
       if (HasStyle) hash ^= Style.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
       if (_unknownFields != null) {
@@ -305,32 +191,16 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (HasWithCollisions) {
-        output.WriteRawTag(8);
-        output.WriteBool(WithCollisions);
-      }
-      if (HasIsPointerBlocker) {
-        output.WriteRawTag(16);
-        output.WriteBool(IsPointerBlocker);
-      }
-      if (HasVisible) {
-        output.WriteRawTag(24);
-        output.WriteBool(Visible);
-      }
       if (Src.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasAssetId) {
-        output.WriteRawTag(42);
-        output.WriteString(AssetId);
-      }
       if (HasStyle) {
-        output.WriteRawTag(48);
-        output.WriteInt32(Style);
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Style);
       }
       if (color_ != null) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(26);
         output.WriteMessage(Color);
       }
       if (_unknownFields != null) {
@@ -343,32 +213,16 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasWithCollisions) {
-        output.WriteRawTag(8);
-        output.WriteBool(WithCollisions);
-      }
-      if (HasIsPointerBlocker) {
-        output.WriteRawTag(16);
-        output.WriteBool(IsPointerBlocker);
-      }
-      if (HasVisible) {
-        output.WriteRawTag(24);
-        output.WriteBool(Visible);
-      }
       if (Src.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(10);
         output.WriteString(Src);
       }
-      if (HasAssetId) {
-        output.WriteRawTag(42);
-        output.WriteString(AssetId);
-      }
       if (HasStyle) {
-        output.WriteRawTag(48);
-        output.WriteInt32(Style);
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Style);
       }
       if (color_ != null) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(26);
         output.WriteMessage(Color);
       }
       if (_unknownFields != null) {
@@ -381,23 +235,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (HasWithCollisions) {
-        size += 1 + 1;
-      }
-      if (HasIsPointerBlocker) {
-        size += 1 + 1;
-      }
-      if (HasVisible) {
-        size += 1 + 1;
-      }
       if (Src.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Src);
       }
-      if (HasAssetId) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(AssetId);
-      }
       if (HasStyle) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Style);
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Style);
       }
       if (color_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Color);
@@ -414,20 +256,8 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.HasWithCollisions) {
-        WithCollisions = other.WithCollisions;
-      }
-      if (other.HasIsPointerBlocker) {
-        IsPointerBlocker = other.IsPointerBlocker;
-      }
-      if (other.HasVisible) {
-        Visible = other.Visible;
-      }
       if (other.Src.Length != 0) {
         Src = other.Src;
-      }
-      if (other.HasAssetId) {
-        AssetId = other.AssetId;
       }
       if (other.HasStyle) {
         Style = other.Style;
@@ -453,31 +283,15 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            WithCollisions = input.ReadBool();
-            break;
-          }
-          case 16: {
-            IsPointerBlocker = input.ReadBool();
-            break;
-          }
-          case 24: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 34: {
+          case 10: {
             Src = input.ReadString();
             break;
           }
-          case 42: {
-            AssetId = input.ReadString();
+          case 16: {
+            Style = (global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) input.ReadEnum();
             break;
           }
-          case 48: {
-            Style = input.ReadInt32();
-            break;
-          }
-          case 58: {
+          case 26: {
             if (color_ == null) {
               Color = new global::Color3();
             }
@@ -499,31 +313,15 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            WithCollisions = input.ReadBool();
-            break;
-          }
-          case 16: {
-            IsPointerBlocker = input.ReadBool();
-            break;
-          }
-          case 24: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 34: {
+          case 10: {
             Src = input.ReadString();
             break;
           }
-          case 42: {
-            AssetId = input.ReadString();
+          case 16: {
+            Style = (global::DCL.ECSComponents.PBNFTShape.Types.PictureFrameStyle) input.ReadEnum();
             break;
           }
-          case 48: {
-            Style = input.ReadInt32();
-            break;
-          }
-          case 58: {
+          case 26: {
             if (color_ == null) {
               Color = new global::Color3();
             }
@@ -534,6 +332,40 @@ namespace DCL.ECSComponents {
       }
     }
     #endif
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the PBNFTShape message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static partial class Types {
+      public enum PictureFrameStyle {
+        [pbr::OriginalName("Classic")] Classic = 0,
+        [pbr::OriginalName("Baroque_Ornament")] BaroqueOrnament = 1,
+        [pbr::OriginalName("Diamond_Ornament")] DiamondOrnament = 2,
+        [pbr::OriginalName("Minimal_Wide")] MinimalWide = 3,
+        [pbr::OriginalName("Minimal_Grey")] MinimalGrey = 4,
+        [pbr::OriginalName("Blocky")] Blocky = 5,
+        [pbr::OriginalName("Gold_Edges")] GoldEdges = 6,
+        [pbr::OriginalName("Gold_Carved")] GoldCarved = 7,
+        [pbr::OriginalName("Gold_Wide")] GoldWide = 8,
+        [pbr::OriginalName("Gold_Rounded")] GoldRounded = 9,
+        [pbr::OriginalName("Metal_Medium")] MetalMedium = 10,
+        [pbr::OriginalName("Metal_Wide")] MetalWide = 11,
+        [pbr::OriginalName("Metal_Slim")] MetalSlim = 12,
+        [pbr::OriginalName("Metal_Rounded")] MetalRounded = 13,
+        [pbr::OriginalName("Pins")] Pins = 14,
+        [pbr::OriginalName("Minimal_Black")] MinimalBlack = 15,
+        [pbr::OriginalName("Minimal_White")] MinimalWhite = 16,
+        [pbr::OriginalName("Tape")] Tape = 17,
+        [pbr::OriginalName("Wood_Slim")] WoodSlim = 18,
+        [pbr::OriginalName("Wood_Wide")] WoodWide = 19,
+        [pbr::OriginalName("Wood_Twigs")] WoodTwigs = 20,
+        [pbr::OriginalName("Canvas")] Canvas = 21,
+        [pbr::OriginalName("None")] None = 22,
+      }
+
+    }
+    #endregion
 
   }
 

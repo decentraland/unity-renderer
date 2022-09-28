@@ -6,19 +6,16 @@ public readonly struct SystemsContext
     public readonly IECSComponentWriter componentWriter;
     public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups componentGroups;
-    public readonly ECSComponent<PBOnPointerDown> pointerDownComponent;
-    public readonly ECSComponent<PBOnPointerUp> pointerUpComponent;
+    public readonly ECSComponent<PBPointerEvents> pointerEvents;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
-        ECSComponent<PBOnPointerDown> pointerDownComponent,
-        ECSComponent<PBOnPointerUp> pointerUpComponent)
+        ECSComponent<PBPointerEvents> pointerEvents)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
-        this.pointerDownComponent = pointerDownComponent;
-        this.pointerUpComponent = pointerUpComponent;
+        this.pointerEvents = pointerEvents;
     }
 }
