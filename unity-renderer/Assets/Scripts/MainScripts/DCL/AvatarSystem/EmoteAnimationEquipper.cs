@@ -29,7 +29,6 @@ namespace AvatarSystem
 
             if (!emotes.Contains(values.emoteId))
                 return;
-
             animator.EquipEmote(values.emoteId, emoteClipData);
         }
 
