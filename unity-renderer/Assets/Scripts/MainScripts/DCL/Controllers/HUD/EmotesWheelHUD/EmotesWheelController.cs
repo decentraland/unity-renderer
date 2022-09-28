@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Emotes;
 using UnityEngine;
 
 namespace DCL.EmotesWheel
@@ -14,7 +15,7 @@ namespace DCL.EmotesWheel
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
         private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
-        private BaseDictionary<(string bodyshapeId, string emoteId), AnimationClip> emoteAnimations => DataStore.i.emotes.animations;
+        private BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> emoteAnimations => DataStore.i.emotes.animations;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
@@ -98,11 +99,7 @@ namespace DCL.EmotesWheel
             {
                 if (equippedEmoteData != null)
                 {
-                    WearableItem emoteItem;
-                    if (DataStore.i.emotes.newFlowEnabled.Get())
-                        emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out emoteItem);
-                    else
-                        catalog.TryGetValue(equippedEmoteData.id, out emoteItem);
+                    emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out var emoteItem);
 
                     if (emoteItem != null)
                     {
@@ -140,7 +137,7 @@ namespace DCL.EmotesWheel
             }
         }
 
-        private void OnAnimationAdded((string bodyshapeId, string emoteId) values, AnimationClip animationClip) { RefreshSlotLoadingState(values.emoteId); }
+        private void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) { RefreshSlotLoadingState(values.emoteId); }
 
         private void RefreshSlotLoadingState(string emoteId)
         {

@@ -35,6 +35,7 @@ public class WearableItem
         public string[] tags;
         public string[] replaces;
         public string[] hides;
+        public bool loop;
     }
 
     public Data data;
@@ -286,6 +287,12 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public override string ToString() { return id; }
+}
+
+[Serializable]
+public class EmoteItem : WearableItem{
 }
 
 [Serializable]

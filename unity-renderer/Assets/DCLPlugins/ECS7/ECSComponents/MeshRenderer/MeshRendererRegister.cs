@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
             DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBMeshRenderer>,
-                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent));
+                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBMeshRenderer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

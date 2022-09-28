@@ -15,6 +15,9 @@ public class InputAction_Measurable : ScriptableObject
 
     [SerializeField] private float currentValue = 0;
     public float GetValue() => currentValue;
+    
+    [SerializeField] internal BooleanVariable blockMeasurable;
+    public BooleanVariable isMeasurableBlocked { get => blockMeasurable; set => blockMeasurable = value; }
 
     internal void RaiseOnValueChanged(float value)
     {

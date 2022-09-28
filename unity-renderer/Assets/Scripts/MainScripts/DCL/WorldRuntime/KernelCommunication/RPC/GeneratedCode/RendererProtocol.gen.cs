@@ -22,20 +22,21 @@ public static partial class RendererProtocolReflection {
   static RendererProtocolReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "ChZSZW5kZXJlclByb3RvY29sLnByb3RvIjQKEENSRFRNYW55TWVzc2FnZXMS",
-          "DwoHc2NlbmVJZBgBIAEoCRIPCgdwYXlsb2FkGAIgASgMIg4KDENSRFRSZXNw",
-          "b25zZSIiCg9QdWxsQ1JEVFJlcXVlc3QSDwoHc2NlbmVJZBgBIAEoCSIXChFD",
-          "UkRUU3RyZWFtUmVxdWVzdDoCGAEytQEKC0NSRFRTZXJ2aWNlEi4KCFNlbmRD",
-          "cmR0EhEuQ1JEVE1hbnlNZXNzYWdlcxoNLkNSRFRSZXNwb25zZSIAEjEKCFB1",
-          "bGxDcmR0EhAuUHVsbENSRFRSZXF1ZXN0GhEuQ1JEVE1hbnlNZXNzYWdlcyIA",
-          "EkMKFkNyZHROb3RpZmljYXRpb25TdHJlYW0SEi5DUkRUU3RyZWFtUmVxdWVz",
-          "dBoRLkNSRFRNYW55TWVzc2FnZXMiADABYgZwcm90bzM="));
+          "ChZSZW5kZXJlclByb3RvY29sLnByb3RvIksKEENSRFRNYW55TWVzc2FnZXMS",
+          "EAoIc2NlbmVfaWQYASABKAkSDwoHcGF5bG9hZBgCIAEoDBIUCgxzY2VuZV9u",
+          "dW1iZXIYAyABKAUiDgoMQ1JEVFJlc3BvbnNlIjkKD1B1bGxDUkRUUmVxdWVz",
+          "dBIQCghzY2VuZV9pZBgBIAEoCRIUCgxzY2VuZV9udW1iZXIYAyABKAUiFwoR",
+          "Q1JEVFN0cmVhbVJlcXVlc3Q6AhgBMrUBCgtDUkRUU2VydmljZRIuCghTZW5k",
+          "Q3JkdBIRLkNSRFRNYW55TWVzc2FnZXMaDS5DUkRUUmVzcG9uc2UiABIxCghQ",
+          "dWxsQ3JkdBIQLlB1bGxDUkRUUmVxdWVzdBoRLkNSRFRNYW55TWVzc2FnZXMi",
+          "ABJDChZDcmR0Tm90aWZpY2F0aW9uU3RyZWFtEhIuQ1JEVFN0cmVhbVJlcXVl",
+          "c3QaES5DUkRUTWFueU1lc3NhZ2VzIgAwAWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::CRDTManyMessages), global::CRDTManyMessages.Parser, new[]{ "SceneId", "Payload" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::CRDTManyMessages), global::CRDTManyMessages.Parser, new[]{ "SceneId", "Payload", "SceneNumber" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CRDTResponse), global::CRDTResponse.Parser, null, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::PullCRDTRequest), global::PullCRDTRequest.Parser, new[]{ "SceneId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PullCRDTRequest), global::PullCRDTRequest.Parser, new[]{ "SceneId", "SceneNumber" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CRDTStreamRequest), global::CRDTStreamRequest.Parser, null, null, null, null, null)
         }));
   }
@@ -79,6 +80,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
   public CRDTManyMessages(CRDTManyMessages other) : this() {
     sceneId_ = other.sceneId_;
     payload_ = other.payload_;
+    sceneNumber_ = other.sceneNumber_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -88,7 +90,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     return new CRDTManyMessages(this);
   }
 
-  /// <summary>Field number for the "sceneId" field.</summary>
+  /// <summary>Field number for the "scene_id" field.</summary>
   public const int SceneIdFieldNumber = 1;
   private string sceneId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -112,6 +114,18 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     }
   }
 
+  /// <summary>Field number for the "scene_number" field.</summary>
+  public const int SceneNumberFieldNumber = 3;
+  private int sceneNumber_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int SceneNumber {
+    get { return sceneNumber_; }
+    set {
+      sceneNumber_ = value;
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -129,6 +143,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     }
     if (SceneId != other.SceneId) return false;
     if (Payload != other.Payload) return false;
+    if (SceneNumber != other.SceneNumber) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -138,6 +153,7 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     int hash = 1;
     if (SceneId.Length != 0) hash ^= SceneId.GetHashCode();
     if (Payload.Length != 0) hash ^= Payload.GetHashCode();
+    if (SceneNumber != 0) hash ^= SceneNumber.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -164,6 +180,10 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
       output.WriteRawTag(18);
       output.WriteBytes(Payload);
     }
+    if (SceneNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SceneNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -182,6 +202,10 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
       output.WriteRawTag(18);
       output.WriteBytes(Payload);
     }
+    if (SceneNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SceneNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -197,6 +221,9 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     }
     if (Payload.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeBytesSize(Payload);
+    }
+    if (SceneNumber != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(SceneNumber);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -215,6 +242,9 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
     }
     if (other.Payload.Length != 0) {
       Payload = other.Payload;
+    }
+    if (other.SceneNumber != 0) {
+      SceneNumber = other.SceneNumber;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -239,6 +269,10 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
           Payload = input.ReadBytes();
           break;
         }
+        case 24: {
+          SceneNumber = input.ReadInt32();
+          break;
+        }
       }
     }
   #endif
@@ -260,6 +294,10 @@ public sealed partial class CRDTManyMessages : pb::IMessage<CRDTManyMessages>
         }
         case 18: {
           Payload = input.ReadBytes();
+          break;
+        }
+        case 24: {
+          SceneNumber = input.ReadInt32();
           break;
         }
       }
@@ -456,6 +494,7 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public PullCRDTRequest(PullCRDTRequest other) : this() {
     sceneId_ = other.sceneId_;
+    sceneNumber_ = other.sceneNumber_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -465,7 +504,7 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     return new PullCRDTRequest(this);
   }
 
-  /// <summary>Field number for the "sceneId" field.</summary>
+  /// <summary>Field number for the "scene_id" field.</summary>
   public const int SceneIdFieldNumber = 1;
   private string sceneId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -474,6 +513,18 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     get { return sceneId_; }
     set {
       sceneId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "scene_number" field.</summary>
+  public const int SceneNumberFieldNumber = 3;
+  private int sceneNumber_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int SceneNumber {
+    get { return sceneNumber_; }
+    set {
+      sceneNumber_ = value;
     }
   }
 
@@ -493,6 +544,7 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
       return true;
     }
     if (SceneId != other.SceneId) return false;
+    if (SceneNumber != other.SceneNumber) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -501,6 +553,7 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
   public override int GetHashCode() {
     int hash = 1;
     if (SceneId.Length != 0) hash ^= SceneId.GetHashCode();
+    if (SceneNumber != 0) hash ^= SceneNumber.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -523,6 +576,10 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
       output.WriteRawTag(10);
       output.WriteString(SceneId);
     }
+    if (SceneNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SceneNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -537,6 +594,10 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
       output.WriteRawTag(10);
       output.WriteString(SceneId);
     }
+    if (SceneNumber != 0) {
+      output.WriteRawTag(24);
+      output.WriteInt32(SceneNumber);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -549,6 +610,9 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     int size = 0;
     if (SceneId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(SceneId);
+    }
+    if (SceneNumber != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(SceneNumber);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -564,6 +628,9 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
     }
     if (other.SceneId.Length != 0) {
       SceneId = other.SceneId;
+    }
+    if (other.SceneNumber != 0) {
+      SceneNumber = other.SceneNumber;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -584,6 +651,10 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
           SceneId = input.ReadString();
           break;
         }
+        case 24: {
+          SceneNumber = input.ReadInt32();
+          break;
+        }
       }
     }
   #endif
@@ -601,6 +672,10 @@ public sealed partial class PullCRDTRequest : pb::IMessage<PullCRDTRequest>
           break;
         case 10: {
           SceneId = input.ReadString();
+          break;
+        }
+        case 24: {
+          SceneNumber = input.ReadInt32();
           break;
         }
       }

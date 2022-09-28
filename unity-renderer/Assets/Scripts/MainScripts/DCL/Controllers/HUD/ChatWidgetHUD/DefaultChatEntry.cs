@@ -332,7 +332,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     public void DockContextMenu(RectTransform panel)
     {
-        panel.pivot = contextMenuPositionReference.pivot;
+        panel.pivot = new Vector2(0,0);
         panel.position = contextMenuPositionReference.position;
     }
 

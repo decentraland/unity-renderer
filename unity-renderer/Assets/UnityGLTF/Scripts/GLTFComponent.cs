@@ -101,7 +101,7 @@ namespace UnityGLTF
 
         private  CancellationTokenSource ctokenSource;
         
-        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes";
+        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant:enabled";
 
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
@@ -277,7 +277,8 @@ namespace UnityGLTF
                     if (DataStore.i.common.isApplicationQuitting.Get())
                         return;
 #endif
-
+                    
+                    Debug.LogError($" GLTFComponent Loading Exception {e.Message} {e.StackTrace}");
                     Debug.LogException(e);
                 }
                 finally

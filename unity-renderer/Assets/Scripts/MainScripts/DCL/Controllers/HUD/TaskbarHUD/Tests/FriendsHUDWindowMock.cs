@@ -15,8 +15,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action OnRequireMoreFriends;
     public event Action OnRequireMoreFriendRequests;
     public event Action<string> OnSearchFriendsRequested;
+    public event Action OnFriendListDisplayed;
+    public event Action OnRequestListDisplayed;
 
-    public void Initialize(IChatController chatController, ILastReadMessagesService lastReadMessagesService,
+    public void Initialize(IChatController chatController,
         IFriendsController friendsController, ISocialAnalytics socialAnalytics)
     {
     }
@@ -26,6 +28,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public RectTransform Transform => (RectTransform) transform;
     public int FriendCount { get; }
     public int FriendRequestCount { get; }
+    public int FriendRequestSentCount { get; }
+    public int FriendRequestReceivedCount { get; }
+    public bool IsFriendListActive { get; }
+    public bool IsRequestListActive { get; }
 
     private bool isDestroyed;
 
@@ -89,7 +95,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
+    public void ShowMoreFriendsToLoadHint(int hiddenCount)
     {
     }
 
@@ -97,7 +103,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount)
+    public void ShowMoreRequestsToLoadHint(int hiddenCount)
     {
     }
 
@@ -118,6 +124,10 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     }
 
     public void UpdateBlockStatus(string userId, bool blocked)
+    {
+    }
+
+    public void ClearAll()
     {
     }
 }

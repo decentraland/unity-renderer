@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dclAction: 1
   currentValue: 0
+  blockMeasurable: {fileID: 11400000, guid: 23f296356c7255041832391891acffdb, type: 2}

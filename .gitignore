@@ -55,6 +55,7 @@ Logs/Packages-Update.log
 
 browser-interface/dist
 browser-interface/node_modules
+protocol-gen/node_modules
 unity-renderer/UserSettings/EditorUserSettings.asset
 unity-renderer/ProjectSettings/QualitySettings.asset
 unity-renderer/Assets/TextMesh Pro/Resources/Fonts & Materials/SF-UI-Text-Heavy SDF.asset

@@ -92,8 +92,8 @@ namespace UnityGLTF.Loader
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
-#endif
-            
+#endif            
+
             token.ThrowIfCancellationRequested();
             
             bool error = false;
@@ -101,8 +101,10 @@ namespace UnityGLTF.Loader
 
             if (!asyncOp.isSucceded)
             {
-                Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
-                errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
+                Debug.LogError($"{asyncOp.webRequest.result} {asyncOp.webRequest.error} -" +
+                               $" {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}" +
+                               $" operation isDone={asyncOp.isDone} isDisposed={asyncOp.isDisposed}");
+                errorMessage = $"{asyncOp.webRequest.error}";
                 error = true;
             }
 
