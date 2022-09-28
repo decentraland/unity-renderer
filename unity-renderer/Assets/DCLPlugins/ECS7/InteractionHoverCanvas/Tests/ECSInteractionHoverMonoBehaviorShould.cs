@@ -1,4 +1,5 @@
 using System;
+using DCL.ECSComponents;
 using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;
