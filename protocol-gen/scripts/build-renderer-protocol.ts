@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { glob } from 'glob'
-import { cleanGeneratedCode, isWin, nodeModulesPath, normalizePath, protocolPath, protocPath, workingDirectory } from './helpers'
+import { cleanGeneratedCode, execute, isWin, nodeModulesPath, normalizePath, protocolPath, protocPath, workingDirectory } from './helpers'
 
 const rendererProtocolOutputPath = path.resolve(
   __dirname,
