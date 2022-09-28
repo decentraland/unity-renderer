@@ -84,7 +84,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         inputEventResultsComponent.Dispose();
     }
 
-    private static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
+    internal static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
     {
         return () =>
         {
