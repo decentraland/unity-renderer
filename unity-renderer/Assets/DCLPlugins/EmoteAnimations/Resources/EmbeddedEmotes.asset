@@ -515,7 +515,7 @@ MonoBehaviour:
     description: Outfit_Accessories_v02
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
-    maleAnimation: {fileID: 7400000, guid: 0ced2ca364b8ee04895e3121897e60ad, type: 2}
+    maleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
     dontShowInBackpack: 1
   - data:
       representations: []
