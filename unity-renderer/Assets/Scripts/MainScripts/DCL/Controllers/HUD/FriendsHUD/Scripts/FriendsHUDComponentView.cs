@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -218,6 +218,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     {
         UpdateBlockStatus(blocked, friendsTab.Get(userId));
         UpdateBlockStatus(blocked, friendRequestsTab.Get(userId));
+    }
+
+    public void ClearAll()
+    {
+        friendsTab.Clear();
+        friendRequestsTab.Clear();
     }
 
     public override void RefreshControl()
