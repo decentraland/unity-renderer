@@ -383,6 +383,13 @@ namespace DCL
             {
                 ProcessButtonUp(buttonId, useRaycast, enablePointerEvent, pointerEventLayer, globalLayer);
             }
+            
+            if (dataStoreEcs7.isEcs7Enabled)
+            {
+                dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
+                dataStoreEcs7.lastPointerInputEvent.isButtonDown = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
+                dataStoreEcs7.lastPointerInputEvent.hasValue = evt == InputController_Legacy.EVENT.BUTTON_DOWN || evt == InputController_Legacy.EVENT.BUTTON_UP;
+            }
         }
 
         private void ProcessButtonUp(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, bool enablePointerEvent,
@@ -447,13 +454,6 @@ namespace DCL
                     ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer,
                         currentPortableExperienceIds[i]);
                 }
-            }
-
-            if (dataStoreEcs7.isEcs7Enabled)
-            {
-                dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
-                dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
-                dataStoreEcs7.lastPointerInputEvent.hasValue = true;
             }
         }
 
@@ -541,13 +541,6 @@ namespace DCL
                         pexId);
                 }
                 
-            }
-
-            if (dataStoreEcs7.isEcs7Enabled)
-            {
-                dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
-                dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
-                dataStoreEcs7.lastPointerInputEvent.hasValue = true;
             }
         }
 

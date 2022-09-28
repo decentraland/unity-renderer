@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
@@ -16,11 +17,14 @@ namespace ECSSystems.PointerInputSystem
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
+            public ECSComponent<PBPointerEvents> pointerEvents;
             public DataStore_ECS7 dataStoreEcs7;
             public bool isLastInputPointerDown;
             public IWorldState worldState;
             public EntityInput lastInputDown;
             public EntityInput lastInputHover;
+            public EntityInput lastHoverFeedback;
+            public IECSInteractionHoverCanvas interactionHoverCanvas;
         }
 
         private class EntityInput
@@ -42,6 +46,8 @@ namespace ECSSystems.PointerInputSystem
         public static Action CreateSystem(
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
+            ECSComponent<PBPointerEvents> pointerEvents,
+            IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
             DataStore_ECS7 dataStoreEcs)
         {
@@ -49,11 +55,14 @@ namespace ECSSystems.PointerInputSystem
             {
                 pointerColliderComponent = pointerColliderComponent,
                 inputResultComponent = inputResultComponent,
+                pointerEvents = pointerEvents,
+                interactionHoverCanvas = interactionHoverCanvas,
                 isLastInputPointerDown = false,
                 dataStoreEcs7 = dataStoreEcs,
                 worldState = worldState,
                 lastInputDown = new EntityInput() { hasValue = false },
                 lastInputHover = new EntityInput() { hasValue = false },
+                lastHoverFeedback = new EntityInput() { hasValue = false },
             };
             return () => Update(state);
         }
@@ -78,6 +87,41 @@ namespace ECSSystems.PointerInputSystem
             bool isHoveringInput = !isPointerDown && !isPointerUp && !state.isLastInputPointerDown;
             bool isHoveringExit = !isRaycastHitValidEntity && state.lastInputHover.hasValue;
 
+            IList<PBPointerEvents.Types.Entry> hoverEvents = isRaycastHitValidEntity
+                ? state.pointerEvents.GetPointerEventsForEntity(colliderData.scene, colliderData.entity)
+                : null;
+
+            // show hover tooltip for pointer down
+            if (hoverEvents != null && isHoveringInput)
+            {
+                if (!state.lastHoverFeedback.hasValue || state.lastHoverFeedback.entity != colliderData.entity)
+                {
+                    state.interactionHoverCanvas.ShowPointerDownHover(hoverEvents, raycastHit.distance);
+                    state.lastHoverFeedback.hasValue = true;
+                    state.lastHoverFeedback.entity = colliderData.entity;
+                    state.lastHoverFeedback.scene = colliderData.scene;
+                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                }
+            }
+            // show hover tooltip for pointer up
+            else if (hoverEvents != null && state.isLastInputPointerDown && !isPointerUp)
+            {
+                if (!state.lastHoverFeedback.hasValue && state.lastInputDown.entity == colliderData.entity)
+                {
+                    state.interactionHoverCanvas.ShowPointerUpHover(hoverEvents, raycastHit.distance, (ActionButton)currentPointerInput.buttonId);
+                    state.lastHoverFeedback.hasValue = true;
+                    state.lastHoverFeedback.entity = colliderData.entity;
+                    state.lastHoverFeedback.scene = colliderData.scene;
+                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                }
+            }
+            // hide hover tooltip
+            else if (state.lastHoverFeedback.hasValue)
+            {
+                state.interactionHoverCanvas.Hide();
+                state.lastHoverFeedback.hasValue = false;
+            }
+
             InputHitType inputHitType = InputHitType.None;
 
             if (isRaycastHitValidEntity)
@@ -88,6 +132,7 @@ namespace ECSSystems.PointerInputSystem
                     : InputHitType.None;
             }
 
+            // process entity hit with input
             switch (inputHitType)
             {
                 case InputHitType.PointerDown:
@@ -189,6 +234,7 @@ namespace ECSSystems.PointerInputSystem
                     break;
             }
 
+            // no entity hit
             if (!isRaycastHitValidEntity)
             {
                 if (isPointerUp)
@@ -250,6 +296,75 @@ namespace ECSSystems.PointerInputSystem
                 }
             }
             return null;
+        }
+
+        private static IList<PBPointerEvents.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerEvents> component,
+            IParcelScene scene, IDCLEntity entity)
+        {
+            var componentData = component.Get(scene, entity);
+            return componentData?.model.PointerEvents;
+        }
+
+        private static void ShowPointerDownHover(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, float distance)
+        {
+            canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
+                pointerEvent.EventType == PointerEventType.Down
+                && pointerEvent.EventInfo.GetShowFeedback()
+                && distance <= pointerEvent.EventInfo.GetMaxDistance()
+            );
+        }
+
+        private static void ShowPointerUpHover(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, float distance, ActionButton expectedButton)
+        {
+            canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
+                pointerEvent.EventType == PointerEventType.Up
+                && pointerEvent.EventInfo.GetShowFeedback()
+                && distance <= pointerEvent.EventInfo.GetMaxDistance()
+                && (pointerEvent.EventInfo.GetButton() == expectedButton || pointerEvent.EventInfo.GetButton() == ActionButton.Any)
+            );
+        }
+
+        private static void ShowHoverTooltips(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, Func<PBPointerEvents.Types.Entry, bool> filter)
+        {
+            if (entityEvents is null)
+                return;
+
+            bool anyTooltipAdded = false;
+            int eventIndex = 0;
+            for (int i = 0; i < canvas.tooltipsCount; i++)
+            {
+                PBPointerEvents.Types.Entry pointerEvent = null;
+                for (; eventIndex < entityEvents.Count; eventIndex++)
+                {
+                    pointerEvent = entityEvents[eventIndex];
+                    if (filter(pointerEvent))
+                    {
+                        eventIndex++;
+                        break;
+                    }
+                    pointerEvent = null;
+                }
+
+                if (!(pointerEvent is null))
+                {
+                    anyTooltipAdded = true;
+                    canvas.SetTooltipText(i, pointerEvent.EventInfo.GetHoverText());
+                    canvas.SetTooltipInput(i, pointerEvent.EventInfo.GetButton());
+                    canvas.SetTooltipActive(i, true);
+                }
+                else
+                {
+                    canvas.SetTooltipActive(i, false);
+                }
+            }
+
+            if (anyTooltipAdded)
+            {
+                canvas.Show();
+            }
         }
     }
 }

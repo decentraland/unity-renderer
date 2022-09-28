@@ -9,12 +9,16 @@ namespace DCL.EmotesCustomization
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
         internal const int NUMBER_OF_SLOTS = 10;
+        internal string bodyShapeId;
 
-        internal bool isEmotesCustomizationSectionOpen => exploreV2DataStore.isOpen.Get() && view.isActive;
-
-        internal IEmotesCustomizationComponentView view;
+        internal DataStore_EmotesCustomization emotesCustomizationDataStore;
+        internal DataStore_Emotes emotesDataStore;
+        internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new BaseDictionary<string, EmoteCardComponentView>();
         internal InputAction_Hold equipInputAction;
-        internal InputAction_Hold showInfoInputAction;
+        internal DataStore_ExploreV2 exploreV2DataStore;
+        internal DataStore_HUDs hudsDataStore;
+        internal Dictionary<string, WearableItem> ownedEmotes = new Dictionary<string, WearableItem>();
+        // internal InputAction_Hold showInfoInputAction;
         internal InputAction_Trigger shortcut0InputAction;
         internal InputAction_Trigger shortcut1InputAction;
         internal InputAction_Trigger shortcut2InputAction;
@@ -25,14 +29,10 @@ namespace DCL.EmotesCustomization
         internal InputAction_Trigger shortcut7InputAction;
         internal InputAction_Trigger shortcut8InputAction;
         internal InputAction_Trigger shortcut9InputAction;
-        internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new BaseDictionary<string, EmoteCardComponentView>();
 
-        internal DataStore_EmotesCustomization emotesCustomizationDataStore;
-        internal DataStore_Emotes emotesDataStore;
-        internal DataStore_ExploreV2 exploreV2DataStore;
-        internal DataStore_HUDs hudsDataStore;
-        internal Dictionary<string, WearableItem> ownedEmotes = new Dictionary<string, WearableItem>();
-        internal string bodyShapeId;
+        internal IEmotesCustomizationComponentView view;
+
+        internal bool isEmotesCustomizationSectionOpen => exploreV2DataStore.isOpen.Get() && view.isActive;
 
         public event Action<string> onEmotePreviewed;
         public event Action<string> onEmoteEquipped;
@@ -40,7 +40,7 @@ namespace DCL.EmotesCustomization
         public event Action<string> onEmoteSell;
 
         public IEmotesCustomizationComponentView Initialize(
-            DataStore_EmotesCustomization emotesCustomizationDataStore, 
+            DataStore_EmotesCustomization emotesCustomizationDataStore,
             DataStore_Emotes emotesDataStore,
             DataStore_ExploreV2 exploreV2DataStore,
             DataStore_HUDs hudsDataStore)
@@ -116,7 +116,7 @@ namespace DCL.EmotesCustomization
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
             emotesDataStore.animations.OnAdded -= OnAnimationAdded;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
-            showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
+            // showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut2InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -185,10 +185,8 @@ namespace DCL.EmotesCustomization
             view.RemoveEmote(emoteId);
             UpdateEmoteSlots();
         }
-        
 
-        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) 
-        { RefreshEmoteLoadingState(values.emoteId); }
+        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) { RefreshEmoteLoadingState(values.emoteId); }
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
@@ -286,8 +284,8 @@ namespace DCL.EmotesCustomization
             equipInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
             equipInputAction.OnFinished += OnEquipInputActionTriggered;
 
-            showInfoInputAction = Resources.Load<InputAction_Hold>("ZoomIn");
-            showInfoInputAction.OnFinished += OnShowInfoInputActionTriggered;
+            // showInfoInputAction = Resources.Load<InputAction_Hold>("ZoomIn");
+            // showInfoInputAction.OnFinished += OnShowInfoInputActionTriggered;
 
             shortcut0InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut0");
             shortcut0InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;

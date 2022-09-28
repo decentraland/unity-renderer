@@ -6,14 +6,33 @@ option (ecs_component_id) = 1040;
 import "common/Color3.proto";
 
 message PBNFTShape {
-  // @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
-  optional bool with_collisions = 1; // default=true
-  // @deprecated use MeshCollider instead https://github.com/decentraland/sdk/issues/366
-  optional bool is_pointer_blocker = 2; // default=true
-  // @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
-  optional bool visible = 3; // default=true
-  string src = 4;
-  optional string asset_id = 5;
-  optional int32 style = 6;
-  optional Color3 color = 7;
+  enum PictureFrameStyle {
+      Classic = 0;
+      Baroque_Ornament = 1;
+      Diamond_Ornament = 2;
+      Minimal_Wide = 3;
+      Minimal_Grey = 4;
+      Blocky = 5;
+      Gold_Edges = 6;
+      Gold_Carved = 7;
+      Gold_Wide = 8;
+      Gold_Rounded = 9;
+      Metal_Medium = 10;
+      Metal_Wide = 11;
+      Metal_Slim = 12;
+      Metal_Rounded = 13;
+      Pins = 14;
+      Minimal_Black = 15;
+      Minimal_White = 16;
+      Tape = 17;
+      Wood_Slim = 18;
+      Wood_Wide = 19;
+      Wood_Twigs = 20;
+      Canvas = 21;
+      None = 22;
+  }
+
+  string src = 1;
+  optional PictureFrameStyle style = 2;
+  optional Color3 color = 3;
 }

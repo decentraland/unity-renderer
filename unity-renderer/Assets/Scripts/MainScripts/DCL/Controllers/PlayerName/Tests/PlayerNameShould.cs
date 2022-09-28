@@ -65,13 +65,17 @@ public class PlayerNameShould : MonoBehaviour
     }
 
     [Test]
-    public void DisableTheGameObjectIfHidden()
+    public void DisableRenderersIfHidden()
     {
         playerName.alpha = 0;
         playerName.targetAlpha = 0;
         playerName.Update(float.MaxValue);
 
-        Assert.IsFalse(playerName.gameObject.activeSelf);
+        var canvasRenderers = playerName.canvasRenderers;
+        Assert.IsTrue(canvasRenderers != null 
+                      && canvasRenderers.
+                          TrueForAll(r => 
+                              r.GetAlpha() < 0.01f));
     }
 
     [Test]

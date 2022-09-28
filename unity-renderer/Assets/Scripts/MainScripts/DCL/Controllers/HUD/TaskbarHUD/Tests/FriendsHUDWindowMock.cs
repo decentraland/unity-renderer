@@ -126,4 +126,8 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public void UpdateBlockStatus(string userId, bool blocked)
     {
     }
+
+    public void ClearAll()
+    {
+    }
 }
