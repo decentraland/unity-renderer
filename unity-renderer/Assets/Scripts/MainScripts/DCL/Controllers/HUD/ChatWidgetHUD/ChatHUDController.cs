@@ -121,8 +121,6 @@ public class ChatHUDController : IDisposable
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
     
     public void UnfocusInputField() => view.UnfocusInputField();
-    
-    public void DeactivatePreview() => view.DeactivatePreview();
 
     public void FadeOutMessages() => view.FadeOutMessages();
 

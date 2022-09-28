@@ -12,7 +12,6 @@ public class PublicChatWindowController : IHUD
 {
     public IPublicChatWindowView View { get; private set; }
     
-    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE }
     private const int FADEOUT_DELAY = 30000;
 
     public event Action OnBack;
@@ -26,7 +25,6 @@ public class PublicChatWindowController : IHUD
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
     private string channelId;
-    private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
 
     private bool skipChatInputTrigger;
@@ -58,10 +56,6 @@ public class PublicChatWindowController : IHUD
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
 
-        if (notificationPanelTransform.Get() == null)
-        {
-            view.OnFocused += HandleViewFocused;
-        }
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += Hide;
 
@@ -80,9 +74,6 @@ public class PublicChatWindowController : IHUD
         chatController.OnAddMessage += HandleMessageReceived;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
-        
-        currentState = ChatWindowVisualState.NONE_VISIBLE;
-        WaitThenFadeOutMessages(deactivateFadeOutCancellationToken.Token).Forget();
     }
 
     public void Setup(string channelId)
@@ -258,7 +249,6 @@ public class PublicChatWindowController : IHUD
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         chatHudController.FadeOutMessages();
-        currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
 
     public void Hide()

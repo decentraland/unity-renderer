@@ -288,14 +288,6 @@ public class ChatHUDControllerShould
         
         view.Received(1).UnfocusInputField();
     }
-    
-    [Test]
-    public void DeactivatePreview()
-    {
-        controller.DeactivatePreview();
-        
-        view.Received(1).DeactivatePreview();
-    }
 
     [TestCase("hehe")]
     [TestCase("jojo")]

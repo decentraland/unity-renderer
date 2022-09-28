@@ -57,48 +57,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         this.model = model;
         RefreshControl();
     }
-
-    public void ActivatePreview()
-    {
-        Debug.Log("aaa");
-        Hide();
-    }
-
-    public void ActivatePreviewInstantly()
-    {
-        Debug.Log("bbb");
-        Hide();
-    }
-
-    public void DeactivatePreview()
-    {
-        Debug.Log("ccc");
-        const float alphaTarget = 1f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = originalSize;
-    }
     
     public void OnPointerDown(PointerEventData eventData) => OnClickOverWindow?.Invoke();
   
-    private IEnumerator SetAlpha(float target, float duration)
-    {
-        var t = 0f;
-        
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            
-            yield return null;
-        }
-    }
 }

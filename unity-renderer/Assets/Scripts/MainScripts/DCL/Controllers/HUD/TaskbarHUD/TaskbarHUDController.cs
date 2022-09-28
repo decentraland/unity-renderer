@@ -787,7 +787,6 @@ public class TaskbarHUDController : IHUD
         channelChatWindow = controller;
 
         controller.OnClosed += OpenPublicChatOnPreviewMode;
-        controller.OnPreviewModeChanged += HandleChannelPreviewModeChanged;
         controller.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 

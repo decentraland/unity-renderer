@@ -27,7 +27,6 @@ namespace DCL.Chat.HUD
         private readonly ISocialAnalytics socialAnalytics;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
-        private CancellationTokenSource deactivatePreviewCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
         private bool skipChatInputTrigger;
         private float lastRequestTime;
@@ -38,7 +37,6 @@ namespace DCL.Chat.HUD
 
         public event Action OnPressBack;
         public event Action OnClosed;
-        public event Action<bool> OnPreviewModeChanged;
         public event Action<string> OnOpenChannelLeave;
 
         public ChatChannelHUDController(DataStore dataStore,
@@ -70,17 +68,8 @@ namespace DCL.Chat.HUD
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
-            if (notificationPanelTransform.Get() == null)
-            {
-                view.OnFocused += HandleViewFocused;
-            }
-
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
             chatHudController.Initialize(view.ChatHUD);
-            chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-            chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
-            chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
-            chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
             chatHudController.OnSendMessage += HandleSendChatMessage;
 
             chatController.OnAddMessage -= HandleMessageReceived;
@@ -157,12 +146,6 @@ namespace DCL.Chat.HUD
 
         public void Dispose()
         {
-            if (chatHudController != null)
-            {
-                chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-                chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
-            }
-
             if (chatController != null)
             {
                 chatController.OnAddMessage -= HandleMessageReceived;
@@ -171,7 +154,7 @@ namespace DCL.Chat.HUD
             }
 
             if (mouseCatcher != null)
-                mouseCatcher.OnMouseLock -= ActivatePreviewMode;
+                mouseCatcher.OnMouseLock -= Hide;
 
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
@@ -179,7 +162,6 @@ namespace DCL.Chat.HUD
             {
                 View.OnBack -= HandlePressBack;
                 View.OnClose -= Hide;
-                View.OnFocused -= HandleViewFocused;
                 View.OnRequireMoreMessages -= RequestOldConversations;
                 View.OnLeaveChannel -= LeaveChannel;
                 View.OnMuteChanged -= MuteChannel;
@@ -187,7 +169,6 @@ namespace DCL.Chat.HUD
             }
 
             hideLoadingCancellationToken.Dispose();
-            deactivatePreviewCancellationToken.Dispose();
             channelMembersHUDController.Dispose();
         }
 
@@ -210,7 +191,6 @@ namespace DCL.Chat.HUD
             {
                 skipChatInputTrigger = true;
                 chatHudController.ResetInputField(true);
-                ActivatePreviewMode();
                 return;
             }
 
@@ -263,58 +243,6 @@ namespace DCL.Chat.HUD
             message.sender == channelId || message.recipient == channelId;
 
         private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
-
-        private void HandleInputFieldSelected()
-        {
-            deactivatePreviewCancellationToken.Cancel();
-            deactivatePreviewCancellationToken = new CancellationTokenSource();
-            DeactivatePreviewMode();
-            // The messages from 'channelId' are marked as read if the player clicks on the input field of the channel window
-            //MarkChannelMessagesAsRead();
-        }
-
-        private void HandleInputFieldDeselected()
-        {
-            if (View.IsFocused) return;
-            WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
-        }
-
-        private void HandleViewFocused(bool focused)
-        {
-            if (focused)
-            {
-                deactivatePreviewCancellationToken.Cancel();
-                deactivatePreviewCancellationToken = new CancellationTokenSource();
-                DeactivatePreviewMode();
-            }
-            else
-            {
-                if (chatHudController.IsInputSelected) return;
-                WaitThenActivatePreview(deactivatePreviewCancellationToken.Token).Forget();
-            }
-        }
-
-        private async UniTaskVoid WaitThenActivatePreview(CancellationToken cancellationToken)
-        {
-            await UniTask.Delay(3000, cancellationToken: cancellationToken);
-            await UniTask.SwitchToMainThread(cancellationToken);
-            if (cancellationToken.IsCancellationRequested) return;
-            ActivatePreviewMode();
-        }
-
-        public void DeactivatePreviewMode()
-        {
-            View.DeactivatePreview();
-            chatHudController.DeactivatePreview();
-            OnPreviewModeChanged?.Invoke(false);
-        }
-
-        public void ActivatePreviewMode()
-        {
-            SetVisiblePanelList(false);
-            View?.ActivatePreview();
-            OnPreviewModeChanged?.Invoke(true);
-        }
 
         private void HandleChatInputTriggered(DCLAction_Trigger action)
         {
