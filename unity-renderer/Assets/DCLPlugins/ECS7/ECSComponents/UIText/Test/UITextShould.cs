@@ -66,18 +66,18 @@ namespace DCLPlugins.ECS7.ECSComponents.UIText.Test
             var newModel = SerializaAndDeserialize(model);
             
             // Assert
-            Assert.AreEqual(model.Text, newModel.Text);
-            Assert.AreEqual(model.TextColor, newModel.TextColor);
+            Assert.AreEqual(model.Value, newModel.Value);
+            Assert.AreEqual(model.Color, newModel.Color);
         }
 
         private PBUiText CreateModel()
         {
             var model = new PBUiText();
-            model.Text = "Hello World<>'";
-            model.TextColor = new Color3();
-            model.TextColor.B = 1;
-            model.TextColor.G = 1;
-            model.TextColor.R = 1;
+            model.Value = "Hello World<>'";
+            model.Color = new Color3();
+            model.Color.B = 1;
+            model.Color.G = 1;
+            model.Color.R = 1;
             return model;
         }
         

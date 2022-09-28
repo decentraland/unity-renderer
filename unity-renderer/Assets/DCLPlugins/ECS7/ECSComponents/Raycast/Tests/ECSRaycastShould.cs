@@ -11,6 +11,7 @@ using DCLPlugins.ECSComponents.Raycast;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using Vector3 = DCL.ECSComponents.Vector3;
 
 namespace Tests
 {
