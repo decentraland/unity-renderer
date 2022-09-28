@@ -128,6 +128,7 @@ async function buildComponents() {
 
   let command = `${protocPath}`
   command += ` --csharp_out "${componentsOutputPath}"`
+  command += ` --csharp_opt=file_extension=.gen.cs`
   command += ` --proto_path "${componentsPreProccessInputPath}/"`
   command += ` ${protoFiles}`
 
