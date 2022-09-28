@@ -47,4 +47,4 @@ export async function execute(
 }
 
 export const camelToSnakeCase = (text: string) =>
-  text.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).slice(1)
+  text.substring(0, 1) + text.slice(1).replace(/[A-Z][a-z]/g, (letter) => `_${letter.toLowerCase()}`)

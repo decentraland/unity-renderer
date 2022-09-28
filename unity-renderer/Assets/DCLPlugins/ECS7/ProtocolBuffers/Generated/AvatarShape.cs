@@ -25,22 +25,23 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChFBdmF0YXJTaGFwZS5wcm90bxIQZGVjZW50cmFsYW5kLmVjcxoTY29tbW9u",
-            "L0NvbG9yMy5wcm90byLiAwoNUEJBdmF0YXJTaGFwZRIKCgJpZBgBIAEoCRIR",
+            "L0NvbG9yMy5wcm90byLyAwoNUEJBdmF0YXJTaGFwZRIKCgJpZBgBIAEoCRIR",
             "CgRuYW1lGAIgASgJSACIAQESFwoKYm9keV9zaGFwZRgDIAEoCUgBiAEBEjEK",
             "CnNraW5fY29sb3IYBCABKAsyGC5kZWNlbnRyYWxhbmQuZWNzLkNvbG9yM0gC",
             "iAEBEjEKCmhhaXJfY29sb3IYBSABKAsyGC5kZWNlbnRyYWxhbmQuZWNzLkNv",
             "bG9yM0gDiAEBEjAKCWV5ZV9jb2xvchgGIAEoCzIYLmRlY2VudHJhbGFuZC5l",
             "Y3MuQ29sb3IzSASIAQESIgoVZXhwcmVzc2lvbl90cmlnZ2VyX2lkGAcgASgJ",
             "SAWIAQESKQocZXhwcmVzc2lvbl90cmlnZ2VyX3RpbWVzdGFtcBgIIAEoA0gG",
-            "iAEBEhQKB3RhbGtpbmcYCSABKAhIB4gBARIRCgl3ZWFyYWJsZXMYCiADKAlC",
-            "BwoFX25hbWVCDQoLX2JvZHlfc2hhcGVCDQoLX3NraW5fY29sb3JCDQoLX2hh",
-            "aXJfY29sb3JCDAoKX2V5ZV9jb2xvckIYChZfZXhwcmVzc2lvbl90cmlnZ2Vy",
-            "X2lkQh8KHV9leHByZXNzaW9uX3RyaWdnZXJfdGltZXN0YW1wQgoKCF90YWxr",
-            "aW5nQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "iAEBEhQKB3RhbGtpbmcYCSABKAhIB4gBARIRCgl3ZWFyYWJsZXMYCiADKAkS",
+            "DgoGZW1vdGVzGAsgAygJQgcKBV9uYW1lQg0KC19ib2R5X3NoYXBlQg0KC19z",
+            "a2luX2NvbG9yQg0KC19oYWlyX2NvbG9yQgwKCl9leWVfY29sb3JCGAoWX2V4",
+            "cHJlc3Npb25fdHJpZ2dlcl9pZEIfCh1fZXhwcmVzc2lvbl90cmlnZ2VyX3Rp",
+            "bWVzdGFtcEIKCghfdGFsa2luZ0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking", "Wearables" }, new[]{ "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarShape), global::DCL.ECSComponents.PBAvatarShape.Parser, new[]{ "Id", "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking", "Wearables", "Emotes" }, new[]{ "Name", "BodyShape", "SkinColor", "HairColor", "EyeColor", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Talking" }, null, null, null)
           }));
     }
     #endregion
@@ -93,6 +94,7 @@ namespace DCL.ECSComponents {
       expressionTriggerTimestamp_ = other.expressionTriggerTimestamp_;
       talking_ = other.talking_;
       wearables_ = other.wearables_.Clone();
+      emotes_ = other.emotes_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -311,6 +313,21 @@ namespace DCL.ECSComponents {
       get { return wearables_; }
     }
 
+    /// <summary>Field number for the "emotes" field.</summary>
+    public const int EmotesFieldNumber = 11;
+    private static readonly pb::FieldCodec<string> _repeated_emotes_codec
+        = pb::FieldCodec.ForString(90);
+    private readonly pbc::RepeatedField<string> emotes_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    ///*
+    /// default = []
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<string> Emotes {
+      get { return emotes_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -336,6 +353,7 @@ namespace DCL.ECSComponents {
       if (ExpressionTriggerTimestamp != other.ExpressionTriggerTimestamp) return false;
       if (Talking != other.Talking) return false;
       if(!wearables_.Equals(other.wearables_)) return false;
+      if(!emotes_.Equals(other.emotes_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -353,6 +371,7 @@ namespace DCL.ECSComponents {
       if (HasExpressionTriggerTimestamp) hash ^= ExpressionTriggerTimestamp.GetHashCode();
       if (HasTalking) hash ^= Talking.GetHashCode();
       hash ^= wearables_.GetHashCode();
+      hash ^= emotes_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -408,6 +427,7 @@ namespace DCL.ECSComponents {
         output.WriteBool(Talking);
       }
       wearables_.WriteTo(output, _repeated_wearables_codec);
+      emotes_.WriteTo(output, _repeated_emotes_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -455,6 +475,7 @@ namespace DCL.ECSComponents {
         output.WriteBool(Talking);
       }
       wearables_.WriteTo(ref output, _repeated_wearables_codec);
+      emotes_.WriteTo(ref output, _repeated_emotes_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -493,6 +514,7 @@ namespace DCL.ECSComponents {
         size += 1 + 1;
       }
       size += wearables_.CalculateSize(_repeated_wearables_codec);
+      size += emotes_.CalculateSize(_repeated_emotes_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -542,6 +564,7 @@ namespace DCL.ECSComponents {
         Talking = other.Talking;
       }
       wearables_.Add(other.wearables_);
+      emotes_.Add(other.emotes_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -606,6 +629,10 @@ namespace DCL.ECSComponents {
             wearables_.AddEntriesFrom(input, _repeated_wearables_codec);
             break;
           }
+          case 90: {
+            emotes_.AddEntriesFrom(input, _repeated_emotes_codec);
+            break;
+          }
         }
       }
     #endif
@@ -668,6 +695,10 @@ namespace DCL.ECSComponents {
           }
           case 82: {
             wearables_.AddEntriesFrom(ref input, _repeated_wearables_codec);
+            break;
+          }
+          case 90: {
+            emotes_.AddEntriesFrom(ref input, _repeated_emotes_codec);
             break;
           }
         }

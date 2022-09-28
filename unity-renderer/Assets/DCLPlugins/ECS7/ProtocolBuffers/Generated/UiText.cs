@@ -25,18 +25,38 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CgxVaVRleHQucHJvdG8SEGRlY2VudHJhbGFuZC5lY3MaE2NvbW1vbi9Db2xv",
-            "cjMucHJvdG8iRgoIUEJVaVRleHQSDAoEdGV4dBgBIAEoCRIsCgp0ZXh0X2Nv",
-            "bG9yGAIgASgLMhguZGVjZW50cmFsYW5kLmVjcy5Db2xvcjNCFKoCEURDTC5F",
-            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
+            "cjMucHJvdG8i8AEKCFBCVWlUZXh0Eg0KBXZhbHVlGAEgASgJEiwKBWNvbG9y",
+            "GAIgASgLMhguZGVjZW50cmFsYW5kLmVjcy5Db2xvcjNIAIgBARI0Cgp0ZXh0",
+            "X2FsaWduGAMgASgOMhsuZGVjZW50cmFsYW5kLmVjcy5UZXh0QWxpZ25IAYgB",
+            "ARIpCgRmb250GAQgASgOMhYuZGVjZW50cmFsYW5kLmVjcy5Gb250SAKIAQES",
+            "FgoJZm9udF9zaXplGAUgASgFSAOIAQFCCAoGX2NvbG9yQg0KC190ZXh0X2Fs",
+            "aWduQgcKBV9mb250QgwKCl9mb250X3NpemUqLAoJVGV4dEFsaWduEgoKBkNl",
+            "bnRlchAAEggKBExlZnQQARIJCgVSaWdodBACKikKBEZvbnQSEgoOTGliZXJh",
+            "dGlvblNhbnMQABINCglTYW5zU2VyaWYQAUIUqgIRRENMLkVDU0NvbXBvbmVu",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.Color3Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Text", "TextColor" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlign), typeof(global::DCL.ECSComponents.Font), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum TextAlign {
+    [pbr::OriginalName("Center")] Center = 0,
+    [pbr::OriginalName("Left")] Left = 1,
+    [pbr::OriginalName("Right")] Right = 2,
+  }
+
+  public enum Font {
+    [pbr::OriginalName("LiberationSans")] LiberationSans = 0,
+    [pbr::OriginalName("SansSerif")] SansSerif = 1,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBUiText : pb::IMessage<PBUiText>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -45,6 +65,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBUiText> _parser = new pb::MessageParser<PBUiText>(() => new PBUiText());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBUiText> Parser { get { return _parser; } }
@@ -72,8 +93,12 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiText(PBUiText other) : this() {
-      text_ = other.text_;
-      textColor_ = other.textColor_ != null ? other.textColor_.Clone() : null;
+      _hasBits0 = other._hasBits0;
+      value_ = other.value_;
+      color_ = other.color_ != null ? other.color_.Clone() : null;
+      textAlign_ = other.textAlign_;
+      font_ = other.font_;
+      fontSize_ = other.fontSize_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -83,28 +108,115 @@ namespace DCL.ECSComponents {
       return new PBUiText(this);
     }
 
-    /// <summary>Field number for the "text" field.</summary>
-    public const int TextFieldNumber = 1;
-    private string text_ = "";
+    /// <summary>Field number for the "value" field.</summary>
+    public const int ValueFieldNumber = 1;
+    private string value_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Text {
-      get { return text_; }
+    public string Value {
+      get { return value_; }
       set {
-        text_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        value_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "text_color" field.</summary>
-    public const int TextColorFieldNumber = 2;
-    private global::DCL.ECSComponents.Color3 textColor_;
+    /// <summary>Field number for the "color" field.</summary>
+    public const int ColorFieldNumber = 2;
+    private global::DCL.ECSComponents.Color3 color_;
+    /// <summary>
+    /// default=(1.0,1.0,1.0)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color3 TextColor {
-      get { return textColor_; }
+    public global::DCL.ECSComponents.Color3 Color {
+      get { return color_; }
       set {
-        textColor_ = value;
+        color_ = value;
       }
+    }
+
+    /// <summary>Field number for the "text_align" field.</summary>
+    public const int TextAlignFieldNumber = 3;
+    private global::DCL.ECSComponents.TextAlign textAlign_;
+    /// <summary>
+    /// default='center'
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.TextAlign TextAlign {
+      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlign.Center; } }
+      set {
+        _hasBits0 |= 1;
+        textAlign_ = value;
+      }
+    }
+    /// <summary>Gets whether the "text_align" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTextAlign {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "text_align" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTextAlign() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "font" field.</summary>
+    public const int FontFieldNumber = 4;
+    private global::DCL.ECSComponents.Font font_;
+    /// <summary>
+    /// default=0
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.Font Font {
+      get { if ((_hasBits0 & 2) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.LiberationSans; } }
+      set {
+        _hasBits0 |= 2;
+        font_ = value;
+      }
+    }
+    /// <summary>Gets whether the "font" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFont {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "font" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFont() {
+      _hasBits0 &= ~2;
+    }
+
+    /// <summary>Field number for the "font_size" field.</summary>
+    public const int FontSizeFieldNumber = 5;
+    private int fontSize_;
+    /// <summary>
+    /// default=10
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int FontSize {
+      get { if ((_hasBits0 & 4) != 0) { return fontSize_; } else { return 0; } }
+      set {
+        _hasBits0 |= 4;
+        fontSize_ = value;
+      }
+    }
+    /// <summary>Gets whether the "font_size" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFontSize {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "font_size" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFontSize() {
+      _hasBits0 &= ~4;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -122,8 +234,11 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Text != other.Text) return false;
-      if (!object.Equals(TextColor, other.TextColor)) return false;
+      if (Value != other.Value) return false;
+      if (!object.Equals(Color, other.Color)) return false;
+      if (TextAlign != other.TextAlign) return false;
+      if (Font != other.Font) return false;
+      if (FontSize != other.FontSize) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -131,8 +246,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Text.Length != 0) hash ^= Text.GetHashCode();
-      if (textColor_ != null) hash ^= TextColor.GetHashCode();
+      if (Value.Length != 0) hash ^= Value.GetHashCode();
+      if (color_ != null) hash ^= Color.GetHashCode();
+      if (HasTextAlign) hash ^= TextAlign.GetHashCode();
+      if (HasFont) hash ^= Font.GetHashCode();
+      if (HasFontSize) hash ^= FontSize.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -151,13 +269,25 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Text.Length != 0) {
+      if (Value.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Text);
+        output.WriteString(Value);
       }
-      if (textColor_ != null) {
+      if (color_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(TextColor);
+        output.WriteMessage(Color);
+      }
+      if (HasTextAlign) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) TextAlign);
+      }
+      if (HasFont) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) Font);
+      }
+      if (HasFontSize) {
+        output.WriteRawTag(40);
+        output.WriteInt32(FontSize);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -169,13 +299,25 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Text.Length != 0) {
+      if (Value.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Text);
+        output.WriteString(Value);
       }
-      if (textColor_ != null) {
+      if (color_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(TextColor);
+        output.WriteMessage(Color);
+      }
+      if (HasTextAlign) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) TextAlign);
+      }
+      if (HasFont) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) Font);
+      }
+      if (HasFontSize) {
+        output.WriteRawTag(40);
+        output.WriteInt32(FontSize);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -187,11 +329,20 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Text.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
+      if (Value.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Value);
       }
-      if (textColor_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TextColor);
+      if (color_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Color);
+      }
+      if (HasTextAlign) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TextAlign);
+      }
+      if (HasFont) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Font);
+      }
+      if (HasFontSize) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(FontSize);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -205,14 +356,23 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.Text.Length != 0) {
-        Text = other.Text;
+      if (other.Value.Length != 0) {
+        Value = other.Value;
       }
-      if (other.textColor_ != null) {
-        if (textColor_ == null) {
-          TextColor = new global::DCL.ECSComponents.Color3();
+      if (other.color_ != null) {
+        if (color_ == null) {
+          Color = new global::DCL.ECSComponents.Color3();
         }
-        TextColor.MergeFrom(other.TextColor);
+        Color.MergeFrom(other.Color);
+      }
+      if (other.HasTextAlign) {
+        TextAlign = other.TextAlign;
+      }
+      if (other.HasFont) {
+        Font = other.Font;
+      }
+      if (other.HasFontSize) {
+        FontSize = other.FontSize;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -230,14 +390,26 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Text = input.ReadString();
+            Value = input.ReadString();
             break;
           }
           case 18: {
-            if (textColor_ == null) {
-              TextColor = new global::DCL.ECSComponents.Color3();
+            if (color_ == null) {
+              Color = new global::DCL.ECSComponents.Color3();
             }
-            input.ReadMessage(TextColor);
+            input.ReadMessage(Color);
+            break;
+          }
+          case 24: {
+            TextAlign = (global::DCL.ECSComponents.TextAlign) input.ReadEnum();
+            break;
+          }
+          case 32: {
+            Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
+            break;
+          }
+          case 40: {
+            FontSize = input.ReadInt32();
             break;
           }
         }
@@ -256,14 +428,26 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Text = input.ReadString();
+            Value = input.ReadString();
             break;
           }
           case 18: {
-            if (textColor_ == null) {
-              TextColor = new global::DCL.ECSComponents.Color3();
+            if (color_ == null) {
+              Color = new global::DCL.ECSComponents.Color3();
             }
-            input.ReadMessage(TextColor);
+            input.ReadMessage(Color);
+            break;
+          }
+          case 24: {
+            TextAlign = (global::DCL.ECSComponents.TextAlign) input.ReadEnum();
+            break;
+          }
+          case 32: {
+            Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
+            break;
+          }
+          case 40: {
+            FontSize = input.ReadInt32();
             break;
           }
         }

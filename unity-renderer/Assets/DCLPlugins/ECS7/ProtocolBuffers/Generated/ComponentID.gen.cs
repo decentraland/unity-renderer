@@ -14,11 +14,12 @@ namespace DCL.ECS7
         public const int AUDIO_SOURCE = 1020;
         public const int AUDIO_STREAM = 1021;
         public const int TEXT_SHAPE = 1030;
-        public const int N_F_T_SHAPE = 1040;
-        public const int G_L_T_F_SHAPE = 1041;
+        public const int NFT_SHAPE = 1040;
+        public const int GLTF_SHAPE = 1041;
         public const int ANIMATOR = 1042;
         public const int UI_TRANSFORM = 1050;
         public const int UI_TEXT = 1052;
+        public const int UI_STYLES = 1053;
         public const int ON_POINTER_DOWN = 1060;
         public const int ON_POINTER_UP = 1061;
         public const int POINTER_EVENTS = 1062;
