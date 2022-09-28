@@ -121,7 +121,9 @@ async function buildComponents() {
   await preProcessComponents()
 
   const protoFiles = glob
-    .sync(path.resolve(componentsPreProccessInputPath, '**/*.proto'))
+    .sync(
+      normalizePath(path.resolve(componentsPreProccessInputPath, '**/*.proto')),
+    )
     .join(' ')
 
   let command = `${protocPath}`
