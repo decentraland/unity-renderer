@@ -69,7 +69,7 @@ namespace DCL.Chat.HUD.NotificationMessages
             userProfileBridge.Get("sender").Returns(senderUserProfile);
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"});
+                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) {recipient = "mutedChannel"});
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
                 "imsender", "face256");
@@ -81,7 +81,7 @@ namespace DCL.Chat.HUD.NotificationMessages
         public void AddMessageToTheViewWhenSenderHasNoProfile()
         {
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"});
+                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) {recipient = "mutedChannel"});
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
                 "sender");

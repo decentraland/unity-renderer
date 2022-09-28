@@ -209,18 +209,16 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ActivatePreviewModeWhenMouseIsLocked()
+    public void HideViewWhenMouseIsLocked()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
+        view.IsActive.Returns(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
         
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Hide();
+        internalChatView.Received(1).UnfocusInputField();
     }
 
     [Test]

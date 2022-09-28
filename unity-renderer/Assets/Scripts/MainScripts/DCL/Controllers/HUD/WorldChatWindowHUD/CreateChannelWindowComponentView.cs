@@ -13,10 +13,12 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_InputField channelNameInput;
         [SerializeField] internal GameObject channelExistsContainer;
         [SerializeField] internal GameObject channelExistsWithJoinOptionContainer;
-        [SerializeField] internal TMP_Text genericErrorLabel;
+        [SerializeField] internal GameObject specialCharactersErrorContainer;
+        [SerializeField] internal GameObject tooShortErrorContainer;
+        [SerializeField] internal GameObject exceededLimitErrorContainer;
         [SerializeField] internal TMP_Text channelNameLengthLabel;
         [SerializeField] internal GameObject inputFieldErrorBevel;
-        [SerializeField] private Color errorColor;
+        [SerializeField] internal Color errorColor;
         
         private Color lengthLabelOriginalColor;
 
@@ -59,22 +61,14 @@ namespace DCL.Chat.HUD
 
         public void Hide() => gameObject.SetActive(false);
 
-        public void ShowError(string message)
-        {
-            channelExistsContainer.SetActive(false);
-            channelExistsWithJoinOptionContainer.SetActive(false);
-            genericErrorLabel.gameObject.SetActive(true);
-            inputFieldErrorBevel.SetActive(true);
-            channelNameLengthLabel.color = errorColor;
-            genericErrorLabel.text = message;
-        }
-
         public void ShowChannelExistsError(bool showJoinChannelOption)
         {
             channelExistsContainer.SetActive(!showJoinChannelOption);
             channelExistsWithJoinOptionContainer.SetActive(showJoinChannelOption);
             inputFieldErrorBevel.SetActive(true);
-            genericErrorLabel.gameObject.SetActive(false);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
+            exceededLimitErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
         }
 
@@ -82,8 +76,10 @@ namespace DCL.Chat.HUD
         {
             channelExistsContainer.SetActive(false);
             channelExistsWithJoinOptionContainer.SetActive(false);
-            genericErrorLabel.gameObject.SetActive(false);
             inputFieldErrorBevel.SetActive(false);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
+            exceededLimitErrorContainer.SetActive(false);
             channelNameLengthLabel.color = lengthLabelOriginalColor;
         }
 
@@ -94,5 +90,38 @@ namespace DCL.Chat.HUD
         public void ClearInputText() => channelNameInput.text = "";
         
         public void FocusInputField() => channelNameInput.Select();
+        
+        public void ShowWrongFormatError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(true);
+            tooShortErrorContainer.SetActive(false);
+            exceededLimitErrorContainer.SetActive(false);
+            channelNameLengthLabel.color = errorColor;
+        }
+
+        public void ShowTooShortError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(true);
+            exceededLimitErrorContainer.SetActive(false);
+            channelNameLengthLabel.color = errorColor;
+        }
+
+        public void ShowChannelsExceededError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
+            exceededLimitErrorContainer.SetActive(true);
+            channelNameLengthLabel.color = errorColor;
+        }
     }
 }

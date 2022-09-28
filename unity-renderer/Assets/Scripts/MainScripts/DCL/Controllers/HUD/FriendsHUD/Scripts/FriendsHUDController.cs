@@ -23,8 +23,8 @@ public class FriendsHUDController : IHUD
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
-    private bool isFriendsLoadedForFirstTime;
-    private bool isFriendsRequestsLoadedForFirstTime;
+    private int lastSkipForFriends = 0;
+    private int lastSkipForFriendRequests = 0;
 
     public IFriendsHUDComponentView View { get; private set; }
 
@@ -152,12 +152,15 @@ public class FriendsHUDController : IHUD
         SetVisiblePanelList(visible);
         if (visible)
         {
+            lastSkipForFriends = 0;
+            lastSkipForFriendRequests = 0;
+            View.ClearAll();
             View.Show();
             UpdateNotificationsCounter();
 
-            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
+            if (View.IsFriendListActive)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
+            else if (View.IsRequestListActive)
                 DisplayMoreFriendRequests();
             
             OnOpened?.Invoke();
@@ -182,9 +185,9 @@ public class FriendsHUDController : IHUD
 
         if (View.IsActive())
         {
-            if (View.IsFriendListActive && !isFriendsLoadedForFirstTime)
+            if (View.IsFriendListActive)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive && !isFriendsRequestsLoadedForFirstTime)
+            else if (View.IsRequestListActive)
                 DisplayMoreFriendRequests();
         }
         
@@ -420,7 +423,6 @@ public class FriendsHUDController : IHUD
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
-        if (isFriendsLoadedForFirstTime) return;
         DisplayMoreFriends();
     }
 
@@ -428,8 +430,11 @@ public class FriendsHUDController : IHUD
     {
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendsToLoadHint();
-        friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendCount);
-        isFriendsLoadedForFirstTime = true;
+        friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
+
+        // We are not handling properly the case when the friends are not fetched correctly from server.
+        // 'lastSkipForFriends' will have an invalid value.
+        lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
     }
 
     private void DisplayMoreFriendRequests()
@@ -437,15 +442,17 @@ public class FriendsHUDController : IHUD
         if (!friendsController.IsInitialized) return;
         ShowOrHideMoreFriendRequestsToLoadHint();
         friendsController.GetFriendRequests(
-            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestSentCount,
-            LOAD_FRIENDS_ON_DEMAND_COUNT, View.FriendRequestReceivedCount);
-        isFriendsRequestsLoadedForFirstTime = true;
+            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
+
+        // We are not handling properly the case when the friend requests are not fetched correctly from server.
+        // 'lastSkipForFriendRequests' will have an invalid value.
+        lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
     }
     
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
-        if (isFriendsRequestsLoadedForFirstTime) return;
         DisplayMoreFriendRequests();
     }
 

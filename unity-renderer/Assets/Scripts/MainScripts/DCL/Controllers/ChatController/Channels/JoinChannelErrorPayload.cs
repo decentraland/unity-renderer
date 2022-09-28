@@ -6,6 +6,6 @@ namespace DCL.Chat.Channels
     public class JoinChannelErrorPayload
     {
         public string channelId;
-        public string message;
+        public int errorCode;
     }
 }

@@ -195,6 +195,7 @@ namespace DCL
                     playerName.SetName(model.name);
                     playerName.Show(true);
                 }
+                
                 avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     playerName = model.name,
@@ -415,7 +416,9 @@ namespace DCL
             playerName?.Hide(true);
             if (player != null)
             {
-                otherPlayers.Remove(player.id);
+                // AvatarShape used from the SDK doesn't register the avatars in 'otherPlayers'
+                if(!string.IsNullOrEmpty(player.id))
+                    otherPlayers.Remove(player.id);
                 player = null;
             }
 

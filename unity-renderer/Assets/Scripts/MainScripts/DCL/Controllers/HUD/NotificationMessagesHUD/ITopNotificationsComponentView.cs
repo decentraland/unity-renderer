@@ -5,6 +5,8 @@ using System;
 
 public interface ITopNotificationsComponentView
 {
+    event Action<bool> OnResetFade;
+    
     Transform GetPanelTransform();
     void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null);
     void Show(bool instant = false);

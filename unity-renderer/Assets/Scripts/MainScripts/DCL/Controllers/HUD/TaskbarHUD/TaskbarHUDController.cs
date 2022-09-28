@@ -696,11 +696,14 @@ public class TaskbarHUDController : IHUD
     private void OpenClickedChat(string chatId)
     {
         const string nearbyChannelId = "nearby";
+        const string conversationListId = "conversationList";
         
         if (chatId == nearbyChannelId)
             OpenPublicChat(nearbyChannelId, true);
         else if (chatController.GetAllocatedChannel(chatId) != null)
             OpenChannelChat(chatId);
+        else if(chatId == conversationListId)
+            OpenChatList();
         else
             OpenPrivateChat(chatId);
     }

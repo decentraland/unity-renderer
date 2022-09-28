@@ -8,4 +8,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
+    IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
 }

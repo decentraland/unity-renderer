@@ -19,7 +19,10 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal GameObject loadMoreContainer;
+        [SerializeField] internal GameObject loadMoreContent;
         [SerializeField] internal GameObject loadMoreSpinner;
+        [SerializeField] internal GameObject createChannelOnSearchContainer;
+        [SerializeField] internal GameObject createChannelOnSearchContent;
         [SerializeField] internal Button[] createChannelButtons;
 
         private bool isLayoutDirty;
@@ -89,6 +92,8 @@ namespace DCL.Chat.HUD
             loadingContainer.SetActive(true);
             channelList.gameObject.SetActive(false);
             resultsHeaderLabel.gameObject.SetActive(false);
+            createChannelOnSearchContent.SetActive(false);
+            loadMoreContent.SetActive(false);
         }
 
         public void Set(Channel channel)
@@ -122,6 +127,8 @@ namespace DCL.Chat.HUD
             loadingContainer.SetActive(false);
             channelList.gameObject.SetActive(true);
             resultsHeaderLabel.gameObject.SetActive(true);
+            createChannelOnSearchContent.SetActive(true);
+            loadMoreContent.SetActive(true);
         }
 
         public void ShowLoadingMore() => loadMoreContainer.SetActive(true);
@@ -131,6 +138,10 @@ namespace DCL.Chat.HUD
         public void ShowResultsHeader() => resultsHeaderLabelContainer.SetActive(true);
 
         public void HideResultsHeader() => resultsHeaderLabelContainer.SetActive(false);
+
+        public void ShowCreateChannelOnSearch() => createChannelOnSearchContainer.SetActive(true);
+
+        public void HideCreateChannelOnSearch() => createChannelOnSearchContainer.SetActive(false);
 
         public override void RefreshControl()
         {

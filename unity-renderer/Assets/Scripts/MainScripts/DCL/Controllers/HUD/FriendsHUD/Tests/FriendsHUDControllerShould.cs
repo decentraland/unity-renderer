@@ -390,17 +390,15 @@ public class FriendsHUDControllerShould
         view.Received(1).Set(OTHER_USER_ID, Arg.Is<FriendEntryModel>(f => f.userName == "hehe"));
     }
 
-    [TestCase(0)]
-    [TestCase(7)]
-    public void GetFriendsWhenBecomesVisible(int friendCount)
+    [Test]
+    public void GetFriendsWhenBecomesVisible()
     {
         view.IsFriendListActive.Returns(true);
-        view.FriendCount.Returns(friendCount);
         friendsController.IsInitialized.Returns(true);
         
         controller.SetVisibility(true);
         
-        friendsController.Received(1).GetFriends(30, friendCount);
+        friendsController.Received(1).GetFriends(30, 0);
     }
     
     [Test]
@@ -429,14 +427,12 @@ public class FriendsHUDControllerShould
     [Test]
     public void GetFriendRequestsWhenSwitchesTabs()
     {
-        view.FriendRequestReceivedCount.Returns(6);
-        view.FriendRequestSentCount.Returns(11);
         friendsController.IsInitialized.Returns(true);
         view.FriendRequestCount.Returns(0);
 
         view.OnRequestListDisplayed += Raise.Event<Action>();
         
-        friendsController.Received(1).GetFriendRequests(30, 11, 30, 6);
+        friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
     }
 
     [Test]
@@ -504,16 +500,16 @@ public class FriendsHUDControllerShould
         friendsController.GetFriends(30, 0);
     }
     
-    [TestCase(3)]
-    [TestCase(11)]
-    public void GetMoreFriendsWhenViewRequests(int friendCount)
+    [Test]
+    public void GetMoreFriendsWhenViewRequests()
     {
+        view.IsFriendListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
-        view.FriendCount.Returns(friendCount);
+        controller.SetVisibility(true);
         
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
-        friendsController.Received(1).GetFriends(30, friendCount);
+        friendsController.Received(1).GetFriends(30, 30);
     }
     
     [Test]
@@ -561,7 +557,7 @@ public class FriendsHUDControllerShould
     }
 
     [Test]
-    public void LoadFriendsOnlyForFirstTime()
+    public void LoadFriendsWhenBecomesVisible()
     {
         friendsController.IsInitialized.Returns(true);
         view.IsActive().Returns(true);
@@ -569,14 +565,12 @@ public class FriendsHUDControllerShould
         controller.SetVisibility(true);
         controller.SetVisibility(false);
         controller.SetVisibility(true);
-        view.OnFriendListDisplayed += Raise.Event<Action>();
-        friendsController.OnInitialized += Raise.Event<Action>();
         
-        friendsController.ReceivedWithAnyArgs(1).GetFriends((int) default, default);
+        friendsController.Received(2).GetFriends(30, 0);
     }
     
     [Test]
-    public void LoadFriendsRequestsOnlyForFirstTime()
+    public void LoadFriendsRequestsWhenBecomesVisible()
     {
         friendsController.IsInitialized.Returns(true);
         view.IsActive().Returns(true);
@@ -584,9 +578,7 @@ public class FriendsHUDControllerShould
         controller.SetVisibility(true);
         controller.SetVisibility(false);
         controller.SetVisibility(true);
-        view.OnRequestListDisplayed += Raise.Event<Action>();
-        friendsController.OnInitialized += Raise.Event<Action>();
-        
-        friendsController.ReceivedWithAnyArgs(1).GetFriendRequests(default, default, default, default);
+     
+        friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
     }
 }

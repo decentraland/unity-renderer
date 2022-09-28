@@ -8,10 +8,10 @@ public interface IChatController
     event Action<ChatMessage> OnAddMessage;
     event Action<Channel> OnChannelUpdated;
     event Action<Channel> OnChannelJoined;
-    event Action<string, string> OnJoinChannelError;
+    event Action<string, ChannelErrorCode> OnJoinChannelError;
     event Action<string> OnChannelLeft;
-    event Action<string, string> OnChannelLeaveError;
-    event Action<string, string> OnMuteChannelError;
+    event Action<string, ChannelErrorCode> OnChannelLeaveError;
+    event Action<string, ChannelErrorCode> OnMuteChannelError;
     event Action<int> OnTotalUnseenMessagesUpdated;
     event Action<string, int> OnUserUnseenMessagesUpdated;
     event Action<string, int> OnChannelUnseenMessagesUpdated;

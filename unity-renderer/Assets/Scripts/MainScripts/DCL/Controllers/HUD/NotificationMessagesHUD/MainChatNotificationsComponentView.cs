@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Interface;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -128,7 +129,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
 
         entry.transform.SetParent(chatEntriesContainer, false);
         entry.RefreshControl();
-        entry.SetTimestamp(UnixTimeStampToLocalTime(message.timestamp));
+        entry.SetTimestamp(Utils.UnixTimeStampToLocalTime(message.timestamp));
         entry.OnClickedNotification += ClickedOnNotification;
         entry.onFocused += FocusedOnNotification;
         entry.showHideAnimator.OnWillFinishHide += SetScrollToEnd;
@@ -202,7 +203,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         chatNotificationComponentView.SetIsPrivate(true);
         chatNotificationComponentView.SetMessage(message.body);
         chatNotificationComponentView.SetNotificationHeader("Private message");
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
         chatNotificationComponentView.SetNotificationTargetId(message.sender);
         if (profilePicture != null)
             chatNotificationComponentView.SetImage(profilePicture);
@@ -218,7 +219,7 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
 
         chatNotificationComponentView.SetNotificationTargetId(channelId);
         chatNotificationComponentView.SetNotificationHeader(channelName);
-        chatNotificationComponentView.SetNotificationSender(username);
+        chatNotificationComponentView.SetNotificationSender($"{username}:");
     }
 
     private void ClickedOnNotification(string targetId)
@@ -262,13 +263,6 @@ public class MainChatNotificationsComponentView : BaseComponentView, IMainChatNo
         entryPool.ForcePrewarm();
 
         return entryPool;
-    }
-
-    private static string UnixTimeStampToLocalTime(ulong unixTimeStampMilliseconds)
-    {
-        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
-        return $"{dtDateTime.Hour}:{dtDateTime.Minute.ToString("D2")}";
     }
 
     public override void RefreshControl()

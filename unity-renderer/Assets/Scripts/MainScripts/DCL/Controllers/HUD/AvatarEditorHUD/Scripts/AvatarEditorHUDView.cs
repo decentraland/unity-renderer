@@ -101,11 +101,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal GameObject loadingSpinnerGameObject;
 
     [Header("Collectibles")]
-    [SerializeField]
-    internal GameObject web3Container;
-
-    [SerializeField]
-    internal GameObject noWeb3Container;
+    [SerializeField] internal GameObject web3Container;
+    [SerializeField] internal GameObject noWeb3Container;
+    [SerializeField] private GameObject collectiblesEmptyListContainer;
 
     [Header("Skins")]
     
@@ -377,7 +375,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
-        Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
+        Func<WearableItem, bool> replaceOtherWearablesToastStrategy,
+        Func<WearableItem, bool> incompatibleWearableToastStrategy)
     {
         if (wearableItem == null)
             return;
@@ -395,7 +394,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             collectionName,
             amount,
             hideOtherWearablesToastStrategy, 
-            replaceOtherWearablesToastStrategy);
+            replaceOtherWearablesToastStrategy,
+            incompatibleWearableToastStrategy);
 
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
@@ -404,7 +404,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                 collectionName,
                 amount,
                 hideOtherWearablesToastStrategy, 
-                replaceOtherWearablesToastStrategy);
+                replaceOtherWearablesToastStrategy,
+                incompatibleWearableToastStrategy);
         }
     }
 
@@ -632,6 +633,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         skinsPopulatedListContainer.SetActive(show);
         skinsEmptyListContainer.SetActive(!show);
         skinsConnectWalletButtonContainer.SetActive(show);
+    }
+
+    public void ShowCollectiblesPopulatedList(bool show)
+    {
+        collectiblesEmptyListContainer.SetActive(!show);
     }
 
     public void SetThirdPartyCollectionsVisibility(bool visible) =>

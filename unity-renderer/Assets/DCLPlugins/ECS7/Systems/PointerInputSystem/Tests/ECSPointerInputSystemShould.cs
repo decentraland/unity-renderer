@@ -5,7 +5,7 @@ using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL.Helpers;
+using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,12 +16,16 @@ namespace Tests
 {
     public class ECSPointerInputSystemShould
     {
+        private const int MAX_TOOLTIPS = 2;
+
         private ECS7TestUtilsScenesAndEntities testUtils;
         private Action systemUpdate;
-        private IECSComponentWriter componentWriter;
 
-        private DataStore_Cursor dataStoreCursor;
         private DataStore_ECS7 dataStoreEcs7;
+        private IWorldState worldState;
+        private IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent;
+        private IECSInteractionHoverCanvas interactionHoverCanvas;
+        private ECSComponentsManager componentsManager;
 
         private Collider colliderEntity1;
         private Collider colliderEntity2;
@@ -34,60 +38,36 @@ namespace Tests
         public void SetUp()
         {
             var componentsFactory = new ECSComponentsFactory();
-            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
-            componentWriter = Substitute.For<IECSComponentWriter>();
 
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
-                componentWriter, internalComponents);
+                Substitute.For<IECSComponentWriter>(), internalComponents);
 
-            var pointerDownComponent = (ECSComponent<PBOnPointerDown>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_DOWN);
-            var pointerUpComponent = (ECSComponent<PBOnPointerUp>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_UP);
+            worldState = Substitute.For<IWorldState>();
+            worldState.ContainsScene(Arg.Any<string>()).Returns(true);
 
-            var componentGroups = new ComponentGroups(componentsManager);
-
-            dataStoreCursor = new DataStore_Cursor();
             dataStoreEcs7 = new DataStore_ECS7();
+            interactionHoverCanvas = Substitute.For<IECSInteractionHoverCanvas>();
+            interactionHoverCanvas.tooltipsCount.Returns(MAX_TOOLTIPS);
 
-            systemUpdate = ECSPointerInputSystem.CreateSystem(componentWriter,
-                componentGroups.pointerDownGroup,
-                componentGroups.pointerUpGroup,
+            systemUpdate = ECSPointerInputSystem.CreateSystem(
                 internalComponents.onPointerColliderComponent,
-                pointerDownComponent,
-                pointerUpComponent,
-                dataStoreEcs7,
-                dataStoreCursor);
+                internalComponents.inputEventResultsComponent,
+                (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
+                interactionHoverCanvas,
+                worldState,
+                dataStoreEcs7);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            inputEventResultsComponent = internalComponents.inputEventResultsComponent;
 
             scene = testUtils.CreateScene("temptation");
             entity1 = scene.CreateEntity(10111);
             entity2 = scene.CreateEntity(10112);
 
-            PBOnPointerDown pointerDown1 = new PBOnPointerDown()
-            {
-                Button = ActionButton.Pointer,
-                HoverText = "temptation",
-                MaxDistance = 10,
-                ShowFeedback = true
-            };
-
-            PBOnPointerUp pointerUp2 = new PBOnPointerUp()
-            {
-                Button = ActionButton.Primary,
-                HoverText = "not-temptation",
-                MaxDistance = 10,
-                ShowFeedback = true
-            };
-
-            componentsManager.DeserializeComponent(ComponentID.ON_POINTER_DOWN, scene, entity1,
-                ProtoSerialization.Serialize(pointerDown1));
-
-            componentsManager.DeserializeComponent(ComponentID.ON_POINTER_UP, scene, entity2,
-                ProtoSerialization.Serialize(pointerUp2));
-
             var colliderGO1 = new GameObject("collider1");
-            var colliderGO2 = new GameObject("collider1");
+            var colliderGO2 = new GameObject("collider2");
 
             colliderEntity1 = colliderGO1.AddComponent<BoxCollider>();
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
@@ -108,71 +88,482 @@ namespace Tests
         }
 
         [Test]
-        public void PutButtonDownResult()
+        public void DetectPointerDown()
         {
-            RaycastResultInfo raycastInfo = new RaycastResultInfo()
-            {
-                hitInfo = new RaycastHitInfo()
-                {
-                    hit = new HitInfo()
-                    {
-                        collider = colliderEntity1,
-                        distance = 10
-                    }
-                }
-            };
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
-            dataStoreEcs7.lastPointerInputEvent = new DataStore_ECS7.PointerEvent((int)ActionButton.Pointer, true, raycastInfo);
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
             systemUpdate();
 
-            componentWriter.Received(1)
-                           .PutComponent(scene.sceneData.id,
-                               entity1.entityId,
-                               ComponentID.ON_POINTER_DOWN_RESULT,
-                               Arg.Any<PBOnPointerDownResult>(),
-                               ECSComponentWriteType.SEND_TO_SCENE);
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var enqueuedEvent = result.model.events.Dequeue();
 
-            dataStoreEcs7.lastPointerInputEvent = null;
-            systemUpdate();
+            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.Down);
         }
 
         [Test]
-        public void PutButtonUpResult()
+        public void DetectPointerUpOnSameEntityAsPointerDown()
         {
-            RaycastResultInfo raycastInfo = new RaycastResultInfo()
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            result.model.events.Dequeue(); // first event would be pointerDown
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.Up);
+        }
+
+        [Test]
+        public void DetectPointerUpOnOtherEntityAsPointerDown()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity2;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            result.model.events.Dequeue(); // first event would be pointerDown
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.IsFalse(enqueuedEvent.hit.HasEntityId);
+        }
+
+        [Test]
+        public void DetectPointerUpWhenInputReleaseWithoutHit()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = false;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity2;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            result.model.events.Dequeue(); // first event would be pointerDown
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.IsFalse(enqueuedEvent.hit.HasEntityId);
+        }
+
+        [Test]
+        public void DetectHoverEnter()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.HoverEnter);
+        }
+
+        [Test]
+        public void DetectHoverExitWhenNewHover()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity2;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            result.model.events.Dequeue(); // hoverEnter - entity1
+            var enqueuedEventHoverExit = result.model.events.Dequeue();
+            var enqueuedEventNewHoverEnter = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity2.entityId, enqueuedEventNewHoverEnter.hit.EntityId);
+            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
+            Assert.IsTrue(enqueuedEventNewHoverEnter.type == PointerEventType.HoverEnter);
+            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.HoverLeave);
+        }
+
+        [Test]
+        public void DetectHoverExit()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = false;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerRayHit.didHit = false;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = null;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            result.model.events.Dequeue(); // hoverEnter - entity1
+            var enqueuedEventHoverExit = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
+            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.HoverLeave);
+        }
+
+        [Test]
+        public void ShowPointerDownHoverTooltip()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
-                hitInfo = new RaycastHitInfo()
+                PointerEvents =
                 {
-                    hit = new HitInfo()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        collider = colliderEntity2,
-                        distance = 10
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Down,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Any,
+                                HoverText = "Temptation"
+                            }
+                        }
                     }
                 }
             };
 
-            dataStoreEcs7.lastPointerInputEvent = new DataStore_ECS7.PointerEvent((int)ActionButton.Primary, true, raycastInfo);
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
             systemUpdate();
 
-            componentWriter.DidNotReceive()
-                           .PutComponent(Arg.Any<string>(),
-                               Arg.Any<long>(),
-                               Arg.Any<int>(),
-                               Arg.Any<PBOnPointerDownResult>(),
-                               Arg.Any<ECSComponentWriteType>());
+            interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
+            interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
+            interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Any);
+            interactionHoverCanvas.Received(1).Show();
+        }
 
-            dataStoreEcs7.lastPointerInputEvent = new DataStore_ECS7.PointerEvent((int)ActionButton.Primary, false, raycastInfo);
+        [Test]
+        public void NotShowPointerDownHoverTooltipWhenMoreThanMaxDistance()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hit.distance = 1.1f;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            PBPointerEvents pointerEvents = new PBPointerEvents()
+            {
+                PointerEvents =
+                {
+                    new List<PBPointerEvents.Types.Entry>()
+                    {
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Down,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Any,
+                                HoverText = "Temptation",
+                                MaxDistance = 1
+                            }
+                        }
+                    }
+                }
+            };
+
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
             systemUpdate();
 
-            componentWriter.Received(1)
-                           .PutComponent(scene.sceneData.id,
-                               entity2.entityId,
-                               ComponentID.ON_POINTER_UP_RESULT,
-                               Arg.Any<PBOnPointerUpResult>(),
-                               ECSComponentWriteType.SEND_TO_SCENE);
+            interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
+            interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().Show();
+        }
 
-            dataStoreEcs7.lastPointerInputEvent = null;
+        [Test]
+        public void ShowPointerUpHoverTooltip()
+        {
+            PBPointerEvents pointerEvents = new PBPointerEvents()
+            {
+                PointerEvents =
+                {
+                    new List<PBPointerEvents.Types.Entry>()
+                    {
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Up,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Pointer,
+                                HoverText = "Temptation"
+                            }
+                        }
+                    }
+                }
+            };
+
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
             systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
+            interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
+            interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Pointer);
+            interactionHoverCanvas.Received(1).Show();
+        }
+
+        [Test]
+        public void NotShowPointerUpHoverTooltipWhenMoreThanMaxDistance()
+        {
+            PBPointerEvents pointerEvents = new PBPointerEvents()
+            {
+                PointerEvents =
+                {
+                    new List<PBPointerEvents.Types.Entry>()
+                    {
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Up,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Pointer,
+                                HoverText = "Temptation",
+                                MaxDistance = 1
+                            }
+                        }
+                    }
+                }
+            };
+
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hit.distance = 1.1f;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
+            interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().Show();
+        }
+
+        [Test]
+        public void NotShowPointerUpHoverTooltipWhenButtonMismatch()
+        {
+            PBPointerEvents pointerEvents = new PBPointerEvents()
+            {
+                PointerEvents =
+                {
+                    new List<PBPointerEvents.Types.Entry>()
+                    {
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Up,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Secondary,
+                                HoverText = "Temptation"
+                            }
+                        }
+                    }
+                }
+            };
+
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            systemUpdate();
+
+            interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
+            interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().Show();
+        }
+
+        [Test]
+        public void HandleSeveralHoverTooltip()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+
+            PBPointerEvents pointerEvents = new PBPointerEvents()
+            {
+                PointerEvents =
+                {
+                    new List<PBPointerEvents.Types.Entry>()
+                    {
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Down,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Any,
+                                HoverText = "Temptation"
+                            }
+                        },
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Down,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Pointer,
+                                HoverText = "Temptation2"
+                            }
+                        },
+                        new PBPointerEvents.Types.Entry()
+                        {
+                            EventType = PointerEventType.Down,
+                            EventInfo = new PBPointerEvents.Types.Info()
+                            {
+                                Button = ActionButton.Primary,
+                                HoverText = "Temptation3"
+                            }
+                        }
+                    }
+                }
+            };
+
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+
+            systemUpdate();
+
+            interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
+            interactionHoverCanvas.Received(1).SetTooltipActive(1, true);
+            interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
+            interactionHoverCanvas.Received(1).SetTooltipText(1, "Temptation2");
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Any);
+            interactionHoverCanvas.Received(1).SetTooltipInput(1, ActionButton.Pointer);
+            interactionHoverCanvas.Received(1).Show();
         }
     }
 }

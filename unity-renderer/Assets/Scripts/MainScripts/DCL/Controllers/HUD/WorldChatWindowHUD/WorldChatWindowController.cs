@@ -6,6 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
+using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
@@ -29,12 +30,12 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-
     private int hiddenDMs;
     private string currentSearch = "";
     private DateTime channelsRequestTimestamp;
     private bool areDMsRequestedByFirstTime;
     private bool isRequestingFriendsWithDMs;
+    private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
@@ -462,6 +463,9 @@ public class WorldChatWindowController : IHUD
     {
         view.ShowSearchLoading();
         friendsController.GetFriendsWithDirectMessages(userNameOrId, limit);
+        hideLoadingCancellationToken?.Cancel();
+        hideLoadingCancellationToken = new CancellationTokenSource();
+        HideSearchLoadingWhenTimeout(hideLoadingCancellationToken.Token).Forget();
     }
 
     private void HandleChannelUpdated(Channel channel)
@@ -495,8 +499,10 @@ public class WorldChatWindowController : IHUD
         OpenPublicChat(channel.ChannelId);
     }
 
-    private void HandleJoinChannelError(string channelId, string message)
+    private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
     {
+        if (dataStore.channels.isCreationModalVisible.Get()) return;
+        dataStore.channels.currentChannelLimitReached.Set(channelId, true);
     }
 
     private void HandleChannelLeft(string channelId)
@@ -511,4 +517,11 @@ public class WorldChatWindowController : IHUD
     private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
 
     private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
+    
+    private async UniTask HideSearchLoadingWhenTimeout(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        view.HideSearchLoading();
+    }
 }
