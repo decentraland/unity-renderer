@@ -64,12 +64,11 @@ namespace DCL
             
             if (current)
             {
-                RemoveABDetectionPaintingForCurrentScene();
+                RemoveGlobalABDetectionPainting();
                 ApplyGlobalABDetectionPainting();
             }
             else
             {
-                RemoveABDetectionPaintingForCurrentScene();
                 RemoveGlobalABDetectionPainting();
             }
         }
@@ -80,6 +79,7 @@ namespace DCL
             
             if (current)
             {
+                RemoveABDetectionPaintingForCurrentScene();
                 ApplyABDetectionPaintingForCurrentScene();
             }
             else
@@ -129,8 +129,13 @@ namespace DCL
                     {
                         renderer.materials = materials;
                     }
+
+                    rendererDict.Remove(renderer);
                 }
+                
+                parcelToRendererMultimap.Remove(currentScene);
             }
+            
         }
 
         private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null)
