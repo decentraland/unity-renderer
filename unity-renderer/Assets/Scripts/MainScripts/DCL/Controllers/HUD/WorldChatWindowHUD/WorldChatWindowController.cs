@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Chat;
-using DCL.Interface;
 using DCL.Friends.WebApi;
+using DCL.Interface;
 using UnityEngine;
 
 public class WorldChatWindowController : IHUD
 {
-    private const int MAX_SEARCHED_CHANNELS = 100;
     private const int DMS_PAGE_SIZE = 30;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 30;
 
@@ -22,7 +19,6 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatChannelModel> publicChannels =
         new Dictionary<string, PublicChatChannelModel>();
 
-    private readonly Dictionary<string, UserProfile> recipientsFromPrivateChats = new Dictionary<string, UserProfile>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private int hiddenDMs;
     private string currentSearch = "";
@@ -149,7 +145,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleUserStatusChanged(string userId, UserStatus status)
     {
-        if (!recipientsFromPrivateChats.ContainsKey(userId)) return;
         if (!lastPrivateMessages.ContainsKey(userId)) return;
 
         if (status.friendshipStatus != FriendshipStatus.FRIEND)
@@ -176,8 +171,6 @@ public class WorldChatWindowController : IHUD
         var profile = userProfileBridge.Get(userId);
         if (profile == null) return;
 
-        recipientsFromPrivateChats[profile.userId] = profile;
-
         view.SetPrivateChat(CreatePrivateChatModel(message, profile));
     }
 
@@ -185,8 +178,6 @@ public class WorldChatWindowController : IHUD
     {
         for (var i = 0; i < usersWithDM.Count; i++)
         {
-            if (recipientsFromPrivateChats.ContainsKey(usersWithDM[i].userId)) continue;
-
             var profile = userProfileBridge.Get(usersWithDM[i].userId);
             if (profile == null) continue;
 
@@ -205,17 +196,12 @@ public class WorldChatWindowController : IHUD
             else
                 lastPrivateMessages[profile.userId] = lastMessage;
 
-            recipientsFromPrivateChats[profile.userId] = profile;
-
             view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
         }
 
         UpdateMoreChannelsToLoadHint();
         view.HidePrivateChatsLoading();
         view.HideSearchLoading();
-
-        if (!string.IsNullOrEmpty(currentSearch))
-            SearchChannelsLocally(currentSearch);
 
         isRequestingFriendsWithDMs = false;
     }
@@ -250,40 +236,14 @@ public class WorldChatWindowController : IHUD
 
         if (string.IsNullOrEmpty(search))
         {
-            View.ClearFilter();
+            View.DisableSearchMode();
             UpdateMoreChannelsToLoadHint();
             return;
         }
 
         UpdateMoreChannelsToLoadHint();
+        View.EnableSearchMode();
         RequestFriendsWithDirectMessagesFromSearch(search, USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH);
-        SearchChannelsLocally(search);
-    }
-
-    private void SearchChannelsLocally(string search)
-    {
-        Dictionary<string, PrivateChatModel> FilterPrivateChannelsByUserName(string search)
-        {
-            var regex = new Regex(search, RegexOptions.IgnoreCase);
-
-            return recipientsFromPrivateChats.Values.Where(profile =>
-                    !string.IsNullOrEmpty(profile.userName) && regex.IsMatch(profile.userName))
-                .Take(MAX_SEARCHED_CHANNELS)
-                .ToDictionary(model => model.userId,
-                    profile => CreatePrivateChatModel(lastPrivateMessages[profile.userId], profile));
-        }
-
-        Dictionary<string, PublicChatChannelModel> FilterPublicChannelsByName(string search)
-        {
-            var regex = new Regex(search, RegexOptions.IgnoreCase);
-
-            return publicChannels.Values
-                .Where(model => !string.IsNullOrEmpty(model.name) && regex.IsMatch(model.name))
-                .Take(MAX_SEARCHED_CHANNELS)
-                .ToDictionary(model => model.channelId, model => model);
-        }
-
-        View.Filter(FilterPrivateChannelsByUserName(search), FilterPublicChannelsByName(search));
     }
 
     private void ShowMorePrivateChats()

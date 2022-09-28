@@ -45,7 +45,7 @@ public class WorldChatWindowComponentViewShould
         view.ShowPrivateChatsLoading();
 
         Assert.IsTrue(view.directChatsLoadingContainer.activeSelf);
-        Assert.IsFalse(view.directChatsContainer.activeSelf);
+        Assert.IsFalse(view.directChatList.isVisible);
         Assert.IsFalse(view.scroll.enabled);
     }
 
@@ -55,7 +55,7 @@ public class WorldChatWindowComponentViewShould
         view.HidePrivateChatsLoading();
 
         Assert.IsFalse(view.directChatsLoadingContainer.activeSelf);
-        Assert.IsTrue(view.directChatsContainer.activeSelf);
+        Assert.IsTrue(view.directChatList.isVisible);
         Assert.IsTrue(view.scroll.enabled);
     }
 
@@ -314,28 +314,19 @@ public class WorldChatWindowComponentViewShould
 
         yield return null;
 
-        view.Filter(new Dictionary<string, PrivateChatModel>
+        view.EnableSearchMode();
+        
+        view.SetPrivateChat(new PrivateChatModel
         {
-            {
-                "genio", new PrivateChatModel
-                {
-                    user = GivenProfile("genio"),
-                    recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "hello")
-                }
-            },
-            {
-                "pepe", new PrivateChatModel
-                {
-                    user = GivenProfile("pepe"),
-                    recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
-                }
-            }
-        }, new Dictionary<string, PublicChatChannelModel>
-        {
-            {
-                "nearby", new PublicChatChannelModel("nearby", "nearby", "")
-            }
+            user = GivenProfile("genio"),
+            recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "hello")
         });
+        view.SetPrivateChat(new PrivateChatModel
+        {
+            user = GivenProfile("pepe"),
+            recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
+        });
+        view.SetPublicChannel(new PublicChatChannelModel("nearby", "nearby", ""));
 
         yield return null;
         
@@ -349,7 +340,6 @@ public class WorldChatWindowComponentViewShould
         Assert.IsNotNull(view.searchResultsList.Get("nearby"));
         Assert.IsTrue(view.searchResultsHeader.activeSelf);
         Assert.IsTrue(view.searchResultsList.isVisible);
-        Assert.IsFalse(view.directChatsContainer.activeSelf);
         Assert.IsFalse(view.directChannelHeader.activeSelf);
         Assert.IsFalse(view.directChatList.isVisible);
         Assert.IsFalse(view.publicChannelList.isVisible);
@@ -360,7 +350,7 @@ public class WorldChatWindowComponentViewShould
     {
         yield return Filter();
         
-        view.ClearFilter();
+        view.DisableSearchMode();
         
         Assert.AreEqual(3, view.directChatList.Count());
         Assert.AreEqual(3, view.PrivateChannelsCount);
@@ -372,7 +362,6 @@ public class WorldChatWindowComponentViewShould
         Assert.IsNotNull(view.publicChannelList.Get("nearby"));
         Assert.IsFalse(view.searchResultsHeader.activeSelf);
         Assert.IsFalse(view.searchResultsList.isVisible);
-        Assert.IsTrue(view.directChatsContainer.activeSelf);
         Assert.IsTrue(view.directChannelHeader.activeSelf);
         Assert.IsTrue(view.directChatList.isVisible);
         Assert.IsTrue(view.publicChannelList.isVisible);

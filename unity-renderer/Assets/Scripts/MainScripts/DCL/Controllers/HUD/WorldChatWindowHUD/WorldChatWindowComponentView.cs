@@ -20,7 +20,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     [SerializeField] internal GameObject searchLoading;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal GameObject directChatsLoadingContainer;
-    [SerializeField] internal GameObject directChatsContainer;
     [SerializeField] internal GameObject directChannelHeader;
     [SerializeField] internal GameObject searchResultsHeader;
     [SerializeField] internal TMP_Text directChatsHeaderLabel;
@@ -132,15 +131,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         var entryModel = new PublicChannelEntry.PublicChannelEntryModel(model.channelId, name = model.name);
 
         if (isSearchMode)
-        {
             searchResultsList.Set(entryModel);
-            publicChannelList.Remove(model.channelId);
-        }
         else
-        {
-            searchResultsList.Remove(model.channelId);
             publicChannelList.Set(model.channelId, entryModel);
-        }
             
         UpdateLayout();
     }
@@ -195,10 +188,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         searchLoading.transform.SetAsLastSibling();
     }
 
-    public void ClearFilter()
+    public void DisableSearchMode()
     {
         isSearchMode = false;
-        searchResultsList.Export(publicChannelList, directChatList);
         searchResultsList.Hide();
         publicChannelList.Show();
         publicChannelList.Sort();
@@ -211,28 +203,21 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         }
         
         searchResultsHeader.SetActive(false);
-
-        directChatList.Filter(entry => true);
-        publicChannelList.Filter(entry => true);
+        searchResultsList.Clear();
 
         UpdateHeaders();
     }
 
-    public void Filter(Dictionary<string, PrivateChatModel> privateChats,
-        Dictionary<string, PublicChatChannelModel> publicChannels)
+    public void EnableSearchMode()
     {
         isSearchMode = true;
 
-        searchResultsList.Import(publicChannelList, directChatList);
         searchResultsList.Show();
         searchResultsList.Sort();
         publicChannelList.Hide();
         directChatList.Hide();
         directChannelHeader.SetActive(false);
         searchResultsHeader.SetActive(true);
-
-        searchResultsList.Filter(entry => privateChats.ContainsKey(entry.Model.userId),
-            entry => publicChannels.ContainsKey(entry.Model.channelId));
 
         UpdateHeaders();
         searchLoading.transform.SetAsLastSibling();
@@ -267,15 +252,9 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
             model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
         if (isSearchMode)
-        {
-            directChatList.Remove(userId);
             searchResultsList.Set(entry);
-        }
         else
-        {
             directChatList.Set(userId, entry);
-            searchResultsList.Remove(userId);
-        }
 
         UpdateHeaders();
         UpdateLayout();
@@ -288,7 +267,12 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         model.isLoadingDirectChats = visible;
         directChatsLoadingContainer.SetActive(visible);
-        directChatsContainer.SetActive(!visible);
+        
+        if (visible)
+            directChatList.Hide();
+        else if (!isSearchMode)
+            directChatList.Show();
+        
         scroll.enabled = !visible;
         isLoadingPrivateChannels = visible;
     }

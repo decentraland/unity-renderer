@@ -264,31 +264,18 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
         view.OnSearchChannelRequested += Raise.Event<Action<string>>("");
 
-        view.Received(1).ClearFilter();
+        view.Received(1).DisableSearchMode();
     }
 
     [Test]
     public void SearchChannels()
     {
-        GivenFriend("nearfr", PresenceStatus.OFFLINE);
-        GivenFriend("fr2", PresenceStatus.OFFLINE);
-        GivenFriend("fr3", PresenceStatus.OFFLINE);
-        GivenFriend("fr4", PresenceStatus.OFFLINE);
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessage.Type.PRIVATE, "nearfr", "wow"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, "fr2", "wow"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, "fr3", "wow"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, "fr4", "wow"),
-        });
-
         controller.Initialize(view);
 
         view.OnSearchChannelRequested += Raise.Event<Action<string>>("near");
 
-        view.Received(1).Filter(
-            Arg.Is<Dictionary<string, PrivateChatModel>>(d => d.ContainsKey("nearfr") && d.Count == 1),
-            Arg.Is<Dictionary<string, PublicChatChannelModel>>(d => d.ContainsKey("nearby") && d.Count == 1));
+        view.Received(1).EnableSearchMode();
+        friendsController.Received(1).GetFriendsWithDirectMessages("near", 30);
     }
 
     [Test]
