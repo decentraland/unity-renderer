@@ -12,13 +12,15 @@ public class WearableSettings
     public bool isLoading { get; set; }
     public Func<WearableItem, bool> HideOtherWearablesToastStrategy { get; }
     public Func<WearableItem, bool> ReplaceOtherWearablesToastStrategy { get; }
-    public WearableSettings(WearableItem item, string collectionName, int amount, Func<WearableItem, bool> hideOtherWearablesToastStrategy, Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
+    public Func<WearableItem, bool> IncompatibleWearableToastStrategy { get; }
+    public WearableSettings(WearableItem item, string collectionName, int amount, Func<WearableItem, bool> hideOtherWearablesToastStrategy, Func<WearableItem, bool> replaceOtherWearablesToastStrategy, Func<WearableItem, bool> incompatibleWearableToastStrategy)
     {
         Item = item;
         CollectionName = collectionName;
         Amount = amount;
         HideOtherWearablesToastStrategy = hideOtherWearablesToastStrategy;
         ReplaceOtherWearablesToastStrategy = replaceOtherWearablesToastStrategy;
+        IncompatibleWearableToastStrategy = incompatibleWearableToastStrategy;
     }
 
     public override string ToString() { return Item.id; }

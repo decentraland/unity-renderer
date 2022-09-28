@@ -91,7 +91,7 @@ namespace AvatarEditorHUD_Tests
         [Test]
         [TestCase("urn:decentraland:off-chain:base-avatars:f_african_leggins", WearableLiterals.BodyShapes.MALE)]
         [TestCase("urn:decentraland:off-chain:base-avatars:eyebrows_02", WearableLiterals.BodyShapes.FEMALE)]
-        public void NotCreate_IncompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
+        public void IncompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
         {
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -109,8 +109,7 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
             
-            Assert.IsTrue(selector.availableWearables.Count(w => w.Item.id == wearableId) == 0);
-            Assert.IsTrue(!selector.itemToggles.ContainsKey(wearableId));
+            Assert.IsTrue(selector.itemToggles.ContainsKey(wearableId));
             Assert.IsTrue(selector.totalWearables.ContainsKey(wearableId));
         }
 

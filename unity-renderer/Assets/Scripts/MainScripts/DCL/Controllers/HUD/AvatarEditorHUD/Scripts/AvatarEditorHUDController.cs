@@ -664,7 +664,8 @@ public class AvatarEditorHUDController : IHUD
         wearablesByCategory[wearable.data.category].Add(wearable);
         view.AddWearable(wearable, userProfile.GetItemAmount(id),
             ShouldShowHideOtherWearablesToast,
-            ShouldShowReplaceOtherWearablesToast);
+            ShouldShowReplaceOtherWearablesToast,
+            ShouldShowIncompatibleWearableToast);
     }
 
     private void RemoveWearable(string id, WearableItem wearable)
@@ -1025,6 +1026,14 @@ public class AvatarEditorHUDController : IHUD
     {
         var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
         return wearable.IsSkin() && !isWearingSkinAlready;
+    }
+
+    private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
+    {
+        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
+            return false;
+        else
+            return !wearable.SupportsBodyShape(model.bodyShape.id);
     }
 
     private bool IsTryingToReplaceSkin(WearableItem wearable)
