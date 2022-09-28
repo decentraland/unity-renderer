@@ -77,6 +77,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
+            // make sure gltf is loaded properly by checking an specific gameobject name in its hierarchy
             Assert.AreEqual("PalmTree_01", handler.gameObject.transform.GetChild(0).GetChild(0).name);
 
             model = new PBGltfContainer()
@@ -87,6 +88,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
+            // make sure gltf is loaded properly by checking an specific gameobject name in its hierarchy
             Assert.AreEqual("shark_skeleton", handler.gameObject.transform.GetChild(0).GetChild(0).GetChild(0).name);
         }
 

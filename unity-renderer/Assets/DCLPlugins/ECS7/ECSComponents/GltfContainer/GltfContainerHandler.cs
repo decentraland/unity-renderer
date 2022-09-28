@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL.Components;
 using DCL.Configuration;
@@ -7,6 +8,7 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.ECSComponents
 {
@@ -66,95 +68,51 @@ namespace DCL.ECSComponents
 
             CleanUp(scene, entity);
 
-            gltfLoader.OnSuccessEvent += rendereable =>
-            {
-                // create physic colliders
-                MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
-                physicColliders = new List<Collider>(meshFilters.Length);
-                for (int i = 0; i < meshFilters.Length; i++)
-                {
-                    if (meshFilters[i].gameObject.layer == PhysicsLayers.characterOnlyLayer)
-                    {
-                        physicColliders.Add(meshFilters[i].gameObject.GetComponent<Collider>());
-                        continue;
-                    }
-
-                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
-                        continue;
-
-                    MeshCollider collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
-                    collider.sharedMesh = meshFilters[i].sharedMesh;
-                    meshFilters[i].gameObject.layer = PhysicsLayers.characterOnlyLayer;
-                    physicColliders.Add(collider);
-
-                    Object.Destroy(meshFilters[i].GetComponent<Renderer>());
-                }
-
-                // create pointer colliders (sadly we are stuck with a hashset here)
-                // and add renderers
-                pointerColliders = new List<Collider>(rendereable.renderers.Count);
-                renderers = new List<Renderer>(rendereable.renderers.Count);
-                foreach (var renderer in rendereable.renderers)
-                {
-                    renderers.Add(renderer);
-                    Transform rendererT = renderer.transform;
-                    bool alreadyHasCollider = false;
-                    for (int i = 0; i < rendererT.childCount; i++)
-                    {
-                        Transform child = rendererT.GetChild(i);
-                        if (child.gameObject.layer != PhysicsLayers.onPointerEventLayer)
-                            continue;
-
-                        alreadyHasCollider = true;
-                        pointerColliders.Add(child.GetComponent<Collider>());
-                        break;
-                    }
-
-                    if (alreadyHasCollider)
-                        continue;
-
-                    GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
-                    colliderGo.layer = PhysicsLayers.onPointerEventLayer;
-                    MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
-                    collider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
-                    colliderGo.transform.SetParent(renderer.transform);
-                    colliderGo.transform.ResetLocalTRS();
-                    pointerColliders.Add(collider);
-                }
-
-                // set colliders and renderers
-                for (int i = 0; i < pointerColliders.Count; i++)
-                {
-                    pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]);
-                }
-                for (int i = 0; i < physicColliders.Count; i++)
-                {
-                    physicColliderComponent.AddCollider(scene, entity, physicColliders[i]);
-                }
-                for (int i = 0; i < renderers.Count; i++)
-                {
-                    renderersComponent.AddRenderer(scene, entity, renderers[i]);
-                }
-                // TODO: modify Animator component to remove `AddShapeReady` usage
-                dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
-                dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
-            };
-
-            gltfLoader.OnFailEvent += exception =>
-            {
-                MaterialTransitionController[] transitionController =
-                    gameObject.GetComponentsInChildren<MaterialTransitionController>(true);
-
-                for (int i = 0; i < transitionController.Length; i++)
-                {
-                    MaterialTransitionController material = transitionController[i];
-                    Object.Destroy(material);
-                }
-                dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
-            };
+            gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(scene, entity, rendereable);
+            gltfLoader.OnFailEvent += exception => OnLoadFail(scene, exception);
 
             dataStoreEcs7.AddPendingResource(scene.sceneData.id, prevLoadedGltf);
             gltfLoader.Load(model.Src);
+        }
+
+        private void OnLoadSuccess(IParcelScene scene, IDCLEntity entity, Rendereable rendereable)
+        {
+            // create physic colliders
+            MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
+            physicColliders = SetUpPhysicColliders(meshFilters);
+
+            // create pointer colliders and renderers
+            (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
+
+            // set colliders and renderers
+            for (int i = 0; i < pointerColliders.Count; i++)
+            {
+                pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]);
+            }
+            for (int i = 0; i < physicColliders.Count; i++)
+            {
+                physicColliderComponent.AddCollider(scene, entity, physicColliders[i]);
+            }
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                renderersComponent.AddRenderer(scene, entity, renderers[i]);
+            }
+            // TODO: modify Animator component to remove `AddShapeReady` usage
+            dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
+            dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
+        }
+
+        private void OnLoadFail(IParcelScene scene, Exception exception)
+        {
+            MaterialTransitionController[] transitionController =
+                gameObject.GetComponentsInChildren<MaterialTransitionController>(true);
+
+            for (int i = 0; i < transitionController.Length; i++)
+            {
+                MaterialTransitionController material = transitionController[i];
+                Object.Destroy(material);
+            }
+            dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
         }
 
         private void CleanUp(IParcelScene scene, IDCLEntity entity)
@@ -188,6 +146,69 @@ namespace DCL.ECSComponents
 
             gltfLoader.ClearEvents();
             gltfLoader.Unload();
+        }
+
+        private static List<Collider> SetUpPhysicColliders(MeshFilter[] meshFilters)
+        {
+            List<Collider> physicColliders = new List<Collider>(meshFilters.Length);
+
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                if (meshFilters[i].gameObject.layer == PhysicsLayers.characterOnlyLayer)
+                {
+                    physicColliders.Add(meshFilters[i].gameObject.GetComponent<Collider>());
+                    continue;
+                }
+
+                if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                    continue;
+
+                MeshCollider collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
+                collider.sharedMesh = meshFilters[i].sharedMesh;
+                meshFilters[i].gameObject.layer = PhysicsLayers.characterOnlyLayer;
+                physicColliders.Add(collider);
+
+                Object.Destroy(meshFilters[i].GetComponent<Renderer>());
+            }
+
+            return physicColliders;
+        }
+
+        private static (List<Collider>, List<Renderer>) SetUpPointerCollidersAndRenderers(HashSet<Renderer> renderers)
+        {
+            List<Collider> pointerColliders = new List<Collider>(renderers.Count);
+            List<Renderer> rendererList = new List<Renderer>(renderers.Count);
+
+            // (sadly we are stuck with a hashset here)
+            foreach (var renderer in renderers)
+            {
+                rendererList.Add(renderer);
+                Transform rendererT = renderer.transform;
+                bool alreadyHasCollider = false;
+                for (int i = 0; i < rendererT.childCount; i++)
+                {
+                    Transform child = rendererT.GetChild(i);
+                    if (child.gameObject.layer != PhysicsLayers.onPointerEventLayer)
+                        continue;
+
+                    alreadyHasCollider = true;
+                    pointerColliders.Add(child.GetComponent<Collider>());
+                    break;
+                }
+
+                if (alreadyHasCollider)
+                    continue;
+
+                GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
+                colliderGo.layer = PhysicsLayers.onPointerEventLayer;
+                MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
+                collider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+                colliderGo.transform.SetParent(renderer.transform);
+                colliderGo.transform.ResetLocalTRS();
+                pointerColliders.Add(collider);
+            }
+
+            return (pointerColliders, rendererList);
         }
     }
 }
