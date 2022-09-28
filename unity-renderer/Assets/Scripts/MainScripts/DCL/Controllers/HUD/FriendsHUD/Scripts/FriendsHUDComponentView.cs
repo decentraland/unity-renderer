@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,22 +130,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         model.isLoadingSpinnerActive = true;
     }
 
-    public List<FriendEntryBase> GetAllEntries()
-    {
-        var result = new List<FriendEntryBase>();
-        result.AddRange(friendsTab.Entries.Values);
-        result.AddRange(friendRequestsTab.Entries.Values);
-        return result;
-    }
-
     public FriendEntryBase GetEntry(string userId)
     {
         return (FriendEntryBase) friendsTab.Get(userId) ?? friendRequestsTab.Get(userId);
     }
 
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
-
-    public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
     public void Show()
     {
@@ -210,9 +199,9 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool ContainsFriendRequest(string userId) => friendRequestsTab.Get(userId) != null;
 
-    public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
+    public void EnableSearchMode() => friendsTab.EnableSearchMode();
 
-    public void ClearFriendFilter() => friendsTab.ClearFilter();
+    public void DisableSearchMode() => friendsTab.DisableSearchMode();
     
     public void UpdateBlockStatus(string userId, bool blocked)
     {

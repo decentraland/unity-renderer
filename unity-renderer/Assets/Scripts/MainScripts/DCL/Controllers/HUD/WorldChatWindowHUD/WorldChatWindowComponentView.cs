@@ -47,12 +47,6 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     public event Action<string> OnOpenPrivateChat;
     public event Action<string> OnOpenPublicChannel;
 
-    public event Action<string> OnUnfriend
-    {
-        add => directChatList.OnUnfriend += value;
-        remove => directChatList.OnUnfriend -= value;
-    }
-
     public event Action<string> OnSearchChannelRequested;
     public event Action OnRequireMorePrivateChats;
 
@@ -212,6 +206,7 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
     {
         isSearchMode = true;
 
+        searchResultsList.Clear();
         searchResultsList.Show();
         searchResultsList.Sort();
         publicChannelList.Hide();

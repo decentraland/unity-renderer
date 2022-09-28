@@ -26,7 +26,7 @@ public interface ISearchBarComponentView
     /// <summary>
     /// Clear the search component.
     /// </summary>
-    void ClearSearch();
+    void ClearSearch(bool notify = true);
 
     /// <summary>
     /// Set the idle time to search.
@@ -60,7 +60,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         inputField.onSubmit.AddListener(SubmitSearch);
         inputField.onSelect.AddListener(SelectInput);
         inputField.onDeselect.AddListener(DeselectInput);
-        clearSearchButton.onClick.AddListener(ClearSearch);
+        clearSearchButton.onClick.AddListener(() => ClearSearch());
 
         SetClearMode();
     }
@@ -99,13 +99,15 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         OnSubmit?.Invoke(value);
     }
 
-    public void ClearSearch()
+    public void ClearSearch(bool notify = true)
     {
         StopSearchCoroutine();
 
         inputField.SetTextWithoutNotify(string.Empty);
         SetClearMode();
-        OnSearchText?.Invoke(string.Empty);
+        
+        if (notify)
+            OnSearchText?.Invoke(string.Empty);
     }
 
     public void SetIdleSearchTime(float idleSearchTime) { model.idleTimeToTriggerSearch = idleSearchTime; }

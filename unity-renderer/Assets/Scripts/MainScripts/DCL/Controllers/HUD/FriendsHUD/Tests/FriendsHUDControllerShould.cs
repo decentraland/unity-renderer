@@ -539,7 +539,7 @@ public class FriendsHUDControllerShould
         view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
         
         friendsController.Received(1).GetFriends(searchText, 100);
-        view.Received(1).FilterFriends(Arg.Is<Dictionary<string, FriendEntryModel>>(d => d.Count == expectedCount));
+        view.Received(1).EnableSearchMode();
     }
 
     [Test]
@@ -547,7 +547,7 @@ public class FriendsHUDControllerShould
     {
         view.OnSearchFriendsRequested += Raise.Event<Action<string>>("");
         
-        view.Received(1).ClearFriendFilter();
+        view.Received(1).DisableSearchMode();
     }
 
     [Test]

@@ -22,8 +22,8 @@ public class FriendsHUDController : IHUD
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
-    private int lastSkipForFriends = 0;
-    private int lastSkipForFriendRequests = 0;
+    private int lastSkipForFriends;
+    private int lastSkipForFriendRequests;
 
     public IFriendsHUDComponentView View { get; private set; }
 
@@ -152,6 +152,8 @@ public class FriendsHUDController : IHUD
         else
         {
             View.Hide();
+            View.DisableSearchMode();
+            searchingFriends = false;
             OnClosed?.Invoke();
         }
     }
@@ -429,11 +431,12 @@ public class FriendsHUDController : IHUD
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
+        if (searchingFriends) return;
         
         friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
-
+        
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
@@ -471,7 +474,7 @@ public class FriendsHUDController : IHUD
     {
         if (string.IsNullOrEmpty(search))
         {
-            View.ClearFriendFilter();
+            View.DisableSearchMode();
             searchingFriends = false;
             ShowOrHideMoreFriendsToLoadHint();
             return;
@@ -479,21 +482,7 @@ public class FriendsHUDController : IHUD
 
         friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
 
-        Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
-        {
-            var regex = new Regex(search, RegexOptions.IgnoreCase);
-
-            return friends.Values.Where(model =>
-            {
-                var status = friendsController.GetUserStatus(model.userId);
-                if (status == null) return false;
-                if (status.friendshipStatus != FriendshipStatus.FRIEND) return false;
-                if (regex.IsMatch(model.userId)) return true;
-                return !string.IsNullOrEmpty(model.userName) && regex.IsMatch(model.userName);
-            }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
-        }
-
-        View.FilterFriends(FilterFriendsByNameOrId(search));
+        View.EnableSearchMode();
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
     }
