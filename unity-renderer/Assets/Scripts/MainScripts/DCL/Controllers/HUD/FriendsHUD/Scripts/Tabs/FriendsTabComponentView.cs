@@ -483,7 +483,7 @@ public class FriendsTabComponentView : BaseComponentView
     }
 
     [Serializable]
-    private struct FriendListComponents
+    private class FriendListComponents
     {
         public CollapsableSortedFriendEntryList list;
         public TMP_Text countText;
