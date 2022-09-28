@@ -118,7 +118,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.CHANNELS_CREATE:
-                hudElement = new CreateChannelWindowController(ChatController.i);
+                hudElement = new CreateChannelWindowController(ChatController.i, DataStore.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 hudElement = new LeaveChannelConfirmationWindowController(ChatController.i);
