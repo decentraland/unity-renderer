@@ -79,7 +79,7 @@ namespace DCL
             
             if (current)
             {
-                RemoveABDetectionPaintingForCurrentScene();
+                RemoveGlobalABDetectionPainting();
                 ApplyABDetectionPaintingForCurrentScene();
             }
             else
