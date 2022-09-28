@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { glob } from 'glob'
 import {
-    camelToSnakeCase,
+  camelToSnakeCase,
   cleanGeneratedCode,
   execute,
   normalizePath,
@@ -10,9 +10,10 @@ import {
   workingDirectory,
 } from './helpers'
 import * as fs from 'node:fs'
+import * as fse from 'fs-extra'
 
 const componentsRawInputPath = normalizePath(
-  path.resolve(protocolPath, 'ecs/components/**/*.proto'),
+  path.resolve(protocolPath, 'ecs/components/'),
 )
 
 const componentsPreProccessInputPath = normalizePath(
@@ -25,23 +26,19 @@ const componentsOutputPath = path.resolve(
 )
 
 async function main() {
-  if (!fs.existsSync(componentsPreProccessInputPath)) {
-    fs.mkdirSync(componentsPreProccessInputPath)
+  if (fs.existsSync(componentsPreProccessInputPath)) {
+    fs.rmSync(componentsPreProccessInputPath, { recursive: true })
   }
+  fse.copySync(componentsRawInputPath, componentsPreProccessInputPath, {
+    overwrite: true,
+  })
+
   await execute(`${protocPath} --version`, workingDirectory)
 
   await buildComponents()
 
   fs.rmSync(componentsPreProccessInputPath, { recursive: true })
 }
-
-/*
-protoc
-  --csharp_out "/Users/mateomiccino/decentraland/unity-renderer/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/GeneratedCode/" --csharp_opt=file_extension=.gen.cs
-  --plugin=protoc-gen-dclunity=/Users/mateomiccino/decentraland/unity-renderer/unity-renderer/Assets/protoc-gen-dclunity-1.0.0-20220629020644.commit-02bd8f6/package/dist/index.js
-  --dclunity_out "/Users/mateomiccino/decentraland/unity-renderer/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/GeneratedCode/" --proto_path "/Users/mateomiccino/decentraland/unity-renderer/unity-renderer/Assets/@dcl-protocol-1.0.0-2569677750.commit-6ce832a/package/renderer-protocol/" "/Users/mateomiccino/decentraland/unity-renderer/unity-renderer/Assets/@dcl-protocol-1.0.0-2569677750.commit-6ce832a/package/renderer-protocol/RendererProtocol.proto"
-*/
-// TODO: Builds components
 
 const regex = new RegExp(/option *\(ecs_component_id\) *= *([0-9]+) *;/)
 
@@ -67,7 +64,9 @@ function generateComponentsEnum(components: ComponentData[]) {
 
   content += '        public const int TRANSFORM = 1;\n'
   for (const component of components) {
-    let componentUpperCaseName = camelToSnakeCase(component.componentName).toUpperCase()
+    let componentUpperCaseName = camelToSnakeCase(
+      component.componentName,
+    ).toUpperCase()
 
     content += `        public const int ${componentUpperCaseName} = ${component.componentId.toString()};\n`
   }
@@ -79,7 +78,9 @@ function generateComponentsEnum(components: ComponentData[]) {
 }
 
 async function preProcessComponents() {
-  const protoFiles = glob.sync(componentsRawInputPath)
+  const protoFiles = glob.sync(
+    path.resolve(componentsPreProccessInputPath, '**/*.proto'),
+  )
   const components: ComponentData[] = []
 
   for (const file of protoFiles) {
@@ -100,8 +101,8 @@ async function preProcessComponents() {
     outputLines.push('package decentraland.ecs;')
     outputLines.push('option csharp_namespace = "DCL.ECSComponents";')
 
-    const fileName = path.basename(file)
     if (newComponentId) {
+      const fileName = path.basename(file)
       const componentName = fileName.replace('.proto', '')
       components.push({
         componentId: newComponentId,
@@ -109,22 +110,28 @@ async function preProcessComponents() {
       })
     }
 
-    fs.writeFileSync(
-      path.resolve(componentsPreProccessInputPath, fileName),
-      outputLines.join('\n'),
-    )
+    fs.writeFileSync(file, outputLines.join('\n'))
   }
 
   generateComponentsEnum(components)
 }
 async function buildComponents() {
+  console.log('Building components...')
   cleanGeneratedCode(componentsOutputPath)
   await preProcessComponents()
+
+  const protoFiles = glob
+    .sync(path.resolve(componentsPreProccessInputPath, '**/*.proto'))
+    .join(' ')
+
   let command = `${protocPath}`
   command += ` --csharp_out "${componentsOutputPath}"`
-  command += ` --proto_path "${protocolPath}/ecs/components"`
-  command += ` ${protocolPath}/ecs/components/*.proto`
+  command += ` --proto_path "${componentsPreProccessInputPath}/"`
+  command += ` ${protoFiles}`
+
   await execute(command, workingDirectory)
+
+  console.log('Building components... Done!')
 }
 
 main().catch((err) => {

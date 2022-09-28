@@ -14,6 +14,7 @@ async function main() {
 }
 
 async function buildRendererProtocol() {
+  console.log('Building Renderer Protocol...')
   cleanGeneratedCode(rendererProtocolOutputPath)
 
   const rendererProtocolInputPath = normalizePath(
@@ -33,6 +34,7 @@ async function buildRendererProtocol() {
   command += ` ${protoFiles}`
 
   await execute(command, workingDirectory)
+  console.log('Building Renderer Protocol... Done!')
 }
 
 main().catch((err) => {

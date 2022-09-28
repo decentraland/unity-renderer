@@ -22,6 +22,7 @@
     "@types/fs-extra": "^9.0.8",
     "@types/glob": "^8.0.0",
     "@types/node-fetch": "^2.5.8",
+    "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "node-fetch": "^2.6.1",
     "protoc-gen-dclunity": "^1.0.0-20220912193536.commit-d764204"
