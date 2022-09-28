@@ -106,18 +106,6 @@ public class PublicChatChannelControllerShould
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
     }
-    
-    [Test]
-    public void ResetInputFieldAndActivatePreviewWhenIsInvalidMessage()
-    {
-        var isPreviewMode = false;
-        
-        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {body = "", messageType = ChatMessage.Type.PUBLIC, recipient = TEST_USER_ID});
-        
-        internalChatView.Received(1).ResetInputField(true);
-        Assert.IsTrue(isPreviewMode);
-    }
 
     [Test]
     public void CloseWhenButtonPressed()
@@ -136,63 +124,21 @@ public class PublicChatChannelControllerShould
     }
 
     [Test]
-    public void ActivatePreviewModeInstantly()
+    public void ClosePanelWhenMouseIsLocked()
     {
-        var isPreviewMode = false;
-        controller.SetVisibility(true);
-
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
-    public void ActivatePreviewMode()
-    {
-        var isPreviewMode = false;
-        controller.SetVisibility(true);
-        
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
-    public void ActivatePreviewModeWhenMouseIsLocked()
-    {
-        var isPreviewMode = false;
         controller.SetVisibility(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
 
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Hide();
     }
 
     [Test]
-    public void DeactivatePreviewMode()
+    public void ShowPanel()
     {
-        var isPreviewMode = false;
         controller.SetVisibility(true);
 
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [Test]
-    public void DeactivatePreviewModeWhenInputFieldIsSelected()
-    {
-        var isPreviewMode = false;
-
-        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
-
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [UnityTest]
-    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
-    {
-        var isPreviewMode = false;
-        view.IsFocused.Returns(false);
-
-        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
-        yield return new WaitForSeconds(4f);
-
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Show();
     }
 
     [Test]
