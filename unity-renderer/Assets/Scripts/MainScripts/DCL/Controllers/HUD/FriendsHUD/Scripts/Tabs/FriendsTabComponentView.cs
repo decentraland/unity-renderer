@@ -59,8 +59,6 @@ public class FriendsTabComponentView : BaseComponentView
                         + creationQueue.Keys.Count(s =>
                             !onlineFriendsList.list.Contains(s) && !offlineFriendsList.list.Contains(s));
 
-    public bool DidDeferredCreationCompleted => creationQueue.Count == 0;
-
     public event Action<string> OnSearchRequested;
 
     public event Action<FriendEntryModel> OnWhisper;
@@ -199,6 +197,7 @@ public class FriendsTabComponentView : BaseComponentView
             searchResultsFriendList.list.Remove(userId);
             searchResultsFriendList.list.Add(userId, entry);
             searchResultsFriendList.FlagAsPendingToSort();
+            searchResultsFriendList.list.Filter(searchBar.Text);
         }
         else
         {
@@ -228,9 +227,9 @@ public class FriendsTabComponentView : BaseComponentView
             creationQueue[userId] = model;
             return;
         }
-
+        
         FriendEntryBase entry;
-
+        
         if (isSearchMode)
         {
             if (!searchResultsFriendList.list.Contains(userId))
@@ -246,7 +245,7 @@ public class FriendsTabComponentView : BaseComponentView
             else
                 entry = onlineFriendsList.list.Get(userId) ?? offlineFriendsList.list.Get(userId);
         }
-
+        
         Populate(userId, model, entry);
     }
 

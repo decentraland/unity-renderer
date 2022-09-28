@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public interface ISearchBarComponentView
 {
+    string Text { get; }
+    
     /// <summary>
     /// Event that will be triggered when a search is ordered in the search component.
     /// </summary>
@@ -51,6 +53,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
+
+    public string Text => inputField.text;
 
     public override void Awake()
     {
