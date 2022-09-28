@@ -41,6 +41,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
+    private string pendingEmoteOnAppear;
+    private long pendingEmoteTimestamp;
 
     internal ISocialAnalytics socialAnalytics;
 
@@ -159,9 +161,17 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
-    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
+    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source, bool playOnAppear)
     {
-        avatar.PlayEmote(id, timestamp);
+        if (playOnAppear)
+        {
+            pendingEmoteOnAppear = id;
+            pendingEmoteTimestamp = timestamp;
+        }
+        else
+        {
+            avatar.PlayEmote(id, timestamp);
+        }
 
         bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
         if (!found)
@@ -223,6 +233,12 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
+
+                if (!string.IsNullOrEmpty(pendingEmoteOnAppear))
+                {
+                    avatar.PlayEmote(pendingEmoteOnAppear, pendingEmoteTimestamp);
+                    pendingEmoteOnAppear = "";
+                }
             }
         }
         catch (OperationCanceledException)

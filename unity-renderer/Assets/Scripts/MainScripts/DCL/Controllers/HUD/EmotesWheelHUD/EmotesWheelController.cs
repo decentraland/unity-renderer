@@ -394,7 +394,7 @@ namespace DCL.EmotesWheel
         }
 
         private void OnViewClosed() { emotesVisible.Set(false); }
-        private void OnAvatarEmoteSet(string id, long timestamp, UserProfile.EmoteSource source) { emotesVisible.Set(false); }
+        private void OnAvatarEmoteSet(string id, long timestamp, UserProfile.EmoteSource source, bool playOnAppear) { emotesVisible.Set(false); }
         private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
 
         private void OnOpenEmotesCustomizationInputActionTriggered(DCLAction_Hold action)

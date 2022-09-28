@@ -891,6 +891,9 @@ public class AvatarEditorHUDController : IHUD
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
 
+        userProfile.SetAvatarExpression("Spawn_Pose_v01", UserProfile.EmoteSource.Backpack, true);
+        avatarModel.expressionTriggerId = "Spawn_Pose_v01";
+        avatarModel.expressionTriggerTimestamp = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds + 100;
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
         
