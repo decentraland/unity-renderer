@@ -44,9 +44,8 @@ const regex = new RegExp(/option *\(ecs_component_id\) *= *([0-9]+) *;/)
 
 const getComponentId = (text: string): string | null => {
   const res = text.match(regex)
-  if (res) {
-    if (res.length >= 1) return res[1]
-  }
+  if (res && res.length >= 1)
+    return res[1]
   return null
 }
 
