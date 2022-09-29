@@ -181,6 +181,17 @@ namespace DCL.Components
                     {
                         mat.EnableKeyword("_ALPHATEST_ON");
                         mat.EnableKeyword("_NORMALMAP");
+                        
+                        //TODO ANTON
+                        //this is a test to run on CI build
+                        //to check if it will fix certain in-build issue
+                        if (mat.name.Contains("Mika"))
+                        {
+                            var metallicValue = mat.GetFloat("_Metallic");
+                            UnityEngine.Debug.LogError($"For {mat.name} metallic = {metallicValue}");
+                        }
+                        mat.SetFloat("_Metallic", 0f);
+                        //
                     }
 
                 OnSuccessWrapper(r, OnSuccess);
