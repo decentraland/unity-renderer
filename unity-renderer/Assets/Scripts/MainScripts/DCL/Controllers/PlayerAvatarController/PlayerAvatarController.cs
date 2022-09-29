@@ -10,6 +10,7 @@ using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
+using ICSharpCode.SharpZipLib.Core;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -41,8 +42,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string VISIBILITY_CONSTRAIN;
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
-    private string pendingEmoteOnAppear;
-    private long pendingEmoteTimestamp;
 
     internal ISocialAnalytics socialAnalytics;
 
@@ -161,17 +160,9 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         userProfile.OnAvatarEmoteSet += OnAvatarEmote;
     }
 
-    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source, bool playOnAppear)
+    private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
-        if (playOnAppear)
-        {
-            pendingEmoteOnAppear = id;
-            pendingEmoteTimestamp = timestamp;
-        }
-        else
-        {
-            avatar.PlayEmote(id, timestamp);
-        }
+        avatar.PlayEmote(id, timestamp);
 
         bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
         if (!found)
@@ -202,6 +193,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private async UniTaskVoid LoadingAvatarRoutine(UserProfile profile, CancellationToken ct)
     {
+        Debug.Log("AAAAA " + profile.avatar.expressionTriggerId);
+        
         if (string.IsNullOrEmpty(profile.avatar.bodyShape) || profile.avatar.wearables == null)
         {
             avatar.Dispose();
@@ -233,12 +226,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
-
-                if (!string.IsNullOrEmpty(pendingEmoteOnAppear))
-                {
-                    avatar.PlayEmote(pendingEmoteOnAppear, pendingEmoteTimestamp);
-                    pendingEmoteOnAppear = "";
-                }
+                
+                avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
         catch (OperationCanceledException)

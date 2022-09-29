@@ -2,6 +2,7 @@ using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 using UnityEngine;
 
 [Serializable]
@@ -101,8 +102,14 @@ public class AvatarModel : BaseModel
         skinColor = other.skinColor;
         hairColor = other.hairColor;
         eyeColor = other.eyeColor;
-        expressionTriggerId = other.expressionTriggerId;
-        expressionTriggerTimestamp = other.expressionTriggerTimestamp;
+        if (!string.IsNullOrEmpty(other.expressionTriggerId) && expressionTriggerId != other.expressionTriggerId)
+        {
+            expressionTriggerId = other.expressionTriggerId;
+        }
+        if (other.expressionTriggerTimestamp != -1 && expressionTriggerTimestamp != other.expressionTriggerTimestamp)
+        {
+            expressionTriggerTimestamp = other.expressionTriggerTimestamp;
+        }
         stickerTriggerId = other.stickerTriggerId;
         stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);

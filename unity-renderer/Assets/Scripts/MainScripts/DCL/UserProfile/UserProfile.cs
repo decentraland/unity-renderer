@@ -19,7 +19,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
-    public event Action<string, long, EmoteSource, bool> OnAvatarEmoteSet;
+    public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
 
     public string userId => model.userId;
     public string ethAddress => model.ethAddress;
@@ -102,14 +102,14 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnUpdate?.Invoke(this);
     }
 
-    public void SetAvatarExpression(string id, EmoteSource source, bool playOnAppear = false)
+    public void SetAvatarExpression(string id, EmoteSource source)
     {
         var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
         WebInterface.SendExpression(id, timestamp);
         OnUpdate?.Invoke(this);
-        OnAvatarEmoteSet?.Invoke(id, timestamp, source, playOnAppear);
+        OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
 
     public void SetInventory(string[] inventoryIds)
