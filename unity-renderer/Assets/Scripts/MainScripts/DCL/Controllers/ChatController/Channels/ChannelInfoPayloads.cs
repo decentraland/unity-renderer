@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace DCL.Chat.Channels
 {
@@ -11,5 +11,11 @@ namespace DCL.Chat.Channels
         public int memberCount;
         public bool joined;
         public bool muted;
+    }
+
+    [Serializable]
+    public class ChannelInfoPayloads
+    {
+        public ChannelInfoPayload[] channelInfoPayload;
     }
 }

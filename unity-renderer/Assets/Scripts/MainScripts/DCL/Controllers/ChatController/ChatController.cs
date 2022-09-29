@@ -143,36 +143,50 @@ public class ChatController : MonoBehaviour, IChatController
     [UsedImplicitly]
     public void UpdateChannelInfo(string payload)
     {
-        var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
-        var channelId = msg.channelId;
-        var channel = new Channel(channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
-        var justLeft = false;
+        var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
+        bool anyChannelLeft = false;
 
-        if (channels.ContainsKey(channelId))
+        foreach (var channelInfo in msg.channelInfoPayload)
         {
-            justLeft = channels[channelId].Joined && !channel.Joined;
-            channels[channelId].CopyFrom(channel);
+            var channelId = channelInfo.channelId;
+            var channel = new Channel(channelId, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+            var justLeft = false;
+
+            if (channels.ContainsKey(channelId))
+            {
+                justLeft = channels[channelId].Joined && !channel.Joined;
+                channels[channelId].CopyFrom(channel);
+            }
+            else
+                channels[channelId] = channel;
+
+            if (justLeft)
+            {
+                OnChannelLeft?.Invoke(channelId);
+                anyChannelLeft = true;
+            }
+
+            if (anyChannelLeft)
+            {
+                // TODO (responsibility issues): extract to another class
+                AudioScriptableObjects.leaveChannel.Play(true);
+            }
+
+            OnChannelUpdated?.Invoke(channel);
         }
-        else
-            channels[channelId] = channel;
-
-        if (justLeft)
-        {
-            OnChannelLeft?.Invoke(channelId);
-
-            // TODO (responsibility issues): extract to another class
-            AudioScriptableObjects.leaveChannel.Play(true);
-        }
-
-        OnChannelUpdated?.Invoke(channel);
     }
 
     // called by kernel
     [UsedImplicitly]
     public void JoinChannelConfirmation(string payload)
     {
-        var msg = JsonUtility.FromJson<ChannelInfoPayload>(payload);
-        var channel = new Channel(msg.channelId, msg.unseenMessages, msg.memberCount, msg.joined, msg.muted, msg.description);
+        var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
+
+        if (msg.channelInfoPayload.Length == 0)
+            return;
+
+        var channelInfo = msg.channelInfoPayload[0];
+        var channel = new Channel(channelInfo.channelId, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
         var channelId = channel.ChannelId;
         
         if (channels.ContainsKey(channelId))
