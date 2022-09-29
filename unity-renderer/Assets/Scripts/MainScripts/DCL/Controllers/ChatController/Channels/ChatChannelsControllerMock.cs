@@ -612,24 +612,25 @@ Invite others to join by quoting the channel name in other chats or include it a
                 "music-festival"
             };
 
-            var channelPayloads = new ChannelInfoPayloads { channelInfoPayload = new ChannelInfoPayload[ids.Length] };
+            var channelPayloads = new ChannelInfoPayloads();
+            List<ChannelInfoPayload> channelsInfo = new List<ChannelInfoPayload>();
 
             for (var i = 0; i < limit && i < ids.Length; i++)
             {
                 var channelId = ids[i];
                 if (!channelId.StartsWith(name) && !string.IsNullOrEmpty(name)) continue;
 
-                var msg = new ChannelInfoPayload
+                channelsInfo.Add(new ChannelInfoPayload
                 {
                     joined = joinedChannels.Contains(channelId),
                     channelId = channelId,
                     muted = false,
                     memberCount = Random.Range(0, 16),
                     unseenMessages = 0
-                };
-                
-                channelPayloads.channelInfoPayload[i] = msg;
+                });
             }
+
+            channelPayloads.channelInfoPayload = channelsInfo.ToArray();
 
             var payload = new ChannelSearchResultsPayload
             {
