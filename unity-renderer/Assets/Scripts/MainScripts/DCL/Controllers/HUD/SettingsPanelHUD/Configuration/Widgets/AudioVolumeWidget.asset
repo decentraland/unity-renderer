@@ -20,14 +20,14 @@ MonoBehaviour:
     array:
     - controls:
         array:
-        - {fileID: 11400000, guid: 983c471e55b0b9748bbbf0c522838ee0, type: 2}
+        - {fileID: 11400000, guid: 8a6e7538f8212934eb45854e5eb281ac, type: 2}
         - {fileID: 11400000, guid: 35c3b496ace24c74d83187c74ef9ae91, type: 2}
         - {fileID: 11400000, guid: c7510b1b051b80b46a1fc98ea3a4dab7, type: 2}
         - {fileID: 11400000, guid: a9f573106b03156409e03bfb9978d32b, type: 2}
         - {fileID: 11400000, guid: c335fa0595a4dea4e89053f4124571a5, type: 2}
     - controls:
         array:
-        - {fileID: 11400000, guid: e131999e85eff014f9d8222127d9a656, type: 2}
+        - {fileID: 11400000, guid: d8ca1f85dd65da446b4013187683374f, type: 2}
         - {fileID: 11400000, guid: b64f1694c0ce6ab4eb53151c63914544, type: 2}
         - {fileID: 11400000, guid: 355f543b43c2b204598eedfe7ec28578, type: 2}
         - {fileID: 11400000, guid: 26320d2a902797b40b238eb5402ea325, type: 2}
