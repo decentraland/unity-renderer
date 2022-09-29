@@ -234,7 +234,7 @@ public class TaskbarHUDController : IHUD
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() !=
                                        null;
-
+                                       
         if (anyInputFieldIsSelected) return;
 
         mouseCatcher.UnlockCursor();
@@ -256,6 +256,7 @@ public class TaskbarHUDController : IHUD
         {
             publicChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(true);
+            chatInputTargetWindow = worldChatWindowHud;
         }
         else
         {
@@ -304,9 +305,6 @@ public class TaskbarHUDController : IHUD
         // TODO: temporary deactivated current window fadein/fadeout until we get the full chat notifications feature implemented
         // view.leftWindowContainerAnimator.Hide();
         // view.ToggleAllOff();
-
-        if (notificationPanelTransform.Get() != null)
-            return;
 
         CloseFriendsWindow();
         CloseChatList();
@@ -421,8 +419,8 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            publicChatWindow.SetVisibility(true, true);
-            visibleWindow = publicChatWindow;
+            worldChatWindowHud.SetVisibility(true);
+            visibleWindow = worldChatWindowHud;
         }
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
@@ -492,6 +490,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
+        chatInputTargetWindow = worldChatWindowHud;
     }
 
     private void CloseChatList()
