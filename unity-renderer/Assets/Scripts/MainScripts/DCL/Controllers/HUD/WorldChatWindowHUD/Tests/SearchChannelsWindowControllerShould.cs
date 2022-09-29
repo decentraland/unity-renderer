@@ -69,7 +69,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
 
-            var channel = new Channel("channel", 15, 11, false, false, "desc");
+            var channel = new Channel("channel", "name", 15, 11, false, false, "desc");
             chatController.OnChannelSearchResult += Raise.Event<Action<string, Channel[]>>("page1", new[] {channel});
 
             view.Received(1).ShowLoadingMore();
@@ -82,7 +82,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(false);
 
             chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
-                new Channel("channel", 15, 11, false, false, "desc"));
+                new Channel("channel", "name", 15, 11, false, false, "desc"));
 
             view.DidNotReceiveWithAnyArgs().Set(default);
         }

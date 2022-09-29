@@ -62,7 +62,7 @@ namespace DCL.Chat.HUD
         public void ShowChannelExistsErrorWithJoinOptionDisabled()
         {
             chatController.GetAllocatedChannel("foo").Returns(
-                new Channel("foo", 0, 2, true, false, ""));
+                new Channel("foo", "fooName", 0, 2, true, false, ""));
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
 
@@ -76,7 +76,7 @@ namespace DCL.Chat.HUD
         public void ShowChannelExistsErrorWithJoinOptionEnabled()
         {
             chatController.GetAllocatedChannel("foo").Returns(
-                new Channel("foo", 0, 2, false, false, ""));
+                new Channel("foo", "fooName", 0, 2, false, false, ""));
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
 
@@ -149,7 +149,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
             
             chatController.OnChannelJoined += Raise.Event<Action<Channel>>(
-                new Channel("foo", 0, 2, false, false, ""));
+                new Channel("foo", "fooName", 0, 2, false, false, ""));
             
             Assert.AreEqual("foo", navigatedChannel);
         }

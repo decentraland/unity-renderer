@@ -12,6 +12,7 @@ namespace DCL.Chat.HUD
     public class ChatChannelHUDControllerShould
     {
         private const string CHANNEL_ID = "channelId";
+        private const string CHANNEL_NAME = "channelName";
 
         private ChatChannelHUDController controller;
         private IChatChannelWindowView view;
@@ -34,7 +35,7 @@ namespace DCL.Chat.HUD
             
             chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedChannel(CHANNEL_ID)
-                .Returns(new Channel(CHANNEL_ID, 4, 12, true, false, "desc"));
+                .Returns(new Channel(CHANNEL_ID, CHANNEL_NAME, 4, 12, true, false, "desc"));
             chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
             dataStore = new DataStore();

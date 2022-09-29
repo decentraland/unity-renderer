@@ -34,7 +34,7 @@ public class WorldChatWindowControllerShould
         chatController = Substitute.For<IChatController>();
         mouseCatcher = Substitute.For<IMouseCatcher>();
         chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", 0, 0, true, false, ""));
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
@@ -451,7 +451,7 @@ public class WorldChatWindowControllerShould
 
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
         chatController.OnChannelJoined +=
-            Raise.Event<Action<Channel>>(new Channel("channelId", 0, 1, true, false, ""));
+            Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 1, true, false, ""));
         
         socialAnalytics.Received(1).SendEmptyChannelCreated("channelId", ChannelJoinedSource.Search);
     }
@@ -463,7 +463,7 @@ public class WorldChatWindowControllerShould
 
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
         chatController.OnChannelJoined +=
-            Raise.Event<Action<Channel>>(new Channel("channelId", 0, 2, true, false, ""));
+            Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
         
         socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId", ChannelJoinedSource.Link);
     }

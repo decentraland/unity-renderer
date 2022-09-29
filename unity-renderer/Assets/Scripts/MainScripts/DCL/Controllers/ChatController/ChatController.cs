@@ -46,7 +46,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void InitializeChat(string json)
     {
         if (chatAlreadyInitialized)
@@ -60,7 +60,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void AddMessageToChatWindow(string jsonMessage)
     {
         var message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
@@ -71,7 +71,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void AddChatMessages(string jsonMessage)
     {
         var messages = JsonUtility.FromJson<ChatMessageListPayload>(jsonMessage);
@@ -87,7 +87,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateTotalUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
@@ -96,7 +96,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateUserUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateUserUnseenMessagesPayload>(json);
@@ -105,7 +105,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateTotalUnseenMessagesByUser(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByUserPayload>(json);
@@ -120,7 +120,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateTotalUnseenMessagesByChannel(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByChannelPayload>(json);
@@ -133,14 +133,14 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateChannelMembers(string payload)
     {
         var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
         OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
     }
     
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateChannelInfo(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
@@ -177,7 +177,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void JoinChannelConfirmation(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
@@ -202,7 +202,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void JoinChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
@@ -210,7 +210,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void LeaveChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
@@ -218,7 +218,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void MuteChannelError(string payload)
     {
         var msg = JsonUtility.FromJson<MuteChannelErrorPayload>(payload);
@@ -226,7 +226,7 @@ public class ChatController : MonoBehaviour, IChatController
     }
 
     // called by kernel
-    [UsedImplicitly]
+    [PublicAPI]
     public void UpdateChannelSearchResults(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelSearchResultsPayload>(payload);
