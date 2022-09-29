@@ -144,6 +144,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateChannelInfo(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
+        bool anyChannelLeft = false;
 
         foreach (var channelInfo in msg.channelInfoPayload)
         {
@@ -162,7 +163,11 @@ public class ChatController : MonoBehaviour, IChatController
             if (justLeft)
             {
                 OnChannelLeft?.Invoke(channelId);
+                anyChannelLeft = true;
+            }
 
+            if (anyChannelLeft)
+            {
                 // TODO (responsibility issues): extract to another class
                 AudioScriptableObjects.leaveChannel.Play(true);
             }
