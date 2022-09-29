@@ -7,6 +7,6 @@ namespace DCL.Services
 
         string[] InputDevices { get ;  }
         string[] OutputDevices { get ;  }
-        public event Action<AudioDevicesResponse> AduioDeviceCached;
+        public event Action AduioDeviceCached;
     }
 }

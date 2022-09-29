@@ -14,29 +14,27 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             base.Initialize();
             audioDevicesService = Environment.i.serviceLocator.Get<IAudioDevicesService>();
 
-            // RaiseOnOverrideIndicatorLabel(new [] { "A", "BBB", "CA" });
-            // UpdateSetting(GetStoredValue());
-
-            // if (audioDevicesService.OutputDevices != null)
-            // {
-            //     RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
-            //     UpdateSetting(GetStoredValue());
-            // }
-            // else
-            // {
-            //     audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
-            // }
+            if (audioDevicesService.OutputDevices != null)
+            {
+                RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
+                UpdateSetting(GetStoredValue());
+            }
+            else
+            {
+                audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
+            }
         }
 
-        // private void OnAudioDevicesCached(AudioDevicesResponse obj)
-        // {
-        //     audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
-        //
-        //     RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
-        //     UpdateSetting(GetStoredValue());
-        // }
+        private void OnAudioDevicesCached()
+        {
+            audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
 
-        public override object GetStoredValue() { return currentAudioSettings.outputDevice; }
+            RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
+            UpdateSetting(GetStoredValue());
+        }
+
+        public override object GetStoredValue() =>
+            currentAudioSettings.outputDevice;
 
         public override void UpdateSetting(object newValue)
         {

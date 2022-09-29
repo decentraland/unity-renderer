@@ -7,8 +7,10 @@ namespace DCL.Services
 
         private readonly IAudioDevicesBridge bridge;
 
+        private bool HasRecievedKernelMessage;
+
         public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) { this.bridge = bridge; }
-        public event Action<AudioDevicesResponse> AduioDeviceCached;
+        public event Action AduioDeviceCached;
 
         public string[] InputDevices { get; private set; }
         public string[] OutputDevices { get; private set; }
@@ -16,22 +18,31 @@ namespace DCL.Services
         public void Initialize()
         {
             if (bridge.AudioDevices == null)
-                bridge.OnAudioDevicesRecieved += ChacheAudioDevices;
+                bridge.OnAudioDevicesRecieved += OnAudioDevicesRecieved;
             else
-                ChacheAudioDevices(bridge.AudioDevices);
+                ChacheAudioDevices();
         }
 
-        public void Dispose() =>
-            bridge.OnAudioDevicesRecieved -= ChacheAudioDevices;
-
-        private void ChacheAudioDevices(AudioDevicesResponse audioDevicesResponse)
+        public void Dispose()
         {
-            bridge.OnAudioDevicesRecieved -= ChacheAudioDevices;
+            if (!HasRecievedKernelMessage)
+                bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
+        }
+
+        private void OnAudioDevicesRecieved(AudioDevicesResponse devices)
+        {
+            bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
+            ChacheAudioDevices();
+        }
+
+        private void ChacheAudioDevices()
+        {
+            HasRecievedKernelMessage = true;
 
             InputDevices = bridge.AudioDevices.inputDevices;
             OutputDevices = bridge.AudioDevices.outputDevices;
 
-            AduioDeviceCached?.Invoke(audioDevicesResponse);
+            AduioDeviceCached?.Invoke();
         }
     }
 

@@ -13,8 +13,6 @@ namespace DCL.SettingsCommon
 
         public readonly ISettingsRepository<QualitySettings> qualitySettings;
 
-        private readonly QualitySettingsData qualitySettingsPreset;
-
         private bool isDisposed;
 
         public Settings(QualitySettingsData qualitySettingsPreset,
@@ -23,7 +21,7 @@ namespace DCL.SettingsCommon
             ISettingsRepository<GeneralSettings> generalSettingsRepository,
             ISettingsRepository<AudioSettings> audioSettingsRepository)
         {
-            this.qualitySettingsPreset = qualitySettingsPreset;
+            qualitySettingsPresets = qualitySettingsPreset;
             this.audioMixer = audioMixer;
             qualitySettings = graphicsQualitySettingsRepository;
             generalSettings = generalSettingsRepository;
@@ -33,7 +31,7 @@ namespace DCL.SettingsCommon
         }
         public static Settings i { get; private set; }
 
-        public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
+        public QualitySettingsData qualitySettingsPresets { get ; }
 
         public event Action OnResetAllSettings;
 
