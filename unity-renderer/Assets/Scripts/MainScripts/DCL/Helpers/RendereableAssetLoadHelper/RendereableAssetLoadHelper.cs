@@ -175,6 +175,13 @@ namespace DCL.Components
                     animationClips = x.animationClips,
                     meshDataSize = x.meshDataSize
                 };
+                
+                if(r != null && r.materials != null)
+                    foreach (var mat in r.materials)
+                    {
+                        mat.EnableKeyword("_ALPHATEST_ON");
+                        mat.EnableKeyword("_NORMALMAP");
+                    }
 
                 OnSuccessWrapper(r, OnSuccess);
             };
@@ -241,6 +248,7 @@ namespace DCL.Components
 
         private void OnSuccessWrapper(Rendereable loadedAsset, Action<Rendereable> OnSuccess)
         {
+            
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
