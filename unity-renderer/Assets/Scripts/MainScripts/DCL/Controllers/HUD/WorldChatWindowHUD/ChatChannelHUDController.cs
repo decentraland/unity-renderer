@@ -186,11 +186,9 @@ namespace DCL.Chat.HUD
                 chatHudController.ResetInputField();
                 chatHudController.FocusInputField();
             }
-
             else
             {
-                skipChatInputTrigger = true;
-                chatHudController.ResetInputField(true);
+                SetVisibility(false);
                 return;
             }
 

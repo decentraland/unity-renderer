@@ -202,6 +202,11 @@ public class PrivateChatWindowController : IHUD
             chatHudController.ResetInputField();
             chatHudController.FocusInputField();
         }
+        else
+        {
+            SetVisibility(false);
+            return;
+        }
 
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";
