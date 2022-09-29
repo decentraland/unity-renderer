@@ -161,7 +161,7 @@ namespace DCL
         {
             OnGotoClicked?.Invoke();
 
-            WebInterface.GoTo(location.x, location.y);
+            Environment.i.world.teleportController.Teleport(location.x, location.y);
 
             OnCloseClick();
         }

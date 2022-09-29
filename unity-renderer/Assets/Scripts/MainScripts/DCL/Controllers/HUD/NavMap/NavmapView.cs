@@ -71,8 +71,6 @@ namespace DCL
                 CloseToast();
             });
 
-            toastView.OnGotoClicked += () => navmapVisible.Set(false);
-
             MapRenderer.OnParcelClicked += TriggerToast;
             MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
