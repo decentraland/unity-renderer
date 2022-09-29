@@ -230,11 +230,11 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateChannelSearchResults(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelSearchResultsPayload>(payload);
-        var channelsResult = new Channel[msg.channels.channelInfoPayload.Length];
+        var channelsResult = new Channel[msg.channels.Length];
 
-        for (var i = 0; i < msg.channels.channelInfoPayload.Length; i++)
+        for (var i = 0; i < msg.channels.Length; i++)
         {
-            var channelPayload = msg.channels.channelInfoPayload[i];
+            var channelPayload = msg.channels[i];
             var channelId = channelPayload.channelId;
             var channel = new Channel(channelId, channelPayload.unseenMessages, channelPayload.memberCount,
                 channelPayload.joined, channelPayload.muted, channelPayload.description);

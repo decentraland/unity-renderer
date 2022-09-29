@@ -7,6 +7,6 @@ namespace DCL.Chat.Channels
     public class ChannelSearchResultsPayload
     {
         [CanBeNull] public string since;
-        public ChannelInfoPayloads channels;
+        public ChannelInfoPayload[] channels;
     }
 }

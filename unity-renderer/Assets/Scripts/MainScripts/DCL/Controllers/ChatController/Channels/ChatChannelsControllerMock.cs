@@ -633,7 +633,7 @@ Invite others to join by quoting the channel name in other chats or include it a
 
             var payload = new ChannelSearchResultsPayload
             {
-                channels = channelPayloads,
+                channels = channelPayloads.channelInfoPayload,
                 since = Guid.NewGuid().ToString()
             };
             
