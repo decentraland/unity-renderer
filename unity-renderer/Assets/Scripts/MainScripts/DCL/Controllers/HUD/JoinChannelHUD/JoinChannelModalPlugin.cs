@@ -8,14 +8,13 @@ using UnityEngine;
 /// </summary>
 public class JoinChannelModalPlugin : IPlugin
 {
-    public JoinChannelComponentController joinChannelComponentController;
+    private readonly JoinChannelComponentController joinChannelComponentController;
 
     public JoinChannelModalPlugin()
     {
         joinChannelComponentController = new JoinChannelComponentController(
             JoinChannelComponentView.Create(),
-            // TODO (channels): Pass ChatController.i after kernel integration
-            ChatChannelsControllerMock.i,
+            ChatController.i,
             DataStore.i,
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
