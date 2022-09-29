@@ -1,4 +1,5 @@
-﻿using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+﻿using DCL.Services;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
@@ -6,11 +7,28 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Output Audio Device", fileName = nameof(OutputAudioDeviceControlController))]
     public class OutputAudioDeviceControlController : SpinBoxSettingsControlController
     {
+        private IAudioDevicesService audioDevicesService;
+
         public override void Initialize()
         {
             base.Initialize();
-            // Environment.i.serviceLocator.
-            RaiseOnOverrideIndicatorLabel(new [] { "Speaker 1", "Speaker 2", "Speaker 3" });
+            audioDevicesService = Environment.i.serviceLocator.Get<IAudioDevicesService>();
+
+            if (audioDevicesService.OutputDevices != null)
+            {
+                RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
+                UpdateSetting(GetStoredValue());
+            }
+            else
+            {
+                audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
+            }
+        }
+        private void OnAudioDevicesCached(AudioDevicesResponse obj)
+        {
+            audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
+
+            RaiseOnOverrideIndicatorLabel(audioDevicesService.OutputDevices);
             UpdateSetting(GetStoredValue());
         }
 

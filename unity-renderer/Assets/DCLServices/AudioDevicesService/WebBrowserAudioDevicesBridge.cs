@@ -5,26 +5,24 @@ using UnityEngine;
 
 namespace DCL.Services
 {
-    public class WebAudioDevicesBridge : MonoBehaviour, IAudioDevicesBridge
+    public class WebBrowserAudioDevicesBridge : MonoBehaviour, IAudioDevicesBridge
     {
 
         public AudioDevicesResponse AudioDevices { get; private set; }
         public event Action<AudioDevicesResponse> OnAudioDevicesRecieved;
 
-        public static WebAudioDevicesBridge GetOrCreate()
+        public static WebBrowserAudioDevicesBridge GetOrCreate()
         {
             GameObject brigeGO = SceneReferences.i?.bridgeGameObject;
             if (SceneReferences.i?.bridgeGameObject == null)
-                return new GameObject("Bridge").AddComponent<WebAudioDevicesBridge>();
+                return new GameObject("Bridge").AddComponent<WebBrowserAudioDevicesBridge>();
 
-            return brigeGO.GetOrCreateComponent<WebAudioDevicesBridge>();
+            return brigeGO.GetOrCreateComponent<WebBrowserAudioDevicesBridge>();
         }
 
         [PublicAPI]
         public void AddAudioDevices(string payload)
         {
-            Debug.Log("[1] GETTING AUDIO DEVICES: " + payload.Length);
-
             AudioDevicesResponse response = null;
 
             try

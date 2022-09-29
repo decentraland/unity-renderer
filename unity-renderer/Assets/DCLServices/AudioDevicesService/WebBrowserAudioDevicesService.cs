@@ -1,10 +1,14 @@
-﻿namespace DCL.Services
+﻿using System;
+
+namespace DCL.Services
 {
-    public class WebAudioDevicesService : IAudioDevicesService
+    public class WebBrowserAudioDevicesService : IAudioDevicesService
     {
+
         private readonly IAudioDevicesBridge bridge;
 
-        public WebAudioDevicesService (IAudioDevicesBridge bridge) { this.bridge = bridge; }
+        public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) { this.bridge = bridge; }
+        public event Action<AudioDevicesResponse> AduioDeviceCached;
 
         public string[] InputDevices { get; private set; }
         public string[] OutputDevices { get; private set; }
@@ -26,6 +30,8 @@
 
             InputDevices = bridge.AudioDevices.inputDevices;
             OutputDevices = bridge.AudioDevices.outputDevices;
+
+            AduioDeviceCached?.Invoke(audioDevicesResponse);
         }
     }
 
