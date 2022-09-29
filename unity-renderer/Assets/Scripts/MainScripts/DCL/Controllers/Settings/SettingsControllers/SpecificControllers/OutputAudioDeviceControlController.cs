@@ -1,5 +1,4 @@
-﻿using DCL.Interface;
-using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+﻿using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
@@ -10,6 +9,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void Initialize()
         {
             base.Initialize();
+            // Environment.i.serviceLocator.
             RaiseOnOverrideIndicatorLabel(new [] { "Speaker 1", "Speaker 2", "Speaker 3" });
             UpdateSetting(GetStoredValue());
         }
@@ -23,8 +23,5 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             ApplySettings();
             Settings.i.ChangeAudioDevicesSettings();
         }
-
-        [ContextMenu(nameof(SetAudioDeviceToKernel))]
-        private void SetAudioDeviceToKernel() => WebInterface.SetOutputAudioDevice("new device");
     }
 }

@@ -69,12 +69,6 @@ namespace DCL
 
         protected virtual void Update() { performanceMetricsController?.Update(); }
 
-        public void SetAudioDevices(string[] devices)
-        {
-            foreach (var device in devices)
-                Debug.Log(device);
-        }
-
         protected virtual void InitializeDataStore()
         {
             DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettings.GLTF_TEX_MAX_SIZE_WEB);

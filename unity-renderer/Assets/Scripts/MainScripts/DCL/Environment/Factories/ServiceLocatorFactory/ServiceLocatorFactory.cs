@@ -39,6 +39,8 @@ namespace DCL
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
 
+            result.Register<IAudioDevicesService>(() => new WebAudioDevicesService(WebAudioDevicesBridge.GetOrCreate()));
+
             return result;
         }
     }

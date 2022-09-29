@@ -1786,12 +1786,12 @@ namespace DCL.Interface
             SendMessage("UpdateMemoryUsage");
         }
 
-        public static void SetOutputAudioDevice(string newDevice)
-        {
-            SendMessage(nameof(SetOutputAudioDevice), new SetOutputAudioDevicePayload
-            {
-                device = newDevice
-            });
-        }
+        // public static void SetOutputAudioDevice(string newDevice)
+        // {
+        //     SendMessage("SetOutputAudioDevice", new SetOutputAudioDevicePayload
+        //     {
+        //         device = newDevice
+        //     });
+        // }
     }
 }
