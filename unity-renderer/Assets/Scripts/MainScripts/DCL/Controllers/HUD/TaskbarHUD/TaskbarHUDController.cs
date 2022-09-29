@@ -256,20 +256,22 @@ public class TaskbarHUDController : IHUD
         {
             publicChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(true);
+            chatToggleTargetWindow = worldChatWindowHud;
             chatInputTargetWindow = worldChatWindowHud;
         }
         else
         {
             worldChatWindowHud.SetVisibility(false);
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
         }
 
         publicChatWindow.SetVisibility(false);
         privateChatWindow.SetVisibility(false);
         channelChatWindow.SetVisibility(false);
-        friendsHud?.SetVisibility(false);
+        CloseFriendsWindow();
+        CloseVoiceChatWindow();
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
-        voiceChatHud?.SetVisibility(false);
     }
 
     private void HandleChatToggle(bool show)
@@ -489,6 +491,7 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+        
         chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = worldChatWindowHud;
     }
@@ -855,6 +858,8 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(false);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
+        
         chatToggleTargetWindow = worldChatWindowHud;
+        chatInputTargetWindow = worldChatWindowHud;
     }
 }
