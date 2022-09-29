@@ -65,10 +65,6 @@ public class PublicChatWindowController : IHUD
             profanityFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
-        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-        chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
-        chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
-        chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
@@ -101,8 +97,6 @@ public class PublicChatWindowController : IHUD
             chatController.OnAddMessage -= HandleMessageReceived;
 
         chatHudController.OnSendMessage -= SendChatMessage;
-        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-        chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= Hide;
@@ -111,7 +105,6 @@ public class PublicChatWindowController : IHUD
 
         if (View != null)
         {
-            View.OnFocused -= HandleViewFocused;
             View.Dispose();
         }
     }
@@ -128,8 +121,7 @@ public class PublicChatWindowController : IHUD
         }
         else
         {
-            skipChatInputTrigger = true;
-            chatHudController.ResetInputField(true);
+            SetVisibility(false);
             return;
         }
 
@@ -209,36 +201,6 @@ public class PublicChatWindowController : IHUD
 
         if (View.IsActive)
             MarkChannelMessagesAsRead();
-        
-        deactivateFadeOutCancellationToken.Cancel();
-        deactivateFadeOutCancellationToken = new CancellationTokenSource();
-    }
-
-    private void HandleInputFieldSelected()
-    {
-        
-    }
-
-    private void HandleInputFieldDeselected()
-    {
-        if (View.IsFocused) 
-            return;
-    }
-
-    private void HandleViewFocused(bool focused)
-    {
-        if (focused)
-        {
-            deactivateFadeOutCancellationToken.Cancel();
-            deactivateFadeOutCancellationToken = new CancellationTokenSource();
-        }
-        else
-        {
-            if (chatHudController.IsInputSelected) 
-                return;
-            
-
-        }
     }
     
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
@@ -258,13 +220,6 @@ public class PublicChatWindowController : IHUD
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
-        // race condition patch caused by unfocusing input field from invalid message on SendChatMessage
-        // chat input trigger is the same key as sending the chat message from the input field
-        if (skipChatInputTrigger)
-        {
-            skipChatInputTrigger = false;
-            return;
-        }
         if (!View.IsActive) return;
         chatHudController.FocusInputField();
     }
