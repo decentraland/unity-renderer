@@ -7,12 +7,13 @@
         public int MemberCount { get; internal set; }
         public bool Joined { get; internal set; }
         public bool Muted { get; internal set; }
-        public string Name => ChannelId;
+        public string Name { get; internal set; }
         public string Description { get; internal set; }
 
-        public Channel(string channelId, int unseenMessages, int memberCount, bool joined, bool muted, string description)
+        public Channel(string channelId, string name, int unseenMessages, int memberCount, bool joined, bool muted, string description)
         {
             ChannelId = channelId;
+            Name = name;
             UnseenMessages = unseenMessages;
             MemberCount = memberCount;
             Joined = joined;

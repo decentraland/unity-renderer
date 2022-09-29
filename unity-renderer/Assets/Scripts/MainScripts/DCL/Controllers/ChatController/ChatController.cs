@@ -41,7 +41,7 @@ public class ChatController : MonoBehaviour, IChatController
     {
         i = this;
         
-        channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, 0, 0, true, false,
+        channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, NEARBY_CHANNEL_ID, 0, 0, true, false,
             NEARBY_CHANNEL_DESCRIPTION);
     }
 
@@ -149,7 +149,7 @@ public class ChatController : MonoBehaviour, IChatController
         foreach (var channelInfo in msg.channelInfoPayload)
         {
             var channelId = channelInfo.channelId;
-            var channel = new Channel(channelId, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+            var channel = new Channel(channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
             var justLeft = false;
 
             if (channels.ContainsKey(channelId))
@@ -186,7 +186,7 @@ public class ChatController : MonoBehaviour, IChatController
             return;
 
         var channelInfo = msg.channelInfoPayload[0];
-        var channel = new Channel(channelInfo.channelId, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+        var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
         var channelId = channel.ChannelId;
         
         if (channels.ContainsKey(channelId))
@@ -236,7 +236,7 @@ public class ChatController : MonoBehaviour, IChatController
         {
             var channelPayload = msg.channels[i];
             var channelId = channelPayload.channelId;
-            var channel = new Channel(channelId, channelPayload.unseenMessages, channelPayload.memberCount,
+            var channel = new Channel(channelId, channelPayload.name, channelPayload.unseenMessages, channelPayload.memberCount,
                 channelPayload.joined, channelPayload.muted, channelPayload.description);
 
             if (channels.ContainsKey(channelId))

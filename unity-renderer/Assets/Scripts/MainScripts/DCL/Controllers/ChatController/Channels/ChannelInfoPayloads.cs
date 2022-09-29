@@ -6,6 +6,7 @@ namespace DCL.Chat.Channels
     public class ChannelInfoPayload
     {
         public string channelId;
+        public string name;
         public string description;
         public int unseenMessages;
         public int memberCount;
