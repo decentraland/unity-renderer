@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Interface;
 
 namespace DCL.Services
 {
@@ -7,10 +8,10 @@ namespace DCL.Services
 
         private readonly IAudioDevicesBridge bridge;
 
-        private bool HasRecievedKernelMessage;
-
         public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) { this.bridge = bridge; }
         public event Action AduioDeviceCached;
+
+        public bool HasRecievedKernelMessage { get; private set; }
 
         public string[] InputDevices { get; private set; }
         public string[] OutputDevices { get; private set; }
@@ -29,6 +30,12 @@ namespace DCL.Services
                 bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
         }
 
+        public void SetOutputDevice(int outputDeviceId) =>
+            WebInterface.SetOutputAudioDevice(outputDeviceId);
+
+        public void SetInputDevice(int inputDeviceId) =>
+            WebInterface.SetInputAudioDevice(inputDeviceId);
+
         private void OnAudioDevicesRecieved(AudioDevicesResponse devices)
         {
             bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
@@ -45,5 +52,4 @@ namespace DCL.Services
             AduioDeviceCached?.Invoke();
         }
     }
-
 }

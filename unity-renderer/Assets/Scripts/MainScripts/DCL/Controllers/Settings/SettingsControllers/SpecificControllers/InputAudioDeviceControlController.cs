@@ -41,7 +41,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentAudioSettings.inputDevice = (int)newValue;
             ApplySettings();
-            Settings.i.ChangeAudioDevicesSettings();
+            // audioDevicesService.SetInputDevice((int)newValue);
         }
     }
 }

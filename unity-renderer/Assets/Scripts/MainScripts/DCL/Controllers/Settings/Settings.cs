@@ -94,9 +94,6 @@ namespace DCL.SettingsCommon
             WebInterface.ApplySettings(calculatedVolume, (int)generalSettings.Data.voiceChatAllow);
         }
 
-        public void ChangeAudioDevicesSettings() =>
-            WebInterface.ChangeAudioDevice(audioSettings.Data.outputDevice, audioSettings.Data.inputDevice);
-
         public void ApplyAvatarSFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("AvatarSFXBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.avatarSFXVolume.Get() * audioSettings.Data.avatarSFXVolume)); }
 
         public void ApplyUISFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("UIBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * audioSettings.Data.uiSFXVolume)); }

@@ -39,9 +39,9 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue)
         {
             currentAudioSettings.outputDevice = (int)newValue;
-
             ApplySettings();
-            Settings.i.ChangeAudioDevicesSettings();
+
+            audioDevicesService.SetOutputDevice(currentAudioSettings.outputDevice);
         }
     }
 }

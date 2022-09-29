@@ -7,6 +7,10 @@ namespace DCL.Services
 
         string[] InputDevices { get ;  }
         string[] OutputDevices { get ;  }
+        bool HasRecievedKernelMessage { get ;  }
         public event Action AduioDeviceCached;
+
+        void SetOutputDevice(int outputDeviceId);
+        void SetInputDevice(int inputDeviceId);
     }
 }
