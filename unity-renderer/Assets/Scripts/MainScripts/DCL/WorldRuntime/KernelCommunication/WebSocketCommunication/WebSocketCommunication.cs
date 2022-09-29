@@ -174,6 +174,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateTotalUnseenMessagesByChannel"] = "Main";
         messageTypeToBridgeName["UpdateChannelMembers"] = "Main";
         messageTypeToBridgeName["UpdateHomeScene"] = "Main";
+        messageTypeToBridgeName["UpdateChannelSearchResults"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
