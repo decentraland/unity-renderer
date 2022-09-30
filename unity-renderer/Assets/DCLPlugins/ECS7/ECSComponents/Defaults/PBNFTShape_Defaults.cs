@@ -2,19 +2,21 @@
 {
     public static class PBNFTShape_Defaults
     {
-        public static bool GetWithCollisions(this PBNFTShape self)
+        private static readonly Color3 defaultColor = new Color3()
         {
-            return !self.HasWithCollisions || self.WithCollisions;
+            R = 0.6404918f,
+            G = 0.611472f,
+            B = 0.8584906f
+        };
+
+        public static PBNFTShape.Types.PictureFrameStyle GetStyle(this PBNFTShape self)
+        {
+            return self.HasStyle ? self.Style : PBNFTShape.Types.PictureFrameStyle.Classic;
         }
-        
-        public static bool GetIsPointerBlocker(this PBNFTShape self)
+
+        public static Color3 GetColor(this PBNFTShape self)
         {
-            return !self.HasIsPointerBlocker || self.IsPointerBlocker;
-        }
-        
-        public static bool GetVisible(this PBNFTShape self)
-        {
-            return !self.HasVisible || self.Visible;
+            return self.Color ?? defaultColor;
         }
     }
 }

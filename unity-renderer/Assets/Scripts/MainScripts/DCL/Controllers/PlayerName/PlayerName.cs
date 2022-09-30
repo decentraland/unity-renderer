@@ -24,6 +24,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] internal Image background;
     [SerializeField] internal Transform pivot;
     [SerializeField] internal Animator talkingAnimator;
+    
+    [SerializeField] internal List<CanvasRenderer> canvasRenderers;
 
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
@@ -58,6 +60,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private void Update() { Update(Time.deltaTime); }
 
+    private void SetRenderersVisible(bool value)
+    {
+        canvasRenderers.ForEach(c => c.SetAlpha(value ? 1f : 0f));
+    }
+
     internal void Update(float deltaTime)
     {
         if (hideConstraints.Count > 0)
@@ -74,7 +81,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         {
             UpdateVisuals(0);
             // We are hidden and we dont have to scale, look at camera or anything, we can disable the gameObject
-            gameObject.SetActive(false);
+            SetRenderersVisible(false);
             return;
         }
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
@@ -107,7 +114,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     public void Show(bool instant = false)
     {
         targetAlpha = TARGET_ALPHA_SHOW;
-        gameObject.SetActive(true);
+        SetRenderersVisible(true);
         if (instant)
             alpha = TARGET_ALPHA_SHOW;
     }
@@ -118,7 +125,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         if (instant && !forceShow)
         {
             alpha = TARGET_ALPHA_HIDE;
-            gameObject.SetActive(false);
+            SetRenderersVisible(false);
         }
     }
 
@@ -134,7 +141,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         this.forceShow = forceShow;
         if (this.forceShow)
-            gameObject.SetActive(true);
+            SetRenderersVisible(true);
     }
 
     public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
@@ -162,7 +169,10 @@ public class PlayerName : MonoBehaviour, IPlayerName
         return alphaValue * Mathf.Lerp(1, 0, (distanceToCamera - MIN_DISTANCE) / (DataStore.i.avatarsLOD.LODDistance.Get() - MIN_DISTANCE));
     }
 
-    internal void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
+    internal void UpdateVisuals(float resolvedAlpha)
+    {
+        canvasGroup.alpha = resolvedAlpha;
+    }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
 
