@@ -25,7 +25,7 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNHbHRmQ29udGFpbmVyLnByb3RvEhBkZWNlbnRyYWxhbmQuZWNzIh4KD1BC",
-            "R2x0ZkNvbnRhaW5lchILCgNzcmMYBCABKAlCFKoCEURDTC5FQ1NDb21wb25l",
+            "R2x0ZkNvbnRhaW5lchILCgNzcmMYASABKAlCFKoCEURDTC5FQ1NDb21wb25l",
             "bnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -82,7 +82,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "src" field.</summary>
-    public const int SrcFieldNumber = 4;
+    public const int SrcFieldNumber = 1;
     private string src_ = "";
     /// <summary>
     /// which file to load
@@ -139,7 +139,7 @@ namespace DCL.ECSComponents {
       output.WriteRawMessage(this);
     #else
       if (Src.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(10);
         output.WriteString(Src);
       }
       if (_unknownFields != null) {
@@ -153,7 +153,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Src.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(10);
         output.WriteString(Src);
       }
       if (_unknownFields != null) {
@@ -199,7 +199,7 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 34: {
+          case 10: {
             Src = input.ReadString();
             break;
           }
@@ -218,7 +218,7 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 34: {
+          case 10: {
             Src = input.ReadString();
             break;
           }
