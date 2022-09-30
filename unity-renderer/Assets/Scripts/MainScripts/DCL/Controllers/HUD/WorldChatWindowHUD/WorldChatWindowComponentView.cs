@@ -347,7 +347,7 @@ namespace DCL.Chat.HUD
         {
             optionsChannelId = entry.Model.channelId;
             entry.Dock(channelContextualMenu);
-            channelContextualMenu.SetHeaderTitle($"#{optionsChannelId.ToLower()}");
+            channelContextualMenu.SetHeaderTitle($"#{entry.Model.name.ToLower()}");
             channelContextualMenu.Show();
         }
 
