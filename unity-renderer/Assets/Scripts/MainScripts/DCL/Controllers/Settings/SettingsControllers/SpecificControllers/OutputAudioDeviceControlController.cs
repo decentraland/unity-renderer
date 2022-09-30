@@ -38,6 +38,9 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
         public override void UpdateSetting(object newValue)
         {
+            if (currentAudioSettings.outputDevice == (int)newValue)
+                return;
+
             currentAudioSettings.outputDevice = (int)newValue;
             ApplySettings();
 

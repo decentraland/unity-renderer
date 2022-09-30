@@ -21,7 +21,7 @@ namespace DCL.Services
         }
 
         [PublicAPI]
-        public void AddAudioDevices(string payload)
+        public void SetAudioDevices(string payload)
         {
             AudioDevicesResponse response = null;
 
