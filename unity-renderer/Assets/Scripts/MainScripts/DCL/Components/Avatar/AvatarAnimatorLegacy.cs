@@ -505,6 +505,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animEventHandler = animationEventHandler;
     }
 
+    private void OnEnable()
+    {
+        animation.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        animation.Stop();
+        animation.enabled = false;
+    }
+
     private void OnDestroy()
     {
         if (animEventHandler != null)
