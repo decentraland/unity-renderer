@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -10,67 +11,62 @@ using Environment = DCL.Environment;
 public class TeleportController : ITeleportController
 {
 
-    private bool teleportInvoked;
-    private Action unloadSceneMessages;
 
     public void Teleport(int x, int y)
     {
-        teleportInvoked = true;
-        WebInterface.GoTo(x,y);
-        CoroutineStarter.Start(WaitForLoadingHUDVisible());
+        CoroutineStarter.Start(WaitForLoadingHUDVisible(() => WebInterface.GoTo(x, y)));
     }
+
     public void JumpIn(int coordsX, int coordsY, string serverName, string layerName)
     {
-        teleportInvoked = true;
-        WebInterface.JumpIn(coordsX,coordsY,serverName,layerName);
-        CoroutineStarter.Start(WaitForLoadingHUDVisible());
+        CoroutineStarter.Start(WaitForLoadingHUDVisible(() => WebInterface.JumpIn(coordsX, coordsY, serverName, layerName)));
     }
+
     public void GoToCrowd()
     {
-        teleportInvoked = true;
-        WebInterface.GoToCrowd();
-        CoroutineStarter.Start(WaitForLoadingHUDVisible());
+        CoroutineStarter.Start(WaitForLoadingHUDVisible(WebInterface.GoToCrowd));
     }
+
     public void GoToMagic()
     {
-        teleportInvoked = true;
-        WebInterface.GoToMagic();
-        CoroutineStarter.Start(WaitForLoadingHUDVisible());
-    }
-    public void QueueSceneToUnload(string sceneId)
-    {
-        if (teleportInvoked)
-        {
-            unloadSceneMessages += () => Environment.i.world.sceneController.UnloadScene(sceneId);
-        }
-        else
-        {
-            Environment.i.world.sceneController.UnloadScene(sceneId);
-        }
+        CoroutineStarter.Start(WaitForLoadingHUDVisible(WebInterface.GoToMagic));
     }
 
-    private void TeleportHUDVisible()
+    public void SetLoadingPayload(string jsonMessage)
     {
-        unloadSceneMessages?.Invoke();
-        unloadSceneMessages = null;
-        if(DataStore.i.HUDs.navmapVisible.Get())
-            DataStore.i.HUDs.navmapVisible.Set(false);
+        Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
+
+        if (payload.isVisible && !DataStore.i.HUDs.loadingHUD.visible.Get())
+            DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
+
+        if (!payload.isVisible && DataStore.i.HUDs.loadingHUD.visible.Get() && payload.message.Contains("Loading"))
+            DataStore.i.HUDs.loadingHUD.fadeOut.Set(true);
+
+        if (!string.IsNullOrEmpty(payload.message))
+            DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
+
+        DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
     }
 
-    IEnumerator WaitForLoadingHUDVisible()
+    IEnumerator WaitForLoadingHUDVisible(Action teleportToRun)
     {
+        DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
         while (!DataStore.i.HUDs.loadingHUD.visible.Get())
         {
             yield return null;
         }
-        TeleportHUDVisible();
+        teleportToRun?.Invoke();
     }
 
-    public void Dispose()
-    {
-        
-    }
-    public void Initialize()
-    {
-    }
+    public void Dispose() { }
+    public void Initialize() { }
+    
+}
+
+[Serializable]
+public class Payload
+{
+    public bool isVisible = false;
+    public string message = "";
+    public bool showTips = false;
 }
