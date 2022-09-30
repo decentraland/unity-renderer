@@ -1,20 +1,14 @@
 # Coding Guidelines
 
-Maintaining a common code style will boost our productivity by reducing the amount of noise in Code Reviews and allowing new members to on-board faster.
-When working with the Unity Project these guidelines (to be documented) must be followed and to ease the process we have a pre-commit hook to deal with it automatically.
-The repo `https://github.com/decentraland/reshaper-pre-commit-hook` contains both the installing bash script and the pre-commit hook itself.
+Maintaining a common code style will boost our productivity by reducing the amount of noise in Code Reviews, improving code navigation and allowing new members to on-board faster.
 
-To install it go to the root of your explorer repository and run the following command on it:
-`curl -s https://raw.githubusercontent.com/decentraland/reshaper-pre-commit-hook/master/install-git-hook.sh | bash`
+When working with the Unity Project these guidelines must be followed.
 
 ### Notes 
 
-* For all our style needs we are using an [`.editorconfig`](https://editorconfig.org/) file. 
-
+* For all our style needs we are using an [`.editorconfig`](https://editorconfig.org/) file.
 * It's recommended to use a `Format On Save` extension on your IDE of choice so we avoid styling feedback noise on pull requests.
-
 * We don't use the `.resharper` extensions for `.editorconfig`. So if you use `resharper` plugin or `rider` you must set the `resharper` specific style settings to match those of `VS Code` and `VS Community`.
-
 
 ### Rider
 You can find a settings export file in the root of the project called "rider_codeStyleDCLSetting". Bear in mind that the conversion between VS and Rider is not 1 on 1 but it's good enough.
@@ -23,27 +17,35 @@ You can find a settings export file in the root of the project called "rider_cod
 [Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary, highlights and specifics related to Unity, which we suggest to follow.
 ### Naming conventions
 Use
-* `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, Property and public Field;
-* `camelCase` - Field, local Variable, methods Parameter;
+* `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
+* `camelCase` - non-public Property, non-public Field, methods Parameter, local Variable;
 * `CAPITALS_SNAKE_CASE` - Constants;
 * `I` prefix in front of Interface name;
+* Events name is in past tens and without `On` prefix
+
 ```csharp
 namespace MyProject                                     // Namespace -> PascalCase
 {
+    public delegate void Interaction<T> (T current);    // Delegate declaration -> PascalCase
     public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
-    public delegate void Change<T> (T current);         // Delegate declaration -> PascalCase
     public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
     
     public class MyClass : IInitializable               // Class/Struct -> PascalCase.
     {
-        public const string ASSET_PATH = "AvatarUI";    // Constant -> CAPITALS_SNAKE_CASE 
+        public const string ASSET_PATH = "AvatarUI";    // Constant -> CAPITALS_SNAKE_CASE
+ 
         public int PublicField;                         // public Field -> PascalCase
         private bool isVisible;                         // Field -> camelCase
-        public bool IsInitialized {get; set;}           // Property -> PascalCase
+
+        public bool IsInitialized {get; set;}           // public Property -> PascalCase
+        private bool isVisitble {set;}                  // non-public Property -> camelCase
+
+        public event Interaction<bool> Interacted;      // event -> PascalCase, without On prefix
         
         public void Play(float speed)                   // Method -> PascalCase. Method parameters -> camelCase
         {
             var animationClip;                          // local variable -> camelCase
+            Interacted += OnInteracted;                 // for event subscribers 'On' prefix can be used
         };              
     }
 }
@@ -51,6 +53,7 @@ namespace MyProject                                     // Namespace -> PascalCa
 Suggestions:
 * `Interface` - try to name it with adjective phrases (`IDamageable`). If it is difficult, then use descriptive noun (`IBaseVariable`) or noun phrase (`IAssetProvider`).
 * `Class`/`Struct` -  name with nouns (`Health`) or noun phrases (`InputService`).
+* `Delegate type` - try to use nouns or noun phrases (as example, see .NET built-in events like `Action`/`Function`/`Predicate`)  
 
 ### Ordering conventions
 * `using` go first and placed alphabetically
