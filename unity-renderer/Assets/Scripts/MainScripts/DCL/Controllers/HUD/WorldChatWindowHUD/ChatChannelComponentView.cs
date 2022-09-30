@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -181,7 +181,7 @@ namespace DCL.Chat.HUD
 
         private void ShowOptionsMenu()
         {
-            contextualMenu.SetHeaderTitle($"#{model.channelId}");
+            contextualMenu.SetHeaderTitle($"#{model.name}");
             contextualMenu.Show();
         }
 
