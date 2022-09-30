@@ -190,7 +190,10 @@ namespace DCL.Components
                             var metallicValue = mat.GetFloat("_Metallic");
                             UnityEngine.Debug.LogError($"For {mat.name} metallic = {metallicValue}");
                         }
+                        
                         mat.SetFloat("_Metallic", 0f);
+                        mat.SetFloat("_SpecularHighlights", 0f);
+                        mat.SetFloat("_EnvironmentReflections", 0f);
                         //
                     }
 
