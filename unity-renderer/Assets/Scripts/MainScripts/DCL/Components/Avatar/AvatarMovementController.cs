@@ -23,6 +23,7 @@ namespace DCL
 
         private float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
+        private bool avatarTransformAvailable = false;
 
 
         private Transform AvatarTransform
@@ -32,7 +33,7 @@ namespace DCL
                 if (avatarTransformValue == null)
                 {
                     avatarTransformValue = GetComponent<AvatarShape>().entity.gameObject.transform;
-                    enabled = true;
+                    avatarTransformAvailable = true;
                 }
 
                 return avatarTransformValue;
@@ -42,7 +43,7 @@ namespace DCL
                 avatarTransformValue = value;
 
                 if (value == null)
-                    enabled = false;
+                    avatarTransformAvailable = false;
             }
         }
 
@@ -173,6 +174,9 @@ namespace DCL
 
         private void Update()
         {
+            if (!avatarTransformAvailable)
+                return;
+
             movementLerpWaitCounter += Time.deltaTime;
             if (movementLerpWaitCounter >= movementLerpWait)
             {
