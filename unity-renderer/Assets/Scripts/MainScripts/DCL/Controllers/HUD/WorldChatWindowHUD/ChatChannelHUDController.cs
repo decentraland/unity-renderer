@@ -193,7 +193,7 @@ namespace DCL.Chat.HUD
 
         private void HandleSendChatMessage(ChatMessage message)
         {
-            message.messageType = ChatMessage.Type.PRIVATE;
+            message.messageType = ChatMessage.Type.PUBLIC;
             message.recipient = channelId;
 
             var isValidMessage = !string.IsNullOrEmpty(message.body)
