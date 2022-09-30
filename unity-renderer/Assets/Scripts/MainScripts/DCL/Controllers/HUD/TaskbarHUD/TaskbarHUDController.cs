@@ -250,7 +250,7 @@ public class TaskbarHUDController : IHUD
     {
         if (mouseCatcher.isLocked) return;
 
-        if ((publicChatWindow.View.IsActive) ||
+        if (publicChatWindow.View.IsActive ||
             channelChatWindow.View.IsActive ||
             privateChatWindow.View.IsActive)
         {

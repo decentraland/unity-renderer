@@ -87,8 +87,6 @@ public class PrivateChatWindowController : IHUD
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
-        chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
-        chatHudController.OnInputFieldDeselected += HandleInputFieldDeselected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
 
         chatController.OnAddMessage -= HandleMessageReceived;
@@ -162,7 +160,6 @@ public class PrivateChatWindowController : IHUD
         if (chatHudController != null)
         {
             chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
-            chatHudController.OnInputFieldDeselected -= HandleInputFieldDeselected;
         }
 
         if (chatController != null)
@@ -205,6 +202,7 @@ public class PrivateChatWindowController : IHUD
         else
         {
             SetVisibility(false);
+            OnClosed?.Invoke();
             return;
         }
 
@@ -279,12 +277,6 @@ public class PrivateChatWindowController : IHUD
         Show();
         // The messages from 'conversationUserId' are marked as read if the player clicks on the input field of the private chat
         //MarkUserChatMessagesAsRead();
-    }
-
-    private void HandleInputFieldDeselected()
-    {
-        if (View.IsFocused)
-            return;
     }
 
     private void HandleViewFocused(bool focused)

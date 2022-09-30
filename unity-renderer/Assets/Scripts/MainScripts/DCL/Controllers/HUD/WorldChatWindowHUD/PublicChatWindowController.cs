@@ -121,6 +121,7 @@ public class PublicChatWindowController : IHUD
         }
         else
         {
+            HandleViewClosed();
             SetVisibility(false);
             return;
         }
