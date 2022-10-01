@@ -4,7 +4,7 @@ Maintaining a common code style will boost our productivity by reducing the amou
 
 When working with the Unity Project these guidelines must be followed.
 
-### Notes 
+### Notes
 
 * For all our style needs we are using an [`.editorconfig`](https://editorconfig.org/) file.
 * It's recommended to use a `Format On Save` extension on your IDE of choice so we avoid styling feedback noise on pull requests.
@@ -15,7 +15,7 @@ You can find a settings export file in the root of the project called "rider_cod
 
 # Code conventions
 [Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary, highlights and specifics related to Unity, which we suggest to follow.
-### Naming conventions
+## Naming conventions
 Use
 * `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
 * `camelCase` - non-public Property, non-public Field, methods Parameter, local Variable;
@@ -26,9 +26,9 @@ Use
 ```csharp
 namespace MyProject                                     // Namespace -> PascalCase
 {
-    public delegate void Interaction<T> (T current);    // Delegate declaration -> PascalCase
-    public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
     public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
+    public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
+    public delegate void Interaction<T> (T current);    // Delegate declaration -> PascalCase
     
     public class MyClass : IInitializable               // Class/Struct -> PascalCase.
     {
@@ -50,66 +50,91 @@ namespace MyProject                                     // Namespace -> PascalCa
     }
 }
 ```
-Suggestions:
+
+### Suggestions:
 * `Interface` - try to name it with adjective phrases (`IDamageable`). If it is difficult, then use descriptive noun (`IBaseVariable`) or noun phrase (`IAssetProvider`).
 * `Class`/`Struct` -  name with nouns (`Health`) or noun phrases (`InputService`).
-* `Delegate type` - try to use nouns or noun phrases (as example, see .NET built-in events like `Action`/`Function`/`Predicate`)  
+* `Delegate type` - try to use nouns or noun phrases (take example from .NET built-in delegate types - `Action`/`Function`/`Predicate`)  
 
-### Ordering conventions
+## Ordering conventions
 * `using` go first and placed alphabetically
 * Class members grouped and appears in the following order
+### Groups order:
   * Enums, delegates declarations
+  * Events (and UnityEvents)
   * Fields
   * Properties
-  * Events
   * Methods
   * Nested classes
-* Order inside group:
+### Order inside group:
   * `public`
   * `internal`
   * `protected internal`
   * `protected`
   * `private`
-* Fields specifics
-  * Const, static and readonly goes first
-  * Public `[HideInInspector]` and `[NonSerialized]` attribute goes after `public`
-  * `[SerializedFields]` attribute fields goes after all `public`
-* Properties specifics
-  * static and readonly goes first
-  * Property with public `set` and private `get` goes before get-only Property or Property with private `set` and public `get` (considered to be more exposed)
+  * methods has additional rule for ordering
+### Fields specifics
+  * Const, static and readonly goes first (in the mentioned order)
+  * `public` fields with `[HideInInspector]` and `[NonSerialized]` attribute goes after `public`'s
+  * `[SerializedFields]` attribute fields goes after all `public` fields (before `internal`-`private`-`protected`)
 ```csharp
-public const string ASSET_PATH = "AvatarPrefab";                            // Constants group 
+public const string ASSET_PATH = "AvatarPrefab";                            // Constants  
 internal const float MIN_TIME = 0.1f;
-private const float MAX_TIMER = 10f;
 
-public static readonly int WaveAnimHash = Animator.StringToHash("Wave");    // Static Read-only group
+public static readonly int WaveAnimHash = Animator.StringToHash("Wave");    // Static Read-only 
 private static readonly int danceAnimHash = Animator.StringToHash("Dance");
 
-internal static bool isOpen;                                                // Static group
-protected static bool isAvtive;                                             
+public static bool IsOpen;                                                  // Static 
+internal static bool isAvtive;                                             
 
-public readonly List<int> CachedNumbers = new List<int>();                  // Read-only group
-private readonly List<Section> Sections = new List<Section>();
+public readonly List<int> CachedNumbers = new List<int>();                  // Read-only 
+protected readonly List<Section> sections = new List<Section>();
 
-public int PublicFieldA;                                                    // Public Fields group
-
+public int PublicFieldA;                                                    // Public  
 [HideInInspector] public int SomeField02;
 [NonSerialized] public int SomeField03;
 
-[SerializedField] internal Animator animator;                               // [SerializedField]'s group
-[SerializedField] private AnimatorClip[] clips[];  
+[SerializedField] internal Animator animator;                               // [SerializedField]'s 
+[SerializedField] private AnimationClip[] clips;  
 
-protected float cooldown;                                                   // internal-protected-private Fields group  
+protected float cooldown;                                                   // internal-protected-private's
 private bool isVisible;                         
-                       
-public bool Property1 { get; set; }                                        // Properties groups  
+```
+### Properties specifics
+  * static and readonly goes first (in the mentioned order)
+  * Property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get` (considered to be more exposed). Same applies for `public` to `internal`, `internal` to `protected` and other relations between `get`-`set` access modifiers
+```csharp
+public bool Property1 { get; set; }                                        // get-set order
 public bool Property2 { private get; set; }
-public bool Property3 { get; }
-public bool Property4 { get; private set; }
+public bool Property3 { get; private set; }
+public bool Property4 { get; }
 
 protected bool Property5 { get; set; }
 private bool Property6 { get; set; }
-
-public event Action Started;                                               // Events group  
-public event Func<float> Completed;
 ```
+### **Methods specifics**
+  * Helper and supplementary methods which called from another method should be placed after method that calls it.
+```csharp
+// Note: indentaion for helper methods is used only for clarity. It is not a part of our formating style 
+public void Test1()                   // called by other class
+{
+    Test1Helper1();
+    Test1Helper2();
+}
+
+  private void Test1Helper1() => A();  // called by Test1() 
+    internal void A() { }              // called by Test1Helper1()
+  private void Test1Helper2() => B();  // called by Test1()
+    public void B() { }                // called by Test1Helper2()
+
+private void Awake() { }               // called by Unity
+```
+  * Not-helper methods should follow the order:
+    * constuctor
+    * destructor 
+    * `public`  
+    * Unity-callbacks 
+      * `Awake`, `Start`, `OnEnable`, `OnDisable`, `OnDestroy`,
+      * other callbacks (with respect to `Enter`-`Stay`-`Exit` order)
+    * `internal`
+    * `protected`
