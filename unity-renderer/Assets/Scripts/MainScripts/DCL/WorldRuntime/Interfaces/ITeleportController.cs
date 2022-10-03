@@ -6,5 +6,4 @@ public interface ITeleportController : IService
     void JumpIn(int coordsX, int coordsY, string serverName, string layerName);
     void GoToCrowd();
     void GoToMagic();
-    void SetLoadingPayload(string jsonMessage);
 }
