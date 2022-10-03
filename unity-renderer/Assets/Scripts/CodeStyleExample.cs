@@ -24,7 +24,10 @@ namespace UIComponents.Scripts.Components.SectionSelector
     [RequireComponent(typeof(Animation))]
     public class CodeStyleExample : MonoBehaviour, IInitializable
     {
-
+        //----------------------------------------------------------------------------------------  Enum, delegates declaration group (protected/private) 
+        private enum Direction { North, South, West, East }
+        private delegate void Interaction<T> (T current);
+        
         //----------------------------------------------------------------------------------------  Const and static readonly Fields group
         public const string ASSET_PATH = "AvatarPrefab";
         private const float MAX_TIMER = 10f;
@@ -32,6 +35,14 @@ namespace UIComponents.Scripts.Components.SectionSelector
         public static readonly int WAVE_ANIM_HASH = Animator.StringToHash("Wave");
         private static readonly int DANCE_ANIM_HASH = Animator.StringToHash("Dance");
 
+        //----------------------------------------------------------------------------------------  Events and UnityEvents group
+        public event Destroction<CodeStyleExample> Destroyed;
+        [NonSerialized] public UnityEvent<bool> Closed; // use [NonSerialized] or [HideInInspector] for UnityEvents
+
+        //----------------------------------------------------------------------------------------  Fields group (other than Const and Static readonly)  
+        public readonly List<int> CachedNumbers = new List<int>();
+        protected readonly List<Vector2> poistions = new List<Vector2>();
+        
         public int Timer;
 
         [SerializeField] private AnimationClip[] clips;
@@ -39,55 +50,20 @@ namespace UIComponents.Scripts.Components.SectionSelector
         [SerializeField] private float health;
         [SerializeField] private bool isVisitble;
 
-        //----------------------------------------------------------------------------------------  Fields group (other than Const and Static readonly)  
-        public readonly List<int> CachedNumbers = new List<int>();
-        protected readonly List<Vector2> poistions = new List<Vector2>();
-
-        private Animation animation;
-        [NonSerialized] public UnityEvent<bool> Closed; // use [NonSerialized] or [HideInInspector] for UnityEvents
-
         protected float cooldown;
+        
+        private Animation animation;
         private Interaction<int> interactionsBuffer;
-
-        [PublicAPI]
-        public bool IsVisitble => isVisitble; // [PublicAPI] Public - used only from outside of Unity solution (by other solution)
-
-        //----------------------------------------------------------------------------------------  Unity callbacks methods group
-        private void Awake() // is used for getting references
-        {
-            animation = GetComponent<Animation>();
-        }
-
-        private void Start() // is used for initialization logic
-        {
-            foreach (AnimationClip clip in clips)
-                animation.AddClip(clip, clip.name);
-        }
-
-        private void OnEnable() // is used for events subscription
-        {
-            Closed.AddListener(OnClosed);
-        }
-
-        private void OnDisable() // is used for events unsubscription
-        {
-            Closed.RemoveListener(OnClosed);
-        }
-
-        private void OnDestroy() // is used for any needed clean-up
-        {
-            Destroyed?.Invoke(this);
-        }
 
         //----------------------------------------------------------------------------------------  Properties group
         public bool IsInitialized { get; private set; }
 
+        [PublicAPI]
+        public bool IsVisitble => isVisitble; // [PublicAPI] Public - used only from outside of Unity solution (by other solution)
+
         //----------------------------------------------------------------------------------------  Public methods group
         public void Initialize() =>
             IsInitialized = true;
-
-        //----------------------------------------------------------------------------------------  Events and UnityEvents group
-        public event Destroction<CodeStyleExample> Destroyed;
 
         public void ApplyDamage(float damage) // Public - called from outside of the class (by other class)
         {
@@ -108,19 +84,42 @@ namespace UIComponents.Scripts.Components.SectionSelector
         private void SetVisibility(bool visible) => // Called by Hide
             isVisitble = visible;
 
+        //----------------------------------------------------------------------------------------  Unity callbacks methods group
+        private void Awake() // is used for getting references
+        {
+            animation = GetComponent<Animation>();
+        }
+
+        private void Start() // is used for initialization logic
+        {
+            foreach (AnimationClip clip in clips)
+                animation.AddClip(clip, clip.name);
+        }
+
+        private void OnEnable() // is used for events subscription
+        {
+            Closed.AddListener(OnClosed);
+        }
+
         private void OnClosed(bool _) => // use _, __, ___ for parameters name if required parameters are not used inside 
             cooldown = MAX_TIMER;
 
+        private void OnDisable() // is used for events unsubscription
+        {
+            Closed.RemoveListener(OnClosed);
+        }
+
+        private void OnDestroy() // is used for any needed clean-up
+        {
+            Destroyed?.Invoke(this);
+        }
+        
         //----------------------------------------------------------------------------------------  internal-protected-private methods group
         // methods that weren't called inside methods above 👆   
         internal void Method1() { }
         protected void Method2() { }
         private void Method3() { }
-
-        //----------------------------------------------------------------------------------------  Enum, delegates declaration group (protected/private) 
-        private enum Direction { North, South, West, East }
-        private delegate void Interaction<T> (T current);
-
+        
         //----------------------------------------------------------------------------------------  Nested classes/struct group
         private struct Data
         {
