@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using DCL;
+using DCL.Interface;
 using UnityEngine;
 
 public class LoadingBridge : MonoBehaviour
@@ -10,6 +12,14 @@ public class LoadingBridge : MonoBehaviour
         public bool isVisible = false;
         public string message = "";
         public bool showTips = false;
+    }
+
+    [Serializable]
+    public class PayloadCoords
+    {
+        public int xCoord;
+        public int yCoord;
+        public string message;
     }
 
     public void SetLoadingScreen(string jsonMessage)
@@ -25,5 +35,30 @@ public class LoadingBridge : MonoBehaviour
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
+    }
+    
+    public void FadeInLoadingHUD(string jsonMessage)
+    {
+        StartCoroutine(WaitForLoadingHUDVisible(jsonMessage));
+    }
+    
+    IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
+    {
+        PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
+        DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
+        WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
+        if (!string.IsNullOrEmpty(payload.message))
+        {
+            DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
+        }
+        else
+        {
+            DataStore.i.HUDs.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
+        }
+        while (!DataStore.i.HUDs.loadingHUD.visible.Get())
+        {
+            yield return null;
+        }
+        WebInterface.CompleteTeleport(payload.xCoord, payload.yCoord);
     }
 }
