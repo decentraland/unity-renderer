@@ -68,7 +68,8 @@ namespace MyProject                                     // Namespace -> PascalCa
   * Methods
   * Nested classes
 ### Order inside group:
-  * `public`
+  * `public` 
+  * `public` with `[PublicApi]` and `[UsedImplicitly]` attributes
   * `internal`
   * `protected internal`
   * `protected`
@@ -103,6 +104,7 @@ private bool isVisible;
 ```
 ### Properties specifics
   * static and readonly goes first (similar as for fields, see example above 👆)
+  * `get`-only and `set`-only properties goes last.
   * Access modifiers for `set` considered to have higher priority than `get` (considered to be more exposed). 
     * For example, property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get`
     
@@ -135,7 +137,8 @@ private void Awake() { }               // called by Unity
   * Not-helper methods should follow the order (where its helper methods follows previous rule and allowed to be placed in between of this order):
     * constuctor
     * destructor 
-    * `public`  
+    * `public`
+    * `public` with `[PublicApi]` and `[UsedImplicitly]` attributes
     * Unity-callbacks 
       * `Awake`, `Start`, `OnEnable`, `OnDisable`, `OnDestroy`,
       * other callbacks (with respect to `Enter`-`Stay`-`Exit` order)
