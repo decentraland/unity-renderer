@@ -55,6 +55,7 @@ public class LoadingBridge : MonoBehaviour
         {
             DataStore.i.HUDs.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
         }
+        DataStore.i.HUDs.loadingHUD.percentage.Set(0);
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
 
         while (!DataStore.i.HUDs.loadingHUD.visible.Get())
