@@ -26,9 +26,9 @@ Use
 ```csharp
 namespace MyProject                                     // Namespace -> PascalCase
 {
-    public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
     public enum Side { Left, Right }                    // Enumeration and Enumerators -> PascalCase 
     public delegate void Interaction<T> (T current);    // Delegate declaration -> PascalCase
+    public interface IInitializable { }                 // Interface -> PascalCase, starts with 'I'
     
     public class MyClass : IInitializable               // Class/Struct -> PascalCase.
     {
@@ -37,16 +37,16 @@ namespace MyProject                                     // Namespace -> PascalCa
         public int PublicField;                         // public Field -> PascalCase
         private bool isVisible;                         // Field -> camelCase
 
-        public bool IsInitialized {get; set;}           // public Property -> PascalCase
-        private bool isVisitble {set;}                  // non-public Property -> camelCase
+        public bool IsInitialized { get; set; }           // public Property -> PascalCase
+        private bool isVisitble { get; }                  // non-public Property -> camelCase
 
         public event Interaction<bool> Interacted;      // event -> PascalCase, without On prefix
         
         public void Play(float speed)                   // Method -> PascalCase. Method parameters -> camelCase
         {
-            var animationClip;                          // local variable -> camelCase
+            AnimationClip animationClip;                // local variable -> camelCase
             Interacted += OnInteracted;                 // for event subscribers 'On' prefix can be used
-        };              
+        }              
     }
 }
 ```
@@ -61,8 +61,9 @@ namespace MyProject                                     // Namespace -> PascalCa
 * Class members grouped and appears in the following order
 ### Groups order:
   * Enums, delegates declarations
-  * Events (and UnityEvents)
-  * Fields
+  * `const` and `static readonly` Fields
+  * Events (and `UnityEvent`'s)
+  * Fields (other `const` and `static readonly`)
   * Properties
   * Methods
   * Nested classes
@@ -74,35 +75,37 @@ namespace MyProject                                     // Namespace -> PascalCa
   * `private`
   * methods has additional rule for ordering
 ### Fields specifics
-  * Const, static and readonly goes first (in the mentioned order)
+  * `Const`, `static` and `readonly` goes first (see example below 👇)
   * `public` fields with `[HideInInspector]` and `[NonSerialized]` attribute goes after `public`'s
-  * `[SerializedFields]` attribute fields goes after all `public` fields (before `internal`-`private`-`protected`)
+  * `[SerializedFields]` attribute fields goes after all `public` fields and before `internal`-`private`-`protected`)
 ```csharp
-public const string ASSET_PATH = "AvatarPrefab";                            // Constants  
+public const string ASSET_PATH = "AvatarPrefab";                              // Constants  
 internal const float MIN_TIME = 0.1f;
 
-public static readonly int WaveAnimHash = Animator.StringToHash("Wave");    // Static Read-only 
-private static readonly int danceAnimHash = Animator.StringToHash("Dance");
+public static readonly int WAVE_ANIM_HASH = Animator.StringToHash("Wave");    // Static Read-only 
+private static readonly int DANCE_ANIM_HASH = Animator.StringToHash("Dance");
 
-public static bool IsOpen;                                                  // Static 
+public static bool IsOpen;                                                    // Static 
 internal static bool isAvtive;                                             
 
-public readonly List<int> CachedNumbers = new List<int>();                  // Read-only 
+public readonly List<int> CachedNumbers = new List<int>();                    // Read-only 
 protected readonly List<Section> sections = new List<Section>();
 
-public int PublicFieldA;                                                    // Public  
+public int PublicFieldA;                                                      // Public  
 [HideInInspector] public int SomeField02;
 [NonSerialized] public int SomeField03;
 
-[SerializedField] internal Animator animator;                               // [SerializedField]'s 
+[SerializedField] internal Animator animator;                                 // [SerializedField]'s 
 [SerializedField] private AnimationClip[] clips;  
 
-protected float cooldown;                                                   // internal-protected-private's
+protected float cooldown;                                                     // internal-protected-private's
 private bool isVisible;                         
 ```
 ### Properties specifics
-  * static and readonly goes first (in the mentioned order)
-  * Property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get` (considered to be more exposed). Same applies for `public` to `internal`, `internal` to `protected` and other relations between `get`-`set` access modifiers
+  * static and readonly goes first (similar as for fields, see example above 👆)
+  * Access modifiers for `set` considered to have higher priority than `get` (considered to be more exposed). 
+    * For example, property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get`
+    
 ```csharp
 public bool Property1 { get; set; }                                        // get-set order
 public bool Property2 { private get; set; }
@@ -113,7 +116,7 @@ protected bool Property5 { get; set; }
 private bool Property6 { get; set; }
 ```
 ### **Methods specifics**
-  * Helper and supplementary methods which called from another method should be placed after method that calls it.
+  * Helper and supplementary methods which called from another method should be placed after method that calls it (in most cases it is `private` functions).
 ```csharp
 // Note: indentaion for helper methods is used only for clarity. It is not a part of our formating style 
 public void Test1()                   // called by other class
@@ -129,7 +132,7 @@ public void Test1()                   // called by other class
 
 private void Awake() { }               // called by Unity
 ```
-  * Not-helper methods should follow the order:
+  * Not-helper methods should follow the order (where its helper methods follows previous rule and allowed to be placed in between of this order):
     * constuctor
     * destructor 
     * `public`  
@@ -138,3 +141,4 @@ private void Awake() { }               // called by Unity
       * other callbacks (with respect to `Enter`-`Stay`-`Exit` order)
     * `internal`
     * `protected`
+  * For more detailed example on the methods ordering rules see methods organization in `CodeStyleExample.cs` file
