@@ -20,7 +20,7 @@ namespace DCL.Tutorial
                 tutorialController.ShowTeacher3DModel(true);
                 tutorialController.SetTeacherPosition(teacherPositionRef.position);
                 if (tutorialController.configuration.teacher != null &&
-                    tutorialController.configuration.teacher.isHiddenByAnAnimation)
+                    tutorialController.configuration.teacher.IsHiddenByAnimation)
                     tutorialController.configuration.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
             }
             else
