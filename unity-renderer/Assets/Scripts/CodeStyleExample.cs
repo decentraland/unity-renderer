@@ -1,5 +1,5 @@
 ﻿// NOTE: following separation lines are used only for clarity and do not take part of our commenting code style!
-//------------------------------------------------------------------------------------------------  Usings group
+//----------------------------------------------------------------------------------------------------  Usings group
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using UnityEngine.Events;
 
 namespace UIComponents.Scripts.Components.SectionSelector
 {
-//------------------------------------------------------------------------------------------------  Enum, delegates, interfaces declaration group (public/internal) 
+    //------------------------------------------------------------------------------------------------  Enum, delegates, interfaces declaration group (public/internal) 
     public enum Side { Left, Right }
 
     public delegate void Destroction<T> (T current);
@@ -39,11 +39,12 @@ namespace UIComponents.Scripts.Components.SectionSelector
         [SerializeField] private float health;
         [SerializeField] private bool isVisitble;
 
-        //----------------------------------------------------------------------------------------  Fields group (other than Const and static readonly)  
+        //----------------------------------------------------------------------------------------  Fields group (other than Const and Static readonly)  
         public readonly List<int> CachedNumbers = new List<int>();
         protected readonly List<Vector2> poistions = new List<Vector2>();
+
         private Animation animation;
-        [NonSerialized] public UnityEvent<bool> Closed;
+        [NonSerialized] public UnityEvent<bool> Closed; // use [NonSerialized] or [HideInInspector] for UnityEvents
 
         protected float cooldown;
         private Interaction<int> interactionsBuffer;
@@ -72,7 +73,7 @@ namespace UIComponents.Scripts.Components.SectionSelector
         {
             Closed.RemoveListener(OnClosed);
         }
-        //----------------------------------------------------------------------------------------  Events and UnityEvents group 
+
         private void OnDestroy() // is used for any needed clean-up
         {
             Destroyed?.Invoke(this);
@@ -101,7 +102,7 @@ namespace UIComponents.Scripts.Components.SectionSelector
             health -= amount;
 
         [UsedImplicitly]
-        public void Hide() => // [UsedImplicitly] Public - for example, by Unity animation events
+        public void Hide() => // [UsedImplicitly] Public - called implicitly, for example, by Unity animation events or SendMessage
             SetVisibility(visible: true);
 
         private void SetVisibility(bool visible) => // Called by Hide
