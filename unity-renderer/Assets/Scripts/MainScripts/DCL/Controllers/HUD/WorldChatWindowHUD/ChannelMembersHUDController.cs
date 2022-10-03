@@ -132,7 +132,7 @@ namespace DCL.Chat.HUD
 
             foreach (ChannelMember member in channelMembers)
             {
-                UserProfile memberProfile = userProfileBridge.GetByName(member.userId);
+                UserProfile memberProfile = userProfileBridge.Get(member.userId);
 
                 if (memberProfile != null)
                 {
