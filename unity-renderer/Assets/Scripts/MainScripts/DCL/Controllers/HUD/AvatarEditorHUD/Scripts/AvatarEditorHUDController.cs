@@ -55,6 +55,7 @@ public class AvatarEditorHUDController : IHUD
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
     private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
+    private const int ownedWearableEmotesRequestRetryTime = 60;
     private bool ownedWearablesAlreadyLoaded = false;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
@@ -140,6 +141,8 @@ public class AvatarEditorHUDController : IHUD
         DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
+
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -174,17 +177,17 @@ public class AvatarEditorHUDController : IHUD
         LoadUserProfile(userProfile, false);
         QueryNftCollections(userProfile.userId);
     }
-
+    
     private void LoadOwnedWereables(UserProfile userProfile)
     {
-        // If there is more than 1 minute that we have checked the owned wearables, we try it again
-        // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
-             (ownedWearablesAlreadyLoaded ||
-              ownedWearablesRemainingRequests <= 0)) ||
-            string.IsNullOrEmpty(userProfile.userId))
+        //If there is no userID we dont fetch owned wearabales
+        if(string.IsNullOrEmpty(userProfile.userId))
             return;
-
+        
+        // If wearables are loaded, we are in wearable cooldown, we dont fetch again owned wearables
+        if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown())
+            return;
+        
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
@@ -228,7 +231,7 @@ public class AvatarEditorHUDController : IHUD
     private void LoadOwnedEmotes()
     {
         //Only check emotes once every 60 seconds
-        if (Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + 60)
+        if (IsEmotesUpdateInCooldown())
             return;
 
         lastTimeOwnedEmotesChecked = Time.realtimeSinceStartup;
@@ -317,7 +320,7 @@ public class AvatarEditorHUDController : IHUD
            .Catch((error) => Debug.LogError(error));
     }
 
-    public void RetryLoadOwnedWearables()
+    public void ReloadOwnedWearablesOnRefocus()
     {
         ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
         LoadOwnedWereables(userProfile);
@@ -839,6 +842,8 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteEquipped -= OnEmoteEquipped;
         emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
+        
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
 
         CleanUp();
     }
@@ -1127,4 +1132,25 @@ public class AvatarEditorHUDController : IHUD
     }
 
     internal virtual IEmotesCustomizationComponentController CreateEmotesController() => new EmotesCustomizationComponentController();
+
+    private bool IsWearableUpdateInCooldown()
+    {
+        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + ownedWearableEmotesRequestRetryTime;
+    }
+    
+    private bool IsEmotesUpdateInCooldown()
+    {
+        return Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + ownedWearableEmotesRequestRetryTime;
+    }
+    
+    private bool AreWearablesAlreadyLoaded()
+    {
+        return ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0;
+    }
+
+    private void OnApplicationFocus()
+    {
+        lastTimeOwnedWearablesChecked = -ownedWearableEmotesRequestRetryTime;
+        lastTimeOwnedEmotesChecked = -ownedWearableEmotesRequestRetryTime;
+    }
 }
