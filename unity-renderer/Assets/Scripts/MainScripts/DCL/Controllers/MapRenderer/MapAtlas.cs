@@ -17,7 +17,26 @@ namespace DCL
         public GameObject overlayLayerGameobject;
         [SerializeField] private Image mapRenderer;
 
-        private void Awake() { SetHighlightedScene(null); }
+        private void Awake()
+        {
+            SetHighlightedScene(null);
+
+            OnMapMainTextureChanged(DataStore.i.HUDs.mapMainTexture.Get(), null);
+            OnMapEstateTextureChanged(DataStore.i.HUDs.mapEstatesTexture.Get(), null);
+            DataStore.i.HUDs.mapMainTexture.OnChange += OnMapMainTextureChanged;
+            DataStore.i.HUDs.mapEstatesTexture.OnChange += OnMapEstateTextureChanged;
+
+        }
+
+        private void OnDestroy()
+        {
+            DataStore.i.HUDs.mapMainTexture.OnChange -= OnMapMainTextureChanged;
+            DataStore.i.HUDs.mapEstatesTexture.OnChange -= OnMapEstateTextureChanged;
+        }
+
+        private void OnMapMainTextureChanged(Texture current, Texture previous) { mapRenderer.material.SetTexture(MAIN_TEXTURE_ID, current); }
+
+        private void OnMapEstateTextureChanged(Texture current, Texture previous) { mapRenderer.material.SetTexture(ESTATE_TEXTURE_ID, current); }
 
         public void Cleanup() { }
 
