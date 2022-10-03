@@ -184,10 +184,53 @@ namespace DCL.Components
                    foreach (var mat in r.materials)
                    {
                        var newMaterial = new Material(mat.shader);
-                       var mergedKeywords = new List<string>();
-                       mergedKeywords.AddRange(mat.shaderKeywords);
-                       mergedKeywords.AddRange(newMaterial.shaderKeywords);
-                       newMaterial.shaderKeywords = mergedKeywords.ToArray();
+
+                       var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
+                       var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
+                       var oldNamesMissingInNewMaterial = new List<string>();
+                       var newNamesMissingInOldMaterial = new List<string>();
+                       var overlapNames = new List<string>();
+                       foreach (var oldPorpertyName in propertiesOfOldMaterial)
+                       {
+                           if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
+                           {
+                               oldNamesMissingInNewMaterial.Add(oldPorpertyName);
+                           }
+                           else
+                           {
+                               overlapNames.Add(oldPorpertyName);
+                           }
+                       }
+
+                       foreach (var newPropertyName in propertiesOfNewMaterial)
+                       {
+                           if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
+                           {
+                               newNamesMissingInOldMaterial.Add(newPropertyName);
+                           }
+                       }
+
+                       Debug.unityLogger.logEnabled = true;
+                       string log = "";
+                       log += "Old properties missing in new mat: ";
+                       foreach (var oldName in oldNamesMissingInNewMaterial)
+                       {
+                           log += oldName + " ";
+                       }
+                       log += "\n New properties missing in old mat: ";
+                       foreach (var newName in newNamesMissingInOldMaterial)
+                       {
+                           log += newName + " ";
+                       }
+                       log += "\n Overlapped properties: ";
+                       foreach (var overlapName in overlapNames)
+                       {
+                           log += overlapName + " ";
+                       }
+                       Debug.Log(log);
+                       Debug.unityLogger.logEnabled = false;
+                       
+                       newMaterial.CopyPropertiesFromMaterial(mat);
                        materialsCloneList.Add(newMaterial);
                    }
 
