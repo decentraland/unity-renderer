@@ -1484,11 +1484,11 @@ namespace DCL.Interface
             SendMessage("GoToMagic");
         }
 
-        public static void CompleteTeleport(int x, int y)
+        public static void LoadingHUDReadyForTeleport(int x, int y)
         {
             gotoEvent.x = x;
             gotoEvent.y = y;
-            SendMessage("CompleteTeleport", gotoEvent);
+            SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
         }
         
         public static void JumpIn(int x, int y, string serverName, string layerName)

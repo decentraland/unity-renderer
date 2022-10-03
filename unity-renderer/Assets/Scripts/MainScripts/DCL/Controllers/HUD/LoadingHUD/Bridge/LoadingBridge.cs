@@ -44,9 +44,9 @@ public class LoadingBridge : MonoBehaviour
     
     IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
-        PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
         WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
+        
+        PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
         if (!string.IsNullOrEmpty(payload.message))
         {
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
@@ -55,10 +55,13 @@ public class LoadingBridge : MonoBehaviour
         {
             DataStore.i.HUDs.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
         }
+        DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
+
         while (!DataStore.i.HUDs.loadingHUD.visible.Get())
         {
             yield return null;
         }
-        WebInterface.CompleteTeleport(payload.xCoord, payload.yCoord);
+        
+        WebInterface.LoadingHUDReadyForTeleport(payload.xCoord, payload.yCoord);
     }
 }
