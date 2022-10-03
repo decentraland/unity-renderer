@@ -14,7 +14,7 @@ When working with the Unity Project these guidelines must be followed.
 You can find a settings export file in the root of the project called "rider_codeStyleDCLSetting". Bear in mind that the conversion between VS and Rider is not 1 on 1 but it's good enough.
 
 # Code conventions
-[Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary, highlights and specifics related to Unity, which we suggest to follow.
+[Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary of our adaptation of it, highlights and specifics related to Unity, which we suggest to follow.
 ## Naming conventions
 Use
 * `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
