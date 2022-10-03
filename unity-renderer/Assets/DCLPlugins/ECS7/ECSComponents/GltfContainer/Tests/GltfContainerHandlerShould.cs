@@ -40,9 +40,9 @@ namespace Tests
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(23423);
 
-            var keepEntityAliveComponent = new InternalECSComponent<object>(
-                0, componentsManager, componentFactory, null);
-            keepEntityAliveComponent.PutFor(scene, entity, entity);
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentFactory, null, new List<InternalComponentWriteData>());
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
 
             scene.contentProvider.baseUrl = $"{TestAssetsUtils.GetPath()}/GLB/";
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
