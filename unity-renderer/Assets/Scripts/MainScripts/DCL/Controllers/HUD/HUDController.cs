@@ -245,14 +245,12 @@ public class HUDController : IHUDController
                 {
                     CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT);
                     PublicChatWindowHud.Initialize();
+                    PublicChatWindowHud.SetVisibility(false);
                     PublicChatWindowHud.OnBack -= HandlePublicChatChannelBacked;
                     PublicChatWindowHud.OnBack += HandlePublicChatChannelBacked;
                     PublicChatWindowHud.OnClosed -= HandlePublicChatChannelClosed;
                     PublicChatWindowHud.OnClosed += HandlePublicChatChannelClosed;
                     taskbarHud?.AddPublicChatChannel(PublicChatWindowHud);
-                    // TODO: this call should be removed when chat notifications are implemented
-                    taskbarHud?.OpenPublicChat(ChatUtils.NEARBY_CHANNEL_ID, false);
-                    PublicChatWindowHud.ActivatePreviewModeInstantly();
                 }
                 else
                     UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT);

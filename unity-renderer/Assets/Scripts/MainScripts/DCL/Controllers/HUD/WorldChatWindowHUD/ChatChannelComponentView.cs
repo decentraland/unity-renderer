@@ -18,8 +18,6 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal ChatHUDView chatView;
         [SerializeField] internal PublicChatModel model;
-        [SerializeField] internal CanvasGroup[] previewCanvasGroup;
-        [SerializeField] internal Vector2 previewModeSize;
         [SerializeField] internal GameObject messagesLoading;
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal GameObject oldMessagesLoadingContainer;
@@ -34,7 +32,6 @@ namespace DCL.Chat.HUD
 
         private Coroutine alphaRoutine;
         private Vector2 originalSize;
-        private bool isPreviewActivated;
         private bool isMembersSectionOpen;
         private float collapsableAreaOriginalWidth;
 
@@ -68,8 +65,6 @@ namespace DCL.Chat.HUD
             optionsButton.onClick.AddListener(ShowOptionsMenu);
             scroll.onValueChanged.AddListener(scrollPos =>
             {
-                if (isPreviewActivated) return;
-
                 if (scrollPos.y > 0.995f)
                     OnRequireMoreMessages?.Invoke();
             });
@@ -98,46 +93,6 @@ namespace DCL.Chat.HUD
             RefreshControl();
         }
 
-        public void ActivatePreview()
-        {
-            isPreviewActivated = true;
-            const float alphaTarget = 0f;
-
-            if (!gameObject.activeInHierarchy)
-            {
-                foreach (var group in previewCanvasGroup)
-                    group.alpha = alphaTarget;
-
-                return;
-            }
-
-            if (alphaRoutine != null)
-                StopCoroutine(alphaRoutine);
-
-            alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-            ((RectTransform) transform).sizeDelta = previewModeSize;
-        }
-
-        public void DeactivatePreview()
-        {
-            isPreviewActivated = false;
-            const float alphaTarget = 1f;
-
-            if (!gameObject.activeInHierarchy)
-            {
-                foreach (var group in previewCanvasGroup)
-                    group.alpha = alphaTarget;
-
-                return;
-            }
-
-            if (alphaRoutine != null)
-                StopCoroutine(alphaRoutine);
-
-            alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-            ((RectTransform) transform).sizeDelta = originalSize;
-        }
-
         public void SetLoadingMessagesActive(bool isActive)
         {
             if (messagesLoading == null) return;
@@ -159,24 +114,6 @@ namespace DCL.Chat.HUD
         {
             base.OnPointerExit(eventData);
             OnFocused?.Invoke(false);
-        }
-        
-        private IEnumerator SetAlpha(float target, float duration)
-        {
-            var t = 0f;
-
-            while (t < duration)
-            {
-                t += Time.deltaTime;
-
-                foreach (var group in previewCanvasGroup)
-                    group.alpha = Mathf.Lerp(group.alpha, target, t / duration);
-
-                yield return null;
-            }
-
-            foreach (var group in previewCanvasGroup)
-                group.alpha = target;
         }
 
         private void ShowOptionsMenu()

@@ -195,20 +195,6 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void ActivatePreviewMode()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-        controller.SetVisibility(true);
-        controller.ActivatePreview();
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
     public void HideViewWhenMouseIsLocked()
     {
         WhenControllerInitializes(FRIEND_ID);
@@ -222,47 +208,12 @@ public class PrivateChatWindowControllerShould
     }
 
     [Test]
-    public void DeactivatePreviewMode()
+    public void ActivatePanel()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.DeactivatePreview();
         
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [Test]
-    public void DeactivatePreviewModeWhenInputFieldIsSelected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
-        
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [UnityTest]
-    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        view.IsFocused.Returns(false);
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
-        yield return new WaitForSeconds(4f);
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Show();
     }
 
     [Test]

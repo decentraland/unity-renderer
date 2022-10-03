@@ -24,8 +24,6 @@ namespace DCL.Chat.HUD
         void Hide();
         void Show();
         void Setup(PublicChatModel model);
-        void ActivatePreview();
-        void DeactivatePreview();
         void SetLoadingMessagesActive(bool isActive);
         void SetOldMessagesLoadingActive(bool isActive);
     }

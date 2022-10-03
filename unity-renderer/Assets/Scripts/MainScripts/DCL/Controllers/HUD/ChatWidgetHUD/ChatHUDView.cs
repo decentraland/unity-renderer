@@ -172,10 +172,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             FocusInputField();
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
-        if (model.isInPreviewMode)
-            ActivatePreview();
-        else
-            DeactivatePreview();
         ClearAllEntries();
         foreach (var entry in model.entries)
             AddEntry(entry);
@@ -194,27 +190,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         model.inputFieldText = text;
         inputField.text = text;
         inputField.MoveTextEnd(false);
-    }
-
-    public void ActivatePreview()
-    {
-        model.isInPreviewMode = true;
-
-        foreach (var entry in entries.Values)
-            entry.ActivatePreview();
-
-        if (contextMenu == null)
-            return;
-        contextMenu.Hide();
-        confirmationDialog.Hide();
-    }
-
-    public void DeactivatePreview()
-    {
-        model.isInPreviewMode = false;
-
-        foreach (var entry in entries.Values)
-            entry.DeactivatePreview();
     }
 
     public void FadeOutMessages()
@@ -270,9 +245,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         chatEntry.transform.SetParent(chatEntriesContainer, false);
         entries[messageId] = chatEntry;
-        
-        if (model.isInPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
 
         SortEntries();
         UpdateLayout();
@@ -454,7 +426,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [Serializable]
     private struct Model
     {
-        public bool isInPreviewMode;
         public bool isInputFieldFocused;
         public string inputFieldText;
         public bool enableFadeoutMode;
