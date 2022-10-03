@@ -333,7 +333,14 @@
             "m_Id": "58bfdcb95a8248298a9e1c557d8bb8ad"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "439356d73e7d48e2814b59fcb7e84f31"
+        },
+        {
+            "m_Id": "aac2c23822724ec98fa61dcb48c3e05e"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -3151,6 +3158,26 @@
 }
 
 {
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "439356d73e7d48e2814b59fcb7e84f31",
+    "m_Title": "UV Zoom ",
+    "m_Content": "The UV Zoom sub-graph calculates the required UV coordinates which will be applied to the rest of the Infinite Floor features.\r\n\r\n- The first output is a regular UV\r\n- The second output is an UV in world space, which is used on the fog and grass grid features\r\n- The last output is a zoom independent of the scale of the object",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": 581.0,
+        "y": 2952.0,
+        "width": 338.7359619140625,
+        "height": 179.7255859375
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
+}
+
+{
     "m_SGVersion": 1,
     "m_Type": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty",
     "m_ObjectId": "441cc3f1db274ddb88e1cd9a9cb0526b",
@@ -5406,6 +5433,26 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "aac2c23822724ec98fa61dcb48c3e05e",
+    "m_Title": "Main HLSL Script",
+    "m_Content": "The MapV5.hlsl is the main script of both, the infinite floor and the map shaders. Some of the parameters are not used in both cases.\r\n\r\nThe **Main_float** function is the one that is executed in the shader graph. Because of this, it has all the inputs that will be fed from the node in the graph.\r\n\r\nThe outputs of the function are:\r\n\r\n- color mask of the map (float4 outColor)\r\n- the main grid that is drawn over in black (float OutlineIntense)\r\n- the faded grid that is transparent (float OutlineFade) (ONLY USED ON UI MAP)\r\n- an in-between grid (float OutlineInner)\r\n- the highlighted parcels (float Highlight) (ONLY USED ON UI MAP)\r\n- both outline masks for the highlighted parcels (float HighlightInnerOutline and float HighlightMidOutline) (ONLY USED ON UI MAP)",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": 1026.0,
+        "y": 2031.0,
+        "width": 647.0,
+        "height": 235.471435546875
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {

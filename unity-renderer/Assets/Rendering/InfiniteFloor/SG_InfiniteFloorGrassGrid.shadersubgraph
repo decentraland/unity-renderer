@@ -255,7 +255,11 @@
             "m_Id": "541cf1dde41b4ba490aca64b04ac009d"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "a48dda3a836e4c74a0355211f7e900f4"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -5305,6 +5309,26 @@
         "y": 0.0,
         "z": 0.0,
         "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "a48dda3a836e4c74a0355211f7e900f4",
+    "m_Title": "Grass Grid Sub-Graph",
+    "m_Content": "The Grass Grid sub-graph generates the grid mask that is projected over the grass areas.\r\n\r\nThe grid is calculated per parcel and it can have a variation in thickness every given number of lines if desired.\r\n\r\nThe intensity of the grid is stronger in the middle, is calculated in world space so it doesn’t move when the mesh does.\r\n\r\nThere are two values to control the grid fade intensity, one being “GrassGridIntenseFade” and the other is “GrassGridFarFade”",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -1919.0,
+        "y": -314.0,
+        "width": 642.0,
+        "height": 170.0
+    },
+    "m_Group": {
+        "m_Id": ""
     }
 }
 

@@ -162,7 +162,11 @@
             "m_Id": "da3f94e44cf244b49f82c43e6a574cca"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "988ba4bee72a4c96949d01a43c4f8019"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -3480,6 +3484,26 @@
         "y": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "988ba4bee72a4c96949d01a43c4f8019",
+    "m_Title": "Textures Sub-Graph",
+    "m_Content": "The Textures sub-graph controls and applies the two textures that are projected on the floor, which are the street tiles, and the grass",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -1422.0,
+        "y": -51.0,
+        "width": 367.1182861328125,
+        "height": 74.46699523925781
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {

@@ -120,7 +120,11 @@
             "m_Id": "2e9ffa3c7bc445c18d372e6fedbb4d21"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "d0b273ef7dfb4ae7974278e63683e906"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -2947,6 +2951,26 @@
         "y": 0.0,
         "z": 0.0,
         "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "d0b273ef7dfb4ae7974278e63683e906",
+    "m_Title": "Random Tiling Sub-Graph",
+    "m_Content": "The Random Tiling sub-graph generates two random grayscale checker masks to be applied to the owned and unowned parcels and generate color variations.",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -744.0,
+        "y": -477.0,
+        "width": 459.0,
+        "height": 100.0
+    },
+    "m_Group": {
+        "m_Id": ""
     }
 }
 

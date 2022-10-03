@@ -60,7 +60,11 @@
             "m_Id": "714032faf6554118b6152f9d15c4d8a3"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "6b569be241bc469db9b880cf8e2a4981"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -570,6 +574,26 @@
         "y": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "6b569be241bc469db9b880cf8e2a4981",
+    "m_Title": "Fog Sub-Graph",
+    "m_Content": "The Fog sub-graph generates a fake radial fog mask that is calculated in world space so it doesn’t move when the floor does.",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -553.0,
+        "y": -342.0,
+        "width": 452.0,
+        "height": 100.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {
