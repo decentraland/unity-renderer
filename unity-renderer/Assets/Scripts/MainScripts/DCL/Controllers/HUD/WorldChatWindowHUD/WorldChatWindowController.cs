@@ -502,7 +502,9 @@ public class WorldChatWindowController : IHUD
     private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
     {
         if (dataStore.channels.isCreationModalVisible.Get()) return;
-        dataStore.channels.currentChannelLimitReached.Set(channelId, true);
+
+        if (errorCode == ChannelErrorCode.ExceededLimit)
+            dataStore.channels.currentChannelLimitReached.Set(channelId, true);
     }
 
     private void HandleChannelLeft(string channelId)
