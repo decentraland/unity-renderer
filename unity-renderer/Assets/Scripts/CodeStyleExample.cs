@@ -1,5 +1,5 @@
 ﻿// NOTE: following separation lines are used only for clarity and do not take part of our commenting code style!
-//-------------------------------  Usings group  -----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------- Usings group
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using UnityEngine.Events;
 
 namespace UIComponents.Scripts.Components.SectionSelector
 {
-    //---------------------------  Enum, delegates, interfaces declaration group (public/internal)  --------------------
+//----------------------------------------------------------------------------------------------------------------------   Enum, delegates, interfaces declaration group (public/internal) 
     public enum Side { Left, Right }
 
     public delegate void Destroction<T> (T current);
@@ -25,7 +25,7 @@ namespace UIComponents.Scripts.Components.SectionSelector
     public class CodeStyleExample : MonoBehaviour, IInitializable
     {
 
-        //------------------------  Const and static readonly Fields group  --------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Const and static readonly Fields group
         public const string ASSET_PATH = "AvatarPrefab";
         private const float MAX_TIMER = 10f;
 
@@ -39,7 +39,7 @@ namespace UIComponents.Scripts.Components.SectionSelector
         [SerializeField] private float health;
         [SerializeField] private bool isVisitble;
 
-        //------------------------  Fields group (other than Const and static readonly)  -------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Fields group (other than Const and static readonly)  
         public readonly List<int> CachedNumbers = new List<int>();
         protected readonly List<Vector2> poistions = new List<Vector2>();
         private Animation animation;
@@ -51,7 +51,7 @@ namespace UIComponents.Scripts.Components.SectionSelector
         [PublicAPI]
         public bool IsVisitble => isVisitble; // [PublicAPI] Public - used only from outside of Unity solution (by other solution)
 
-        //------------------------  Unity callbacks methods group  -----------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Unity callbacks methods group
         private void Awake() // is used for getting references
         {
             animation = GetComponent<Animation>();
@@ -72,20 +72,20 @@ namespace UIComponents.Scripts.Components.SectionSelector
         {
             Closed.RemoveListener(OnClosed);
         }
-
+        //------------------------------------------------------------------------------------------------------------------  Events and UnityEvents group 
         private void OnDestroy() // is used for any needed clean-up
         {
             Destroyed?.Invoke(this);
         }
 
-        //------------------------  Properties group  ------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Properties group
         public bool IsInitialized { get; private set; }
 
-        //------------------------  Public methods group  --------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Public methods group
         public void Initialize() =>
             IsInitialized = true;
 
-        //------------------------  Events and UnityEvents group  ------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Events and UnityEvents group
         public event Destroction<CodeStyleExample> Destroyed;
 
         public void ApplyDamage(float damage) // Public - called from outside of the class (by other class)
@@ -110,17 +110,17 @@ namespace UIComponents.Scripts.Components.SectionSelector
         private void OnClosed(bool _) => // use _, __, ___ for parameters name if required parameters are not used inside 
             cooldown = MAX_TIMER;
 
-        //--------------------------  internal-protected-private methods group  ----------------------------------------
-        //                        methods that weren't called inside methods above 👆 
+        //------------------------------------------------------------------------------------------------------------------ internal-protected-private methods group
+        // methods that weren't called inside methods above 👆   
         internal void Method1() { }
         protected void Method2() { }
         private void Method3() { }
 
-        //------------------------  Enum, delegates declaration group (protected/private)  -----------------------------
+        //------------------------------------------------------------------------------------------------------------------ Enum, delegates declaration group (protected/private) 
         private enum Direction { North, South, West, East }
         private delegate void Interaction<T> (T current);
 
-        //-------------------------  Nested classes/struct group  ------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------ Nested classes/struct group
         private struct Data
         {
             public int A;
