@@ -10,6 +10,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ImageComponentView userThumbnail;
         [SerializeField] internal GameObject onlineMark;
         [SerializeField] internal GameObject offlineMark;
+        [SerializeField] internal GameObject optionsButtonContainer;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal RectTransform userContextMenuPositionReference;
 
@@ -43,6 +44,7 @@ namespace DCL.Chat.HUD
             SetUserName(model.userName);
             SetUserThumbnail(model.thumnailUrl);
             SetUserOnlineStatus(model.isOnline);
+            SetIsOptionsButtonHidden(model.isOptionsButtonHidden);
         }
 
         public void SetUserContextMenu(UserContextMenu userContextMenu)
@@ -87,6 +89,16 @@ namespace DCL.Chat.HUD
 
             if (offlineMark != null)
                 offlineMark.SetActive(!isOnline);
+        }
+
+        private void SetIsOptionsButtonHidden(bool isHidden)
+        {
+            model.isOptionsButtonHidden = isHidden;
+
+            if (optionsButtonContainer == null)
+                return;
+
+            optionsButtonContainer.SetActive(!isHidden);
         }
 
         private void Dock(UserContextMenu userContextMenu)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace DCL.Chat.HUD
 {
@@ -9,5 +9,6 @@ namespace DCL.Chat.HUD
         public string userName;
         public string thumnailUrl;
         public bool isOnline;
+        public bool isOptionsButtonHidden;
     }
 }

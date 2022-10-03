@@ -141,7 +141,8 @@ namespace DCL.Chat.HUD
                         isOnline = member.isOnline,
                         thumnailUrl = memberProfile.face256SnapshotURL,
                         userId = memberProfile.userId,
-                        userName = memberProfile.userName
+                        userName = memberProfile.userName,
+                        isOptionsButtonHidden = memberProfile.userId == userProfileBridge.GetOwn().userId
                     };
 
                     view.Set(userToAdd);
