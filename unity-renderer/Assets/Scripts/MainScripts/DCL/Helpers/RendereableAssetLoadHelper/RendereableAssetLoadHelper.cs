@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -175,27 +177,24 @@ namespace DCL.Components
                     animationClips = x.animationClips,
                     meshDataSize = x.meshDataSize
                 };
-                
-                if(r != null && r.materials != null)
-                    foreach (var mat in r.materials)
-                    {
-                        mat.EnableKeyword("_ALPHATEST_ON");
-                        mat.EnableKeyword("_NORMALMAP");
-                        
-                        //TODO ANTON
-                        //this is a test to run on CI build
-                        //to check if it will fix certain in-build issue
-                        if (mat.name.Contains("Mika"))
-                        {
-                            var metallicValue = mat.GetFloat("_Metallic");
-                            UnityEngine.Debug.LogError($"For {mat.name} metallic = {metallicValue}");
-                        }
-                        
-                        mat.SetFloat("_Metallic", 0f);
-                        mat.SetFloat("_SpecularHighlights", 0f);
-                        mat.SetFloat("_EnvironmentReflections", 0f);
-                        //
-                    }
+
+                if (r.materials != null)
+                {
+                   var materialsCloneList = new List<Material>();
+                   foreach (var mat in r.materials)
+                   {
+                       var newMaterial = new Material(mat.shader);
+                       var mergedKeywords = new List<string>();
+                       mergedKeywords.AddRange(mat.shaderKeywords);
+                       mergedKeywords.AddRange(newMaterial.shaderKeywords);
+                       newMaterial.shaderKeywords = mergedKeywords.ToArray();
+                       materialsCloneList.Add(newMaterial);
+                   }
+
+                   r.materials.Clear();
+                    foreach (var newMat in materialsCloneList)
+                        r.materials.Add(newMat);
+                }
 
                 OnSuccessWrapper(r, OnSuccess);
             };
