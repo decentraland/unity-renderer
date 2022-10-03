@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public interface IPlacesAndEventsSectionComponentView
@@ -47,11 +46,18 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal bool isDefaultSubSectionLoadedByFirstTime = false;
 
+    public override void Start() =>
+        CreateSubSectionSelectorMappings();
+
     public IHighlightsSubSectionComponentView currentHighlightsSubSectionComponentView => highlightsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
 
-    public override void Start() { CreateSubSectionSelectorMappings(); }
+    public void GoToSubsection(int subSectionIndex) =>
+        subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
+
+    public void SetActive(bool isActive) =>
+        gameObject.SetActive(isActive);
 
     public override void RefreshControl()
     {
@@ -92,7 +98,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
                               eventsSubSection.gameObject.SetActive(isOn);
                           });
 
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(true);
+        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
     }
 
     internal void RemoveSectionSelectorMappings()
@@ -101,8 +107,4 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
     }
-
-    public void GoToSubsection(int subSectionIndex) { subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(true); }
-
-    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }

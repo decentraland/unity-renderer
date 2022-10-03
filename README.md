@@ -134,6 +134,7 @@ If the local WebGL build always fails with the error `System.ComponentModel.Win3
   - For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
 - [How to create new components for ECS7](docs/ecs7-component-creation.md)
 - [How to modify the Renderer Protocol](docs/how-to-renderer-protocol.md)
+- [How to use Asset Bundle Converter](docs/how-to-use-asset-bundle-coverter.md)
 
 ## Setup CircleCI
 

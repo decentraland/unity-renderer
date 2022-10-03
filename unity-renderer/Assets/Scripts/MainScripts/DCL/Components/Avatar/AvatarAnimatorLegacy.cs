@@ -34,6 +34,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float IDLE_TRANSITION_TIME = 0.2f;
     const float RUN_TRANSITION_TIME = 0.15f;
     const float WALK_TRANSITION_TIME = 0.15f;
+    const float WALK_MAX_SPEED = 6;
+    const float RUN_MIN_SPEED = 4f;
+    const float WALK_MIN_SPEED = 0.1f;
+    const float WALK_RUN_SWITCH_TIME = 1.5f;
     const float JUMP_TRANSITION_TIME = 0.01f;
     const float FALL_TRANSITION_TIME = 0.5f;
     const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
@@ -82,9 +86,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public new Animation animation;
     public BlackBoard blackboard;
     public Transform target;
-
-    [SerializeField] float runMinSpeed = 6f;
-    [SerializeField] float walkMinSpeed = 0.1f;
 
     internal System.Action<BlackBoard> currentState;
 
@@ -287,12 +288,15 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
         
-
-        if (movementSpeed > runMinSpeed)
+        if (movementSpeed >= WALK_MAX_SPEED)
         {
             CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME);
         }
-        else if (movementSpeed > walkMinSpeed)
+        else if (movementSpeed >= RUN_MIN_SPEED && movementSpeed < WALK_MAX_SPEED) 
+        { 
+            // Keep current animation, leave empty
+        }
+        else if (movementSpeed > WALK_MIN_SPEED)
         {
             CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME);
         }
@@ -300,6 +304,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, IDLE_TRANSITION_TIME);
         }
+
 
         if (!bb.isGrounded)
         {
@@ -498,6 +503,23 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         animEventHandler = animationEventHandler;
+    }
+
+    private void OnEnable()
+    {
+        if (animation == null)
+            return;
+
+        animation.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        if (animation == null)
+            return;
+
+        animation.Stop();
+        animation.enabled = false;
     }
 
     private void OnDestroy()
