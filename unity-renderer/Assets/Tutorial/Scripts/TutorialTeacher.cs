@@ -31,7 +31,6 @@ namespace DCL.Tutorial
                 case TeacherAnimation.StepCompleted:
                     teacherAnimator.SetTrigger("StepCompleted");
                     PlayHappySound(0.3f);
-                    IsHiddenByAnimation = false;
                     break;
                 case TeacherAnimation.QuickGoodbye:
                     teacherAnimator.SetTrigger("QuickGoodbye");
