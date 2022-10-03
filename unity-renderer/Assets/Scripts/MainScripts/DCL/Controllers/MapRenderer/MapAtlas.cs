@@ -1,3 +1,4 @@
+using System;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +8,8 @@ namespace DCL
     public class MapAtlas : MonoBehaviour
     {
         private static readonly int MOUSE_POSITION_ID = Shader.PropertyToID("_MousePosition");
-        private static readonly int GRID_THICKNESS_ID = Shader.PropertyToID("_GridThickness");
+        private static readonly int MAIN_TEXTURE_ID = Shader.PropertyToID("_Map");
+        private static readonly int ESTATE_TEXTURE_ID = Shader.PropertyToID("_EstateIDMap");
 
         public RectTransform viewport;
         public GameObject container;
@@ -44,32 +46,6 @@ namespace DCL
                 return;
             }
             mapRenderer.material.SetVector(MOUSE_POSITION_ID, Vector2.one * coords.Value);
-            mapRenderer.RecalculateMasking();
-        }
-
-        public void SetGridThickness(float zoom)
-        {
-            if(zoom > 0.19f && zoom < 0.21f)
-            {
-                mapRenderer.material.SetFloat(GRID_THICKNESS_ID, 0.55f);
-            }
-            else if (zoom > 0.27f && zoom < 0.29f)
-            {
-                mapRenderer.material.SetFloat(GRID_THICKNESS_ID, 0.5f);
-            }
-            else if (zoom > 0.39f && zoom < 0.41f)
-            {
-                mapRenderer.material.SetFloat(GRID_THICKNESS_ID, 0.35f);
-            }
-            else if (zoom > 0.54f && zoom < 0.56f)
-            {
-                mapRenderer.material.SetFloat(GRID_THICKNESS_ID, 0.25f);
-            }
-            else if (zoom > 0.79f && zoom < 0.81f)
-            {
-                mapRenderer.material.SetFloat(GRID_THICKNESS_ID, 0.2f);
-            }
-
             mapRenderer.RecalculateMasking();
         }
     }

@@ -285,8 +285,6 @@ namespace DCL
             UpdateParcelHighlight();
 
             UpdateParcelHold();
-
-            atlas.SetGridThickness(scaleFactor);
         }
 
         void UpdateCursorMapCoords()

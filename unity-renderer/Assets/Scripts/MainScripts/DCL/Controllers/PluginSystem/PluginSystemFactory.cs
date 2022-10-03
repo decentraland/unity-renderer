@@ -47,6 +47,8 @@ namespace DCL
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
 
+            pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());
+
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
             return pluginSystem;
