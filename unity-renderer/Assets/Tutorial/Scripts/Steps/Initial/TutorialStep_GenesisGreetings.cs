@@ -24,8 +24,15 @@ namespace DCL.Tutorial
 
         public override void OnStepStart()
         {
+            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
+            if (Mathf.Abs(currentCoords.x) > 3 || Mathf.Abs(currentCoords.y) > 3)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             base.OnStepStart();
-            
+
             CommonScriptableObjects.userMovementKeysBlocked.Set(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
@@ -63,7 +70,7 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
-            
+
             CommonScriptableObjects.userMovementKeysBlocked.Set(false);
         }
 

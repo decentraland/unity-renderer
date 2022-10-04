@@ -75,10 +75,6 @@ namespace DCL.Tutorial
 
         public TutorialController ()
         {
-            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
-            if (currentCoords.x != 0 || currentCoords.y != 0)
-                return;
-
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
         }
