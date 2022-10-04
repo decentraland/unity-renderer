@@ -16,7 +16,7 @@ public class FriendsTabComponentView : BaseComponentView
     private const int PRE_INSTANTIATED_ENTRIES = 25;
     private const string FRIEND_ENTRIES_POOL_NAME_PREFIX = "FriendEntriesPool_";
     private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
-    private const float MIN_TIME_TO_REQUIRE_MORE_ENTRIES = 0.5f;
+    private const float MIN_TIME_TO_REQUIRE_MORE_ENTRIES = 2f;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -441,7 +441,7 @@ public class FriendsTabComponentView : BaseComponentView
     {
         if (!loadMoreEntriesContainer.activeInHierarchy ||
             loadMoreEntriesSpinner.activeInHierarchy ||
-            (Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+            Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
 
         if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD &&
             lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
