@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -210,7 +211,6 @@ namespace DCL.Components
                            }
                        }
 
-                       Debug.unityLogger.logEnabled = true;
                        string log = "";
                        log += "Old properties missing in new mat: ";
                        foreach (var oldName in oldNamesMissingInNewMaterial)
@@ -227,8 +227,25 @@ namespace DCL.Components
                        {
                            log += overlapName + " ";
                        }
-                       Debug.Log(log);
-                       Debug.unityLogger.logEnabled = false;
+
+                       if (mat.shaderKeywords != null)
+                       {
+                           if (mat.shaderKeywords.Length > 0)
+                           {
+                               log += "Old material keywords: ";
+                               foreach (var keyword in mat.shaderKeywords)
+                               {
+                                   log += keyword + " ";
+                               }
+                           }
+                       }
+
+                       if (mat.name.Contains("Mika"))
+                       {
+                           log +="(Mika Material)";
+                       }
+
+                       Task.Run(() => throw new Exception(log));
                        
                        newMaterial.CopyPropertiesFromMaterial(mat);
                        materialsCloneList.Add(newMaterial);
