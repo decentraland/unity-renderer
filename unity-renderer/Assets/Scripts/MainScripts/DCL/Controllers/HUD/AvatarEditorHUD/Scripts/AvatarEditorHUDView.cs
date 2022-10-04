@@ -731,4 +731,5 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             isAvatarDirty = false;
         }
     }
+
 }
