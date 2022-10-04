@@ -6,7 +6,6 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -49,8 +48,8 @@ namespace Tests
             scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
 
             renderersComponent = internalEcsComponents.renderersComponent;
-            pointerColliderComponent = Substitute.For<IInternalECSComponent<InternalColliders>>();
-            physicColliderComponent = Substitute.For<IInternalECSComponent<InternalColliders>>();
+            pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
+            physicColliderComponent = internalEcsComponents.physicColliderComponent;
             dataStoreEcs7 = new DataStore_ECS7();
 
             handler = new GltfContainerHandler(pointerColliderComponent, physicColliderComponent, renderersComponent, dataStoreEcs7);
@@ -102,9 +101,6 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
-            physicColliderComponent.ClearReceivedCalls();
-            pointerColliderComponent.ClearReceivedCalls();
-
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
 
@@ -117,12 +113,11 @@ namespace Tests
             Assert.AreEqual(physicCollider.gameObject.layer, PhysicsLayers.characterOnlyLayer);
             Assert.AreEqual(pointerCollider.gameObject.layer, PhysicsLayers.onPointerEventLayer);
 
-            physicColliderComponent.Received(1)
-                                   .PutFor(scene, entity,
-                                       Arg.Is<InternalColliders>(i => i.colliders[0] == physicCollider));
-            pointerColliderComponent.Received(1)
-                                    .PutFor(scene, entity,
-                                        Arg.Is<InternalColliders>(i => i.colliders[0] == pointerCollider));
+            var physicColliderComponentData = physicColliderComponent.GetFor(scene, entity);
+            var pointerColliderComponentData = pointerColliderComponent.GetFor(scene, entity);
+
+            Assert.AreEqual(physicCollider, physicColliderComponentData.model.colliders[0]);
+            Assert.AreEqual(pointerCollider, pointerColliderComponentData.model.colliders[0]);
         }
 
         [UnityTest]
@@ -181,8 +176,8 @@ namespace Tests
             Assert.IsFalse(handler.gameObject);
             Assert.IsFalse(handler.gltfLoader.isFinished);
             Assert.IsNull(renderersComponent.GetFor(scene, entity));
-            physicColliderComponent.Received(1).RemoveFor(scene, entity);
-            pointerColliderComponent.Received(1).RemoveFor(scene, entity);
+            Assert.IsNull(physicColliderComponent.GetFor(scene, entity));
+            Assert.IsNull(pointerColliderComponent.GetFor(scene, entity));
         }
     }
 }
