@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using DCL.Helpers;
 using DCL.Interface;
@@ -47,7 +46,7 @@ namespace DCL
         private float scaleDuration = 0.2f;
 
         private InputAction_Trigger.Triggered selectParcelDelegate;
-        private bool waitingForFullscreenHUDOpen = false;
+        private bool waitingForFullscreenHUDOpen;
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
 
@@ -106,23 +105,23 @@ namespace DCL
             mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
             zoomIn.OnStarted -= OnZoomPlusMinus;
             zoomOut.OnStarted -= OnZoomPlusMinus;
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
+
+            if (waitingForFullscreenHUDOpen == false)
+                CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
         }
 
-        public event Action<bool> OnToggle;
-
-        public void Initialize()
+        private void Initialize()
         {
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
         }
 
-        public void SetExitButtonActive(bool isActive) =>
+        private void SetExitButtonActive(bool isActive) =>
             closeButton.gameObject.SetActive(isActive);
 
-        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        private void SetAsFullScreenMenuMode(Transform parentTransform)
         {
             if (parentTransform == null)
                 return;
@@ -193,27 +192,14 @@ namespace DCL
 
         private void HandleZoomButtonsAspect()
         {
-            if (currentZoomLevel < MAP_ZOOM_LEVELS)
-            {
-                zoomInButton.interactable = true;
-                zoomInPlus.color = normalColor;
-            }
-            else
-            {
-                zoomInButton.interactable = false;
-                zoomInPlus.color = disabledColor;
-            }
+            SetZoomButtonInteractability(zoomInButton, zoomInPlus, canZoomMore: currentZoomLevel < MAP_ZOOM_LEVELS);
+            SetZoomButtonInteractability(zoomOutButton, zoomOutMinus, canZoomMore: currentZoomLevel >= 1);
+        }
 
-            if (currentZoomLevel >= 1)
-            {
-                zoomOutButton.interactable = true;
-                zoomOutMinus.color = normalColor;
-            }
-            else
-            {
-                zoomOutButton.interactable = false;
-                zoomOutMinus.color = disabledColor;
-            }
+        private void SetZoomButtonInteractability(Button button, Image buttonIcon, bool canZoomMore)
+        {
+            button.interactable = canZoomMore;
+            buttonIcon.color = canZoomMore? normalColor : disabledColor;
         }
 
         private IEnumerator ScaleOverTime(Vector3 startScaleSize)
@@ -235,7 +221,7 @@ namespace DCL
             isScaling = false;
         }
 
-        private void OnNavmapVisibleChanged(bool current, bool previous) =>
+        private void OnNavmapVisibleChanged(bool current, bool previous) => 
             SetVisible(current);
 
         private void OnExploreChange(bool current, bool previous)
@@ -260,7 +246,6 @@ namespace DCL
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
-                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
                     CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
                 }
             }
@@ -272,6 +257,8 @@ namespace DCL
 
         private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
         {
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+
             if (!current)
                 return;
 
@@ -333,8 +320,6 @@ namespace DCL
                 // Set longer interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
             }
-
-            OnToggle?.Invoke(visible);
         }
 
         private void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
