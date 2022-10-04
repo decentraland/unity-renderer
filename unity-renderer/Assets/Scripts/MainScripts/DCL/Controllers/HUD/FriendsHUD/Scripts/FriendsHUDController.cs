@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
 using SocialFeaturesAnalytics;
@@ -268,6 +266,7 @@ public class FriendsHUDController : IHUD
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
+                onlineFriends.Remove(userId);
                 View.Set(userId, sentRequest);
                 break;
             case FriendshipStatus.REQUESTED_FROM:
@@ -277,6 +276,7 @@ public class FriendsHUDController : IHUD
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
+                onlineFriends.Remove(userId);
                 View.Set(userId, receivedRequest);
                 break;
         }
@@ -306,6 +306,7 @@ public class FriendsHUDController : IHUD
             case FriendshipAction.DELETED:
                 friends.Remove(userId);
                 View.Remove(userId);
+                onlineFriends.Remove(userId);
                 break;
             case FriendshipAction.APPROVED:
                 var approved = friends.ContainsKey(userId)
