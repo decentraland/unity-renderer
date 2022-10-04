@@ -40,6 +40,7 @@ public class ECS7TestScene : IParcelScene
     }
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
     bool IParcelScene.isPersistent => throw new NotImplementedException();
+    public bool isPortableExperience { get; set; } = false;
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
     string IParcelScene.GetSceneName()

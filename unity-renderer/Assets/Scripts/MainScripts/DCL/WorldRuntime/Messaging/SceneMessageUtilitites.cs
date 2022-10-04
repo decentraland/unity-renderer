@@ -1,10 +1,13 @@
-﻿using DCL;
+﻿using System;
+using DCL;
 
 public class SceneMessageUtilities
 {
-    public static bool DecodePayloadChunk(string chunk, out string sceneId, out string message, out string tag)
+    public static bool DecodePayloadChunk(string chunk, out int sceneNumber, out string message, out string tag)
     {
-        sceneId = message = tag = null;
+        // sceneId = message = tag = null;
+        message = tag = null;
+        sceneNumber = -1;
 
         var separatorPosition = chunk.IndexOf('\t');
 
@@ -13,7 +16,7 @@ public class SceneMessageUtilities
             return false;
         }
 
-        sceneId = chunk.Substring(0, separatorPosition);
+        sceneNumber = Int32.Parse(chunk.Substring(0, separatorPosition));
 
         var lastPosition = separatorPosition + 1;
         separatorPosition = chunk.IndexOf('\t', lastPosition);

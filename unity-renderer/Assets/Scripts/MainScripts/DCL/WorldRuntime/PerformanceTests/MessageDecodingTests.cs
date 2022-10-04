@@ -18,7 +18,6 @@ namespace MessaginPerformanceTests
         {
             string[] messages = GetMessagesFromFile(MessageDecoder.MESSAGES_FILENAME);
             int count = messages.Length;
-            string sceneId;
             int sceneNumber;
             string tag;
             string message;
@@ -28,7 +27,7 @@ namespace MessaginPerformanceTests
                 {
                     for (var i = 0; i < count; i++)
                     {
-                        MessageDecoder.DecodePayloadChunk(messages[i], out sceneId, out sceneNumber, out message, out tag,
+                        MessageDecoder.DecodePayloadChunk(messages[i], out sceneNumber, out message, out tag,
                             out sendSceneMessage);
                     }
                 })

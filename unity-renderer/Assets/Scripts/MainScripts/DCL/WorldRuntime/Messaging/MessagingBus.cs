@@ -163,11 +163,16 @@ namespace DCL
             if (timeBudget <= 0 || !enabled || pendingMessagesCount == 0)
                 return false;
 
+            bool debug = type == MessagingBusType.INIT;
+
             float startTime = Time.realtimeSinceStartup;
 
             while (enabled && pendingMessagesCount > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
                 LinkedListNode<QueuedSceneMessage> pendingMessagesFirst;
+                
+                if(debug)
+                    Debug.Log("MessagingBus - INIT - ProcessQueue - 1");
 
                 lock (pendingMessages)
                 {
@@ -181,6 +186,9 @@ namespace DCL
 
                     continue;
                 }
+                
+                if(debug)
+                    Debug.Log("MessagingBus - INIT - ProcessQueue - 2");
 
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
@@ -193,6 +201,9 @@ namespace DCL
 
                 bool shouldLogMessage = VERBOSE;
 
+                if(debug)
+                    Debug.Log("MessagingBus - INIT - ProcessQueue - 3 - message type: " + m.type);
+                
                 switch (m.type)
                 {
                     case QueuedSceneMessage.Type.NONE:

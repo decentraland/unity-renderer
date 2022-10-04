@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Interface;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class MinimapHUDController : IHUD
 
     public MinimapHUDView view;
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
-    private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
+    private IntVariable currentSceneNumber => CommonScriptableObjects.sceneNumber;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
@@ -96,10 +97,11 @@ public class MinimapHUDController : IHUD
         }
     }
 
+    // TODO: FIX THIS
     public void ReportScene()
     {
         var coords = playerCoords.Get();
-        WebInterface.SendReportScene($"{coords.x},{coords.y}");
+        WebInterface.SendReportScene(DCL.Environment.i.world.state.GetSceneNumberByCoords(coords));
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }

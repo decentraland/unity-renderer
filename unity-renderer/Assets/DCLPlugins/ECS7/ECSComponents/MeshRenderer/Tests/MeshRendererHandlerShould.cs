@@ -21,7 +21,7 @@ namespace Tests
         public void SetUp()
         {
             testUtils = new ECS7TestUtilsScenesAndEntities();
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(100);
             texturizableComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
             handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent);

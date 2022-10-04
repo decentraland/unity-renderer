@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DCL;
 using NUnit.Framework;
@@ -132,14 +133,15 @@ namespace MessagingBusTest
         {
             //Given
             QueuedSceneMessage.Type messageType = QueuedSceneMessage.Type.UNLOAD_PARCEL;
-            string messagePayload = messageType.ToString();
+            string messagePayload = "111";
 
             QueuedSceneMessage_Scene queuedSceneMessageScene = new QueuedSceneMessage_Scene
             {
                 payload = new Protocol.CreateEntity {entityId = entityId},
                 message = messagePayload,
                 tag = "entity_1",
-                type = messageType
+                type = messageType,
+                sceneNumber = 111
             };
 
             bus.Start();
@@ -148,7 +150,7 @@ namespace MessagingBusTest
             bus.ProcessQueue(0.1f, out _);
 
             //Then
-            messageProcessHandler.Received(1).UnloadParcelSceneExecute(messagePayload);
+            messageProcessHandler.Received(1).UnloadParcelSceneExecute(Int32.Parse(messagePayload));
         }
 
         [Test]

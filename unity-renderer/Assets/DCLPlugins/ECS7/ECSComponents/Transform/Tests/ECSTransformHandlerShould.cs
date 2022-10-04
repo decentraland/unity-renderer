@@ -22,7 +22,7 @@ namespace Tests
         public void SetUp()
         {
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
-            scene = sceneTestHelper.CreateScene("temptation1");
+            scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
             worldState = Substitute.For<IWorldState>();

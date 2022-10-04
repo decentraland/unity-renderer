@@ -20,7 +20,7 @@ namespace Tests
         {
             handler = new MeshColliderHandler();
             testUtils = new ECS7TestUtilsScenesAndEntities();
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
         }
 
