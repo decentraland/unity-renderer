@@ -7,6 +7,18 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     
+    public event Action<PrivateChatEntry> OnOpenPrivateChat
+    {
+        add => directChatList.OnOpenChat += value;
+        remove => directChatList.OnOpenChat += value;
+    }
+    
+    public event Action<PublicChannelEntry> OnOpenPublicChat
+    {
+        add => publicChannelList.OnOpenChat += value;
+        remove => publicChannelList.OnOpenChat -= value;
+    }
+    
     public void Initialize(IChatController chatController)
     {
         directChatList.Initialize(chatController);

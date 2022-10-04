@@ -64,6 +64,8 @@ public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowV
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
         directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
         directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
+        searchResultsList.OnOpenPrivateChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
+        searchResultsList.OnOpenPublicChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId); 
         publicChannelList.OnOpenChat += entry => OnOpenPublicChannel?.Invoke(entry.Model.channelId);
         searchBar.OnSearchText += text => OnSearchChannelRequested?.Invoke(text);
         scroll.onValueChanged.AddListener(RequestMorePrivateChats);
