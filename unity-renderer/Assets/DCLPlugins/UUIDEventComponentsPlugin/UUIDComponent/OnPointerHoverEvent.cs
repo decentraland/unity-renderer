@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -40,6 +42,15 @@ namespace DCL.Components
 
         public virtual void SetHoverState(bool hoverState)
         {
+            SetHighlightStatus(entity.meshesInfo.renderers, hoverState);
+        }
+
+        private void SetHighlightStatus(IReadOnlyList<Renderer> renderers, bool active)
+        {
+            if (active)
+                DataStore.i.objectsOutliner.renderers.Set(renderers);
+            else
+                DataStore.i.objectsOutliner.renderers.Set(new List<Renderer>());
         }
 
         void SetEventColliders(IDCLEntity entity)
