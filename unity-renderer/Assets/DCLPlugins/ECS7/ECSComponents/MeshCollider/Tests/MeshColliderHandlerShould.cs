@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using DCL.ECS7.InternalComponents;
@@ -24,8 +25,8 @@ namespace Tests
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
 
-            var keepEntityAliveComponent = new InternalECSComponent<object>(
-                0, componentsManager, componentsFactory, null);
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentsFactory, null, new List<InternalComponentWriteData>());
 
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
@@ -36,7 +37,7 @@ namespace Tests
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1101);
 
-            keepEntityAliveComponent.PutFor(scene, entity, entity);
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
