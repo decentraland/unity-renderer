@@ -5,13 +5,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static DCL.MapGlobalUsersPositionMarkerController;
+using static InputAction_Trigger;
 
 namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
         private const float MAP_ZOOM_LEVELS = 4;
+        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
+        private const float SCALE_DURATION = 0.2f;
+
+        private readonly Color normalColor = new Color(0f, 0f, 0f, 1f);
+        private readonly Color disabledColor = new Color(0f, 0f, 0f, 0.5f);
 
         [Header("References")]
         [SerializeField] internal Button closeButton;
@@ -34,22 +40,18 @@ namespace DCL
         private Vector3 atlasOriginalPosition;
         private RectTransform containerRectTransform;
         private int currentZoomLevel;
-        private Color disabledColor = new Color(0f, 0f, 0f, 0.5f);
-        private bool isScaling = false;
+        private bool isScaling;
         private MinimapMetadata mapMetadata;
         private Transform mapRendererMinimapParent;
         private RectTransform minimapViewport;
 
-        private Color normalColor = new Color(0f, 0f, 0f, 1f);
         Vector3 previousScaleSize;
         private float scale = 1f;
-        private float scaleDuration = 0.2f;
-
-        private InputAction_Trigger.Triggered selectParcelDelegate;
+        
+        private Triggered selectParcelDelegate;
         private bool waitingForFullscreenHUDOpen;
 
-        public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
-
+        private BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
 
         void Start()
@@ -211,10 +213,10 @@ namespace DCL
 
             float counter = 0;
 
-            while (counter < scaleDuration)
+            while (counter < SCALE_DURATION)
             {
                 counter += Time.deltaTime;
-                containerRectTransform.localScale = Vector3.Lerp(startScaleSize, targetScale, counter / scaleDuration);
+                containerRectTransform.localScale = Vector3.Lerp(startScaleSize, targetScale, counter / SCALE_DURATION);
                 yield return null;
             }
 
@@ -283,12 +285,12 @@ namespace DCL
 
                 MapRenderer.i.scaleFactor = scale;
 
-                if (minimapViewport == null)
+                if (minimapViewport == null || mapRendererMinimapParent == null)
+                {
                     minimapViewport = MapRenderer.i.atlas.viewport;
-
-                if (mapRendererMinimapParent == null)
                     mapRendererMinimapParent = MapRenderer.i.transform.parent;
-
+                }
+                
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
                 MapRenderer.i.atlas.viewport = scrollRect.viewport;
@@ -301,12 +303,13 @@ namespace DCL
                 MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
 
                 // Set shorter interval of time for populated scenes markers fetch
-                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.FOREGROUND);
+                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(UpdateMode.FOREGROUND);
             }
             else
             {
                 if (minimapViewport == null)
                     return;
+                
                 ResetCameraZoom();
                 CloseToast();
 
@@ -318,11 +321,11 @@ namespace DCL
                 MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(DataStore.i.player.playerWorldPosition.Get()));
 
                 // Set longer interval of time for populated scenes markers fetch
-                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
+                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(UpdateMode.BACKGROUND);
             }
         }
 
-        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
+        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int _)
         {
             const string format = "{0},{1}";
             currentSceneCoordsText.text = string.Format(format, current.x, current.y);
@@ -343,7 +346,7 @@ namespace DCL
         private void CloseToast() =>
             toastView.OnCloseClick();
 
-        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
+        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
             SetAsFullScreenMenuMode(currentParentTransform);
     }
 }
