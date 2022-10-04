@@ -29,6 +29,9 @@ namespace DCL
         
         protected virtual void Awake()
         {
+            //TODO ANTON
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            
             if (i != null)
             {
                 Utils.SafeDestroy(this);

@@ -244,10 +244,7 @@ namespace DCL.Components
                            log +="(Mika Material)";
                        }
                        
-                       bool temp = UnityEngine.Debug.unityLogger.logEnabled;
-                       UnityEngine.Debug.unityLogger.logEnabled = true;
-                       Debug.Log(log);
-                       UnityEngine.Debug.unityLogger.logEnabled = temp;
+                       UnityEngine.Debug.LogError(log);
                        
                        newMaterial.CopyPropertiesFromMaterial(mat);
                        materialsCloneList.Add(newMaterial);
