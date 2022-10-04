@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -244,8 +243,11 @@ namespace DCL.Components
                        {
                            log +="(Mika Material)";
                        }
-
-                       Task.Run(() => throw new Exception(log));
+                       
+                       bool temp = UnityEngine.Debug.unityLogger.logEnabled;
+                       UnityEngine.Debug.unityLogger.logEnabled = true;
+                       Debug.Log(log);
+                       UnityEngine.Debug.unityLogger.logEnabled = temp;
                        
                        newMaterial.CopyPropertiesFromMaterial(mat);
                        materialsCloneList.Add(newMaterial);
