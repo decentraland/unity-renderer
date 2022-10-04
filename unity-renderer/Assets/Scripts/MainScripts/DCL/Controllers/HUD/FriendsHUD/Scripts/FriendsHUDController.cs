@@ -165,9 +165,9 @@ public class FriendsHUDController : IHUD
 
         if (View.IsActive())
         {
-            if (View.IsFriendListActive)
+            if (View.IsFriendListActive && lastSkipForFriends <= 0)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive)
+            else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                 DisplayMoreFriendRequests();
         }
         
@@ -413,6 +413,7 @@ public class FriendsHUDController : IHUD
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
+        if (lastSkipForFriends > 0) return;
         DisplayMoreFriends();
     }
 
@@ -448,6 +449,7 @@ public class FriendsHUDController : IHUD
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
+        if (lastSkipForFriendRequests > 0) return;
         DisplayMoreFriendRequests();
     }
 
