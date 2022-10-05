@@ -8,7 +8,8 @@ namespace DCL
 {
     public class NavmapZoom : MonoBehaviour
     {
-        private const float MAP_ZOOM_LEVELS = 4;
+        private const int MAX_ZOOM = 4;
+        private const int MIN_ZOOM = 1;
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
         private const float SCALE_DURATION = 0.2f;
 
@@ -27,132 +28,107 @@ namespace DCL
 
         public void ResetCameraZoom()
         {
-            currentZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
+            currentZoomLevel = MAX_ZOOM / 2;
             Scale = zoomCurve.Evaluate(currentZoomLevel);
             containerRectTransform.localScale = new Vector3(Scale, Scale, Scale);
 
-            zoomIn.SetUiInteractable(isInteractable: currentZoomLevel < MAP_ZOOM_LEVELS);
-            zoomOut.SetUiInteractable(isInteractable: currentZoomLevel >= 1);
+            SetUiButtonInteractability();
         }
-
+        
+        private void SetUiButtonInteractability()
+        {
+            zoomIn.SetUiInteractable(isInteractable: currentZoomLevel < MAX_ZOOM);
+            zoomOut.SetUiInteractable(isInteractable: currentZoomLevel > MIN_ZOOM);
+        }
+        
         private void Start() => ResetCameraZoom();
 
         private void OnEnable()
         {
             mouseWheelAction.OnValueChanged += OnMouseWheelValueChanged;
 
-            zoomIn.InputAction.OnStarted += ZoomInRequest;
-            zoomOut.InputAction.OnStarted += ZoomOutRequest;
+            zoomIn.InputAction.OnStarted += Zoom;
+            zoomOut.InputAction.OnStarted += Zoom;
 
-            zoomIn.Button.onClick.AddListener( () => ZoomInRequest(DCLAction_Hold.ZoomIn));
-            zoomOut.Button.onClick.AddListener( () => ZoomOutRequest(DCLAction_Hold.ZoomOut));
+            zoomIn.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomIn));
+            zoomOut.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomOut));
         }
 
         private void OnDisable()
         {
             mouseWheelAction.OnValueChanged -= OnMouseWheelValueChanged;
 
-            zoomIn.InputAction.OnStarted -= ZoomInRequest;
-            zoomOut.InputAction.OnStarted -= ZoomOutRequest;
-        }
-
-        enum ZoomDir
-        {
-            In,
-            Out
+            zoomIn.InputAction.OnStarted -= Zoom;
+            zoomOut.InputAction.OnStarted -= Zoom;
         }
 
         private void OnMouseWheelValueChanged(DCLAction_Measurable action, float value)
         {
-            if (Mathf.Abs(value) < MOUSE_WHEEL_THRESHOLD)
+            if (value == 0 || Mathf.Abs(value) < MOUSE_WHEEL_THRESHOLD)
                 return;
 
-            if (value > 0)
-                ZoomIn();
-            else if (value < 0)
-                ZoomOut();
+            var zoomAction = value > 0 ? DCLAction_Hold.ZoomIn : DCLAction_Hold.ZoomOut;
+
+            Zoom(zoomAction);
         }
 
-        private void ZoomInRequest(DCLAction_Hold _)
+        private void Zoom(DCLAction_Hold action)
         {
-            if (!navmapVisible.Get())
+            if (!navmapVisible.Get() || isScaling)
                 return;
+            
+            switch (action)
+            {
+                case DCLAction_Hold.ZoomIn when currentZoomLevel == MAX_ZOOM:
+                case DCLAction_Hold.ZoomOut when currentZoomLevel == MIN_ZOOM:
+                    return;
+            }
 
             EventSystem.current.SetSelectedGameObject(null);
 
-            ZoomIn();
+            float startScale = Scale;
+            UpdateScale(zoomDirection: action == DCLAction_Hold.ZoomIn ? 1 : -1);
+
+            StopAllCoroutines();
+            StartCoroutine(ScaleOverTime(from: startScale, to: Scale));
+
+            SetUiButtonInteractability();
         }
         
-        private void ZoomOutRequest(DCLAction_Hold _)
+        private void UpdateScale(int zoomDirection)
         {
-            if (!navmapVisible.Get())
-                return;
-
-            EventSystem.current.SetSelectedGameObject(null);
-
-            ZoomOut();
+            currentZoomLevel += zoomDirection;
+            Scale = zoomCurve.Evaluate(currentZoomLevel);
+            MapRenderer.i.scaleFactor = Scale;
         }
 
-        private void ZoomIn()
-        {
-            if (!navmapVisible.Get() || isScaling)
-                return;
-
-            if (currentZoomLevel < MAP_ZOOM_LEVELS)
-            {
-                currentZoomLevel++;
-                StartCoroutine(ScaleOverTime(Scale));
-            }
-
-            zoomIn.SetUiInteractable(isInteractable: currentZoomLevel < MAP_ZOOM_LEVELS);
-            zoomOut.SetUiInteractable(isInteractable: currentZoomLevel >= 1);
-        }
-
-        private void ZoomOut()
-        {
-            if (!navmapVisible.Get() || isScaling)
-                return;
-
-            if (currentZoomLevel >= 1)
-            {
-                currentZoomLevel--;
-                StartCoroutine(ScaleOverTime(Scale));
-            }
-
-            zoomIn.SetUiInteractable(isInteractable: currentZoomLevel < MAP_ZOOM_LEVELS);
-            zoomOut.SetUiInteractable(isInteractable: currentZoomLevel >= 1);
-        }
-
-        private IEnumerator ScaleOverTime(float startScale)
+        private IEnumerator ScaleOverTime(float from, float to)
         {
             isScaling = true;
 
-            Scale = zoomCurve.Evaluate(currentZoomLevel);
-            MapRenderer.i.scaleFactor = Scale;
-            
-            Vector3 startScaleSize = new Vector3(startScale, startScale, startScale);
-            Vector3 targetScale = new Vector3(Scale, Scale, Scale);
-            
+            Vector3 startScale = new Vector3(from, from, from);
+            Vector3 targetScale = new Vector3(to, to, to);
+
             for (float timer = 0; timer < SCALE_DURATION; timer += Time.deltaTime)
             {
-                containerRectTransform.localScale = 
-                    Vector3.Lerp(startScaleSize, targetScale, timer / SCALE_DURATION);
-                
+                containerRectTransform.localScale =
+                    Vector3.Lerp(startScale, targetScale, timer / SCALE_DURATION);
+
                 yield return null;
             }
-            
+
             isScaling = false;
         }
 
         [Serializable]
-        private struct ZoomInput
+        private class ZoomInput
         {
             private static Color normalColor = new Color(0f, 0f, 0f, 1f);
             private static Color disabledColor = new Color(0f, 0f, 0f, 0.5f);
 
             public InputAction_Hold InputAction;
             public Button Button;
-            
+
             [SerializeField] private Image Image;
 
             public void SetUiInteractable(bool isInteractable)
