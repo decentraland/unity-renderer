@@ -141,7 +141,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         if (Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate)
             avatar.RemoveVisibilityConstrain(INSIDE_CAMERA);
         else
-            avatar.AddVisibilityConstrain(INSIDE_CAMERA);
+            avatar.AddVisibilityConstraint(INSIDE_CAMERA);
     }
 
     public void SetAvatarVisibility(bool isVisible)
@@ -150,7 +150,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         if (isVisible)
             avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         else
-            avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
+            avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAIN);
     }
 
     private void OnEnable()
@@ -163,7 +163,12 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     {
         avatar.PlayEmote(id, timestamp);
 
-        DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+        bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
+        if (!found)
+        {
+            var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
+            emotesCatalog.TryGetLoadedEmote(id, out emoteItem);
+        }
 
         if (emoteItem != null)
         {
@@ -205,16 +210,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                if (DataStore.i.emotes.newFlowEnabled.Get())
-                {
-                    emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                }
-                else
-                {
-                    //TODO remove this when new flow is the default and we can los retrocompatibility
-                    //temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-                    wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
-                }
+                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 
                 await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
@@ -262,7 +259,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     {
         if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            avatar.AddVisibilityConstraint(IN_HIDE_AREA);
             stickersControllers.ToggleHideArea(true);
         }
         currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);

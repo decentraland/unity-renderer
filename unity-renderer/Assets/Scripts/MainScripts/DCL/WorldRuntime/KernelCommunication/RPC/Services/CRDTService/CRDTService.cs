@@ -75,23 +75,22 @@ namespace RPC.Services
 
         private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
-            string sceneId = request.SceneId;
-
             try
             {
-                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
+                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out CRDTProtocol sceneCrdtState))
                 {
                     return emptyResponse;
                 }
 
                 memoryStream.SetLength(0);
 
-                context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+                context.crdtContext.scenesOutgoingCrdts.Remove(request.SceneNumber);
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
 
-                reusableCrdtMessage.SceneId = sceneId;
+                reusableCrdtMessage.SceneId = request.SceneId;
+                reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
 
                 return UniTask.FromResult(reusableCrdtMessage);

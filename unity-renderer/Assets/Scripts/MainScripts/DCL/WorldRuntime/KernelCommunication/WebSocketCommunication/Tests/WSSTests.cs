@@ -90,13 +90,13 @@ namespace Tests
 
                 Assert.LessOrEqual(Mathf.FloorToInt(time), 8);
 
-                string loadedSceneID = "0,0";
+                int loadedSceneNumber = 1;
 
                 yield return null;
 
-                Assert.IsTrue(DCL.Environment.i.world.state.ContainsScene(loadedSceneID),
+                Assert.IsTrue(DCL.Environment.i.world.state.ContainsScene(loadedSceneNumber),
                     "Expected loadedScene not found!");
-                Assert.IsTrue(DCL.Environment.i.world.state.GetScene(loadedSceneID) != null,
+                Assert.IsTrue(DCL.Environment.i.world.state.GetScene(loadedSceneNumber) != null,
                     "Expected loadedScene found but was null!!!");
             }
 

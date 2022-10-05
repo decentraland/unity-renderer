@@ -59,7 +59,7 @@ namespace Tests
             messageQueueHandler.sceneMessagesPool.Returns(new ConcurrentQueue<QueuedSceneMessage_Scene>());
             context.crdtContext.messageQueueHandler = messageQueueHandler;
 
-            string sceneId = "temptation";
+            int sceneNumber = 666;
             CRDTMessage crdtMessage = new CRDTMessage()
             {
                 key1 = 7693,
@@ -72,7 +72,7 @@ namespace Tests
                                .Do(info =>
                                {
                                    QueuedSceneMessage_Scene message = info.Arg<QueuedSceneMessage_Scene>();
-                                   Assert.AreEqual(message.sceneId, sceneId);
+                                   Assert.AreEqual(message.sceneNumber, sceneNumber);
                                    CRDTMessage received = (CRDTMessage)message.payload;
                                    Assert.AreEqual(crdtMessage.key1, received.key1);
                                    Assert.AreEqual(crdtMessage.timestamp, received.timestamp);
@@ -84,7 +84,7 @@ namespace Tests
             {
                 await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
                 {
-                    SceneId = sceneId,
+                    SceneNumber = sceneNumber,
                     Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                 });
             }
@@ -99,8 +99,8 @@ namespace Tests
         [Test]
         public async void SendCRDTtoScene()
         {
-            string scene1 = "temptation1";
-            string scene2 = "temptation2";
+            int scene1 = 666;
+            int scene2 = 777;
 
             CRDTProtocol sceneState1 = new CRDTProtocol();
             CRDTProtocol sceneState2 = new CRDTProtocol();
@@ -121,7 +121,7 @@ namespace Tests
 
                 // request for `scene1`
                 CRDTManyMessages response1 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
-                    new PullCRDTRequest() { SceneId = scene1 });
+                    new PullCRDTRequest() { SceneNumber = scene1 });
 
                 var deserializer = KernelBinaryMessageDeserializer.Deserialize(response1.Payload.ToByteArray());
                 deserializer.MoveNext();
@@ -134,7 +134,7 @@ namespace Tests
 
                 // request for `scene2`
                 CRDTManyMessages response2 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
-                    new PullCRDTRequest() { SceneId = scene2 });
+                    new PullCRDTRequest() { SceneNumber = scene2 });
 
                 deserializer = KernelBinaryMessageDeserializer.Deserialize(response2.Payload.ToByteArray());
                 deserializer.MoveNext();

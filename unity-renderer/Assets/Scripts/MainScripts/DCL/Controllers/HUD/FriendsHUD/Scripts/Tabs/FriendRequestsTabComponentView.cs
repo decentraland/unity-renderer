@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -15,6 +16,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private const float NOTIFICATIONS_DURATION = 3;
     private const int AVATAR_SNAPSHOTS_PER_FRAME = 5;
     private const int CREATION_AMOUNT_PER_FRAME = 5;
+    private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
+    private const float MIN_TIME_TO_REQUIRE_MORE_ENTRIES = 0.5f;
 
     [SerializeField] private GameObject enabledHeader;
     [SerializeField] private GameObject disabledHeader;
@@ -28,6 +31,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private TMP_Text sentRequestsCountText;
     [SerializeField] private UserContextMenu contextMenuPanel;
     [SerializeField] private RectTransform viewport;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Notifications")] [SerializeField]
     private Notification requestSentNotification;
@@ -38,9 +42,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Model model;
     
     [Header("Load More Entries")]
-    [SerializeField] internal Button loadMoreEntriesButton;
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
+    [SerializeField] internal GameObject loadMoreEntriesSpinner;
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private readonly Dictionary<string, FriendRequestEntry> entries = new Dictionary<string, FriendRequestEntry>();
@@ -50,10 +54,18 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private string lastRequestSentUserName;
     private int currentAvatarSnapshotIndex;
     private bool isLayoutDirty;
+    private Vector2 lastScrollPosition = Vector2.one;
+    private Coroutine requireMoreEntriesRoutine;
+    private float loadMoreEntriesRestrictionTime;
 
     public Dictionary<string, FriendRequestEntry> Entries => entries;
 
     public int Count => Entries.Count + creationQueue.Keys.Count(s => !Entries.ContainsKey(s));
+
+    public int ReceivedCount => receivedRequestsList.Count() +
+                                creationQueue.Count(pair => pair.Value.isReceived && !Entries.ContainsKey(pair.Key));
+    public int SentCount => sentRequestsList.Count() +
+                                creationQueue.Count(pair => !pair.Value.isReceived && !Entries.ContainsKey(pair.Key));
 
     public event Action<FriendRequestEntryModel> OnCancelConfirmation;
     public event Action<FriendRequestEntryModel> OnRejectConfirmation;
@@ -68,7 +80,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit += SendFriendRequest;
         searchBar.OnSearchText += OnSearchInputValueChanged;
         contextMenuPanel.OnBlock += HandleFriendBlockRequest;
-        loadMoreEntriesButton.onClick.AddListener(RequestMoreEntries);
+        scroll.onValueChanged.AddListener(RequestMoreEntries);
         UpdateLayout();
     }
 
@@ -78,7 +90,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         searchBar.OnSubmit -= SendFriendRequest;
         searchBar.OnSearchText -= OnSearchInputValueChanged;
         contextMenuPanel.OnBlock -= HandleFriendBlockRequest;
-        loadMoreEntriesButton.onClick.RemoveListener(RequestMoreEntries);
+        scroll.onValueChanged.RemoveListener(RequestMoreEntries);
         NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
 
@@ -158,6 +170,10 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     public void Clear()
     {
+        HideMoreFriendsLoadingSpinner();
+        loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
+        scroll.verticalNormalizedPosition = 1f;
+        creationQueue.Clear();
         entries.ToList().ForEach(pair => Remove(pair.Key));
         receivedRequestsList.Clear();
         sentRequestsList.Clear();
@@ -251,6 +267,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void SendFriendRequest(string friendUserName)
     {
+        friendUserName = friendUserName.Trim()
+            .Replace("\n", "")
+            .Replace("\r", "");
         if (string.IsNullOrEmpty(friendUserName)) return;
 
         searchBar.ClearSearch();
@@ -272,13 +291,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
         requestSentNotification.model.message = $"Your request to {lastRequestSentUserName} successfully sent!";
         NotificationsController.i?.ShowNotification(requestSentNotification);
     }
-    
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount)
-    {
-        loadMoreEntriesLabel.SetText(
-            $"{pendingFriendsCount} request hidden. Click below to show more.");
-        ShowMoreFriendsToLoadHint();
-    }
 
     public void HideMoreFriendsToLoadHint()
     {
@@ -286,12 +298,17 @@ public class FriendRequestsTabComponentView : BaseComponentView
         UpdateLayout();
     }
     
-    private void ShowMoreFriendsToLoadHint()
+    public void ShowMoreEntriesToLoadHint(int hiddenCount)
     {
+        loadMoreEntriesLabel.text = $"{hiddenCount} requests hidden. Scroll down to show more.";
         loadMoreEntriesContainer.SetActive(true);
         UpdateLayout();
     }
-    
+
+    private void ShowMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(true);
+
+    private void HideMoreFriendsLoadingSpinner() => loadMoreEntriesSpinner.SetActive(false);
+
     private void UpdateEmptyOrFilledState()
     {
         emptyStateContainer.SetActive(entries.Count == 0);
@@ -306,13 +323,6 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void OnFriendRequestReceivedAccepted(FriendRequestEntry requestEntry)
     {
-        // Add placeholder friend to avoid affecting UX by roundtrip with kernel
-        FriendsController.i?.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
-        {
-            userId = requestEntry.Model.userId,
-            action = FriendshipAction.APPROVED
-        });
-
         ShowFriendAcceptedNotification(requestEntry);
         Remove(requestEntry.Model.userId);
         OnFriendRequestApproved?.Invoke((FriendRequestEntryModel) requestEntry.Model);
@@ -341,6 +351,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
         contextMenuPanel.Show(friendEntry.Model.userId);
+        contextMenuPanel.SetFriendshipContentActive(false);
         friendEntry.Dock(contextMenuPanel);
     }
 
@@ -385,9 +396,35 @@ public class FriendRequestsTabComponentView : BaseComponentView
             creationQueue.Remove(pair.Key);
             Set(pair.Key, pair.Value);
         }
+
+        HideMoreFriendsLoadingSpinner();
     }
-    
-    private void RequestMoreEntries() => OnRequireMoreEntries?.Invoke();
+
+    private void RequestMoreEntries(Vector2 position)
+    {
+        if (!loadMoreEntriesContainer.activeInHierarchy ||
+            loadMoreEntriesSpinner.activeInHierarchy ||
+            (Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime) < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+
+        if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
+        {
+            if (requireMoreEntriesRoutine != null)
+                StopCoroutine(requireMoreEntriesRoutine);
+
+            ShowMoreFriendsLoadingSpinner();
+            requireMoreEntriesRoutine = StartCoroutine(WaitThenRequireMoreEntries());
+
+            loadMoreEntriesRestrictionTime = Time.realtimeSinceStartup;
+        }
+
+        lastScrollPosition = position;
+    }
+
+    private IEnumerator WaitThenRequireMoreEntries()
+    {
+        yield return new WaitForSeconds(1f);
+        OnRequireMoreEntries?.Invoke();
+    }
 
     [Serializable]
     private class Model

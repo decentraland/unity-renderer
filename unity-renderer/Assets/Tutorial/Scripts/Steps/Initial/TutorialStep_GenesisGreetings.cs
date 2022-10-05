@@ -25,7 +25,8 @@ namespace DCL.Tutorial
         public override void OnStepStart()
         {
             base.OnStepStart();
-
+            
+            CommonScriptableObjects.userMovementKeysBlocked.Set(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
             titleText.text = titleText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
@@ -62,6 +63,8 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
+            
+            CommonScriptableObjects.userMovementKeysBlocked.Set(false);
         }
 
         internal void OnOkButtonClick() { stepIsFinished = true; }

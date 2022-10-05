@@ -53,7 +53,7 @@ namespace DCL.ECSComponents
                     DisposeMesh(entity,scene);
                     generatedMesh = shape.mesh;
                     GenerateRenderer(generatedMesh, scene, entity, model.GetVisible(), model.GetWithCollisions(), model.GetIsPointerBlocker());
-                    dataStore.AddShapeReady(entity.entityId,meshesInfo.meshRootGameObject);
+                    dataStore.AddShapeReady(entity.entityId, meshesInfo.meshRootGameObject);
                     dataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                 };
                 primitiveMeshPromisePrimitive.OnFailEvent += ( mesh,  exception) =>

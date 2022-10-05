@@ -514,7 +514,6 @@ namespace DCL.Tutorial_Tests
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.VoiceChatAction_OnStarted(DCLAction_Hold.VoiceChatRecording);
-                step.VoiceChatAction_OnFinished(DCLAction_Hold.VoiceChatRecording);
             });
         }
 

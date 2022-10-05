@@ -19,7 +19,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDController();
+                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController());
                 break;
             case HUDElementID.PROFILE_HUD:
                 hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
@@ -28,13 +28,15 @@ public class HUDFactory : IHUDFactory
                 hudElement = new NotificationHUDController();
                 break;
             case HUDElementID.AVATAR_EDITOR:
-                hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags, Environment.i.platform.serviceProviders.analytics);
+                hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags,
+                    Environment.i.platform.serviceProviders.analytics);
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
-                hudElement = new PlayerInfoCardHUDController(FriendsController.i,
+                hudElement = new PlayerInfoCardHUDController(
+                    FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
@@ -52,29 +54,27 @@ public class HUDFactory : IHUDFactory
                 hudElement = new TermsOfServiceHUDController();
                 break;
             case HUDElementID.FRIENDS:
-                hudElement = new FriendsHUDController(DataStore.i, new WebInterfaceFriendsController(FriendsController.i),
+                hudElement = new FriendsHUDController(DataStore.i,
+                    FriendsController.i,
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    ChatController.i,
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    ChatController.i);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
-                    new WebInterfaceFriendsController(FriendsController.i),
-                    ChatController.i,
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+                    FriendsController.i,
+                    ChatController.i);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
                     ChatController.i,
-                    new WebInterfaceFriendsController(FriendsController.i),
+                    FriendsController.i,
                     Resources.Load<InputAction_Trigger>("CloseWindow"),
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
@@ -82,14 +82,11 @@ public class HUDFactory : IHUDFactory
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
             case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(ChatController.i,
-                    Environment.i.serviceLocator.Get<ILastReadMessagesService>(),
+                hudElement = new PublicChatChannelController(
+                    ChatController.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     ProfanityFilterSharedInstances.regexFilter,
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;

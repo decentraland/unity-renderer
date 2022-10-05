@@ -9,8 +9,6 @@ namespace DCL.Components
 {
     internal class AvatarAttachHandler : IDisposable
     {
-        private const float BOUNDARIES_CHECK_INTERVAL = 5;
-
         public AvatarAttachComponent.Model model { internal set; get; } = new AvatarAttachComponent.Model();
         public IParcelScene scene { private set; get; }
         public IDCLEntity entity { private set; get; }
@@ -28,7 +26,6 @@ namespace DCL.Components
 
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
-        private float lastBoundariesCheckTime = 0;
 
         public void Initialize(IParcelScene scene, IDCLEntity entity, IUpdateEventHandler updateEventHandler)
         {
@@ -113,11 +110,6 @@ namespace DCL.Components
             {
                 entity.gameObject.transform.position = anchorPoint.position;
                 entity.gameObject.transform.rotation = anchorPoint.rotation;
-
-                if (Time.unscaledTime - lastBoundariesCheckTime > BOUNDARIES_CHECK_INTERVAL)
-                {
-                    CheckSceneBoundaries(entity);
-                }
             }
             else
             {
@@ -138,12 +130,6 @@ namespace DCL.Components
             return result;
         }
 
-        private void CheckSceneBoundaries(IDCLEntity entity)
-        {
-            sceneBoundsChecker?.AddEntityToBeChecked(entity);
-            lastBoundariesCheckTime = Time.unscaledTime;
-        }
-
         private void StartComponentUpdate()
         {
             if (componentUpdate != null)
@@ -152,6 +138,7 @@ namespace DCL.Components
             currentCoords = null;
             componentUpdate = LateUpdate;
             updateEventHandler?.AddListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
+            sceneBoundsChecker?.AddEntityToBeChecked(entity, isPersistent: true, runPreliminaryEvaluation: true);
         }
 
         private void StopComponentUpdate()
@@ -160,6 +147,8 @@ namespace DCL.Components
                 return;
 
             updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, componentUpdate);
+            sceneBoundsChecker?.RemoveEntity(entity, removeIfPersistent: true);
+            sceneBoundsChecker?.AddEntityToBeChecked(entity, isPersistent: false, runPreliminaryEvaluation: false);
             componentUpdate = null;
         }
     }

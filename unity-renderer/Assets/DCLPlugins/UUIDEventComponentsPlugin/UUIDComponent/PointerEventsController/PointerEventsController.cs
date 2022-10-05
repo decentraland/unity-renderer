@@ -42,6 +42,8 @@ namespace DCL
         private InputController_Legacy inputControllerLegacy;
         private InteractionHoverCanvasController hoverCanvas;
 
+        private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
+
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
             InteractionHoverCanvasController hoverCanvas)
         {
@@ -83,7 +85,8 @@ namespace DCL
             IWorldState worldState = Environment.i.world.state;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
-            bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity,
+            Ray ray = GetRayFromCamera();
+            bool didHit = Physics.Raycast(ray, out hitInfo, Mathf.Infinity,
                 PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
 
             bool uiIsBlocking = false;
@@ -105,6 +108,17 @@ namespace DCL
                     uiIsBlocking = uiGraphicRaycastResults.Count > 0;
                 }
             }
+
+            if (dataStoreEcs7.isEcs7Enabled)
+            {
+                dataStoreEcs7.lastPointerRayHit.hit.collider = hitInfo.collider;
+                dataStoreEcs7.lastPointerRayHit.hit.point = hitInfo.point;
+                dataStoreEcs7.lastPointerRayHit.hit.normal = hitInfo.normal;
+                dataStoreEcs7.lastPointerRayHit.hit.distance = hitInfo.distance;
+                dataStoreEcs7.lastPointerRayHit.didHit = didHit;
+                dataStoreEcs7.lastPointerRayHit.ray = ray;
+                dataStoreEcs7.lastPointerRayHit.hasValue = true;
+            }            
 
             if (!didHit || uiIsBlocking)
             {
@@ -200,38 +214,20 @@ namespace DCL
 
         private IList<IPointerEvent> GetPointerEventList(IDCLEntity entity)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-            {
-                return pointerInputEvent.Cast<IPointerEvent>().ToList();
-            }
-            else
-            {
-                var lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
-                                                               .Select(child => child.GetComponent<IPointerEvent>())
-                                                               .Where(pointerComponent => pointerComponent != null)
-                                                               .ToArray();
-
-                return lastHoveredEventList;
-            }
+            return entity.gameObject.transform.Cast<Transform>()
+                                    .Select(child => child.GetComponent<IPointerEvent>())
+                                    .Where(pointerComponent => pointerComponent != null)
+                                    .ToArray();
         }
 
         private IPointerEvent GetPointerEvent(IDCLEntity entity)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-                return pointerInputEvent.First();
-            else
-                return entity.gameObject.GetComponentInChildren<IPointerEvent>();
+            return entity.gameObject.GetComponentInChildren<IPointerEvent>();
         }
 
-        private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
+        private IList<IPointerInputEvent> GetPointerInputEvents(GameObject hitGameObject)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (entity != null && DataStore.i.ecs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-                return pointerInputEvent;
-            else
-                return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
+            return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
         private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
@@ -369,6 +365,13 @@ namespace DCL
             {
                 ProcessButtonUp(buttonId, useRaycast, enablePointerEvent, pointerEventLayer, globalLayer);
             }
+            
+            if (dataStoreEcs7.isEcs7Enabled)
+            {
+                dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
+                dataStoreEcs7.lastPointerInputEvent.isButtonDown = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
+                dataStoreEcs7.lastPointerInputEvent.hasValue = evt == InputController_Legacy.EVENT.BUTTON_DOWN || evt == InputController_Legacy.EVENT.BUTTON_UP;
+            }
         }
 
         private void ProcessButtonUp(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, bool enablePointerEvent,
@@ -391,12 +394,16 @@ namespace DCL
 
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
-            if (pointerInputUpEvent != null)
+            RaycastResultInfo raycastInfoPointerEventLayer = null;
+            if (pointerInputUpEvent != null || dataStoreEcs7.isEcs7Enabled)
             {
                 // Raycast for pointer event components
-                RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane,
+                raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane,
                     pointerEventLayer, loadedScene);
+            }
 
+            if (pointerInputUpEvent != null && raycastInfoPointerEventLayer != null)
+            {
                 bool isOnClickComponentBlocked =
                     IsBlockingOnClick(raycastInfoPointerEventLayer.hitInfo, raycastGlobalLayerHitInfo);
 
@@ -464,7 +471,7 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                IList<IPointerInputEvent> events = GetPointerInputEvents(info.entity, hitGameObject);
+                IList<IPointerInputEvent> events = GetPointerInputEvents(hitGameObject);
 
                 for (var i = 0; i < events.Count; i++)
                 {

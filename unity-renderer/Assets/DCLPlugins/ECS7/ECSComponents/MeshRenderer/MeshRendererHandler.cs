@@ -10,6 +10,7 @@ namespace DCL.ECSComponents
     public class MeshRendererHandler : IECSComponentHandler<PBMeshRenderer>
     {
         private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
+        private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
         private readonly DataStore_ECS7 ecs7DataStore;
 
         private GameObject componentGameObject;
@@ -19,9 +20,13 @@ namespace DCL.ECSComponents
         private AssetPromise_PrimitiveMesh primitiveMeshPromise;
         private PBMeshRenderer prevModel;
 
-        public MeshRendererHandler(DataStore_ECS7 dataStoreEcs7, IInternalECSComponent<InternalTexturizable> texturizableComponent)
+        public MeshRendererHandler(
+            DataStore_ECS7 dataStoreEcs7,
+            IInternalECSComponent<InternalTexturizable> texturizableComponent,
+            IInternalECSComponent<InternalRenderers> renderersComponent)
         {
             texturizableInternalComponent = texturizableComponent;
+            renderersInternalComponent = renderersComponent;
             ecs7DataStore = dataStoreEcs7;
         }
 
@@ -34,11 +39,13 @@ namespace DCL.ECSComponents
             componentMeshRenderer = componentGameObject.AddComponent<MeshRenderer>();
             componentMeshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
             texturizableInternalComponent.AddRenderer(scene, entity, componentMeshRenderer);
+            renderersInternalComponent.AddRenderer(scene, entity, componentMeshRenderer);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             texturizableInternalComponent.RemoveRenderer(scene, entity, componentMeshRenderer);
+            renderersInternalComponent.RemoveRenderer(scene, entity, componentMeshRenderer);
 
             if (prevModel != null)
                 ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, prevModel);

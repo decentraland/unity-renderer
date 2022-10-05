@@ -50,41 +50,41 @@ public class RendererUtilsShould
     public void AddRendereableCorrectly()
     {
         // Arrange
-        string sceneId = "SceneId";
+        int sceneNumber = 666;
         int componentId = 5;
 
         Mesh mesh =  PrimitiveMeshBuilder.BuildCube(1f);
         DataStore_WorldObjects.SceneData sceneData = new DataStore_WorldObjects.SceneData();
-        DataStore.i.sceneWorldObjects.sceneData.Add(sceneId, sceneData);
+        DataStore.i.sceneWorldObjects.sceneData.Add(sceneNumber, sceneData);
         int sceneDataMeshesCount = sceneData.meshes.Count();
         var renderers = gameObject.GetComponentsInChildren<Renderer>(true);
 
         // Act
-        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject,renderers);
+        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneNumber, componentId, mesh, gameObject,renderers);
 
         // Assert
         Assert.IsNotNull(rendereable);
-        Assert.AreNotEqual(sceneDataMeshesCount, DataStore.i.sceneWorldObjects.sceneData[sceneId].meshes.Count());
+        Assert.AreNotEqual(sceneDataMeshesCount, DataStore.i.sceneWorldObjects.sceneData[sceneNumber].meshes.Count());
     }
     
     [Test]
     public void RemoveRendereableCorrectly()
     {
         // Arrange
-        string sceneId = "SceneId";
+        int sceneNumber = 666;
         int componentId = 5;
 
         Mesh mesh =  PrimitiveMeshBuilder.BuildCube(1f);
         DataStore_WorldObjects.SceneData sceneData = new DataStore_WorldObjects.SceneData();
-        DataStore.i.sceneWorldObjects.sceneData.Add(sceneId, sceneData);
+        DataStore.i.sceneWorldObjects.sceneData.Add(sceneNumber, sceneData);
         var renderers = gameObject.GetComponentsInChildren<Renderer>(true);
-        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneId, componentId, mesh, gameObject,renderers);
+        var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneNumber, componentId, mesh, gameObject,renderers);
         int sceneDataMeshesCount = sceneData.meshes.Count();
         
         // Act
-        ECSComponentsUtils.RemoveRendereableFromDataStore(sceneId,rendereable);
+        ECSComponentsUtils.RemoveRendereableFromDataStore(sceneNumber, rendereable);
 
         // Assert
-        Assert.AreNotEqual(sceneDataMeshesCount, DataStore.i.sceneWorldObjects.sceneData[sceneId].meshes.Count());
+        Assert.AreNotEqual(sceneDataMeshesCount, DataStore.i.sceneWorldObjects.sceneData[sceneNumber].meshes.Count());
     }
 }

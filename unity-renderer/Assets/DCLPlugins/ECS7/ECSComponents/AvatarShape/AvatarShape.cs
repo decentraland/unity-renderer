@@ -176,10 +176,7 @@ namespace DCL.ECSComponents
             var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             HashSet<string> emotes = new HashSet<string>();
-            if (DataStore.i.emotes.newFlowEnabled.Get())
-            {
-                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-            }
+            emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
@@ -396,7 +393,7 @@ namespace DCL.ECSComponents
 
         public void ApplyHideAvatarModifier()
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            avatar.AddVisibilityConstraint(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
             playerNameContainer.SetActive(false);
         }

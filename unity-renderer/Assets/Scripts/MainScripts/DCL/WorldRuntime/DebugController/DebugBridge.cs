@@ -18,7 +18,6 @@ namespace DCL
             public bool enabled;
         }
 
-
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
 

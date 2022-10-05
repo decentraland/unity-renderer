@@ -8,6 +8,7 @@ using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using DCL.Chat;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -238,7 +239,7 @@ public class HUDController : IHUDController
                     PublicChatChannelHud.OnClosed += HandlePublicChatChannelClosed;
                     taskbarHud?.AddPublicChatChannel(PublicChatChannelHud);
                     // TODO: this call should be removed when chat notifications are implemented
-                    taskbarHud?.OpenPublicChatChannel("general", false);
+                    taskbarHud?.OpenPublicChatChannel(ChatUtils.NEARBY_CHANNEL_ID, false);
                     PublicChatChannelHud.ActivatePreviewModeInstantly();
                 }
                 else

@@ -1,6 +1,7 @@
 using DCL.Rendering;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -34,7 +35,7 @@ namespace CullingControllerTests
             var originalRendererD = testGameObjectD.AddComponent<SkinnedMeshRenderer>();
             testGameObjectD.layer = 0;
 
-            Renderer[] renderers = null;
+            ICollection<Renderer> renderers = null;
             Renderer obtainedRendererA = null, obtainedRendererB = null, obtainedRendererC = null, obtainedRendererD = null;
 
             // Act
@@ -80,7 +81,6 @@ namespace CullingControllerTests
             // Act
             tracker.ForcePopulateRenderersList(includeInactives);
 
-            Renderer[] renderers = tracker.GetRenderers();
             Renderer obtainedRenderer = tracker.GetRenderers().FirstOrDefault(x => x == originalRenderer);
 
             // Assert

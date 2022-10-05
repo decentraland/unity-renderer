@@ -324,6 +324,16 @@ namespace DCL.Controllers
             
             Gizmos.color = new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, 0.5f);
             Gizmos.DrawCube(outerBounds.center, outerBounds.size + Vector3.up);
+            
+            Gizmos.color = new Color(Color.green.r, Color.green.g, Color.green.b, 0.5f);
+            Bounds  parcelBounds = new Bounds();
+            foreach (Vector2Int parcel in parcels)
+            {
+                Vector3 parcelSceneUnityPos = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(parcel.x, parcel.y));
+                parcelBounds.center = parcelSceneUnityPos + new Vector3(8f, 0f, 8f);
+                parcelBounds.size = new Vector3(16f, 0.1f, 16f);
+                Gizmos.DrawCube(parcelBounds.center, parcelBounds.size);
+            }
         }
 
         public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }

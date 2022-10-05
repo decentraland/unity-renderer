@@ -1,4 +1,4 @@
-﻿using AvatarSystem;
+using AvatarSystem;
 using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
@@ -7,66 +7,83 @@ namespace DCL
 {
     public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
-        const float SPEED_SLOW = 2.0f;
-        const float SPEED_FAST = 4.0f;
-        const float SPEED_ULTRA_FAST = 8.0f;
-        const float SPEED_GRAVITY = 8.0f;
-        const float ROTATION_SPEED = 6.25f;
-        const float SPEED_EPSILON = 0.0001f;
+        private const float SPEED_SLOW = 2.0f;
+        private const float SPEED_FAST = 4.0f;
+        private const float SPEED_ULTRA_FAST = 8.0f;
+        private const float SPEED_GRAVITY = 8.0f;
+        private const float ROTATION_SPEED = 6.25f;
+        private const float SPEED_EPSILON = 0.0001f;
+        private float movementSpeed = SPEED_SLOW;
+
+        private Transform avatarTransformValue;
+
+        private Quaternion targetRotation;
+        private Vector3 currentWorldPosition = Vector3.zero;
+        private Vector3 targetPosition;
 
         private float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
 
-        Transform avatarTransform
+
+        private Transform AvatarTransform
         {
             get
             {
                 if (avatarTransformValue == null)
+                {
                     avatarTransformValue = GetComponent<AvatarShape>().entity.gameObject.transform;
+                    enabled = true;
+                }
 
                 return avatarTransformValue;
             }
+            set 
+            { 
+                avatarTransformValue = value;
+
+                if (value == null)
+                    enabled = false;
+            }
         }
 
-        Transform avatarTransformValue;
-
-        Vector3 currentPosition
+        private Vector3 CurrentPosition
         {
             get { return currentWorldPosition; }
             set
             {
                 currentWorldPosition = value;
-                avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
+                AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
             }
         }
 
-        Vector3 currentWorldPosition = Vector3.zero;
-
-        Quaternion currentRotation { get { return avatarTransform.rotation; } set { avatarTransform.rotation = value; } }
-
-        Vector3 targetPosition;
-        Quaternion targetRotation;
-
-        float movementSpeed = SPEED_SLOW;
+        private Quaternion CurrentRotation 
+        { 
+            get { return AvatarTransform.rotation; } 
+            set { AvatarTransform.rotation = value; } 
+        }
 
         public void OnPoolGet() { }
 
         public void OnPoolRelease()
         {
-            avatarTransformValue = null;
+            AvatarTransform = null;
+
             currentWorldPosition = Vector3.zero;
         }
 
         public void SetAvatarTransform(Transform avatarTransform)
         {
-            avatarTransformValue = avatarTransform;
+            AvatarTransform = avatarTransform;
         }
 
-        void OnEnable() { CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition; }
+        private void OnEnable() { CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition; }
 
-        void OnDisable() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
+        private void OnDisable() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
 
-        void OnWorldReposition(Vector3 current, Vector3 previous) { avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition); }
+        private void OnWorldReposition(Vector3 current, Vector3 previous) 
+        { 
+            AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
+        }
 
         public void OnTransformChanged(object model)
         {
@@ -87,8 +104,8 @@ namespace DCL
         {
             if (immediate)
             {
-                currentPosition = position;
-                avatarTransform.rotation = rotation;
+                CurrentPosition = position;
+                AvatarTransform.rotation = rotation;
             }
 
             Vector3 flatEulerRotation = rotation.eulerAngles;
@@ -100,24 +117,17 @@ namespace DCL
 
             float distance = Vector3.Distance(targetPosition, currentWorldPosition);
 
-            //NOTE(Brian): More distance to goal = faster movement.
             if (distance >= 50)
-            {
-                this.movementSpeed = float.MaxValue;
-            }
+                movementSpeed = float.MaxValue;
             else if (distance >= 3)
-            {
-                this.movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
-            }
+                movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
             else
-            {
-                this.movementSpeed = SPEED_SLOW;
-            }
+                movementSpeed = SPEED_SLOW;
         }
 
         void UpdateLerp(float deltaTime)
         {
-            if (Vector3.SqrMagnitude(currentPosition - targetPosition) < SPEED_EPSILON)
+            if (Vector3.SqrMagnitude(CurrentPosition - targetPosition) < SPEED_EPSILON)
             {
                 UpdateRotation(deltaTime, targetRotation);
                 return;
@@ -127,11 +137,14 @@ namespace DCL
             UpdateMovement(deltaTime);
         }
 
-        private void UpdateRotation(float deltaTime, Quaternion targetRotation) { currentRotation = Quaternion.Slerp(currentRotation, targetRotation, ROTATION_SPEED * deltaTime); }
+        private void UpdateRotation(float deltaTime, Quaternion targetRotation) 
+        { 
+            CurrentRotation = Quaternion.Slerp(CurrentRotation, targetRotation, ROTATION_SPEED * deltaTime);
+        }
 
         private void UpdateMovement(float deltaTime)
         {
-            Vector3 flattenedDiff = targetPosition - currentPosition;
+            Vector3 flattenedDiff = targetPosition - CurrentPosition;
             flattenedDiff.y = 0;
 
             //NOTE(Brian): Avoid Unity error when computing look rotation for 0 magnitude vectors.
@@ -143,26 +156,23 @@ namespace DCL
                 UpdateRotation(deltaTime, lookRotation);
             }
 
-            Vector3 direction = (targetPosition - currentPosition).normalized;
+            Vector3 direction = (targetPosition - CurrentPosition).normalized;
             Vector3 delta = direction * (movementSpeed * deltaTime);
 
             //NOTE(Brian): We need a separate value for Y movement because the gravity has to be lerped faster.
             delta.y = direction.y * SPEED_GRAVITY * deltaTime;
 
             //NOTE(Brian): If we overshoot targetPosition we adjust the delta value accordingly.
-            if (delta.sqrMagnitude > Vector3.SqrMagnitude(targetPosition - currentPosition))
+            if (delta.sqrMagnitude > Vector3.SqrMagnitude(targetPosition - CurrentPosition))
             {
-                delta = targetPosition - currentPosition;
+                delta = targetPosition - CurrentPosition;
             }
 
-            currentPosition += delta;
+            CurrentPosition += delta;
         }
 
-        void Update()
+        private void Update()
         {
-            if (avatarTransformValue == null)
-                return;
-
             movementLerpWaitCounter += Time.deltaTime;
             if (movementLerpWaitCounter >= movementLerpWait)
             {

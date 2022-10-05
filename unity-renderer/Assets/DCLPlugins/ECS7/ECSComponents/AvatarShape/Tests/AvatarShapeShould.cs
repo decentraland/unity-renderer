@@ -114,7 +114,7 @@ namespace DCL.ECSComponents.Tests
             avatarShape.ApplyHideAvatarModifier();
             
             // Assert
-            avatar.Received(1).AddVisibilityConstrain(AvatarShape.IN_HIDE_AREA);
+            avatar.Received(1).AddVisibilityConstraint(AvatarShape.IN_HIDE_AREA);
             Assert.IsFalse(avatarShape.playerNameContainer.activeInHierarchy);
         }
         

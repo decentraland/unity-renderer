@@ -8,16 +8,7 @@ using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
 {
-    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
     public static DCLWebSocketService service;
-
-    WebSocketServer ws;
-    private Coroutine updateCoroutine;
-    private bool requestStop = false;
-
-    private Dictionary<string, GameObject> bridgeGameObjects = new Dictionary<string, GameObject>();
-
-    public Dictionary<string, string> messageTypeToBridgeName = new Dictionary<string, string>(); // Public to be able to modify it from `explorer-desktop`
 
     [System.NonSerialized]
     public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -25,7 +16,34 @@ public class WebSocketCommunication : IKernelCommunication
     [System.NonSerialized]
     public static volatile bool queuedMessagesDirty;
 
+    private Dictionary<string, GameObject> bridgeGameObjects = new Dictionary<string, GameObject>();
+
+    public Dictionary<string, string> messageTypeToBridgeName = new Dictionary<string, string>(); // Public to be able to modify it from `explorer-desktop`
+    private bool requestStop = false;
+    private Coroutine updateCoroutine;
+
+    WebSocketServer ws;
+
+    public WebSocketCommunication(bool withSSL = false, int startPort = 7666, int endPort = 7800)
+    {
+        InitMessageTypeToBridgeName();
+
+        DCL.DataStore.i.debugConfig.isWssDebugMode = true;
+
+        string url = StartServer(startPort, endPort, withSSL);
+
+        Debug.Log("WebSocket Server URL: " + url);
+
+        DataStore.i.wsCommunication.url = url;
+
+        DataStore.i.wsCommunication.communicationReady.Set(true);
+
+        updateCoroutine = CoroutineStarter.Start(ProcessMessages());
+    }
+
     public bool isServerReady => ws.IsListening;
+    public void Dispose() { ws.Stop(); }
+    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
 
     private string StartServer(int port, int maxPort, bool withSSL)
     {
@@ -48,7 +66,7 @@ public class WebSocketCommunication : IKernelCommunication
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
-                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 
+                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
                     },
                     KeepClean = false
                 };
@@ -83,23 +101,6 @@ public class WebSocketCommunication : IKernelCommunication
 
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
-    }
-
-    public WebSocketCommunication(bool withSSL = false, int startPort = 5000, int endPort = 5100)
-    {
-        InitMessageTypeToBridgeName();
-
-        DCL.DataStore.i.debugConfig.isWssDebugMode = true;
-
-        string url = StartServer(startPort, endPort, withSSL);
-
-        Debug.Log("WebSocket Server URL: " + url);
-
-        DataStore.i.wsCommunication.url = url;
-
-        DataStore.i.wsCommunication.communicationReady.Set(true);
-
-        updateCoroutine = CoroutineStarter.Start(ProcessMessages());
     }
 
     private void InitMessageTypeToBridgeName()
@@ -154,6 +155,17 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
         messageTypeToBridgeName["TogglePreviewMenu"] = "Main";
         messageTypeToBridgeName["ToggleSceneSpawnPoints"] = "Main";
+        messageTypeToBridgeName["AddFriendsWithDirectMessages"] = "Main";
+        messageTypeToBridgeName["AddFriends"] = "Main";
+        messageTypeToBridgeName["AddFriendRequests"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
+        messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
+        messageTypeToBridgeName["InitializeChat"] = "Main";
+        messageTypeToBridgeName["AddChatMessages"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateUserUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateHomeScene"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
@@ -172,7 +184,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "HUDController";
         messageTypeToBridgeName["AirdroppingRequest"] = "HUDController";
-        
+
         messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
         messageTypeToBridgeName["SelectGizmo"] = "BuilderController";
         messageTypeToBridgeName["ResetObject"] = "BuilderController";
@@ -264,5 +276,4 @@ public class WebSocketCommunication : IKernelCommunication
             yield return null;
         }
     }
-    public void Dispose() { ws.Stop(); }
 }
