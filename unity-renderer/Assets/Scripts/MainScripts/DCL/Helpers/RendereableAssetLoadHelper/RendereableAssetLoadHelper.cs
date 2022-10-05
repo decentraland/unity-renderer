@@ -242,6 +242,18 @@ namespace DCL.Components
                                    }
                                }
                            }
+                           
+                           if (newMaterial.shaderKeywords != null)
+                           {
+                               if (newMaterial.shaderKeywords.Length > 0)
+                               {
+                                   log += "New material keywords: ";
+                                   foreach (var keyword in newMaterial.shaderKeywords)
+                                   {
+                                       log += keyword + " ";
+                                   }
+                               }
+                           }
 
                            if (mat.name.Contains("Mika"))
                            {
