@@ -17,6 +17,8 @@ namespace ECSSystems.ScenesUiSystem
             public IWorldState worldState;
             public BaseList<IParcelScene> loadedScenes;
             public string lastSceneId;
+            public bool isPendingSceneUI;
+            public IParcelScene currentScene;
         }
 
         public static Action CreateSystem(UIDocument uiDocument,
@@ -30,7 +32,9 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent = internalUiContainerComponent,
                 worldState = worldState,
                 loadedScenes = loadedScenes,
-                lastSceneId = null
+                lastSceneId = null,
+                isPendingSceneUI = false,
+                currentScene = null
             };
 
             return () => Update(state);
@@ -44,9 +48,28 @@ namespace ECSSystems.ScenesUiSystem
 
             ApplyParenting(state.internalUiContainerComponent);
 
+            // clear UI if scene changed
             if (sceneChanged)
             {
-                ApplySceneChange(state.internalUiContainerComponent, state.loadedScenes, state.uiDocument, currentSceneId);
+                ClearUI(state.uiDocument);
+                state.isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
+                state.currentScene = null;
+            }
+
+            // UI not set for current scene yet
+            if (state.isPendingSceneUI)
+            {
+                // we get current scene reference
+                if (state.currentScene == null)
+                {
+                    state.currentScene = GetCurrentScene(currentSceneId, state.loadedScenes);
+                }
+
+                // we apply current scene UI
+                else if (ApplySceneUI(state.internalUiContainerComponent, state.uiDocument, state.currentScene))
+                {
+                    state.isPendingSceneUI = false;
+                }
             }
         }
 
@@ -92,16 +115,18 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        private static void ApplySceneChange(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            BaseList<IParcelScene> loadedScenes, UIDocument uiDocument, string sceneId)
+        private static void ClearUI(UIDocument uiDocument)
         {
             if (uiDocument.rootVisualElement.childCount > 0)
             {
                 uiDocument.rootVisualElement.Clear();
             }
+        }
 
+        private static IParcelScene GetCurrentScene(string sceneId, BaseList<IParcelScene> loadedScenes)
+        {
             if (string.IsNullOrEmpty(sceneId))
-                return;
+                return null;
 
             IParcelScene currentScene = null;
             for (int i = 0; i < loadedScenes.Count; i++)
@@ -113,16 +138,21 @@ namespace ECSSystems.ScenesUiSystem
                 }
             }
 
-            if (currentScene == null)
-                return;
+            return currentScene;
+        }
 
+        private static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+            UIDocument uiDocument, IParcelScene currentScene)
+        {
             IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneRootUiContainer != null)
             {
                 uiDocument.rootVisualElement.Add(sceneRootUiContainer.model.rootElement);
+                return true;
             }
+            return false;
         }
     }
 }
