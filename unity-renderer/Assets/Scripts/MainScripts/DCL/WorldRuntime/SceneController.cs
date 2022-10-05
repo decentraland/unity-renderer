@@ -19,7 +19,7 @@ namespace DCL
 {
     public class SceneController : ISceneController
     {
-        public static bool VERBOSE = true;
+        public static bool VERBOSE = false;
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
@@ -601,26 +601,19 @@ namespace DCL
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
-            
-            Debug.Log($"LoadParcelScenesExecute - 1 - sceneId:{sceneToLoad.id}...sceneNumber:{sceneToLoad.sceneNumber}");
 
             if (sceneToLoad == null || sceneToLoad.sceneNumber < 0)
                 return;
-            
-            Debug.Log($"LoadParcelScenesExecute - 2 - sceneId:{sceneToLoad.id}...sceneNumber:{sceneToLoad.sceneNumber}");
 
             DebugConfig debugConfig = DataStore.i.debugConfig;
 #if UNITY_EDITOR
             if (debugConfig.soloScene && sceneToLoad.basePosition.ToString() != debugConfig.soloSceneCoords.ToString())
             {
-                Debug.Log($"LoadParcelScenesExecute - 2.1 - sceneId:{sceneToLoad.id}...sceneNumber:{sceneToLoad.sceneNumber}");
-                
                 SendSceneReady(sceneToLoad.sceneNumber);
 
                 return;
             }
 #endif
-            Debug.Log($"LoadParcelScenesExecute - 3 - sceneId:{sceneToLoad.id}...sceneNumber:{sceneToLoad.sceneNumber}");
 
             ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
 
@@ -648,10 +641,6 @@ namespace DCL
 
                 if (VERBOSE)
                     Debug.Log($"{Time.frameCount}: Load parcel scene (id: {newScene.sceneData.sceneNumber})");
-            }
-            else
-            {
-                Debug.Log($"{Time.frameCount}: Load parcel scene WorldState contains scene {sceneToLoad.sceneNumber}!");
             }
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);

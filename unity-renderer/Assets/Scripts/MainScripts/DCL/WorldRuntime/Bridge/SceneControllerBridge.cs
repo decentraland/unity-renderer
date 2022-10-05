@@ -16,7 +16,7 @@ public class SceneControllerBridge : MonoBehaviour
     }
     
     // TODO: Are PEXes unloaded with UnloadScene as well? do they have sceneNumber besides their mandatory scene id? otherwise we will have to crate an UnloadScene(string) overload for those.
-    // WebSocketCommunication.cs can only receive strings as kernel message parameters...
+    // sceneNumber comes as a string because WebSocketCommunication can only receive strings as kernel message parameters
     public void UnloadSceneV2(string sceneNumber)
     {
         StartCoroutine(AnalyzeLoadingHUDState(Int32.Parse(sceneNumber)));
@@ -24,10 +24,9 @@ public class SceneControllerBridge : MonoBehaviour
 
     IEnumerator AnalyzeLoadingHUDState(int sceneNumber)
     {
-        if(DataStore.i.HUDs.loadingHUD.fadeIn.Get())
+        if (DataStore.i.HUDs.loadingHUD.fadeIn.Get())
         {
             yield return new UnityEngine.WaitUntil(() => CommonScriptableObjects.isLoadingHUDOpen.Get());
-
         }
         
         Environment.i.world.sceneController.UnloadScene(sceneNumber);

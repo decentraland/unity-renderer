@@ -163,16 +163,11 @@ namespace DCL
             if (timeBudget <= 0 || !enabled || pendingMessagesCount == 0)
                 return false;
 
-            bool debug = type == MessagingBusType.INIT;
-
             float startTime = Time.realtimeSinceStartup;
 
             while (enabled && pendingMessagesCount > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
                 LinkedListNode<QueuedSceneMessage> pendingMessagesFirst;
-                
-                if(debug)
-                    Debug.Log("MessagingBus - INIT - ProcessQueue - 1");
 
                 lock (pendingMessages)
                 {
@@ -186,9 +181,6 @@ namespace DCL
 
                     continue;
                 }
-                
-                if(debug)
-                    Debug.Log("MessagingBus - INIT - ProcessQueue - 2");
 
                 QueuedSceneMessage m = pendingMessagesFirst.Value;
 
@@ -200,9 +192,6 @@ namespace DCL
                     RemoveUnreliableMessage(m);
 
                 bool shouldLogMessage = VERBOSE;
-
-                if(debug)
-                    Debug.Log("MessagingBus - INIT - ProcessQueue - 3 - message type: " + m.type);
                 
                 switch (m.type)
                 {
@@ -212,8 +201,6 @@ namespace DCL
 
                         if (!(m is QueuedSceneMessage_Scene sceneMessage))
                             continue;
-                        
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.SCENE_MESSAGE - sceneNumber: {m.sceneNumber}");
 
                         if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                         {
@@ -247,22 +234,16 @@ namespace DCL
 
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.LOAD_PARCEL - sceneNumber: {m.sceneNumber}");
-                        
                         handler.LoadParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UNLOAD_PARCEL - sceneNumber: {m.sceneNumber}");
-                        
                         handler.UnloadParcelSceneExecute(m.sceneNumber);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
 
                         break;
                     case QueuedSceneMessage.Type.UPDATE_PARCEL:
-                        Debug.Log($"ProcessQueue - QueuedSceneMessage.Type.UPDATE_PARCEL - sceneNumber: {m.sceneNumber}");
-                        
                         handler.UpdateParcelScenesExecute(m.message);
                         ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
 
