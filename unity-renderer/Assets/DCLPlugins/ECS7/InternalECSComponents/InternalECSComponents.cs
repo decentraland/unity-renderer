@@ -5,7 +5,7 @@ using DCL.ECSRuntime;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
-    private readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
+    internal readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
 
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
@@ -102,29 +102,5 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             }
         }
         scheduledWrite.Clear();
-    }
-
-    internal static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
-    {
-        return () =>
-        {
-            for (int i = 0; i < scheduledWrite.Count; i++)
-            {
-                var writeData = scheduledWrite[i];
-                if (writeData.scene == null)
-                    continue;
-
-                InternalComponent data = writeData.data;
-                if (data != null)
-                {
-                    data._dirty = false;
-                }
-                else
-                {
-                    writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
-                }
-            }
-            scheduledWrite.Clear();
-        };
     }
 }
