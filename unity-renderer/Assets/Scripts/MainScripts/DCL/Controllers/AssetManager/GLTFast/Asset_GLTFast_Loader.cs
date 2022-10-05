@@ -19,7 +19,26 @@ namespace DCL
 
         public void Instantiate(Transform containerTransform)
         {
-            gltfImport.InstantiateScene(containerTransform);
+            if (gltfImport.sceneCount > 1)
+            {
+                for (int i = 0; i < gltfImport.sceneCount; i++)
+                {
+                    var targetTransform = containerTransform;
+                    if (i != 0)
+                    {
+                        var go = new GameObject($"{containerTransform.name}_{i}");
+                        Transform goTransform = go.transform;
+                        goTransform.SetParent(containerTransform.parent, false);
+                        targetTransform = goTransform;
+                    }
+                    
+                    gltfImport.InstantiateScene(targetTransform, i);
+                }
+            }
+            else
+            {
+                gltfImport.InstantiateScene(containerTransform);
+            }
         }
     }
 }
