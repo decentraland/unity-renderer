@@ -129,11 +129,15 @@ namespace DCL.Chat.HUD
             expandMembersListButton.gameObject.SetActive(!isMembersSectionOpen);
             collapseMembersListButton.gameObject.SetActive(isMembersSectionOpen);
 
+            contextualMenu.gameObject.transform.SetParent(collapsableArea);
+            
             collapsableArea.sizeDelta = new Vector2(
                 isMembersSectionOpen ? 
                     collapsableAreaOriginalWidth + MEMBERS_SECTION_WIDTH :
                     collapsableAreaOriginalWidth,
                 collapsableArea.sizeDelta.y);
+
+            contextualMenu.gameObject.transform.SetParent(this.transform);
 
             if (isMembersSectionOpen)
                 OnShowMembersList?.Invoke();
