@@ -39,11 +39,13 @@ public class LoadingBridge : MonoBehaviour
     
     public void FadeInLoadingHUD(string jsonMessage)
     {
+        //TODO: Logic to be cleaned by the RFC-1
         StartCoroutine(WaitForLoadingHUDVisible(jsonMessage));
     }
     
     IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
+        //TODO: Logic to be cleaned by the RFC-1
         WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
         
         PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
