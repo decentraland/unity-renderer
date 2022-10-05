@@ -61,14 +61,8 @@ public class ChatController : MonoBehaviour, IChatController
 
     // called by kernel
     [PublicAPI]
-    public void AddMessageToChatWindow(string jsonMessage)
-    {
-        var message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
-        if (message == null) return;
-
-        messages.Add(message);
-        OnAddMessage?.Invoke(message);
-    }
+    public void AddMessageToChatWindow(string jsonMessage) =>
+        AddMessage(JsonUtility.FromJson<ChatMessage>(jsonMessage));
 
     // called by kernel
     [PublicAPI]
@@ -199,6 +193,8 @@ public class ChatController : MonoBehaviour, IChatController
 
         // TODO (responsibility issues): extract to another class
         AudioScriptableObjects.joinChannel.Play(true);
+        
+        SendChannelWelcomeMessage(channel);
     }
 
     // called by kernel
@@ -306,6 +302,29 @@ public class ChatController : MonoBehaviour, IChatController
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);
+    
+    private void SendChannelWelcomeMessage(Channel channel)
+    {
+        var message =
+            new ChatMessage(ChatMessage.Type.SYSTEM, "", @$"This is the start of the channel #{channel.Name}.\n
+Invite others to join by quoting the channel name in other chats or include it as a part of your bio.")
+            {
+                recipient = channel.ChannelId,
+                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                isChannelMessage = true,
+                messageId = Guid.NewGuid().ToString()
+            };
+
+        AddMessage(message);
+    }
+
+    private void AddMessage(ChatMessage message)
+    {
+        if (message == null) return;
+
+        messages.Add(message);
+        OnAddMessage?.Invoke(message);
+    }
 
     [ContextMenu("Fake Public Message")]
     public void FakePublicMessage()
