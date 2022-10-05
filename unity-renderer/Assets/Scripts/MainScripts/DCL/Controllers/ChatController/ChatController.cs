@@ -310,7 +310,7 @@ public class ChatController : MonoBehaviour, IChatController
 Invite others to join by quoting the channel name in other chats or include it as a part of your bio.")
             {
                 recipient = channel.ChannelId,
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp = 0,
                 isChannelMessage = true,
                 messageId = Guid.NewGuid().ToString()
             };
