@@ -331,7 +331,7 @@ public class BuilderInWorldEditor : IBIWEditor
     
     internal void DeactivatePlayerAvatar(string id,Player player)
     {
-        player.avatar.AddVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
+        player.avatar.AddVisibilityConstraint(AVATAR_HIDE_CONSTRAINT);
         player.playerName.AddVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
     }
 

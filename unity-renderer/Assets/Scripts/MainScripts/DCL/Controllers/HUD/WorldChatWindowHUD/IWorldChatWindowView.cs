@@ -12,7 +12,6 @@ public interface IWorldChatWindowView
 
     RectTransform Transform { get; }
     bool IsActive { get; }
-    int PrivateChannelsCount { get; }
 
     void Initialize(IChatController chatController);
     void Show();
@@ -24,13 +23,11 @@ public interface IWorldChatWindowView
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);
     void Dispose();
-    void ClearFilter();
+    void DisableSearchMode();
     void HideMoreChatsToLoadHint();
     void ShowMoreChatsToLoadHint(int count);
-    void ShowMoreChatsLoading();
-    void HideMoreChatsLoading();
     void ShowSearchLoading();
     void HideSearchLoading();
-    void Filter(Dictionary<string,PrivateChatModel> privateChats, Dictionary<string,PublicChatChannelModel> publicChannels);
+    void EnableSearchMode();
     bool ContainsPrivateChannel(string userId);
 }

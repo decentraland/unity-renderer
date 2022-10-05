@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -13,14 +14,15 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
-        Renderer[] renderers;
-        SkinnedMeshRenderer[] skinnedRenderers;
-        Animation[] animations;
+        private ICollection<Renderer> renderers;
+        private ICollection<SkinnedMeshRenderer> skinnedRenderers;
+        private Animation[] animations;
 
-        bool dirty = true;
         private int ignoredLayersMask;
+        private bool dirty = true;
 
-        public CullingObjectsTracker ()
+
+        public CullingObjectsTracker()
         {
             PoolManager.i.OnGet -= MarkDirty;
             PoolManager.i.OnGet += MarkDirty;
@@ -34,17 +36,23 @@ namespace DCL.Rendering
             if (!dirty)
                 yield break;
 
-            renderers = Object.FindObjectsOfType<Renderer>()
-                .Where(x => !(x is SkinnedMeshRenderer)
-                            && !(x is ParticleSystemRenderer)
-                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+            List<Renderer> renderersList = new List<Renderer>();
+            List<SkinnedMeshRenderer> skinnedRenderersList = new List<SkinnedMeshRenderer>();
+            Renderer[] allRenderers = Object.FindObjectsOfType<Renderer>();
 
-            yield return null;
-
-            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>()
-                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+            foreach (Renderer renderer in allRenderers)
+            {
+                if ((((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                    && !(renderer is ParticleSystemRenderer))
+                {
+                    if (renderer is SkinnedMeshRenderer)
+                        skinnedRenderersList.Add((SkinnedMeshRenderer)renderer);
+                    else
+                        renderersList.Add(renderer);
+                }
+            }
+            renderers = renderersList;
+            skinnedRenderers = skinnedRenderersList;
 
             yield return null;
 
@@ -59,15 +67,23 @@ namespace DCL.Rendering
         /// <param name="includeInactives">True for add inactive objects to the tracked list.</param>
         public void ForcePopulateRenderersList(bool includeInactives)
         {
-            renderers = Object.FindObjectsOfType<Renderer>(includeInactives)
-                .Where(x => !(x is SkinnedMeshRenderer)
-                            && !(x is ParticleSystemRenderer)
-                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+            List<Renderer> renderersList = new List<Renderer>();
+            List<SkinnedMeshRenderer> skinnedRenderersList = new List<SkinnedMeshRenderer>();
+            Renderer[] allRenderers = Object.FindObjectsOfType<Renderer>(includeInactives);
 
-            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>(includeInactives)
-                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+            foreach (Renderer renderer in allRenderers)
+            {
+                if ((((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                    && !(renderer is ParticleSystemRenderer))
+                {
+                    if (renderer is SkinnedMeshRenderer)
+                        skinnedRenderersList.Add((SkinnedMeshRenderer)renderer);
+                    else
+                        renderersList.Add(renderer);
+                }
+            }
+            renderers = renderersList;
+            skinnedRenderers = skinnedRenderersList;
         }
 
         public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
@@ -86,14 +102,14 @@ namespace DCL.Rendering
         /// <summary>
         /// Returns the renderers list.
         /// </summary>
-        /// <returns>An array with all the tracked renderers.</returns>
-        public Renderer[] GetRenderers() { return renderers; }
+        /// <returns>An ICollection with all the tracked renderers.</returns>
+        public ICollection<Renderer> GetRenderers() { return renderers; }
 
         /// <summary>
         /// Returns the skinned renderers list.
         /// </summary>
-        /// <returns>An array with all the tracked skinned renderers.</returns>
-        public SkinnedMeshRenderer[] GetSkinnedRenderers() { return skinnedRenderers; }
+        /// <returns>An ICollection with all the tracked skinned renderers.</returns>
+        public ICollection<SkinnedMeshRenderer> GetSkinnedRenderers() { return skinnedRenderers; }
 
         /// <summary>
         /// Returns the animations list.
