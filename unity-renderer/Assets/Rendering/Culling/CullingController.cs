@@ -134,14 +134,14 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            ICollection<Renderer> renderers;
+            IEnumerable<Renderer> renderers = null;
 
             // If profile matches the skinned renderer profile in settings,
             // the skinned renderers are going to be used.
             if (profile == settings.rendererProfile)
                 renderers = objectsTracker.GetRenderers();
             else
-                renderers = objectsTracker.GetSkinnedRenderers() as ICollection<Renderer>;
+                renderers = objectsTracker.GetSkinnedRenderers();
 
 
             foreach (Renderer r in renderers)
