@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 
@@ -33,10 +32,7 @@ public interface IFriendsHUDComponentView
 
     void HideLoadingSpinner();
     void ShowLoadingSpinner();
-    List<FriendEntryBase> GetAllEntries();
-    FriendEntryBase GetEntry(string userId);
     void DisplayFriendUserNotFound();
-    bool IsFriendListCreationReady();
     void Dispose();
     void Show();
     void Hide();
@@ -52,8 +48,8 @@ public interface IFriendsHUDComponentView
     void HideMoreRequestsToLoadHint();
     bool ContainsFriend(string userId);
     bool ContainsFriendRequest(string userId);
-    void FilterFriends(Dictionary<string, FriendEntryModel> friends);
-    void ClearFriendFilter();
+    void EnableSearchMode();
+    void DisableSearchMode();
     void UpdateBlockStatus(string userId, bool blocked);
     void ClearAll();
 }
