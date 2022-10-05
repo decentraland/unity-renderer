@@ -3492,64 +3492,6 @@ MonoBehaviour:
   currentSceneNameText: {fileID: 2734279282512924330}
   currentSceneCoordsText: {fileID: 8417015326604837885}
   toastView: {fileID: 4118697293185831752}
-  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
-  zoomIn: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
-  zoomOut: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
-  zoomInButton: {fileID: 7044420972446223561}
-  zoomOutButton: {fileID: 6232309133183881431}
-  zoomInPlus: {fileID: 6752097118152243281}
-  zoomOutMinus: {fileID: 3416978492583913869}
-  zoomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.2
-      inSlope: Infinity
-      outSlope: Infinity
-      tangentMode: 103
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.28
-      inSlope: 0.8
-      outSlope: 0.8
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 2
-      value: 0.4
-      inSlope: Infinity
-      outSlope: Infinity
-      tangentMode: 7
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 3
-      value: 0.55
-      inSlope: 0
-      outSlope: Infinity
-      tangentMode: 97
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 4
-      value: 0.8
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!225 &3578851569800893368
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3627,12 +3569,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  zoomIn: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
-  zoomInButton: {fileID: 7044420972446223561}
-  zoomInPlus: {fileID: 6752097118152243281}
-  zoomOutButton: {fileID: 6232309133183881431}
-  zoomOut: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
-  zoomOutMinus: {fileID: 3416978492583913869}
+  zoomIn:
+    InputAction: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
+    Button: {fileID: 7044420972446223561}
+    Image: {fileID: 6752097118152243281}
+  zoomOut:
+    InputAction: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
+    Button: {fileID: 6232309133183881431}
+    Image: {fileID: 3416978492583913869}
 --- !u!1 &7147034322982732920
 GameObject:
   m_ObjectHideFlags: 0
