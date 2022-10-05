@@ -95,9 +95,21 @@ static class BuildCommand
     {
         string buildOptions = GetArgument("customBuildOptions");
 
-        return buildOptions == "AcceptExternalModificationsToPlayer"
-            ? BuildOptions.AcceptExternalModificationsToPlayer
-            : BuildOptions.None;
+        var result = BuildOptions.None;
+
+        string[] buildOptionsArray = string.IsNullOrWhiteSpace(buildOptions) ? 
+            null : buildOptions.Split(',');
+
+        if (buildOptionsArray == null) 
+            return result;
+        
+        foreach(var buildOptionStr in buildOptionsArray)
+            if (Enum.TryParse<BuildOptions>(buildOptionStr, out var buildOption))
+            {
+                result |= buildOption;
+            }
+
+        return result;
     }
 
     // https://stackoverflow.com/questions/1082532/how-to-tryparse-for-enum-value
