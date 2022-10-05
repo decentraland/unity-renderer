@@ -19,7 +19,7 @@ namespace DCL
 
         public void Instantiate(Transform containerTransform)
         {
-            gltfImport.InstantiateMainScene(containerTransform);
+            gltfImport.InstantiateScene(containerTransform);
         }
     }
 }
