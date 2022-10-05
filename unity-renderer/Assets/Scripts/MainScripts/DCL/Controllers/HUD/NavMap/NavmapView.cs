@@ -1,24 +1,16 @@
-using System.Collections;
 using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static DCL.MapGlobalUsersPositionMarkerController;
 using static InputAction_Trigger;
 
 namespace DCL
 {
+
     public class NavmapView : MonoBehaviour
     {
-        private const float MAP_ZOOM_LEVELS = 4;
-        private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
-        private const float SCALE_DURATION = 0.2f;
-
-        private readonly Color normalColor = new Color(0f, 0f, 0f, 1f);
-        private readonly Color disabledColor = new Color(0f, 0f, 0f, 0.5f);
-
         [Header("References")]
         [SerializeField] internal Button closeButton;
         [SerializeField] internal ScrollRect scrollRect;
@@ -26,43 +18,32 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
-        [SerializeField] internal InputAction_Measurable mouseWheelAction;
-
-        [Header("Zoom")]
-        [SerializeField] internal InputAction_Hold zoomIn;
-        [SerializeField] internal InputAction_Hold zoomOut;
-        [SerializeField] internal Button zoomInButton;
-        [SerializeField] internal Button zoomOutButton;
-        [SerializeField] internal Image zoomInPlus;
-        [SerializeField] internal Image zoomOutMinus;
-        [SerializeField] internal AnimationCurve zoomCurve;
 
         private Vector3 atlasOriginalPosition;
-        private RectTransform containerRectTransform;
-        private int currentZoomLevel;
-        private bool isScaling;
+        
         private MinimapMetadata mapMetadata;
         private Transform mapRendererMinimapParent;
         private RectTransform minimapViewport;
 
-        Vector3 previousScaleSize;
-        private float scale = 1f;
-        
         private Triggered selectParcelDelegate;
         private bool waitingForFullscreenHUDOpen;
+        
+        private NavmapZoom zoom;
 
         private BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
 
+        private void Awake()
+        {
+            zoom = GetComponent<NavmapZoom>();
+        }
+
         void Start()
         {
             mapMetadata = MinimapMetadata.GetMetadata();
-            containerRectTransform = scrollRectContentTransform.GetComponent<RectTransform>();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                navmapVisible.Set(false);
-            });
+            closeButton.onClick.AddListener(() => { navmapVisible.Set(false); });
+
             scrollRect.onValueChanged.AddListener((x) =>
             {
                 if (!navmapVisible.Get())
@@ -82,18 +63,6 @@ namespace DCL
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
-            mouseWheelAction.OnValueChanged += OnMouseWheelChangeValue;
-            zoomIn.OnStarted += OnZoomPlusMinus;
-            zoomOut.OnStarted += OnZoomPlusMinus;
-            zoomInButton.onClick.AddListener(() =>
-            {
-                OnZoomPlusMinus(DCLAction_Hold.ZoomIn);
-            });
-            zoomOutButton.onClick.AddListener(() =>
-            {
-                OnZoomPlusMinus(DCLAction_Hold.ZoomOut);
-            });
-            ResetCameraZoom();
             Initialize();
         }
 
@@ -104,9 +73,6 @@ namespace DCL
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
-            mouseWheelAction.OnValueChanged -= OnMouseWheelChangeValue;
-            zoomIn.OnStarted -= OnZoomPlusMinus;
-            zoomOut.OnStarted -= OnZoomPlusMinus;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
 
             if (waitingForFullscreenHUDOpen == false)
@@ -141,89 +107,7 @@ namespace DCL
             rectTransform.offsetMin = Vector2.zero;
         }
 
-        private void ResetCameraZoom()
-        {
-            currentZoomLevel = Mathf.FloorToInt(MAP_ZOOM_LEVELS / 2);
-            scale = zoomCurve.Evaluate(currentZoomLevel);
-            containerRectTransform.localScale = new Vector3(scale, scale, scale);
-            HandleZoomButtonsAspect();
-        }
-
-        private void OnZoomPlusMinus(DCLAction_Hold action)
-        {
-            if (!navmapVisible.Get())
-                return;
-
-            if (action.Equals(DCLAction_Hold.ZoomIn))
-            {
-                CalculateZoomLevelAndDirection(1);
-            }
-            else if (action.Equals(DCLAction_Hold.ZoomOut))
-            {
-                CalculateZoomLevelAndDirection(-1);
-            }
-            EventSystem.current.SetSelectedGameObject(null);
-        }
-
-        private void OnMouseWheelChangeValue(DCLAction_Measurable action, float value)
-        {
-            if (value > -MOUSE_WHEEL_THRESHOLD && value < MOUSE_WHEEL_THRESHOLD)
-                return;
-            CalculateZoomLevelAndDirection(value);
-        }
-
-        private void CalculateZoomLevelAndDirection(float value)
-        {
-            if (!navmapVisible.Get())
-                return;
-            if (isScaling)
-                return;
-            previousScaleSize = new Vector3(scale, scale, scale);
-            if (value > 0 && currentZoomLevel < MAP_ZOOM_LEVELS)
-            {
-                currentZoomLevel++;
-                StartCoroutine(ScaleOverTime(previousScaleSize));
-            }
-            if (value < 0 && currentZoomLevel >= 1)
-            {
-                currentZoomLevel--;
-                StartCoroutine(ScaleOverTime(previousScaleSize));
-            }
-            HandleZoomButtonsAspect();
-        }
-
-        private void HandleZoomButtonsAspect()
-        {
-            SetZoomButtonInteractability(zoomInButton, zoomInPlus, canZoomMore: currentZoomLevel < MAP_ZOOM_LEVELS);
-            SetZoomButtonInteractability(zoomOutButton, zoomOutMinus, canZoomMore: currentZoomLevel >= 1);
-        }
-
-        private void SetZoomButtonInteractability(Button button, Image buttonIcon, bool canZoomMore)
-        {
-            button.interactable = canZoomMore;
-            buttonIcon.color = canZoomMore? normalColor : disabledColor;
-        }
-
-        private IEnumerator ScaleOverTime(Vector3 startScaleSize)
-        {
-            isScaling = true;
-            scale = zoomCurve.Evaluate(currentZoomLevel);
-            MapRenderer.i.scaleFactor = scale;
-            Vector3 targetScale = new Vector3(scale, scale, scale);
-
-            float counter = 0;
-
-            while (counter < SCALE_DURATION)
-            {
-                counter += Time.deltaTime;
-                containerRectTransform.localScale = Vector3.Lerp(startScaleSize, targetScale, counter / SCALE_DURATION);
-                yield return null;
-            }
-
-            isScaling = false;
-        }
-
-        private void OnNavmapVisibleChanged(bool current, bool previous) => 
+        private void OnNavmapVisibleChanged(bool current, bool previous) =>
             SetVisible(current);
 
         private void OnExploreChange(bool current, bool previous)
@@ -283,14 +167,14 @@ namespace DCL
                 if (!DataStore.i.exploreV2.isInitialized.Get())
                     Utils.UnlockCursor();
 
-                MapRenderer.i.scaleFactor = scale;
+                MapRenderer.i.scaleFactor = zoom.Scale;
 
                 if (minimapViewport == null || mapRendererMinimapParent == null)
                 {
                     minimapViewport = MapRenderer.i.atlas.viewport;
                     mapRendererMinimapParent = MapRenderer.i.transform.parent;
                 }
-                
+
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
 
                 MapRenderer.i.atlas.viewport = scrollRect.viewport;
@@ -309,8 +193,8 @@ namespace DCL
             {
                 if (minimapViewport == null)
                     return;
-                
-                ResetCameraZoom();
+
+                zoom.ResetCameraZoom();
                 CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
