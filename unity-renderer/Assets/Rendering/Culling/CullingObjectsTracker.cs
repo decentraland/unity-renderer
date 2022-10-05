@@ -14,8 +14,8 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
-        private Renderer[] renderers;
-        private SkinnedMeshRenderer[] skinnedRenderers;
+        private ICollection<Renderer> renderers;
+        private ICollection<SkinnedMeshRenderer> skinnedRenderers;
         private Animation[] animations;
 
         private int ignoredLayersMask;
@@ -51,8 +51,8 @@ namespace DCL.Rendering
                         renderersList.Add(renderer);
                 }
             }
-            renderers = renderersList.ToArray();
-            skinnedRenderers = skinnedRenderersList.ToArray();
+            renderers = renderersList;
+            skinnedRenderers = skinnedRenderersList;
 
             yield return null;
 
@@ -82,8 +82,8 @@ namespace DCL.Rendering
                         renderersList.Add(renderer);
                 }
             }
-            renderers = renderersList.ToArray();
-            skinnedRenderers = skinnedRenderersList.ToArray();
+            renderers = renderersList;
+            skinnedRenderers = skinnedRenderersList;
         }
 
         public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
@@ -102,14 +102,14 @@ namespace DCL.Rendering
         /// <summary>
         /// Returns the renderers list.
         /// </summary>
-        /// <returns>An array with all the tracked renderers.</returns>
-        public Renderer[] GetRenderers() { return renderers; }
+        /// <returns>An ICollection with all the tracked renderers.</returns>
+        public ICollection<Renderer> GetRenderers() { return renderers; }
 
         /// <summary>
         /// Returns the skinned renderers list.
         /// </summary>
-        /// <returns>An array with all the tracked skinned renderers.</returns>
-        public SkinnedMeshRenderer[] GetSkinnedRenderers() { return skinnedRenderers; }
+        /// <returns>An ICollection with all the tracked skinned renderers.</returns>
+        public ICollection<SkinnedMeshRenderer> GetSkinnedRenderers() { return skinnedRenderers; }
 
         /// <summary>
         /// Returns the animations list.
