@@ -23,10 +23,11 @@ public class UiContainerHandler : IECSComponentHandler<InternalUiContainer>
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, InternalUiContainer model)
     {
+        currentModel = model;
+
         if (model.childElements.Count == 0 && !model.hasTransform)
         {
             thisComponent.RemoveFor(scene, entity);
         }
-        currentModel = model;
     }
 }
