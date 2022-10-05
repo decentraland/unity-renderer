@@ -178,81 +178,87 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize
                 };
 
-                if (r.materials != null)
+                Debug.LogError($"Logging materials for {x.container.name}");
+
+                try
                 {
-                   var materialsCloneList = new List<Material>();
-                   foreach (var mat in r.materials)
-                   {
-                       var newMaterial = new Material(mat.shader);
+                    var materialsCloneList = new List<Material>();
+                       foreach (var mat in r.materials)
+                       {
+                           var newMaterial = new Material(mat.shader);
 
-                       var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
-                       var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
-                       var oldNamesMissingInNewMaterial = new List<string>();
-                       var newNamesMissingInOldMaterial = new List<string>();
-                       var overlapNames = new List<string>();
-                       foreach (var oldPorpertyName in propertiesOfOldMaterial)
-                       {
-                           if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
+                           var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
+                           var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
+                           var oldNamesMissingInNewMaterial = new List<string>();
+                           var newNamesMissingInOldMaterial = new List<string>();
+                           var overlapNames = new List<string>();
+                           foreach (var oldPorpertyName in propertiesOfOldMaterial)
                            {
-                               oldNamesMissingInNewMaterial.Add(oldPorpertyName);
-                           }
-                           else
-                           {
-                               overlapNames.Add(oldPorpertyName);
-                           }
-                       }
-
-                       foreach (var newPropertyName in propertiesOfNewMaterial)
-                       {
-                           if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
-                           {
-                               newNamesMissingInOldMaterial.Add(newPropertyName);
-                           }
-                       }
-
-                       string log = "";
-                       log += "Old properties missing in new mat: ";
-                       foreach (var oldName in oldNamesMissingInNewMaterial)
-                       {
-                           log += oldName + " ";
-                       }
-                       log += "\n New properties missing in old mat: ";
-                       foreach (var newName in newNamesMissingInOldMaterial)
-                       {
-                           log += newName + " ";
-                       }
-                       log += "\n Overlapped properties: ";
-                       foreach (var overlapName in overlapNames)
-                       {
-                           log += overlapName + " ";
-                       }
-
-                       if (mat.shaderKeywords != null)
-                       {
-                           if (mat.shaderKeywords.Length > 0)
-                           {
-                               log += "Old material keywords: ";
-                               foreach (var keyword in mat.shaderKeywords)
+                               if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
                                {
-                                   log += keyword + " ";
+                                   oldNamesMissingInNewMaterial.Add(oldPorpertyName);
+                               }
+                               else
+                               {
+                                   overlapNames.Add(oldPorpertyName);
                                }
                            }
+
+                           foreach (var newPropertyName in propertiesOfNewMaterial)
+                           {
+                               if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
+                               {
+                                   newNamesMissingInOldMaterial.Add(newPropertyName);
+                               }
+                           }
+
+                           string log = "";
+                           log += "Old properties missing in new mat: ";
+                           foreach (var oldName in oldNamesMissingInNewMaterial)
+                           {
+                               log += oldName + " ";
+                           }
+                           log += "\n New properties missing in old mat: ";
+                           foreach (var newName in newNamesMissingInOldMaterial)
+                           {
+                               log += newName + " ";
+                           }
+                           log += "\n Overlapped properties: ";
+                           foreach (var overlapName in overlapNames)
+                           {
+                               log += overlapName + " ";
+                           }
+
+                           if (mat.shaderKeywords != null)
+                           {
+                               if (mat.shaderKeywords.Length > 0)
+                               {
+                                   log += "Old material keywords: ";
+                                   foreach (var keyword in mat.shaderKeywords)
+                                   {
+                                       log += keyword + " ";
+                                   }
+                               }
+                           }
+
+                           if (mat.name.Contains("Mika"))
+                           {
+                               log +="(Mika Material)";
+                           }
+                           
+                           UnityEngine.Debug.LogError(log);
+                           
+                           newMaterial.CopyPropertiesFromMaterial(mat);
+                           materialsCloneList.Add(newMaterial);
                        }
 
-                       if (mat.name.Contains("Mika"))
-                       {
-                           log +="(Mika Material)";
-                       }
-                       
-                       UnityEngine.Debug.LogError(log);
-                       
-                       newMaterial.CopyPropertiesFromMaterial(mat);
-                       materialsCloneList.Add(newMaterial);
-                   }
-
-                   r.materials.Clear();
-                    foreach (var newMat in materialsCloneList)
-                        r.materials.Add(newMat);
+                       r.materials.Clear();
+                        foreach (var newMat in materialsCloneList)
+                            r.materials.Add(newMat);
+                }
+                catch (Exception e)
+                {
+                    UnityEngine.Debug.LogException(e);
                 }
 
                 OnSuccessWrapper(r, OnSuccess);

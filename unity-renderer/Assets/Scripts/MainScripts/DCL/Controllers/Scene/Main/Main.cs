@@ -31,6 +31,7 @@ namespace DCL
         {
             //TODO ANTON
             UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.LogError("unityLogger.logEnabled set to true");
             
             if (i != null)
             {
