@@ -1,4 +1,5 @@
 using DCL.Chat.HUD;
+using DCL.Chat.Notifications;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;

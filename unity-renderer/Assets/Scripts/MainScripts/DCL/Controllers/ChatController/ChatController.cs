@@ -73,11 +73,7 @@ public class ChatController : MonoBehaviour, IChatController
         if (messages == null) return;
 
         foreach (var message in messages.messages)
-        {
-            this.messages.Add(message);
-
-            OnAddMessage?.Invoke(message);
-        }
+            AddMessage(message);
     }
 
     // called by kernel

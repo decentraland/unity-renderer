@@ -1,22 +1,27 @@
-using DCL;
-using DCL.Helpers;
+using DCL.Chat.Channels;
 
-/// <summary>
-/// Plugin feature that initialize the chat notifications feature.
-/// </summary>
-public class ChatNotificationsFeature : IPlugin
+namespace DCL.Chat.Notifications
 {
-    public ChatNotificationController chatNotificationController;
-
-    public ChatNotificationsFeature()
+    /// <summary>
+    /// Plugin feature that initialize the chat notifications feature.
+    /// </summary>
+    public class ChatNotificationsFeature : IPlugin
     {
-        chatNotificationController = CreateController();
-    }
+        private readonly ChatNotificationController chatNotificationController;
 
-    internal virtual ChatNotificationController CreateController() => new ChatNotificationController(DataStore.i, MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(), ChatController.i, new UserProfileWebInterfaceBridge());
+        public ChatNotificationsFeature()
+        {
+            chatNotificationController = CreateController();
+        }
 
-    public void Dispose()
-    {
-        chatNotificationController.Dispose();
+        private ChatNotificationController CreateController() => new ChatNotificationController(DataStore.i,
+            MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
+            ChatController.i,
+            new UserProfileWebInterfaceBridge());
+
+        public void Dispose()
+        {
+            chatNotificationController.Dispose();
+        }
     }
 }
