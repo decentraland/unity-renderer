@@ -24,13 +24,6 @@ namespace DCL.Tutorial
 
         public override void OnStepStart()
         {
-            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
-            if (Mathf.Abs(currentCoords.x) > 3 || Mathf.Abs(currentCoords.y) > 3)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
             base.OnStepStart();
 
             CommonScriptableObjects.userMovementKeysBlocked.Set(true);
@@ -55,6 +48,13 @@ namespace DCL.Tutorial
                 {
                     WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneId(), "tutorial", "begin");
                 }
+            }
+
+            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
+            if (Mathf.Abs(currentCoords.x) > 3 || Mathf.Abs(currentCoords.y) > 3)
+            {
+                stepIsFinished = true;
+                return;
             }
         }
 
