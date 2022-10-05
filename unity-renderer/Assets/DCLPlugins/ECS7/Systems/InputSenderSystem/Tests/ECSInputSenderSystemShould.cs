@@ -39,7 +39,7 @@ namespace Tests
             updateSystems = () =>
             {
                 systemUpdate();
-                internalComponents.writeInternalComponentsSystem();
+                internalComponents.WriteSystemUpdate();
             };
         }
 
@@ -104,7 +104,7 @@ namespace Tests
             var model = compData.model;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
-            internalComponents.writeInternalComponentsSystem(); //clean dirty
+            internalComponents.WriteSystemUpdate(); //clean dirty
 
             updateSystems();
 
