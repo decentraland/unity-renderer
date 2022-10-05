@@ -134,14 +134,14 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            IEnumerable<Renderer> renderers;
+            ICollection<Renderer> renderers;
 
             // If profile matches the skinned renderer profile in settings,
             // the skinned renderers are going to be used.
             if (profile == settings.rendererProfile)
                 renderers = objectsTracker.GetRenderers();
             else
-                renderers = objectsTracker.GetSkinnedRenderers();
+                renderers = objectsTracker.GetSkinnedRenderers() as ICollection<Renderer>;
 
 
             foreach (Renderer r in renderers)
@@ -373,13 +373,13 @@ namespace DCL.Rendering
                     renderer.forceRenderingOff = false;
             }
 
-            foreach (SkinnedMeshRenderer skinnedRenderer in renderers)
+            foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
             {
                 if (skinnedRenderer != null)
                     skinnedRenderer.updateWhenOffscreen = true;
             }
 
-            for (var i = 0; i < animations?.Length; i++)
+            for (int i = 0; i < animations?.Length; i++)
             {
                 if (animations[i] != null)
                     animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
