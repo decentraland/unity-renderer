@@ -178,6 +178,8 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize
                 };
 
+                var temp = UnityEngine.Debug.unityLogger.logEnabled;
+                UnityEngine.Debug.unityLogger.logEnabled = true;
                 Debug.LogError($"Logging materials for {x.container.name}");
 
                 try
@@ -260,6 +262,8 @@ namespace DCL.Components
                 {
                     UnityEngine.Debug.LogException(e);
                 }
+                
+                UnityEngine.Debug.unityLogger.logEnabled = temp;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
