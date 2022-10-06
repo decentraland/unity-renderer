@@ -26,7 +26,7 @@ namespace DCL
         public float Scale { get; private set; } = 1;
         private BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
 
-        public void ResetCameraZoom()
+        public void ResetToDefault()
         {
             currentZoomLevel = MAX_ZOOM / 2;
             Scale = zoomCurve.Evaluate(currentZoomLevel);
@@ -41,7 +41,7 @@ namespace DCL
             zoomOut.SetUiInteractable(isInteractable: currentZoomLevel > MIN_ZOOM);
         }
         
-        private void Start() => ResetCameraZoom();
+        private void Start() => ResetToDefault();
 
         private void OnEnable()
         {

@@ -1,5 +1,4 @@
 using DCL.Helpers;
-using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,114 +7,110 @@ using static InputAction_Trigger;
 
 namespace DCL
 {
-
     public class NavmapView : MonoBehaviour
     {
-        [Header("References")]
         [SerializeField] internal Button closeButton;
+        
+        [Space]
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] internal Transform scrollRectContentTransform;
+        
+        [Space]
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
+        
+        [Space]
         [SerializeField] internal NavmapToastView toastView;
-
+        [SerializeField] private NavmapZoom zoom;
+        
         private Vector3 atlasOriginalPosition;
         
-        private MinimapMetadata mapMetadata;
         private Transform mapRendererMinimapParent;
         private RectTransform minimapViewport;
 
         private Triggered selectParcelDelegate;
         private bool waitingForFullscreenHUDOpen;
-        
-        private NavmapZoom zoom;
 
         private BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
 
-        private void Awake()
-        {
-            zoom = GetComponent<NavmapZoom>();
-        }
+        private RectTransform rectTransform;
+        private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
 
         void Start()
         {
-            mapMetadata = MinimapMetadata.GetMetadata();
-
-            closeButton.onClick.AddListener(() => { navmapVisible.Set(false); });
-
-            scrollRect.onValueChanged.AddListener((x) =>
-            {
-                if (!navmapVisible.Get())
-                    return;
-
-                MapRenderer.i.atlas.UpdateCulling();
-                CloseToast();
-            });
-
-            toastView.OnGotoClicked += () => navmapVisible.Set(false);
-
-            MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnCursorFarFromParcel += CloseToast;
-            CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
-            DataStore.i.exploreV2.isOpen.OnChange += OnExploreChange;
-            navmapVisible.OnChange += OnNavmapVisibleChanged;
-
-            configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
-            Initialize();
-        }
-
-        private void OnDestroy()
-        {
-            MapRenderer.OnParcelClicked -= TriggerToast;
-            MapRenderer.OnCursorFarFromParcel -= CloseToast;
-            CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
-            navmapVisible.OnChange -= OnNavmapVisibleChanged;
-            configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
-            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreChange;
-
-            if (waitingForFullscreenHUDOpen == false)
-                CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
-        }
-
-        private void Initialize()
-        {
-            toastView.gameObject.SetActive(false);
+            
             scrollRect.gameObject.SetActive(false);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
         }
 
-        private void SetExitButtonActive(bool isActive) =>
-            closeButton.gameObject.SetActive(isActive);
-
-        private void SetAsFullScreenMenuMode(Transform parentTransform)
+        private void OnEnable()
         {
-            if (parentTransform == null)
+            closeButton.onClick.AddListener(CloseNavmap);
+            scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+            
+            CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+            
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
+            navmapVisible.OnChange += OnNavmapVisibilityChanged;
+
+            configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
+        }
+        
+        private void OnDisable()
+        {
+            closeButton.onClick.RemoveListener(CloseNavmap);
+            scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+
+            CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
+            navmapVisible.OnChange -= OnNavmapVisibilityChanged;
+            configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
+            DataStore.i.exploreV2.isOpen.OnChange -= OnExploreOpenChanged;
+
+            if (waitingForFullscreenHUDOpen == false)
+                CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullScreenOpened;
+        }
+        
+        private void OnScrollValueChanged(Vector2 _)
+        {
+            if (!navmapVisible.Get())
                 return;
 
-            transform.SetParent(parentTransform);
-            transform.localScale = Vector3.one;
-            SetExitButtonActive(false);
-
-            RectTransform rectTransform = transform as RectTransform;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            rectTransform.localPosition = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-            rectTransform.offsetMin = Vector2.zero;
+            MapRenderer.i.atlas.UpdateCulling();
+            toastView.Close();
+        }
+        
+        private void CloseNavmap()
+        {
+            navmapVisible.Set(false);
         }
 
-        private void OnNavmapVisibleChanged(bool current, bool previous) =>
-            SetVisible(current);
-
-        private void OnExploreChange(bool current, bool previous)
+        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
         {
-            if (current)
+            if (currentParentTransform == null)
                 return;
 
-            SetVisible(false);
+            transform.SetParent(currentParentTransform);
+            transform.localScale = Vector3.one;
+            
+            closeButton.gameObject.SetActive(false);
+            
+            RectTransform.anchorMin = Vector2.zero;
+            RectTransform.anchorMax = Vector2.one;
+            RectTransform.pivot = new Vector2(0.5f, 0.5f);
+            RectTransform.localPosition = Vector2.zero;
+            RectTransform.offsetMax = Vector2.zero;
+            RectTransform.offsetMin = Vector2.zero;
+        }
+
+        private void OnNavmapVisibilityChanged(bool isVisible, bool _) => 
+            SetVisible(isVisible);
+
+        private void OnExploreOpenChanged(bool isOpen, bool _)
+        {
+            if (!isOpen)
+                SetVisible(false);
         }
 
         internal void SetVisible(bool visible)
@@ -132,7 +127,7 @@ namespace DCL
                 else
                 {
                     waitingForFullscreenHUDOpen = true;
-                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
+                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullScreenOpened;
                 }
             }
             else
@@ -141,18 +136,18 @@ namespace DCL
             }
         }
 
-        private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
+        private void OnFullScreenOpened(bool isFullScreen, bool _)
         {
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullScreenOpened;
 
-            if (!current)
+            if (!isFullScreen)
                 return;
 
             SetVisibility_Internal(true);
             waitingForFullscreenHUDOpen = false;
         }
 
-        internal void SetVisibility_Internal(bool visible)
+        private void SetVisibility_Internal(bool visible)
         {
             if (MapRenderer.i == null)
                 return;
@@ -189,13 +184,10 @@ namespace DCL
                 // Set shorter interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(UpdateMode.FOREGROUND);
             }
-            else
+            else if (minimapViewport != null)
             {
-                if (minimapViewport == null)
-                    return;
-
-                zoom.ResetCameraZoom();
-                CloseToast();
+                zoom.ResetToDefault();
+                toastView.Close();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
@@ -215,22 +207,5 @@ namespace DCL
             currentSceneCoordsText.text = string.Format(format, current.x, current.y);
             currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
         }
-
-        private void TriggerToast(int cursorTileX, int cursorTileY)
-        {
-            if (toastView.isOpen)
-                CloseToast();
-            var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
-            if (sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
-
-            toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
-        }
-
-        private void CloseToast() =>
-            toastView.OnCloseClick();
-
-        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
-            SetAsFullScreenMenuMode(currentParentTransform);
     }
 }
