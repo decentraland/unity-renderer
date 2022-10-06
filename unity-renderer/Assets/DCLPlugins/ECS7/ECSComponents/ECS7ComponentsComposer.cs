@@ -103,7 +103,6 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister.Dispose();
-            uiTextRegister.Dispose();
 
             // Components without a handler
             pointerEventResultRegister.Dispose();
