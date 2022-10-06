@@ -33,6 +33,7 @@ namespace DCL.ECSComponents
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
+        private readonly UiTextRegister uiTextRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
         private readonly PointerEventResultRegister pointerEventResultRegister;
@@ -66,6 +67,7 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
 
             // Components without a handler
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
@@ -101,6 +103,7 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister.Dispose();
+            uiTextRegister.Dispose();
 
             // Components without a handler
             pointerEventResultRegister.Dispose();
