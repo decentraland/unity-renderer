@@ -35,8 +35,8 @@ Material:
     - Vector1_27d87839ae5d43bbb9fd90d603de34c5: 0
     - Vector1_41989c0b96844a94bd216bd7218fc859: 0.939
     - _Blender: 0.522
-    - _Fade: 1
-    - _MiddlePoint: 23
+    - _Fade: 0.864
+    - _MiddlePoint: 52
     m_Colors:
     - _ColorFloor: {r: 0.019446416, g: 0.21698111, b: 0.030721748, a: 1}
     - _ColorInfFloor: {r: 0.069785744, g: 1, b: 0, a: 1}

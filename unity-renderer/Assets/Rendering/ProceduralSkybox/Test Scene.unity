@@ -245,7 +245,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 245
+      value: 421
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
@@ -325,7 +325,7 @@ PrefabInstance:
     - target: {fileID: -3887185075125053422, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[1]
-      value: 67.9
+      value: 73.7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
