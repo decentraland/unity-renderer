@@ -67,9 +67,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(SubmitSearch);
-        inputField.onSelect.AddListener(SelectInput);
-        inputField.onDeselect.AddListener(DeselectInput);
-        clearSearchButton.onClick.AddListener(ClearSearch);
+        clearSearchButton.onClick.AddListener(() => ClearSearch());
 
         SetClearMode();
     }

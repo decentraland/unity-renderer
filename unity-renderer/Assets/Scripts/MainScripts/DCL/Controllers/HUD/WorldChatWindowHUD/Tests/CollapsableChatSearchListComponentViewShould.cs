@@ -43,7 +43,7 @@ namespace DCL.Chat.HUD
             GivenPrivateChatEntry();
             GivenPublicChatEntry();
 
-            view.Clear(true);
+            view.Clear();
             
             Assert.IsTrue(view.emptyStateContainer.activeSelf);
         }

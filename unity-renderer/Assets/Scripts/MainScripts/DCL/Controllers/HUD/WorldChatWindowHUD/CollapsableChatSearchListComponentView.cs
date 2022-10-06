@@ -15,7 +15,7 @@ namespace DCL.Chat.HUD
             remove => directChatList.OnOpenChat += value;
         }
 
-        public event Action<PublicChannelEntry> OnOpenPublicChat
+        public event Action<PublicChatEntry> OnOpenPublicChat
         {
             add => publicChannelList.OnOpenChat += value;
             remove => publicChannelList.OnOpenChat -= value;
@@ -65,14 +65,14 @@ namespace DCL.Chat.HUD
             return entry;
         }
 
-        public void Set(PrivateChatEntry.PrivateChatEntryModel model)
+        public void Set(PrivateChatEntryModel model)
         {
             directChatList.Set(model.userId, model);
             directChatList.Get(model.userId).EnableAvatarSnapshotFetching();
             UpdateEmptyState();
         }
 
-        public void Set(PublicChannelEntry.PublicChannelEntryModel model)
+        public void Set(PublicChatEntryModel model)
         {
             publicChannelList.Set(model.channelId, model);
             UpdateEmptyState();

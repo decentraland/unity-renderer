@@ -349,7 +349,7 @@ public class WorldChatWindowComponentViewShould
             user = GivenProfile("pepe"),
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
         });
-        view.SetPublicChannel(new PublicChatChannelModel("nearby", "nearby", ""));
+        view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false));
 
         yield return null;
         
