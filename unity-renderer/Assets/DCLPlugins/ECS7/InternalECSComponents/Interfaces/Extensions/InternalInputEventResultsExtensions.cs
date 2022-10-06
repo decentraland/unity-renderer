@@ -26,7 +26,6 @@ namespace DCL.ECS7.InternalComponents
 
             data.timestamp = model.lastTimestamp++;
             model.events.Enqueue(data);
-            model.dirty = true;
 
             component.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
