@@ -1,16 +1,18 @@
-using DCL;
-using DCL.Interface;
-using UnityEngine;
 using System;
+using UnityEngine;
 
-public interface ITopNotificationsComponentView
+namespace DCL.Chat.Notifications
 {
-    event Action<bool> OnResetFade;
+    public interface ITopNotificationsComponentView
+    {
+        event Action<bool> OnResetFade;
     
-    Transform GetPanelTransform();
-    void AddNewChatNotification(ChatMessage message, string username = null, string profilePicture = null);
-    void Show(bool instant = false);
-    void Hide(bool instant = false);
-    void ShowNotification();
-    void HideNotification();
+        Transform GetPanelTransform();
+        void AddNewChatNotification(PrivateChatMessageNotificationModel model);
+        void AddNewChatNotification(PublicChannelMessageNotificationModel model);
+        void Show(bool instant = false);
+        void Hide(bool instant = false);
+        void ShowNotification();
+        void HideNotification();
+    }
 }

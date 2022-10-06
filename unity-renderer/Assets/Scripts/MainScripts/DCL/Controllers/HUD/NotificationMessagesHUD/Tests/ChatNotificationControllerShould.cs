@@ -6,7 +6,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DCL.Chat.HUD.NotificationMessages
+namespace DCL.Chat.Notifications
 {
     public class ChatNotificationControllerShould
     {
@@ -46,18 +46,45 @@ namespace DCL.Chat.HUD.NotificationMessages
         [Test]
         public void FilterNotificationWhenChannelIsMuted()
         {
-            chatController.GetAllocatedChannel("mutedChannel").Returns(new Channel("mutedChannel", "mutedChannel", 0, 3, true,
-                true, ""));
+            chatController.GetAllocatedChannel("mutedChannel").Returns(new Channel("mutedChannel", "mutedChannel",
+                0, 3, true, true, ""));
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
                 ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"});
 
-            topNotificationsView.DidNotReceiveWithAnyArgs().AddNewChatNotification(default);
-            mainNotificationsView.DidNotReceiveWithAnyArgs().AddNewChatNotification(default);
+            topNotificationsView.DidNotReceiveWithAnyArgs().AddNewChatNotification((PublicChannelMessageNotificationModel) default);
+            mainNotificationsView.DidNotReceiveWithAnyArgs()
+                .AddNewChatNotification((PublicChannelMessageNotificationModel) default);
         }
 
         [Test]
-        public void AddMessageToTheView()
+        public void AddPublicMessageToTheView()
+        {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots {face256 = "face256"}
+            });
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+            chatController.GetAllocatedChannel("mutedChannel")
+                .Returns(new Channel("mutedChannel", "random-channel", 0, 0, true, false, ""));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                {recipient = "mutedChannel"});
+
+            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "mutedChannel" &&
+                m.ChannelName == "random-channel"));
+            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "mutedChannel" &&
+                m.ChannelName == "random-channel"));
+        }
+
+        [Test]
+        public void AddPrivateMessageToTheView()
         {
             var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
             senderUserProfile.UpdateData(new UserProfileModel
@@ -69,24 +96,54 @@ namespace DCL.Chat.HUD.NotificationMessages
             userProfileBridge.Get("sender").Returns(senderUserProfile);
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) {recipient = "mutedChannel"});
+                    ChatMessage.Type.PRIVATE, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                {recipient = "me"});
 
-            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
-                "imsender", "face256");
-            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
-                "imsender", "face256");
+            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
         }
 
         [Test]
-        public void AddMessageToTheViewWhenSenderHasNoProfile()
+        public void AddNearbyMessageToTheView()
         {
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) {recipient = "mutedChannel"});
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots {face256 = "face256"}
+            });
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+            chatController.GetAllocatedChannel("nearby")
+                .Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
 
-            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
-                "sender");
-            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<ChatMessage>(m => m.messageId == "mid"),
-                "sender");
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
+                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
+
+            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "nearby" &&
+                m.ChannelName == "nearby"));
+            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "nearby" &&
+                m.ChannelName == "nearby"));
+        }
+
+        [Test]
+        public void AddPublicMessageToTheViewWhenSenderHasNoProfile()
+        {
+            chatController.GetAllocatedChannel("mutedChannel")
+                .Returns(new Channel("mutedChannel", "random-channel", 0, 0, true, false, ""));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                {recipient = "mutedChannel"});
+
+            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "sender"));
+            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
+                m.MessageId == "mid" && m.Username == "sender"));
         }
     }
 }
