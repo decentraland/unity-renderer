@@ -214,38 +214,20 @@ namespace DCL
 
         private IList<IPointerEvent> GetPointerEventList(IDCLEntity entity)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-            {
-                return pointerInputEvent.Cast<IPointerEvent>().ToList();
-            }
-            else
-            {
-                var lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
-                                                               .Select(child => child.GetComponent<IPointerEvent>())
-                                                               .Where(pointerComponent => pointerComponent != null)
-                                                               .ToArray();
-
-                return lastHoveredEventList;
-            }
+            return entity.gameObject.transform.Cast<Transform>()
+                                    .Select(child => child.GetComponent<IPointerEvent>())
+                                    .Where(pointerComponent => pointerComponent != null)
+                                    .ToArray();
         }
 
         private IPointerEvent GetPointerEvent(IDCLEntity entity)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-                return pointerInputEvent.First();
-            else
-                return entity.gameObject.GetComponentInChildren<IPointerEvent>();
+            return entity.gameObject.GetComponentInChildren<IPointerEvent>();
         }
 
-        private IList<IPointerInputEvent> GetPointerInputEvents(IDCLEntity entity, GameObject hitGameObject)
+        private IList<IPointerInputEvent> GetPointerInputEvents(GameObject hitGameObject)
         {
-            // If an event exist in the new ECS, we got that value, if not it is ECS 6, so we continue as before
-            if (entity != null && dataStoreEcs7.entityEvents.TryGetValue(entity.entityId, out List<IPointerInputEvent> pointerInputEvent))
-                return pointerInputEvent;
-            else
-                return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
+            return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
         private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
@@ -492,7 +474,7 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                IList<IPointerInputEvent> events = GetPointerInputEvents(info.entity, hitGameObject);
+                IList<IPointerInputEvent> events = GetPointerInputEvents(hitGameObject);
 
                 for (var i = 0; i < events.Count; i++)
                 {

@@ -14,8 +14,8 @@ namespace Tests
         private IList<InternalComponentWriteData> writeComponentList;
         private IDCLEntity entity;
         private IParcelScene scene;
-        private InternalECSComponent<InternalRenderers> renderersComponent;
-        private InternalECSComponent<InternalVisibility> visibilityComponent;
+        private IInternalECSComponent<InternalRenderers> renderersComponent;
+        private IInternalECSComponent<InternalVisibility> visibilityComponent;
         private ECS7TestUtilsScenesAndEntities testUtils;
 
         [SetUp]
@@ -23,26 +23,16 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
-            writeComponentList = new List<InternalComponentWriteData>();
+            var internalComponents = new InternalECSComponents(manager, factory);
+            writeComponentList = internalComponents.scheduledWrite;
 
-            renderersComponent = new InternalECSComponent<InternalRenderers>(
-                InternalECSComponentsId.RENDERERS,
-                manager,
-                factory,
-                null,
-                writeComponentList);
-
-            visibilityComponent = new InternalECSComponent<InternalVisibility>(
-                InternalECSComponentsId.VISIBILITY,
-                manager,
-                factory,
-                null,
-                writeComponentList);
+            renderersComponent = internalComponents.renderersComponent;
+            visibilityComponent = internalComponents.visibilityComponent;
 
             testUtils = new ECS7TestUtilsScenesAndEntities(manager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1111);
-            writeSystem = InternalECSComponents.WriteSystem(writeComponentList);
+            writeSystem = internalComponents.WriteSystemUpdate;
         }
 
         [TearDown]

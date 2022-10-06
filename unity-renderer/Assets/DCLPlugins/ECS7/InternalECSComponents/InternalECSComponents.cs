@@ -5,7 +5,8 @@ using DCL.ECSRuntime;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
-    public Action writeInternalComponentsSystem { get; }
+    internal readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
+
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
     public IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
@@ -17,10 +18,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
-        IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
-
-        writeInternalComponentsSystem = WriteSystem(scheduledWrite);
-
         texturizableComponent = new InternalECSComponent<InternalTexturizable>(
             InternalECSComponentsId.TEXTURIZABLE,
             componentsManager,
@@ -84,6 +81,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
     public void Dispose()
     {
+        scheduledWrite.Clear();
+
         texturizableComponent.Dispose();
         materialComponent.Dispose();
         onPointerColliderComponent.Dispose();
@@ -92,27 +91,24 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         inputEventResultsComponent.Dispose();
     }
 
-    internal static Action WriteSystem(IList<InternalComponentWriteData> scheduledWrite)
+    public void WriteSystemUpdate()
     {
-        return () =>
+        for (int i = 0; i < scheduledWrite.Count; i++)
         {
-            for (int i = 0; i < scheduledWrite.Count; i++)
-            {
-                var writeData = scheduledWrite[i];
-                if (writeData.scene == null)
-                    continue;
+            var writeData = scheduledWrite[i];
+            if (writeData.scene == null)
+                continue;
 
-                InternalComponent data = writeData.data;
-                if (data != null)
-                {
-                    data._dirty = false;
-                }
-                else
-                {
-                    writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
-                }
+            InternalComponent data = writeData.data;
+            if (data != null)
+            {
+                data._dirty = false;
             }
-            scheduledWrite.Clear();
-        };
+            else
+            {
+                writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
+            }
+        }
+        scheduledWrite.Clear();
     }
 }

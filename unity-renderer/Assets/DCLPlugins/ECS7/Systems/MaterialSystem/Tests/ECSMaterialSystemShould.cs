@@ -37,7 +37,7 @@ namespace Tests
             systemsUpdate = () =>
             {
                 materialSystemUpdate();
-                internalEcsComponents.writeInternalComponentsSystem();
+                internalEcsComponents.WriteSystemUpdate();
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);

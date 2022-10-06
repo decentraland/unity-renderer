@@ -28,7 +28,7 @@ public class ECSSystemsController : IDisposable
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
-        this.internalComponentWriteSystem = context.internalEcsComponents.writeInternalComponentsSystem;
+        this.internalComponentWriteSystem = context.internalEcsComponents.WriteSystemUpdate;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);

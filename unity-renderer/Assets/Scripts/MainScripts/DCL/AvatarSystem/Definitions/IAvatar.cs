@@ -19,7 +19,7 @@ namespace AvatarSystem
         int lodLevel { get; }
 
         UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default);
-        void AddVisibilityConstrain(string key);
+        void AddVisibilityConstraint(string key);
         void RemoveVisibilityConstrain(string key);
         void PlayEmote(string emoteId, long timestamps);
         void SetLODLevel(int lodIndex);
