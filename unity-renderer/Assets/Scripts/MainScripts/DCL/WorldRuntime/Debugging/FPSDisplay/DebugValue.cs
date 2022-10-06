@@ -6,7 +6,7 @@ using UnityEngine;
 public class DebugValue : MonoBehaviour
 {
 
-    [SerializeField] private TMP_Text textValue;
+    [SerializeField] internal TMP_Text textValue;
     
     public DebugValueEnum debugValueEnum;
 

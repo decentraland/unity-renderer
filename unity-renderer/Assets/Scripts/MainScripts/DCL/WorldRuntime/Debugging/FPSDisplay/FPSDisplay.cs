@@ -16,7 +16,7 @@ namespace DCL.FPSDisplay
         private const string TWO_DECIMALS = "##.00";
 
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
-        [SerializeField] private DebugValue[] valuesToUpdate;
+        [SerializeField] internal List<DebugValue> valuesToUpdate;
         [SerializeField] private Button closeButton;
         [SerializeField] private CopyToClipboardButton copySceneToClipboard;
 
@@ -186,7 +186,7 @@ namespace DCL.FPSDisplay
                     metrics = activeScene.metricsCounter.currentCount;
                     limits = activeScene.metricsCounter.maxCount;
                 }
-                for (var i = 0; i < valuesToUpdate.Length; i++)
+                for (var i = 0; i < valuesToUpdate.Count; i++)
                 {
                     if(valuesToUpdate[i].isActiveAndEnabled)
                         valuesToUpdate[i].SetValue(updateValueDictionary[valuesToUpdate[i].debugValueEnum].Invoke());
@@ -235,6 +235,11 @@ namespace DCL.FPSDisplay
         private void OnDestroy()
         {
             closeButton.onClick.RemoveAllListeners();
+        }
+
+        public void AddValueToUpdate(DebugValue valueToUpdate)
+        {
+            valuesToUpdate.Add(valueToUpdate);
         }
 
 
