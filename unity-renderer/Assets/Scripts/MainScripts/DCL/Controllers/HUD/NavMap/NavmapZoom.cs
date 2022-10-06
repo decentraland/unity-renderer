@@ -32,10 +32,10 @@ namespace DCL
             Scale = zoomCurve.Evaluate(currentZoomLevel);
             containerRectTransform.localScale = new Vector3(Scale, Scale, Scale);
 
-            SetUiButtonInteractability();
+            SetUiButtonsInteractability();
         }
         
-        private void SetUiButtonInteractability()
+        private void SetUiButtonsInteractability()
         {
             zoomIn.SetUiInteractable(isInteractable: currentZoomLevel < MAX_ZOOM);
             zoomOut.SetUiInteractable(isInteractable: currentZoomLevel > MIN_ZOOM);
@@ -51,7 +51,7 @@ namespace DCL
             zoomOut.InputAction.OnStarted += Zoom;
 
             zoomIn.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomIn));
-            zoomOut.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomOut));
+            zoomOut.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomOut)); zoomOut.Button.onClick.AddListener( () => Zoom(DCLAction_Hold.ZoomOut));  
         }
 
         private void OnDisable()
@@ -92,7 +92,7 @@ namespace DCL
             StopAllCoroutines();
             StartCoroutine(ScaleOverTime(from: startScale, to: Scale));
 
-            SetUiButtonInteractability();
+            SetUiButtonsInteractability();
         }
         
         private void UpdateScale(int zoomDirection)
