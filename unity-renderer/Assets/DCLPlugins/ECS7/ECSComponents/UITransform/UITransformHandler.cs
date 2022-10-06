@@ -30,6 +30,9 @@ namespace DCL.ECSComponents
                 var containerModel = containerData.model;
                 containerModel.hasTransform = false;
 
+                // do parent detach only if not child of root entity
+                // since ui element without transform should be always attached
+                // to the root entity
                 if (containerModel.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
                 {
                     containerModel.parentElement?.Remove(containerModel.rootElement);
@@ -172,7 +175,6 @@ namespace DCL.ECSComponents
             {
                 case YGDisplay.Flex:
                     return DisplayStyle.Flex;
-                    break;
                 case YGDisplay.None:
                     return DisplayStyle.None;
                 default:

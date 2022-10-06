@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using NUnit.Framework;
@@ -18,20 +17,16 @@ namespace Tests
         {
             var factory = new ECSComponentsFactory();
             var manager = new ECSComponentsManager(factory.componentBuilders);
+            var internalComponents = new InternalECSComponents(manager, factory);
 
-            internalUiContainer = new InternalECSComponent<InternalUiContainer>(
-                0,
-                manager,
-                factory,
-                () => new UiContainerHandler(() => internalUiContainer),
-                new List<InternalComponentWriteData>());
+            internalUiContainer = internalComponents.uiContainerComponent;
 
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager);
             scene = sceneTestHelper.CreateScene("temptation");
             entity = scene.CreateEntity(111);
 
             var initialModel = new InternalUiContainer();
-            initialModel.childElements.Add(new VisualElement());
+            initialModel.rootElement.Add(new VisualElement());
             initialModel.hasTransform = true;
 
             internalUiContainer.PutFor(scene, entity, initialModel);
@@ -47,7 +42,7 @@ namespace Tests
         public void NotRemoveComponentWhenTransformLeft()
         {
             var model = internalUiContainer.GetFor(scene, entity).model;
-            model.childElements.Clear();
+            model.rootElement.Clear();
             internalUiContainer.PutFor(scene, entity, model);
 
             Assert.NotNull(internalUiContainer.GetFor(scene, entity));
@@ -68,7 +63,7 @@ namespace Tests
         {
             var model = internalUiContainer.GetFor(scene, entity).model;
             model.hasTransform = false;
-            model.childElements.Clear();
+            model.rootElement.Clear();
             internalUiContainer.PutFor(scene, entity, model);
 
             Assert.IsNull(internalUiContainer.GetFor(scene, entity));
