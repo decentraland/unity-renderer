@@ -83,7 +83,7 @@ namespace DCL.Chat.Notifications
                         break;
                     case ChatMessage.Type.PUBLIC:
                         var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
-                            message.body, channel?.Name ?? message.recipient, message.recipient, message.timestamp, peerName);
+                            message.body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp, peerName);
 
                         mainChatNotificationView.AddNewChatNotification(publicModel);
 

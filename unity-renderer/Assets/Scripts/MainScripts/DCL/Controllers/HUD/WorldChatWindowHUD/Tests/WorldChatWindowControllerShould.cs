@@ -298,7 +298,7 @@ public class WorldChatWindowControllerShould
         view.OnSearchChatRequested += Raise.Event<Action<string>>("near");
 
         view.Received(1).EnableSearchMode();
-        friendsController.Received(1).GetFriendsWithDirectMessages("near", 30);
+        friendsController.Received(1).GetFriendsWithDirectMessages("near", 20);
     }
 
     [Test]

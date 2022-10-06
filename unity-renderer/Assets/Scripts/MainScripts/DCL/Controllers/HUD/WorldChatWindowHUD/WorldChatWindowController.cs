@@ -8,9 +8,8 @@ using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
-using Channel = DCL.Chat.Channels.Channel;
-using DCL.Interface;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowController : IHUD
 {
