@@ -1,3 +1,4 @@
+using DCL.ECSComponents;
 using UnityEngine;
 
 public class ECSInteractionHoverMonoBehavior : MonoBehaviour, IECSInteractionHoverCanvas

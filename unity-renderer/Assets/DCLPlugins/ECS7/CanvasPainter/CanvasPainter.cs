@@ -213,8 +213,8 @@ namespace DCL.ECS7
                 componentData = textComponentGroup.group[i].componentData1;
 
                 var textElement = new TextElement();
-                textElement.text = textComponentGroup.group[i].componentData2.model.Text;
-                var color = textComponentGroup.group[i].componentData2.model.TextColor;
+                textElement.text = textComponentGroup.group[i].componentData2.model.Value;
+                var color = textComponentGroup.group[i].componentData2.model.Color;
                 textElement.style.color =  new UnityEngine.Color(color.R, color.G,color.B,1);
                 
                 // We create the text element

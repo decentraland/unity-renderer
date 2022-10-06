@@ -9,6 +9,7 @@ using DCL.Models;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 using RaycastHit = UnityEngine.RaycastHit;
+using Vector3 = DCL.ECSComponents.Vector3;
 
 namespace DCLPlugins.ECSComponents.Raycast
 {

@@ -197,9 +197,10 @@ namespace DCL.Controllers
                 }
             }
 
-            // If it has a mesh we don't evaluate its position due to artists "pivot point sloppiness", we evaluate its mesh merged bounds
-            if (HasMesh(entity))
+            if (HasMesh(entity)) // If it has a mesh we don't evaluate its position due to artists "pivot point sloppiness", we evaluate its mesh merged bounds
                 EvaluateMeshBounds(entity, onlyOuterBoundsCheck);
+            else if (entity.scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.AVATAR_SHAPE)) // AvatarShape is different than any other kind of shape
+                EvaluateAvatarMeshBounds(entity, onlyOuterBoundsCheck);
             else
                 EvaluateEntityPosition(entity, onlyOuterBoundsCheck);
         }
@@ -219,9 +220,11 @@ namespace DCL.Controllers
             
             if (!entity.isInsideSceneOuterBoundaries)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
-            
-            if (!onlyOuterBoundsCheck)
-                SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
+
+            if (onlyOuterBoundsCheck)
+                return;
+                
+            SetMeshesAndComponentsInsideBoundariesState(entity, IsEntityMeshInsideSceneBoundaries(entity));
         }
         
         private void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
@@ -234,13 +237,39 @@ namespace DCL.Controllers
                 SetComponentsInsideBoundariesValidState(entity, false);
                 SetEntityInsideBoundariesState(entity, false);
             }
+
+            if (onlyOuterBoundsCheck)
+                return;
             
-            if (!onlyOuterBoundsCheck)
+            bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get());
+            SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
+            SetEntityInsideBoundariesState(entity, isInsideBoundaries);
+        }
+
+        private void EvaluateAvatarMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
+        {
+            Vector3 entityGOPosition = entity.gameObject.transform.position;
+            
+            // Heuristic using the entity scale for the size of the avatar bounds, otherwise we should configure the 
+            // entity's meshRootGameObject, etc. after its GPU skinning runs and use the regular entity mesh evaluation 
+            Bounds avatarBounds = new Bounds();
+            avatarBounds.center = entityGOPosition;
+            avatarBounds.size = entity.gameObject.transform.lossyScale;
+            
+            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(avatarBounds);
+            
+            if (!entity.isInsideSceneOuterBoundaries)
             {
-                bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entityGOPosition + CommonScriptableObjects.worldOffset.Get());
-                SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
-                SetEntityInsideBoundariesState(entity, isInsideBoundaries);
+                SetComponentsInsideBoundariesValidState(entity, false);
+                SetEntityInsideBoundariesState(entity, false);
             }
+
+            if (onlyOuterBoundsCheck)
+                return;
+            
+            bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(avatarBounds);
+            SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
+            SetEntityInsideBoundariesState(entity, isInsideBoundaries);
         }
 
         private void SetEntityInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
@@ -269,7 +298,7 @@ namespace DCL.Controllers
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
-
+            
             // 2nd check (submeshes & colliders AABB)
             if (!isInsideBoundaries)
             {

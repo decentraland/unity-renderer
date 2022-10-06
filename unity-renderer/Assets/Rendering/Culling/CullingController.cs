@@ -134,7 +134,7 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            Renderer[] renderers;
+            IEnumerable<Renderer> renderers = null;
 
             // If profile matches the skinned renderer profile in settings,
             // the skinned renderers are going to be used.
@@ -144,15 +144,13 @@ namespace DCL.Rendering
                 renderers = objectsTracker.GetSkinnedRenderers();
 
 
-            for (var i = 0; i < renderers.Length; i++)
+            foreach (Renderer r in renderers)
             {
                 if (timeBudgetCount > settings.maxTimeBudget)
                 {
                     timeBudgetCount = 0;
                     yield return null;
                 }
-
-                Renderer r = renderers[i];
 
                 if (r == null)
                     continue;
@@ -365,26 +363,26 @@ namespace DCL.Rendering
         /// </summary>
         internal void ResetObjects()
         {
-            var skinnedRenderers = objectsTracker.GetSkinnedRenderers();
-            var renderers = objectsTracker.GetRenderers();
-            var animations = objectsTracker.GetAnimations();
+            IEnumerable<Renderer> renderers = objectsTracker.GetRenderers();
+            IEnumerable<SkinnedMeshRenderer> skinnedRenderers = objectsTracker.GetSkinnedRenderers();
+            Animation[] animations = objectsTracker.GetAnimations();
 
-            for (var i = 0; i < skinnedRenderers?.Length; i++)
+            foreach (Renderer renderer in renderers)
             {
-                if (skinnedRenderers[i] != null)
-                    skinnedRenderers[i].updateWhenOffscreen = true;
+                if (renderer != null)
+                    renderer.forceRenderingOff = false;
             }
 
-            for (var i = 0; i < animations?.Length; i++)
+            foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
+            {
+                if (skinnedRenderer != null)
+                    skinnedRenderer.updateWhenOffscreen = true;
+            }
+
+            for (int i = 0; i < animations?.Length; i++)
             {
                 if (animations[i] != null)
                     animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
-            }
-
-            for (var i = 0; i < renderers?.Length; i++)
-            {
-                if (renderers[i] != null)
-                    renderers[i].forceRenderingOff = false;
             }
         }
 
@@ -508,7 +506,7 @@ namespace DCL.Rendering
             if (OnDataReport == null)
                 return;
 
-            int rendererCount = (objectsTracker.GetRenderers()?.Length ?? 0) + (objectsTracker.GetSkinnedRenderers()?.Length ?? 0);
+            int rendererCount = (objectsTracker.GetRenderers()?.Count ?? 0) + (objectsTracker.GetSkinnedRenderers()?.Count ?? 0);
 
             OnDataReport.Invoke(rendererCount, hiddenRenderers.Count, shadowlessRenderers.Count);
         }

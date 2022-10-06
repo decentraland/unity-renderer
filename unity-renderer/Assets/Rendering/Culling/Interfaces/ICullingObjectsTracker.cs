@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Rendering
@@ -9,8 +10,8 @@ namespace DCL.Rendering
         void SetIgnoredLayersMask(int ignoredLayersMask);
         void MarkDirty();
         bool IsDirty();
-        Renderer[] GetRenderers();
-        SkinnedMeshRenderer[] GetSkinnedRenderers();
+        ICollection<Renderer> GetRenderers();
+        ICollection<SkinnedMeshRenderer> GetSkinnedRenderers();
         Animation[] GetAnimations();
         IEnumerator PopulateRenderersList();
         void ForcePopulateRenderersList(bool includeInactives);

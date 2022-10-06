@@ -393,7 +393,7 @@ namespace DCL.ECSComponents
 
         public void ApplyHideAvatarModifier()
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            avatar.AddVisibilityConstraint(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
             playerNameContainer.SetActive(false);
         }
