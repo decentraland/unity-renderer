@@ -30,7 +30,7 @@ namespace ECSSystems.InputSenderSystem
         {
             var inputResults = state.inputResultComponent.GetForAll();
             var writer = state.componentWriter;
-            
+
             for (int i = 0; i < inputResults.Count; i++)
             {
                 var model = inputResults[i].value.model;
@@ -54,17 +54,14 @@ namespace ECSSystems.InputSenderSystem
                         Hit = inputEvent.hit,
                         State = inputEvent.type,
                         Timestamp = inputEvent.timestamp
-                    });  
+                    });
                 }
 
                 writer.PutComponent(scene.sceneData.id,
                     entity.entityId,
                     ComponentID.POINTER_EVENTS_RESULT,
-                    result, 
+                    result,
                     ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
-
-                model.dirty = false;
-                state.inputResultComponent.PutFor(scene, entity, model);
             }
         }
     }

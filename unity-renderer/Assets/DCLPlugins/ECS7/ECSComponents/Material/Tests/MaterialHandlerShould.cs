@@ -186,7 +186,9 @@ namespace Tests
         public void RemoveInternalMaterialOnRemove()
         {
             handler.OnComponentRemoved(scene, entity);
-            internalMaterialComponent.Received(1).RemoveFor(scene, entity);
+            internalMaterialComponent.Received(1)
+                                     .RemoveFor(scene, entity,
+                                         Arg.Is<InternalMaterial>(x => x.material == null));
         }
     }
 }

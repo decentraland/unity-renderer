@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -16,16 +18,26 @@ namespace Tests
         private ECS7TestUtilsScenesAndEntities testUtils;
         private MeshRendererHandler handler;
         private IInternalECSComponent<InternalTexturizable> texturizableComponent;
+        private InternalECSComponents internalComponent;
 
         [SetUp]
         public void SetUp()
         {
-            testUtils = new ECS7TestUtilsScenesAndEntities();
+            var factory = new ECSComponentsFactory();
+            var manager = new ECSComponentsManager(factory.componentBuilders);
+            internalComponent = new InternalECSComponents(manager, factory);
+
+            testUtils = new ECS7TestUtilsScenesAndEntities(manager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(100);
-            texturizableComponent = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
+            texturizableComponent = internalComponent.texturizableComponent;
 
-            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent, Substitute.For<IInternalECSComponent<InternalRenderers>>());
+            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
+                Substitute.For<IInternalECSComponent<InternalRenderers>>());
+
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, manager, factory, null, new List<InternalComponentWriteData>());
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
@@ -71,18 +83,12 @@ namespace Tests
             yield return null;
 
             Renderer renderer = entity.gameObject.GetComponentInChildren<Renderer>();
-            texturizableComponent.Received(1)
-                                 .PutFor(scene, entity,
-                                     Arg.Is<InternalTexturizable>(x => x.renderers.Contains(renderer)));
-
-            texturizableComponent.ClearReceivedCalls();
+            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).model.renderers.Contains(renderer));
 
             handler.OnComponentRemoved(scene, entity);
             yield return null;
 
-            texturizableComponent.Received(1)
-                                 .PutFor(scene, entity,
-                                     Arg.Is<InternalTexturizable>(x => x.renderers.Count == 0));
+            Assert.IsNull(texturizableComponent.GetFor(scene, entity));
         }
 
         [UnityTest]
