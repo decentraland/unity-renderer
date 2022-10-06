@@ -55,24 +55,20 @@ namespace DCL.Chat.Notifications
             ownUserProfile ??= userProfileBridge.GetOwn();
             if (message.sender == ownUserProfile.userId) return;
 
-            if (!string.IsNullOrEmpty(message.recipient))
-            {
-                var channel = chatController.GetAllocatedChannel(message.recipient);
-                if (channel is {Muted: true}) return;
-            }
-
             var span = Utils.UnixToDateTimeWithTime((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
                        Utils.UnixToDateTimeWithTime(message.timestamp);
 
             if (span < maxNotificationInterval)
             {
+                var channel = chatController.GetAllocatedChannel(string.IsNullOrEmpty(message.recipient) && message.messageType == ChatMessage.Type.PUBLIC
+                    ? "nearby"
+                    : message.recipient);
+                if (channel?.Muted ?? false) return;
+                
                 var peerId = ExtractPeerId(message);
                 var peerProfile = userProfileBridge.Get(peerId);
                 var peerName = peerProfile?.userName ?? peerId;
                 var peerProfilePicture = peerProfile?.face256SnapshotURL;
-                var channel = chatController.GetAllocatedChannel(string.IsNullOrEmpty(message.recipient)
-                    ? "nearby"
-                    : message.recipient);
 
                 switch (message.messageType)
                 {
@@ -87,7 +83,7 @@ namespace DCL.Chat.Notifications
                         break;
                     case ChatMessage.Type.PUBLIC:
                         var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
-                            message.body, channel.Name, channel.ChannelId, message.timestamp, peerName);
+                            message.body, channel?.Name ?? message.recipient, message.recipient, message.timestamp, peerName);
 
                         mainChatNotificationView.AddNewChatNotification(publicModel);
 
