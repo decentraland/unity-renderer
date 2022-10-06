@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Helpers;
+using DCL.Interface;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -19,6 +20,9 @@ namespace DCL.Services
 
             return brigeGO.GetOrCreateComponent<WebBrowserAudioDevicesBridge>();
         }
+
+        [ContextMenu(nameof(RequestAudioDevices))]
+        public void RequestAudioDevices() { WebInterface.RequestAudioDevices(); }
 
         [PublicAPI]
         public void SetAudioDevices(string payload)

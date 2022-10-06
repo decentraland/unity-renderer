@@ -18,10 +18,11 @@ namespace DCL.Services
 
         public void Initialize()
         {
+            
             if (bridge.AudioDevices == null)
                 bridge.OnAudioDevicesRecieved += OnAudioDevicesRecieved;
             else
-                ChacheAudioDevices();
+                CacheAudioDevices();
         }
 
         public void Dispose()
@@ -39,10 +40,10 @@ namespace DCL.Services
         private void OnAudioDevicesRecieved(AudioDevicesResponse devices)
         {
             bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
-            ChacheAudioDevices();
+            CacheAudioDevices();
         }
 
-        private void ChacheAudioDevices()
+        private void CacheAudioDevices()
         {
             HasRecievedKernelMessage = true;
 

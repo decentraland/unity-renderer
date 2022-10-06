@@ -560,7 +560,7 @@ namespace DCL.Interface
             public float voiceChatVolume;
             public int voiceChatAllowCategory;
         }
-        
+
         [Serializable]
         public class UserRealmPayload
         {
@@ -757,7 +757,7 @@ namespace DCL.Interface
             public int limit;
             public string fromMessageId;
         }
-        
+
         [Serializable]
         public class FriendshipUpdateStatusMessage
         {
@@ -795,7 +795,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-        
+
         [Serializable]
         private class GetFriendRequestsPayload
         {
@@ -1472,13 +1472,6 @@ namespace DCL.Interface
             SendMessage("ApplySettings", applySettingsPayload);
         }
 
-        public static void ChangeAudioDevice(int outputDevice, int inputDevice)
-        {
-            changeAudioDevicePayload.outputDevice = outputDevice;
-            changeAudioDevicePayload.inputDevice = inputDevice;
-            SendMessage("ChangeAudioDevice", changeAudioDevicePayload);
-        }
-
         public static void RequestGIFProcessor(string gifURL, string gifId, bool isWebGL1)
         {
             gifSetupPayload.imageSource = gifURL;
@@ -1754,10 +1747,7 @@ namespace DCL.Interface
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
 
-        public static void GetUnseenMessagesByUser()
-        {
-            SendMessage("GetUnseenMessagesByUser");
-        }
+        public static void GetUnseenMessagesByUser() { SendMessage("GetUnseenMessagesByUser"); }
 
         public static void GetFriends(int limit, int skip)
         {
@@ -1791,6 +1781,15 @@ namespace DCL.Interface
         {
             SendMessage("UpdateMemoryUsage");
         }
+        
+        public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
+
+        public static void ChangeAudioDevice(int outputDevice, int inputDevice)
+        {
+            changeAudioDevicePayload.outputDevice = outputDevice;
+            changeAudioDevicePayload.inputDevice = inputDevice;
+            SendMessage("ChangeAudioDevice", changeAudioDevicePayload);
+        }
 
         public static void SetOutputAudioDevice(int outputDeviceId)
         {
@@ -1803,10 +1802,12 @@ namespace DCL.Interface
 
         public static void SetInputAudioDevice(int inputDeviceId)
         {
+            Debug.Log($"SEND {nameof(SetInputAudioDevice)}  id = {inputDeviceId}");
             SendMessage(nameof(SetInputAudioDevice), new SetInputAudioDevicePayload()
             {
                 deviceId = inputDeviceId
             });
         }
     }
+
 }
