@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
@@ -15,7 +16,7 @@ namespace ECSSystems.ScenesUiSystem
             public UIDocument uiDocument;
             public IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
             public IWorldState worldState;
-            public BaseList<IParcelScene> loadedScenes;
+            public IList<IParcelScene> loadedScenes;
             public string lastSceneId;
             public bool isPendingSceneUI;
             public IParcelScene currentScene;
@@ -23,7 +24,7 @@ namespace ECSSystems.ScenesUiSystem
 
         public static Action CreateSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            BaseList<IParcelScene> loadedScenes,
+            IList<IParcelScene> loadedScenes,
             IWorldState worldState)
         {
             var state = new State()
@@ -60,20 +61,20 @@ namespace ECSSystems.ScenesUiSystem
             if (state.isPendingSceneUI)
             {
                 // we get current scene reference
-                if (state.currentScene == null)
-                {
-                    state.currentScene = GetCurrentScene(currentSceneId, state.loadedScenes);
-                }
+                state.currentScene ??= GetCurrentScene(currentSceneId, state.loadedScenes);
 
                 // we apply current scene UI
-                else if (ApplySceneUI(state.internalUiContainerComponent, state.uiDocument, state.currentScene))
+                if (state.currentScene != null)
                 {
-                    state.isPendingSceneUI = false;
+                    if (ApplySceneUI(state.internalUiContainerComponent, state.uiDocument, state.currentScene))
+                    {
+                        state.isPendingSceneUI = false;
+                    }
                 }
             }
         }
 
-        private static void ApplyParenting(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
+        internal static void ApplyParenting(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
@@ -89,33 +90,32 @@ namespace ECSSystems.ScenesUiSystem
                 if (uiContainerData.model.parentElement != null)
                     continue;
 
-                var parentData = internalUiContainerComponent.GetFor(uiContainerData.scene, uiContainerData.model.parentId);
+                InternalUiContainer parentDataModel =
+                    internalUiContainerComponent.GetFor(uiContainerData.scene, uiContainerData.model.parentId)?.model;
 
                 // create root entity ui container if needed
-                if (parentData == null && uiContainerData.model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                if (parentDataModel == null && uiContainerData.model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
                 {
-                    internalUiContainerComponent.PutFor(uiContainerData.scene,
-                        SpecialEntityId.SCENE_ROOT_ENTITY,
-                        new InternalUiContainer()
-                        {
-                            hasTransform = true
-                        });
+                    parentDataModel = new InternalUiContainer()
+                    {
+                        hasTransform = true
+                    };
                 }
-                // apply parenting
-                else if (parentData != null)
-                {
-                    var parentContainerModel = parentData.model;
-                    var currentContainerModel = uiContainerData.model;
-                    parentContainerModel.rootElement.Add(uiContainerData.model.rootElement);
-                    currentContainerModel.parentElement = parentData.model.rootElement;
 
-                    internalUiContainerComponent.PutFor(parentData.scene, parentData.entity, parentContainerModel);
+                // apply parenting
+                if (parentDataModel != null)
+                {
+                    var currentContainerModel = uiContainerData.model;
+                    parentDataModel.rootElement.Add(uiContainerData.model.rootElement);
+                    currentContainerModel.parentElement = parentDataModel.rootElement;
+
+                    internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.model.parentId, parentDataModel);
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
         }
 
-        private static void ClearUI(UIDocument uiDocument)
+        internal static void ClearUI(UIDocument uiDocument)
         {
             if (uiDocument.rootVisualElement.childCount > 0)
             {
@@ -123,7 +123,7 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        private static IParcelScene GetCurrentScene(string sceneId, BaseList<IParcelScene> loadedScenes)
+        internal static IParcelScene GetCurrentScene(string sceneId, IList<IParcelScene> loadedScenes)
         {
             if (string.IsNullOrEmpty(sceneId))
                 return null;
@@ -141,7 +141,7 @@ namespace ECSSystems.ScenesUiSystem
             return currentScene;
         }
 
-        private static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+        internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             UIDocument uiDocument, IParcelScene currentScene)
         {
             IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
