@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Variables.RealmsInfo;
 
 namespace DCL.FPSDisplay
@@ -18,6 +17,8 @@ namespace DCL.FPSDisplay
 
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
         [SerializeField] private DebugValue[] valuesToUpdate;
+        [SerializeField] private Button closeButton;
+        [SerializeField] private CopyToClipboardButton copySceneToClipboard;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private int lastPlayerCount;
@@ -36,6 +37,12 @@ namespace DCL.FPSDisplay
         private IParcelScene activeScene;
         private int totalMessagesCurrent;
         private int totalMessagesGlobal;
+
+        private void Start()
+        {
+            closeButton.onClick.AddListener(() =>DataStore.i.debugConfig.isFPSPanelVisible.Set(false));
+            copySceneToClipboard.SetFuncToCopy(() =>  activeScene.sceneData.id);
+        }
 
         private void OnEnable()
         {
@@ -88,7 +95,7 @@ namespace DCL.FPSDisplay
             updateValueDictionary.Add(DebugValueEnum.FPS_HiccupsLoss, GetHiccupsLoss);
             updateValueDictionary.Add(DebugValueEnum.FPS_BadFramesPercentiles, () => $"{fpsColor}{((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%</color>");
             
-            updateValueDictionary.Add(DebugValueEnum.Scene_Name, () =>  $"{activeScene.sceneData.id}");
+            updateValueDictionary.Add(DebugValueEnum.Scene_Name, () =>  GetStringID());
             updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{totalMessagesCurrent} of {totalMessagesGlobal}");
             updateValueDictionary.Add(DebugValueEnum.Scene_PendingOnQueue, () =>  $"{totalMessagesGlobal - totalMessagesCurrent}");
             updateValueDictionary.Add(DebugValueEnum.Scene_Poly, () => $"{metrics.triangles}/{limits.triangles}");
@@ -107,6 +114,20 @@ namespace DCL.FPSDisplay
             string fpsFormatted = fps.ToString("##");
             string msFormatted = (dt * 1000).ToString("##");
             return $"<b>FPS</b> {fpsColor}{fpsFormatted}</color> {msFormatted} ms";
+        }
+        
+        private string GetStringID()
+        {
+            string activeSceneID = activeScene.sceneData.id;
+            if (activeSceneID.Length >= 11)
+            {
+                return $"{activeSceneID.Substring(0, 5)}...{activeSceneID.Substring(activeSceneID.Length - 5, 5)}";
+            }
+            else
+            {
+                return activeSceneID;
+            }
+                
         }
 
         private string GetHiccupsLoss()
@@ -147,8 +168,6 @@ namespace DCL.FPSDisplay
         {
             lastPlayerCount = otherPlayers.Count();
         }
-
-
 
         private IEnumerator UpdateLabelLoop()
         {
@@ -212,6 +231,13 @@ namespace DCL.FPSDisplay
         {
             return $"<color={color}>";
         }
+        
+        private void OnDestroy()
+        {
+            closeButton.onClick.RemoveAllListeners();
+        }
+
+
 
     }
 }

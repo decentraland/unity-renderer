@@ -42,12 +42,12 @@ namespace DCL
 
         public void HideFPSPanel()
         {
-            debugController.HideFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void ShowFPSPanel()
         {
-            debugController.ShowFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void DetectABs(string payload)
