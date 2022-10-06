@@ -916,7 +916,7 @@ GameObject:
   - component: {fileID: 681900400}
   m_Layer: 25
   m_Name: FloorQuad
-  m_TagString: Untagged
+  m_TagString: InfiniteFloor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1093,7 +1093,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 9999.998
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68900116c3a41174b99515736da2783f,
         type: 3}
@@ -2215,3 +2215,24 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039602258}
   m_Mesh: {fileID: 0}
+--- !u!1 &2078115274 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 68900116c3a41174b99515736da2783f,
+    type: 3}
+  m_PrefabInstance: {fileID: 909509501}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2078115275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078115274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 861f79c8cea292a47adf59a6af7b14df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _infiniteFloorRenderer: {fileID: 0}
+  _fogColor: {r: 0, g: 0, b: 0, a: 0}
+  _skyColor: {r: 0, g: 0, b: 0, a: 0}

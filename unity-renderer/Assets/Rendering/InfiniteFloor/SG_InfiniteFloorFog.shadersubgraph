@@ -263,8 +263,8 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -462.0,
-            "y": 34.25,
-            "width": 126.0001220703125,
+            "y": 34.000003814697269,
+            "width": 126.0,
             "height": 118.0
         }
     },
@@ -330,10 +330,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -676.2684326171875,
-            "y": -85.26844787597656,
-            "width": 208.0,
-            "height": 302.0
+            "x": -676.0,
+            "y": -84.99999237060547,
+            "width": 130.0,
+            "height": 117.99999237060547
         }
     },
     "m_Slots": [
@@ -406,8 +406,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -202.9998779296875,
-            "y": -131.74951171875,
+            "x": -202.99996948242188,
+            "y": -132.0,
             "width": 188.0,
             "height": 166.0
         }
@@ -611,7 +611,7 @@
             "x": -577.0,
             "y": -132.0,
             "width": 93.0,
-            "height": 34.0
+            "height": 34.00000762939453
         }
     },
     "m_Slots": [
@@ -635,10 +635,10 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.GroupData",
     "m_ObjectId": "714032faf6554118b6152f9d15c4d8a3",
-    "m_Title": "Wold Space Cusotm Fog",
+    "m_Title": "Wold Space Custom Fog",
     "m_Position": {
-        "x": 10.0,
-        "y": 10.0
+        "x": -877.6240844726563,
+        "y": -191.0
     }
 }
 
@@ -755,10 +755,10 @@
         "m_Expanded": false,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -15.0,
-            "y": -131.75,
-            "width": 118.0,
-            "height": 77.0
+            "x": -14.99997329711914,
+            "y": -132.0,
+            "width": 117.99995422363281,
+            "height": 76.0
         }
     },
     "m_Slots": [
@@ -957,8 +957,8 @@
             "serializedVersion": "2",
             "x": 272.0,
             "y": -132.0,
-            "width": 128.0,
-            "height": 94.0
+            "width": 128.00006103515626,
+            "height": 94.00000762939453
         }
     },
     "m_Slots": [
@@ -1061,9 +1061,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 131.0,
-            "y": -131.75,
-            "width": 126.0,
+            "x": 131.00003051757813,
+            "y": -132.0,
+            "width": 125.99993896484375,
             "height": 118.0
         }
     },
@@ -1401,8 +1401,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -465.9998779296875,
-            "y": -131.74951171875,
+            "x": -466.0,
+            "y": -132.0,
             "width": 130.0,
             "height": 118.0
         }
@@ -1460,8 +1460,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -853.0000610351563,
-            "y": -68.99999237060547,
+            "x": -853.0,
+            "y": -69.0,
             "width": 145.0,
             "height": 34.0
         }
@@ -1543,10 +1543,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -19.0,
-            "y": -42.75,
-            "width": 0.0,
-            "height": 0.0
+            "x": -18.999996185302736,
+            "y": -42.999996185302737,
+            "width": 139.99996948242188,
+            "height": 34.0
         }
     },
     "m_Slots": [
