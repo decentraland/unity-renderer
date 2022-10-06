@@ -4,6 +4,7 @@ using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
+using UnityEngine;
 
 public class ChannelMembersHUDControllerShould
 {
@@ -115,12 +116,12 @@ public class ChannelMembersHUDControllerShould
     [Test]
     public void UpdateChannelMembersCorrectly()
     {
+        const string testChannelId = "testChannelId";
+        
         // Arrange
         channelMembersComponentView.Configure().IsActive.Returns(info => true);
 
-        string testChannelId = "testChannelId";
-
-        UserProfile testUserId1Profile = new UserProfile();
+        var testUserId1Profile = ScriptableObject.CreateInstance<UserProfile>();
         testUserId1Profile.UpdateData(new UserProfileModel
         {
             userId = "testUserId1",
@@ -130,9 +131,9 @@ public class ChannelMembersHUDControllerShould
                 face256 = ""
             }
         });
-        userProfileBridge.Configure().GetByName("testUserId1").Returns(info => testUserId1Profile);
+        userProfileBridge.Configure().Get("testUserId1").Returns(info => testUserId1Profile);
 
-        UserProfile testUserId2Profile = new UserProfile();
+        var testUserId2Profile = ScriptableObject.CreateInstance<UserProfile>();
         testUserId2Profile.UpdateData(new UserProfileModel
         {
             userId = "testUserId2",
@@ -142,7 +143,11 @@ public class ChannelMembersHUDControllerShould
                 face256 = ""
             }
         });
-        userProfileBridge.Configure().GetByName("testUserId2").Returns(info => testUserId1Profile);
+        userProfileBridge.Configure().Get("testUserId2").Returns(info => testUserId2Profile);
+        
+        var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
+        ownProfile.UpdateData(new UserProfileModel{userId = "ownProfileId"});
+        userProfileBridge.GetOwn().Returns(ownProfile);
 
         ChannelMember[] testChannelMembers =
         {
@@ -157,7 +162,10 @@ public class ChannelMembersHUDControllerShould
 
         // Assert
         channelMembersComponentView.Received(1).HideLoading();
-        userProfileBridge.Received(testChannelMembers.Length).GetByName(Arg.Any<string>());
+        channelMembersComponentView.Received(1).Set(Arg.Is<ChannelMemberEntryModel>(c =>
+            c.userName == "testUserId1"));
+        channelMembersComponentView.Received(1).Set(Arg.Is<ChannelMemberEntryModel>(c =>
+            c.userName == "testUserId2"));
         channelMembersComponentView.Received(testChannelMembers.Length).Set(Arg.Any<ChannelMemberEntryModel>());
         channelMembersComponentView.Received(1).ShowLoadingMore();
     }
