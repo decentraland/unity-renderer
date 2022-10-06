@@ -12,6 +12,7 @@ namespace DCL.Tutorial
     public class TutorialStep_GenesisGreetings : TutorialStep
     {
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+        private const int GENESIS_PLAZA_TUTORIAL_LOCATION = 3;
 
         [SerializeField]
         Button okButton;
@@ -49,13 +50,6 @@ namespace DCL.Tutorial
                     WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneId(), "tutorial", "begin");
                 }
             }
-
-            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
-            if (Mathf.Abs(currentCoords.x) > 3 || Mathf.Abs(currentCoords.y) > 3)
-            {
-                stepIsFinished = true;
-                return;
-            }
         }
 
         public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => stepIsFinished); }
@@ -75,5 +69,19 @@ namespace DCL.Tutorial
         }
 
         internal void OnOkButtonClick() { stepIsFinished = true; }
+
+        private void Update()
+        {
+            if (stepIsFinished)
+                return;
+
+            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
+            if (Mathf.Abs(currentCoords.x) > GENESIS_PLAZA_TUTORIAL_LOCATION ||
+                Mathf.Abs(currentCoords.y) > GENESIS_PLAZA_TUTORIAL_LOCATION)
+            {
+                stepIsFinished = true;
+                return;
+            }
+        }
     }
 }
