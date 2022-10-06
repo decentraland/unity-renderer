@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using DCL.Configuration;
+using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
@@ -17,12 +18,13 @@ using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
-    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler
+    public class AvatarShape : BaseComponent, IHideAvatarAreaHandler, IHidePassportAreaHandler, IOutOfSceneBoundariesHandler
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
-        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+        private const string VISIBILITY_CONSTRAINT_HIDE_AREA = "IN_HIDE_AREA";
+        private const string VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS = "OUTSIDE_SCENE_BOUNDS";
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -71,6 +73,12 @@ namespace DCL
             {
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
             }
+        }
+
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
         private Avatar GetStandardAvatar()
@@ -123,6 +131,9 @@ namespace DCL
 
         public void OnDestroy()
         {
+            if(entity != null)
+                DataStore.i.sceneBoundariesChecker?.Remove(entity,this);
+            
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
@@ -355,7 +366,7 @@ namespace DCL
         {
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
             {
-                avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+                avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAINT_HIDE_AREA);
                 onPointerDown.gameObject.SetActive(false);
                 playerNameContainer.SetActive(false);
                 stickersControllers.ToggleHideArea(true);
@@ -368,7 +379,7 @@ namespace DCL
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
             {
-                avatar.RemoveVisibilityConstrain(IN_HIDE_AREA);
+                avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_HIDE_AREA);
                 onPointerDown.gameObject.SetActive(true);
                 playerNameContainer.SetActive(true);
                 stickersControllers.ToggleHideArea(false);
@@ -444,6 +455,21 @@ namespace DCL
             }
 
             avatarReporterController.ReportAvatarRemoved();
+        }
+        
+        public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
+        {
+            if (scene.isPersistent)
+                isInsideBoundaries = true;
+
+            if(isInsideBoundaries)
+                avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
+            else
+                avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
+            
+            onPointerDown.gameObject.SetActive(isInsideBoundaries);
+            playerNameContainer.SetActive(isInsideBoundaries);
+            stickersControllers.ToggleHideArea(!isInsideBoundaries);
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

@@ -110,7 +110,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetSceneDebugPanel"] = "Main";
         messageTypeToBridgeName["ShowFPSPanel"] = "Main";
         messageTypeToBridgeName["HideFPSPanel"] = "Main";
-        messageTypeToBridgeName["DetectABs"] = "Main";
         messageTypeToBridgeName["SetEngineDebugPanel"] = "Main";
         messageTypeToBridgeName["SendSceneMessage"] = "Main";
         messageTypeToBridgeName["LoadParcelScenes"] = "Main";

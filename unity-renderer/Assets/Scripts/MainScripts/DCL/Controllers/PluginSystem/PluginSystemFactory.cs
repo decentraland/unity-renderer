@@ -55,7 +55,6 @@ namespace DCL
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
             
-            //TODO ANTON make feature flag if needed
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
