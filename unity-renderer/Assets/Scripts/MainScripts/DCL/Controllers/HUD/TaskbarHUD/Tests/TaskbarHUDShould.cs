@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
@@ -73,7 +74,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             chatController,
             new DataStore(),
             Substitute.For<IMouseCatcher>(),
-            Substitute.For<ISocialAnalytics>());
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChannelsUtils>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -119,7 +121,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             chatController,
             new DataStore(),
             Substitute.For<IMouseCatcher>(),
-            Substitute.For<ISocialAnalytics>());
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChannelsUtils>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -140,7 +143,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddFriendsWindow(friendsHudController);
 
         var channelSearchController = new SearchChannelsWindowController(this.chatController, Substitute.For<IMouseCatcher>(), new DataStore(),
-            Substitute.For<ISocialAnalytics>());
+            Substitute.For<ISocialAnalytics>(), Substitute.For<IChannelsUtils>());
         channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
         controller.AddChannelSearch(channelSearchController);
 

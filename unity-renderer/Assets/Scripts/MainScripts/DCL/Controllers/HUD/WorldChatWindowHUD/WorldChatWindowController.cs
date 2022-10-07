@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
@@ -8,6 +5,9 @@ using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
@@ -23,6 +23,7 @@ public class WorldChatWindowController : IHUD
     private readonly DataStore dataStore;
     private readonly IMouseCatcher mouseCatcher;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IChannelsUtils channelsUtils;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -55,7 +56,8 @@ public class WorldChatWindowController : IHUD
         IChatController chatController,
         DataStore dataStore,
         IMouseCatcher mouseCatcher,
-        ISocialAnalytics socialAnalytics) 
+        ISocialAnalytics socialAnalytics,
+        IChannelsUtils channelsUtils) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -63,6 +65,7 @@ public class WorldChatWindowController : IHUD
         this.dataStore = dataStore;
         this.mouseCatcher = mouseCatcher;
         this.socialAnalytics = socialAnalytics;
+        this.channelsUtils = channelsUtils;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -81,11 +84,11 @@ public class WorldChatWindowController : IHUD
         view.OnOpenChannelSearch += OpenChannelSearch;
         view.OnLeaveChannel += LeaveChannel;
         view.OnCreateChannel += OpenChannelCreationWindow;
-        
+
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
-        
+
         var channel = chatController.GetAllocatedChannel(ChatUtils.NEARBY_CHANNEL_ID);
         publicChannels[ChatUtils.NEARBY_CHANNEL_ID] = new PublicChatModel(ChatUtils.NEARBY_CHANNEL_ID, channel.Name,
             channel.Description,
@@ -333,6 +336,8 @@ public class WorldChatWindowController : IHUD
 
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
+
+        view.SetCreateChannelButtonActive(channelsUtils.IsAllowedToCreateChannels());
     }
     
     private void SearchChats(string search)

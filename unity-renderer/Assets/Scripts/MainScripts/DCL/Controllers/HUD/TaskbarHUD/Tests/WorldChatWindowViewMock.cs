@@ -111,4 +111,8 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public bool ContainsPrivateChannel(string userId) => false;
+
+    public void SetCreateChannelButtonActive(bool isActive)
+    {
+    }
 }

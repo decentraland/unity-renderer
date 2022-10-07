@@ -143,6 +143,12 @@ namespace DCL.Chat.HUD
 
         public void HideCreateChannelOnSearch() => createChannelOnSearchContainer.SetActive(false);
 
+        public void SetCreateChannelButtonsActive(bool isActive)
+        {
+            foreach (var button in createChannelButtons)
+                button.gameObject.SetActive(isActive);
+        }
+
         public override void RefreshControl()
         {
             throw new NotImplementedException();

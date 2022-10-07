@@ -36,4 +36,5 @@ public interface IWorldChatWindowView
     void HideSearchLoading();
     void EnableSearchMode();
     bool ContainsPrivateChannel(string userId);
+    void SetCreateChannelButtonActive(bool isActive);
 }

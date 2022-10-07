@@ -262,6 +262,8 @@ namespace DCL.Chat.HUD
         public bool ContainsPrivateChannel(string userId) => privateChatsCreationQueue.ContainsKey(userId)
                                                              || directChatList.Get(userId) != null;
 
+        public void SetCreateChannelButtonActive(bool isActive) => createChannelButton.gameObject.SetActive(isActive);
+
         public override void RefreshControl()
         {
             publicChannelList.Clear();
