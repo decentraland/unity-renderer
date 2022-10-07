@@ -22,11 +22,16 @@ namespace DCL.Services
         }
 
         [ContextMenu(nameof(RequestAudioDevices))]
-        public void RequestAudioDevices() { WebInterface.RequestAudioDevices(); }
+        public void RequestAudioDevices()
+        {
+            Debug.Log(nameof(RequestAudioDevices));
+            WebInterface.RequestAudioDevices();
+        }
 
         [PublicAPI]
         public void SetAudioDevices(string payload)
         {
+            Debug.Log($"Get devices - {payload}");
             AudioDevicesResponse response = null;
 
             try
