@@ -260,6 +260,16 @@ namespace DCL.Components
                                }
                            }
 
+                           log += "Passes enabled: ";
+                           for (int i = 0; i < mat.passCount; i++)
+                           {
+                               var passName = mat.GetPassName(i);
+                               if (mat.GetShaderPassEnabled(passName))
+                               {
+                                   log += passName + " ";
+                               }
+                           }
+
                            if (mat.name.Contains("Mika"))
                            {
                                log +="(Mika Material)";
