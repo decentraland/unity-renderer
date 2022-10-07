@@ -174,7 +174,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
             
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
-                "foo", ChannelErrorCode.ExceededLimit);
+                "foo", ChannelErrorCode.LimitExceeded);
             
             view.Received(1).ShowChannelsExceededError();
             view.Received(1).DisableCreateButton();

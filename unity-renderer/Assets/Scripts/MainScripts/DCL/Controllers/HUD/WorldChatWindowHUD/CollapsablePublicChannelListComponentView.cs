@@ -8,7 +8,6 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
 {
     [SerializeField] private ChannelEntryFactory entryFactory;
 
-    private bool releaseEntriesFromPool = true;
     private IChatController chatController;
 
     public event Action<PublicChatEntry> OnOpenChat;
@@ -24,19 +23,11 @@ public class CollapsablePublicChannelListComponentView : CollapsableSortedListCo
         Filter(entry => regex.IsMatch(entry.Model.name));
     }
 
-    public void Clear(bool releaseEntriesFromPool)
-    {
-        // avoids releasing instances from pool just for this clear
-        this.releaseEntriesFromPool = releaseEntriesFromPool;
-        base.Clear();
-        this.releaseEntriesFromPool = true;
-    }
-
     public override PublicChatEntry Remove(string key)
     {
         var entry = base.Remove(key);
         
-        if (releaseEntriesFromPool && entry)
+        if (entry)
             Destroy(entry.gameObject);
         
         return entry;

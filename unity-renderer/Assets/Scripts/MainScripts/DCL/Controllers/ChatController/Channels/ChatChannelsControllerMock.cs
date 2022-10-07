@@ -550,7 +550,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             var mockedPayload = new JoinChannelErrorPayload
             {
                 channelId = channelId,
-                errorCode = (int) ChannelErrorCode.ExceededLimit
+                errorCode = (int) ChannelErrorCode.LimitExceeded
             };
 
             return JsonUtility.ToJson(mockedPayload);

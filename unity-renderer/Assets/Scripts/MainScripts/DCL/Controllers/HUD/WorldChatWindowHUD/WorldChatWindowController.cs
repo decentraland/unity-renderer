@@ -432,7 +432,7 @@ public class WorldChatWindowController : IHUD
     {
         if (dataStore.channels.isCreationModalVisible.Get()) return;
 
-        if (errorCode == ChannelErrorCode.ExceededLimit)
+        if (errorCode == ChannelErrorCode.LimitExceeded)
             dataStore.channels.currentChannelLimitReached.Set(channelId, true);
     }
 

@@ -82,7 +82,7 @@ namespace DCL.Chat.HUD
         
         public void ClearAllEntries()
         {
-            channelList.Clear(true);
+            channelList.Clear();
             UpdateLayout();
             UpdateHeaders();
         }

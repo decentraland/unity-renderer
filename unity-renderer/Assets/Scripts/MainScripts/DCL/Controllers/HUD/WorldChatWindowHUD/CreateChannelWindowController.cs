@@ -116,7 +116,7 @@ namespace DCL.Chat.HUD
         {
             switch (errorCode)
             {
-                case ChannelErrorCode.ExceededLimit:
+                case ChannelErrorCode.LimitExceeded:
                     view.ShowChannelsExceededError();
                     break;
                 case ChannelErrorCode.WrongFormat:

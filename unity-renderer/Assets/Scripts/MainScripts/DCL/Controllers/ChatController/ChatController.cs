@@ -134,13 +134,13 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateChannelInfo(string payload)
     {
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
-        bool anyChannelLeft = false;
+        var anyChannelLeft = false;
 
         foreach (var channelInfo in msg.channelInfoPayload)
         {
             var channelId = channelInfo.channelId;
             var channel = new Channel(channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
-            var justLeft = false;
+            var justLeft = !channel.Joined;
 
             if (channels.ContainsKey(channelId))
             {
