@@ -1328,7 +1328,7 @@ namespace DCL.Helpers
                 data.parcels = new Vector2Int[] { data.basePosition };
             }
 
-            if (data.sceneNumber < 0)
+            if (data.sceneNumber <= 0)
             {
                 data.sceneNumber = 666;
             }

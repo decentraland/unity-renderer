@@ -77,7 +77,7 @@ namespace DCL
             this.scenePosition = scenePosition;
             this.sceneParcelCount = sceneParcelCount;
 
-            Assert.IsTrue( sceneNumber >= 0, "Scene must have a scene number!" );
+            Assert.IsTrue( sceneNumber > 0, "Scene must have a scene number!" );
             maxCountValue = ComputeMaxCount();
         }
 
@@ -348,7 +348,7 @@ namespace DCL
 
         private void UpdateMetrics()
         {
-            if (sceneNumber < 0 || data == null || !data.sceneData.ContainsKey(sceneNumber))
+            if (sceneNumber <= 0 || data == null || !data.sceneData.ContainsKey(sceneNumber))
                 return;
 
             if (data != null && data.sceneData.ContainsKey(sceneNumber))

@@ -87,7 +87,7 @@ namespace DCL
             var worldState = Environment.i.world.state;
             int currentSceneNumber = worldState.GetCurrentSceneNumber();
 
-            if (currentSceneNumber < 0)
+            if (currentSceneNumber <= 0)
                 return null;
 
             bool foundCurrentScene = worldState.TryGetScene(currentSceneNumber, out IParcelScene scene);

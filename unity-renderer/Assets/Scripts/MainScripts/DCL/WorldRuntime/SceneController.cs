@@ -19,7 +19,7 @@ namespace DCL
 {
     public class SceneController : ISceneController
     {
-        public static bool VERBOSE = false;
+        public static bool VERBOSE = true;
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
@@ -557,17 +557,16 @@ namespace DCL
 
         public void SortScenesByDistance()
         {
-            // if (DCLCharacterController.i == null)
-            //     return;
-
             IWorldState worldState = Environment.i.world.state;
 
             worldState.SortScenesByDistance(currentGridSceneCoordinate);
 
             int currentSceneNumber = worldState.GetCurrentSceneNumber();
 
-            if (!DataStore.i.debugConfig.isDebugMode.Get() && currentSceneNumber < 0)
+            if (!DataStore.i.debugConfig.isDebugMode.Get() && currentSceneNumber <= 0)
             {
+                Debug.Log("PRAVS - SceneController.SortSCenesByDistance() - locking before knowing current scene...");
+                
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
@@ -588,6 +587,8 @@ namespace DCL
             if (Environment.i.world.state.TryGetScene(newSceneNumber, out IParcelScene newCurrentScene)
                 && !(newCurrentScene as ParcelScene).sceneLifecycleHandler.isReady)
             {
+                Debug.Log("PRAVS - SceneController.SortSCenesByDistance() - locking OnCurrentSceneNumberChange...");
+                
                 CommonScriptableObjects.rendererState.AddLock(newCurrentScene);
 
                 (newCurrentScene as ParcelScene).sceneLifecycleHandler.OnSceneReady += (readyScene) => { CommonScriptableObjects.rendererState.RemoveLock(readyScene); };
@@ -602,7 +603,7 @@ namespace DCL
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            if (sceneToLoad == null || sceneToLoad.sceneNumber < 0)
+            if (sceneToLoad == null || sceneToLoad.sceneNumber <= 0)
                 return;
 
             DebugConfig debugConfig = DataStore.i.debugConfig;
@@ -669,7 +670,7 @@ namespace DCL
 
         public void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene)
         {
-            if (scene == null || scene.sceneNumber == null)
+            if (scene == null || scene.sceneNumber <= 0)
                 return;
 
             var sceneToLoad = scene;
@@ -748,7 +749,7 @@ namespace DCL
                 message = decentralandSceneJSON
             };
             
-            Debug.Log($"LoadParcelScenes - sceneNumber:{queuedMessage.sceneNumber}");
+            Debug.Log($"LoadParcelScenes - sceneNumber:{queuedMessage.sceneNumber}; tag:{queuedMessage.tag}");
 
             ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 

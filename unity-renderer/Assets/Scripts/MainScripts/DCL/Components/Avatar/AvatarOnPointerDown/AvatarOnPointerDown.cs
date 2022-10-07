@@ -177,7 +177,7 @@ namespace DCL.Components
             }
 
             int playerSceneNumber = CommonScriptableObjects.sceneNumber.Get();
-            if (playerSceneNumber < 0)
+            if (playerSceneNumber <= 0)
             {
                 return false;
             }

@@ -95,7 +95,7 @@ namespace DCL
 
                 sortedControllers.Clear();
 
-                if (currentSceneNumber >= 0 && messagingControllers.ContainsKey(currentSceneNumber))
+                if (currentSceneNumber > 0 && messagingControllers.ContainsKey(currentSceneNumber))
                     currentSceneController = messagingControllers[currentSceneNumber];
 
                 for (int i = 0; i < count; i++)
@@ -201,7 +201,7 @@ namespace DCL
                 messagingControllers.TryAdd(sceneNumber, new MessagingController(this, messageHandler, sceneNumber));
             }
 
-            if (isGlobal && sceneNumber >= 0)
+            if (isGlobal && sceneNumber > 0)
             {
                 messagingControllers.TryGetValue(sceneNumber, out MessagingController newGlobalSceneController);
 

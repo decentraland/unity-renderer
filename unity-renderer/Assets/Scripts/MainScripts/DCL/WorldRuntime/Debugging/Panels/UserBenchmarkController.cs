@@ -177,7 +177,7 @@ namespace DCL
         {
             IWorldState worldState = Environment.i.world.state;
             int debugSceneNumber = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneNumber;
-            if (debugSceneNumber >= 0)
+            if (debugSceneNumber > 0)
             {
                 if (worldState.TryGetScene(debugSceneNumber, out IParcelScene scene))
                     return scene;

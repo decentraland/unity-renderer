@@ -242,7 +242,7 @@ namespace DCL.Components
             var dirtyShapesByScene = dirtyShapesBySceneVariable.Get();
 
             int sceneDataSceneNumber = scene.sceneData.sceneNumber;
-            if (sceneDataSceneNumber < 0) sceneDataSceneNumber = 666;
+            if (sceneDataSceneNumber <= 0) sceneDataSceneNumber = 666;
 
             if (!dirtyShapesByScene.ContainsKey(sceneDataSceneNumber))
             {

@@ -48,7 +48,7 @@ namespace DCL
 
         public bool ContainsScene(int sceneNumber)
         {
-            if (sceneNumber < 0 || !loadedScenes.ContainsKey(sceneNumber))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
             return true;
@@ -58,7 +58,7 @@ namespace DCL
         {
             scene = null;
 
-            if (sceneNumber < 0 || !loadedScenes.ContainsKey(sceneNumber))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
             scene = loadedScenes[sceneNumber];
@@ -209,7 +209,7 @@ namespace DCL
                 
             scenesSortedByDistance.Add(newScene);
 
-            if (currentSceneNumber == -1)
+            if (currentSceneNumber <= 0)
                 currentSceneNumber = sceneNumber;
         }
         

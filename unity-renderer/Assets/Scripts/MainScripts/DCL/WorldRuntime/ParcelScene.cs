@@ -79,7 +79,7 @@ namespace DCL.Controllers
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
-            Assert.IsTrue( data.sceneNumber >= 0, "Scene must have a valid scene number!" );
+            Assert.IsTrue( data.sceneNumber > 0, "Scene must have a valid scene number!" );
 
             this.sceneData = data;
 

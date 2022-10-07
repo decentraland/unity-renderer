@@ -117,9 +117,9 @@ namespace DCL
                 return;
             }
 
-            if (sceneNumber < 0 || !self.sceneData.ContainsKey(sceneNumber))
+            if (sceneNumber <= 0 || !self.sceneData.ContainsKey(sceneNumber))
             {
-                logger.Log($"AddRendereable", $"invalid sceneId! (scene number: {sceneNumber})");
+                logger.Log($"AddRendereable", $"invalid sceneNumber! (scene number: {sceneNumber})");
                 return;
             }
 
@@ -150,9 +150,9 @@ namespace DCL
                 return;
             }
 
-            if (sceneNumber < 0 || !self.sceneData.ContainsKey(sceneNumber) )
+            if (sceneNumber <= 0 || !self.sceneData.ContainsKey(sceneNumber) )
             {
-                logger.Log($"RemoveRendereable", $"invalid sceneId! (scene number: {sceneNumber})");
+                logger.Log($"RemoveRendereable", $"invalid sceneNumber! (scene number: {sceneNumber})");
                 return;
             }
 

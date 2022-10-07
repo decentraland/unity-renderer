@@ -11,7 +11,7 @@ public static class AnalyticsHelper
         if (!worldState.TryGetScene(sceneNumber, out var scene))
             return;
         
-        if (sceneNumber >= 0)
+        if (sceneNumber > 0)
         {
             analyticDict.Add("base_parcel_position", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
             analyticDict.Add("scene", $"scene number: {sceneNumber}");

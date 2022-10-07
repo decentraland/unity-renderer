@@ -98,6 +98,6 @@ public class AvatarReporterController : IAvatarReporterController
 
     private bool WasInLoadedScene()
     {
-        return lastSceneNumber >= 0;
+        return lastSceneNumber > 0;
     }
 }

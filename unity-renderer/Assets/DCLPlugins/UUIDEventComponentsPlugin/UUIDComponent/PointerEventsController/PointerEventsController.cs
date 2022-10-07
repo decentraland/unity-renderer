@@ -92,7 +92,7 @@ namespace DCL
             bool uiIsBlocking = false;
             int currentSceneNumber = worldState.GetCurrentSceneNumber();
 
-            bool validCurrentScene = currentSceneNumber >= 0 && worldState.ContainsScene(currentSceneNumber);
+            bool validCurrentScene = currentSceneNumber > 0 && worldState.ContainsScene(currentSceneNumber);
 
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
             if (didHit && validCurrentScene)
@@ -380,7 +380,7 @@ namespace DCL
             IWorldState worldState = Environment.i.world.state;
 
             int currentSceneNumber = worldState.GetCurrentSceneNumber();
-            if (currentSceneNumber < 0)
+            if (currentSceneNumber <= 0)
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
@@ -442,7 +442,7 @@ namespace DCL
             IWorldState worldState = Environment.i.world.state;
 
             int currentSceneNumber = worldState.GetCurrentSceneNumber();
-            if (currentSceneNumber < 0)
+            if (currentSceneNumber <= 0)
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;

@@ -67,7 +67,7 @@ namespace DCL
         internal void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
             sceneNumber = current.debugConfig.sceneLimitsWarningSceneNumber;
-            if (sceneNumber < 0)
+            if (sceneNumber <= 0)
             {
                 StopChecking();
             }
@@ -88,7 +88,7 @@ namespace DCL
             bool isLimitReached = false;
             bool isLimitReachedAndMessageChanged = false;
 
-            if (sceneNumber >= 0)
+            if (sceneNumber > 0)
             {
                 worldState.TryGetScene(sceneNumber, out IParcelScene scene);
                 ISceneMetricsCounter metricsController = scene?.metricsCounter;
