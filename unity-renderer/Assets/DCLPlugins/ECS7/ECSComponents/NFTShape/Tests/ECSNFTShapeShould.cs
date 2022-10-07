@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Helpers.NFT;
 using NFTShape_Internal;
 using NSubstitute;
@@ -26,14 +28,15 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            Environment.Setup(serviceLocator);
+            var factory = new ECSComponentsFactory();
+            var manager = new ECSComponentsManager(factory.componentBuilders);
+            var internalComponent = new InternalECSComponents(manager, factory);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities();
+            testUtils = new ECS7TestUtilsScenesAndEntities(manager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(10399);
 
-            renderersComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
+            renderersComponent = internalComponent.renderersComponent;
             infoRetriever = Substitute.For<INFTInfoRetriever>();
             assetRetriever = Substitute.For<INFTAssetRetriever>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
@@ -41,6 +44,10 @@ namespace Tests
                 infoRetriever,
                 assetRetriever,
                 renderersComponent);
+
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, manager, factory, null, new List<InternalComponentWriteData>());
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
@@ -97,12 +104,10 @@ namespace Tests
         public void AddAndRemoveRenderer()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
-            renderersComponent.Received(1)
-                              .PutFor(scene, entity,
-                                  Arg.Is<InternalRenderers>(r => r.renderers.Contains(handler.shapeFrame.frameRenderer)));
+            Assert.IsTrue(renderersComponent.GetFor(scene, entity).model.renderers.Contains(handler.shapeFrame.frameRenderer));
 
             handler.OnComponentRemoved(scene, entity);
-            renderersComponent.Received(1).RemoveFor(scene, entity);
+            Assert.IsNull(renderersComponent.GetFor(scene, entity));
         }
 
         [Test]

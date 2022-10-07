@@ -111,7 +111,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetMemoryUsage"] = "Main";
         messageTypeToBridgeName["ShowFPSPanel"] = "Main";
         messageTypeToBridgeName["HideFPSPanel"] = "Main";
-        messageTypeToBridgeName["DetectABs"] = "Main";
         messageTypeToBridgeName["SetEngineDebugPanel"] = "Main";
         messageTypeToBridgeName["SendSceneMessage"] = "Main";
         messageTypeToBridgeName["LoadParcelScenes"] = "Main";

@@ -8,6 +8,7 @@ namespace DCL
     public class ABDetectorTracker : IDisposable
     {
         private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
+        private const string FROM_RAW_GLTF_TAG = "FromRawGLTF";
         private const string AB_DETECTOR_MATERIALS_PREFAB_NAME = "AbDetectorMaterials";
         
         private readonly DebugConfig debugConfig;
@@ -63,12 +64,11 @@ namespace DCL
             
             if (current)
             {
-                RemoveABDetectionPaintingForCurrentScene();
+                RemoveGlobalABDetectionPainting();
                 ApplyGlobalABDetectionPainting();
             }
             else
             {
-                RemoveABDetectionPaintingForCurrentScene();
                 RemoveGlobalABDetectionPainting();
             }
         }
@@ -79,6 +79,7 @@ namespace DCL
             
             if (current)
             {
+                RemoveGlobalABDetectionPainting();
                 ApplyABDetectionPaintingForCurrentScene();
             }
             else
@@ -128,8 +129,13 @@ namespace DCL
                     {
                         renderer.materials = materials;
                     }
+
+                    rendererDict.Remove(renderer);
                 }
+                
+                parcelToRendererMultimap.Remove(currentScene);
             }
+            
         }
 
         private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null)
@@ -139,29 +145,29 @@ namespace DCL
                 for (int i = 0; i < someTransform.childCount; i++)
                 {
                     var childTransform = someTransform.GetChild(i).transform;
-                    if (childTransform.gameObject.name.Contains("GLTF Shape"))
-                    {
-                        var childGameObject = childTransform.GetChild(0).gameObject;
-                        var renderers = childGameObject.
-                            GetComponentsInChildren<Renderer>(true);
+                    var renderers = childTransform.
+                        GetComponents<Renderer>();
                   
-                        foreach (Renderer renderer in renderers)
-                        {
-                            rendererDict[renderer] = renderer.materials;
+                    foreach (Renderer renderer in renderers)
+                    {
+                        rendererDict[renderer] = renderer.materials;
 
-                            if (optionalParcelScene != null)
-                            {
-                                parcelToRendererMultimap.Add(optionalParcelScene, renderer);
-                            }
-                            
-                            renderer.material = renderer.tag.Equals(FROM_ASSET_BUNDLE_TAG) ? 
-                            abDetectorMaterialsHolder.ABMaterial : abDetectorMaterialsHolder.GLTFMaterial;
+                        if (optionalParcelScene != null)
+                        {
+                            parcelToRendererMultimap.Add(optionalParcelScene, renderer);
+                        }
+
+                        if (renderer.tag.Equals(FROM_ASSET_BUNDLE_TAG))
+                        {
+                            renderer.material = abDetectorMaterialsHolder.ABMaterial;
+                        }
+                        else if(renderer.tag.Equals(FROM_RAW_GLTF_TAG))
+                        {
+                            renderer.material = abDetectorMaterialsHolder.GLTFMaterial;
                         }
                     }
-                    else
-                    {
-                        ApplyMaterials(childTransform, optionalParcelScene);
-                    }
+                    
+                    ApplyMaterials(childTransform, optionalParcelScene);
                 }
             }
         }

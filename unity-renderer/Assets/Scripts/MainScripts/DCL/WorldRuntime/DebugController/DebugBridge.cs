@@ -58,19 +58,6 @@ namespace DCL
             debugController.ToggleFPSPanel();
         }
 
-        public void DetectABs(string payload)
-        {
-            var data = JsonUtility.FromJson<DetectABsPayload>(payload);
-            if (data.forCurrentScene)
-            {
-                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
-            else
-            {
-                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
-        }
-
         public void SetSceneDebugPanel()
         {
             debugController.SetSceneDebugPanel();
@@ -82,7 +69,6 @@ namespace DCL
             DataStore.i.debugConfig.usedJSHeapSize.Set(data.usedJSHeapSize / 1024f / 1024f);
             DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit / 1024f / 1024f);
             DataStore.i.debugConfig.totalJSHeapSize.Set(data.totalJSHeapSize / 1024f / 1024f);
-
         }
 
         public void SetEngineDebugPanel()

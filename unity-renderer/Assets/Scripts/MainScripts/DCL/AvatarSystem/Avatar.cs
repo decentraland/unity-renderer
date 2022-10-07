@@ -108,7 +108,7 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+        public void AddVisibilityConstraint(string key) { visibility.AddGlobalConstrain(key); }
 
         public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
 

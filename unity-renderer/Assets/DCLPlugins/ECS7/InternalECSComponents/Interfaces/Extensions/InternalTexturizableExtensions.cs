@@ -36,7 +36,6 @@ namespace DCL.ECS7.InternalComponents
             {
                 model.renderers.Add(renderers[i]);
             }
-            model.dirty = true;
             texurizableInternalComponent.PutFor(scene, entity, model);
         }
 
@@ -63,7 +62,6 @@ namespace DCL.ECS7.InternalComponents
 
             var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
             model.renderers.Add(renderer);
-            model.dirty = true;
             texurizableInternalComponent.PutFor(scene, entity, model);
         }
     }
