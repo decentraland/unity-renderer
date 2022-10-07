@@ -37,7 +37,6 @@ namespace DCL.Chat
             switch (allowedUsersData.mode)
             {
                 case AllowChannelsCreationMode.ALLOWLIST:
-                    Debug.Log("[SANTI] =======> MODE: ALLOWLIST");
                     List<string> allowedWallets = new List<string>();
                     if (allowedUsersData.allowList != null)
                     {
@@ -48,12 +47,10 @@ namespace DCL.Chat
                         return false;
                     break;
                 case AllowChannelsCreationMode.NAMES:
-                    Debug.Log("[SANTI] =======> MODE: NAMES");
                     if (!ownUserProfile.hasClaimedName)
                         return false;
                     break;
                 case AllowChannelsCreationMode.WALLET:
-                    Debug.Log("[SANTI] =======> MODE: WALLET");
                     if (ownUserProfile.isGuest)
                         return false;
                     break;
