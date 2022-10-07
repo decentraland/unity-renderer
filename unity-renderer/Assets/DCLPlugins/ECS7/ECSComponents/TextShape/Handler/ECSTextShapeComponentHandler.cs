@@ -137,7 +137,16 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent.text = model.Text;
 
         if (model.TextColor != null)
-            textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
+        {
+            if (model.HasOpacity)
+            {
+                textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, model.Opacity);
+            }
+            else
+            {
+                textComponent.color = new UnityEngine.Color(model.TextColor.R, model.TextColor.G, model.TextColor.B, 1.0f);
+            }
+        }
 
         textComponent.fontSize = model.GetFontSize();
         textComponent.richText = true;
