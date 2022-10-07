@@ -11,7 +11,7 @@ namespace Tests
     public class NavmapToastViewShould : IntegrationTestSuite_Legacy
     {
         NavmapToastView navmapToastView;
-        private NavmapVisibility navmapVisibility;
+        private NavmapView navmapView;
         private MinimapHUDController controller;
 
         protected override List<GameObject> SetUp_LegacySystems()
@@ -29,11 +29,11 @@ namespace Tests
 
             controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>());
             controller.Initialize();
-            navmapVisibility = Object.FindObjectOfType<NavmapVisibility>();
-            navmapToastView = navmapVisibility.toastView;
+            navmapView = Object.FindObjectOfType<NavmapView>();
+            navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
-                navmapVisibility.SetVisible(true);
+                navmapView.navmapVisibilityBehaviour.SetVisible(true);
         }
 
         protected override IEnumerator TearDown()

@@ -1,3 +1,4 @@
+using System;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,16 +6,8 @@ using static DCL.MapGlobalUsersPositionMarkerController;
 
 namespace DCL
 {
-    public class NavmapVisibility : MonoBehaviour
+    public class NavmapVisibilityBehaviour : IDisposable
     {
-        [Space]
-        [SerializeField] internal ScrollRect scrollRect;
-        [SerializeField] internal Transform scrollRectContentTransform;
-        
-        [Space]
-        [SerializeField] internal NavmapToastView toastView;
-        [SerializeField] private NavmapZoom zoom;
-        
         private Vector3 atlasOriginalPosition;
         
         private Transform mapRendererMinimapParent;
@@ -22,30 +15,30 @@ namespace DCL
 
         private bool waitingForFullscreenHUDOpen;
 
-        private RectTransform rectTransform;
-        private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
-
-        private BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
-        private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
+        private readonly BaseVariable<bool> navmapVisible;
         
-        void Start()
-        {
-            ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
-            
-            scrollRect.gameObject.SetActive(false);
-            DataStore.i.HUDs.isNavMapInitialized.Set(true);
-        }
+        private readonly ScrollRect scrollRect;
+        private readonly Transform scrollRectContentTransform;
+        
+        private readonly NavmapZoom zoom;
+        private readonly NavmapToastView toastView;
 
-        private void OnEnable()
+        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, ScrollRect scrollRect, Transform scrollRectContentTransform, NavmapZoom zoom, NavmapToastView toastView)
         {
-            configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
+            this.navmapVisible = navmapVisible;
+            
+            this.scrollRect = scrollRect;
+            this.scrollRectContentTransform = scrollRectContentTransform;
+            
+            this.zoom = zoom;
+            this.toastView = toastView;
+            
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
         }
         
-        private void OnDisable()
+        public void Dispose()
         {
-            configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreOpenChanged;
             navmapVisible.OnChange -= OnNavmapVisibilityChanged;
 
@@ -53,22 +46,6 @@ namespace DCL
                 CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullScreenOpened;
         }
         
-        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
-        {
-            if (currentParentTransform == null)
-                return;
-
-            transform.SetParent(currentParentTransform);
-            transform.localScale = Vector3.one;
-            
-            RectTransform.anchorMin = Vector2.zero;
-            RectTransform.anchorMax = Vector2.one;
-            RectTransform.pivot = new Vector2(0.5f, 0.5f);
-            RectTransform.localPosition = Vector2.zero;
-            RectTransform.offsetMax = Vector2.zero;
-            RectTransform.offsetMin = Vector2.zero;
-        }
-
         private void OnNavmapVisibilityChanged(bool isVisible, bool _) => 
             SetVisible(isVisible);
 

@@ -3520,6 +3520,8 @@ MonoBehaviour:
   currentSceneNameText: {fileID: 2734279282512924330}
   currentSceneCoordsText: {fileID: 8417015326604837885}
   toastView: {fileID: 4118697293185831752}
+  zoom: {fileID: 1481270875036362003}
+  scrollRectContentTransform: {fileID: 4562892339457273614}
 --- !u!114 &1481270875036362003
 MonoBehaviour:
   m_ObjectHideFlags: 0
