@@ -110,12 +110,12 @@ Shader "DCL/Universal Render Pipeline/Lit"
             // MB Added Tags to comply with new URP spesifics 
             Tags{
             "LightMode" = "UniversalForward"
-            "RenderPipeline"="UniversalPipeline"
-            "RenderType"="Transparent"
-            "UniversalMaterialType" = "Lit"
-            "Queue"="Transparent"
-            "ShaderGraphShader"="true"
-            "ShaderGraphTargetId"="UniversalLitSubTarget"
+//            "RenderPipeline"="UniversalPipeline"
+//            "RenderType"="Transparent"
+//            "UniversalMaterialType" = "Lit"
+//            "Queue"="Transparent"
+//            "ShaderGraphShader"="true"
+//            "ShaderGraphTargetId"="UniversalLitSubTarget"
             }
 
             // MB Render State
@@ -131,7 +131,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             */
             
             Blend[_SrcBlend][_DstBlend]  
-            ZTest LEqual
+//            ZTest LEqual
             ZWrite[_ZWrite]
             Cull[_Cull]
             
@@ -502,7 +502,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             
             Cull [_Cull]
             Blend[_SrcBlend][_DstBlend]  
-            ZTest LEqual
+            //ZTest LEqual
             ZWrite [_ZWrite]
 
             HLSLPROGRAM
@@ -658,7 +658,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma multi_compile_instancing
 
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }
 
