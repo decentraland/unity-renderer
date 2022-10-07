@@ -112,15 +112,9 @@ namespace DCL
             messageToSend.loadPercentage = 0;
 
             currentComponentsLoading = loadedScenes.Sum(x => x.componentsLoading);
-            
-            Debug.Log("PRAVS - LoadingFeedbackController - 1 - currentComponentsLoading:" + currentComponentsLoading);
-            
             if (currentComponentsLoading > 0)
             {
                 loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
-                
-                Debug.Log("PRAVS - LoadingFeedbackController - 2 - loadingComponentsPercentage:" + loadingComponentsPercentage);
-                
                 messageToSend.loadPercentage = loadingComponentsPercentage;
                 DataStore.i.HUDs.loadingHUD.percentage.Set(loadingComponentsPercentage);
                 loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);

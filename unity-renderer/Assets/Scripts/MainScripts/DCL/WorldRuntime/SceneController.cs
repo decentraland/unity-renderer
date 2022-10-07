@@ -19,7 +19,7 @@ namespace DCL
 {
     public class SceneController : ISceneController
     {
-        public static bool VERBOSE = true;
+        public static bool VERBOSE = false;
         const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
@@ -565,8 +565,6 @@ namespace DCL
 
             if (!DataStore.i.debugConfig.isDebugMode.Get() && currentSceneNumber <= 0)
             {
-                Debug.Log("PRAVS - SceneController.SortSCenesByDistance() - locking before knowing current scene...");
-                
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
@@ -587,8 +585,6 @@ namespace DCL
             if (Environment.i.world.state.TryGetScene(newSceneNumber, out IParcelScene newCurrentScene)
                 && !(newCurrentScene as ParcelScene).sceneLifecycleHandler.isReady)
             {
-                Debug.Log("PRAVS - SceneController.SortSCenesByDistance() - locking OnCurrentSceneNumberChange...");
-                
                 CommonScriptableObjects.rendererState.AddLock(newCurrentScene);
 
                 (newCurrentScene as ParcelScene).sceneLifecycleHandler.OnSceneReady += (readyScene) => { CommonScriptableObjects.rendererState.RemoveLock(readyScene); };
@@ -748,8 +744,6 @@ namespace DCL
                 type = QueuedSceneMessage.Type.LOAD_PARCEL,
                 message = decentralandSceneJSON
             };
-            
-            Debug.Log($"LoadParcelScenes - sceneNumber:{queuedMessage.sceneNumber}; tag:{queuedMessage.tag}");
 
             ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
