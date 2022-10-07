@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 using Variables.RealmsInfo;
@@ -81,10 +82,6 @@ namespace DCL.FPSDisplay
                 return;
             
             updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
-            updateValueDictionary.Add(DebugValueEnum.Skybox_Config, () => DataStore.i.skyboxConfig.configToLoad.Get());
-            updateValueDictionary.Add(DebugValueEnum.Skybox_Duration, () => $"{DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
-            updateValueDictionary.Add(DebugValueEnum.Skybox_GameTime, () => $"{DataStore.i.skyboxConfig.currentVirtualTime.Get().ToString(TWO_DECIMALS)}");
-            updateValueDictionary.Add(DebugValueEnum.Skybox_UTCTime, () => $"{DataStore.i.worldTimer.GetCurrentTime()}");
             
             updateValueDictionary.Add(DebugValueEnum.General_Network, () => currentNetwork.ToUpper());
             updateValueDictionary.Add(DebugValueEnum.General_Realm, () => currentRealmValue.ToUpper());
@@ -95,16 +92,20 @@ namespace DCL.FPSDisplay
             updateValueDictionary.Add(DebugValueEnum.FPS_HiccupsLoss, GetHiccupsLoss);
             updateValueDictionary.Add(DebugValueEnum.FPS_BadFramesPercentiles, () => $"{fpsColor}{((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%</color>");
             
-            updateValueDictionary.Add(DebugValueEnum.Scene_Name, () =>  GetStringID());
-            updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{totalMessagesCurrent} of {totalMessagesGlobal}");
+            updateValueDictionary.Add(DebugValueEnum.Scene_Name, GetSceneID);
+            updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{(float)totalMessagesCurrent / totalMessagesGlobal * 100}%");
             updateValueDictionary.Add(DebugValueEnum.Scene_PendingOnQueue, () =>  $"{totalMessagesGlobal - totalMessagesCurrent}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Poly, () => $"{metrics.triangles}/{limits.triangles}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Textures, () => $"{metrics.textures}/{limits.textures}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Materials, () => $"{metrics.materials}/{limits.materials}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Entities, () => $"{metrics.entities}/{limits.entities}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Meshes, () => $"{metrics.meshes}/{limits.meshes}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Bodies, () => $"{metrics.bodies}/{limits.bodies}");
+            updateValueDictionary.Add(DebugValueEnum.Scene_Poly, () => GetSceneMetric(metrics.triangles, limits.triangles));
+            updateValueDictionary.Add(DebugValueEnum.Scene_Textures, () => GetSceneMetric(metrics.textures,limits.textures));
+            updateValueDictionary.Add(DebugValueEnum.Scene_Materials, () => GetSceneMetric(metrics.materials,limits.materials));
+            updateValueDictionary.Add(DebugValueEnum.Scene_Entities, () =>GetSceneMetric(metrics.entities,limits.entities));
+            updateValueDictionary.Add(DebugValueEnum.Scene_Meshes, () => GetSceneMetric(metrics.meshes, limits.meshes));
+            updateValueDictionary.Add(DebugValueEnum.Scene_Bodies, () => GetSceneMetric(metrics.bodies,limits.bodies));
             updateValueDictionary.Add(DebugValueEnum.Scene_Components, () => (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString());
+            
+            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  $"{DataStore.i.debugConfig.usedJSHeapSize.Get().ToString(TWO_DECIMALS)} M");
+            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"{DataStore.i.debugConfig.jsHeapSizeLimit.Get().ToString(TWO_DECIMALS)} M");
+            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => $"{DataStore.i.debugConfig.totalJSHeapSize.Get().ToString(TWO_DECIMALS)} M");
 
         }
         
@@ -115,8 +116,13 @@ namespace DCL.FPSDisplay
             string msFormatted = (dt * 1000).ToString("##");
             return $"<b>FPS</b> {fpsColor}{fpsFormatted}</color> {msFormatted} ms";
         }
+
+        private string GetSceneMetric(int value, int limit)
+        {
+            return $"{GetColor(GetHexColor(FPSColoring.GetPercentageColoring(value, limit)))}current: {value} max: {limit}</color>";
+        }
         
-        private string GetStringID()
+        private string GetSceneID()
         {
             string activeSceneID = activeScene.sceneData.id;
             if (activeSceneID.Length >= 11)
@@ -181,6 +187,7 @@ namespace DCL.FPSDisplay
                 fps = performanceData.Get().fpsCount;
                 fpsColor = GetColor(GetHexColor(FPSColoring.GetDisplayColor(fps)));
                 activeScene = GetActiveScene();
+                WebInterface.UpdateMemoryUsage();
                 if (activeScene != null && activeScene.metricsCounter != null)
                 {
                     metrics = activeScene.metricsCounter.currentCount;
@@ -188,8 +195,10 @@ namespace DCL.FPSDisplay
                 }
                 for (var i = 0; i < valuesToUpdate.Count; i++)
                 {
-                    if(valuesToUpdate[i].isActiveAndEnabled)
+                    if (valuesToUpdate[i].isActiveAndEnabled)
+                    {
                         valuesToUpdate[i].SetValue(updateValueDictionary[valuesToUpdate[i].debugValueEnum].Invoke());
+                    }
                 }
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }

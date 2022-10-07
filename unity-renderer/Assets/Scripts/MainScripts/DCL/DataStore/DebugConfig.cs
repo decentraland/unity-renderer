@@ -40,6 +40,15 @@ namespace DCL
         
         [System.NonSerialized]
         public BaseVariable<bool> showGlobalABDetectionLayer = new BaseVariable<bool>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> jsHeapSizeLimit = new BaseVariable<float>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> totalJSHeapSize = new BaseVariable<float>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> usedJSHeapSize = new BaseVariable<float>();
 
         /// <summary>
         /// True when WSS message pipeline is enabled

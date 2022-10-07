@@ -35,7 +35,7 @@ namespace Tests
             string currentTime = $"{DataStore.i.worldTimer.GetCurrentTime()}";
 
             DebugValue testDebugValue = Resources.Load<DebugValue>("DebugValueDescription");
-            testDebugValue.debugValueEnum = DebugValueEnum.Skybox_UTCTime;
+            testDebugValue.debugValueEnum = DebugValueEnum.FPS_HiccupsLoss;
             fpsDisplay.AddValueToUpdate(testDebugValue);
 
             yield return new WaitForSeconds(1f);

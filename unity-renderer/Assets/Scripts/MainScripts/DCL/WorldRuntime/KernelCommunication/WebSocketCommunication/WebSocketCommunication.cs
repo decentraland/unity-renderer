@@ -108,6 +108,7 @@ public class WebSocketCommunication : IKernelCommunication
         // Please, use `Bridges` as a bridge name, avoid adding messages here. The system will use `Bridges` as the default bridge name.
         messageTypeToBridgeName["SetDebug"] = "Main";
         messageTypeToBridgeName["SetSceneDebugPanel"] = "Main";
+        messageTypeToBridgeName["SetMemoryUsage"] = "Main";
         messageTypeToBridgeName["ShowFPSPanel"] = "Main";
         messageTypeToBridgeName["HideFPSPanel"] = "Main";
         messageTypeToBridgeName["DetectABs"] = "Main";

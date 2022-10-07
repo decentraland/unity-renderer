@@ -21,7 +21,7 @@ public class CopyToClipboardButton : MonoBehaviour
     {
         copyToast = new Model()
         {
-            type = Type.WARNING,
+            type = Type.WARNING_NO_ICON,
             groupID = groupID,
             message = message,
             timer = timer
