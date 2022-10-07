@@ -184,7 +184,7 @@ namespace DCL.Components
 
                 try
                 {
-                    var materialsCloneList = new List<Material>();
+                       var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
                            var newMaterial = new Material(mat.shader);
@@ -242,6 +242,11 @@ namespace DCL.Components
                                    }
                                }
                            }
+
+                           newMaterial.shaderKeywords = new []
+                           {
+                               "_ALPHATEST_ON", "_NORMALMAP"
+                           };
                            
                            if (newMaterial.shaderKeywords != null)
                            {
