@@ -245,7 +245,7 @@ namespace DCL.Components
 
                            newMaterial.shaderKeywords = new []
                            {
-                               "_ALPHATEST_ON", "_NORMALMAP"
+                               "_ALPHATEST_ON", "_NORMALMAP", "_ENVIRONMENTREFLECTIONS_OFF"
                            };
                            
                            if (newMaterial.shaderKeywords != null)
