@@ -63,7 +63,7 @@ namespace Tests
             };
 
             // Act
-            handler.OnComponentModelUpdated(parcelScene, entity, new PBMeshRenderer());
+            handler.OnComponentModelUpdated(parcelScene, entity, CreateBoxMesh());
 
             // Assert
             Assert.IsTrue(resourceLoaded);
@@ -88,8 +88,8 @@ namespace Tests
         public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            var model = new PBMeshRenderer();
-            var model2 = new PBMeshRenderer();
+            var model = CreateBoxMesh();
+            var model2 = CreateBoxMesh();
 
             // Act
             handler.OnComponentModelUpdated(parcelScene, entity,model);
@@ -99,6 +99,15 @@ namespace Tests
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
+        }
+        
+
+        // Helper
+        private PBMeshRenderer CreateBoxMesh()
+        {
+            var meshRenderer = new PBMeshRenderer();
+            meshRenderer.Box = new PBMeshRenderer.Types.BoxMesh();
+            return meshRenderer;
         }
     }
 }
