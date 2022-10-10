@@ -109,6 +109,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelUpdated += HandleChannelUpdated;
         chatController.OnChannelJoined += HandleChannelJoined;
         chatController.OnJoinChannelError += HandleJoinChannelError;
+        chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
@@ -130,6 +131,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelUpdated -= HandleChannelUpdated;
         chatController.OnChannelJoined -= HandleChannelJoined;
         chatController.OnJoinChannelError -= HandleJoinChannelError;
+        chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
@@ -437,9 +439,19 @@ public class WorldChatWindowController : IHUD
     {
         if (dataStore.channels.isCreationModalVisible.Get()) return;
 
-        if (errorCode == ChannelErrorCode.LimitExceeded)
-            dataStore.channels.currentChannelLimitReached.Set(channelId, true);
+        switch (errorCode)
+        {
+            case ChannelErrorCode.LimitExceeded:
+                dataStore.channels.currentChannelLimitReached.Set(channelId, true);
+                break;
+            case ChannelErrorCode.Unknown:
+                dataStore.channels.joinChannelError.Set(channelId, true);
+                break;
+        }
     }
+    
+    private void HandleLeaveChannelError(string channelId, ChannelErrorCode errorCode) => 
+        dataStore.channels.leaveChannelError.Set(channelId, true);
 
     private void HandleChannelLeft(string channelId)
     {
