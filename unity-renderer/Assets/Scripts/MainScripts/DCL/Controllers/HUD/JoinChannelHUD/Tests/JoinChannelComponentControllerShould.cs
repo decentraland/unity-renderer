@@ -17,7 +17,7 @@ public class JoinChannelComponentControllerShould
     private DataStore dataStore;
     private StringVariable currentPlayerInfoCardId;
     private ISocialAnalytics socialAnalytics;
-    private IChannelsFeatureFlagService channelsUtils;
+    private IChannelsFeatureFlagService channelsFeatureFlagService;
 
     [SetUp]
     public void SetUp()
@@ -28,12 +28,12 @@ public class JoinChannelComponentControllerShould
         channelsDataStore = dataStore.channels;
         currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
-        channelsUtils = Substitute.For<IChannelsFeatureFlagService>();
+        channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
         joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
             dataStore,
             socialAnalytics,
             currentPlayerInfoCardId,
-            channelsUtils);
+            channelsFeatureFlagService);
     }
 
     [TearDown]

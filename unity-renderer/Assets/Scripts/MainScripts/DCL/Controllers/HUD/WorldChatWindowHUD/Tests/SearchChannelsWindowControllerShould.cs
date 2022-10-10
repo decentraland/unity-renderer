@@ -17,7 +17,7 @@ namespace DCL.Chat.HUD
         private IMouseCatcher mouseCatcher;
         private DataStore dataStore;
         private ISocialAnalytics socialAnalytics;
-        private IChannelsFeatureFlagService channelsUtils;
+        private IChannelsFeatureFlagService channelsFeatureFlagService;
 
         [SetUp]
         public void SetUp()
@@ -27,8 +27,8 @@ namespace DCL.Chat.HUD
             view = Substitute.For<ISearchChannelsWindowView>();
             dataStore = new DataStore();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
-            channelsUtils = Substitute.For<IChannelsFeatureFlagService>();
-            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore, socialAnalytics, channelsUtils);
+            channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
+            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore, socialAnalytics, channelsFeatureFlagService);
             controller.Initialize(view);
         }
 

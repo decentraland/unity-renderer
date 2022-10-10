@@ -12,7 +12,7 @@ public class JoinChannelComponentController : IDisposable
     internal readonly DataStore_Channels channelsDataStore;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly StringVariable currentPlayerInfoCardId;
-    private readonly IChannelsFeatureFlagService channelsUtils;
+    private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
     private string channelId;
 
     public JoinChannelComponentController(
@@ -21,7 +21,7 @@ public class JoinChannelComponentController : IDisposable
         DataStore dataStore,
         ISocialAnalytics socialAnalytics,
         StringVariable currentPlayerInfoCardId,
-        IChannelsFeatureFlagService channelsUtils)
+        IChannelsFeatureFlagService channelsFeatureFlagService)
     {
         this.joinChannelView = joinChannelView;
         this.chatController = chatController;
@@ -29,7 +29,7 @@ public class JoinChannelComponentController : IDisposable
         channelsDataStore = dataStore.channels;
         this.socialAnalytics = socialAnalytics;
         this.currentPlayerInfoCardId = currentPlayerInfoCardId;
-        this.channelsUtils = channelsUtils;
+        this.channelsFeatureFlagService = channelsFeatureFlagService;
 
         channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.joinChannelView.OnCancelJoin += OnCancelJoin;
@@ -45,7 +45,7 @@ public class JoinChannelComponentController : IDisposable
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
-        if (!channelsUtils.IsChannelsFeatureEnabled())
+        if (!channelsFeatureFlagService.IsChannelsFeatureEnabled())
             return;
 
         if (string.IsNullOrEmpty(currentChannelId))

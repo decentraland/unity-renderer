@@ -23,7 +23,7 @@ public class WorldChatWindowController : IHUD
     private readonly DataStore dataStore;
     private readonly IMouseCatcher mouseCatcher;
     private readonly ISocialAnalytics socialAnalytics;
-    private readonly IChannelsFeatureFlagService channelsUtils;
+    private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -58,7 +58,7 @@ public class WorldChatWindowController : IHUD
         DataStore dataStore,
         IMouseCatcher mouseCatcher,
         ISocialAnalytics socialAnalytics,
-        IChannelsFeatureFlagService channelsUtils) 
+        IChannelsFeatureFlagService channelsFeatureFlagService) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -66,7 +66,7 @@ public class WorldChatWindowController : IHUD
         this.dataStore = dataStore;
         this.mouseCatcher = mouseCatcher;
         this.socialAnalytics = socialAnalytics;
-        this.channelsUtils = channelsUtils;
+        this.channelsFeatureFlagService = channelsFeatureFlagService;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -109,7 +109,7 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
 
-        if (channelsUtils.IsChannelsFeatureEnabled())
+        if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
         {
             view.OnOpenChannelSearch += OpenChannelSearch;
             view.OnLeaveChannel += LeaveChannel;
@@ -174,7 +174,7 @@ public class WorldChatWindowController : IHUD
                 RequestUnreadMessages();
             }
 
-            if (channelsUtils.IsChannelsFeatureEnabled() && 
+            if (channelsFeatureFlagService.IsChannelsFeatureEnabled() && 
                 !areJoinedChannelsRequestedByFirstTime)
             {
                 RequestJoinedChannels();
@@ -362,7 +362,7 @@ public class WorldChatWindowController : IHUD
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
 
-        view.SetCreateChannelButtonActive(channelsUtils.IsAllowedToCreateChannels());
+        view.SetCreateChannelButtonActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
     }
     
     private void SearchChats(string search)

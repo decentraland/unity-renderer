@@ -16,7 +16,7 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly IChannelsFeatureFlagService channelsUtils;
+        private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -36,13 +36,13 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
-            IChannelsFeatureFlagService channelsUtils)
+            IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.dataStore = dataStore;
             this.socialAnalytics = socialAnalytics;
-            this.channelsUtils = channelsUtils;
+            this.channelsFeatureFlagService = channelsFeatureFlagService;
         }
 
         public void Initialize(ISearchChannelsWindowView view = null)
@@ -50,7 +50,7 @@ namespace DCL.Chat.HUD
             view ??= SearchChannelsWindowComponentView.Create();
             this.view = view;
 
-            view.SetCreateChannelButtonsActive(channelsUtils.IsAllowedToCreateChannels());
+            view.SetCreateChannelButtonsActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
         }
 
         public void Dispose()
