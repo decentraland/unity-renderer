@@ -105,9 +105,7 @@ namespace Tests
         // Helper
         private PBMeshRenderer CreateBoxMesh()
         {
-            var meshRenderer = new PBMeshRenderer();
-            meshRenderer.Box = new PBMeshRenderer.Types.BoxMesh();
-            return meshRenderer;
+            return new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
         }
     }
 }
