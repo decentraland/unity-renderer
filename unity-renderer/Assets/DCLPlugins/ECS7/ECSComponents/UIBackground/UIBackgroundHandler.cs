@@ -35,6 +35,7 @@ namespace DCL.ECSComponents
                 var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
                 containerModel.components.Add(componentId);
                 containerModel.rootElement.style.backgroundColor = model.BackgroundColor.ToUnityColor();
+                internalUiContainer.PutFor(scene, entity, containerModel);
             }
         }
 
