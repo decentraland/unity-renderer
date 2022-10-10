@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
+using System.Linq;
 
 namespace DCL.Rendering
 {
@@ -143,17 +144,24 @@ namespace DCL.Rendering
             else
                 renderers = objectsTracker.GetSkinnedRenderers();
 
+            Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
+            int amount = 0;
+            float maxAmountPerFrame = Mathf.Min(
+                ((float)amount / renderers.Count()) / CullingControllerSettings.MAX_FRAES_PER_FULL_CULLING,
+                CullingControllerSettings.MAX_CULLING_ELEMENTS_PER_FRAME);
 
             foreach (Renderer r in renderers)
             {
-                if (timeBudgetCount > settings.maxTimeBudget)
-                {
-                    timeBudgetCount = 0;
-                    yield return null;
-                }
-
                 if (r == null)
                     continue;
+
+                if (amount >= maxAmountPerFrame)
+                {
+                    yield return null;
+                    playerPosition = CommonScriptableObjects.playerUnityPosition;
+                    amount = 0;
+                }
+                amount++;
 
                 bool rendererIsInIgnoreLayer = ((1 << r.gameObject.layer) & settings.ignoredLayersMask) != 0;
 
@@ -163,15 +171,9 @@ namespace DCL.Rendering
                     continue;
                 }
 
-                float startTime = Time.realtimeSinceStartup;
-
-                //NOTE(Brian): Need to retrieve positions every frame to take into account
-                //             world repositioning.
-                Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
-
                 Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
-
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
+
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
                 float boundsSize = bounds.size.magnitude;
                 float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
@@ -180,15 +182,11 @@ namespace DCL.Rendering
 
                 bool shouldBeVisible =
                     // all objects are visible if culling is off
-                    !settings.enableObjectCulling
-                    // or if the player is inside the bounding box of the object
-                    || bounds.Contains(playerPosition)
-                    // or if the player distance is below the threshold
-                    || distance < profile.visibleDistanceThreshold
-                    // at last, we perform the expensive queries of emmisiveness and opaque conditions
-                    // these are the last conditions because IsEmissive and IsOpaque perform expensive lookups
-                    || viewportSize > profile.emissiveSizeThreshold && IsEmissive(r)
-                    || viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
+                    !settings.enableObjectCulling || 
+                    bounds.Contains(playerPosition) ||
+                    distance < profile.visibleDistanceThreshold ||
+                    viewportSize > profile.emissiveSizeThreshold && IsEmissive(r) ||
+                    viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
                 ;
 
                 bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
@@ -216,10 +214,9 @@ namespace DCL.Rendering
 
                 SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
-                if (DRAW_GIZMOS) DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
+                if (DRAW_GIZMOS) 
+                    DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
-                timeBudgetCount += Time.realtimeSinceStartup - startTime;
-
             }
         }
         
