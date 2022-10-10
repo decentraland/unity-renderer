@@ -184,10 +184,11 @@ namespace DCL.Components
 
                 try
                 {
+                       var urpLitShader = Shader.Find("Universal Render Pipeline/Lit");
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           var newMaterial = new Material(mat.shader);
+                           var newMaterial = new Material(urpLitShader);
 
                            var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
                            var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
@@ -245,7 +246,7 @@ namespace DCL.Components
                            {
                                if (mat.shaderKeywords.Length > 0)
                                {
-                                   log += "Old material keywords: ";
+                                   log += "\n Old material keywords: ";
                                    foreach (var keyword in mat.shaderKeywords)
                                    {
                                        log += keyword + " ";
@@ -257,7 +258,7 @@ namespace DCL.Components
                            {
                                if (newMaterial.shaderKeywords.Length > 0)
                                {
-                                   log += "New material keywords: ";
+                                   log += "\n New material keywords: ";
                                    foreach (var keyword in newMaterial.shaderKeywords)
                                    {
                                        log += keyword + " ";
@@ -265,7 +266,7 @@ namespace DCL.Components
                                }
                            }
 
-                           log += "Passes enabled: ";
+                           log += "\n Passes enabled: ";
                            for (int i = 0; i < mat.passCount; i++)
                            {
                                var passName = mat.GetPassName(i);
@@ -277,12 +278,12 @@ namespace DCL.Components
 
                            if (mat.name.Contains("Mika"))
                            {
-                               log +="(Mika Material)";
+                               log +="\n (Mika Material)";
                            }
                            
                            if (mat.name.Contains("beam_static"))
                            {
-                               log +="(beam_static Material)";
+                               log +="\n (beam_static Material)";
                            }
                            
                            UnityEngine.Debug.LogError(log);
