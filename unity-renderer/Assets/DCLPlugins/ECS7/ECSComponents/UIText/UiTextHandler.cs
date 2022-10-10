@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
@@ -11,7 +12,7 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
 
-        private Label uiElement;
+        internal Label uiElement;
         private AssetPromise_Font fontPromise;
         private int lastFontId = -1;
 
@@ -40,6 +41,7 @@ namespace DCL.ECSComponents
                 containerModel.rootElement.Remove(uiElement);
                 internalUiContainer.PutFor(scene, entity, containerModel);
             }
+            uiElement = null;
             fontPromiseKeeper.Forget(fontPromise);
         }
 
@@ -48,6 +50,7 @@ namespace DCL.ECSComponents
             uiElement.text = model.Value;
             uiElement.style.color = model.GetColor().ToUnityColor();
             uiElement.style.fontSize = model.GetFontSize();
+            uiElement.style.unityTextAlign = ToUnityTextAlign(model.GetTextAlign());
 
             int fontId = (int)model.GetFont();
             if (lastFontId != fontId)
@@ -62,6 +65,21 @@ namespace DCL.ECSComponents
                 };
                 fontPromiseKeeper.Keep(fontPromise);
                 fontPromiseKeeper.Forget(prevPromise);
+            }
+        }
+
+        private static TextAnchor ToUnityTextAlign(TextAlign align)
+        {
+            switch (align)
+            {
+                case TextAlign.Center:
+                    return TextAnchor.MiddleCenter;
+                case TextAlign.Left:
+                    return TextAnchor.MiddleLeft;
+                case TextAlign.Right:
+                    return TextAnchor.MiddleRight;
+                default:
+                    return TextAnchor.MiddleCenter;
             }
         }
     }
