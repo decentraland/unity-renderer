@@ -5,9 +5,9 @@ namespace DCL.Chat.Channels
     [Serializable]
     public enum AllowChannelsCreationMode
     {
-        ALLOWLIST = 0,
-        NAMES = 1,
-        WALLET = 2
+        ALLOWLIST,
+        NAMES,
+        WALLET
     }
 
     [Serializable]
