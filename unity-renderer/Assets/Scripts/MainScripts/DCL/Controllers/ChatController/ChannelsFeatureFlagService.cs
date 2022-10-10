@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Chat.Channels
@@ -40,23 +41,11 @@ namespace DCL.Chat.Channels
             switch (allowedUsersData.mode)
             {
                 case AllowChannelsCreationMode.ALLOWLIST:
-                    List<string> allowedWallets = new List<string>();
-                    if (allowedUsersData.allowList != null)
-                    {
-                        foreach (var userId in allowedUsersData.allowList)
-                            allowedWallets.Add(userId.ToLower());
-                    }
-                    if (!allowedWallets.Contains(ownUserProfile.userId.ToLower()))
-                        return false;
-                    break;
+                    return allowedUsersData.allowList.Any(userId => userId.ToLower() == ownUserProfile.userId.ToLower());
                 case AllowChannelsCreationMode.NAMES:
-                    if (!ownUserProfile.hasClaimedName)
-                        return false;
-                    break;
+                    return !ownUserProfile.hasClaimedName;
                 case AllowChannelsCreationMode.WALLET:
-                    if (ownUserProfile.isGuest)
-                        return false;
-                    break;
+                    return ownUserProfile.isGuest;
             }
 
             return true;
