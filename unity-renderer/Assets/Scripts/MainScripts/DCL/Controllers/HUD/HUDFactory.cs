@@ -116,6 +116,7 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
+                    new UserProfileWebInterfaceBridge(),
                     new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.CHANNELS_CREATE:

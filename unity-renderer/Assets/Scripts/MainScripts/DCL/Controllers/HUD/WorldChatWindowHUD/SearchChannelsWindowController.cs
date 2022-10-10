@@ -16,6 +16,7 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly IUserProfileBridge userProfileBridge;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
@@ -24,6 +25,7 @@ namespace DCL.Chat.HUD
         private string searchText;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private bool isSearchingByName;
+        private UserProfile ownUserProfile;
 
         public ISearchChannelsWindowView View => view;
 
@@ -36,12 +38,14 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
+            IUserProfileBridge userProfileBridge,
             IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.dataStore = dataStore;
             this.socialAnalytics = socialAnalytics;
+            this.userProfileBridge = userProfileBridge;
             this.channelsFeatureFlagService = channelsFeatureFlagService;
         }
 
@@ -50,7 +54,9 @@ namespace DCL.Chat.HUD
             view ??= SearchChannelsWindowComponentView.Create();
             this.view = view;
 
-            view.SetCreateChannelButtonsActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
+            ownUserProfile = userProfileBridge.GetOwn();
+            if (ownUserProfile != null)
+                ownUserProfile.OnUpdate += OnUserProfileUpdate;
         }
 
         public void Dispose()
@@ -59,6 +65,9 @@ namespace DCL.Chat.HUD
             view.Dispose();
             loadingCancellationToken.Cancel();
             loadingCancellationToken.Dispose();
+
+            if (ownUserProfile != null)
+                ownUserProfile.OnUpdate -= OnUserProfileUpdate;
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -220,5 +229,7 @@ namespace DCL.Chat.HUD
             dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Search);
             OnOpenChannelLeave?.Invoke(channelId);
         }
+
+        private void OnUserProfileUpdate(UserProfile profile) => view.SetCreateChannelButtonsActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
     }
 }

@@ -43,9 +43,9 @@ namespace DCL.Chat.Channels
                 case AllowChannelsCreationMode.ALLOWLIST:
                     return allowedUsersData.allowList.Any(userId => userId.ToLower() == ownUserProfile.userId.ToLower());
                 case AllowChannelsCreationMode.NAMES:
-                    return !ownUserProfile.hasClaimedName;
+                    return ownUserProfile.hasClaimedName;
                 case AllowChannelsCreationMode.WALLET:
-                    return ownUserProfile.isGuest;
+                    return !ownUserProfile.isGuest;
             }
 
             return true;
