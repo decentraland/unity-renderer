@@ -6,7 +6,8 @@ using DCL.Interface;
 public class ChatController_Mock : IChatController
 {
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
-    
+
+    public event Action OnInitialized;
     public event Action<ChatMessage> OnAddMessage;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;

@@ -27,7 +27,8 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<string, ChannelErrorCode> OnJoinChannelError;
     public event Action<string> OnChannelLeft;
     public event Action<string, ChannelErrorCode> OnChannelLeaveError;
-    public event Action<string, ChannelErrorCode> OnMuteChannelError; 
+    public event Action<string, ChannelErrorCode> OnMuteChannelError;
+    public event Action OnInitialized;
     public event Action<ChatMessage> OnAddMessage;
     public event Action<int> OnTotalUnseenMessagesUpdated;
     public event Action<string, int> OnUserUnseenMessagesUpdated;
@@ -55,6 +56,7 @@ public class ChatController : MonoBehaviour, IChatController
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
 
         TotalUnseenMessages = msg.totalUnseenMessages;
+        OnInitialized?.Invoke();
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
         chatAlreadyInitialized = true;
     }

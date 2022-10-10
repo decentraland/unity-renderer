@@ -103,6 +103,7 @@ public class WorldChatWindowController : IHUD
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
 
+        chatController.OnInitialized += HandleChatInitialization;
         chatController.OnAddMessage += HandleMessageAdded;
         chatController.OnChannelUpdated += HandleChannelUpdated;
         chatController.OnChannelJoined += HandleChannelJoined;
@@ -125,6 +126,7 @@ public class WorldChatWindowController : IHUD
         view.OnOpenChannelSearch -= OpenChannelSearch;
         view.OnCreateChannel -= OpenChannelCreationWindow;
         view.Dispose();
+        chatController.OnInitialized -= HandleChatInitialization;
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
         chatController.OnChannelJoined -= HandleChannelJoined;
@@ -210,6 +212,13 @@ public class WorldChatWindowController : IHUD
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         view.HideChannelsLoading();
+    }
+
+    private void HandleChatInitialization()
+    {
+        if (areJoinedChannelsRequestedByFirstTime) return;
+        // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
+        RequestJoinedChannels();
     }
 
     private void HandleFriendsControllerInitialization()
