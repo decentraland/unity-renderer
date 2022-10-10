@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Chat
+namespace DCL.Chat.Channels
 {
     public class ChannelsUtils : IChannelsUtils
     {
