@@ -88,7 +88,7 @@ namespace Tests
         {
             // Arrange
             var model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
-            var model2 = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.CylinderMesh() };
+            var model2 = new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() };
 
             // Act
             handler.OnComponentCreated(parcelScene, entity);
