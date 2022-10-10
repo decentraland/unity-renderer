@@ -13,6 +13,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
+    internal const float ALPHA_STEPS = 16f;
     internal const float TARGET_ALPHA_SHOW = 1;
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
@@ -32,6 +33,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal float alpha;
     internal float targetAlpha;
+    internal float previousAlphaStep;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
     internal List<string> hideConstraints = new List<string>();
@@ -74,16 +76,20 @@ public class PlayerName : MonoBehaviour, IPlayerName
         }
         
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
+        alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
+        float currentAlphaStep = GetNearestAlphaStep(alpha);
+        if (currentAlphaStep == previousAlphaStep)
+            return;
 
-        if (!Mathf.Approximately(alpha, finalTargetAlpha))
-            alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
-        else if (alpha == 0)
+        previousAlphaStep = currentAlphaStep;
+
+        if (currentAlphaStep == 0)
         {
             UpdateVisuals(0);
-            // We are hidden and we dont have to scale, look at camera or anything, we can disable the gameObject
             SetRenderersVisible(false);
             return;
         }
+
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
         Quaternion cameraRotation = DataStore.i.camera.rotation.Get();
@@ -172,6 +178,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal void UpdateVisuals(float resolvedAlpha)
     {
         canvasGroup.alpha = resolvedAlpha;
+    }
+
+    internal float GetNearestAlphaStep(float alpha)
+    {
+        return Mathf.Floor(alpha / ALPHA_STEPS) * ALPHA_STEPS;
     }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
