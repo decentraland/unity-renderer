@@ -29,6 +29,7 @@ public class JoinChannelComponentControllerShould
         currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
+        channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
         joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
             dataStore,
             socialAnalytics,

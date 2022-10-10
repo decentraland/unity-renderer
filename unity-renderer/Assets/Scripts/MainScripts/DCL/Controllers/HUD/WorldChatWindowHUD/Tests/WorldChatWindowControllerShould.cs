@@ -41,6 +41,7 @@ public class WorldChatWindowControllerShould
         friendsController.IsInitialized.Returns(true);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
+        channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
         dataStore = new DataStore();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
