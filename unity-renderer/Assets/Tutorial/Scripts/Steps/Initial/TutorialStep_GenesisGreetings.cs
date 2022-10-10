@@ -69,6 +69,8 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
 
             CommonScriptableObjects.userMovementKeysBlocked.Set(false);
+
+            CommonScriptableObjects.playerCoords.OnChange -= OnChangePlayerCoords;
         }
 
         internal void OnOkButtonClick() { stepIsFinished = true; }
