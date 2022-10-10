@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -360,6 +361,12 @@ public class WorldChatWindowController : IHUD
 
         UpdateMoreChannelsToLoadHint();
         View.EnableSearchMode();
+
+        var matchedChannels = publicChannels.Values
+            .Where(model => model.name.ToLower().Contains(search.ToLower()));
+        foreach (var channelMatch in matchedChannels)
+            View.SetPublicChat(channelMatch);
+        
         RequestFriendsWithDirectMessagesFromSearch(search, USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH);
     }
 
