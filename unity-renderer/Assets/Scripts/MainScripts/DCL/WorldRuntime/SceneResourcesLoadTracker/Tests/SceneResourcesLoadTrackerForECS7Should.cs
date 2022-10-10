@@ -52,8 +52,8 @@ namespace Tests
             DataStore.i.ecs7.pendingSceneResources.Clear();
         }
 
-        [UnityTest]
-        public IEnumerator DetectLoadOfComponentCorrectly()
+        [Test]
+        public void DetectLoadOfComponentCorrectly()
         {
             // Arrange
             bool resourceLoaded = false;
@@ -63,54 +63,40 @@ namespace Tests
             };
 
             // Act
-            handler.OnComponentModelUpdated(parcelScene, entity, CreateBoxMesh());
-            yield return null;
+            handler.OnComponentCreated(parcelScene, entity);
+            handler.OnComponentModelUpdated(parcelScene, entity, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
 
             // Assert
             Assert.IsTrue(resourceLoaded);
         }
 
-        [UnityTest]
-        public IEnumerator IgnoreComponentAfterDisposed()
-        {
-            // Arrange
-            handler.OnComponentCreated(parcelScene, entity);
-            
+        [Test]
+        public void IgnoreComponentAfterDisposed()
+        {   
             // Act
+            handler.OnComponentCreated(parcelScene, entity);
             handler.OnComponentRemoved(parcelScene, entity);
 
-            yield return null;
-
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
         
-        [UnityTest]
-        public IEnumerator WaitForAllComponentsToBeReady()
+        [Test]
+        public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            var model = CreateBoxMesh();
-            var model2 = CreateBoxMesh();
+            var model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
 
             // Act
-            handler.OnComponentModelUpdated(parcelScene, entity,model);
-            handler.OnComponentModelUpdated(parcelScene, entity,model2);
-
-            yield return null;
+            handler.OnComponentCreated(parcelScene, entity);
+            handler.OnComponentModelUpdated(parcelScene, entity, model);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
-        }
-        
-
-        // Helper
-        private PBMeshRenderer CreateBoxMesh()
-        {
-            return new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
         }
     }
 }
