@@ -16,7 +16,7 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly IChannelsUtils channelsUtils;
+        private readonly IChannelsFeatureFlagService channelsUtils;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -36,7 +36,7 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
-            IChannelsUtils channelsUtils)
+            IChannelsFeatureFlagService channelsUtils)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;

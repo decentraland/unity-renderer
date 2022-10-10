@@ -12,7 +12,7 @@ public class JoinChannelComponentController : IDisposable
     internal readonly DataStore_Channels channelsDataStore;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly StringVariable currentPlayerInfoCardId;
-    private readonly IChannelsUtils channelsUtils;
+    private readonly IChannelsFeatureFlagService channelsUtils;
     private string channelId;
 
     public JoinChannelComponentController(
@@ -21,7 +21,7 @@ public class JoinChannelComponentController : IDisposable
         DataStore dataStore,
         ISocialAnalytics socialAnalytics,
         StringVariable currentPlayerInfoCardId,
-        IChannelsUtils channelsUtils)
+        IChannelsFeatureFlagService channelsUtils)
     {
         this.joinChannelView = joinChannelView;
         this.chatController = chatController;

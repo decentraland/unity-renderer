@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Chat.Channels
 {
-    public class ChannelsUtils : IChannelsUtils
+    public class ChannelsFeatureFlagService : IChannelsFeatureFlagService
     {
         private const string FEATURE_FLAG_FOR_CHANNELS_FEATURE = "matrix_channels_enabled";
         private const string FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "users_allowed_to_create_channels";
@@ -14,7 +14,7 @@ namespace DCL.Chat.Channels
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
 
-        public ChannelsUtils(DataStore dataStore, IUserProfileBridge userProfileBridge)
+        public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;

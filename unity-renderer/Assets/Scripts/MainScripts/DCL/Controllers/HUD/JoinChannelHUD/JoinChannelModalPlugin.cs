@@ -23,7 +23,7 @@ public class JoinChannelModalPlugin : IPlugin
                 Environment.i.platform.serviceProviders.analytics,
                 userProfileWebInterfaceBridge),
             Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-            new ChannelsUtils(
+            new ChannelsFeatureFlagService(
                 DataStore.i,
                 userProfileWebInterfaceBridge));
     }

@@ -23,7 +23,7 @@ public class WorldChatWindowControllerShould
     private IMouseCatcher mouseCatcher;
     private UserProfile ownUserProfile;
     private ISocialAnalytics socialAnalytics;
-    private IChannelsUtils channelsUtils;
+    private IChannelsFeatureFlagService channelsUtils;
     private DataStore dataStore;
 
     [SetUp]
@@ -40,7 +40,7 @@ public class WorldChatWindowControllerShould
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
-        channelsUtils = Substitute.For<IChannelsUtils>();
+        channelsUtils = Substitute.For<IChannelsFeatureFlagService>();
         dataStore = new DataStore();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,

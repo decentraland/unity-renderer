@@ -1,6 +1,6 @@
 namespace DCL.Chat
 {
-    public interface IChannelsUtils
+    public interface IChannelsFeatureFlagService
     {
         bool IsChannelsFeatureEnabled();
         bool IsAllowedToCreateChannels();

@@ -23,7 +23,7 @@ public class WorldChatWindowController : IHUD
     private readonly DataStore dataStore;
     private readonly IMouseCatcher mouseCatcher;
     private readonly ISocialAnalytics socialAnalytics;
-    private readonly IChannelsUtils channelsUtils;
+    private readonly IChannelsFeatureFlagService channelsUtils;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -58,7 +58,7 @@ public class WorldChatWindowController : IHUD
         DataStore dataStore,
         IMouseCatcher mouseCatcher,
         ISocialAnalytics socialAnalytics,
-        IChannelsUtils channelsUtils) 
+        IChannelsFeatureFlagService channelsUtils) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
