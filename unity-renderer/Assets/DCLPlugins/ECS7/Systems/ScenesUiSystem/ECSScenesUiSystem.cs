@@ -96,10 +96,7 @@ namespace ECSSystems.ScenesUiSystem
                 // create root entity ui container if needed
                 if (parentDataModel == null && uiContainerData.model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
                 {
-                    parentDataModel = new InternalUiContainer()
-                    {
-                        hasTransform = true
-                    };
+                    parentDataModel = new InternalUiContainer();
                 }
 
                 // apply parenting

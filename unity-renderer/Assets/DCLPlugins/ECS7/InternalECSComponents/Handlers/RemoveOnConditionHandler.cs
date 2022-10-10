@@ -8,9 +8,9 @@ public class RemoveOnConditionHandler<T> : IECSComponentHandler<T> where T : Int
 {
 
     private readonly IInternalECSComponent<T> thisComponent;
-    private readonly Func<T, bool> condition;
+    private readonly Func<IParcelScene, IDCLEntity, T, bool> condition;
 
-    public RemoveOnConditionHandler(Func<IInternalECSComponent<T>> componentGet, Func<T, bool> condition)
+    public RemoveOnConditionHandler(Func<IInternalECSComponent<T>> componentGet, Func<IParcelScene, IDCLEntity, T, bool> condition)
     {
         this.thisComponent = componentGet();
         this.condition = condition;
@@ -22,7 +22,7 @@ public class RemoveOnConditionHandler<T> : IECSComponentHandler<T> where T : Int
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, T model)
     {
-        if (condition(model))
+        if (condition(scene, entity, model))
         {
             thisComponent.RemoveFor(scene, entity);
         }

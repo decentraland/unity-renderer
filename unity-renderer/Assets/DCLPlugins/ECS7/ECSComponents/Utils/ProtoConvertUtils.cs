@@ -91,5 +91,10 @@ namespace DCL.ECSComponents
         {
             return new Color(color.R, color.G, color.B);
         }
+
+        public static Color ToUnityColor(this Color4 color)
+        {
+            return new Color(color.R, color.G, color.B, color.A);
+        }
     }
 }

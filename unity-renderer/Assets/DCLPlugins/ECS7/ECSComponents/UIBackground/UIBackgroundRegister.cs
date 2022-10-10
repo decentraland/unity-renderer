@@ -1,21 +1,21 @@
-﻿using System;
+using System;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class UITransformRegister : IDisposable
+    public class UIBackgroundRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public UITransformRegister(int componentId, ECSComponentsFactory factory,
+        public UIBackgroundRegister(int componentId, ECSComponentsFactory factory,
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
-            var handler = new UITransformHandler(internalUiContainer, componentId);
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiTransform>, () => handler);
-            componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, ProtoSerialization.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiBackground>,
+                () => new UIBackgroundHandler(internalUiContainer, componentId));
+            componentWriter.AddOrReplaceComponentSerializer<PBUiBackground>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

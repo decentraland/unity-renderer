@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
@@ -23,7 +24,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalTexturizable>(
-                () => texturizableComponent, model => model.renderers.Count == 0),
+                () => texturizableComponent, (_, __, model) => model.renderers.Count == 0),
             scheduledWrite);
 
         materialComponent = new InternalECSComponent<InternalMaterial>(
@@ -38,7 +39,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
-                () => onPointerColliderComponent, model => model.colliders.Count == 0),
+                () => onPointerColliderComponent, (_, __, model) => model.colliders.Count == 0),
             scheduledWrite);
 
         physicColliderComponent = new InternalECSComponent<InternalColliders>(
@@ -46,7 +47,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
-                () => physicColliderComponent, model => model.colliders.Count == 0),
+                () => physicColliderComponent, (_, __, model) => model.colliders.Count == 0),
             scheduledWrite);
 
         renderersComponent = new InternalECSComponent<InternalRenderers>(
@@ -54,7 +55,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalRenderers>(
-                () => renderersComponent, model => model.renderers.Count == 0),
+                () => renderersComponent, (_, __, model) => model.renderers.Count == 0),
             scheduledWrite);
 
         visibilityComponent = new InternalECSComponent<InternalVisibility>(
@@ -77,7 +78,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalUiContainer>(
                 () => uiContainerComponent,
-                model => model.rootElement.childCount == 0 && !model.hasTransform),
+                (_, entity, model) => model.rootElement.childCount == 0 && model.components.Count == 0 && entity.entityId != SpecialEntityId.SCENE_ROOT_ENTITY),
             scheduledWrite);
     }
 

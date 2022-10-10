@@ -27,7 +27,7 @@ namespace Tests
 
             var initialModel = new InternalUiContainer();
             initialModel.rootElement.Add(new VisualElement());
-            initialModel.hasTransform = true;
+            initialModel.components.Add(0);
 
             internalUiContainer.PutFor(scene, entity, initialModel);
         }
@@ -39,9 +39,10 @@ namespace Tests
         }
 
         [Test]
-        public void NotRemoveComponentWhenTransformLeft()
+        public void NotRemoveComponentWhenComponentsLeft()
         {
             var model = internalUiContainer.GetFor(scene, entity).model;
+            //  model.components.Count == 1
             model.rootElement.Clear();
             internalUiContainer.PutFor(scene, entity, model);
 
@@ -52,17 +53,18 @@ namespace Tests
         public void NotRemoveComponentWhenChildrenLeft()
         {
             var model = internalUiContainer.GetFor(scene, entity).model;
-            model.hasTransform = false;
+            model.components.Clear();
+            //  model.rootElement.childCount == 1
             internalUiContainer.PutFor(scene, entity, model);
 
             Assert.NotNull(internalUiContainer.GetFor(scene, entity));
         }
 
         [Test]
-        public void RemoveWhenNoChildrenAndNoTransform()
+        public void RemoveWhenNoChildrenAndNoComponents()
         {
             var model = internalUiContainer.GetFor(scene, entity).model;
-            model.hasTransform = false;
+            model.components.Clear();
             model.rootElement.Clear();
             internalUiContainer.PutFor(scene, entity, model);
 
