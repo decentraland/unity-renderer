@@ -17,7 +17,8 @@ namespace Tests
     public class SceneResourcesLoadTrackerForECS7Should
     {
         private SceneResourcesLoadTracker resourcesLoadTracker;
-        private ECSBoxShapeComponentHandler hanlder;
+        private MeshRendererHandler handler;
+
         private IParcelScene parcelScene;
         private IDCLEntity entity;
         private GameObject gameObject;
@@ -40,14 +41,14 @@ namespace Tests
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
             resourcesLoadTracker.Track(sceneData.id);
-            hanlder = new ECSBoxShapeComponentHandler(DataStore.i.ecs7, Substitute.For<IInternalECSComponent<InternalTexturizable>>());
+            handler = new MeshRendererHandler(DataStore.i.ecs7, Substitute.For<IInternalECSComponent<InternalTexturizable>>(), Substitute.For<IInternalECSComponent<InternalRenderers>>());
         }
 
         [TearDown]
         public void TearDown()
         {
             GameObject.Destroy(gameObject);
-            hanlder.OnComponentRemoved(parcelScene,entity);
+            handler.OnComponentRemoved(parcelScene,entity);
             DataStore.i.ecs7.pendingSceneResources.Clear();
         }
 
@@ -62,7 +63,8 @@ namespace Tests
             };
 
             // Act
-            hanlder.OnComponentModelUpdated(parcelScene, entity,new PBBoxShape());
+            handler.OnComponentCreated(parcelScene, entity);
+            handler.OnComponentModelUpdated(parcelScene, entity, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
 
             // Assert
             Assert.IsTrue(resourceLoaded);
@@ -70,12 +72,10 @@ namespace Tests
 
         [Test]
         public void IgnoreComponentAfterDisposed()
-        {
-            // Arrange
-            hanlder.OnComponentCreated(parcelScene, entity);
-            
+        {   
             // Act
-            hanlder.OnComponentRemoved(parcelScene, entity);
+            handler.OnComponentCreated(parcelScene, entity);
+            handler.OnComponentRemoved(parcelScene, entity);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
@@ -87,12 +87,13 @@ namespace Tests
         public void WaitForAllComponentsToBeReady()
         {
             // Arrange
-            var model = new PBBoxShape();
-            var model2 = new PBBoxShape();
+            var model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
+            var model2 = new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() };
 
             // Act
-            hanlder.OnComponentModelUpdated(parcelScene, entity,model);
-            hanlder.OnComponentModelUpdated(parcelScene, entity,model2);
+            handler.OnComponentCreated(parcelScene, entity);
+            handler.OnComponentModelUpdated(parcelScene, entity, model);
+            handler.OnComponentModelUpdated(parcelScene, entity, model2);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
