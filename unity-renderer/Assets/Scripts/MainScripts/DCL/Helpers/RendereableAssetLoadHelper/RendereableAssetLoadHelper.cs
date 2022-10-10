@@ -184,11 +184,11 @@ namespace DCL.Components
 
                 try
                 {
-                       var urpLitShader = Shader.Find("Universal Render Pipeline/Lit");
+                       //var urpLitShader = Shader.Find("Universal Render Pipeline/Lit");
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           var newMaterial = new Material(urpLitShader);
+                           var newMaterial = new Material(mat.shader);
 
                            var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
                            var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
@@ -253,6 +253,14 @@ namespace DCL.Components
                                    }
                                }
                            }
+
+                           if(mat.shaderKeywords != null)
+                                newMaterial.shaderKeywords = mat.shaderKeywords.ToArray();
+                           
+                           // newMaterial.shaderKeywords = new string[4]
+                           // {
+                           //     "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
+                           // };
                            
                            if (newMaterial.shaderKeywords != null)
                            {
