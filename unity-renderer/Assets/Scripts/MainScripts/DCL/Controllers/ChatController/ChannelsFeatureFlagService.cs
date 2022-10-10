@@ -9,7 +9,7 @@ namespace DCL.Chat.Channels
         private const string FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "users_allowed_to_create_channels";
         private const string VARIANT_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "allowedUsers";
 
-        private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        private BaseVariable<FeatureFlag> featureFlags => dataStore.featureFlags.flags;
 
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
