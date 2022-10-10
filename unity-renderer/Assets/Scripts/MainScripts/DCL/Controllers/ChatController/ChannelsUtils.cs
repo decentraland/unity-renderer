@@ -5,6 +5,7 @@ namespace DCL.Chat
 {
     public class ChannelsUtils : IChannelsUtils
     {
+        private const string FEATURE_FLAG_FOR_CHANNELS_FEATURE = "matrix_channels_enabled";
         private const string FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "users_allowed_to_create_channels";
         private const string VARIANT_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "allowedUsers";
 
@@ -18,6 +19,8 @@ namespace DCL.Chat
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
         }
+
+        public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
 
         public bool IsAllowedToCreateChannels()
         {
