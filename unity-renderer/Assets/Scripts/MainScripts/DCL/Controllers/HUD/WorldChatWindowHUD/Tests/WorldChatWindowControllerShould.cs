@@ -482,6 +482,16 @@ public class WorldChatWindowControllerShould
         view.Received(1).RemovePublicChat("channelId");
     }
 
+    [Test]
+    public void RequestJoinedChannelsWhenChatInitializes()
+    {
+        controller.Initialize(view);
+
+        chatController.OnInitialized += Raise.Event<Action>();
+        
+        chatController.Received(1).GetJoinedChannels(10, 0);
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();

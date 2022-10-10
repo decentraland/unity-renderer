@@ -41,6 +41,12 @@ namespace DCL.Chat.Channels
             remove => controller.OnChannelUnseenMessagesUpdated -= value;
         }
 
+        public event Action OnInitialized
+        {
+            add => controller.OnInitialized += value;
+            remove => controller.OnInitialized -= value;
+        }
+
         public event Action<ChatMessage> OnAddMessage
         {
             add => controller.OnAddMessage += value;

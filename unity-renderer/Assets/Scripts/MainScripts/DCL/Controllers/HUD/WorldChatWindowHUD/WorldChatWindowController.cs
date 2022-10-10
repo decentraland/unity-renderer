@@ -38,6 +38,7 @@ public class WorldChatWindowController : IHUD
     private bool isRequestingDMs;
     private bool areJoinedChannelsRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
 
     public IWorldChatWindowView View => view;
 
@@ -101,6 +102,7 @@ public class WorldChatWindowController : IHUD
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
 
+        chatController.OnInitialized += HandleChatInitialization;
         chatController.OnAddMessage += HandleMessageAdded;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
@@ -139,6 +141,7 @@ public class WorldChatWindowController : IHUD
         view.OnOpenChannelSearch -= OpenChannelSearch;
         view.OnCreateChannel -= OpenChannelCreationWindow;
         view.Dispose();
+        chatController.OnInitialized -= HandleChatInitialization;
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
         chatController.OnChannelJoined -= HandleChannelJoined;
@@ -225,6 +228,13 @@ public class WorldChatWindowController : IHUD
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         view.HideChannelsLoading();
+    }
+
+    private void HandleChatInitialization()
+    {
+        if (areJoinedChannelsRequestedByFirstTime) return;
+        // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
+        RequestJoinedChannels();
     }
 
     private void HandleFriendsControllerInitialization()
@@ -406,6 +416,17 @@ public class WorldChatWindowController : IHUD
         friendsController.GetFriendsWithDirectMessages(DMS_PAGE_SIZE, lastSkipForDMs);
         lastSkipForDMs += DMS_PAGE_SIZE;
         areDMsRequestedByFirstTime = true;
+        
+        hidePrivateChatsLoadingCancellationToken.Cancel();
+        hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
+        HidePrivateChatsLoadingWhenTimeout(hidePrivateChatsLoadingCancellationToken.Token).Forget();
+    }
+
+    private async UniTaskVoid HidePrivateChatsLoadingWhenTimeout(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        if (cancellationToken.IsCancellationRequested) return;
+        view.HidePrivateChatsLoading();
     }
 
     internal void RequestFriendsWithDirectMessagesFromSearch(string userNameOrId, int limit)
