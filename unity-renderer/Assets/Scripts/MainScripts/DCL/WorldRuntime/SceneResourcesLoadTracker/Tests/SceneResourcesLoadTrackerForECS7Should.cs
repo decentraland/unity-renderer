@@ -52,8 +52,8 @@ namespace Tests
             DataStore.i.ecs7.pendingSceneResources.Clear();
         }
 
-        [Test]
-        public void DetectLoadOfComponentCorrectly()
+        [UnityTest]
+        public IEnumerator DetectLoadOfComponentCorrectly()
         {
             // Arrange
             bool resourceLoaded = false;
@@ -64,13 +64,14 @@ namespace Tests
 
             // Act
             handler.OnComponentModelUpdated(parcelScene, entity, CreateBoxMesh());
+            yield return null;
 
             // Assert
             Assert.IsTrue(resourceLoaded);
         }
 
-        [Test]
-        public void IgnoreComponentAfterDisposed()
+        [UnityTest]
+        public IEnumerator IgnoreComponentAfterDisposed()
         {
             // Arrange
             handler.OnComponentCreated(parcelScene, entity);
@@ -78,14 +79,16 @@ namespace Tests
             // Act
             handler.OnComponentRemoved(parcelScene, entity);
 
+            yield return null;
+
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
             Assert.AreEqual(100, resourcesLoadTracker.loadingProgress);
             Assert.AreEqual(0, resourcesLoadTracker.pendingResourcesCount);
         }
         
-        [Test]
-        public void WaitForAllComponentsToBeReady()
+        [UnityTest]
+        public IEnumerator WaitForAllComponentsToBeReady()
         {
             // Arrange
             var model = CreateBoxMesh();
@@ -94,6 +97,8 @@ namespace Tests
             // Act
             handler.OnComponentModelUpdated(parcelScene, entity,model);
             handler.OnComponentModelUpdated(parcelScene, entity,model2);
+
+            yield return null;
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
