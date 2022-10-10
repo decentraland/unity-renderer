@@ -27,6 +27,9 @@ namespace DCL.Tutorial
         {
             base.OnStepStart();
 
+            OnChangePlayerCoords(new Vector2Int(0, 0), CommonScriptableObjects.playerCoords.Get());
+            CommonScriptableObjects.playerCoords.OnChange += OnChangePlayerCoords;
+
             CommonScriptableObjects.userMovementKeysBlocked.Set(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
@@ -70,14 +73,13 @@ namespace DCL.Tutorial
 
         internal void OnOkButtonClick() { stepIsFinished = true; }
 
-        private void Update()
+        private void OnChangePlayerCoords(Vector2Int prevCoords, Vector2Int coords)
         {
             if (stepIsFinished)
                 return;
 
-            Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
-            if (Mathf.Abs(currentCoords.x) > GENESIS_PLAZA_TUTORIAL_LOCATION ||
-                Mathf.Abs(currentCoords.y) > GENESIS_PLAZA_TUTORIAL_LOCATION)
+            if (Mathf.Abs(coords.x) > GENESIS_PLAZA_TUTORIAL_LOCATION ||
+                Mathf.Abs(coords.y) > GENESIS_PLAZA_TUTORIAL_LOCATION)
             {
                 stepIsFinished = true;
                 return;
