@@ -191,6 +191,7 @@ namespace DCL.Components
 
                            var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
                            var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
+                           
                            var oldNamesMissingInNewMaterial = new List<string>();
                            var newNamesMissingInOldMaterial = new List<string>();
                            var overlapNames = new List<string>();
@@ -215,7 +216,16 @@ namespace DCL.Components
                            }
 
                            string log = "";
-                           log += "Old properties missing in new mat: ";
+
+                           var renderPipelineTagValue = mat.GetTag("RenderPipeline", false);
+                           var renderTypeTagValue = mat.GetTag("RenderType", false);
+                           var newPipelineTagValue = newMaterial.GetTag("RenderPipeline", false);
+                           var newTypeTagValue = newMaterial.GetTag("RenderType", false);
+
+                           log += $"Old tags RenderPipeline={renderPipelineTagValue} RenderType={renderTypeTagValue} ";
+                           log += $"\n New tags RenderPipeline={newPipelineTagValue} RenderType={newTypeTagValue} ";
+                           
+                           log += "\n Old properties missing in new mat: ";
                            foreach (var oldName in oldNamesMissingInNewMaterial)
                            {
                                log += oldName + " ";
@@ -242,11 +252,6 @@ namespace DCL.Components
                                    }
                                }
                            }
-
-                           newMaterial.shaderKeywords = new []
-                           {
-                               "_ALPHATEST_ON", "_NORMALMAP", "_ENVIRONMENTREFLECTIONS_OFF"
-                           };
                            
                            if (newMaterial.shaderKeywords != null)
                            {
@@ -273,6 +278,11 @@ namespace DCL.Components
                            if (mat.name.Contains("Mika"))
                            {
                                log +="(Mika Material)";
+                           }
+                           
+                           if (mat.name.Contains("beam_static"))
+                           {
+                               log +="(beam_static Material)";
                            }
                            
                            UnityEngine.Debug.LogError(log);
