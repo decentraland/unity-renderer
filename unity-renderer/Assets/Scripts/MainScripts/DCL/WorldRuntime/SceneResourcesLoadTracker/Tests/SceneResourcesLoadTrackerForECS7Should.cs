@@ -88,10 +88,12 @@ namespace Tests
         {
             // Arrange
             var model = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() };
+            var model2 = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.CylinderMesh() };
 
             // Act
             handler.OnComponentCreated(parcelScene, entity);
             handler.OnComponentModelUpdated(parcelScene, entity, model);
+            handler.OnComponentModelUpdated(parcelScene, entity, model2);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());
