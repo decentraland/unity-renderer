@@ -33,6 +33,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text searchResultsHeaderLabel;
         [SerializeField] internal ScrollRect scroll;
         [SerializeField] internal SearchBarComponentView searchBar;
+        [SerializeField] internal GameObject searchAndCreateContainer;
         [SerializeField] internal Button openChannelSearchButton;
         [SerializeField] internal ChannelContextualMenu channelContextualMenu;
         [SerializeField] internal Button createChannelButton;
@@ -263,6 +264,8 @@ namespace DCL.Chat.HUD
                                                              || directChatList.Get(userId) != null;
 
         public void SetCreateChannelButtonActive(bool isActive) => createChannelButton.gameObject.SetActive(isActive);
+
+        public void SetSearchAndCreateContainerActive(bool isActive) => searchAndCreateContainer.SetActive(isActive);
 
         public override void RefreshControl()
         {

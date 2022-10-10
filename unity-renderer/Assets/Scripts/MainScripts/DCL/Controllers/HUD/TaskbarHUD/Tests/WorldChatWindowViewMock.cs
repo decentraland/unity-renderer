@@ -115,4 +115,8 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public void SetCreateChannelButtonActive(bool isActive)
     {
     }
+
+    public void SetSearchAndCreateContainerActive(bool isActive)
+    {
+    }
 }

@@ -81,9 +81,6 @@ public class WorldChatWindowController : IHUD
         view.OnOpenPublicChat += OpenPublicChat;
         view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
-        view.OnOpenChannelSearch += OpenChannelSearch;
-        view.OnLeaveChannel += LeaveChannel;
-        view.OnCreateChannel += OpenChannelCreationWindow;
 
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -96,7 +93,6 @@ public class WorldChatWindowController : IHUD
             channel.MemberCount,
             false);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
-        view.ShowChannelsLoading();
 
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
@@ -106,15 +102,31 @@ public class WorldChatWindowController : IHUD
                 view.ShowPrivateChatsLoading();
 
         chatController.OnAddMessage += HandleMessageAdded;
-        chatController.OnChannelUpdated += HandleChannelUpdated;
-        chatController.OnChannelJoined += HandleChannelJoined;
-        chatController.OnJoinChannelError += HandleJoinChannelError;
-        chatController.OnChannelLeaveError += HandleLeaveChannelError;
-        chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
+
+        if (channelsUtils.IsChannelsFeatureEnabled())
+        {
+            view.OnOpenChannelSearch += OpenChannelSearch;
+            view.OnLeaveChannel += LeaveChannel;
+            view.OnCreateChannel += OpenChannelCreationWindow;
+
+            chatController.OnChannelUpdated += HandleChannelUpdated;
+            chatController.OnChannelJoined += HandleChannelJoined;
+            chatController.OnJoinChannelError += HandleJoinChannelError;
+            chatController.OnChannelLeaveError += HandleLeaveChannelError;
+            chatController.OnChannelLeft += HandleChannelLeft;
+
+            view.ShowChannelsLoading();
+            view.SetSearchAndCreateContainerActive(true);
+        }
+        else
+        {
+            view.HideChannelsLoading();
+            view.SetSearchAndCreateContainerActive(false);
+        }
     }
 
     public void Dispose()
@@ -159,7 +171,8 @@ public class WorldChatWindowController : IHUD
                 RequestUnreadMessages();
             }
 
-            if (!areJoinedChannelsRequestedByFirstTime)
+            if (channelsUtils.IsChannelsFeatureEnabled() && 
+                !areJoinedChannelsRequestedByFirstTime)
             {
                 RequestJoinedChannels();
                 RequestUnreadChannelsMessages();

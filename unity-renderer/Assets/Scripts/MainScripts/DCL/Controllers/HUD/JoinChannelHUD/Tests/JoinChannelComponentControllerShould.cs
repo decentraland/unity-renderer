@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using DCL.Chat;
 
 public class JoinChannelComponentControllerShould
 {
@@ -16,6 +17,7 @@ public class JoinChannelComponentControllerShould
     private DataStore dataStore;
     private StringVariable currentPlayerInfoCardId;
     private ISocialAnalytics socialAnalytics;
+    private IChannelsUtils channelsUtils;
 
     [SetUp]
     public void SetUp()
@@ -26,10 +28,12 @@ public class JoinChannelComponentControllerShould
         channelsDataStore = dataStore.channels;
         currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
+        channelsUtils = Substitute.For<IChannelsUtils>();
         joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
             dataStore,
             socialAnalytics,
-            currentPlayerInfoCardId);
+            currentPlayerInfoCardId,
+            channelsUtils);
     }
 
     [TearDown]

@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -12,14 +13,19 @@ public class JoinChannelModalPlugin : IPlugin
 
     public JoinChannelModalPlugin()
     {
+        UserProfileWebInterfaceBridge userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+
         joinChannelComponentController = new JoinChannelComponentController(
             JoinChannelComponentView.Create(),
             ChatController.i,
             DataStore.i,
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
-                new UserProfileWebInterfaceBridge()),
-            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"));
+                userProfileWebInterfaceBridge),
+            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+            new ChannelsUtils(
+                DataStore.i,
+                userProfileWebInterfaceBridge));
     }
 
     public void Dispose() { joinChannelComponentController.Dispose(); }
