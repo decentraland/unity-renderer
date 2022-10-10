@@ -18,15 +18,16 @@ namespace Tests
 
         private IInternalECSComponent<InternalInputEventResults> inputResultComponent;
         private IECSComponentWriter componentWriter;
+        private InternalECSComponents internalComponents;
 
-        private Action systemUpdate;
+        private Action updateSystems;
 
         [SetUp]
         public void SetUp()
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             inputResultComponent = internalComponents.inputEventResultsComponent;
             componentWriter = Substitute.For<IECSComponentWriter>();
@@ -34,7 +35,12 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene = testUtils.CreateScene("temptation");
 
-            systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+            updateSystems = () =>
+            {
+                systemUpdate();
+                internalComponents.WriteSystemUpdate();
+            };
         }
 
         [TearDown]
@@ -60,7 +66,7 @@ namespace Tests
                 inputResultComponent.AddEvent(scene, eventData);
             }
 
-            systemUpdate();
+            updateSystems();
 
             componentWriter.Received(1)
                            .PutComponent(
@@ -96,11 +102,11 @@ namespace Tests
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             var model = compData.model;
-            model.dirty = false;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            internalComponents.WriteSystemUpdate(); //clean dirty
 
-            systemUpdate();
+            updateSystems();
 
             componentWriter.DidNotReceive()
                            .PutComponent(
@@ -128,7 +134,7 @@ namespace Tests
                 inputResultComponent.AddEvent(scene, eventData);
             }
 
-            systemUpdate();
+            updateSystems();
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             var model = compData.model;

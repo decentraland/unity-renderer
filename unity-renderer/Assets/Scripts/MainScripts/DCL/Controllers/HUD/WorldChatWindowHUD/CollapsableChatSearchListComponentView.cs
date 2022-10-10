@@ -7,25 +7,22 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     [SerializeField] private CollapsableDirectChatListComponentView directChatList;
     [SerializeField] private CollapsablePublicChannelListComponentView publicChannelList;
     
+    public event Action<PrivateChatEntry> OnOpenPrivateChat
+    {
+        add => directChatList.OnOpenChat += value;
+        remove => directChatList.OnOpenChat += value;
+    }
+    
+    public event Action<PublicChannelEntry> OnOpenPublicChat
+    {
+        add => publicChannelList.OnOpenChat += value;
+        remove => publicChannelList.OnOpenChat -= value;
+    }
+    
     public void Initialize(IChatController chatController)
     {
         directChatList.Initialize(chatController);
         publicChannelList.Initialize(chatController);
-    }
-
-    public void Filter(string search)
-    {
-        directChatList.Filter(search);
-        publicChannelList.Filter(search);
-        UpdateEmptyState();
-    }
-
-    public void Filter(Func<PrivateChatEntry, bool> privateComparision,
-        Func<PublicChannelEntry, bool> publicComparision)
-    {
-        directChatList.Filter(privateComparision);
-        publicChannelList.Filter(publicComparision);
-        UpdateEmptyState();
     }
 
     public override void Filter(Func<BaseComponentView, bool> comparision)
@@ -38,13 +35,6 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     public override int Count()
     {
         return directChatList.Count() + publicChannelList.Count();
-    }
-
-    public void Clear(bool releaseEntriesFromPool)
-    {
-        directChatList.Clear(releaseEntriesFromPool);
-        publicChannelList.Clear(releaseEntriesFromPool);
-        UpdateEmptyState();
     }
 
     public override void Clear()
@@ -76,37 +66,13 @@ public class CollapsableChatSearchListComponentView : CollapsableSortedListCompo
     public void Set(PrivateChatEntry.PrivateChatEntryModel model)
     {
         directChatList.Set(model.userId, model);
+        directChatList.Get(model.userId).EnableAvatarSnapshotFetching();
         UpdateEmptyState();
     }
     
     public void Set(PublicChannelEntry.PublicChannelEntryModel model)
     {
         publicChannelList.Set(model.channelId, model);
-        UpdateEmptyState();
-    }
-
-    public void Export(CollapsablePublicChannelListComponentView publicChannelList,
-        CollapsableDirectChatListComponentView privateChatList)
-    {
-        foreach (var pair in this.publicChannelList.Entries)
-            publicChannelList.Add(pair.Key, pair.Value);
-        foreach (var pair in directChatList.Entries)
-            privateChatList.Add(pair.Key, pair.Value);
-        
-        Clear(false);
-    }
-
-    public void Import(CollapsablePublicChannelListComponentView publicChannelList,
-        CollapsableDirectChatListComponentView privateChatList)
-    {
-        foreach (var pair in privateChatList.Entries)
-            directChatList.Add(pair.Key, pair.Value);
-        foreach (var pair in publicChannelList.Entries)
-            this.publicChannelList.Add(pair.Key, pair.Value);
-        
-        privateChatList.Clear(false);
-        publicChannelList.Clear(false);
-        
         UpdateEmptyState();
     }
 }

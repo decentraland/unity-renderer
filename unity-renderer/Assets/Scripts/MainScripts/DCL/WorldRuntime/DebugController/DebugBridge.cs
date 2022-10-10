@@ -18,13 +18,6 @@ namespace DCL
             public bool enabled;
         }
 
-        [Serializable]
-        class DetectABsPayload
-        {
-            public bool isOn;
-            public bool forCurrentScene;
-        }
-
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
 
@@ -48,19 +41,6 @@ namespace DCL
         public void ShowFPSPanel()
         {
             debugController.ShowFPSPanel();
-        }
-
-        public void DetectABs(string payload)
-        {
-            var data = JsonUtility.FromJson<DetectABsPayload>(payload);
-            if (data.forCurrentScene)
-            {
-                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
-            else
-            {
-                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
         }
 
         public void SetSceneDebugPanel()

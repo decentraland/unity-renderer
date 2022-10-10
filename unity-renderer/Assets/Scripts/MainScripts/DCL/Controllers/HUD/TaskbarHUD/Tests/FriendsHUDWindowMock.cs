@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 
@@ -53,15 +52,9 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     {
     }
 
-    public List<FriendEntryBase> GetAllEntries() => new List<FriendEntryBase>();
-
-    public FriendEntryBase GetEntry(string userId) => null;
-
     public void DisplayFriendUserNotFound()
     {
     }
-
-    public bool IsFriendListCreationReady() => false;
 
     public void Dispose()
     {
@@ -114,12 +107,12 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public bool ContainsFriend(string userId) => false;
 
     public bool ContainsFriendRequest(string userId) => false;
-
-    public void FilterFriends(Dictionary<string, FriendEntryModel> friends)
+    
+    public void EnableSearchMode()
     {
     }
 
-    public void ClearFriendFilter()
+    public void DisableSearchMode()
     {
     }
 

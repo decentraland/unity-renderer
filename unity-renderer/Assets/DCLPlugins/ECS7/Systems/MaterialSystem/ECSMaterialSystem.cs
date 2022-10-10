@@ -45,7 +45,6 @@ namespace ECSSystems.MaterialSystem
 
                 IList<Renderer> renderers = texturizableModel.renderers;
                 Material material = materialModel.material;
-                materialModel.renderers = renderers;
 
                 for (int j = 0; j < renderers.Count; j++)
                 {
@@ -56,12 +55,6 @@ namespace ECSSystems.MaterialSystem
                     }
                     renderer.shadowCastingMode = materialModel.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                 }
-
-                materialModel.dirty = false;
-                texturizableModel.dirty = false;
-
-                state.materialComponent.PutFor(entityData.scene, entityData.entity, materialModel);
-                state.texturizableComponent.PutFor(entityData.scene, entityData.entity, texturizableModel);
             }
         }
     }
