@@ -94,9 +94,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-
-        // MB added render type to comply with new URP spesifics 
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
+        Tags{"RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
         LOD 300
 
         // ------------------------------------------------------------------
@@ -106,35 +104,11 @@ Shader "DCL/Universal Render Pipeline/Lit"
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
             Name "ForwardLit"
-            
-            // MB Added Tags to comply with new URP spesifics 
-            Tags{
-            "LightMode" = "UniversalForward"
-//            "RenderPipeline"="UniversalPipeline"
-//            "RenderType"="Transparent"
-//            "UniversalMaterialType" = "Lit"
-//            "Queue"="Transparent"
-//            "ShaderGraphShader"="true"
-//            "ShaderGraphTargetId"="UniversalLitSubTarget"
-            }
+            Tags{"LightMode" = "UniversalForward"}
 
-            // MB Render State
-                       
-            /*
-            Blend[_SrcBlend][_DstBlend]                 
-            ZWrite[_ZWrite]            
-            Cull[_Cull]                       
-            
-            Cull Back
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha            
-            ZWrite Off
-            */
-            
-            Blend[_SrcBlend][_DstBlend]  
-//            ZTest LEqual
+            Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
             Cull[_Cull]
-            
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -203,24 +177,9 @@ Shader "DCL/Universal Render Pipeline/Lit"
             Name "ShadowCaster"
             Tags{"LightMode" = "ShadowCaster"}
 
-            // MB Render State
-            
-            /*
             ZWrite On
             ZTest LEqual
             ColorMask 0
-            Cull[_Cull]
-                        
-            Render State
-            Cull Back
-            
-            ZWrite On
-            
-            */
-            
-            ZTest LEqual
-            ColorMask 0
-            ZWrite[_ZWrite]
             Cull[_Cull]
 
             HLSLPROGRAM
@@ -255,29 +214,12 @@ Shader "DCL/Universal Render Pipeline/Lit"
         {
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
-            
             Name "GBuffer"
             Tags{"LightMode" = "UniversalGBuffer"}
 
-            // MB Render State
-            /*
-                        
-            Cull Back            
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha            
-            ZWrite Off
-
-            */
-
-            Blend[_SrcBlend][_DstBlend]  
-            ZTest LEqual
-            ZWrite[_ZWrite]
-            Cull[_Cull]
-            
-            /*
             ZWrite[_ZWrite]
             ZTest LEqual
             Cull[_Cull]
-            */
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -460,50 +402,21 @@ Shader "DCL/Universal Render Pipeline/Lit"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        
-        // MB Added RendeType to comply with URP spesifics
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
+        Tags{"RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
         LOD 300
 
         // ------------------------------------------------------------------
         //  Forward pass. Shades all light in a single pass. GI + emission + Fog
-        //Pass
-        //{
+        Pass
+        {
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
-            
-            //MB Tags
-            /*            
             Name "ForwardLit"
-            
             Tags{"LightMode" = "UniversalForward"}
 
             Blend [_SrcBlend][_DstBlend]
             ZWrite [_ZWrite]
             Cull [_Cull]
-            
-            */
-
-            // MB new pass for forward lit
-            Pass
-            {
-                Name "ForwardLit"
-                Tags
-                {
-                    "LightMode" = "UniversalForward"
-                }
-            
-            /*
-            // Render State
-            Cull Back            
-            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha            
-            ZWrite Off
-            */
-            
-            Cull [_Cull]
-            Blend[_SrcBlend][_DstBlend]  
-            //ZTest LEqual
-            ZWrite [_ZWrite]
 
             HLSLPROGRAM
             #pragma only_renderers gles gles3 glcore d3d11
@@ -658,7 +571,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma multi_compile_instancing
 
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
             ENDHLSL
         }
 
