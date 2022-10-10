@@ -31,12 +31,15 @@ namespace DCL.Services
         [PublicAPI]
         public void SetAudioDevices(string payload)
         {
-            Debug.Log($"Get devices - {payload}");
             AudioDevicesResponse response = null;
 
             try
             {
                 response = JsonUtility.FromJson<AudioDevicesResponse>(payload);
+                foreach (AudioDevice inputDevice in response.inputDevices)
+                {
+                    Debug.Log($"{inputDevice.deviceId} - {inputDevice.label}");
+                }
             }
             catch (Exception e)
             {

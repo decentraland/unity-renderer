@@ -5,7 +5,15 @@ namespace DCL.Services
     [Serializable]
     public class AudioDevicesResponse
     {
-        public string[] outputDevices;
-        public string[] inputDevices;
+        public AudioDevice[] outputDevices;
+        public AudioDevice[] inputDevices;
+    }
+    
+    
+    [Serializable]
+    public class AudioDevice
+    {
+        public string deviceId;
+        public string label;
     }
 }
