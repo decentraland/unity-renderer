@@ -41,65 +41,6 @@ public static class ECSComponentsUtils
             collider.gameObject.layer = colliderLayer;
         }
     }
-
-    public static MeshesInfo GeneratePrimitive(IDCLEntity entity, Mesh mesh, GameObject gameObject,bool visible, bool withCollisions, bool isPointerBlocker)
-    {
-        // We create the unity components needed to generate the primitive
-        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
-        meshFilter.sharedMesh = mesh;
-        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
-        Renderer[] renderers = new Renderer[] { meshRenderer };
-        MeshFilter[] meshFilters = new MeshFilter[] { meshFilter };
-
-        // We generate the mesh info on the entity, so we can use on other systems 
-        MeshesInfo meshesInfo = new MeshesInfo();
-        meshesInfo.innerGameObject = gameObject;
-        meshesInfo.meshRootGameObject = gameObject;
-        meshesInfo.UpdateRenderersCollection(renderers,meshFilters);
-        
-        // We generate the representation of the primitive and assign it to the meshInfo
-        ShapeRepresentation shape = new ShapeRepresentation();
-        shape.UpdateModel(visible, withCollisions);
-        meshesInfo.currentShape = shape;
-        
-        // We should remove this relation in the future, the entity shouldn't know about the mesh
-        entity.meshesInfo = meshesInfo;
-        
-        // We update the rendering
-        UpdateRenderer(entity, gameObject, renderers, visible, withCollisions, isPointerBlocker);
-        
-        return meshesInfo;
-    }
-    
-    public static void UpdateRenderer(IDCLEntity entity, GameObject meshGameObject, Renderer[] renderers,bool visible, bool withCollisions, bool isPointerBlocker)
-    {
-        ConfigurePrimitiveShapeVisibility(meshGameObject, visible,renderers);
-        
-        // TODO: For better perfomance we should create the correct collider to each component shape instead of creating a meshCollider
-        CollidersManager.i.ConfigureColliders(entity.meshRootGameObject,withCollisions, false, entity,CalculateCollidersLayer(withCollisions,isPointerBlocker));
-    }
-    
-    public static void ConfigurePrimitiveShapeVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
-    {
-        if (meshGameObject == null)
-            return;
-
-        Collider onPointerEventCollider;
-
-        for (var i = 0; i < meshRenderers.Length; i++)
-        {
-            meshRenderers[i].enabled = shouldBeVisible;
-
-            if (meshRenderers[i].transform.childCount > 0)
-            {
-                onPointerEventCollider = meshRenderers[i].transform.GetChild(0).GetComponent<Collider>();
-
-                if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
-                    onPointerEventCollider.enabled = shouldBeVisible;
-            }
-        }
-    }
     
     public static void RemoveRendereableFromDataStore(string sceneId, Rendereable rendereable)
     {
