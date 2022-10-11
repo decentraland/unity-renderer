@@ -1,6 +1,6 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL.Helpers
 {
@@ -32,30 +32,31 @@ namespace DCL.Helpers
             }
             text += "Properties";
             text += "\n";
- 
-            for (int i = 0; i < ShaderUtil.GetPropertyCount(shader); i++)
+
+            var propertyCount = shader.GetPropertyCount();
+            for (int i = 0; i < propertyCount; i++)
             {
-                string propertyName = ShaderUtil.GetPropertyName(shader, i);
-                ShaderUtil.ShaderPropertyType propertyType = ShaderUtil.GetPropertyType(shader, i);
-                string propertyDescription = ShaderUtil.GetPropertyDescription(shader, i);
+                string propertyName = shader.GetPropertyName(i);
+                var propertyType = shader.GetPropertyType(i);
+                string propertyDescription = shader.GetPropertyDescription(i);
  
                 string value;
  
                 switch (propertyType)
                 {
-                    case ShaderUtil.ShaderPropertyType.Color: // The property holds a Vector4 value representing a color.
+                    case ShaderPropertyType.Color: // The property holds a Vector4 value representing a color.
                         value = string.Format(formatter, "{0}", material.GetColor(propertyName));
                         break;
-                    case ShaderUtil.ShaderPropertyType.Vector: // The property holds a Vector4 value.
+                    case ShaderPropertyType.Vector: // The property holds a Vector4 value.
                         value = string.Format(formatter, "{0}", material.GetVector(propertyName));
                         break;
-                    case ShaderUtil.ShaderPropertyType.Float: // The property holds a floating number value.
+                    case ShaderPropertyType.Float: // The property holds a floating number value.
                         value = string.Format(formatter, "{0}", material.GetFloat(propertyName));
                         break;
-                    case ShaderUtil.ShaderPropertyType.Range: //    The property holds a floating number value in a certain range.
+                    case ShaderPropertyType.Range: //    The property holds a floating number value in a certain range.
                         value = string.Format(formatter, "{0}", material.GetFloat(propertyName));
                         break;
-                    case ShaderUtil.ShaderPropertyType.TexEnv: // The property holds a Texture object.
+                    case ShaderPropertyType.Texture: // The property holds a Texture object.
                         value = material.GetTexture(propertyName) == null ? "null" : string.Format(formatter, "{0}", material.GetTexture(propertyName).dimension);
                         break;
                     default:
