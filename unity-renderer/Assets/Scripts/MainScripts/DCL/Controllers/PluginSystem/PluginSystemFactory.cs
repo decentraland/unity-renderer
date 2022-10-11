@@ -41,6 +41,7 @@ namespace DCL
             pluginSystem.Register<JoinChannelModalPlugin>(() => new JoinChannelModalPlugin());
             pluginSystem.Register<ChannelLimitReachedWindowPlugin>(() => new ChannelLimitReachedWindowPlugin());
             pluginSystem.Register<ChannelJoinErrorWindowPlugin>(() => new ChannelJoinErrorWindowPlugin());
+            pluginSystem.Register<ChannelLeaveErrorWindowPlugin>(() => new ChannelLeaveErrorWindowPlugin());
             pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());

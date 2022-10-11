@@ -1,3 +1,5 @@
+using DCL.Chat.Channels;
+
 namespace DCL.Chat.HUD
 {
     public class LeaveChannelConfirmationWindowController : IHUD
@@ -10,6 +12,7 @@ namespace DCL.Chat.HUD
             this.chatController = chatController;
 
             this.chatController.OnChannelLeft += HandleChannelLeft;
+            this.chatController.OnChannelLeaveError += HandleChannelLeaveError;
         }
 
         public ILeaveChannelConfirmationWindowComponentView View => joinChannelView;
@@ -25,6 +28,7 @@ namespace DCL.Chat.HUD
         public void Dispose()
         {
             chatController.OnChannelLeft -= HandleChannelLeft;
+            chatController.OnChannelLeaveError -= HandleChannelLeaveError;
             joinChannelView.OnCancelLeave -= OnCancelLeave;
             joinChannelView.OnConfirmLeave -= OnConfirmLeave;
         }
@@ -56,5 +60,8 @@ namespace DCL.Chat.HUD
         {
             joinChannelView.Hide();
         }
+        
+        private void HandleChannelLeaveError(string channelId, ChannelErrorCode errorCode) =>
+            joinChannelView.Hide();
     }
 }
