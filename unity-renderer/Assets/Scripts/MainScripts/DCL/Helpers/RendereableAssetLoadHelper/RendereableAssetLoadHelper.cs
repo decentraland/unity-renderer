@@ -181,7 +181,6 @@ namespace DCL.Components
 
                 var temp = UnityEngine.Debug.unityLogger.logEnabled;
                 UnityEngine.Debug.unityLogger.logEnabled = true;
-                Debug.LogError($"Logging materials for {x.container.name}");
 
                 try
                 {
