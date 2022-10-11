@@ -189,27 +189,32 @@ namespace DCL.Components
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           var matText = mat.ToText();
+                           var matText = "";
+
+                           matText += $"ENTITY_{r.ownerId} " + mat.name + " ";
                            
-                           if (x.container.transform.AnyAncestorHasName("ENTITY_253440"))
-                           {
-                               matText +="\n ENTITY_253440 (beam) " + mat.name;
-                           }
+                           // if (x.container.transform.AnyAncestorNameContains("253440"))
+                           // {
+                           //     matText +="\n ENTITY_253440 (beam) " + mat.name;
+                           // }
+                           //
+                           // if (x.container.transform.AnyAncestorNameContains("214016"))
+                           // {
+                           //     matText +="\n ENTITY_214016 (tube1) " + mat.name;
+                           // }
+                           //
+                           // if (x.container.transform.AnyAncestorNameContains("215040"))
+                           // {
+                           //     matText +="\n ENTITY_215040 (tube2) " + mat.name;
+                           // }
+                           //
+                           // if (x.container.transform.AnyAncestorNameContains("35840"))
+                           // {
+                           //     matText +="\n ENTITY_35840 (mika) " + mat.name;
+                           // }
                            
-                           if (x.container.transform.AnyAncestorHasName("ENTITY_214016"))
-                           {
-                               matText +="\n ENTITY_253440 (tube1) " + mat.name;
-                           }
-                    
-                           if (x.container.transform.AnyAncestorHasName("ENTITY_215040"))
-                           {
-                               matText +="\n ENTITY_253440 (tube2) " + mat.name;
-                           }
-                    
-                           if (x.container.transform.AnyAncestorHasName("ENTITY_35840"))
-                           {
-                               matText +="\n ENTITY_253440 (mika) " + mat.name;
-                           }
+                           
+                           matText += "\n" + mat.ToText();
                     
                            Debug.LogError(matText);
                            // Debug.LogError(matText);
@@ -384,27 +389,31 @@ namespace DCL.Components
 
                 foreach (var mat in r.materials)
                 {
-                    var matText = mat.ToText();
-                    
-                    if (x.container.transform.AnyAncestorHasName("ENTITY_253440"))
-                    {
-                        matText +="\n ENTITY_253440 (beam) " + mat.name;
-                    }
-                    
-                    if (x.container.transform.AnyAncestorHasName("ENTITY_214016"))
-                    {
-                        matText +="\n ENTITY_253440 (tube1) " + mat.name;
-                    }
-                    
-                    if (x.container.transform.AnyAncestorHasName("ENTITY_215040"))
-                    {
-                        matText +="\n ENTITY_253440 (tube2) " + mat.name;
-                    }
-                    
-                    if (x.container.transform.AnyAncestorHasName("ENTITY_35840"))
-                    {
-                        matText +="\n ENTITY_253440 (mika) " + mat.name;
-                    }
+                    var matText = "";
+
+                    matText += $"ENTITY_{r.ownerId} " + mat.name + " ";
+                           
+                    // if (x.container.transform.AnyAncestorNameContains("253440"))
+                    // {
+                    //     matText +="\n ENTITY_253440 (beam) " + mat.name;
+                    // }
+                    //
+                    // if (x.container.transform.AnyAncestorNameContains("214016"))
+                    // {
+                    //     matText +="\n ENTITY_214016 (tube1) " + mat.name;
+                    // }
+                    //
+                    // if (x.container.transform.AnyAncestorNameContains("215040"))
+                    // {
+                    //     matText +="\n ENTITY_215040 (tube2) " + mat.name;
+                    // }
+                    //
+                    // if (x.container.transform.AnyAncestorNameContains("35840"))
+                    // {
+                    //     matText +="\n ENTITY_35840 (mika) " + mat.name;
+                    // }
+                           
+                    matText += "\n" + mat.ToText();
                     
                     Debug.LogError(matText);
                 }
