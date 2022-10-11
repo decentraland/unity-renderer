@@ -112,6 +112,8 @@ public class WorldChatWindowController : IHUD
 
         if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
         {
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
+
             view.OnOpenChannelSearch += OpenChannelSearch;
             view.OnLeaveChannel += LeaveChannel;
             view.OnCreateChannel += OpenChannelCreationWindow;
@@ -159,6 +161,8 @@ public class WorldChatWindowController : IHUD
         
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken?.Dispose();
+
+        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
 
     public void SetVisibility(bool visible)
@@ -362,10 +366,8 @@ public class WorldChatWindowController : IHUD
 
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
-
-        view.SetCreateChannelButtonActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
     }
-    
+
     private void SearchChats(string search)
     {
         currentSearch = search;
@@ -513,4 +515,6 @@ public class WorldChatWindowController : IHUD
         if (cancellationToken.IsCancellationRequested) return;
         view.HideSearchLoading();
     }
+
+    private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonActive(isAllowed);
 }

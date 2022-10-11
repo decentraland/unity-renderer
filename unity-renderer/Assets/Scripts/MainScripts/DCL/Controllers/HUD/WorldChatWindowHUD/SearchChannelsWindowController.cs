@@ -25,7 +25,6 @@ namespace DCL.Chat.HUD
         private string searchText;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private bool isSearchingByName;
-        private UserProfile ownUserProfile;
 
         public ISearchChannelsWindowView View => view;
 
@@ -54,9 +53,7 @@ namespace DCL.Chat.HUD
             view ??= SearchChannelsWindowComponentView.Create();
             this.view = view;
 
-            ownUserProfile = userProfileBridge.GetOwn();
-            if (ownUserProfile != null)
-                ownUserProfile.OnUpdate += OnUserProfileUpdate;
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
         }
 
         public void Dispose()
@@ -66,8 +63,7 @@ namespace DCL.Chat.HUD
             loadingCancellationToken.Cancel();
             loadingCancellationToken.Dispose();
 
-            if (ownUserProfile != null)
-                ownUserProfile.OnUpdate -= OnUserProfileUpdate;
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -230,6 +226,6 @@ namespace DCL.Chat.HUD
             OnOpenChannelLeave?.Invoke(channelId);
         }
 
-        private void OnUserProfileUpdate(UserProfile profile) => view.SetCreateChannelButtonsActive(channelsFeatureFlagService.IsAllowedToCreateChannels());
+        private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonsActive(isAllowed);
     }
 }

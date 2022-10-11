@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -15,15 +15,27 @@ namespace DCL.Chat.Channels
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
 
+        public event Action<bool> OnAllowedToCreateChannelsChanged;
+
         public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
+
+            this.userProfileBridge.GetOwn().OnUpdate += OnUserProfileUpdate;
         }
 
         public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
 
-        public bool IsAllowedToCreateChannels()
+        private void OnUserProfileUpdate(UserProfile profile)
+        {
+            if (string.IsNullOrEmpty(profile.userId))
+                return;
+
+            OnAllowedToCreateChannelsChanged?.Invoke(IsAllowedToCreateChannels());
+        }
+
+        private bool IsAllowedToCreateChannels()
         {
             if (!featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS))
                 return false;
