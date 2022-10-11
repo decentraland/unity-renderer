@@ -766,15 +766,9 @@ namespace DCL.Interface
         }
 
         [Serializable]
-        public class SetOutputAudioDevicePayload
-        {
-            public int deviceId;
-        }
-
-        [Serializable]
         public class SetInputAudioDevicePayload
         {
-            public int deviceId;
+            public string deviceId;
         }
 
         public enum FriendshipAction
@@ -1791,18 +1785,8 @@ namespace DCL.Interface
             SendMessage("ChangeAudioDevice", changeAudioDevicePayload);
         }
 
-        public static void SetOutputAudioDevice(int outputDeviceId)
+        public static void SetInputAudioDevice(string inputDeviceId)
         {
-            Debug.Log($"SEND {nameof(SetOutputAudioDevice)}  id = {outputDeviceId}");
-            SendMessage("SetOutputAudioDevice", new SetOutputAudioDevicePayload
-            {
-                deviceId = outputDeviceId
-            });
-        }
-
-        public static void SetInputAudioDevice(int inputDeviceId)
-        {
-            Debug.Log($"SEND {nameof(SetInputAudioDevice)}  id = {inputDeviceId}");
             SendMessage(nameof(SetInputAudioDevice), new SetInputAudioDevicePayload()
             {
                 deviceId = inputDeviceId

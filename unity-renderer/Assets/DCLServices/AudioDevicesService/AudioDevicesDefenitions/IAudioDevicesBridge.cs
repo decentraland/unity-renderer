@@ -5,9 +5,9 @@ namespace DCL.Services
 
     public interface IAudioDevicesBridge
     {
-
-        AudioDevicesResponse AudioDevices { get; }
         event Action<AudioDevicesResponse> OnAudioDevicesRecieved;
+        AudioDevicesResponse AudioDevices { get; }
+        void RequestAudioDevices();
     }
 
 }

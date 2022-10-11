@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL.SettingsPanelHUD.Controls
 {
@@ -11,6 +13,12 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private TMP_Dropdown dropdown;
         
         private SpinBoxSettingsControlController spinBoxController;
+        private PointerClickEventInterceptor pointerClick;
+        
+        private void Awake()
+        {
+            pointerClick = dropdown.GetComponent<PointerClickEventInterceptor>();
+        }
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
@@ -28,7 +36,11 @@ namespace DCL.SettingsPanelHUD.Controls
             {
                 ApplySetting(spinBoxValue);
             });
+            
+            pointerClick.PointerClicked += spinBoxController.OnPointerClicked;
         }
+        
+        
         private void SetOption(string option)
         {
             dropdown.captionText.text = option;
@@ -50,6 +62,7 @@ namespace DCL.SettingsPanelHUD.Controls
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            pointerClick.PointerClicked -= spinBoxController.OnPointerClicked;
 
             if (spinBoxController != null)
             {

@@ -8,8 +8,9 @@ namespace DCL.Services
         public event Action AduioDeviceCached;
 
         bool HasRecievedKernelMessage { get ;  }
-        Dictionary<string, string> InputDevices { get ;  }
+        AudioDevice[] InputDevices { get ;  }
 
-        void SetOutputDevice(int outputDeviceId);
+        void SetInputDevice(AudioDevice inputDevice);
+        void RequestAudioDevices();
     }
 }

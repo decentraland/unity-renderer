@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using DCL.Services;
+﻿using DCL.Services;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
@@ -9,30 +9,43 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     public class InputAudioDeviceControlController : SpinBoxSettingsControlController
     {
         private IAudioDevicesService audioDevicesService;
-
+        
         public override void Initialize()
         {
             base.Initialize();
 
             audioDevicesService = Environment.i.serviceLocator.Get<IAudioDevicesService>();
 
-            if (audioDevicesService.InputDevices != null)
+            if (audioDevicesService.HasRecievedKernelMessage)
             {
-                RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices.Values.ToArray());
+                RaiseOnOverrideIndicatorLabel(DeviceNames());
                 UpdateSetting(GetStoredValue());
             }
-            else
-            {
+            else 
                 audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
+            
+            void OnAudioDevicesCached()
+            {
+                audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
+
+                RaiseOnOverrideIndicatorLabel(DeviceNames());
+                UpdateSetting(GetStoredValue());
             }
         }
 
-        private void OnAudioDevicesCached()
+        public override void OnPointerClicked(PointerEventData eventData)
         {
-            audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
+            if(!audioDevicesService.HasRecievedKernelMessage)
+                audioDevicesService.RequestAudioDevices();
+        }
 
-            RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices.Values.ToArray());
-            UpdateSetting(GetStoredValue());
+        private string[] DeviceNames()
+        {
+            string[] deviceNames = new string[audioDevicesService.InputDevices.Length];
+            for (int i = 0; i < audioDevicesService.InputDevices.Length; i++)
+                deviceNames[i] = audioDevicesService.InputDevices[i].label;
+
+            return deviceNames;
         }
 
         public override object GetStoredValue() =>
@@ -40,9 +53,13 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
         public override void UpdateSetting(object newValue)
         {
+            if (currentAudioSettings.inputDevice == (int)newValue)
+                return;
+
             currentAudioSettings.inputDevice = (int)newValue;
             ApplySettings();
-            // audioDevicesService.SetInputDevice((int)newValue);
+            
+            // audioDevicesService.SetInputDevice(audioDevicesService.InputDevices[(int)newValue]);
         }
     }
 }
