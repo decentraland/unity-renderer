@@ -16,6 +16,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject specialCharactersErrorContainer;
         [SerializeField] internal GameObject tooShortErrorContainer;
         [SerializeField] internal GameObject exceededLimitErrorContainer;
+        [SerializeField] internal GameObject unknownErrorContainer;
         [SerializeField] internal TMP_Text channelNameLengthLabel;
         [SerializeField] internal GameObject inputFieldErrorBevel;
         [SerializeField] internal Color errorColor;
@@ -32,8 +33,10 @@ namespace DCL.Chat.HUD
             return Instantiate(Resources.Load<CreateChannelWindowComponentView>("SocialBarV1/ChannelCreationHUD"));
         }
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+            
             createButton.onClick.AddListener(() => OnCreateSubmit?.Invoke());
             channelNameInput.onValueChanged.AddListener(text =>
             {
@@ -69,6 +72,7 @@ namespace DCL.Chat.HUD
             specialCharactersErrorContainer.SetActive(false);
             tooShortErrorContainer.SetActive(false);
             exceededLimitErrorContainer.SetActive(false);
+            unknownErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
         }
 
@@ -80,6 +84,7 @@ namespace DCL.Chat.HUD
             specialCharactersErrorContainer.SetActive(false);
             tooShortErrorContainer.SetActive(false);
             exceededLimitErrorContainer.SetActive(false);
+            unknownErrorContainer.SetActive(false);
             channelNameLengthLabel.color = lengthLabelOriginalColor;
         }
 
@@ -99,6 +104,7 @@ namespace DCL.Chat.HUD
             specialCharactersErrorContainer.SetActive(true);
             tooShortErrorContainer.SetActive(false);
             exceededLimitErrorContainer.SetActive(false);
+            unknownErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
         }
 
@@ -110,6 +116,7 @@ namespace DCL.Chat.HUD
             specialCharactersErrorContainer.SetActive(false);
             tooShortErrorContainer.SetActive(true);
             exceededLimitErrorContainer.SetActive(false);
+            unknownErrorContainer.SetActive(false);
             channelNameLengthLabel.color = errorColor;
         }
 
@@ -121,6 +128,19 @@ namespace DCL.Chat.HUD
             specialCharactersErrorContainer.SetActive(false);
             tooShortErrorContainer.SetActive(false);
             exceededLimitErrorContainer.SetActive(true);
+            unknownErrorContainer.SetActive(false);
+            channelNameLengthLabel.color = errorColor;
+        }
+
+        public void ShowUnknownError()
+        {
+            channelExistsContainer.SetActive(false);
+            channelExistsWithJoinOptionContainer.SetActive(false);
+            inputFieldErrorBevel.SetActive(true);
+            specialCharactersErrorContainer.SetActive(false);
+            tooShortErrorContainer.SetActive(false);
+            exceededLimitErrorContainer.SetActive(false);
+            unknownErrorContainer.SetActive(true);
             channelNameLengthLabel.color = errorColor;
         }
     }

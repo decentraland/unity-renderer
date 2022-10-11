@@ -12,15 +12,16 @@ namespace DCL.Chat.HUD
         RectTransform Transform { get; }
         void Show();
         void Hide();
-        void ShowChannelExistsError(bool showJoinChannelOption);
         void ClearError();
         void DisableCreateButton();
         void EnableCreateButton();
         void ClearInputText();
         void Dispose();
         void FocusInputField();
+        void ShowChannelExistsError(bool showJoinChannelOption);
         void ShowWrongFormatError();
         void ShowTooShortError();
         void ShowChannelsExceededError();
+        void ShowUnknownError();
     }
 }

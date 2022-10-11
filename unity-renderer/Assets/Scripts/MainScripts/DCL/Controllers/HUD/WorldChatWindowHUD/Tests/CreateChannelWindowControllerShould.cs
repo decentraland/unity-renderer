@@ -174,9 +174,48 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
             
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
-                "foo", ChannelErrorCode.ExceededLimit);
+                "foo", ChannelErrorCode.LimitExceeded);
             
             view.Received(1).ShowChannelsExceededError();
+            view.Received(1).DisableCreateButton();
+        }
+        
+        [Test]
+        public void ShowUnknownError()
+        {
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+            
+            chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
+                "foo", ChannelErrorCode.Unknown);
+            
+            view.Received(1).ShowUnknownError();
+            view.Received(1).EnableCreateButton();
+        }
+        
+        [Test]
+        public void ShowReservedNameError()
+        {
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+            
+            chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
+                "foo", ChannelErrorCode.ReservedName);
+            
+            view.Received(1).ShowChannelExistsError(false);
+            view.Received(1).DisableCreateButton();
+        }
+        
+        [Test]
+        public void ShowAlreadyExistsError()
+        {
+            controller.SetVisibility(true);
+            view.ClearReceivedCalls();
+            
+            chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
+                "foo", ChannelErrorCode.AlreadyExists);
+            
+            view.Received(1).ShowChannelExistsError(true);
             view.Received(1).DisableCreateButton();
         }
 

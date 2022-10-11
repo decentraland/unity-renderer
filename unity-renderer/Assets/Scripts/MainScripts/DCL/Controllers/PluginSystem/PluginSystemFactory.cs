@@ -40,6 +40,7 @@ namespace DCL
             pluginSystem.Register<PlacesAndEventsFeature>(() => new PlacesAndEventsFeature());
             pluginSystem.Register<JoinChannelModalPlugin>(() => new JoinChannelModalPlugin());
             pluginSystem.Register<ChannelLimitReachedWindowPlugin>(() => new ChannelLimitReachedWindowPlugin());
+            pluginSystem.Register<ChannelJoinErrorWindowPlugin>(() => new ChannelJoinErrorWindowPlugin());
             pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());

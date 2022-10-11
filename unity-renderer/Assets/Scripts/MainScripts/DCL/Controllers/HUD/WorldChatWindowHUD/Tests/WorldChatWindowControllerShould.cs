@@ -294,11 +294,15 @@ public class WorldChatWindowControllerShould
     public void SearchChannels()
     {
         controller.Initialize(view);
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
+            new Channel("channelId", "channelName", 0, 1, true, false, ""));
+        view.ClearReceivedCalls();
 
-        view.OnSearchChatRequested += Raise.Event<Action<string>>("near");
+        view.OnSearchChatRequested += Raise.Event<Action<string>>("nam");
 
         view.Received(1).EnableSearchMode();
-        friendsController.Received(1).GetFriendsWithDirectMessages("near", 20);
+        view.Received(1).SetPublicChat(Arg.Is<PublicChatModel>(p => p.name == "channelName"));
+        friendsController.Received(1).GetFriendsWithDirectMessages("nam", 20);
     }
 
     [Test]
@@ -476,6 +480,16 @@ public class WorldChatWindowControllerShould
         
         socialAnalytics.Received(1).SendLeaveChannel("channelId", ChannelLeaveSource.Command);
         view.Received(1).RemovePublicChat("channelId");
+    }
+
+    [Test]
+    public void RequestJoinedChannelsWhenChatInitializes()
+    {
+        controller.Initialize(view);
+
+        chatController.OnInitialized += Raise.Event<Action>();
+        
+        chatController.Received(1).GetJoinedChannels(10, 0);
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)
