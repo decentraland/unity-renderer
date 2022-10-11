@@ -63,11 +63,12 @@ namespace DCL.Chat.HUD
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             contextualMenu.OnLeave += () => OnLeaveChannel?.Invoke();
             optionsButton.onClick.AddListener(ShowOptionsMenu);
-            scroll.onValueChanged.AddListener(scrollPos =>
-            {
-                if (scrollPos.y > 0.995f)
-                    OnRequireMoreMessages?.Invoke();
-            });
+            // TODO: It was decided to temporally remove the loading of the channel's history. We'll re-enable it later.
+            //scroll.onValueChanged.AddListener(scrollPos =>
+            //{
+            //    if (scrollPos.y > 0.995f)
+            //        OnRequireMoreMessages?.Invoke();
+            //});
 
             collapsableAreaOriginalWidth = collapsableArea.sizeDelta.x;
             membersIconButton.onClick.AddListener(ToggleMembersSection);
