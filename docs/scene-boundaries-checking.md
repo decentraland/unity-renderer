@@ -11,7 +11,9 @@ Components on entities that are considered outside their respective scene bounda
 #### Entity Evaluation
 When the SBC runs its pass to evaluate all the entities in its collection, they are checked one by one and then removed from the collection (they'll be auto-added again later if the needed actions are executed)
 
-If the evaluated entity doesn't have a Shape component attached, then its evaluation will be just its Transform position, otherwise the whole mesh merged boundaries (including colliders) min-max points are used for the entity out-of-boundaries evaluation.
+- If the evaluated entity doesn't have a `Shape` component attached, then [its Transform position](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L233) is used for the scene-boundaries evaluation.
+- If the evaluated entity has a Shape component that's not an `AvatarShape`, [the whole mesh merged boundaries (including colliders) min-max points](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L219) are used for the scene-boundaries evaluation.
+- If the evaluated entity has an AvatarShape component then a `Bounds` object is created and resized based on the entity's transform lossy scale, and [that `Bounds` object](https://github.com/decentraland/unity-renderer/blob/08284ea1d1d2d58faa087ee93ad9c95fdd5c4e5d/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/SceneBoundariesController/SceneBoundsChecker.cs#L259) is used as the merged bounds for the scene-boundaries evaluation.
 
 #### Persistent Entities
 
@@ -36,7 +38,7 @@ Rendered components (any 'Shape' component), that are outside their scene bounda
 - [When an entity is parented to the camera](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L509)
 - [When an entity is reparented to the avatar](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L528)
 - [When an entity is normally reparented](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ParcelScene.cs#L557)
-- [When any affected component implementing the `IOutOfSceneBoundariesHandler` interface is attached to the entity](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ECSComponentManagerLegacy/ECSComponentsManagerLegacy.cs#L435) 
+- [When any affected component implementing the `IOutOfSceneBoundariesHandler` interface is attached/modified on the entity (if it's a Transform component the preliminary check will be run)](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ECSComponentManagerLegacy/ECSComponentsManagerLegacy.cs#L435) 
 - [When the `AvatarAttachHandler` starts its entity update](https://github.com/decentraland/unity-renderer/blob/05c9abdbf1e55bf33817e890ce56d65fb51dd66a/unity-renderer/Assets/Scripts/MainScripts/DCL/Components/AvatarAttach/AvatarAttachHandler.cs#L141) 
 
 ### Types of scenes

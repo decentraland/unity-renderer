@@ -20,6 +20,8 @@ public class ECSTestScene : MonoBehaviour
         StartCoroutine(LoadScene(SceneScript, SceneUpdateScript));
     }
 
+    private static ContentProvider contentProvider;
+    
     private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneId, 101, ComponentID.TRANSFORM,
@@ -79,7 +81,7 @@ public class ECSTestScene : MonoBehaviour
         componentWriter.PutComponent(sceneId, entityId, ComponentID.TRANSFORM,
             new ECSTransform() { position = position, scale = UnityEngine.Vector3.one });
     }
-    
+
     private static void AddAvatarShapeComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         PBAvatarShape avatarShape = new PBAvatarShape();
@@ -87,22 +89,22 @@ public class ECSTestScene : MonoBehaviour
         avatarShape.Name = "TestName#2354";
         avatarShape.BodyShape = "urn:decentraland:off-chain:base-avatars:BaseFemale";
         avatarShape.ExpressionTriggerId = "Idle";
-        
+
         avatarShape.EyeColor = new Color3();
         avatarShape.EyeColor.R = 0.223f;
         avatarShape.EyeColor.G = 0.484f;
-        avatarShape.EyeColor.B = 0.691f;   
-        
+        avatarShape.EyeColor.B = 0.691f;
+
         avatarShape.HairColor = new Color3();
         avatarShape.HairColor.R = 0.223f;
         avatarShape.HairColor.G = 0.484f;
         avatarShape.HairColor.B = 0.691f;
-        
+
         avatarShape.SkinColor = new Color3();
         avatarShape.SkinColor.R = 0.223f;
         avatarShape.SkinColor.G = 0.484f;
         avatarShape.SkinColor.B = 0.691f;
-        
+
         avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:f_eyebrows_07");
         avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:eyes_02");
         avatarShape.Wearables.Add("urn:decentraland:off-chain:base-avatars:f_mouth_03");
@@ -114,17 +116,9 @@ public class ECSTestScene : MonoBehaviour
         avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xbada8a315e84e4d78e3b6914003647226d9b4001:1");
         avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:5");
         avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xd89efd0be036410d4ff194cd6ecece4ef8851d86:0");
-        
+
         componentWriter.PutComponent(sceneId, 4, ComponentID.AVATAR_SHAPE,
             avatarShape);
-    }
-    private static void AddGLTFShapeComponent(string sceneId, IECSComponentWriter componentWriter)
-    {
-        Environment.i.world.state.GetScenesSortedByDistance()[0].contentProvider.baseUrl = "https://peer.decentraland.org/content/contents/";
-        Environment.i.world.state.GetScenesSortedByDistance()[0].contentProvider.fileToHash.Add("models/SCENE.glb".ToLower(), "QmQgQtuAg9qsdrmLwnFiLRAYZ6Du4Dp7Yh7bw7ELn7AqkD");
-            
-        componentWriter.PutComponent(sceneId, 2, ComponentID.GLTF_SHAPE,
-            new PBGLTFShape() { Src = "models/SCENE.glb", Visible = true });
     }
 
     private static void AddTextShapeComponent(string sceneId, IECSComponentWriter componentWriter)
@@ -153,24 +147,6 @@ public class ECSTestScene : MonoBehaviour
         model.Y = true;
         model.Z = false;
         componentWriter.PutComponent(sceneId, 3, ComponentID.BILLBOARD,
-            model);
-    }
-
-    private static void AddPlaneShapeComponent(string sceneId, IECSComponentWriter componentWriter)
-    {
-        PBPlaneShape model = new PBPlaneShape();
-        model.Visible = true;
-        model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId, 3, ComponentID.PLANE_SHAPE,
-            model);
-    }
-
-    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
-    {
-        PBBoxShape model = new PBBoxShape();
-        model.Visible = true;
-        model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId, 2, ComponentID.BOX_SHAPE,
             model);
     }
 
@@ -224,6 +200,9 @@ public class ECSTestScene : MonoBehaviour
                                               .GetField("componentWriter", BindingFlags.NonPublic | BindingFlags.Instance)
                                               .GetValue(ecs7Plugin) as IECSComponentWriter;
 
+        contentProvider = Environment.i.world.state.GetScene(scene.id).contentProvider;
+        contentProvider.baseUrl = "";
+
         sceneScript.Invoke(scene.id, componentWriter);
 
         mainGO.SendMessage("ActivateRendering");
@@ -248,6 +227,9 @@ public class ECSTestScene : MonoBehaviour
         CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
         var cameraController = GameObject.Find("CameraController");
         cameraController.SendMessage("SetRotation", JsonUtility.ToJson(cameraConfig));
+
+        GameObject camera = GameObject.Find("MainCamera");
+        camera.GetComponent<Camera>().enabled = true;
 
         Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, () => updateScript(scene.id, componentWriter));
     }

@@ -16,7 +16,7 @@ namespace Tests
         private ECS7TestScene scene1;
         private InternalECSComponents internalEcsComponents;
         private ECS7TestUtilsScenesAndEntities testUtils;
-        private Action materialSystemUpdate;
+        private Action systemsUpdate;
         private Material materialResource;
 
         [SetUp]
@@ -30,9 +30,15 @@ namespace Tests
             var texturizableGroup = componentsManager.CreateComponentGroup<InternalMaterial, InternalTexturizable>
                 ((int)InternalECSComponentsId.MATERIAL, (int)InternalECSComponentsId.TEXTURIZABLE);
 
-            materialSystemUpdate = ECSMaterialSystem.CreateSystem(texturizableGroup,
+            var materialSystemUpdate = ECSMaterialSystem.CreateSystem(texturizableGroup,
                 internalEcsComponents.texturizableComponent,
                 internalEcsComponents.materialComponent);
+
+            systemsUpdate = () =>
+            {
+                materialSystemUpdate();
+                internalEcsComponents.WriteSystemUpdate();
+            };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene0 = testUtils.CreateScene("temptation0");
@@ -80,7 +86,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // nothing should change since we don't have a material yet
             Assert.IsNull(renderer00.sharedMaterial);
@@ -101,7 +107,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // scene0's entities should have material set
             Assert.NotNull(renderer00.sharedMaterial);
@@ -132,7 +138,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // scene1's entity should have material set
             Assert.NotNull(renderer10.sharedMaterial);
@@ -156,7 +162,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             Assert.AreEqual(scene0Material, renderer00.sharedMaterial);
             Assert.AreEqual(scene0Material, renderer01.sharedMaterial);
@@ -205,13 +211,16 @@ namespace Tests
             });
 
             // apply material
-            materialSystemUpdate();
+            systemsUpdate();
 
             // remove material for entity00
-            materialComponent.RemoveFor(scene0, entity00);
+            materialComponent.RemoveFor(scene0, entity00, new InternalMaterial()
+            {
+                material = null,
+            });
 
             // apply changes
-            materialSystemUpdate();
+            systemsUpdate();
 
             // entity00 should have it material removed from it renderers
             Assert.IsNull(renderer00.sharedMaterial);

@@ -142,7 +142,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         if (Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate)
             avatar.RemoveVisibilityConstrain(INSIDE_CAMERA);
         else
-            avatar.AddVisibilityConstrain(INSIDE_CAMERA);
+            avatar.AddVisibilityConstraint(INSIDE_CAMERA);
     }
 
     public void SetAvatarVisibility(bool isVisible)
@@ -151,7 +151,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         if (isVisible)
             avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
         else
-            avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
+            avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAIN);
     }
 
     private void OnEnable()
@@ -264,7 +264,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     {
         if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.HIDE_AVATAR))
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            avatar.AddVisibilityConstraint(IN_HIDE_AREA);
             stickersControllers.ToggleHideArea(true);
         }
         currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);

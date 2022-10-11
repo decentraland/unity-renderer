@@ -372,7 +372,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
 
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
-        Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
+        Func<WearableItem, bool> replaceOtherWearablesToastStrategy,
+        Func<WearableItem, bool> incompatibleWearableToastStrategy)
     {
         if (wearableItem == null)
             return;
@@ -390,7 +391,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             collectionName,
             amount,
             hideOtherWearablesToastStrategy, 
-            replaceOtherWearablesToastStrategy);
+            replaceOtherWearablesToastStrategy,
+            incompatibleWearableToastStrategy);
 
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
@@ -399,7 +401,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                 collectionName,
                 amount,
                 hideOtherWearablesToastStrategy, 
-                replaceOtherWearablesToastStrategy);
+                replaceOtherWearablesToastStrategy,
+                incompatibleWearableToastStrategy);
         }
     }
 
