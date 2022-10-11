@@ -35,9 +35,9 @@ TagManager:
   - ViewportCullingIgnored
   - FX
   - Skybox
-  - 
-  - 
-  - 
+  - Outlined
+  - OutlinedOccluded
+  - OutlinedBlurred
   - 
   - 
   - 

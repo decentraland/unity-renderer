@@ -1,5 +1,34 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7952636854246204999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50f1d0221b22e7a49bcc0ef7dca40b67, type: 3}
+  m_Name: Occluded
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  _outlineResources: {fileID: 11400000, guid: b4bcd554b71bea14e8dfeab9f695327e, type: 2}
+  _outlineLayers: {fileID: 11400000, guid: 059d229f23209a74687769672d1084b8, type: 2}
+  _outlineSettings:
+    _outlineSettings: {fileID: 11400000, guid: 148702e692027be49bcfa2f2779e7516, type: 2}
+    _outlineColor: {r: 1, g: 0, b: 0, a: 1}
+    _outlineWidth: 4
+    _outlineIntensity: 2
+    _outlineAlphaCutoff: 0.9
+    _outlineMode: 0
+    _filterMode: 1
+    _layerMask:
+      serializedVersion: 2
+      m_Bits: 134217728
+    _renderingLayerMask: 1
+  _renderPassEvent: 400
+  _shaderPassNames: []
 --- !u!114 &-7551554940414059620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,7 +88,9 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -7551554940414059620}
   - {fileID: 4650022159256899313}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce335884328840
+  - {fileID: -7952636854246204999}
+  - {fileID: 3386850156239789438}
+  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce335884328840b999f97aea8ea2917e1d26d64582002f
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -89,6 +120,35 @@ MonoBehaviour:
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 0
   m_AccurateGbufferNormals: 0
+--- !u!114 &3386850156239789438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50f1d0221b22e7a49bcc0ef7dca40b67, type: 3}
+  m_Name: Outlined
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  _outlineResources: {fileID: 11400000, guid: b4bcd554b71bea14e8dfeab9f695327e, type: 2}
+  _outlineLayers: {fileID: 11400000, guid: 059d229f23209a74687769672d1084b8, type: 2}
+  _outlineSettings:
+    _outlineSettings: {fileID: 11400000, guid: e2fa3bc9a92a87d4e8e7af3bac314dbc, type: 2}
+    _outlineColor: {r: 1, g: 0, b: 0, a: 1}
+    _outlineWidth: 4
+    _outlineIntensity: 2
+    _outlineAlphaCutoff: 0.9
+    _outlineMode: 0
+    _filterMode: 1
+    _layerMask:
+      serializedVersion: 2
+      m_Bits: 67108864
+    _renderingLayerMask: 1
+  _renderPassEvent: 400
+  _shaderPassNames: []
 --- !u!114 &4650022159256899313
 MonoBehaviour:
   m_ObjectHideFlags: 0
