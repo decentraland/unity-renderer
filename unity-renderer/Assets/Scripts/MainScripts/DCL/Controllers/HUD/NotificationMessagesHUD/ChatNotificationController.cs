@@ -134,9 +134,7 @@ namespace DCL.Chat.Notifications
         private string ExtractPeerId(ChatMessage message) =>
             message.sender != ownUserProfile.userId ? message.sender : message.recipient;
 
-        private void ResetVisibility(bool current, bool previous){
-            SetVisibility(current);
-        }
+        private void ResetVisibility(bool current, bool previous) => SetVisibility(current);
 
         public void SetVisibility(bool visible)
         {
