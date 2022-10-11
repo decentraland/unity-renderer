@@ -1778,13 +1778,6 @@ namespace DCL.Interface
         
         public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
 
-        public static void ChangeAudioDevice(int outputDevice, int inputDevice)
-        {
-            changeAudioDevicePayload.outputDevice = outputDevice;
-            changeAudioDevicePayload.inputDevice = inputDevice;
-            SendMessage("ChangeAudioDevice", changeAudioDevicePayload);
-        }
-
         public static void SetInputAudioDevice(string inputDeviceId)
         {
             SendMessage(nameof(SetInputAudioDevice), new SetInputAudioDevicePayload()

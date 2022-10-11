@@ -19,4 +19,5 @@ MonoBehaviour:
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
   isBeta: 0
-  spinBoxLabels: []
+  spinBoxLabels:
+  - Default

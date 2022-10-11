@@ -29,9 +29,12 @@ namespace DCL.Services
                 bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
         }
 
-        public void SetInputDevice(AudioDevice inputDevice) => 
-            WebInterface.SetInputAudioDevice(inputDevice.deviceId);
-        
+        public void SetInputDevice(int deviceId)
+        {
+            if (deviceId <= InputDevices.Length)
+                WebInterface.SetInputAudioDevice(InputDevices[deviceId].deviceId);
+        }
+
         public void RequestAudioDevices() => bridge.RequestAudioDevices();
 
         private void OnAudioDevicesRecieved(AudioDevicesResponse devices)
@@ -45,7 +48,7 @@ namespace DCL.Services
             HasRecievedKernelMessage = true;
 
             InputDevices = bridge.AudioDevices.inputDevices;
-            
+
             AduioDeviceCached?.Invoke();
         }
     }

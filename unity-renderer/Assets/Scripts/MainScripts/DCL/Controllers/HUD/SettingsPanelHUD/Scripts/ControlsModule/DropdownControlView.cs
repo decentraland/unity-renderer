@@ -22,7 +22,7 @@ namespace DCL.SettingsPanelHUD.Controls
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
-            //we use spinbox control model and control controller for compatibility
+            // we use spinbox control model and control controller for compatibility
             SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
 
             spinBoxController = (SpinBoxSettingsControlController)settingsControlController;

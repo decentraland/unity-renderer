@@ -10,7 +10,7 @@ namespace DCL.Services
         bool HasRecievedKernelMessage { get ;  }
         AudioDevice[] InputDevices { get ;  }
 
-        void SetInputDevice(AudioDevice inputDevice);
+        void SetInputDevice(int deviceId);
         void RequestAudioDevices();
     }
 }
