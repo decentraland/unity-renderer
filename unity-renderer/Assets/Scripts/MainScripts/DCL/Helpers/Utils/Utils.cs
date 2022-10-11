@@ -205,7 +205,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.one * 100;
         }
 
-        public static bool AnyAncestorHasName(this Transform tf, string name)
+        public static bool AnyAncestorNameContains(this Transform tf, string subString)
         {
             var currentTf = tf.parent;
             int loopCounter = 0;
@@ -216,7 +216,7 @@ namespace DCL.Helpers
                 if (loopCounter > searchDepth)
                     return false;
                 
-                if (currentTf.gameObject.name == name)
+                if (currentTf.gameObject.name.Contains(subString))
                     return true;
 
                 currentTf = currentTf.parent;

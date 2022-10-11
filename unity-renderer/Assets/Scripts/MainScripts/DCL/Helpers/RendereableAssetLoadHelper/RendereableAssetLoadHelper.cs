@@ -189,9 +189,23 @@ namespace DCL.Components
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           var matText = "";
+                           if (r.container.name.Contains("Avatar"))
+                               continue;
 
+                           if (!mat.name.ToLower().Contains("mika"))
+                               continue;
+                           
+                           if (!mat.name.ToLower().Contains("beam"))
+                               continue;
+                           
+                           var matText = "";
+                           
                            matText += $"{r.container.name} " + mat.name + " ";
+
+                           mat.shaderKeywords = new []
+                           {
+                               "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
+                           };
                            
                            mat.EnableKeyword("_ALPHATEST_ON");
                            mat.EnableKeyword("_EMISSION");
@@ -394,6 +408,15 @@ namespace DCL.Components
 
                 foreach (var mat in r.materials)
                 {
+                    if (r.container.name.Contains("Avatar"))
+                        continue;
+                    
+                    if (!mat.name.ToLower().Contains("mika"))
+                        continue;
+                           
+                    if (!mat.name.ToLower().Contains("beam"))
+                        continue;
+                    
                     var matText = "";
 
                     matText += $"{r.container.name} " + mat.name + " ";
