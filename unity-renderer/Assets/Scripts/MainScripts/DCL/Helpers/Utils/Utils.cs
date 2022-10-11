@@ -205,6 +205,29 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.one * 100;
         }
 
+        public static bool AnyAncestorHasName(this Transform tf, string name)
+        {
+            var currentTf = tf.parent;
+            int loopCounter = 0;
+            
+            const int searchDepth = 1000;
+            while (currentTf != null)
+            {
+                if (loopCounter > searchDepth)
+                    return false;
+                
+                if (currentTf.gameObject.name == name)
+                    return true;
+
+                currentTf = currentTf.parent;
+
+                loopCounter++;
+            }
+
+            return false;
+
+        }
+
         public static void SetToBottomLeft(this RectTransform t)
         {
             t.anchorMin = Vector2.zero;

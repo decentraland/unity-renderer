@@ -191,14 +191,24 @@ namespace DCL.Components
                        {
                            var matText = mat.ToText();
                            
-                           if (mat.name.Contains("Mika"))
+                           if (x.container.transform.AnyAncestorHasName("ENTITY_253440"))
                            {
-                               matText +="\n (Mika Material)";
+                               matText +="\n ENTITY_253440 (beam) " + mat.name;
+                           }
+                           
+                           if (x.container.transform.AnyAncestorHasName("ENTITY_214016"))
+                           {
+                               matText +="\n ENTITY_253440 (tube1) " + mat.name;
                            }
                     
-                           if (mat.name.Contains("Beam_blue"))
+                           if (x.container.transform.AnyAncestorHasName("ENTITY_215040"))
                            {
-                               matText +="\n (Beam_blue Material)";
+                               matText +="\n ENTITY_253440 (tube2) " + mat.name;
+                           }
+                    
+                           if (x.container.transform.AnyAncestorHasName("ENTITY_35840"))
+                           {
+                               matText +="\n ENTITY_253440 (mika) " + mat.name;
                            }
                     
                            Debug.LogError(matText);
@@ -376,14 +386,24 @@ namespace DCL.Components
                 {
                     var matText = mat.ToText();
                     
-                    if (mat.name.Contains("Mika"))
+                    if (x.container.transform.AnyAncestorHasName("ENTITY_253440"))
                     {
-                        matText +="\n (Mika Material)";
+                        matText +="\n ENTITY_253440 (beam) " + mat.name;
                     }
                     
-                    if (mat.name.Contains("beam_blue"))
+                    if (x.container.transform.AnyAncestorHasName("ENTITY_214016"))
                     {
-                        matText +="\n (Beam_blue Material)";
+                        matText +="\n ENTITY_253440 (tube1) " + mat.name;
+                    }
+                    
+                    if (x.container.transform.AnyAncestorHasName("ENTITY_215040"))
+                    {
+                        matText +="\n ENTITY_253440 (tube2) " + mat.name;
+                    }
+                    
+                    if (x.container.transform.AnyAncestorHasName("ENTITY_35840"))
+                    {
+                        matText +="\n ENTITY_253440 (mika) " + mat.name;
                     }
                     
                     Debug.LogError(matText);
