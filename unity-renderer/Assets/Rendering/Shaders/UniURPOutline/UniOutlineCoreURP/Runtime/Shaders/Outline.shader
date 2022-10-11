@@ -1,0 +1,232 @@
+
+
+// Renders outline based on a texture produced with 'OutlineColor'.
+// Modified version of 'Custom/Post Outline' 
+// shader reference willweissman
+
+
+Shader "CustomShaders/HLSL/URPUniOutline/Outline"
+{
+	HLSLINCLUDE
+
+		#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+	
+        //#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl"
+		//#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthNormalsOnlyPass.hlsl"
+	    //#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl"
+
+	    //#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
+	    //#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
+
+	    //#include "DepthOnlyPass.hlsl"
+		//#include "DepthNormalsOnlyPass.hlsl"
+		//#include "ShadowCasterPass.hlsl"
+
+	    // gpu skinning
+		CBUFFER_START(UnityPerMaterial)
+		float4x4 _WorldInverse;
+		float4x4 _Matrices[100];
+		float4x4 _BindPoses[100];
+		CBUFFER_END
+		
+		TEXTURE2D_X(_MaskTex);
+		SAMPLER(sampler_MaskTex);
+
+		TEXTURE2D_X(_MainTex);
+		SAMPLER(sampler_MainTex);
+		float2 _MainTex_TexelSize;
+
+		float4 _Color;
+		float _Intensity;
+		int _Width;
+		float _GaussSamples[32];
+
+		struct Varyings
+		{
+			float4 positionCS : SV_POSITION;
+			float2 uv : TEXCOORD0;
+			UNITY_VERTEX_OUTPUT_STEREO
+		};
+
+#if SHADER_TARGET < 35 || _USE_DRAWMESH
+
+		struct Attributes
+		{
+			float4 positionOS : POSITION;
+			float2 uv : TEXCOORD0;
+			UNITY_VERTEX_INPUT_INSTANCE_ID
+		};
+
+		Varyings VertexSimple(Attributes input)
+		{
+			Varyings output = (Varyings)0;
+
+			UNITY_SETUP_INSTANCE_ID(input);
+			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+			output.positionCS = float4(input.positionOS.xy, UNITY_NEAR_CLIP_VALUE, 1);
+			output.uv = ComputeScreenPos(output.positionCS).xy;
+
+			return output;
+		}
+
+#else
+
+		struct Attributes
+		{
+			uint vertexID : SV_VertexID;
+			UNITY_VERTEX_INPUT_INSTANCE_ID
+		};
+
+		Varyings VertexSimple(Attributes input)
+		{
+			Varyings output = (Varyings)0;
+
+			UNITY_SETUP_INSTANCE_ID(input);
+			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+			output.positionCS = GetFullScreenTriangleVertexPosition(input.vertexID);
+			output.uv = GetFullScreenTriangleTexCoord(input.vertexID);
+
+			return output;
+		}
+
+#endif
+
+		float CalcIntensityN0(float2 uv, float2 offset, int k)
+		{
+			return SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, uv + k * offset).r * _GaussSamples[k];
+		}
+
+		float CalcIntensityN1(float2 uv, float2 offset, int k)
+		{
+			return SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, uv - k * offset).r * _GaussSamples[k];
+		}
+
+		float CalcIntensity(float2 uv, float2 offset)
+		{
+			float intensity = 0;
+
+			// Accumulates horizontal or vertical blur intensity for the specified texture position.
+			// Set offset = (tx, 0) for horizontal sampling and offset = (0, ty) for vertical.
+			// 
+			// NOTE: Unroll directive is needed to make the method function on platforms like WebGL 1.0 where loops are not supported.
+			// If maximum outline width is changed here, it should be changed in OutlineResources.MaxWidth as well.
+			//
+			[unroll(32)]
+			for (int k = 1; k <= _Width; ++k)
+			{
+				intensity += CalcIntensityN0(uv, offset, k);
+				intensity += CalcIntensityN1(uv, offset, k);
+			}
+
+			intensity += CalcIntensityN0(uv, offset, 0);
+			return intensity;
+		}
+
+		float4 FragmentH(Varyings i) : SV_Target
+		{
+			UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+
+			float2 uv = UnityStereoTransformScreenSpaceTex(i.uv);
+			float intensity = CalcIntensity(uv, float2(_MainTex_TexelSize.x, 0));
+			return float4(intensity, intensity, intensity, 1);
+		}
+
+		float4 FragmentV(Varyings i) : SV_Target
+		{
+			UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+
+			float2 uv = UnityStereoTransformScreenSpaceTex(i.uv);
+
+			if (SAMPLE_TEXTURE2D_X(_MaskTex, sampler_MaskTex, uv).r > 0)
+			{
+				// TODO: Avoid discard/clip to improve performance on mobiles.
+				discard;
+			}
+
+			float intensity = CalcIntensity(uv, float2(0, _MainTex_TexelSize.y));
+			intensity = _Intensity > 99 ? step(0.01, intensity) : intensity * _Intensity;
+			return float4(_Color.rgb, saturate(_Color.a * intensity));
+		}
+
+	ENDHLSL
+
+	// SM3.5+
+	SubShader
+	{
+		Tags{ "RenderPipeline" = "UniversalPipeline" }
+
+		Cull Off
+		ZWrite Off
+		ZTest Always
+		Lighting Off
+
+		Pass
+		{
+			Name "HPass"
+
+			HLSLPROGRAM
+
+			#pragma target 3.5
+			#pragma multi_compile_instancing
+			#pragma shader_feature_local _USE_DRAWMESH
+			#pragma vertex VertexSimple
+			#pragma fragment FragmentH
+
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "VPassBlend"
+			Blend SrcAlpha OneMinusSrcAlpha
+
+			HLSLPROGRAM
+
+			#pragma target 3.5
+			#pragma multi_compile_instancing
+			#pragma shader_feature_local _USE_DRAWMESH
+			#pragma vertex VertexSimple
+			#pragma fragment FragmentV
+
+			ENDHLSL
+		}
+	}
+
+	// SM2.0
+	SubShader
+	{
+		Tags { "RenderPipeline" = "UniversalPipeline" }
+
+		Cull Off
+		ZWrite Off
+		ZTest Always
+		Lighting Off
+
+		Pass
+		{
+			Name "HPass"
+
+			HLSLPROGRAM
+
+			#pragma vertex VertexSimple
+			#pragma fragment FragmentH
+
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "VPassBlend"
+			Blend SrcAlpha OneMinusSrcAlpha
+
+			HLSLPROGRAM
+
+			#pragma vertex VertexSimple
+			#pragma fragment FragmentV
+
+			ENDHLSL
+		}
+	}
+}

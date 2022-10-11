@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3adefd0bc16d894394d4cb1f8a53607, type: 3}
+  m_Name: Collection
+  m_EditorClassIdentifier: 
+  _layers:
+  - _settings:
+      _outlineSettings: {fileID: 11400000, guid: 5cc49aab81296b84f8d1c65b1fdf63e0, type: 2}
+      _outlineColor: {r: 1, g: 0, b: 0, a: 1}
+      _outlineWidth: 25
+      _outlineIntensity: 2
+      _outlineAlphaCutoff: 0.9
+      _outlineMode: 1
+    _name: 
+    _enabled: 1
+    _mergeLayerObjects: 0
+  - _settings:
+      _outlineSettings: {fileID: 11400000, guid: 148702e692027be49bcfa2f2779e7516, type: 2}
+      _outlineColor: {r: 0, g: 0.41398382, b: 1, a: 1}
+      _outlineWidth: 4
+      _outlineIntensity: 2
+      _outlineAlphaCutoff: 0.784
+      _outlineMode: 2
+    _name: 
+    _enabled: 1
+    _mergeLayerObjects: 0
+  _ignoreLayerMask: 0
