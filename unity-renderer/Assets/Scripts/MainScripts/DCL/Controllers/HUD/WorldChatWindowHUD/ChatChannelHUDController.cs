@@ -19,7 +19,6 @@ namespace DCL.Chat.HUD
 
         private readonly DataStore dataStore;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;

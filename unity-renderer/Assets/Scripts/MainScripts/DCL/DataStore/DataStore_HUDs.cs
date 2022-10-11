@@ -23,6 +23,7 @@ namespace DCL
         public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
         public readonly BaseVariable<bool> gotoPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
+        public readonly BaseVariable<bool> shouldShowNotificationPanel = new BaseVariable<bool>(true);
         public readonly BaseVariable<Transform> notificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> topNotificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
