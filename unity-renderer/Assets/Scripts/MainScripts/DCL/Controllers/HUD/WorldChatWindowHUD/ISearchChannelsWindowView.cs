@@ -30,5 +30,6 @@ namespace DCL.Chat.HUD
         void HideResultsHeader();
         void ShowCreateChannelOnSearch();
         void HideCreateChannelOnSearch();
+        void SetCreateChannelButtonsActive(bool isActive);
     }
 }

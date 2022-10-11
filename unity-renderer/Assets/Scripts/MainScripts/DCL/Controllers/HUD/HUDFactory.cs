@@ -4,7 +4,6 @@ using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
-using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using SignupHUD;
@@ -74,7 +73,8 @@ public class HUDFactory : IHUDFactory
                     SceneReferences.i.mouseCatcher,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -115,7 +115,9 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    new UserProfileWebInterfaceBridge(),
+                    new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(ChatController.i, DataStore.i);

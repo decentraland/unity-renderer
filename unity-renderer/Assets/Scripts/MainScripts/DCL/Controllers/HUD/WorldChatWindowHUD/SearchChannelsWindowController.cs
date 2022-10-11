@@ -16,6 +16,8 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
         private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
@@ -34,18 +36,24 @@ namespace DCL.Chat.HUD
         public SearchChannelsWindowController(IChatController chatController,
             IMouseCatcher mouseCatcher,
             DataStore dataStore,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            IUserProfileBridge userProfileBridge,
+            IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.dataStore = dataStore;
             this.socialAnalytics = socialAnalytics;
+            this.userProfileBridge = userProfileBridge;
+            this.channelsFeatureFlagService = channelsFeatureFlagService;
         }
 
         public void Initialize(ISearchChannelsWindowView view = null)
         {
             view ??= SearchChannelsWindowComponentView.Create();
             this.view = view;
+
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
         }
 
         public void Dispose()
@@ -54,6 +62,8 @@ namespace DCL.Chat.HUD
             view.Dispose();
             loadingCancellationToken.Cancel();
             loadingCancellationToken.Dispose();
+
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -215,5 +225,7 @@ namespace DCL.Chat.HUD
             dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Search);
             OnOpenChannelLeave?.Invoke(channelId);
         }
+
+        private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonsActive(isAllowed);
     }
 }

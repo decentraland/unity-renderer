@@ -76,4 +76,8 @@ public class SearchChannelsWindowMock : MonoBehaviour, ISearchChannelsWindowView
     public void HideCreateChannelOnSearch()
     {
     }
+
+    public void SetCreateChannelButtonsActive(bool isActive)
+    {
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
@@ -22,6 +23,7 @@ public class WorldChatWindowControllerShould
     private IMouseCatcher mouseCatcher;
     private UserProfile ownUserProfile;
     private ISocialAnalytics socialAnalytics;
+    private IChannelsFeatureFlagService channelsFeatureFlagService;
     private DataStore dataStore;
 
     [SetUp]
@@ -38,13 +40,16 @@ public class WorldChatWindowControllerShould
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
+        channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
+        channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
         dataStore = new DataStore();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
             dataStore,
             mouseCatcher,
-            socialAnalytics);
+            socialAnalytics,
+            channelsFeatureFlagService);
         view = Substitute.For<IWorldChatWindowView>();
     }
 

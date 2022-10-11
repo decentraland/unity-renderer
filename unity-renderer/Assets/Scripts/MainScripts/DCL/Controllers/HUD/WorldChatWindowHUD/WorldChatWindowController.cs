@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
@@ -9,6 +5,10 @@ using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
@@ -24,6 +24,7 @@ public class WorldChatWindowController : IHUD
     private readonly DataStore dataStore;
     private readonly IMouseCatcher mouseCatcher;
     private readonly ISocialAnalytics socialAnalytics;
+    private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -57,7 +58,8 @@ public class WorldChatWindowController : IHUD
         IChatController chatController,
         DataStore dataStore,
         IMouseCatcher mouseCatcher,
-        ISocialAnalytics socialAnalytics) 
+        ISocialAnalytics socialAnalytics,
+        IChannelsFeatureFlagService channelsFeatureFlagService) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -65,6 +67,7 @@ public class WorldChatWindowController : IHUD
         this.dataStore = dataStore;
         this.mouseCatcher = mouseCatcher;
         this.socialAnalytics = socialAnalytics;
+        this.channelsFeatureFlagService = channelsFeatureFlagService;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -80,14 +83,11 @@ public class WorldChatWindowController : IHUD
         view.OnOpenPublicChat += OpenPublicChat;
         view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
-        view.OnOpenChannelSearch += OpenChannelSearch;
-        view.OnLeaveChannel += LeaveChannel;
-        view.OnCreateChannel += OpenChannelCreationWindow;
-        
+
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
-        
+
         var channel = chatController.GetAllocatedChannel(ChatUtils.NEARBY_CHANNEL_ID);
         publicChannels[ChatUtils.NEARBY_CHANNEL_ID] = new PublicChatModel(ChatUtils.NEARBY_CHANNEL_ID, channel.Name,
             channel.Description,
@@ -95,7 +95,6 @@ public class WorldChatWindowController : IHUD
             channel.MemberCount,
             false);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
-        view.ShowChannelsLoading();
 
         foreach (var value in chatController.GetAllocatedEntries())
             HandleMessageAdded(value);
@@ -106,15 +105,33 @@ public class WorldChatWindowController : IHUD
 
         chatController.OnInitialized += HandleChatInitialization;
         chatController.OnAddMessage += HandleMessageAdded;
-        chatController.OnChannelUpdated += HandleChannelUpdated;
-        chatController.OnChannelJoined += HandleChannelJoined;
-        chatController.OnJoinChannelError += HandleJoinChannelError;
-        chatController.OnChannelLeaveError += HandleLeaveChannelError;
-        chatController.OnChannelLeft += HandleChannelLeft;
         friendsController.OnAddFriendsWithDirectMessages += HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus += HandleUserStatusChanged;
         friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
         friendsController.OnInitialized += HandleFriendsControllerInitialization;
+
+        if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
+        {
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
+
+            view.OnOpenChannelSearch += OpenChannelSearch;
+            view.OnLeaveChannel += LeaveChannel;
+            view.OnCreateChannel += OpenChannelCreationWindow;
+
+            chatController.OnChannelUpdated += HandleChannelUpdated;
+            chatController.OnChannelJoined += HandleChannelJoined;
+            chatController.OnJoinChannelError += HandleJoinChannelError;
+            chatController.OnChannelLeaveError += HandleLeaveChannelError;
+            chatController.OnChannelLeft += HandleChannelLeft;
+
+            view.ShowChannelsLoading();
+            view.SetSearchAndCreateContainerActive(true);
+        }
+        else
+        {
+            view.HideChannelsLoading();
+            view.SetSearchAndCreateContainerActive(false);
+        }
     }
 
     public void Dispose()
@@ -144,6 +161,8 @@ public class WorldChatWindowController : IHUD
         
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken?.Dispose();
+
+        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
 
     public void SetVisibility(bool visible)
@@ -160,7 +179,8 @@ public class WorldChatWindowController : IHUD
                 RequestUnreadMessages();
             }
 
-            if (!areJoinedChannelsRequestedByFirstTime)
+            if (channelsFeatureFlagService.IsChannelsFeatureEnabled() && 
+                !areJoinedChannelsRequestedByFirstTime)
             {
                 RequestJoinedChannels();
                 RequestUnreadChannelsMessages();
@@ -347,7 +367,7 @@ public class WorldChatWindowController : IHUD
         if (!profile.hasConnectedWeb3)
             view.HidePrivateChatsLoading();
     }
-    
+
     private void SearchChats(string search)
     {
         currentSearch = search;
@@ -495,4 +515,6 @@ public class WorldChatWindowController : IHUD
         if (cancellationToken.IsCancellationRequested) return;
         view.HideSearchLoading();
     }
+
+    private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonActive(isAllowed);
 }
