@@ -27,12 +27,14 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly DataStore_ECS7 dataStoreEcs7;
+        private DataStore_FeatureFlag featureFlags;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicColliderComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
-            DataStore_ECS7 dataStoreEcs7)
+            DataStore_ECS7 dataStoreEcs7, DataStore_FeatureFlag featureFlags)
         {
+            this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
             this.physicColliderComponent = physicColliderComponent;
             this.renderersComponent = renderersComponent;
@@ -47,7 +49,7 @@ namespace DCL.ECSComponents
             transform.SetParent(entity.gameObject.transform);
             transform.ResetLocalTRS();
 
-            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles);
+            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles, () => featureFlags.flags.Get().IsFeatureEnabled("gltfast"));
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
