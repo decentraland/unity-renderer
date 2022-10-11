@@ -6,12 +6,10 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
     private readonly CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDView hudView;
     private string activeCategory;
-    static readonly DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    
 
-    public AvatarEditorHUDAnimationHandler(CharacterPreviewController characterPreviewController, AvatarEditorHUDView hudView)
+    public AvatarEditorHUDAnimationHandler(AvatarEditorHUDView hudView)
     {
-        this.characterPreviewController = characterPreviewController;
+        this.characterPreviewController = hudView.characterPreviewController;
         this.hudView = hudView;
         hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
         hudView.OnRandomize += OnClickRandomize;
@@ -19,6 +17,7 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         {
             hudView.wearableGridPairs[i].selector.OnItemClicked += OnSelectWearable;
         }
+        hudView.collectiblesItemSelector.OnItemClicked += OnSelectWearable;
     }
     
     private void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
@@ -36,9 +35,8 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
     
     private void PlayAnimation(AvatarModel avatarModelToUpdate)
     {
-        var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
-        avatarModelToUpdate.expressionTriggerTimestamp = timestamp;
-        characterPreviewController.PlayEmote(activeCategory, timestamp);
+        avatarModelToUpdate.expressionTriggerTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        characterPreviewController.PlayEmote(activeCategory, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 
     private void OnSelectWearable(string wearableId)
@@ -76,8 +74,11 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
             case "mask":
                 activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
-            default:
+            case WearableLiterals.Categories.BODY_SHAPE:
                 activeCategory = "";
+                break;
+            default:
+                activeCategory = GetRandomizedName("Outfit_Upper_v0",3);
                 break;
         }
     }
@@ -95,5 +96,6 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         {
             hudView.wearableGridPairs[i].selector.OnItemClicked -= OnSelectWearable;
         }
+        hudView.collectiblesItemSelector.OnItemClicked -= OnSelectWearable;
     }
 }

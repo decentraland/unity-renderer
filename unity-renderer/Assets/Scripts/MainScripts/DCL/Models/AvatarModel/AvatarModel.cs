@@ -102,14 +102,8 @@ public class AvatarModel : BaseModel
         skinColor = other.skinColor;
         hairColor = other.hairColor;
         eyeColor = other.eyeColor;
-        if (!string.IsNullOrEmpty(other.expressionTriggerId) && expressionTriggerId != other.expressionTriggerId)
-        {
-            expressionTriggerId = other.expressionTriggerId;
-        }
-        if (other.expressionTriggerTimestamp != -1 && expressionTriggerTimestamp != other.expressionTriggerTimestamp)
-        {
-            expressionTriggerTimestamp = other.expressionTriggerTimestamp;
-        }
+        expressionTriggerId = other.expressionTriggerId;
+        expressionTriggerTimestamp = other.expressionTriggerTimestamp;
         stickerTriggerId = other.stickerTriggerId;
         stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);

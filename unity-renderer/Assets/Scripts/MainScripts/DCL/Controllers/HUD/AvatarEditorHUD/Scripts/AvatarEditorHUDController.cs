@@ -74,11 +74,10 @@ public class AvatarEditorHUDController : IHUD
     private bool isThirdPartyCollectionsEnabled => featureFlags.flags.Get().IsFeatureEnabled(THIRD_PARTY_COLLECTIONS_FEATURE_FLAG);
 
     public AvatarEditorHUDView view;
-    public CharacterPreviewController characterPreviewController { get; private set; }
 
     private bool loadingWearables;
     private WearableItem[] emotesLoadedAsWearables;
-    private AvatarEditorHUDAnimationHandler avatarEditorHUDAnimationHandler;
+    internal AvatarEditorHUDAnimationHandler avatarEditorHUDAnimationHandler;
     public event Action OnOpen;
     public event Action OnClose;
     
@@ -97,10 +96,7 @@ public class AvatarEditorHUDController : IHUD
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
-
-        characterPreviewController = GameObject.Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
-        characterPreviewController.name = "_CharacterPreviewController";
-        
+      
         view = AvatarEditorHUDView.Create(this);
 
         view.skinsFeatureContainer.SetActive(true);
@@ -148,7 +144,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
-        avatarEditorHUDAnimationHandler = new AvatarEditorHUDAnimationHandler(characterPreviewController, view);
+        avatarEditorHUDAnimationHandler = new AvatarEditorHUDAnimationHandler(view);
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
@@ -854,11 +850,8 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
         
-<<<<<<< HEAD
         avatarEditorHUDAnimationHandler.Dispose();
-=======
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
->>>>>>> dev
 
         CleanUp();
     }
@@ -898,8 +891,6 @@ public class AvatarEditorHUDController : IHUD
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
 
-        avatarModel.expressionTriggerId = "Spawn_Pose_v01";
-        avatarModel.expressionTriggerTimestamp = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds + 100;
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
         

@@ -13,7 +13,7 @@ using Random = System.Random;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
+public class AvatarEditorHUDView : MonoBehaviour,  IPointerDownHandler
 {
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -128,7 +128,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
-    private static CharacterPreviewController characterPreviewController;
+    public CharacterPreviewController characterPreviewController { get; private set; }
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
@@ -145,6 +145,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     {
         loadingSpinnerGameObject.SetActive(false);
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
+        if (characterPreviewController == null)
+        {
+            characterPreviewController = Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
+            characterPreviewController.name = "_CharacterPreviewController";
+        }
         isOpen = false;
         arePanelsInitialized = false;
     }
@@ -163,7 +168,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
         foreach (var button in goToMarketplaceButtons)
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
-        characterPreviewController = controller.characterPreviewController;
         characterPreviewController.camera.enabled = false;
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
@@ -681,9 +685,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
-    public void ResetPreviewEmote() { 
-        PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
-    }
+    public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 
     public void ToggleThirdPartyCollection(string collectionId, bool isOn)
     {

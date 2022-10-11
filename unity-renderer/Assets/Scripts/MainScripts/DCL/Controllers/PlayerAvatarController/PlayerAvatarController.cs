@@ -10,7 +10,6 @@ using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
-using ICSharpCode.SharpZipLib.Core;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -193,8 +192,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private async UniTaskVoid LoadingAvatarRoutine(UserProfile profile, CancellationToken ct)
     {
-        Debug.Log("AAAAA " + profile.avatar.expressionTriggerId);
-        
         if (string.IsNullOrEmpty(profile.avatar.bodyShape) || profile.avatar.wearables == null)
         {
             avatar.Dispose();
