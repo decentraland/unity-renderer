@@ -184,17 +184,10 @@ namespace DCL.Components
 
                 try
                 {
-                       //var urpLitShader = Shader.Find("Universal Render Pipeline/Lit");
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
                            if (r.container.name.Contains("Avatar"))
-                               continue;
-
-                           if (!mat.name.ToLower().Contains("mika"))
-                               continue;
-                           
-                           if (!mat.name.ToLower().Contains("beam"))
                                continue;
                            
                            var matText = "";
@@ -408,12 +401,6 @@ namespace DCL.Components
                 foreach (var mat in r.materials)
                 {
                     if (r.container.name.Contains("Avatar"))
-                        continue;
-                    
-                    if (!mat.name.ToLower().Contains("mika"))
-                        continue;
-                           
-                    if (!mat.name.ToLower().Contains("beam"))
                         continue;
                     
                     var matText = "";
