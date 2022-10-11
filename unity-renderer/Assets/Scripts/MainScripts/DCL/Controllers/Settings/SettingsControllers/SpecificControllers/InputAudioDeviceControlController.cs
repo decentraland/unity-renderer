@@ -1,4 +1,5 @@
-﻿using DCL.Services;
+﻿using System.Linq;
+using DCL.Services;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
             if (audioDevicesService.InputDevices != null)
             {
-                RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices);
+                RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices.Values.ToArray());
                 UpdateSetting(GetStoredValue());
             }
             else
@@ -30,7 +31,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
 
-            RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices);
+            RaiseOnOverrideIndicatorLabel(audioDevicesService.InputDevices.Values.ToArray());
             UpdateSetting(GetStoredValue());
         }
 

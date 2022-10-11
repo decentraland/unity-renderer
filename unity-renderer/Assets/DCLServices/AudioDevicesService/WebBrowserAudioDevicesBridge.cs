@@ -8,7 +8,6 @@ namespace DCL.Services
 {
     public class WebBrowserAudioDevicesBridge : MonoBehaviour, IAudioDevicesBridge
     {
-
         public AudioDevicesResponse AudioDevices { get; private set; }
         public event Action<AudioDevicesResponse> OnAudioDevicesRecieved;
 
@@ -16,7 +15,7 @@ namespace DCL.Services
         {
             GameObject brigeGO = SceneReferences.i?.bridgeGameObject;
             if (SceneReferences.i?.bridgeGameObject == null)
-                return new GameObject("Bridge").AddComponent<WebBrowserAudioDevicesBridge>();
+                return new GameObject("Bridge").AddComponent<WebBrowserAudioDevicesBridge>();                                                                            
 
             return brigeGO.GetOrCreateComponent<WebBrowserAudioDevicesBridge>();
         }
@@ -36,10 +35,6 @@ namespace DCL.Services
             try
             {
                 response = JsonUtility.FromJson<AudioDevicesResponse>(payload);
-                foreach (AudioDevice inputDevice in response.inputDevices)
-                {
-                    Debug.Log($"{inputDevice.deviceId} - {inputDevice.label}");
-                }
             }
             catch (Exception e)
             {
@@ -50,7 +45,7 @@ namespace DCL.Services
                 return;
 
             AudioDevices = response;
-            OnAudioDevicesRecieved?.Invoke(response);
+            OnAudioDevicesRecieved?.Invoke(AudioDevices);
         }
     }
 }

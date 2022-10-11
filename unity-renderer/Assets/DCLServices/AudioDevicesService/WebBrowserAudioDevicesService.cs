@@ -1,20 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using DCL.Interface;
+using UnityEngine;
 
 namespace DCL.Services
 {
     public class WebBrowserAudioDevicesService : IAudioDevicesService
     {
-
         private readonly IAudioDevicesBridge bridge;
 
-        public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) { this.bridge = bridge; }
+        public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) => this.bridge = bridge;
         public event Action AduioDeviceCached;
 
         public bool HasRecievedKernelMessage { get; private set; }
-
-        public string[] InputDevices { get; private set; }
-        public string[] OutputDevices { get; private set; }
+        public Dictionary<string, string> InputDevices { get; private set; }
 
         public void Initialize()
         {
@@ -47,9 +46,13 @@ namespace DCL.Services
         {
             HasRecievedKernelMessage = true;
 
-            InputDevices = bridge.AudioDevices.inputDevices;
-            OutputDevices = bridge.AudioDevices.outputDevices;
-
+            InputDevices = new Dictionary<string, string>();
+            
+            foreach (AudioDevice device in bridge.AudioDevices.inputDevices)
+            {
+                Debug.Log($"{device.deviceId} --- {device.label}");
+                InputDevices.Add(device.deviceId, device.label);
+            }
             AduioDeviceCached?.Invoke();
         }
     }
