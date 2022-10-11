@@ -32,7 +32,6 @@ public class PublicChatWindowController : IHUD
 
     private UserProfile ownProfile => userProfileBridge.GetOwn();
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-    internal BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
 
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
@@ -206,9 +205,6 @@ public class PublicChatWindowController : IHUD
     
     private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
     {
-        if (notificationPanelTransform.Get() == null)
-            await UniTask.Delay(FADEOUT_DELAY, cancellationToken: cancellationToken);
-
         await UniTask.SwitchToMainThread(cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         chatHudController.FadeOutMessages();

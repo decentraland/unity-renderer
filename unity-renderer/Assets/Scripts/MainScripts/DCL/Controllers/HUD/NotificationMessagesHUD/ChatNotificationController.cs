@@ -18,6 +18,7 @@ namespace DCL.Chat.Notifications
         private readonly ITopNotificationsComponentView topNotificationView;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly TimeSpan maxNotificationInterval = new TimeSpan(0, 1, 0);
+        private BaseVariable<bool> shouldShowNotificationPanel => dataStore.HUDs.shouldShowNotificationPanel;
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -41,6 +42,8 @@ namespace DCL.Chat.Notifications
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
             visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
+            shouldShowNotificationPanel.OnChange += ResetVisibility;
+            ResetVisibility(shouldShowNotificationPanel.Get(), false);
         }
 
         private void VisiblePanelsChanged(HashSet<string> newList, HashSet<string> oldList)
@@ -124,19 +127,23 @@ namespace DCL.Chat.Notifications
 
             mainChatNotificationView.HideNotifications();
 
-            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            if (topNotificationPanelTransform.Get() != null && topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                 topNotificationView.HideNotification();
         }
 
         private string ExtractPeerId(ChatMessage message) =>
             message.sender != ownUserProfile.userId ? message.sender : message.recipient;
 
+        private void ResetVisibility(bool current, bool previous) => SetVisibility(current);
+
         public void SetVisibility(bool visible)
         {
             ResetFadeOut(visible);
             if (visible)
             {
-                mainChatNotificationView.Show();
+                if(shouldShowNotificationPanel.Get())
+                    mainChatNotificationView.Show();
+                
                 topNotificationView.Hide();
                 mainChatNotificationView.ShowNotifications();
             }

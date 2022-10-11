@@ -163,11 +163,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(controller.privateChatWindow.View.IsActive);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
-        //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is showing up.
+        //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is hidden and private chat is showing up.
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.publicChatWindow.View.IsActive);
+        Assert.IsFalse(controller.publicChatWindow.View.IsActive);
+        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
         Assert.IsFalse(controller.friendsHud.View.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

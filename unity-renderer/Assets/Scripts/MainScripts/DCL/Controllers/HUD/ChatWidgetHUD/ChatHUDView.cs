@@ -42,7 +42,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
-    private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
 
     protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
@@ -235,10 +234,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             
             SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
-        
-        animationCancellationToken.Cancel();
-        animationCancellationToken = new CancellationTokenSource();
-        AnimateNewEntry(entries[model.messageId].gameObject.transform, animationCancellationToken.Token).Forget();
     }
 
     public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
@@ -251,33 +246,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
-    }
-
-    private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var mySequence = DOTween.Sequence()
-            .AppendInterval(0.2f)
-            .Append(notification.DOScale(1, 0.3f).SetEase(Ease.OutBack));
-        try
-        {
-            var endPosition = new Vector2(0, 0);
-            var currentPosition = chatEntriesContainer.anchoredPosition;
-            notification.localScale = Vector3.zero;
-            DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.8f)
-                .SetEase(Ease.OutCubic);
-            while (chatEntriesContainer.anchoredPosition.y < 0)
-            {
-                chatEntriesContainer.anchoredPosition = currentPosition;
-                await UniTask.NextFrame(cancellationToken);
-            }
-            mySequence.Play();
-        }
-        catch (OperationCanceledException)
-        {
-            if (!DOTween.IsTweening(notification))
-                notification.DOScale(1, 0.3f).SetEase(Ease.OutBack);
-        }
     }
 
     public void RemoveFirstEntry()

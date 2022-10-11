@@ -345,16 +345,7 @@ public class TaskbarHUDController : IHUD
 
     private void OpenPublicChatOnPreviewMode()
     {
-        if (notificationPanelTransform.Get() != null)
-        {
-            publicChatWindow.SetVisibility(false, false);
-            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
-            return;
-        }
-
-        chatToggleTargetWindow = publicChatWindow;
-        publicChatWindow.SetVisibility(true, false);
-
+        publicChatWindow.SetVisibility(false, false);
         view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
