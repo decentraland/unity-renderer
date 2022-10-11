@@ -41,6 +41,12 @@ namespace DCL.Chat.Channels
             remove => controller.OnChannelUnseenMessagesUpdated -= value;
         }
 
+        public event Action OnInitialized
+        {
+            add => controller.OnInitialized += value;
+            remove => controller.OnInitialized -= value;
+        }
+
         public event Action<ChatMessage> OnAddMessage
         {
             add => controller.OnAddMessage += value;
@@ -550,7 +556,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             var mockedPayload = new JoinChannelErrorPayload
             {
                 channelId = channelId,
-                errorCode = (int) ChannelErrorCode.ExceededLimit
+                errorCode = (int) ChannelErrorCode.LimitExceeded
             };
 
             return JsonUtility.ToJson(mockedPayload);

@@ -108,23 +108,36 @@ namespace DCL.Chat.HUD
             if (string.IsNullOrEmpty(channelName)) return;
             if (!nameFormatRegex.IsMatch(channelName)) return;
             if (chatController.GetAllocatedChannel(channelName) != null) return;
-            chatController.CreateChannel(channelName);
             view.DisableCreateButton();
+            chatController.CreateChannel(channelName);
         }
 
         private void HandleCreationError(string channelId, ChannelErrorCode errorCode)
         {
             switch (errorCode)
             {
-                case ChannelErrorCode.ExceededLimit:
+                case ChannelErrorCode.AlreadyExists:
+                    view.ShowChannelExistsError(true);
+                    view.DisableCreateButton();
+                    break;
+                case ChannelErrorCode.LimitExceeded:
                     view.ShowChannelsExceededError();
+                    view.DisableCreateButton();
                     break;
                 case ChannelErrorCode.WrongFormat:
                     view.ShowWrongFormatError();
+                    view.DisableCreateButton();
+                    break;
+                case ChannelErrorCode.ReservedName:
+                    view.ShowChannelExistsError(false);
+                    view.DisableCreateButton();
+                    break;
+                default:
+                case ChannelErrorCode.Unknown:
+                    view.ShowUnknownError();
+                    view.EnableCreateButton();
                     break;
             }
-            
-            view.DisableCreateButton();
         }
     }
 }
