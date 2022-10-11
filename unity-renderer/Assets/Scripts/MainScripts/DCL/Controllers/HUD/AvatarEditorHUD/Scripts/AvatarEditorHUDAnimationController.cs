@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationController
 {
@@ -6,6 +7,7 @@ public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationContr
     private CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDView hudView;
     private string activeCategory;
+    private int currentAnimationIndexShown;
 
 
     public void Initialize(AvatarEditorHUDView avatarEditorHUDView)
@@ -87,7 +89,8 @@ public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationContr
 
     private string GetRandomizedName(string baseString, int limit)
     {
-        return baseString + UnityEngine.Random.Range(1, limit+1);
+        currentAnimationIndexShown = (currentAnimationIndexShown + 1) % limit;
+        return baseString + (currentAnimationIndexShown + 1);
     }
 
     public void Dispose()
