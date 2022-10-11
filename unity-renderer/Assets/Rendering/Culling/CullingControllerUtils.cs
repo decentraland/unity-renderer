@@ -6,8 +6,6 @@ namespace DCL.Rendering
 {
     public static class CullingControllerUtils
     {
-        private static Dictionary<Renderer, bool> renderersVisibility = new Dictionary<Renderer, bool>();
-
         /// <summary>
         /// Computes the rule used for toggling skinned meshes updateWhenOffscreen param.
         /// Skinned meshes should be always updated if near the camera to avoid false culling positives on screen edges.
@@ -78,26 +76,18 @@ namespace DCL.Rendering
         /// <returns>True if its opaque</returns>
         internal static bool IsOpaque(Renderer renderer)
         {
-            if (renderersVisibility.ContainsKey(renderer))
-                return renderersVisibility[renderer];
-
             renderer.GetSharedMaterials(allocMaterialList);
             Material firstMat = allocMaterialList[0];
 
             if (firstMat == null)
-            {
-                renderersVisibility.Add(renderer, true);
                 return true;
-            }
 
             if (firstMat.HasProperty(ShaderUtils.ZWrite) &&
                 (int) firstMat.GetFloat(ShaderUtils.ZWrite) == 0)
             {
-                renderersVisibility.Add(renderer, false);
                 return false;
             }
 
-            renderersVisibility.Add(renderer, true);
             return true;
         }
 
@@ -108,26 +98,18 @@ namespace DCL.Rendering
         /// <returns>True if the renderer is emissive.</returns>
         internal static bool IsEmissive(Renderer renderer)
         {
-            if (renderersVisibility.ContainsKey(renderer))
-                return renderersVisibility[renderer];
-
             renderer.GetSharedMaterials(allocMaterialList);
             Material firstMat = allocMaterialList[0];
 
             if (firstMat == null)
-            {
-                renderersVisibility.Add(renderer, false);
                 return false;
-            }
 
-            if ((firstMat.HasProperty(ShaderUtils.EmissionMap) && firstMat.GetTexture(ShaderUtils.EmissionMap) != null) ||
-                (firstMat.HasProperty(ShaderUtils.EmissionColor) && firstMat.GetColor(ShaderUtils.EmissionColor) != Color.clear))
-            {
-                renderersVisibility.Add(renderer, true);
+            if (firstMat.HasProperty(ShaderUtils.EmissionMap) && firstMat.GetTexture(ShaderUtils.EmissionMap) != null)
                 return true;
-            }
 
-            renderersVisibility.Add(renderer, false);
+            if (firstMat.HasProperty(ShaderUtils.EmissionColor) && firstMat.GetColor(ShaderUtils.EmissionColor) != Color.clear)
+                return true;
+
             return false;
         }
 

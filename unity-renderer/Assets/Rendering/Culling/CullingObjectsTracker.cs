@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
@@ -40,8 +41,20 @@ namespace DCL.Rendering
             List<SkinnedMeshRenderer> skinnedRenderersList = new List<SkinnedMeshRenderer>();
             Renderer[] allRenderers = Object.FindObjectsOfType<Renderer>();
 
+            //GameObject[] gos = SceneManager.GetActiveScene().GetRootGameObjects();
+
+            yield return null;
+
+            int amount = 0;
             foreach (Renderer renderer in allRenderers)
             {
+                if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
+                {
+                    yield return null;
+                    amount = 0;
+                }
+                amount++;
+
                 if ((((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
                     && !(renderer is ParticleSystemRenderer))
                 {
