@@ -74,9 +74,9 @@ Material:
     - Vector1_c87711ac559c4306ada261dfe896c46a: 0.02
     - _ColorMask: 15
     - _FogFade: 7500
-    - _FogIntensity: 0
+    - _FogIntensity: 1
     - _GrassGridFade: 45000
-    - _GrassGridFarFade: 3500
+    - _GrassGridFarFade: 4500
     - _GrassGridIntenseFade: 3000
     - _GrassGridThickness: 0.04
     - _GrassGridThicknessVariation: 0.05
