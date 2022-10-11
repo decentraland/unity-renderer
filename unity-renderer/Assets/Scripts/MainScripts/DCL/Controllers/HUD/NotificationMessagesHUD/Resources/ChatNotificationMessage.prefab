@@ -642,6 +642,7 @@ MonoBehaviour:
   notificationTimestamp: {fileID: 9112808225028901382}
   image: {fileID: 3187331134329545017}
   imageBackground: {fileID: 62235492067932950}
+  multiNotificationBackground: {fileID: 0}
   firstSeparator: {fileID: 3114354280389063715}
   secondSeparator: {fileID: 1677442955841434726}
   isPrivate: 1
@@ -662,12 +663,17 @@ MonoBehaviour:
     notificationTargetId: 
   privateColor: {r: 0.10980392, g: 0.93333334, b: 0.4862745, a: 1}
   publicColor: {r: 0.7607843, g: 0.8235294, b: 0.9843137, a: 1}
+  standardColor: {r: 0, g: 0, b: 0, a: 0}
   channelColors:
   - {r: 0.98039216, g: 0.31764707, b: 0.31764707, a: 1}
-  - {r: 0.88235295, g: 0.49411765, b: 0.13333334, a: 1}
-  - {r: 0.9843137, g: 0.78039217, b: 0.05882353, a: 1}
-  - {r: 0.9882353, g: 0.39607844, b: 1, a: 1}
-  - {r: 0.03529412, g: 0.5921569, b: 1, a: 1}
+  - {r: 1, g: 0.6392157, b: 0.4392157, a: 1}
+  - {r: 1, g: 0.47843137, b: 0, a: 1}
+  - {r: 1, g: 0.81960785, b: 0.36078432, a: 1}
+  - {r: 0.8, g: 1, b: 0.38039216, a: 1}
+  - {r: 0.42745098, g: 0.9647059, b: 1, a: 1}
+  - {r: 0.36078432, g: 0.654902, b: 1, a: 1}
+  - {r: 0.6862745, g: 0.49019608, b: 1, a: 1}
+  shouldAnimateFocus: 1
   notificationTargetId: 
 --- !u!114 &6661278415341880864
 MonoBehaviour:
