@@ -17,6 +17,7 @@ public class WorldChatWindowController : IHUD
     private const int DMS_PAGE_SIZE = 30;
     private const int USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH = 20;
     private const int CHANNELS_PAGE_SIZE = 10;
+    private const int MINUTES_FOR_AUTOMATIC_CHANNELS_INFO_RELOADING = 1;
 
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IFriendsController friendsController;
@@ -40,6 +41,7 @@ public class WorldChatWindowController : IHUD
     private bool areJoinedChannelsRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
 
     public IWorldChatWindowView View => view;
 
@@ -161,6 +163,8 @@ public class WorldChatWindowController : IHUD
         
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken?.Dispose();
+        reloadingChannelsInfoCancellationToken.Cancel();
+        reloadingChannelsInfoCancellationToken.Dispose();
 
         channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
@@ -179,15 +183,24 @@ public class WorldChatWindowController : IHUD
                 RequestUnreadMessages();
             }
 
-            if (channelsFeatureFlagService.IsChannelsFeatureEnabled() && 
-                !areJoinedChannelsRequestedByFirstTime)
+            if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                RequestJoinedChannels();
-                RequestUnreadChannelsMessages();
+                if (!areJoinedChannelsRequestedByFirstTime)
+                {
+                    RequestJoinedChannels();
+                    RequestUnreadChannelsMessages();
+                }
+                else
+                {
+                    SetAutomaticChannelsInfoUpdatingActive(true);
+                }
             }
         }
         else
+        {
             view.Hide();
+            SetAutomaticChannelsInfoUpdatingActive(false);
+        }
     }
     
     private void OpenChannelCreationWindow()
@@ -517,4 +530,43 @@ public class WorldChatWindowController : IHUD
     }
 
     private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonActive(isAllowed);
+
+    private void SetAutomaticChannelsInfoUpdatingActive(bool isActive)
+    {
+        reloadingChannelsInfoCancellationToken.Cancel();
+
+        if (isActive)
+        {
+            GetCurrentChannelsInfo();
+            reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
+            ReloadChannelsInfoPeriodically(reloadingChannelsInfoCancellationToken.Token).Forget();
+        }
+    }
+
+    private async UniTask ReloadChannelsInfoPeriodically(CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            await UniTask.Delay(MINUTES_FOR_AUTOMATIC_CHANNELS_INFO_RELOADING * 60 * 1000, cancellationToken: cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            GetCurrentChannelsInfo();
+        }
+    }
+
+    private void GetCurrentChannelsInfo()
+    {
+        // TODO: Use this code once kernel accepts a list of channels in the "GetChannelInfo" message
+        //chatController.GetChannelInfo(publicChannels
+        //        .Select(x => x.Key)
+        //        .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
+        //        .ToArray());
+        foreach (var channel in publicChannels)
+        {
+            string[] channelsToGetInfo = { channel.Key };
+            chatController.GetChannelInfo(channelsToGetInfo);
+        }
+    }
 }

@@ -108,6 +108,9 @@ namespace DCL.Chat.HUD
             SetVisiblePanelList(visible);
             if (visible)
             {
+                if (channelMembersHUDController.IsVisible)
+                    channelMembersHUDController.SetAutomaticReloadingActive(true);
+
                 View?.SetLoadingMessagesActive(false);
                 View?.SetOldMessagesLoadingActive(false);
 

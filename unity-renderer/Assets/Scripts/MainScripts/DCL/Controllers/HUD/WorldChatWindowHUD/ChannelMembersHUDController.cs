@@ -9,7 +9,7 @@ namespace DCL.Chat.HUD
     {
         private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
-        private const int MINUTES_FOR_AUTOMATIC_RELOADING = 5;
+        private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
         private IChannelMembersComponentView view;
@@ -23,6 +23,7 @@ namespace DCL.Chat.HUD
 
         public IChannelMembersComponentView View => view;
         public string CurrentChannelId => currentChannelId;
+        public bool IsVisible => isVisible;
 
         public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController, IUserProfileBridge userProfileBridge)
         {
