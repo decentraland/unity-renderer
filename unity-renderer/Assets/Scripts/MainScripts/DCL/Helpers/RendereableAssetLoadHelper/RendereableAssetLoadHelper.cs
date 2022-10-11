@@ -191,7 +191,12 @@ namespace DCL.Components
                        {
                            var matText = "";
 
-                           matText += $"ENTITY_{r.ownerId} " + mat.name + " ";
+                           matText += $"{r.container.name} " + mat.name + " ";
+                           
+                           mat.EnableKeyword("_ALPHATEST_ON");
+                           mat.EnableKeyword("_EMISSION");
+                           mat.EnableKeyword("_METALLICSPECGLOSSMAP");
+                           mat.EnableKeyword("_NORMALMAP");
                            
                            // if (x.container.transform.AnyAncestorNameContains("253440"))
                            // {
@@ -391,7 +396,7 @@ namespace DCL.Components
                 {
                     var matText = "";
 
-                    matText += $"ENTITY_{r.ownerId} " + mat.name + " ";
+                    matText += $"{r.container.name} " + mat.name + " ";
                            
                     // if (x.container.transform.AnyAncestorNameContains("253440"))
                     // {
