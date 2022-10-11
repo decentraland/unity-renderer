@@ -129,6 +129,7 @@ namespace DCL.Components
             {
                 LoadGLTFast(targetUrl, OnSuccessEvent, exception =>
                 {
+                    Debug.LogError($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
                     LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
                 });
             }

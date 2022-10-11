@@ -21,10 +21,18 @@ namespace DCL.GLTFast.Wrappers
             this.fileToUrl = fileToUrl;
         }
 
-        public async Task<IDownload> Request(Uri url)
+        public async Task<IDownload> Request(Uri uri)
         {
+            string finalUrl = uri.OriginalString;
+
+            string fileName = uri.AbsolutePath.Substring(uri.AbsolutePath.LastIndexOf('/') + 1);
+            if (fileToUrl(fileName, out string url))
+            {
+                finalUrl = url;
+            }
+            
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
-                url: url.AbsoluteUri,
+                url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 30,
                 disposeOnCompleted: false,
@@ -40,7 +48,7 @@ namespace DCL.GLTFast.Wrappers
 
             if (!wrapper.success)
             {
-                Debug.LogError("[GLTFast WebRequest Failed] " + asyncOp.asyncOp.webRequest.url);
+                Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}");
             }
 
             return wrapper;
