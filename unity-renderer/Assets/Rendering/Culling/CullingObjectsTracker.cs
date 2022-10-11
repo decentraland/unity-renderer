@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
@@ -41,7 +39,8 @@ namespace DCL.Rendering
             List<SkinnedMeshRenderer> skinnedRenderersList = new List<SkinnedMeshRenderer>();
             Renderer[] allRenderers = Object.FindObjectsOfType<Renderer>();
 
-            //GameObject[] gos = SceneManager.GetActiveScene().GetRootGameObjects();
+            // TODO new task, avoid FindGameObjectsOfType and use:
+            // SceneManager.GetActiveScene().GetRootGameObjects(), calculate from there.
 
             yield return null;
 

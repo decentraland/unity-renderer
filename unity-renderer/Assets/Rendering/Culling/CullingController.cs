@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
-using System.Linq;
-using DG.Tweening.Core.Easing;
 
 namespace DCL.Rendering
 {
@@ -154,23 +152,18 @@ namespace DCL.Rendering
         internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
         {
             Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
-            int amount = 0;
-            float maxAmountPerFrame = Mathf.Min(
-                (float)renderers.Count() / CullingControllerSettings.MAX_FRAES_PER_FULL_CULLING,
-                CullingControllerSettings.MAX_CULLING_ELEMENTS_PER_FRAME);
-
+            float currentStartTime = Time.realtimeSinceStartup;
             foreach (Renderer r in renderers)
             {
                 if (r == null)
                     continue;
 
-                if (amount >= maxAmountPerFrame)
+                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
-                    amount = 0;
+                    currentStartTime = Time.realtimeSinceStartup;
                 }
-                amount++;
 
                 Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
@@ -220,22 +213,18 @@ namespace DCL.Rendering
         internal IEnumerator ProcessProfileWithDisabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
         {
             Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
-            int amount = 0;
-            float maxAmountPerFrame = (float)renderers.Count() /
-                CullingControllerSettings.MAX_FRAES_PER_FULL_CULLING_WHEN_CULLING_IS_DEACTIVATED;
-
+            float currentStartTime = Time.realtimeSinceStartup;
             foreach (Renderer r in renderers)
             {
                 if (r == null)
                     continue;
 
-                if (amount >= maxAmountPerFrame)
+                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
-                    amount = 0;
+                    currentStartTime = Time.realtimeSinceStartup;
                 }
-                amount++;
 
                 Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
@@ -248,16 +237,7 @@ namespace DCL.Rendering
                 bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
-                {
-                    Material mat = skr.sharedMaterial;
-
-                    if (IsAvatarRenderer(mat))
-                    {
-                        shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
-                    }
-
                     skr.updateWhenOffscreen = false;
-                }
 
                 if (OnDataReport != null)
                 {

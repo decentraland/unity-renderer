@@ -9,13 +9,10 @@ namespace DCL.Rendering
     [System.Serializable]
     public class CullingControllerSettings
     {
-        public const int MAX_FRAES_PER_FULL_CULLING = 600;
-        public const int MAX_FRAES_PER_FULL_CULLING_WHEN_CULLING_IS_DEACTIVATED = 60;
         public const int MAX_POPULATING_ELEMENTS_PER_FRAME = 100;
-        public const int MAX_CULLING_ELEMENTS_PER_FRAME = 10;
 
         [NonSerialized]
-        public float maxTimeBudget = 2 / 1000;
+        public float maxTimeBudget = 1f / 1000;
 
         public bool enableObjectCulling = true;
         public bool enableShadowCulling = true;
