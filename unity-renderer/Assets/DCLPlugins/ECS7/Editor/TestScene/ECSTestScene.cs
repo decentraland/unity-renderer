@@ -143,9 +143,7 @@ public class ECSTestScene : MonoBehaviour
     private static void AddBillBoardComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         PBBillboard model = new PBBillboard();
-        model.X = false;
-        model.Y = true;
-        model.Z = false;
+        model.BillboardMode = BillboardMode.Yaxe;
         componentWriter.PutComponent(sceneId, 3, ComponentID.BILLBOARD,
             model);
     }

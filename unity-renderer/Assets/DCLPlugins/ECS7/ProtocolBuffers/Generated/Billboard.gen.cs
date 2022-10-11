@@ -25,18 +25,28 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch5lY3MvY29tcG9uZW50cy9CaWxsYm9hcmQucHJvdG8SEGRlY2VudHJhbGFu",
-            "ZC5lY3MiTwoLUEJCaWxsYm9hcmQSDgoBeBgBIAEoCEgAiAEBEg4KAXkYAiAB",
-            "KAhIAYgBARIOCgF6GAMgASgISAKIAQFCBAoCX3hCBAoCX3lCBAoCX3pCFKoC",
-            "EURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "ZC5lY3MikgEKC1BCQmlsbGJvYXJkEjsKDWJpbGxib2FyZE1vZGUYASABKA4y",
+            "Hy5kZWNlbnRyYWxhbmQuZWNzLkJpbGxib2FyZE1vZGVIAIgBARIeChFvcHBv",
+            "c2l0ZURpcmVjdGlvbhgCIAEoCEgBiAEBQhAKDl9iaWxsYm9hcmRNb2RlQhQK",
+            "El9vcHBvc2l0ZURpcmVjdGlvbiomCg1CaWxsYm9hcmRNb2RlEgsKB0FsbEF4",
+            "ZXMQABIICgRZQXhlEAFCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBBillboard), global::DCL.ECSComponents.PBBillboard.Parser, new[]{ "X", "Y", "Z" }, new[]{ "X", "Y", "Z" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.BillboardMode), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBBillboard), global::DCL.ECSComponents.PBBillboard.Parser, new[]{ "BillboardMode", "OppositeDirection" }, new[]{ "BillboardMode", "OppositeDirection" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum BillboardMode {
+    [pbr::OriginalName("AllAxes")] AllAxes = 0,
+    [pbr::OriginalName("YAxe")] Yaxe = 1,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBBillboard : pb::IMessage<PBBillboard>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -74,9 +84,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBBillboard(PBBillboard other) : this() {
       _hasBits0 = other._hasBits0;
-      x_ = other.x_;
-      y_ = other.y_;
-      z_ = other.z_;
+      billboardMode_ = other.billboardMode_;
+      oppositeDirection_ = other.oppositeDirection_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -86,88 +95,60 @@ namespace DCL.ECSComponents {
       return new PBBillboard(this);
     }
 
-    /// <summary>Field number for the "x" field.</summary>
-    public const int XFieldNumber = 1;
-    private bool x_;
+    /// <summary>Field number for the "billboardMode" field.</summary>
+    public const int BillboardModeFieldNumber = 1;
+    private global::DCL.ECSComponents.BillboardMode billboardMode_;
     /// <summary>
-    /// default=true
+    /// default=AllAxes
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool X {
-      get { if ((_hasBits0 & 1) != 0) { return x_; } else { return false; } }
+    public global::DCL.ECSComponents.BillboardMode BillboardMode {
+      get { if ((_hasBits0 & 1) != 0) { return billboardMode_; } else { return global::DCL.ECSComponents.BillboardMode.AllAxes; } }
       set {
         _hasBits0 |= 1;
-        x_ = value;
+        billboardMode_ = value;
       }
     }
-    /// <summary>Gets whether the "x" field is set</summary>
+    /// <summary>Gets whether the "billboardMode" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasX {
+    public bool HasBillboardMode {
       get { return (_hasBits0 & 1) != 0; }
     }
-    /// <summary>Clears the value of the "x" field</summary>
+    /// <summary>Clears the value of the "billboardMode" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearX() {
+    public void ClearBillboardMode() {
       _hasBits0 &= ~1;
     }
 
-    /// <summary>Field number for the "y" field.</summary>
-    public const int YFieldNumber = 2;
-    private bool y_;
+    /// <summary>Field number for the "oppositeDirection" field.</summary>
+    public const int OppositeDirectionFieldNumber = 2;
+    private bool oppositeDirection_;
     /// <summary>
-    /// default=true
+    /// default=false
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Y {
-      get { if ((_hasBits0 & 2) != 0) { return y_; } else { return false; } }
+    public bool OppositeDirection {
+      get { if ((_hasBits0 & 2) != 0) { return oppositeDirection_; } else { return false; } }
       set {
         _hasBits0 |= 2;
-        y_ = value;
+        oppositeDirection_ = value;
       }
     }
-    /// <summary>Gets whether the "y" field is set</summary>
+    /// <summary>Gets whether the "oppositeDirection" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasY {
+    public bool HasOppositeDirection {
       get { return (_hasBits0 & 2) != 0; }
     }
-    /// <summary>Clears the value of the "y" field</summary>
+    /// <summary>Clears the value of the "oppositeDirection" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearY() {
+    public void ClearOppositeDirection() {
       _hasBits0 &= ~2;
-    }
-
-    /// <summary>Field number for the "z" field.</summary>
-    public const int ZFieldNumber = 3;
-    private bool z_;
-    /// <summary>
-    /// default=true
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Z {
-      get { if ((_hasBits0 & 4) != 0) { return z_; } else { return false; } }
-      set {
-        _hasBits0 |= 4;
-        z_ = value;
-      }
-    }
-    /// <summary>Gets whether the "z" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasZ {
-      get { return (_hasBits0 & 4) != 0; }
-    }
-    /// <summary>Clears the value of the "z" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearZ() {
-      _hasBits0 &= ~4;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -185,9 +166,8 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (X != other.X) return false;
-      if (Y != other.Y) return false;
-      if (Z != other.Z) return false;
+      if (BillboardMode != other.BillboardMode) return false;
+      if (OppositeDirection != other.OppositeDirection) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -195,9 +175,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasX) hash ^= X.GetHashCode();
-      if (HasY) hash ^= Y.GetHashCode();
-      if (HasZ) hash ^= Z.GetHashCode();
+      if (HasBillboardMode) hash ^= BillboardMode.GetHashCode();
+      if (HasOppositeDirection) hash ^= OppositeDirection.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -216,17 +195,13 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (HasX) {
+      if (HasBillboardMode) {
         output.WriteRawTag(8);
-        output.WriteBool(X);
+        output.WriteEnum((int) BillboardMode);
       }
-      if (HasY) {
+      if (HasOppositeDirection) {
         output.WriteRawTag(16);
-        output.WriteBool(Y);
-      }
-      if (HasZ) {
-        output.WriteRawTag(24);
-        output.WriteBool(Z);
+        output.WriteBool(OppositeDirection);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -238,17 +213,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasX) {
+      if (HasBillboardMode) {
         output.WriteRawTag(8);
-        output.WriteBool(X);
+        output.WriteEnum((int) BillboardMode);
       }
-      if (HasY) {
+      if (HasOppositeDirection) {
         output.WriteRawTag(16);
-        output.WriteBool(Y);
-      }
-      if (HasZ) {
-        output.WriteRawTag(24);
-        output.WriteBool(Z);
+        output.WriteBool(OppositeDirection);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -260,13 +231,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (HasX) {
-        size += 1 + 1;
+      if (HasBillboardMode) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) BillboardMode);
       }
-      if (HasY) {
-        size += 1 + 1;
-      }
-      if (HasZ) {
+      if (HasOppositeDirection) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -281,14 +249,11 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.HasX) {
-        X = other.X;
+      if (other.HasBillboardMode) {
+        BillboardMode = other.BillboardMode;
       }
-      if (other.HasY) {
-        Y = other.Y;
-      }
-      if (other.HasZ) {
-        Z = other.Z;
+      if (other.HasOppositeDirection) {
+        OppositeDirection = other.OppositeDirection;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -306,15 +271,11 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            X = input.ReadBool();
+            BillboardMode = (global::DCL.ECSComponents.BillboardMode) input.ReadEnum();
             break;
           }
           case 16: {
-            Y = input.ReadBool();
-            break;
-          }
-          case 24: {
-            Z = input.ReadBool();
+            OppositeDirection = input.ReadBool();
             break;
           }
         }
@@ -333,15 +294,11 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            X = input.ReadBool();
+            BillboardMode = (global::DCL.ECSComponents.BillboardMode) input.ReadEnum();
             break;
           }
           case 16: {
-            Y = input.ReadBool();
-            break;
-          }
-          case 24: {
-            Z = input.ReadBool();
+            OppositeDirection = input.ReadBool();
             break;
           }
         }

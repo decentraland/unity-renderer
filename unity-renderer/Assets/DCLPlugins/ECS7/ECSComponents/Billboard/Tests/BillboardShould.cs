@@ -71,9 +71,8 @@ namespace DCL.ECSComponents.Test
             var newModel = SerializaAndDeserialize(model);
 
             // Assert
-            Assert.AreEqual(model.X, newModel.X);
-            Assert.AreEqual(model.Y, newModel.Y);
-            Assert.AreEqual(model.Z, newModel.Z);
+            Assert.AreEqual(model.OppositeDirection, newModel.OppositeDirection);
+            Assert.AreEqual(model.BillboardMode, newModel.BillboardMode);
         }
 
         private PBBillboard SerializaAndDeserialize(PBBillboard pb)
@@ -85,9 +84,8 @@ namespace DCL.ECSComponents.Test
         private PBBillboard CreateModel()
         {
             PBBillboard model = new PBBillboard();
-            model.X = true;
-            model.Y = false;
-            model.Z = false;
+            model.OppositeDirection = true;
+            model.BillboardMode = BillboardMode.AllAxes;
             return model;
         }
     }
