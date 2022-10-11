@@ -20,16 +20,14 @@ namespace DCL.FPSDisplay
         [SerializeField] internal List<DebugValue> valuesToUpdate;
         [SerializeField] private Button closeButton;
         [SerializeField] private CopyToClipboardButton copySceneToClipboard;
+        [SerializeField] private DebugSection memorySection;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private int lastPlayerCount;
         private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
-
         private Promise<KernelConfigModel> kernelConfigPromise;
         private string currentNetwork = string.Empty;
         private string currentRealmValue = string.Empty;
-
-        private Vector2 minSize = Vector2.zero;
         private Dictionary<DebugValueEnum, Func<string>> updateValueDictionary;
         private float fps;
         private string fpsColor;
@@ -38,11 +36,17 @@ namespace DCL.FPSDisplay
         private IParcelScene activeScene;
         private int totalMessagesCurrent;
         private int totalMessagesGlobal;
+        private BaseVariable<float> jsUsedHeapSize => DataStore.i.debugConfig.jsUsedHeapSize;
+        private BaseVariable<float> jsHeapSizeLimit => DataStore.i.debugConfig.jsHeapSizeLimit;
+        private BaseVariable<float> jsTotalHeapSize => DataStore.i.debugConfig.jsTotalHeapSize;
 
         private void Start()
         {
             closeButton.onClick.AddListener(() =>DataStore.i.debugConfig.isFPSPanelVisible.Set(false));
             copySceneToClipboard.SetFuncToCopy(() =>  activeScene.sceneData.id);
+#if UNITY_STANDALONE || !UNITY_EDITOR
+            memorySection.gameObject.SetActive(false);
+#endif
         }
 
         private void OnEnable()
@@ -83,6 +87,11 @@ namespace DCL.FPSDisplay
             
             updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
             
+            updateValueDictionary.Add(DebugValueEnum.Skybox_Config, () => DataStore.i.skyboxConfig.configToLoad.Get());
+            updateValueDictionary.Add(DebugValueEnum.Skybox_Duration, () => $"{DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
+            updateValueDictionary.Add(DebugValueEnum.Skybox_GameTime, () => $"{DataStore.i.skyboxConfig.currentVirtualTime.Get().ToString(TWO_DECIMALS)}");
+            updateValueDictionary.Add(DebugValueEnum.Skybox_UTCTime, () => $"{DataStore.i.worldTimer.GetCurrentTime()}");
+            
             updateValueDictionary.Add(DebugValueEnum.General_Network, () => currentNetwork.ToUpper());
             updateValueDictionary.Add(DebugValueEnum.General_Realm, () => currentRealmValue.ToUpper());
             updateValueDictionary.Add(DebugValueEnum.General_NearbyPlayers, () => lastPlayerCount.ToString());
@@ -103,10 +112,9 @@ namespace DCL.FPSDisplay
             updateValueDictionary.Add(DebugValueEnum.Scene_Bodies, () => GetSceneMetric(metrics.bodies,limits.bodies));
             updateValueDictionary.Add(DebugValueEnum.Scene_Components, () => (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString());
             
-            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  $"{DataStore.i.debugConfig.usedJSHeapSize.Get().ToString(TWO_DECIMALS)} M");
-            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"{DataStore.i.debugConfig.jsHeapSizeLimit.Get().ToString(TWO_DECIMALS)} M");
-            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => $"{DataStore.i.debugConfig.totalJSHeapSize.Get().ToString(TWO_DECIMALS)} M");
-
+            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  GetMemoryMetric(jsUsedHeapSize.Get()));
+            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => GetMemoryMetric(jsTotalHeapSize.Get()));
+            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"{jsHeapSizeLimit.Get().ToString(TWO_DECIMALS)} Mb");
         }
         
         private string GetFPSCount()
@@ -120,6 +128,11 @@ namespace DCL.FPSDisplay
         private string GetSceneMetric(int value, int limit)
         {
             return $"{GetColor(GetHexColor(FPSColoring.GetPercentageColoring(value, limit)))}current: {value} max: {limit}</color>";
+        }
+        
+        private string GetMemoryMetric(float value)
+        {
+            return $"{GetColor(GetHexColor(FPSColoring.GetMemoryColoring(value)))}{value.ToString(TWO_DECIMALS)} Mb</color>";
         }
         
         private string GetSceneID()

@@ -19,13 +19,6 @@ namespace DCL
         }
 
         [Serializable]
-        class DetectABsPayload
-        {
-            public bool isOn;
-            public bool forCurrentScene;
-        }
-        
-        [Serializable]
         class MemoryDescriptionPayload
         {
             public long jsHeapSizeLimit;
@@ -66,9 +59,9 @@ namespace DCL
         public void SetMemoryUsage(string payload)
         {
             var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
-            DataStore.i.debugConfig.usedJSHeapSize.Set(data.usedJSHeapSize / 1024f / 1024f);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize / 1024f / 1024f);
             DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit / 1024f / 1024f);
-            DataStore.i.debugConfig.totalJSHeapSize.Set(data.totalJSHeapSize / 1024f / 1024f);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize / 1024f / 1024f);
         }
 
         public void SetEngineDebugPanel()

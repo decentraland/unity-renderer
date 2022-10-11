@@ -45,10 +45,10 @@ namespace DCL
         public BaseVariable<float> jsHeapSizeLimit = new BaseVariable<float>();
         
         [System.NonSerialized]
-        public BaseVariable<float> totalJSHeapSize = new BaseVariable<float>();
+        public BaseVariable<float> jsTotalHeapSize = new BaseVariable<float>();
         
         [System.NonSerialized]
-        public BaseVariable<float> usedJSHeapSize = new BaseVariable<float>();
+        public BaseVariable<float> jsUsedHeapSize = new BaseVariable<float>();
 
         /// <summary>
         /// True when WSS message pipeline is enabled

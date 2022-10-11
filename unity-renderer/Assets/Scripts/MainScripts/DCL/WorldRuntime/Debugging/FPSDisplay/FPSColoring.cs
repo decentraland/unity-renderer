@@ -47,6 +47,18 @@ namespace DCL.FPSDisplay
             }
             return GOOD_COLOR;
         }
-        
+
+        public static Color GetMemoryColoring(float memoryValue)
+        {
+            if (memoryValue > 1500)
+            {
+                return BAD_COLOR;
+            }
+            if (memoryValue > 1800)
+            {
+                return UNBEARABLE_COLOR;
+            }
+            return GOOD_COLOR;
+        }
     }
 }
