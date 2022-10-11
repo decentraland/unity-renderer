@@ -235,6 +235,18 @@ namespace DCL
                     loadedPortableExperienceScenes.Remove(loadedScene.sceneData.id);
             }
         }
+        
+        // TODO: call this somewhere ???
+        public void RemovePortableExperienceScene(string sceneId)
+        {
+            IParcelScene scene;
+            if (loadedPortableExperienceScenes.TryGetValue(sceneId, out scene))
+            {
+                globalScenes.Remove(scene);
+                loadedScenes.Remove(scene.sceneData.sceneNumber);
+                globalSceneNumbers.Remove(scene.sceneData.sceneNumber);
+            }
+        }
 
         public void Dispose()
         {

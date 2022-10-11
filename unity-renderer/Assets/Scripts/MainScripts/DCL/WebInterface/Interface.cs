@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Ray = UnityEngine.Ray;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -70,7 +71,6 @@ namespace DCL.Interface
                 public int sceneNumber;
             }
 
-            // TODO: Change receiving end in Kernel to recognize the new property in the message
             public SceneReady(int sceneNumber) : base("SceneReady", new Payload() { sceneNumber = sceneNumber }) { }
         }
 
@@ -428,7 +428,7 @@ namespace DCL.Interface
         [Serializable]
         private class SetHomeScenePayload
         {
-            public string sceneId;
+            public string sceneCoords;
         }
 
         [System.Serializable]
@@ -1384,11 +1384,11 @@ namespace DCL.Interface
             });
         }
 
-        public static void SetHomeScene(string sceneID)
+        public static void SetHomeScene(string sceneCoords)
         {
             SendMessage("SetHomeScene", new SetHomeScenePayload
             {
-                sceneId = sceneID
+                sceneCoords = sceneCoords
             });
         }
 

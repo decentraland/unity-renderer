@@ -598,6 +598,9 @@ namespace DCL
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
+            
+            if (VERBOSE)
+                Debug.Log($"{Time.frameCount}: Trying to load scene: id: {sceneToLoad.id}; number: {sceneToLoad.sceneNumber}");
 
             if (sceneToLoad == null || sceneToLoad.sceneNumber <= 0)
                 return;
@@ -794,7 +797,7 @@ namespace DCL
 
             // int newGlobalSceneNumber = -1 - globalScene.sceneNumber;
             int newGlobalSceneNumber = globalScene.sceneNumber;
-            Debug.Log($"CreateGlobalScene - sceneNumber:{newGlobalSceneNumber}");
+            // Debug.Log($"CreateGlobalScene - sceneNumber:{newGlobalSceneNumber}");
 
             IWorldState worldState = Environment.i.world.state;
 
