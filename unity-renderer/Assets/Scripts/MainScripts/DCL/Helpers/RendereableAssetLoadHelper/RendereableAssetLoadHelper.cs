@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -188,121 +189,135 @@ namespace DCL.Components
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           var newMaterial = new Material(mat.shader);
-
-                           var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
-                           var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
+                           var matText = mat.ToText();
                            
-                           var oldNamesMissingInNewMaterial = new List<string>();
-                           var newNamesMissingInOldMaterial = new List<string>();
-                           var overlapNames = new List<string>();
-                           foreach (var oldPorpertyName in propertiesOfOldMaterial)
-                           {
-                               if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
-                               {
-                                   oldNamesMissingInNewMaterial.Add(oldPorpertyName);
-                               }
-                               else
-                               {
-                                   overlapNames.Add(oldPorpertyName);
-                               }
-                           }
-
-                           foreach (var newPropertyName in propertiesOfNewMaterial)
-                           {
-                               if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
-                               {
-                                   newNamesMissingInOldMaterial.Add(newPropertyName);
-                               }
-                           }
-
-                           string log = "";
-
-                           var renderPipelineTagValue = mat.GetTag("RenderPipeline", false);
-                           var renderTypeTagValue = mat.GetTag("RenderType", false);
-                           var newPipelineTagValue = newMaterial.GetTag("RenderPipeline", false);
-                           var newTypeTagValue = newMaterial.GetTag("RenderType", false);
-
-                           log += $"Old tags RenderPipeline={renderPipelineTagValue} RenderType={renderTypeTagValue} ";
-                           log += $"\n New tags RenderPipeline={newPipelineTagValue} RenderType={newTypeTagValue} ";
-                           
-                           log += "\n Old properties missing in new mat: ";
-                           foreach (var oldName in oldNamesMissingInNewMaterial)
-                           {
-                               log += oldName + " ";
-                           }
-                           log += "\n New properties missing in old mat: ";
-                           foreach (var newName in newNamesMissingInOldMaterial)
-                           {
-                               log += newName + " ";
-                           }
-                           log += "\n Overlapped properties: ";
-                           foreach (var overlapName in overlapNames)
-                           {
-                               log += overlapName + " ";
-                           }
-
-                           if (mat.shaderKeywords != null)
-                           {
-                               if (mat.shaderKeywords.Length > 0)
-                               {
-                                   log += "\n Old material keywords: ";
-                                   foreach (var keyword in mat.shaderKeywords)
-                                   {
-                                       log += keyword + " ";
-                                   }
-                               }
-                           }
-
-                           if(mat.shaderKeywords != null)
-                                newMaterial.shaderKeywords = mat.shaderKeywords.ToArray();
-                           
-                           // newMaterial.shaderKeywords = new string[4]
-                           // {
-                           //     "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
-                           // };
-                           
-                           if (newMaterial.shaderKeywords != null)
-                           {
-                               if (newMaterial.shaderKeywords.Length > 0)
-                               {
-                                   log += "\n New material keywords: ";
-                                   foreach (var keyword in newMaterial.shaderKeywords)
-                                   {
-                                       log += keyword + " ";
-                                   }
-                               }
-                           }
-
-                           log += "\n Passes enabled: ";
-                           for (int i = 0; i < mat.passCount; i++)
-                           {
-                               var passName = mat.GetPassName(i);
-                               if (mat.GetShaderPassEnabled(passName))
-                               {
-                                   log += passName + " ";
-                               }
-                           }
-
                            if (mat.name.Contains("Mika"))
                            {
-                               log +="\n (Mika Material)";
+                               matText +="\n (Mika Material)";
                            }
-                           
-                           if (mat.name.Contains("beam_static"))
+                    
+                           if (mat.name.Contains("Beam_blue"))
                            {
-                               log +="\n (beam_static Material)";
+                               matText +="\n (Beam_blue Material)";
                            }
-                           
-                           UnityEngine.Debug.LogError(log);
-                           
-                           newMaterial.CopyPropertiesFromMaterial(mat);
-                           materialsCloneList.Add(newMaterial);
+                    
+                           Debug.LogError(matText);
+                           // Debug.LogError(matText);
+                           // var newMaterial = new Material(mat.shader);
+                           //
+                           // var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
+                           // var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
+                           //
+                           // var oldNamesMissingInNewMaterial = new List<string>();
+                           // var newNamesMissingInOldMaterial = new List<string>();
+                           // var overlapNames = new List<string>();
+                           // foreach (var oldPorpertyName in propertiesOfOldMaterial)
+                           // {
+                           //     if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
+                           //     {
+                           //         oldNamesMissingInNewMaterial.Add(oldPorpertyName);
+                           //     }
+                           //     else
+                           //     {
+                           //         overlapNames.Add(oldPorpertyName);
+                           //     }
+                           // }
+                           //
+                           // foreach (var newPropertyName in propertiesOfNewMaterial)
+                           // {
+                           //     if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
+                           //     {
+                           //         newNamesMissingInOldMaterial.Add(newPropertyName);
+                           //     }
+                           // }
+                           //
+                           // string log = "";
+                           //
+                           // var renderPipelineTagValue = mat.GetTag("RenderPipeline", false);
+                           // var renderTypeTagValue = mat.GetTag("RenderType", false);
+                           // var newPipelineTagValue = newMaterial.GetTag("RenderPipeline", false);
+                           // var newTypeTagValue = newMaterial.GetTag("RenderType", false);
+                           //
+                           // log += $"Old tags RenderPipeline={renderPipelineTagValue} RenderType={renderTypeTagValue} ";
+                           // log += $"\n New tags RenderPipeline={newPipelineTagValue} RenderType={newTypeTagValue} ";
+                           //
+                           // log += "\n Old properties missing in new mat: ";
+                           // foreach (var oldName in oldNamesMissingInNewMaterial)
+                           // {
+                           //     log += oldName + " ";
+                           // }
+                           // log += "\n New properties missing in old mat: ";
+                           // foreach (var newName in newNamesMissingInOldMaterial)
+                           // {
+                           //     log += newName + " ";
+                           // }
+                           // log += "\n Overlapped properties: ";
+                           // foreach (var overlapName in overlapNames)
+                           // {
+                           //     log += overlapName + " ";
+                           // }
+                           //
+                           // if (mat.shaderKeywords != null)
+                           // {
+                           //     if (mat.shaderKeywords.Length > 0)
+                           //     {
+                           //         log += "\n Old material keywords: ";
+                           //         foreach (var keyword in mat.shaderKeywords)
+                           //         {
+                           //             log += keyword + " ";
+                           //         }
+                           //     }
+                           // }
+                           //
+                           // if(mat.shaderKeywords != null)
+                           //      newMaterial.shaderKeywords = mat.shaderKeywords.ToArray();
+                           //
+                           // // newMaterial.shaderKeywords = new string[4]
+                           // // {
+                           // //     "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
+                           // // };
+                           //
+                           // if (newMaterial.shaderKeywords != null)
+                           // {
+                           //     if (newMaterial.shaderKeywords.Length > 0)
+                           //     {
+                           //         log += "\n New material keywords: ";
+                           //         foreach (var keyword in newMaterial.shaderKeywords)
+                           //         {
+                           //             log += keyword + " ";
+                           //         }
+                           //     }
+                           // }
+                           //
+                           // log += "\n Passes enabled: ";
+                           // for (int i = 0; i < mat.passCount; i++)
+                           // {
+                           //     var passName = mat.GetPassName(i);
+                           //     if (mat.GetShaderPassEnabled(passName))
+                           //     {
+                           //         log += passName + " ";
+                           //     }
+                           // }
+                           //
+                           // if (mat.name.Contains("Mika"))
+                           // {
+                           //     log +="\n (Mika Material)";
+                           // }
+                           //
+                           // if (mat.name.Contains("beam_static"))
+                           // {
+                           //     log +="\n (beam_static Material)";
+                           // }
+                           //
+                           // UnityEngine.Debug.LogError(log);
+                           //
+                           // newMaterial.CopyPropertiesFromMaterial(mat);
+                           // materialsCloneList.Add(newMaterial);
                        }
 
-                       r.materials.Clear();
-                        foreach (var newMat in materialsCloneList)
-                            r.materials.Add(newMat);
+                       // r.materials.Clear();
+                       //  foreach (var newMat in materialsCloneList)
+                       //      r.materials.Add(newMat);
                 }
                 catch (Exception e)
                 {
@@ -356,6 +371,23 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize,
                     animationClips = x.animationClips
                 };
+
+                foreach (var mat in r.materials)
+                {
+                    var matText = mat.ToText();
+                    
+                    if (mat.name.Contains("Mika"))
+                    {
+                        matText +="\n (Mika Material)";
+                    }
+                    
+                    if (mat.name.Contains("beam_blue"))
+                    {
+                        matText +="\n (Beam_blue Material)";
+                    }
+                    
+                    Debug.LogError(matText);
+                }
 
                 OnSuccessWrapper(r, OnSuccess);
             };
