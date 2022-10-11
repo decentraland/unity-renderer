@@ -178,7 +178,9 @@ namespace DCL.Components
                     foreach (var mat in r.materials)
                     {
                         var matText = "";
-                        if (mat.name.ToLower().Contains("mika") || mat.name.ToLower().Contains("beam"))
+                        if (mat.name.ToLower().Contains("mika") 
+                            || mat.name.ToLower().Contains("beam")
+                            || mat.name.ToLower().Contains("atlas"))
                         {
                             matText += $"{r.container.name} " + mat.name + " ";
 
