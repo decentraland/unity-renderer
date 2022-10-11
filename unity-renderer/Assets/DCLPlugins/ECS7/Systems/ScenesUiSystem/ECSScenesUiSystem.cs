@@ -9,25 +9,27 @@ using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
 {
-    public static class ECSScenesUiSystem
+    public class ECSScenesUiSystem : IDisposable
     {
         private class State
         {
             public UIDocument uiDocument;
             public IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
             public IWorldState worldState;
-            public IList<IParcelScene> loadedScenes;
+            public BaseList<IParcelScene> loadedScenes;
             public string lastSceneId;
             public bool isPendingSceneUI;
             public IParcelScene currentScene;
         }
 
-        public static Action CreateSystem(UIDocument uiDocument,
+        private State state;
+
+        public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            IList<IParcelScene> loadedScenes,
+            BaseList<IParcelScene> loadedScenes,
             IWorldState worldState)
         {
-            var state = new State()
+            state = new State()
             {
                 uiDocument = uiDocument,
                 internalUiContainerComponent = internalUiContainerComponent,
@@ -38,10 +40,15 @@ namespace ECSSystems.ScenesUiSystem
                 currentScene = null
             };
 
-            return () => Update(state);
+            state.loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
         }
 
-        private static void Update(State state)
+        public void Dispose()
+        {
+            state.loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
+        }
+
+        public void Update()
         {
             string currentSceneId = state.worldState.GetCurrentSceneId();
             bool sceneChanged = state.lastSceneId != currentSceneId;
@@ -71,6 +78,14 @@ namespace ECSSystems.ScenesUiSystem
                         state.isPendingSceneUI = false;
                     }
                 }
+            }
+        }
+
+        private void LoadedScenesOnOnRemoved(IParcelScene scene)
+        {
+            if (scene.sceneData.id == state.lastSceneId)
+            {
+                state.lastSceneId = null;
             }
         }
 
@@ -149,7 +164,10 @@ namespace ECSSystems.ScenesUiSystem
 
             if (sceneRootUiContainer != null)
             {
-                uiDocument.rootVisualElement.Add(sceneRootUiContainer.model.rootElement);
+                var model = sceneRootUiContainer.model;
+                uiDocument.rootVisualElement.Add(model.rootElement);
+                model.parentElement = uiDocument.rootVisualElement;
+                internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }
             return false;

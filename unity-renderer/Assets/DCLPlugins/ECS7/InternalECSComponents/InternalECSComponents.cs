@@ -75,9 +75,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             InternalECSComponentsId.UI_CONTAINER,
             componentsManager,
             componentsFactory,
-            () => new RemoveOnConditionHandler<InternalUiContainer>(
-                () => uiContainerComponent,
-                model => model.rootElement.childCount == 0 && !model.hasTransform),
+            () => new UiContainerHandler(() => uiContainerComponent),
             scheduledWrite);
     }
 
