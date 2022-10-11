@@ -187,7 +187,7 @@ namespace DCL.Components
                        var materialsCloneList = new List<Material>();
                        foreach (var mat in r.materials)
                        {
-                           if (r.container.name.Contains("Avatar"))
+                           if (r.container.name.Contains("Avatar") || mat.name.Contains("Avatar"))
                                continue;
                            
                            var matText = "";
@@ -400,7 +400,7 @@ namespace DCL.Components
 
                 foreach (var mat in r.materials)
                 {
-                    if (r.container.name.Contains("Avatar"))
+                    if (r.container.name.Contains("Avatar") || mat.name.Contains("Avatar"))
                         continue;
                     
                     var matText = "";
