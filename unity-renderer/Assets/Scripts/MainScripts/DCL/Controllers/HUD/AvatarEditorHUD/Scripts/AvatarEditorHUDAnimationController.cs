@@ -1,16 +1,18 @@
 using System;
 
-public class AvatarEditorHUDAnimationHandler : IDisposable
+public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationController
 {
 
-    private readonly CharacterPreviewController characterPreviewController;
+    private CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDView hudView;
     private string activeCategory;
 
-    public AvatarEditorHUDAnimationHandler(AvatarEditorHUDView hudView)
+
+    public void Initialize(AvatarEditorHUDView avatarEditorHUDView)
     {
         this.characterPreviewController = hudView.characterPreviewController;
-        this.hudView = hudView;
+        this.hudView = avatarEditorHUDView;
+        
         hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
         hudView.OnRandomize += OnClickRandomize;
         for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
@@ -20,7 +22,7 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         hudView.collectiblesItemSelector.OnItemClicked += OnSelectWearable;
     }
     
-    private void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
+    public void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
     {
         if (!string.IsNullOrEmpty(activeCategory))
         {
@@ -39,7 +41,7 @@ public class AvatarEditorHUDAnimationHandler : IDisposable
         characterPreviewController.PlayEmote(activeCategory, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 
-    private void OnSelectWearable(string wearableId)
+    public void OnSelectWearable(string wearableId)
     {
         CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
         switch (wearable.data.category)

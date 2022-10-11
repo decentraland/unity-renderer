@@ -47,7 +47,7 @@ namespace AvatarEditorHUD_Tests
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, catalog, Substitute.For<IAvatarEditorHUDAnimationController>());
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 

@@ -77,11 +77,9 @@ public class AvatarEditorHUDController : IHUD
 
     private bool loadingWearables;
     private WearableItem[] emotesLoadedAsWearables;
-    internal AvatarEditorHUDAnimationHandler avatarEditorHUDAnimationHandler;
+    internal IAvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
     public event Action OnOpen;
     public event Action OnClose;
-    
-
 
     public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags, IAnalytics analytics)
     {
@@ -92,7 +90,9 @@ public class AvatarEditorHUDController : IHUD
 
     public void Initialize(UserProfile userProfile, 
         BaseDictionary<string, WearableItem> catalog, 
-        bool bypassUpdateAvatarPreview = false)
+        IAvatarEditorHUDAnimationController avatarEditorHUDAnimationController,
+        bool bypassUpdateAvatarPreview = false
+        )
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
@@ -144,7 +144,9 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
-        avatarEditorHUDAnimationHandler = new AvatarEditorHUDAnimationHandler(view);
+        this.avatarEditorHUDAnimationController = avatarEditorHUDAnimationController;
+        this.avatarEditorHUDAnimationController.Initialize(view);
+        
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
@@ -850,7 +852,7 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
         
-        avatarEditorHUDAnimationHandler.Dispose();
+        avatarEditorHUDAnimationController.Dispose();
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
 
         CleanUp();
