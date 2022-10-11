@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -163,193 +161,70 @@ namespace DCL.Components
             abPromise.OnSuccessEvent += (x) =>
             {
 #if UNITY_EDITOR
-                x.container.name = AB_GO_NAME_PREFIX + x.container.name; 
+                x.container.name = AB_GO_NAME_PREFIX + x.container.name;
 #endif
                 var r = new Rendereable()
                 {
-                    container = x.container,
-                    totalTriangleCount = x.totalTriangleCount,
-                    meshes = x.meshes,
-                    renderers = x.renderers,
-                    materials = x.materials,
-                    textures = x.textures,
-                    meshToTriangleCount = x.meshToTriangleCount,
-                    animationClipSize = x.animationClipSize,
-                    animationClips = x.animationClips,
-                    meshDataSize = x.meshDataSize
+                    container = x.container, totalTriangleCount = x.totalTriangleCount, meshes = x.meshes, renderers = x.renderers,
+                    materials = x.materials, textures = x.textures, meshToTriangleCount = x.meshToTriangleCount, animationClipSize = x.animationClipSize,
+                    animationClips = x.animationClips, meshDataSize = x.meshDataSize
                 };
 
                 var temp = UnityEngine.Debug.unityLogger.logEnabled;
                 UnityEngine.Debug.unityLogger.logEnabled = true;
-
+                
                 try
                 {
-                       var materialsCloneList = new List<Material>();
-                       foreach (var mat in r.materials)
-                       {
-                           if (r.container.name.Contains("Avatar") || mat.name.Contains("Avatar"))
-                               continue;
-                           
-                           var matText = "";
-                           
-                           matText += $"{r.container.name} " + mat.name + " ";
+                    foreach (var mat in r.materials)
+                    {
+                        var matText = "";
+                        if (mat.name.ToLower().Contains("mika") || mat.name.ToLower().Contains("beam"))
+                        {
+                            matText += $"{r.container.name} " + mat.name + " ";
 
-                           mat.shaderKeywords = new []
-                           {
-                               "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
-                           };
-                           
-                           mat.EnableKeyword("_ALPHATEST_ON");
-                           mat.EnableKeyword("_EMISSION");
-                           mat.EnableKeyword("_METALLICSPECGLOSSMAP");
-                           mat.EnableKeyword("_NORMALMAP");
-                           
-                           // if (x.container.transform.AnyAncestorNameContains("253440"))
-                           // {
-                           //     matText +="\n ENTITY_253440 (beam) " + mat.name;
-                           // }
-                           //
-                           // if (x.container.transform.AnyAncestorNameContains("214016"))
-                           // {
-                           //     matText +="\n ENTITY_214016 (tube1) " + mat.name;
-                           // }
-                           //
-                           // if (x.container.transform.AnyAncestorNameContains("215040"))
-                           // {
-                           //     matText +="\n ENTITY_215040 (tube2) " + mat.name;
-                           // }
-                           //
-                           // if (x.container.transform.AnyAncestorNameContains("35840"))
-                           // {
-                           //     matText +="\n ENTITY_35840 (mika) " + mat.name;
-                           // }
-                           
-                           
-                           matText += "\n" + mat.ToText();
-                    
-                           Debug.LogError(matText);
-                           // Debug.LogError(matText);
-                           // var newMaterial = new Material(mat.shader);
-                           //
-                           // var propertiesOfNewMaterial = newMaterial.GetTexturePropertyNames();
-                           // var propertiesOfOldMaterial = mat.GetTexturePropertyNames();
-                           //
-                           // var oldNamesMissingInNewMaterial = new List<string>();
-                           // var newNamesMissingInOldMaterial = new List<string>();
-                           // var overlapNames = new List<string>();
-                           // foreach (var oldPorpertyName in propertiesOfOldMaterial)
-                           // {
-                           //     if (propertiesOfNewMaterial.Contains(oldPorpertyName) == false)
-                           //     {
-                           //         oldNamesMissingInNewMaterial.Add(oldPorpertyName);
-                           //     }
-                           //     else
-                           //     {
-                           //         overlapNames.Add(oldPorpertyName);
-                           //     }
-                           // }
-                           //
-                           // foreach (var newPropertyName in propertiesOfNewMaterial)
-                           // {
-                           //     if (propertiesOfOldMaterial.Contains(newPropertyName) == false)
-                           //     {
-                           //         newNamesMissingInOldMaterial.Add(newPropertyName);
-                           //     }
-                           // }
-                           //
-                           // string log = "";
-                           //
-                           // var renderPipelineTagValue = mat.GetTag("RenderPipeline", false);
-                           // var renderTypeTagValue = mat.GetTag("RenderType", false);
-                           // var newPipelineTagValue = newMaterial.GetTag("RenderPipeline", false);
-                           // var newTypeTagValue = newMaterial.GetTag("RenderType", false);
-                           //
-                           // log += $"Old tags RenderPipeline={renderPipelineTagValue} RenderType={renderTypeTagValue} ";
-                           // log += $"\n New tags RenderPipeline={newPipelineTagValue} RenderType={newTypeTagValue} ";
-                           //
-                           // log += "\n Old properties missing in new mat: ";
-                           // foreach (var oldName in oldNamesMissingInNewMaterial)
-                           // {
-                           //     log += oldName + " ";
-                           // }
-                           // log += "\n New properties missing in old mat: ";
-                           // foreach (var newName in newNamesMissingInOldMaterial)
-                           // {
-                           //     log += newName + " ";
-                           // }
-                           // log += "\n Overlapped properties: ";
-                           // foreach (var overlapName in overlapNames)
-                           // {
-                           //     log += overlapName + " ";
-                           // }
-                           //
-                           // if (mat.shaderKeywords != null)
-                           // {
-                           //     if (mat.shaderKeywords.Length > 0)
-                           //     {
-                           //         log += "\n Old material keywords: ";
-                           //         foreach (var keyword in mat.shaderKeywords)
-                           //         {
-                           //             log += keyword + " ";
-                           //         }
-                           //     }
-                           // }
-                           //
-                           // if(mat.shaderKeywords != null)
-                           //      newMaterial.shaderKeywords = mat.shaderKeywords.ToArray();
-                           //
-                           // // newMaterial.shaderKeywords = new string[4]
-                           // // {
-                           // //     "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
-                           // // };
-                           //
-                           // if (newMaterial.shaderKeywords != null)
-                           // {
-                           //     if (newMaterial.shaderKeywords.Length > 0)
-                           //     {
-                           //         log += "\n New material keywords: ";
-                           //         foreach (var keyword in newMaterial.shaderKeywords)
-                           //         {
-                           //             log += keyword + " ";
-                           //         }
-                           //     }
-                           // }
-                           //
-                           // log += "\n Passes enabled: ";
-                           // for (int i = 0; i < mat.passCount; i++)
-                           // {
-                           //     var passName = mat.GetPassName(i);
-                           //     if (mat.GetShaderPassEnabled(passName))
-                           //     {
-                           //         log += passName + " ";
-                           //     }
-                           // }
-                           //
-                           // if (mat.name.Contains("Mika"))
-                           // {
-                           //     log +="\n (Mika Material)";
-                           // }
-                           //
-                           // if (mat.name.Contains("beam_static"))
-                           // {
-                           //     log +="\n (beam_static Material)";
-                           // }
-                           //
-                           // UnityEngine.Debug.LogError(log);
-                           //
-                           // newMaterial.CopyPropertiesFromMaterial(mat);
-                           // materialsCloneList.Add(newMaterial);
-                       }
+                            mat.shaderKeywords = new []
+                            {
+                                "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
+                            };
 
-                       // r.materials.Clear();
-                       //  foreach (var newMat in materialsCloneList)
-                       //      r.materials.Add(newMat);
+                            mat.EnableKeyword("_ALPHATEST_ON");
+                            mat.EnableKeyword("_EMISSION");
+                            mat.EnableKeyword("_METALLICSPECGLOSSMAP");
+                            mat.EnableKeyword("_NORMALMAP");
+
+
+                            // if (x.container.transform.AnyAncestorNameContains("253440"))
+                            // {
+                            //     matText +="\n ENTITY_253440 (beam) " + mat.name;
+                            // }
+                            //
+                            // if (x.container.transform.AnyAncestorNameContains("214016"))
+                            // {
+                            //     matText +="\n ENTITY_214016 (tube1) " + mat.name;
+                            // }
+                            //
+                            // if (x.container.transform.AnyAncestorNameContains("215040"))
+                            // {
+                            //     matText +="\n ENTITY_215040 (tube2) " + mat.name;
+                            // }
+                            //
+                            // if (x.container.transform.AnyAncestorNameContains("35840"))
+                            // {
+                            //     matText +="\n ENTITY_35840 (mika) " + mat.name;
+                            // }
+
+
+                            matText += "\n" + mat.ToText();
+
+                            Debug.LogError(matText);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
                     UnityEngine.Debug.LogException(e);
                 }
-                
+
                 UnityEngine.Debug.unityLogger.logEnabled = temp;
 
                 OnSuccessWrapper(r, OnSuccess);
@@ -386,51 +261,28 @@ namespace DCL.Components
 #endif
                 var r = new Rendereable
                 {
-                    container = x.container,
-                    totalTriangleCount = x.totalTriangleCount,
-                    meshes = x.meshes,
-                    renderers = x.renderers,
-                    materials = x.materials,
-                    textures = x.textures,
-                    meshToTriangleCount = x.meshToTriangleCount,
-                    animationClipSize = x.animationClipSize,
-                    meshDataSize = x.meshDataSize,
-                    animationClips = x.animationClips
+                    container = x.container, totalTriangleCount = x.totalTriangleCount, meshes = x.meshes, renderers = x.renderers,
+                    materials = x.materials, textures = x.textures, meshToTriangleCount = x.meshToTriangleCount, animationClipSize = x.animationClipSize,
+                    meshDataSize = x.meshDataSize, animationClips = x.animationClips
                 };
 
+                var temp = UnityEngine.Debug.unityLogger.logEnabled;
+                UnityEngine.Debug.unityLogger.logEnabled = true;
                 foreach (var mat in r.materials)
                 {
-                    if (r.container.name.Contains("Avatar") || mat.name.Contains("Avatar"))
-                        continue;
-                    
                     var matText = "";
 
-                    matText += $"{r.container.name} " + mat.name + " ";
-                           
-                    // if (x.container.transform.AnyAncestorNameContains("253440"))
-                    // {
-                    //     matText +="\n ENTITY_253440 (beam) " + mat.name;
-                    // }
-                    //
-                    // if (x.container.transform.AnyAncestorNameContains("214016"))
-                    // {
-                    //     matText +="\n ENTITY_214016 (tube1) " + mat.name;
-                    // }
-                    //
-                    // if (x.container.transform.AnyAncestorNameContains("215040"))
-                    // {
-                    //     matText +="\n ENTITY_215040 (tube2) " + mat.name;
-                    // }
-                    //
-                    // if (x.container.transform.AnyAncestorNameContains("35840"))
-                    // {
-                    //     matText +="\n ENTITY_35840 (mika) " + mat.name;
-                    // }
-                           
-                    matText += "\n" + mat.ToText();
-                    
-                    Debug.LogError(matText);
+                    if (mat.name.ToLower().Contains("mika") || mat.name.ToLower().Contains("beam"))
+                    {
+                        matText += $"{r.container.name} " + mat.name + " ";
+
+                        matText += "\n" + mat.ToText();
+
+                        Debug.LogError(matText);
+                    }
                 }
+                
+                UnityEngine.Debug.unityLogger.logEnabled = temp;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
@@ -451,7 +303,6 @@ namespace DCL.Components
 
         private void OnSuccessWrapper(Rendereable loadedAsset, Action<Rendereable> OnSuccess)
         {
-            
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
