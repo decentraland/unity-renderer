@@ -24,7 +24,27 @@ namespace DCL.GLTFast.Wrappers
         public object Current => asyncOp.Current;
         
         // TODO: Update this when we receive decoded images from the content server
-        public Texture2D texture => (asyncOp.webRequest.downloadHandler as DownloadHandlerTexture)?.texture;
+        public Texture2D texture
+        {
+            get
+            {
+                Texture2D texture2D;
+                if (asyncOp.webRequest.downloadHandler is DownloadHandlerTexture downloadHandlerTexture)
+                {
+                    texture2D = downloadHandlerTexture.texture;
+                }
+                else
+                {
+                    return  null;
+                }
+
+#if UNITY_WEBGL
+                texture2D.Compress(false);
+#endif
+
+                return texture2D;
+            }
+        }
         public void Dispose()
         {
             asyncOp.Dispose();
