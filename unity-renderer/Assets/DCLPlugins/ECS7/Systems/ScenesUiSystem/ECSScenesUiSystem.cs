@@ -22,7 +22,7 @@ namespace ECSSystems.ScenesUiSystem
             public IParcelScene currentScene;
         }
 
-        private State state;
+        private readonly State state;
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
@@ -105,17 +105,10 @@ namespace ECSSystems.ScenesUiSystem
                 if (uiContainerData.model.parentElement != null)
                     continue;
 
-                InternalUiContainer parentDataModel =
-                    internalUiContainerComponent.GetFor(uiContainerData.scene, uiContainerData.model.parentId)?.model;
-
-                // create root entity ui container if needed
-                if (parentDataModel == null && uiContainerData.model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
-                {
-                    parentDataModel = new InternalUiContainer()
-                    {
-                        hasTransform = true
-                    };
-                }
+                InternalUiContainer parentDataModel = GetParentContainerModel(
+                    internalUiContainerComponent,
+                    uiContainerData.scene,
+                    uiContainerData.model.parentId);
 
                 // apply parenting
                 if (parentDataModel != null)
@@ -171,6 +164,23 @@ namespace ECSSystems.ScenesUiSystem
                 return true;
             }
             return false;
+        }
+
+        private static InternalUiContainer GetParentContainerModel(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+            IParcelScene scene, long parentId)
+        {
+            InternalUiContainer parentDataModel =
+                internalUiContainerComponent.GetFor(scene, parentId)?.model;
+
+            // create root entity ui container if needed
+            if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
+            {
+                parentDataModel = new InternalUiContainer()
+                {
+                    hasTransform = true
+                };
+            }
+            return parentDataModel;
         }
     }
 }
