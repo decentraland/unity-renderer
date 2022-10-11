@@ -145,11 +145,6 @@ public class AvatarEditorHUDView : MonoBehaviour,  IPointerDownHandler
     {
         loadingSpinnerGameObject.SetActive(false);
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
-        if (characterPreviewController == null)
-        {
-            characterPreviewController = Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
-            characterPreviewController.name = "_CharacterPreviewController";
-        }
         isOpen = false;
         arePanelsInitialized = false;
     }
@@ -168,6 +163,8 @@ public class AvatarEditorHUDView : MonoBehaviour,  IPointerDownHandler
         foreach (var button in goToMarketplaceButtons)
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
+        characterPreviewController = Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
+        characterPreviewController.name = "_CharacterPreviewController";
         characterPreviewController.camera.enabled = false;
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;

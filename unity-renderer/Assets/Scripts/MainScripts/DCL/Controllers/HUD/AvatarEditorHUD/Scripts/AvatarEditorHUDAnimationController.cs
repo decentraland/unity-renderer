@@ -10,9 +10,9 @@ public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationContr
 
     public void Initialize(AvatarEditorHUDView avatarEditorHUDView)
     {
-        this.characterPreviewController = hudView.characterPreviewController;
         this.hudView = avatarEditorHUDView;
         
+        characterPreviewController = hudView.characterPreviewController;
         hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
         hudView.OnRandomize += OnClickRandomize;
         for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
