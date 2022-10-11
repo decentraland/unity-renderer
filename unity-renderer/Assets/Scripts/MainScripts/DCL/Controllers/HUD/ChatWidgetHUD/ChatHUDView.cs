@@ -225,7 +225,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             chatEntry.Populate(model);
 
             if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
-                chatEntry.OnPress += OnOpenContextMenu;
+                chatEntry.OnUserNameClicked += OnOpenContextMenu;
 
             chatEntry.OnTriggerHover += OnMessageTriggerHover;
             chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
