@@ -127,7 +127,7 @@ namespace DCL.Chat.Notifications
 
             mainChatNotificationView.HideNotifications();
 
-            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+            if (topNotificationPanelTransform.Get() != null && topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                 topNotificationView.HideNotification();
         }
 
