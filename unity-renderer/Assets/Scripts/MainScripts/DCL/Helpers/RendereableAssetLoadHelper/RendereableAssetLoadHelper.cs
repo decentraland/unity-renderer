@@ -184,15 +184,15 @@ namespace DCL.Components
                         {
                             matText += $"{r.container.name} " + mat.name + " ";
 
-                            mat.shaderKeywords = new []
-                            {
-                                "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
-                            };
-
-                            mat.EnableKeyword("_ALPHATEST_ON");
-                            mat.EnableKeyword("_EMISSION");
-                            mat.EnableKeyword("_METALLICSPECGLOSSMAP");
-                            mat.EnableKeyword("_NORMALMAP");
+                            // mat.shaderKeywords = new []
+                            // {
+                            //     "_ALPHATEST_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_NORMALMAP"
+                            // };
+                            //
+                            // mat.EnableKeyword("_ALPHATEST_ON");
+                            // mat.EnableKeyword("_EMISSION");
+                            // mat.EnableKeyword("_METALLICSPECGLOSSMAP");
+                            // mat.EnableKeyword("_NORMALMAP");
 
 
                             // if (x.container.transform.AnyAncestorNameContains("253440"))
