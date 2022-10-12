@@ -75,8 +75,18 @@ namespace DCL.ECSComponents
         {
             return self.HasWrapMode ? self.WrapMode : TextureWrapMode.Clamp;
         }
+        
+        public static TextureWrapMode GetWrapMode(this PBMaterial.Types.AvatarTexture self)
+        {
+            return self.HasWrapMode ? self.WrapMode : TextureWrapMode.Clamp;
+        }
 
         public static FilterMode GetFilterMode(this PBMaterial.Types.Texture self)
+        {
+            return self.HasFilterMode ? self.FilterMode : FilterMode.Bilinear;
+        }
+        
+        public static FilterMode GetFilterMode(this PBMaterial.Types.AvatarTexture self)
         {
             return self.HasFilterMode ? self.FilterMode : FilterMode.Bilinear;
         }

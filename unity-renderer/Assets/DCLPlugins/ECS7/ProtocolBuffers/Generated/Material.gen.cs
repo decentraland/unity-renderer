@@ -25,43 +25,49 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch1lY3MvY29tcG9uZW50cy9NYXRlcmlhbC5wcm90bxIQZGVjZW50cmFsYW5k",
-            "LmVjcxoiZWNzL2NvbXBvbmVudHMvY29tbW9uL0NvbG9yMy5wcm90byKICQoK",
-            "UEJNYXRlcmlhbBI6Cgd0ZXh0dXJlGAEgASgLMiQuZGVjZW50cmFsYW5kLmVj",
-            "cy5QQk1hdGVyaWFsLlRleHR1cmVIAIgBARIWCglhbHBoYVRlc3QYAiABKAJI",
-            "AYgBARIYCgtjYXN0U2hhZG93cxgDIAEoCEgCiAEBEj8KDGFscGhhVGV4dHVy",
-            "ZRgEIAEoCzIkLmRlY2VudHJhbGFuZC5lY3MuUEJNYXRlcmlhbC5UZXh0dXJl",
-            "SAOIAQESQgoPZW1pc3NpdmVUZXh0dXJlGAUgASgLMiQuZGVjZW50cmFsYW5k",
-            "LmVjcy5QQk1hdGVyaWFsLlRleHR1cmVIBIgBARI+CgtidW1wVGV4dHVyZRgG",
-            "IAEoCzIkLmRlY2VudHJhbGFuZC5lY3MuUEJNYXRlcmlhbC5UZXh0dXJlSAWI",
-            "AQESMgoLYWxiZWRvQ29sb3IYByABKAsyGC5kZWNlbnRyYWxhbmQuZWNzLkNv",
-            "bG9yM0gGiAEBEjQKDWVtaXNzaXZlQ29sb3IYCCABKAsyGC5kZWNlbnRyYWxh",
-            "bmQuZWNzLkNvbG9yM0gHiAEBEjgKEXJlZmxlY3Rpdml0eUNvbG9yGAkgASgL",
-            "MhguZGVjZW50cmFsYW5kLmVjcy5Db2xvcjNICIgBARJBChB0cmFuc3BhcmVu",
-            "Y3lNb2RlGAogASgOMiIuZGVjZW50cmFsYW5kLmVjcy5UcmFuc3BhcmVuY3lN",
-            "b2RlSAmIAQESFQoIbWV0YWxsaWMYCyABKAJICogBARIWCglyb3VnaG5lc3MY",
-            "DCABKAJIC4gBARIXCgpnbG9zc2luZXNzGA0gASgCSAyIAQESHgoRc3BlY3Vs",
-            "YXJJbnRlbnNpdHkYDiABKAJIDYgBARIeChFlbWlzc2l2ZUludGVuc2l0eRgP",
-            "IAEoAkgOiAEBEhwKD2RpcmVjdEludGVuc2l0eRgQIAEoAkgPiAEBGqMBCgdU",
-            "ZXh0dXJlEgsKA3NyYxgBIAEoCRI4Cgh3cmFwTW9kZRgCIAEoDjIhLmRlY2Vu",
-            "dHJhbGFuZC5lY3MuVGV4dHVyZVdyYXBNb2RlSACIAQESNQoKZmlsdGVyTW9k",
-            "ZRgDIAEoDjIcLmRlY2VudHJhbGFuZC5lY3MuRmlsdGVyTW9kZUgBiAEBQgsK",
-            "CV93cmFwTW9kZUINCgtfZmlsdGVyTW9kZUIKCghfdGV4dHVyZUIMCgpfYWxw",
-            "aGFUZXN0Qg4KDF9jYXN0U2hhZG93c0IPCg1fYWxwaGFUZXh0dXJlQhIKEF9l",
-            "bWlzc2l2ZVRleHR1cmVCDgoMX2J1bXBUZXh0dXJlQg4KDF9hbGJlZG9Db2xv",
-            "ckIQCg5fZW1pc3NpdmVDb2xvckIUChJfcmVmbGVjdGl2aXR5Q29sb3JCEwoR",
-            "X3RyYW5zcGFyZW5jeU1vZGVCCwoJX21ldGFsbGljQgwKCl9yb3VnaG5lc3NC",
-            "DQoLX2dsb3NzaW5lc3NCFAoSX3NwZWN1bGFySW50ZW5zaXR5QhQKEl9lbWlz",
-            "c2l2ZUludGVuc2l0eUISChBfZGlyZWN0SW50ZW5zaXR5KkQKD1RleHR1cmVX",
-            "cmFwTW9kZRIKCgZSZXBlYXQQABIJCgVDbGFtcBABEgoKBk1pcnJvchACEg4K",
-            "Ck1pcnJvck9uY2UQAyo0CgpGaWx0ZXJNb2RlEgkKBVBvaW50EAASDAoIQmls",
-            "aW5lYXIQARINCglUcmlsaW5lYXIQAipjChBUcmFuc3BhcmVuY3lNb2RlEgoK",
-            "Bk9wYXF1ZRAAEg0KCUFscGhhVGVzdBABEg4KCkFscGhhQmxlbmQQAhIaChZB",
-            "bHBoYVRlc3RBbmRBbHBoYUJsZW5kEAMSCAoEQXV0bxAEQhSqAhFEQ0wuRUNT",
-            "Q29tcG9uZW50c2IGcHJvdG8z"));
+            "LmVjcxoiZWNzL2NvbXBvbmVudHMvY29tbW9uL0NvbG9yMy5wcm90byL7CgoK",
+            "UEJNYXRlcmlhbBI6CgpzcmNUZXh0dXJlGAEgASgLMiQuZGVjZW50cmFsYW5k",
+            "LmVjcy5QQk1hdGVyaWFsLlRleHR1cmVIABJDCg1hdmF0YXJUZXh0dXJlGAIg",
+            "ASgLMiouZGVjZW50cmFsYW5kLmVjcy5QQk1hdGVyaWFsLkF2YXRhclRleHR1",
+            "cmVIABIWCglhbHBoYVRlc3QYAyABKAJIAYgBARIYCgtjYXN0U2hhZG93cxgE",
+            "IAEoCEgCiAEBEj8KDGFscGhhVGV4dHVyZRgFIAEoCzIkLmRlY2VudHJhbGFu",
+            "ZC5lY3MuUEJNYXRlcmlhbC5UZXh0dXJlSAOIAQESQgoPZW1pc3NpdmVUZXh0",
+            "dXJlGAYgASgLMiQuZGVjZW50cmFsYW5kLmVjcy5QQk1hdGVyaWFsLlRleHR1",
+            "cmVIBIgBARI+CgtidW1wVGV4dHVyZRgHIAEoCzIkLmRlY2VudHJhbGFuZC5l",
+            "Y3MuUEJNYXRlcmlhbC5UZXh0dXJlSAWIAQESMgoLYWxiZWRvQ29sb3IYCCAB",
+            "KAsyGC5kZWNlbnRyYWxhbmQuZWNzLkNvbG9yM0gGiAEBEjQKDWVtaXNzaXZl",
+            "Q29sb3IYCSABKAsyGC5kZWNlbnRyYWxhbmQuZWNzLkNvbG9yM0gHiAEBEjgK",
+            "EXJlZmxlY3Rpdml0eUNvbG9yGAogASgLMhguZGVjZW50cmFsYW5kLmVjcy5D",
+            "b2xvcjNICIgBARJBChB0cmFuc3BhcmVuY3lNb2RlGAsgASgOMiIuZGVjZW50",
+            "cmFsYW5kLmVjcy5UcmFuc3BhcmVuY3lNb2RlSAmIAQESFQoIbWV0YWxsaWMY",
+            "DCABKAJICogBARIWCglyb3VnaG5lc3MYDSABKAJIC4gBARIXCgpnbG9zc2lu",
+            "ZXNzGA4gASgCSAyIAQESHgoRc3BlY3VsYXJJbnRlbnNpdHkYDyABKAJIDYgB",
+            "ARIeChFlbWlzc2l2ZUludGVuc2l0eRgQIAEoAkgOiAEBEhwKD2RpcmVjdElu",
+            "dGVuc2l0eRgRIAEoAkgPiAEBGqMBCgdUZXh0dXJlEgsKA3NyYxgBIAEoCRI4",
+            "Cgh3cmFwTW9kZRgCIAEoDjIhLmRlY2VudHJhbGFuZC5lY3MuVGV4dHVyZVdy",
+            "YXBNb2RlSACIAQESNQoKZmlsdGVyTW9kZRgDIAEoDjIcLmRlY2VudHJhbGFu",
+            "ZC5lY3MuRmlsdGVyTW9kZUgBiAEBQgsKCV93cmFwTW9kZUINCgtfZmlsdGVy",
+            "TW9kZRqsAQoNQXZhdGFyVGV4dHVyZRIOCgZ1c2VySWQYASABKAkSOAoId3Jh",
+            "cE1vZGUYAiABKA4yIS5kZWNlbnRyYWxhbmQuZWNzLlRleHR1cmVXcmFwTW9k",
+            "ZUgAiAEBEjUKCmZpbHRlck1vZGUYAyABKA4yHC5kZWNlbnRyYWxhbmQuZWNz",
+            "LkZpbHRlck1vZGVIAYgBAUILCglfd3JhcE1vZGVCDQoLX2ZpbHRlck1vZGVC",
+            "CQoHdGV4dHVyZUIMCgpfYWxwaGFUZXN0Qg4KDF9jYXN0U2hhZG93c0IPCg1f",
+            "YWxwaGFUZXh0dXJlQhIKEF9lbWlzc2l2ZVRleHR1cmVCDgoMX2J1bXBUZXh0",
+            "dXJlQg4KDF9hbGJlZG9Db2xvckIQCg5fZW1pc3NpdmVDb2xvckIUChJfcmVm",
+            "bGVjdGl2aXR5Q29sb3JCEwoRX3RyYW5zcGFyZW5jeU1vZGVCCwoJX21ldGFs",
+            "bGljQgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NCFAoSX3NwZWN1bGFy",
+            "SW50ZW5zaXR5QhQKEl9lbWlzc2l2ZUludGVuc2l0eUISChBfZGlyZWN0SW50",
+            "ZW5zaXR5KkQKD1RleHR1cmVXcmFwTW9kZRIKCgZSZXBlYXQQABIJCgVDbGFt",
+            "cBABEgoKBk1pcnJvchACEg4KCk1pcnJvck9uY2UQAyo0CgpGaWx0ZXJNb2Rl",
+            "EgkKBVBvaW50EAASDAoIQmlsaW5lYXIQARINCglUcmlsaW5lYXIQAipjChBU",
+            "cmFuc3BhcmVuY3lNb2RlEgoKBk9wYXF1ZRAAEg0KCUFscGhhVGVzdBABEg4K",
+            "CkFscGhhQmxlbmQQAhIaChZBbHBoYVRlc3RBbmRBbHBoYUJsZW5kEAMSCAoE",
+            "QXV0bxAEQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.Color3Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.FilterMode), typeof(global::DCL.ECSComponents.TransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "SrcTexture", "AvatarTexture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture), global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture.Parser, new[]{ "UserId", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
           }));
     }
     #endregion
@@ -128,7 +134,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBMaterial(PBMaterial other) : this() {
       _hasBits0 = other._hasBits0;
-      texture_ = other.texture_ != null ? other.texture_.Clone() : null;
       alphaTest_ = other.alphaTest_;
       castShadows_ = other.castShadows_;
       alphaTexture_ = other.alphaTexture_ != null ? other.alphaTexture_.Clone() : null;
@@ -144,6 +149,15 @@ namespace DCL.ECSComponents {
       specularIntensity_ = other.specularIntensity_;
       emissiveIntensity_ = other.emissiveIntensity_;
       directIntensity_ = other.directIntensity_;
+      switch (other.TextureCase) {
+        case TextureOneofCase.SrcTexture:
+          SrcTexture = other.SrcTexture.Clone();
+          break;
+        case TextureOneofCase.AvatarTexture:
+          AvatarTexture = other.AvatarTexture.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -153,23 +167,38 @@ namespace DCL.ECSComponents {
       return new PBMaterial(this);
     }
 
-    /// <summary>Field number for the "texture" field.</summary>
-    public const int TextureFieldNumber = 1;
-    private global::DCL.ECSComponents.PBMaterial.Types.Texture texture_;
+    /// <summary>Field number for the "srcTexture" field.</summary>
+    public const int SrcTextureFieldNumber = 1;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBMaterial.Types.Texture Texture {
-      get { return texture_; }
+    public global::DCL.ECSComponents.PBMaterial.Types.Texture SrcTexture {
+      get { return textureCase_ == TextureOneofCase.SrcTexture ? (global::DCL.ECSComponents.PBMaterial.Types.Texture) texture_ : null; }
       set {
         texture_ = value;
+        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.SrcTexture;
+      }
+    }
+
+    /// <summary>Field number for the "avatarTexture" field.</summary>
+    public const int AvatarTextureFieldNumber = 2;
+    /// <summary>
+    /// default = null
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture AvatarTexture {
+      get { return textureCase_ == TextureOneofCase.AvatarTexture ? (global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture) texture_ : null; }
+      set {
+        texture_ = value;
+        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.AvatarTexture;
       }
     }
 
     /// <summary>Field number for the "alphaTest" field.</summary>
-    public const int AlphaTestFieldNumber = 2;
+    public const int AlphaTestFieldNumber = 3;
     private float alphaTest_;
     /// <summary>
     /// default = 0.5. range value: from 0 to 1
@@ -197,7 +226,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "castShadows" field.</summary>
-    public const int CastShadowsFieldNumber = 3;
+    public const int CastShadowsFieldNumber = 4;
     private bool castShadows_;
     /// <summary>
     /// default =  true
@@ -225,7 +254,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "alphaTexture" field.</summary>
-    public const int AlphaTextureFieldNumber = 4;
+    public const int AlphaTextureFieldNumber = 5;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture alphaTexture_;
     /// <summary>
     /// default = null
@@ -240,7 +269,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "emissiveTexture" field.</summary>
-    public const int EmissiveTextureFieldNumber = 5;
+    public const int EmissiveTextureFieldNumber = 6;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture emissiveTexture_;
     /// <summary>
     /// default = null
@@ -255,7 +284,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "bumpTexture" field.</summary>
-    public const int BumpTextureFieldNumber = 6;
+    public const int BumpTextureFieldNumber = 7;
     private global::DCL.ECSComponents.PBMaterial.Types.Texture bumpTexture_;
     /// <summary>
     /// default = null
@@ -270,7 +299,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "albedoColor" field.</summary>
-    public const int AlbedoColorFieldNumber = 7;
+    public const int AlbedoColorFieldNumber = 8;
     private global::DCL.ECSComponents.Color3 albedoColor_;
     /// <summary>
     /// default = white;
@@ -285,7 +314,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "emissiveColor" field.</summary>
-    public const int EmissiveColorFieldNumber = 8;
+    public const int EmissiveColorFieldNumber = 9;
     private global::DCL.ECSComponents.Color3 emissiveColor_;
     /// <summary>
     /// default = black;
@@ -300,7 +329,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "reflectivityColor" field.</summary>
-    public const int ReflectivityColorFieldNumber = 9;
+    public const int ReflectivityColorFieldNumber = 10;
     private global::DCL.ECSComponents.Color3 reflectivityColor_;
     /// <summary>
     /// default = white;
@@ -315,7 +344,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "transparencyMode" field.</summary>
-    public const int TransparencyModeFieldNumber = 10;
+    public const int TransparencyModeFieldNumber = 11;
     private global::DCL.ECSComponents.TransparencyMode transparencyMode_;
     /// <summary>
     /// default = TransparencyMode.Auto
@@ -343,7 +372,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "metallic" field.</summary>
-    public const int MetallicFieldNumber = 11;
+    public const int MetallicFieldNumber = 12;
     private float metallic_;
     /// <summary>
     /// default = 0.5
@@ -371,7 +400,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "roughness" field.</summary>
-    public const int RoughnessFieldNumber = 12;
+    public const int RoughnessFieldNumber = 13;
     private float roughness_;
     /// <summary>
     /// default = 0.5
@@ -399,7 +428,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "glossiness" field.</summary>
-    public const int GlossinessFieldNumber = 13;
+    public const int GlossinessFieldNumber = 14;
     private float glossiness_;
     /// <summary>
     /// default = 1
@@ -427,7 +456,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "specularIntensity" field.</summary>
-    public const int SpecularIntensityFieldNumber = 14;
+    public const int SpecularIntensityFieldNumber = 15;
     private float specularIntensity_;
     /// <summary>
     /// default = 1
@@ -455,7 +484,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "emissiveIntensity" field.</summary>
-    public const int EmissiveIntensityFieldNumber = 15;
+    public const int EmissiveIntensityFieldNumber = 16;
     private float emissiveIntensity_;
     /// <summary>
     /// default = 2
@@ -483,7 +512,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "directIntensity" field.</summary>
-    public const int DirectIntensityFieldNumber = 16;
+    public const int DirectIntensityFieldNumber = 17;
     private float directIntensity_;
     /// <summary>
     /// default = 1
@@ -510,6 +539,27 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~256;
     }
 
+    private object texture_;
+    /// <summary>Enum of possible cases for the "texture" oneof.</summary>
+    public enum TextureOneofCase {
+      None = 0,
+      SrcTexture = 1,
+      AvatarTexture = 2,
+    }
+    private TextureOneofCase textureCase_ = TextureOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TextureOneofCase TextureCase {
+      get { return textureCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTexture() {
+      textureCase_ = TextureOneofCase.None;
+      texture_ = null;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -525,7 +575,8 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(Texture, other.Texture)) return false;
+      if (!object.Equals(SrcTexture, other.SrcTexture)) return false;
+      if (!object.Equals(AvatarTexture, other.AvatarTexture)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(AlphaTest, other.AlphaTest)) return false;
       if (CastShadows != other.CastShadows) return false;
       if (!object.Equals(AlphaTexture, other.AlphaTexture)) return false;
@@ -541,6 +592,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(SpecularIntensity, other.SpecularIntensity)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(EmissiveIntensity, other.EmissiveIntensity)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DirectIntensity, other.DirectIntensity)) return false;
+      if (TextureCase != other.TextureCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -548,7 +600,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (texture_ != null) hash ^= Texture.GetHashCode();
+      if (textureCase_ == TextureOneofCase.SrcTexture) hash ^= SrcTexture.GetHashCode();
+      if (textureCase_ == TextureOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
       if (HasAlphaTest) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(AlphaTest);
       if (HasCastShadows) hash ^= CastShadows.GetHashCode();
       if (alphaTexture_ != null) hash ^= AlphaTexture.GetHashCode();
@@ -564,6 +617,7 @@ namespace DCL.ECSComponents {
       if (HasSpecularIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(SpecularIntensity);
       if (HasEmissiveIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(EmissiveIntensity);
       if (HasDirectIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DirectIntensity);
+      hash ^= (int) textureCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -582,68 +636,72 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (texture_ != null) {
+      if (textureCase_ == TextureOneofCase.SrcTexture) {
         output.WriteRawTag(10);
-        output.WriteMessage(Texture);
+        output.WriteMessage(SrcTexture);
+      }
+      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+        output.WriteRawTag(18);
+        output.WriteMessage(AvatarTexture);
       }
       if (HasAlphaTest) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(AlphaTest);
       }
       if (HasCastShadows) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteBool(CastShadows);
       }
       if (alphaTexture_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(42);
         output.WriteMessage(AlphaTexture);
       }
       if (emissiveTexture_ != null) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(50);
         output.WriteMessage(EmissiveTexture);
       }
       if (bumpTexture_ != null) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(58);
         output.WriteMessage(BumpTexture);
       }
       if (albedoColor_ != null) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(66);
         output.WriteMessage(AlbedoColor);
       }
       if (emissiveColor_ != null) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(74);
         output.WriteMessage(EmissiveColor);
       }
       if (reflectivityColor_ != null) {
-        output.WriteRawTag(74);
+        output.WriteRawTag(82);
         output.WriteMessage(ReflectivityColor);
       }
       if (HasTransparencyMode) {
-        output.WriteRawTag(80);
+        output.WriteRawTag(88);
         output.WriteEnum((int) TransparencyMode);
       }
       if (HasMetallic) {
-        output.WriteRawTag(93);
+        output.WriteRawTag(101);
         output.WriteFloat(Metallic);
       }
       if (HasRoughness) {
-        output.WriteRawTag(101);
+        output.WriteRawTag(109);
         output.WriteFloat(Roughness);
       }
       if (HasGlossiness) {
-        output.WriteRawTag(109);
+        output.WriteRawTag(117);
         output.WriteFloat(Glossiness);
       }
       if (HasSpecularIntensity) {
-        output.WriteRawTag(117);
+        output.WriteRawTag(125);
         output.WriteFloat(SpecularIntensity);
       }
       if (HasEmissiveIntensity) {
-        output.WriteRawTag(125);
+        output.WriteRawTag(133, 1);
         output.WriteFloat(EmissiveIntensity);
       }
       if (HasDirectIntensity) {
-        output.WriteRawTag(133, 1);
+        output.WriteRawTag(141, 1);
         output.WriteFloat(DirectIntensity);
       }
       if (_unknownFields != null) {
@@ -656,68 +714,72 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (texture_ != null) {
+      if (textureCase_ == TextureOneofCase.SrcTexture) {
         output.WriteRawTag(10);
-        output.WriteMessage(Texture);
+        output.WriteMessage(SrcTexture);
+      }
+      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+        output.WriteRawTag(18);
+        output.WriteMessage(AvatarTexture);
       }
       if (HasAlphaTest) {
-        output.WriteRawTag(21);
+        output.WriteRawTag(29);
         output.WriteFloat(AlphaTest);
       }
       if (HasCastShadows) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteBool(CastShadows);
       }
       if (alphaTexture_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(42);
         output.WriteMessage(AlphaTexture);
       }
       if (emissiveTexture_ != null) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(50);
         output.WriteMessage(EmissiveTexture);
       }
       if (bumpTexture_ != null) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(58);
         output.WriteMessage(BumpTexture);
       }
       if (albedoColor_ != null) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(66);
         output.WriteMessage(AlbedoColor);
       }
       if (emissiveColor_ != null) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(74);
         output.WriteMessage(EmissiveColor);
       }
       if (reflectivityColor_ != null) {
-        output.WriteRawTag(74);
+        output.WriteRawTag(82);
         output.WriteMessage(ReflectivityColor);
       }
       if (HasTransparencyMode) {
-        output.WriteRawTag(80);
+        output.WriteRawTag(88);
         output.WriteEnum((int) TransparencyMode);
       }
       if (HasMetallic) {
-        output.WriteRawTag(93);
+        output.WriteRawTag(101);
         output.WriteFloat(Metallic);
       }
       if (HasRoughness) {
-        output.WriteRawTag(101);
+        output.WriteRawTag(109);
         output.WriteFloat(Roughness);
       }
       if (HasGlossiness) {
-        output.WriteRawTag(109);
+        output.WriteRawTag(117);
         output.WriteFloat(Glossiness);
       }
       if (HasSpecularIntensity) {
-        output.WriteRawTag(117);
+        output.WriteRawTag(125);
         output.WriteFloat(SpecularIntensity);
       }
       if (HasEmissiveIntensity) {
-        output.WriteRawTag(125);
+        output.WriteRawTag(133, 1);
         output.WriteFloat(EmissiveIntensity);
       }
       if (HasDirectIntensity) {
-        output.WriteRawTag(133, 1);
+        output.WriteRawTag(141, 1);
         output.WriteFloat(DirectIntensity);
       }
       if (_unknownFields != null) {
@@ -730,8 +792,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (texture_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Texture);
+      if (textureCase_ == TextureOneofCase.SrcTexture) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SrcTexture);
+      }
+      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(AvatarTexture);
       }
       if (HasAlphaTest) {
         size += 1 + 4;
@@ -773,7 +838,7 @@ namespace DCL.ECSComponents {
         size += 1 + 4;
       }
       if (HasEmissiveIntensity) {
-        size += 1 + 4;
+        size += 2 + 4;
       }
       if (HasDirectIntensity) {
         size += 2 + 4;
@@ -789,12 +854,6 @@ namespace DCL.ECSComponents {
     public void MergeFrom(PBMaterial other) {
       if (other == null) {
         return;
-      }
-      if (other.texture_ != null) {
-        if (texture_ == null) {
-          Texture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
-        }
-        Texture.MergeFrom(other.Texture);
       }
       if (other.HasAlphaTest) {
         AlphaTest = other.AlphaTest;
@@ -859,6 +918,21 @@ namespace DCL.ECSComponents {
       if (other.HasDirectIntensity) {
         DirectIntensity = other.DirectIntensity;
       }
+      switch (other.TextureCase) {
+        case TextureOneofCase.SrcTexture:
+          if (SrcTexture == null) {
+            SrcTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+          }
+          SrcTexture.MergeFrom(other.SrcTexture);
+          break;
+        case TextureOneofCase.AvatarTexture:
+          if (AvatarTexture == null) {
+            AvatarTexture = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
+          }
+          AvatarTexture.MergeFrom(other.AvatarTexture);
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -875,87 +949,98 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (texture_ == null) {
-              Texture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+            global::DCL.ECSComponents.PBMaterial.Types.Texture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+            if (textureCase_ == TextureOneofCase.SrcTexture) {
+              subBuilder.MergeFrom(SrcTexture);
             }
-            input.ReadMessage(Texture);
+            input.ReadMessage(subBuilder);
+            SrcTexture = subBuilder;
             break;
           }
-          case 21: {
+          case 18: {
+            global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
+            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+              subBuilder.MergeFrom(AvatarTexture);
+            }
+            input.ReadMessage(subBuilder);
+            AvatarTexture = subBuilder;
+            break;
+          }
+          case 29: {
             AlphaTest = input.ReadFloat();
             break;
           }
-          case 24: {
+          case 32: {
             CastShadows = input.ReadBool();
             break;
           }
-          case 34: {
+          case 42: {
             if (alphaTexture_ == null) {
               AlphaTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
-          case 42: {
+          case 50: {
             if (emissiveTexture_ == null) {
               EmissiveTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
-          case 50: {
+          case 58: {
             if (bumpTexture_ == null) {
               BumpTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(BumpTexture);
             break;
           }
-          case 58: {
+          case 66: {
             if (albedoColor_ == null) {
               AlbedoColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(AlbedoColor);
             break;
           }
-          case 66: {
+          case 74: {
             if (emissiveColor_ == null) {
               EmissiveColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(EmissiveColor);
             break;
           }
-          case 74: {
+          case 82: {
             if (reflectivityColor_ == null) {
               ReflectivityColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(ReflectivityColor);
             break;
           }
-          case 80: {
+          case 88: {
             TransparencyMode = (global::DCL.ECSComponents.TransparencyMode) input.ReadEnum();
             break;
           }
-          case 93: {
+          case 101: {
             Metallic = input.ReadFloat();
             break;
           }
-          case 101: {
+          case 109: {
             Roughness = input.ReadFloat();
             break;
           }
-          case 109: {
+          case 117: {
             Glossiness = input.ReadFloat();
             break;
           }
-          case 117: {
+          case 125: {
             SpecularIntensity = input.ReadFloat();
             break;
           }
-          case 125: {
+          case 133: {
             EmissiveIntensity = input.ReadFloat();
             break;
           }
-          case 133: {
+          case 141: {
             DirectIntensity = input.ReadFloat();
             break;
           }
@@ -975,87 +1060,98 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (texture_ == null) {
-              Texture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+            global::DCL.ECSComponents.PBMaterial.Types.Texture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+            if (textureCase_ == TextureOneofCase.SrcTexture) {
+              subBuilder.MergeFrom(SrcTexture);
             }
-            input.ReadMessage(Texture);
+            input.ReadMessage(subBuilder);
+            SrcTexture = subBuilder;
             break;
           }
-          case 21: {
+          case 18: {
+            global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
+            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+              subBuilder.MergeFrom(AvatarTexture);
+            }
+            input.ReadMessage(subBuilder);
+            AvatarTexture = subBuilder;
+            break;
+          }
+          case 29: {
             AlphaTest = input.ReadFloat();
             break;
           }
-          case 24: {
+          case 32: {
             CastShadows = input.ReadBool();
             break;
           }
-          case 34: {
+          case 42: {
             if (alphaTexture_ == null) {
               AlphaTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
-          case 42: {
+          case 50: {
             if (emissiveTexture_ == null) {
               EmissiveTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
-          case 50: {
+          case 58: {
             if (bumpTexture_ == null) {
               BumpTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
             }
             input.ReadMessage(BumpTexture);
             break;
           }
-          case 58: {
+          case 66: {
             if (albedoColor_ == null) {
               AlbedoColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(AlbedoColor);
             break;
           }
-          case 66: {
+          case 74: {
             if (emissiveColor_ == null) {
               EmissiveColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(EmissiveColor);
             break;
           }
-          case 74: {
+          case 82: {
             if (reflectivityColor_ == null) {
               ReflectivityColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(ReflectivityColor);
             break;
           }
-          case 80: {
+          case 88: {
             TransparencyMode = (global::DCL.ECSComponents.TransparencyMode) input.ReadEnum();
             break;
           }
-          case 93: {
+          case 101: {
             Metallic = input.ReadFloat();
             break;
           }
-          case 101: {
+          case 109: {
             Roughness = input.ReadFloat();
             break;
           }
-          case 109: {
+          case 117: {
             Glossiness = input.ReadFloat();
             break;
           }
-          case 117: {
+          case 125: {
             SpecularIntensity = input.ReadFloat();
             break;
           }
-          case 125: {
+          case 133: {
             EmissiveIntensity = input.ReadFloat();
             break;
           }
-          case 133: {
+          case 141: {
             DirectIntensity = input.ReadFloat();
             break;
           }
@@ -1349,6 +1445,303 @@ namespace DCL.ECSComponents {
                 break;
               case 10: {
                 Src = input.ReadString();
+                break;
+              }
+              case 16: {
+                WrapMode = (global::DCL.ECSComponents.TextureWrapMode) input.ReadEnum();
+                break;
+              }
+              case 24: {
+                FilterMode = (global::DCL.ECSComponents.FilterMode) input.ReadEnum();
+                break;
+              }
+            }
+          }
+        }
+        #endif
+
+      }
+
+      public sealed partial class AvatarTexture : pb::IMessage<AvatarTexture>
+      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          , pb::IBufferMessage
+      #endif
+      {
+        private static readonly pb::MessageParser<AvatarTexture> _parser = new pb::MessageParser<AvatarTexture>(() => new AvatarTexture());
+        private pb::UnknownFieldSet _unknownFields;
+        private int _hasBits0;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pb::MessageParser<AvatarTexture> Parser { get { return _parser; } }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::DCL.ECSComponents.PBMaterial.Descriptor.NestedTypes[1]; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public AvatarTexture() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public AvatarTexture(AvatarTexture other) : this() {
+          _hasBits0 = other._hasBits0;
+          userId_ = other.userId_;
+          wrapMode_ = other.wrapMode_;
+          filterMode_ = other.filterMode_;
+          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public AvatarTexture Clone() {
+          return new AvatarTexture(this);
+        }
+
+        /// <summary>Field number for the "userId" field.</summary>
+        public const int UserIdFieldNumber = 1;
+        private string userId_ = "";
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string UserId {
+          get { return userId_; }
+          set {
+            userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+
+        /// <summary>Field number for the "wrapMode" field.</summary>
+        public const int WrapModeFieldNumber = 2;
+        private global::DCL.ECSComponents.TextureWrapMode wrapMode_;
+        /// <summary>
+        /// default = TextureWrapMode.Clamp
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::DCL.ECSComponents.TextureWrapMode WrapMode {
+          get { if ((_hasBits0 & 1) != 0) { return wrapMode_; } else { return global::DCL.ECSComponents.TextureWrapMode.Repeat; } }
+          set {
+            _hasBits0 |= 1;
+            wrapMode_ = value;
+          }
+        }
+        /// <summary>Gets whether the "wrapMode" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasWrapMode {
+          get { return (_hasBits0 & 1) != 0; }
+        }
+        /// <summary>Clears the value of the "wrapMode" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearWrapMode() {
+          _hasBits0 &= ~1;
+        }
+
+        /// <summary>Field number for the "filterMode" field.</summary>
+        public const int FilterModeFieldNumber = 3;
+        private global::DCL.ECSComponents.FilterMode filterMode_;
+        /// <summary>
+        /// default = FilterMode.Bilinear
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::DCL.ECSComponents.FilterMode FilterMode {
+          get { if ((_hasBits0 & 2) != 0) { return filterMode_; } else { return global::DCL.ECSComponents.FilterMode.Point; } }
+          set {
+            _hasBits0 |= 2;
+            filterMode_ = value;
+          }
+        }
+        /// <summary>Gets whether the "filterMode" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasFilterMode {
+          get { return (_hasBits0 & 2) != 0; }
+        }
+        /// <summary>Clears the value of the "filterMode" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearFilterMode() {
+          _hasBits0 &= ~2;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override bool Equals(object other) {
+          return Equals(other as AvatarTexture);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool Equals(AvatarTexture other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          if (UserId != other.UserId) return false;
+          if (WrapMode != other.WrapMode) return false;
+          if (FilterMode != other.FilterMode) return false;
+          return Equals(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override int GetHashCode() {
+          int hash = 1;
+          if (UserId.Length != 0) hash ^= UserId.GetHashCode();
+          if (HasWrapMode) hash ^= WrapMode.GetHashCode();
+          if (HasFilterMode) hash ^= FilterMode.GetHashCode();
+          if (_unknownFields != null) {
+            hash ^= _unknownFields.GetHashCode();
+          }
+          return hash;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void WriteTo(pb::CodedOutputStream output) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          output.WriteRawMessage(this);
+        #else
+          if (UserId.Length != 0) {
+            output.WriteRawTag(10);
+            output.WriteString(UserId);
+          }
+          if (HasWrapMode) {
+            output.WriteRawTag(16);
+            output.WriteEnum((int) WrapMode);
+          }
+          if (HasFilterMode) {
+            output.WriteRawTag(24);
+            output.WriteEnum((int) FilterMode);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(output);
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+          if (UserId.Length != 0) {
+            output.WriteRawTag(10);
+            output.WriteString(UserId);
+          }
+          if (HasWrapMode) {
+            output.WriteRawTag(16);
+            output.WriteEnum((int) WrapMode);
+          }
+          if (HasFilterMode) {
+            output.WriteRawTag(24);
+            output.WriteEnum((int) FilterMode);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(ref output);
+          }
+        }
+        #endif
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public int CalculateSize() {
+          int size = 0;
+          if (UserId.Length != 0) {
+            size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
+          }
+          if (HasWrapMode) {
+            size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) WrapMode);
+          }
+          if (HasFilterMode) {
+            size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FilterMode);
+          }
+          if (_unknownFields != null) {
+            size += _unknownFields.CalculateSize();
+          }
+          return size;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(AvatarTexture other) {
+          if (other == null) {
+            return;
+          }
+          if (other.UserId.Length != 0) {
+            UserId = other.UserId;
+          }
+          if (other.HasWrapMode) {
+            WrapMode = other.WrapMode;
+          }
+          if (other.HasFilterMode) {
+            FilterMode = other.FilterMode;
+          }
+          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void MergeFrom(pb::CodedInputStream input) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          input.ReadRawMessage(this);
+        #else
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+                break;
+              case 10: {
+                UserId = input.ReadString();
+                break;
+              }
+              case 16: {
+                WrapMode = (global::DCL.ECSComponents.TextureWrapMode) input.ReadEnum();
+                break;
+              }
+              case 24: {
+                FilterMode = (global::DCL.ECSComponents.FilterMode) input.ReadEnum();
+                break;
+              }
+            }
+          }
+        #endif
+        }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+                break;
+              case 10: {
+                UserId = input.ReadString();
                 break;
               }
               case 16: {

@@ -1,12 +1,41 @@
+using System.Collections;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.ECSComponents
 {
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
+        [System.Serializable]
+        public class ProfileRequestData
+        {
+            [System.Serializable]
+            public class Avatars
+            {
+                public Avatar avatar;
+            }
+
+            [System.Serializable]
+            public class Avatar
+            {
+                public Snapshots snapshots;
+            }
+
+            [System.Serializable]
+            public class Snapshots
+            {
+                public string face256;
+                public string body;
+            }
+
+            public Avatars[] avatars;
+        }
+        
         private PBMaterial lastModel = null;
         internal AssetPromise_Material promiseMaterial;
 
@@ -32,9 +61,66 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            AssetPromise_Material_Model? promiseModel = null;
-            AssetPromise_Material_Model.Texture? albedoTexture = CreateMaterialPromiseTextureModel(model.Texture, scene);
+            if (model.TextureCase == PBMaterial.TextureOneofCase.AvatarTexture)
+            {
+                CoroutineStarter.Start(FetchUserProfileAvatarSnapshotSrc(model.AvatarTexture.UserId, (albedoTextureUrl) =>
+                {
+                    if (string.IsNullOrEmpty(albedoTextureUrl))
+                        return;
+                    
+                    AssetPromise_Material_Model.Texture materialModel = new AssetPromise_Material_Model.Texture(albedoTextureUrl,
+                        (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
+                        (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
+                    
+                    CreateAndConfigureMaterialPromise(scene, entity, model, materialModel);
+                }));
+                
+                return;
+            }
 
+            CreateAndConfigureMaterialPromise(scene, entity, model, CreateMaterialPromiseTextureModel(model.SrcTexture, scene));
+        }
+
+        private IEnumerator FetchUserProfileAvatarSnapshotSrc(string userId, Action<string> finishCallback)
+        {
+            if (string.IsNullOrEmpty(userId))
+                yield break;
+         
+            string sourceUrl = Environment.i.platform.serviceProviders.catalyst.lambdasUrl + "/profiles?id=" + userId;
+            // The sourceUrl request should return an array, with an object
+            //      the object has `timerstamp` and `avatars`, `avatars` is an array
+            //      we only request a single avatar so with length=1
+            //      avatars[0] has the avatar and we have to access to
+            //      avatars[0].avatar.snapshots, and the links are
+            //      face,face128,face256 and body
+            
+            // TODO: check if this user data already exists to avoid this fetch.
+            yield return GetAvatarUrls(sourceUrl, finishCallback);
+        }
+        
+        private static IEnumerator GetAvatarUrls(string url, Action<string> onURLSuccess)
+        {
+            yield return Environment.i.platform.webRequest.Get(
+                url: url,
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 10,
+                disposeOnCompleted: false,
+                OnFail: (webRequest) =>
+                {
+                    Debug.LogWarning($"Request error! profile data couldn't be fetched! -- {webRequest.webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    ProfileRequestData[] data = DCL.Helpers.Utils.ParseJsonArray<ProfileRequestData[]>(webRequest.webRequest.downloadHandler.text);
+                    string face256Url = data[0]?.avatars[0]?.avatar.snapshots.face256;
+                    onURLSuccess?.Invoke(face256Url);
+                });
+        }
+
+        private void CreateAndConfigureMaterialPromise(IParcelScene scene, IDCLEntity entity, PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
+        {
+            AssetPromise_Material_Model? promiseModel = null;
+            
             if (IsPbrMaterial(model))
             {
                 AssetPromise_Material_Model.Texture? alphaTexture = CreateMaterialPromiseTextureModel(model.AlphaTexture, scene);
@@ -90,9 +176,7 @@ namespace DCL.ECSComponents
                 return null;
 
             if (!scene.contentProvider.TryGetContentsUrl(textureModel.Src, out string url))
-            {
                 return null;
-            }
 
             return new AssetPromise_Material_Model.Texture(url,
                 (UnityEngine.TextureWrapMode)textureModel.GetWrapMode(),
