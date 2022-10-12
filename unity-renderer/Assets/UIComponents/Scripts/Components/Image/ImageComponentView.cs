@@ -1,5 +1,5 @@
-using System;
 using DCL.Helpers;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
