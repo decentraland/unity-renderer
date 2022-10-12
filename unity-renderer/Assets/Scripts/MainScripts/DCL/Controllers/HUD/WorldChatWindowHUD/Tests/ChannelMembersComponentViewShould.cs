@@ -1,5 +1,7 @@
+using System.Collections;
 using DCL.Chat.HUD;
 using NUnit.Framework;
+using UnityEngine.TestTools;
 
 public class ChannelMembersComponentViewShould
 {
@@ -57,8 +59,8 @@ public class ChannelMembersComponentViewShould
         Assert.IsFalse(experienceRowComponent.resultsHeaderLabel.gameObject.activeSelf);
     }
 
-    [Test]
-    public void SetCorrectly()
+    [UnityTest]
+    public IEnumerator SetCorrectly()
     {
         // Arrange
         experienceRowComponent.memberList.Clear();
@@ -73,6 +75,8 @@ public class ChannelMembersComponentViewShould
 
         // Act
         experienceRowComponent.Set(testModel);
+        // wait for the queued entry to be added in the next frame
+        yield return null;
 
         // Assert
         Assert.IsTrue(experienceRowComponent.memberList.Contains(testId));
