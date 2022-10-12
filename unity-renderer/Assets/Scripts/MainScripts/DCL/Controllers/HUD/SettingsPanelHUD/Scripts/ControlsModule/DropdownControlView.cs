@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace DCL.SettingsPanelHUD.Controls
 {
@@ -55,6 +53,8 @@ namespace DCL.SettingsPanelHUD.Controls
             {
                 dropdown.options.Add(data);
             }
+            
+            dropdown.Hide();
             dropdown.RefreshShownValue();
         }
 

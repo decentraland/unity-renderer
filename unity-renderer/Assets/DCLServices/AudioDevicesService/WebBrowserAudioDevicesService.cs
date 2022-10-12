@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using DCL.Interface;
-using UnityEngine;
 
 namespace DCL.Services
 {
@@ -31,7 +29,7 @@ namespace DCL.Services
 
         public void SetInputDevice(int deviceId)
         {
-            if (deviceId <= InputDevices.Length)
+            if (HasRecievedKernelMessage && deviceId <= InputDevices.Length)
                 WebInterface.SetInputAudioDevice(InputDevices[deviceId].deviceId);
         }
 
