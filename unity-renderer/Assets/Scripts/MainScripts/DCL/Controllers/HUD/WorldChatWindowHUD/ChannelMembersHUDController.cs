@@ -88,6 +88,7 @@ namespace DCL.Chat.HUD
             view.Show();
             view.ClearAllEntries();
             view.ShowLoading();
+            view.HideLoadingMore();
 
             loadStartedTimestamp = DateTime.Now;
             string[] channelsToGetInfo = { currentChannelId };
