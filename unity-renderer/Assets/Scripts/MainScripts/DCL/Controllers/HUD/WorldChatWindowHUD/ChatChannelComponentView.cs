@@ -49,6 +49,7 @@ namespace DCL.Chat.HUD
         public IChannelMembersComponentView ChannelMembersHUD => membersList;
         public RectTransform Transform => (RectTransform) transform;
         public bool IsFocused => isFocused;
+        private Color targetGraphicColor;
 
         public static ChatChannelComponentView Create()
         {
@@ -75,6 +76,7 @@ namespace DCL.Chat.HUD
             expandMembersListButton.onClick.AddListener(ToggleMembersSection);
             collapseMembersListButton.onClick.AddListener(ToggleMembersSection);
             muteToggle.OnSelectedChanged += (b, s, arg3) => OnMuteChanged?.Invoke(b);
+            targetGraphicColor = membersIconButton.targetGraphic.color;
         }
 
         public override void RefreshControl()
@@ -140,17 +142,16 @@ namespace DCL.Chat.HUD
 
             contextualMenu.gameObject.transform.SetParent(this.transform);
 
-            var tempColor = membersIconButton.targetGraphic.color;
             if (isMembersSectionOpen)
             {
-                tempColor.a = 0f;
-                membersIconButton.targetGraphic.color = tempColor;
+                targetGraphicColor.a = 0f;
+                membersIconButton.targetGraphic.color = targetGraphicColor;
                 OnShowMembersList?.Invoke();
             }
             else
             {
-                tempColor.a = 1f;
-                membersIconButton.targetGraphic.color = tempColor;
+                targetGraphicColor.a = 1f;
+                membersIconButton.targetGraphic.color = targetGraphicColor;
                 OnHideMembersList?.Invoke();
             }
         }
