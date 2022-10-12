@@ -75,7 +75,7 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private async UniTaskVoid LoadMembers()
+        private void LoadMembers()
         {
             ClearListeners();
 
@@ -89,8 +89,6 @@ namespace DCL.Chat.HUD
             view.Show();
             view.ClearAllEntries();
             view.ShowLoading();
-
-            await UniTask.NextFrame();
 
             loadStartedTimestamp = DateTime.Now;
             string[] channelsToGetInfo = { currentChannelId };
@@ -109,6 +107,7 @@ namespace DCL.Chat.HUD
             view.ClearAllEntries();
             view.HideLoadingMore();
             view.ShowLoading();
+            Debug.Log("ChannelMembers: SearchMembers");
 
             isSearching = !string.IsNullOrEmpty(searchText);
 
@@ -175,6 +174,7 @@ namespace DCL.Chat.HUD
             if (IsLoading() || isSearching) return;
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
+            Debug.Log("ChannelMembers: LoadMoreMembers");
             chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, view.EntryCount);
 
             if (!isSearching)
