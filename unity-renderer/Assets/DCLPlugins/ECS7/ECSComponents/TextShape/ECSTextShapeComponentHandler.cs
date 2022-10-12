@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -12,25 +13,28 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private static readonly int underlaySoftnessShaderProp = Shader.PropertyToID("_UnderlaySoftness");
 
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+    private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
 
     private GameObject textGameObject;
     private TextMeshPro textComponent;
     private RectTransform rectTransform;
+    private Renderer textRenderer;
 
     private AssetPromise_Font fontPromise;
 
     private PBTextShape currentModel;
 
-    public ECSTextShapeComponentHandler(AssetPromiseKeeper_Font fontPromiseKeeper)
+    public ECSTextShapeComponentHandler(AssetPromiseKeeper_Font fontPromiseKeeper, IInternalECSComponent<InternalRenderers> renderersInternalComponent)
     {
         this.fontPromiseKeeper = fontPromiseKeeper;
+        this.renderersInternalComponent = renderersInternalComponent;
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
         textGameObject = new GameObject("TextShape");
 
-        textGameObject.AddComponent<MeshRenderer>();
+        textRenderer = textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
         rectTransform.SetParent(entity.gameObject.transform, false);
@@ -39,10 +43,12 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent.text = string.Empty;
         textComponent.richText = true;
         textComponent.overflowMode = TextOverflowModes.Overflow;
+        renderersInternalComponent.AddRenderer(scene, entity, textRenderer);
     }
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
+        renderersInternalComponent.RemoveRenderer(scene, entity, textRenderer);
         fontPromiseKeeper.Forget(fontPromise);
 
         Object.Destroy(textGameObject);

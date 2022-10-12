@@ -9,10 +9,11 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponents internalComponents)
         {
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTextShape>,
-                () => new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i));
+                () => new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, internalComponents.renderersComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
