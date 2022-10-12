@@ -1,207 +1,75 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Controllers;
-using DCL.Helpers;
-using DCL.Interface;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.UI;
-using Variables.RealmsInfo;
 
 namespace DCL.FPSDisplay
 {
     public class FPSDisplay : MonoBehaviour
     {
         private const float REFRESH_SECONDS = 0.1f;
-        private const string NO_DECIMALS = "##";
-        private const string TWO_DECIMALS = "##.00";
-        private const float BYTES_TO_MEGABYTES = 1048576f;
 
-        [SerializeField] private PerformanceMetricsDataVariable performanceData;
         [SerializeField] internal List<DebugValue> valuesToUpdate;
         [SerializeField] private Button closeButton;
         [SerializeField] private CopyToClipboardButton copySceneToClipboard;
         [SerializeField] private DebugSection memorySection;
         [SerializeField] private RectTransform container;
+        [SerializeField] private PerformanceMetricsDataVariable performanceData;
 
-        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private int lastPlayerCount;
-        private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
-        private Promise<KernelConfigModel> kernelConfigPromise;
-        private string currentNetwork = string.Empty;
-        private string currentRealmValue = string.Empty;
         private Dictionary<DebugValueEnum, Func<string>> updateValueDictionary;
-        private float fps;
-        private string fpsColor;
-        private string sceneID;
-        private string sceneComponents;
-        private SceneMetricsModel metrics;
-        private SceneMetricsModel limits;
-        private IParcelScene activeScene;
-        private int totalMessagesCurrent;
-        private int totalMessagesGlobal;
-        private BaseVariable<float> jsUsedHeapSize => DataStore.i.debugConfig.jsUsedHeapSize;
-        private BaseVariable<float> jsHeapSizeLimit => DataStore.i.debugConfig.jsHeapSizeLimit;
-        private BaseVariable<float> jsTotalHeapSize => DataStore.i.debugConfig.jsTotalHeapSize;
         private Vector3 containerStartAnchoredPosition;
+
+        private List<IDebugMetricModule> debugMetricsModules;
+        private SceneDebugMetricModule sceneDebugMetricModule;
 
         private void Awake()
         {
             containerStartAnchoredPosition = container.anchoredPosition;
+            
+            sceneDebugMetricModule = new SceneDebugMetricModule();
+            debugMetricsModules = new List<IDebugMetricModule>
+            {
+                new FPSDebugMetricModule(performanceData),
+                new SkyboxDebugMetricModule(),
+                new MemoryJSDebugMetricModule(),
+                new MemoryDesktopDebugMetricModule(),
+                new GeneralDebugMetricModule(),
+                sceneDebugMetricModule
+            };
+            updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
+            foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
+            {
+                debugMetricsModule.SetUpModule(updateValueDictionary);
+            }
         }
 
         private void Start()
         {
             closeButton.onClick.AddListener(() =>DataStore.i.debugConfig.isFPSPanelVisible.Set(false));
-            copySceneToClipboard.SetFuncToCopy(() =>  activeScene.sceneData.id);
-#if UNITY_STANDALONE || !UNITY_EDITOR
-            memorySection.gameObject.SetActive(false);
-#endif
+            copySceneToClipboard.SetFuncToCopy(() =>  sceneDebugMetricModule.GetSceneID());
         }
 
         private void OnEnable()
         {
             container.anchoredPosition = containerStartAnchoredPosition;
+            foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
+            {
+                debugMetricsModule.EnableModule();
+            }
             
-            lastPlayerCount = otherPlayers.Count();
-            otherPlayers.OnAdded += OnOtherPlayersModified;
-            otherPlayers.OnRemoved += OnOtherPlayersModified;
-
-            SetupKernelConfig();
-            SetupRealm();
-
-            SetupDictionary();
-            
-            ProfilingEvents.OnMessageWillQueue += OnMessageWillQueue;
-            ProfilingEvents.OnMessageWillDequeue += OnMessageWillDequeue;
-
             StartCoroutine(UpdateLabelLoop());
         }
         
         private void OnDisable()
         {
-            otherPlayers.OnAdded -= OnOtherPlayersModified;
-            otherPlayers.OnRemoved -= OnOtherPlayersModified;
-            currentRealm.OnChange -= UpdateRealm;
-            kernelConfigPromise.Dispose();
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
-            
-            ProfilingEvents.OnMessageWillQueue += OnMessageWillQueue;
-            ProfilingEvents.OnMessageWillDequeue += OnMessageWillDequeue;
-
+            foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
+            {
+                debugMetricsModule.DisableModule();
+            }
             StopAllCoroutines();
         }
-
-        private void SetupDictionary()
-        {
-            if (updateValueDictionary != null)
-                return;
-            
-            updateValueDictionary = new Dictionary<DebugValueEnum, Func<string>>();
-            
-            updateValueDictionary.Add(DebugValueEnum.Skybox_Config, () => DataStore.i.skyboxConfig.configToLoad.Get());
-            updateValueDictionary.Add(DebugValueEnum.Skybox_Duration, () => $"{DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
-            updateValueDictionary.Add(DebugValueEnum.Skybox_GameTime, () => $"{DataStore.i.skyboxConfig.currentVirtualTime.Get().ToString(TWO_DECIMALS)}");
-            updateValueDictionary.Add(DebugValueEnum.Skybox_UTCTime, () => $"{DataStore.i.worldTimer.GetCurrentTime()}");
-            
-            updateValueDictionary.Add(DebugValueEnum.General_Network, () => currentNetwork.ToUpper());
-            updateValueDictionary.Add(DebugValueEnum.General_Realm, () => currentRealmValue.ToUpper());
-            updateValueDictionary.Add(DebugValueEnum.General_NearbyPlayers, () => lastPlayerCount.ToString());
-            
-            updateValueDictionary.Add(DebugValueEnum.FPS, GetFPSCount);
-            updateValueDictionary.Add(DebugValueEnum.FPS_HiccupsInTheLast1000, () => $"{fpsColor}{performanceData.Get().hiccupCount.ToString()}</color>");
-            updateValueDictionary.Add(DebugValueEnum.FPS_HiccupsLoss, GetHiccupsLoss);
-            updateValueDictionary.Add(DebugValueEnum.FPS_BadFramesPercentiles, () => $"{fpsColor}{((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%</color>");
-            
-            updateValueDictionary.Add(DebugValueEnum.Scene_Name, () => sceneID);
-            updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{((float)totalMessagesCurrent / totalMessagesGlobal * 100).ToString(TWO_DECIMALS)}%");
-            updateValueDictionary.Add(DebugValueEnum.Scene_PendingOnQueue, () =>  $"{totalMessagesGlobal - totalMessagesCurrent}");
-            updateValueDictionary.Add(DebugValueEnum.Scene_Poly, () => GetSceneMetric(metrics.triangles, limits.triangles));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Textures, () => GetSceneMetric(metrics.textures,limits.textures));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Materials, () => GetSceneMetric(metrics.materials,limits.materials));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Entities, () =>GetSceneMetric(metrics.entities,limits.entities));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Meshes, () => GetSceneMetric(metrics.meshes, limits.meshes));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Bodies, () => GetSceneMetric(metrics.bodies,limits.bodies));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Components, () => sceneComponents);
-            
-            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  GetMemoryMetric(jsUsedHeapSize.Get() / BYTES_TO_MEGABYTES));
-            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => GetMemoryMetric(jsTotalHeapSize.Get() / BYTES_TO_MEGABYTES));
-            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"2048 Mb");
-            
-            updateValueDictionary.Add(DebugValueEnum.Memory_Total_Allocated, () =>  $"{(Profiler.GetTotalAllocatedMemoryLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb"); 
-            updateValueDictionary.Add(DebugValueEnum.Memory_Reserved_Ram, () => $"{(Profiler.GetTotalReservedMemoryLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb"); 
-            updateValueDictionary.Add(DebugValueEnum.Memory_Mono, () => $"{(Profiler.GetMonoUsedSizeLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb");
-            Profiler.GetAllocatedMemoryForGraphicsDriver();
-        }
-        
-        private string GetFPSCount()
-        {
-            float dt = Time.unscaledDeltaTime;
-            string fpsFormatted = fps.ToString("##");
-            string msFormatted = (dt * 1000).ToString("##");
-            return $"<b>FPS</b> {fpsColor}{fpsFormatted}</color> {msFormatted} ms";
-        }
-
-        private string GetSceneMetric(int value, int limit)
-        {
-            return $"{GetColor(GetHexColor(FPSColoring.GetPercentageColoring(value, limit)))}current: {value} max: {limit}</color>";
-        }
-        
-        private string GetMemoryMetric(float value)
-        {
-            return $"{GetColor(GetHexColor(FPSColoring.GetMemoryColoring(value)))}{value.ToString(NO_DECIMALS)} Mb</color>";
-        }
-        
-        private void SetSceneData()
-        {
-            sceneID = activeScene.sceneData.id;
-            if (sceneID.Length >= 11)
-            {
-                sceneID = $"{sceneID.Substring(0, 5)}...{sceneID.Substring(sceneID.Length - 5, 5)}";
-            }
-            sceneComponents = (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString();
-        }
-
-        private string GetHiccupsLoss()
-        {
-            return $"{fpsColor}{(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% {performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs</color>";
-        }
-        private void SetupRealm()
-        {
-            currentRealm.OnChange += UpdateRealm;
-            UpdateRealm(currentRealm.Get(), null);
-        }
-
-        private void SetupKernelConfig()
-        {
-            kernelConfigPromise = KernelConfig.i.EnsureConfigInitialized();
-            kernelConfigPromise.Catch(Debug.Log);
-            kernelConfigPromise.Then(OnKernelConfigChanged);
-            KernelConfig.i.OnChange += OnKernelConfigChanged;
-        }
-
-        private void UpdateRealm(CurrentRealmModel current, CurrentRealmModel previous)
-        {
-            if (current == null) return;
-            currentRealmValue = current.serverName ?? string.Empty;
-        }
-
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-        {
-            OnKernelConfigChanged(current);
-        }
-
-        private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
-        {
-            currentNetwork = kernelConfig.network ?? string.Empty;
-        }
-
-        private void OnOtherPlayersModified(string playerName, Player player)
-        {
-            lastPlayerCount = otherPlayers.Count();
-        }
-
+ 
         private IEnumerator UpdateLabelLoop()
         {
             while (performanceData.Get().totalSeconds <= 0)
@@ -211,16 +79,9 @@ namespace DCL.FPSDisplay
             
             while (true)
             {
-                Profiler.BeginSample("FPS DISPLAY");
-                fps = performanceData.Get().fpsCount;
-                fpsColor = GetColor(GetHexColor(FPSColoring.GetDisplayColor(fps)));
-                activeScene = GetActiveScene();
-                WebInterface.UpdateMemoryUsage();
-                if (activeScene != null && activeScene.metricsCounter != null)
+                foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
                 {
-                    metrics = activeScene.metricsCounter.currentCount;
-                    limits = activeScene.metricsCounter.maxCount;
-                    SetSceneData();
+                    debugMetricsModule.UpdateModule();
                 }
                 for (var i = 0; i < valuesToUpdate.Count; i++)
                 {
@@ -229,59 +90,23 @@ namespace DCL.FPSDisplay
                         valuesToUpdate[i].SetValue(updateValueDictionary[valuesToUpdate[i].debugValueEnum].Invoke());
                     }
                 }
-                Profiler.EndSample();
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }
         }
        
-        private IParcelScene GetActiveScene()
-        {
-            IWorldState worldState = DCL.Environment.i.world.state;
-            string debugSceneId = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneId;
-
-            if (!string.IsNullOrEmpty(debugSceneId))
-            {
-                if (worldState.TryGetScene(debugSceneId, out IParcelScene scene))
-                    return scene;
-            }
-
-            var currentPos = DataStore.i.player.playerGridPosition.Get();
-            worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), out IParcelScene resultScene);
-
-            return resultScene;
-        }
-        
-        private void OnMessageWillDequeue(string obj)
-        {
-            totalMessagesCurrent = Math.Min(totalMessagesCurrent + 1, totalMessagesGlobal);
-        }
-
-        private void OnMessageWillQueue(string obj)
-        {
-            totalMessagesGlobal++;
-        }
-        
-        private static string GetHexColor(Color color)
-        {
-            return $"#{ColorUtility.ToHtmlStringRGB(color)}";
-        }
-
-        private string GetColor(string color)
-        {
-            return $"<color={color}>";
-        }
-        
         private void OnDestroy()
         {
             closeButton.onClick.RemoveAllListeners();
+            foreach (IDebugMetricModule debugMetricsModule in debugMetricsModules)
+            {
+                debugMetricsModule.Dispose();
+            }
         }
 
         public void AddValueToUpdate(DebugValue valueToUpdate)
         {
             valuesToUpdate.Add(valueToUpdate);
         }
-
-
 
     }
 }

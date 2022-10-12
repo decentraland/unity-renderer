@@ -10,8 +10,6 @@ namespace DCL.FPSDisplay
         private static readonly Color WORSE_COLOR = new Color(0.9764706f, 0.4117647f, 0.05490196f);
         private static readonly Color UNBEARABLE_COLOR = Color.red;
 
-
-
         public static FPSColor[] coloring =
         {
             new FPSColor(GREAT_COLOR, FPSEvaluation.GREAT),
@@ -21,7 +19,7 @@ namespace DCL.FPSDisplay
             new FPSColor(UNBEARABLE_COLOR, FPSEvaluation.UNBEARABLE),
         };
 
-        public static Color GetDisplayColor(float fps)
+        private static Color GeFPSDisplayColor(float fps)
         {
             for (int i = 0; i < coloring.Length; i++)
             {
@@ -34,7 +32,7 @@ namespace DCL.FPSDisplay
             return coloring[coloring.Length - 1].color;
         }
 
-        public static Color GetPercentageColoring(float value, float limit)
+        private static Color GetPercentageColoring(float value, float limit)
         {
             float currentPercentage = value / limit;
             if (currentPercentage > 90)
@@ -48,7 +46,7 @@ namespace DCL.FPSDisplay
             return GOOD_COLOR;
         }
 
-        public static Color GetMemoryColoring(float memoryValue)
+        private static Color GetMemoryColoring(float memoryValue)
         {
             if (memoryValue > 1500)
             {
@@ -60,5 +58,15 @@ namespace DCL.FPSDisplay
             }
             return GOOD_COLOR;
         }
+
+        public static string GetDisplayColorString(float fps) { return GetColor(GetHexColor(GeFPSDisplayColor(fps))); }
+
+        public static string GetPercentageColoringString(int value, int limit) { return GetColor(GetHexColor(GetPercentageColoring(value, limit))); }
+
+        private static string GetHexColor(Color color) { return $"#{ColorUtility.ToHtmlStringRGB(color)}"; }
+
+        private static string GetColor(string color) { return $"<color={color}>"; }
+
+        public static object GetMemoryColoringString(float memoryValue) { return GetColor(GetHexColor(GetMemoryColoring(memoryValue))); }
     }
 }
