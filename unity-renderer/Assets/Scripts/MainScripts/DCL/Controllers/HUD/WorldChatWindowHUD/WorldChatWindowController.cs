@@ -558,15 +558,9 @@ public class WorldChatWindowController : IHUD
 
     private void GetCurrentChannelsInfo()
     {
-        // TODO: Use this code once kernel accepts a list of channels in the "GetChannelInfo" message
-        //chatController.GetChannelInfo(publicChannels
-        //        .Select(x => x.Key)
-        //        .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
-        //        .ToArray());
-        foreach (var channel in publicChannels)
-        {
-            string[] channelsToGetInfo = { channel.Key };
-            chatController.GetChannelInfo(channelsToGetInfo);
-        }
+        chatController.GetChannelInfo(publicChannels
+                .Select(x => x.Key)
+                .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
+                .ToArray());
     }
 }
