@@ -13,41 +13,24 @@ namespace DCL.Services
         public bool HasRecievedKernelMessage { get; private set; }
         public AudioDevice[] InputDevices { get; private set; }
 
-        public void Initialize()
-        {
-            if (bridge.AudioDevices == null)
-                bridge.OnAudioDevicesRecieved += OnAudioDevicesRecieved;
-            else
-                CacheAudioDevices();
-        }
+        public void Initialize() => bridge.OnAudioDevicesRecieved += CacheAudioDevices;
+        public void Dispose() => bridge.OnAudioDevicesRecieved -= CacheAudioDevices;
 
-        public void Dispose()
+        private void CacheAudioDevices(AudioDevicesResponse devices)
         {
-            if (!HasRecievedKernelMessage)
-                bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
+            HasRecievedKernelMessage = true;
+
+            InputDevices = devices.inputDevices;
+
+            AduioDeviceCached?.Invoke();
         }
+        
+        public void RequestAudioDevices() => bridge.RequestAudioDevices();
 
         public void SetInputDevice(int deviceId)
         {
             if (HasRecievedKernelMessage && deviceId <= InputDevices.Length)
                 WebInterface.SetInputAudioDevice(InputDevices[deviceId].deviceId);
-        }
-
-        public void RequestAudioDevices() => bridge.RequestAudioDevices();
-
-        private void OnAudioDevicesRecieved(AudioDevicesResponse devices)
-        {
-            bridge.OnAudioDevicesRecieved -= OnAudioDevicesRecieved;
-            CacheAudioDevices();
-        }
-
-        private void CacheAudioDevices()
-        {
-            HasRecievedKernelMessage = true;
-
-            InputDevices = bridge.AudioDevices.inputDevices;
-
-            AduioDeviceCached?.Invoke();
         }
     }
 }

@@ -8,7 +8,6 @@ namespace DCL.Services
 {
     public class WebBrowserAudioDevicesBridge : MonoBehaviour, IAudioDevicesBridge
     {
-        public AudioDevicesResponse AudioDevices { get; private set; }
         public event Action<AudioDevicesResponse> OnAudioDevicesRecieved;
 
         public static WebBrowserAudioDevicesBridge GetOrCreate()
@@ -40,8 +39,7 @@ namespace DCL.Services
             if (response == null)
                 return;
 
-            AudioDevices = response;
-            OnAudioDevicesRecieved?.Invoke(AudioDevices);
+            OnAudioDevicesRecieved?.Invoke(response);
         }
     }
 }
