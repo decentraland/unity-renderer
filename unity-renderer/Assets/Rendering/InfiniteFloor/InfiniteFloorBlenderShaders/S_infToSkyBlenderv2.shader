@@ -2,10 +2,12 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 {
     Properties
     {
-        _ColorFloor("ColorFloor", Color) = (0, 0, 0, 0)
-        _ColorSky("ColorSky", Color) = (0, 0, 0, 0)
-        _MiddlePoint("MiddlePoint", Range(-100, 400)) = 0
-        _Fade("Fade", Range(0, 1)) = 0
+        _colorFloor("ColorFloor", Color) = (0, 0, 0, 0)
+        _colorSky("ColorSky", Color) = (0, 0, 0, 0)
+        _colorArea("ColorArea", Range(0, 1)) = 0
+        _horizonStartPoint("HorizonStartPoint", Range(0, 1)) = 0
+        _fade("Fade", Range(0, 1)) = 0
+        _opacity("Opacity", Range(0, 1)) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -45,7 +47,7 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
             #pragma target 4.5
         #pragma exclude_renderers gles gles3 glcore
         #pragma multi_compile_instancing
-        #pragma multi_compile_fog
+        //#pragma multi_compile_fog
         #pragma multi_compile _ DOTS_INSTANCING_ON
         #pragma vertex vert
         #pragma fragment frag
@@ -186,16 +188,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+
         void Unity_Multiply_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -206,19 +227,9 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
             Out = lerp(A, B, T);
         }
 
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Lerp_float(float A, float B, float T, out float Out)
@@ -253,51 +264,56 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float4 _Property_8e127b7d586e43c98c5eaebfce216ede_Out_0 = _ColorSky;
-            float4 _Property_41a30041471045439f3dc3148c58d816_Out_0 = _ColorFloor;
-            float _Property_8089e8377fef49ee875fa986aacab2b6_Out_0 = _MiddlePoint;
-            float4 _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0 = IN.uv0;
-            float _Split_247013a6242b4504975a037c9d873a12_R_1 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[0];
-            float _Split_247013a6242b4504975a037c9d873a12_G_2 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[1];
-            float _Split_247013a6242b4504975a037c9d873a12_B_3 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[2];
-            float _Split_247013a6242b4504975a037c9d873a12_A_4 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[3];
-            float _Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2;
-            Unity_Multiply_float(_Property_8089e8377fef49ee875fa986aacab2b6_Out_0, _Split_247013a6242b4504975a037c9d873a12_G_2, _Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2);
-            float4 _Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3;
-            Unity_Lerp_float4(_Property_8e127b7d586e43c98c5eaebfce216ede_Out_0, _Property_41a30041471045439f3dc3148c58d816_Out_0, (_Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2.xxxx), _Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3);
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.BaseColor = (_Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3.xyz);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float4 _Property_ebb921ea819640ab8212a37e253e2371_Out_0 = _colorSky;
+            float4 _Property_d510806a90eb44d8a3358e1bae617f9e_Out_0 = _colorFloor;
+            float _Property_a970125d69574360bc269817531f2345_Out_0 = _colorArea;
+            float _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3;
+            Unity_Remap_float(_Property_a970125d69574360bc269817531f2345_Out_0, float2 (0, 1), float2 (0, 100), _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3);
+            float4 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGBA_4;
+            float3 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGB_5;
+            float2 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6;
+            Unity_Combine_float(0, _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3, 0, 0, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGBA_4, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGB_5, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6);
+            float2 _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3;
+            Unity_TilingAndOffset_float(IN.uv0.xy, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6, float2 (0, 0), _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3);
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_R_1 = _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3[0];
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_G_2 = _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3[1];
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_B_3 = 0;
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_A_4 = 0;
+            float _Property_624ca2d844594690af1d834a1a61c282_Out_0 = _colorArea;
+            float _Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2;
+            Unity_Multiply_float(_Split_f102f27ffa9b42a381a7f2b776c604cd_G_2, _Property_624ca2d844594690af1d834a1a61c282_Out_0, _Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2);
+            float4 _Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3;
+            Unity_Lerp_float4(_Property_ebb921ea819640ab8212a37e253e2371_Out_0, _Property_d510806a90eb44d8a3358e1bae617f9e_Out_0, (_Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2.xxxx), _Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3);
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.BaseColor = (_Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3.xyz);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 
@@ -510,29 +526,21 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Multiply_float(float A, float B, out float Out)
@@ -571,38 +579,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 
@@ -815,29 +820,21 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Multiply_float(float A, float B, out float Out)
@@ -876,38 +873,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 
@@ -1131,16 +1125,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+
         void Unity_Multiply_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -1151,19 +1164,9 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
             Out = lerp(A, B, T);
         }
 
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Lerp_float(float A, float B, float T, out float Out)
@@ -1198,51 +1201,56 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float4 _Property_8e127b7d586e43c98c5eaebfce216ede_Out_0 = _ColorSky;
-            float4 _Property_41a30041471045439f3dc3148c58d816_Out_0 = _ColorFloor;
-            float _Property_8089e8377fef49ee875fa986aacab2b6_Out_0 = _MiddlePoint;
-            float4 _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0 = IN.uv0;
-            float _Split_247013a6242b4504975a037c9d873a12_R_1 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[0];
-            float _Split_247013a6242b4504975a037c9d873a12_G_2 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[1];
-            float _Split_247013a6242b4504975a037c9d873a12_B_3 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[2];
-            float _Split_247013a6242b4504975a037c9d873a12_A_4 = _UV_2e20f69e14434c93bb1cb6b7350d7385_Out_0[3];
-            float _Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2;
-            Unity_Multiply_float(_Property_8089e8377fef49ee875fa986aacab2b6_Out_0, _Split_247013a6242b4504975a037c9d873a12_G_2, _Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2);
-            float4 _Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3;
-            Unity_Lerp_float4(_Property_8e127b7d586e43c98c5eaebfce216ede_Out_0, _Property_41a30041471045439f3dc3148c58d816_Out_0, (_Multiply_3b01cc14f9904a14932a6e9b561b4285_Out_2.xxxx), _Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3);
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.BaseColor = (_Lerp_bc6004eca6094d269c7a456ff0a5132a_Out_3.xyz);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float4 _Property_ebb921ea819640ab8212a37e253e2371_Out_0 = _colorSky;
+            float4 _Property_d510806a90eb44d8a3358e1bae617f9e_Out_0 = _colorFloor;
+            float _Property_a970125d69574360bc269817531f2345_Out_0 = _colorArea;
+            float _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3;
+            Unity_Remap_float(_Property_a970125d69574360bc269817531f2345_Out_0, float2 (0, 1), float2 (0, 100), _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3);
+            float4 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGBA_4;
+            float3 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGB_5;
+            float2 _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6;
+            Unity_Combine_float(0, _Remap_89c31f73da0141d7b734d7d8d6ab2542_Out_3, 0, 0, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGBA_4, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RGB_5, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6);
+            float2 _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3;
+            Unity_TilingAndOffset_float(IN.uv0.xy, _Combine_101f5e7e40a544d3b4b210dbbd2cc135_RG_6, float2 (0, 0), _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3);
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_R_1 = _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3[0];
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_G_2 = _TilingAndOffset_78d2fa950a3a4edfb08d76cd28defd41_Out_3[1];
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_B_3 = 0;
+            float _Split_f102f27ffa9b42a381a7f2b776c604cd_A_4 = 0;
+            float _Property_624ca2d844594690af1d834a1a61c282_Out_0 = _colorArea;
+            float _Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2;
+            Unity_Multiply_float(_Split_f102f27ffa9b42a381a7f2b776c604cd_G_2, _Property_624ca2d844594690af1d834a1a61c282_Out_0, _Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2);
+            float4 _Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3;
+            Unity_Lerp_float4(_Property_ebb921ea819640ab8212a37e253e2371_Out_0, _Property_d510806a90eb44d8a3358e1bae617f9e_Out_0, (_Multiply_0934024c0e2a4a51a39a23874978c7ec_Out_2.xxxx), _Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3);
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.BaseColor = (_Lerp_66cf411ef0c647d6bc391b3e6e0f175d_Out_3.xyz);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 
@@ -1454,29 +1462,21 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Multiply_float(float A, float B, out float Out)
@@ -1515,38 +1515,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 
@@ -1758,29 +1755,21 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float4 _ColorFloor;
-        float4 _ColorSky;
-        float _MiddlePoint;
-        float _Fade;
+        float4 _colorFloor;
+        float4 _colorSky;
+        float _colorArea;
+        float _horizonStartPoint;
+        float _fade;
+        float _opacity;
         CBUFFER_END
 
         // Object and Global properties
 
             // Graph Functions
             
-        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
-        {
-            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-        }
-
         void Unity_Subtract_float(float A, float B, out float Out)
         {
             Out = A - B;
-        }
-
-        void Unity_Clamp_float(float In, float Min, float Max, out float Out)
-        {
-            Out = clamp(In, Min, Max);
         }
 
         void Unity_Multiply_float(float A, float B, out float Out)
@@ -1819,38 +1808,35 @@ Shader "CustomShader/CGGen/Unlit/InfToSkyBlenderv2"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_R_1 = IN.WorldSpacePosition[0];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2 = IN.WorldSpacePosition[1];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_B_3 = IN.WorldSpacePosition[2];
-            float _Split_046f91b035ef48bf8b8ba2a08227dfd3_A_4 = 0;
-            float _Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0 = _MiddlePoint;
-            float _Remap_5788c2aebc0148a8acc125d100116178_Out_3;
-            Unity_Remap_float(_Property_8af78ab9dd7d40fc9596cb36d9b73748_Out_0, float2 (100, 0), float2 (500, 1), _Remap_5788c2aebc0148a8acc125d100116178_Out_3);
-            float _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2;
-            Unity_Subtract_float(_Split_046f91b035ef48bf8b8ba2a08227dfd3_G_2, _Remap_5788c2aebc0148a8acc125d100116178_Out_3, _Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2);
-            float _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3;
-            Unity_Clamp_float(_Subtract_cb69cffcc71c4584ad40cb503347f001_Out_2, 0, 1, _Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3);
-            float Slider_aaa9b0ba30044d93b72874a44dd43d15 = 0;
-            float _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3;
-            Unity_Remap_float(Slider_aaa9b0ba30044d93b72874a44dd43d15, float2 (0, 1), float2 (1, 0), _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3);
-            float _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            Unity_Multiply_float(_Clamp_c0fb641ae5ef483296bb6fc8f3fcffea_Out_3, _Remap_d4fcf78c286646a1b638f3d2f94cb582_Out_3, _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2);
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_R_1 = _Multiply_c6c0274139b940d898914ebbfa21d4bc_Out_2;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_B_3 = 0;
-            float _Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_A_4 = 0;
-            float _Property_84e56b7c54584a54b01b075bddc2de0e_Out_0 = _MiddlePoint;
-            float4 _UV_ab5e333f2999409999b6703d6f61009d_Out_0 = IN.uv0;
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_R_1 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[0];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[1];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_B_3 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[2];
-            float _Split_83f2dfe5cdc6498986ab9c02a4df16e0_A_4 = _UV_ab5e333f2999409999b6703d6f61009d_Out_0[3];
-            float _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2;
-            Unity_Multiply_float(_Property_84e56b7c54584a54b01b075bddc2de0e_Out_0, _Split_83f2dfe5cdc6498986ab9c02a4df16e0_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2);
-            float _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0 = _Fade;
-            float _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
-            Unity_Lerp_float(_Split_3424f6bf2ef24fd8bb1bd6a7c34ebc41_G_2, _Multiply_f9d562d93cd3479b93f2b696dc0d3b0d_Out_2, _Property_fc4e1f04527b464f87b12cd013ac9d9d_Out_0, _Lerp_3575848615314a9ab24bb697003c63d5_Out_3);
-            surface.Alpha = _Lerp_3575848615314a9ab24bb697003c63d5_Out_3;
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_R_1 = IN.WorldSpacePosition[0];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_G_2 = IN.WorldSpacePosition[1];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_B_3 = IN.WorldSpacePosition[2];
+            float _Split_aeeafb27b6b14fdcae69f448e2260726_A_4 = 0;
+            float _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0 = _horizonStartPoint;
+            float _Subtract_a8807f3cb202422081af18e991784035_Out_2;
+            Unity_Subtract_float(_Split_aeeafb27b6b14fdcae69f448e2260726_G_2, _Property_e129408d0454460ba9a61e6799a8e3c6_Out_0, _Subtract_a8807f3cb202422081af18e991784035_Out_2);
+            float _Property_f7c05ac277ed4f2292888504564fd941_Out_0 = _colorArea;
+            float _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            Unity_Multiply_float(_Subtract_a8807f3cb202422081af18e991784035_Out_2, _Property_f7c05ac277ed4f2292888504564fd941_Out_0, _Multiply_1170df6f23a446b3af978d503196a379_Out_2);
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_R_1 = _Multiply_1170df6f23a446b3af978d503196a379_Out_2;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_G_2 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_B_3 = 0;
+            float _Split_feba676e1c5e4f709179250fe78fb1bb_A_4 = 0;
+            float _Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0 = _fade;
+            float4 _UV_e14cf8c76e164723aebfe22b814798b3_Out_0 = IN.uv0;
+            float _Split_a54861b234184c03a9499c1168c06c3a_R_1 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[0];
+            float _Split_a54861b234184c03a9499c1168c06c3a_G_2 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[1];
+            float _Split_a54861b234184c03a9499c1168c06c3a_B_3 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[2];
+            float _Split_a54861b234184c03a9499c1168c06c3a_A_4 = _UV_e14cf8c76e164723aebfe22b814798b3_Out_0[3];
+            float _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2;
+            Unity_Multiply_float(_Property_de3c163d6a884249bead5ad2e4b0fa89_Out_0, _Split_a54861b234184c03a9499c1168c06c3a_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2);
+            float _Property_5bf34e958fa5418f96c21e781585c51c_Out_0 = _fade;
+            float _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3;
+            Unity_Lerp_float(_Split_feba676e1c5e4f709179250fe78fb1bb_G_2, _Multiply_8925ba594e074c09a5ffb93a6f0ab647_Out_2, _Property_5bf34e958fa5418f96c21e781585c51c_Out_0, _Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3);
+            float _Property_14f624362d86444fb3dc22672a6eca9f_Out_0 = _opacity;
+            float _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
+            Unity_Lerp_float(_Lerp_9db127345b514726b5026df3c9cc8fb9_Out_3, 1, _Property_14f624362d86444fb3dc22672a6eca9f_Out_0, _Lerp_9acfe57675d14994af96573154250d0d_Out_3);
+            surface.Alpha = _Lerp_9acfe57675d14994af96573154250d0d_Out_3;
             return surface;
         }
 

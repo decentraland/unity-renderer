@@ -1,4 +1,4 @@
-Shader "Custom/S_InfiniteFloor"
+Shader "Custom/S_InfiniteFloor" 
 {
     Properties
     {
