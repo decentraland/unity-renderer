@@ -662,7 +662,7 @@ MonoBehaviour:
     imageUri: 
     notificationTargetId: 
   privateColor: {r: 0.10980392, g: 0.93333334, b: 0.4862745, a: 1}
-  publicColor: {r: 0.7607843, g: 0.8235294, b: 0.9843137, a: 1}
+  publicColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
   standardColor: {r: 0, g: 0, b: 0, a: 0}
   channelColors:
   - {r: 0.98039216, g: 0.31764707, b: 0.31764707, a: 1}

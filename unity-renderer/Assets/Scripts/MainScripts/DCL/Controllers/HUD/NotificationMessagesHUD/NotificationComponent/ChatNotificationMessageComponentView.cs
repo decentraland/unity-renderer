@@ -12,6 +12,8 @@ using Cysharp.Threading.Tasks;
 
 public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig<ChatNotificationMessageComponentModel>
 {
+    private const string NEAR_BY_CHANNEL = "~nearby";
+
     [Header("Prefab References")]
     [SerializeField] internal Button button;
     [SerializeField] public TMP_Text notificationMessage;
@@ -123,8 +125,13 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     public void SetNotificationHeader(string header)
     {
         if (!isPrivate)
-            SetRandomColorForChannel(header);
-            
+        {
+            if(header == NEAR_BY_CHANNEL)
+                notificationHeader.color = publicColor;
+            else
+                SetRandomColorForChannel(header);
+        }
+
         model.messageHeader = header;
         if(header.Length <= maxHeaderCharacters)
             notificationHeader.text = header;
@@ -133,6 +140,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
         ForceUIRefresh();
     }
+
 
     private void SetRandomColorForChannel(string header)
     {
