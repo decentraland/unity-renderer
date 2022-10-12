@@ -21,6 +21,7 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentWriteSystem;
+    private readonly ECSScenesUiSystem uiSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -40,6 +41,10 @@ public class ECSSystemsController : IDisposable
         scenesUiDocument.name = "_ECSScenesUI";
         scenesUi = scenesUiDocument.gameObject;
 
+        uiSystem = new ECSScenesUiSystem(scenesUiDocument,
+            context.internalEcsComponents.uiContainerComponent,
+            DataStore.i.ecs7.scenes, Environment.i.world.state);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -58,9 +63,7 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            ECSScenesUiSystem.CreateSystem(scenesUiDocument,
-                context.internalEcsComponents.uiContainerComponent,
-                DataStore.i.ecs7.scenes, Environment.i.world.state)
+            uiSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
@@ -74,6 +77,7 @@ public class ECSSystemsController : IDisposable
     {
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        uiSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }

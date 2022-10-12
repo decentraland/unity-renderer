@@ -130,7 +130,6 @@ async function buildComponents() {
   command += ` --proto_path "${componentsPreProccessInputPath}/"`
   command += ` ${protoFiles}`
 
-  console.log('command: ', componentsPreProccessInputPath)
   await execute(command, workingDirectory)
 
   console.log('Building components... Done!')

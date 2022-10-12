@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
@@ -153,10 +152,10 @@ namespace Tests
             worldState.GetCurrentSceneId().Returns("temptation");
 
             // create system
-            Action systemUpdate = ECSScenesUiSystem.CreateSystem(
+            var system = new ECSScenesUiSystem(
                 uiDocument,
                 uiContainerComponent,
-                new IParcelScene[] { scene },
+                new BaseList<IParcelScene> { scene },
                 worldState);
 
             // create root ui for scene
@@ -164,7 +163,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // ui document should have scene ui set
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootSceneContainer.rootElement));
@@ -176,10 +175,10 @@ namespace Tests
             ECS7TestScene scene = sceneTestHelper.CreateScene("temptation");
             IWorldState worldState = Substitute.For<IWorldState>();
             worldState.GetCurrentSceneId().Returns("temptation");
-            List<IParcelScene> loadedScenes = new List<IParcelScene>();
+            BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>();
 
             // create system
-            Action systemUpdate = ECSScenesUiSystem.CreateSystem(
+            var system = new ECSScenesUiSystem(
                 uiDocument,
                 uiContainerComponent,
                 loadedScenes,
@@ -190,7 +189,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // scene was not loaded yet
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootSceneContainer.rootElement));
@@ -199,7 +198,7 @@ namespace Tests
             loadedScenes.Add(scene);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // ui document should have scene ui set
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootSceneContainer.rootElement));
@@ -218,10 +217,10 @@ namespace Tests
 
             IWorldState worldState = Substitute.For<IWorldState>();
             worldState.GetCurrentSceneId().Returns(scene1Id);
-            List<IParcelScene> loadedScenes = new List<IParcelScene>();
+            BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>();
 
             // create system
-            Action systemUpdate = ECSScenesUiSystem.CreateSystem(
+            var system = new ECSScenesUiSystem(
                 uiDocument,
                 uiContainerComponent,
                 loadedScenes,
@@ -234,7 +233,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene2Container);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // scene was not loaded yet
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
@@ -246,7 +245,7 @@ namespace Tests
             worldState.GetCurrentSceneId().Returns(scene2Id);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // ui document should have scene2 ui set
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootScene2Container.rootElement));
@@ -256,7 +255,7 @@ namespace Tests
             worldState.GetCurrentSceneId().Returns(scene1Id);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // ui document should have scene1 ui set
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
@@ -266,7 +265,7 @@ namespace Tests
             worldState.GetCurrentSceneId().Returns(scene_without_uiId);
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // prev scene ui should be removed
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
@@ -274,7 +273,7 @@ namespace Tests
 
             // back to scene1 (and then move to a not loaded scene)
             worldState.GetCurrentSceneId().Returns(scene1Id);
-            systemUpdate();
+            system.Update();
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
 
@@ -282,7 +281,7 @@ namespace Tests
             worldState.GetCurrentSceneId().Returns("some-scene");
 
             // do system update
-            systemUpdate();
+            system.Update();
 
             // prev scene ui should be removed
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));

@@ -19,7 +19,7 @@ namespace Tests
         {
             component = Substitute.For<IInternalECSComponent<InternalTexturizable>>();
             handler = new RemoveOnConditionHandler<InternalTexturizable>(
-                () => component, (_, __, m) => m.renderers.Count == 0);
+                () => component, m => m.renderers.Count == 0);
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
         }
