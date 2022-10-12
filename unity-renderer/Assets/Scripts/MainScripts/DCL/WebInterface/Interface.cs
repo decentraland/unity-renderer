@@ -569,13 +569,6 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class ChangeAudioDevicePayload
-        {
-            public int outputDevice;
-            public int inputDevice;
-        }
-
-        [System.Serializable]
         public class JumpInPayload
         {
             public UserRealmPayload realm = new UserRealmPayload();
@@ -921,7 +914,6 @@ namespace DCL.Interface
         private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
         private static SetScenesLoadRadiusPayload setScenesLoadRadiusPayload = new SetScenesLoadRadiusPayload();
         private static ApplySettingsPayload applySettingsPayload = new ApplySettingsPayload();
-        private static ChangeAudioDevicePayload changeAudioDevicePayload = new ChangeAudioDevicePayload();
         private static GIFSetupPayload gifSetupPayload = new GIFSetupPayload();
         private static JumpInPayload jumpInPayload = new JumpInPayload();
         private static GotoEvent gotoEvent = new GotoEvent();

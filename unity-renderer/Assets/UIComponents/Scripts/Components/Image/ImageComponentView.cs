@@ -56,11 +56,13 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     [Header("Configuration")]
     [SerializeField] internal ImageComponentModel model;
 
+    public event Action<Sprite> OnLoaded;
+
     internal Sprite currentSprite;
-    internal string currentUriLoading = null;
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
-    internal string lastLoadedUri = null;
     internal Vector2 lastParentSize;
+    internal string currentUriLoading = null;
+    internal string lastLoadedUri = null;
 
     public override void Start() { imageObserver.AddListener(OnImageObserverUpdated); }
 
@@ -76,7 +78,31 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         RefreshControl();
     }
 
-    public event Action<Sprite> OnLoaded;
+    public override void RefreshControl()
+    {
+        if (model == null)
+            return;
+
+        SetLastUriRequestCached(model.lastUriCached);
+        if (model.sprite != null)
+            SetImage(model.sprite);
+        else if (model.texture != null)
+            SetImage(model.texture);
+        else if (!string.IsNullOrEmpty(model.uri))
+            SetImage(model.uri);
+        else
+            SetImage(sprite: null);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        currentUriLoading = null;
+        lastLoadedUri = null;
+        imageObserver.RemoveListener(OnImageObserverUpdated);
+        Destroy(currentSprite);
+    }
 
     public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
     {
@@ -86,10 +112,10 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
 
         image.sprite = sprite;
-
+        
         if (cleanLastLoadedUri)
             lastLoadedUri = null;
-
+        
         SetFitParent(model.fitParent);
     }
 
@@ -147,32 +173,6 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     {
         image.enabled = !isVisible;
         loadingIndicator.SetActive(isVisible);
-    }
-
-    public override void RefreshControl()
-    {
-        if (model == null)
-            return;
-
-        SetLastUriRequestCached(model.lastUriCached);
-        if (model.sprite != null)
-            SetImage(model.sprite);
-        else if (model.texture != null)
-            SetImage(model.texture);
-        else if (!string.IsNullOrEmpty(model.uri))
-            SetImage(model.uri);
-        else
-            SetImage(sprite: null);
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        currentUriLoading = null;
-        lastLoadedUri = null;
-        imageObserver.RemoveListener(OnImageObserverUpdated);
-        DestroyInternal(currentSprite);
     }
 
     internal void OnImageObserverUpdated(Texture2D texture)
