@@ -5,8 +5,6 @@ namespace DCL.SettingsCommon
 {
     public class PlayerPrefsAudioSettingsRepository : ISettingsRepository<AudioSettings>
     {
-        private const string OUTPUT_DEVICE = "outputAudioDevice";
-        private const string INPUT_DEVICE = "inputAudioDevice";
         private const string CHAT_SFX_ENABLED = "chatSFXEnabled";
         private const string MASTER_VOLUME = "masterVolume";
         private const string MUSIC_VOLUME = "musicVolume";
@@ -14,10 +12,12 @@ namespace DCL.SettingsCommon
         private const string AVATAR_SFX_VOLUME = "avatarSFXVolume";
         private const string SCENE_SFX_VOLUME = "sceneSFXVolume";
         private const string UI_SFX_VOLUME = "uiSFXVolume";
-        private readonly AudioSettings defaultSettings;
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
+        private readonly AudioSettings defaultSettings;
         private AudioSettings currentSettings;
+        
+        public event Action<AudioSettings> OnChanged;
 
         public PlayerPrefsAudioSettingsRepository(
             IPlayerPrefsSettingsByKey settingsByKey,
@@ -28,24 +28,22 @@ namespace DCL.SettingsCommon
             currentSettings = Load();
         }
 
-        public event Action<AudioSettings> OnChanged;
-
         public AudioSettings Data => currentSettings;
 
         public void Apply(AudioSettings settings)
         {
-            if (currentSettings.Equals(settings))
-                return;
+            if (currentSettings.Equals(settings)) return;
             currentSettings = settings;
             OnChanged?.Invoke(currentSettings);
         }
 
-        public void Reset() { Apply(defaultSettings); }
+        public void Reset()
+        {
+            Apply(defaultSettings);
+        }
 
         public void Save()
         {
-            settingsByKey.SetInt(OUTPUT_DEVICE, currentSettings.outputDevice);
-            settingsByKey.SetInt(INPUT_DEVICE, currentSettings.inputDevice);
             settingsByKey.SetBool(CHAT_SFX_ENABLED, currentSettings.chatSFXEnabled);
             settingsByKey.SetFloat(MASTER_VOLUME, currentSettings.masterVolume);
             settingsByKey.SetFloat(MUSIC_VOLUME, currentSettings.musicVolume);
@@ -60,11 +58,9 @@ namespace DCL.SettingsCommon
         private AudioSettings Load()
         {
             var settings = defaultSettings;
-
+            
             try
             {
-                settings.outputDevice = settingsByKey.GetInt(OUTPUT_DEVICE, defaultSettings.outputDevice);
-                settings.inputDevice = settingsByKey.GetInt(INPUT_DEVICE, defaultSettings.inputDevice);
                 settings.chatSFXEnabled = settingsByKey.GetBool(CHAT_SFX_ENABLED, defaultSettings.chatSFXEnabled);
                 settings.masterVolume = settingsByKey.GetFloat(MASTER_VOLUME, defaultSettings.masterVolume);
                 settings.musicVolume = settingsByKey.GetFloat(MUSIC_VOLUME, defaultSettings.musicVolume);
