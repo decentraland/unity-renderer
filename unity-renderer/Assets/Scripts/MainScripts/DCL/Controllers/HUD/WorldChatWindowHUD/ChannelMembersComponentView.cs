@@ -1,6 +1,7 @@
-using DCL.Helpers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ namespace DCL.Chat.HUD
     public class ChannelMembersComponentView : BaseComponentView, IChannelMembersComponentView
     {
         private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.005f;
+        private const int ENTRIES_THROTTLING = 30;
 
         [SerializeField] internal CollapsableChannelMemberListComponentView memberList;
         [SerializeField] internal GameObject resultsHeaderLabelContainer;
@@ -20,6 +22,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject loadMoreContainer;
         [SerializeField] internal GameObject loadMoreSpinner;
 
+        private readonly Queue<ChannelMemberEntryModel> queuedEntries = new Queue<ChannelMemberEntryModel>();
         private bool isLayoutDirty;
         private bool isSortDirty;
         private Vector2 lastScrollPosition;
@@ -28,7 +31,7 @@ namespace DCL.Chat.HUD
         public event Action<string> OnSearchUpdated;
         public event Action OnRequestMoreMembers;
 
-        public int EntryCount => memberList.Count();
+        public int EntryCount => memberList.Count() + queuedEntries.Count;
         public bool IsActive => gameObject.activeInHierarchy;
 
         public override void Awake()
@@ -48,6 +51,8 @@ namespace DCL.Chat.HUD
                 ((RectTransform)scroll.transform).ForceUpdateLayout();
 
             isLayoutDirty = false;
+            
+            SetQueuedEntries();
 
             if (isSortDirty)
                 memberList.Sort();
@@ -64,8 +69,8 @@ namespace DCL.Chat.HUD
 
         public void ClearAllEntries()
         {
-            Debug.Log("ChannelMembers: ClearAllEntries");
             memberList.Clear();
+            queuedEntries.Clear();
             UpdateLayout();
             UpdateHeaders();
         }
@@ -77,13 +82,7 @@ namespace DCL.Chat.HUD
             resultsHeaderLabel.gameObject.SetActive(false);
         }
 
-        public void Set(ChannelMemberEntryModel user)
-        {
-            memberList.Set(user.userId, user);
-            UpdateLayout();
-            Sort();
-            UpdateHeaders();
-        }
+        public void Set(ChannelMemberEntryModel user) => queuedEntries.Enqueue(user);
 
         public override void Show(bool instant = false)
         {
@@ -146,6 +145,21 @@ namespace DCL.Chat.HUD
             yield return new WaitForSeconds(1f);
             loadMoreSpinner.SetActive(false);
             OnRequestMoreMembers?.Invoke();
+        }
+        
+        private void SetQueuedEntries()
+        {
+            if (queuedEntries.Count <= 0) return;
+            
+            for (var i = 0; i < ENTRIES_THROTTLING && queuedEntries.Count > 0; i++)
+            {
+                var user = queuedEntries.Dequeue();
+                memberList.Set(user.userId, user);
+            }
+
+            UpdateLayout();
+            Sort();
+            UpdateHeaders();
         }
 
         public static ChannelMembersComponentView Create()

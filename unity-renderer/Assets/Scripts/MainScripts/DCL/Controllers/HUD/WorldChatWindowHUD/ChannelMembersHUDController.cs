@@ -1,8 +1,7 @@
-using Cysharp.Threading.Tasks;
-using DCL.Chat.Channels;
 using System;
 using System.Threading;
-using UnityEngine;
+using Cysharp.Threading.Tasks;
+using DCL.Chat.Channels;
 
 namespace DCL.Chat.HUD
 {
@@ -26,7 +25,8 @@ namespace DCL.Chat.HUD
         public string CurrentChannelId => currentChannelId;
         public bool IsVisible => isVisible;
 
-        public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController, IUserProfileBridge userProfileBridge)
+        public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController,
+            IUserProfileBridge userProfileBridge)
         {
             this.view = view;
             this.chatController = chatController;
@@ -91,9 +91,8 @@ namespace DCL.Chat.HUD
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
-            string[] channelsToGetInfo = { currentChannelId };
+            string[] channelsToGetInfo = {currentChannelId};
             chatController.GetChannelInfo(channelsToGetInfo);
-            Debug.Log("ChannelMembers: chatController.GetChannelMembers");
             chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
             loadingCancellationToken.Cancel();
@@ -107,7 +106,6 @@ namespace DCL.Chat.HUD
             view.ClearAllEntries();
             view.HideLoadingMore();
             view.ShowLoading();
-            Debug.Log("ChannelMembers: SearchMembers");
 
             isSearching = !string.IsNullOrEmpty(searchText);
 
@@ -131,7 +129,6 @@ namespace DCL.Chat.HUD
 
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
-            Debug.Log("ChannelMembers: UpdateChannelMembers");
             if (!view.IsActive) return;
             view.HideLoading();
 
@@ -174,7 +171,6 @@ namespace DCL.Chat.HUD
             if (IsLoading() || isSearching) return;
             loadStartedTimestamp = DateTime.Now;
             view.HideLoadingMore();
-            Debug.Log("ChannelMembers: LoadMoreMembers");
             chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, view.EntryCount);
 
             if (!isSearching)
@@ -197,10 +193,10 @@ namespace DCL.Chat.HUD
             while (true)
             {
                 await UniTask.Delay(MINUTES_FOR_AUTOMATIC_RELOADING * 60 * 1000, cancellationToken: cancellationToken);
-                
+
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                
+
                 LoadMembers();
             }
         }
