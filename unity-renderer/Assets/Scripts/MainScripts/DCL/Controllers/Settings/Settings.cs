@@ -7,26 +7,13 @@ namespace DCL.SettingsCommon
 {
     public class Settings
     {
-        public static Settings i { get; private set; }
-
-        public event Action OnResetAllSettings;
-        
-        public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
+        private readonly AudioMixer audioMixer;
+        public readonly ISettingsRepository<AudioSettings> audioSettings;
+        public readonly ISettingsRepository<GeneralSettings> generalSettings;
 
         public readonly ISettingsRepository<QualitySettings> qualitySettings;
-        public readonly ISettingsRepository<GeneralSettings> generalSettings;
-        public readonly ISettingsRepository<AudioSettings> audioSettings;
-        
-        private readonly QualitySettingsData qualitySettingsPreset;
-        private readonly AudioMixer audioMixer;
 
         private bool isDisposed;
-
-        public static void CreateSharedInstance(ISettingsFactory settingsFactory)
-        {
-            if (i != null && !i.isDisposed) return;
-            i = settingsFactory.Build();
-        }
 
         public Settings(QualitySettingsData qualitySettingsPreset,
             AudioMixer audioMixer,
@@ -34,13 +21,25 @@ namespace DCL.SettingsCommon
             ISettingsRepository<GeneralSettings> generalSettingsRepository,
             ISettingsRepository<AudioSettings> audioSettingsRepository)
         {
-            this.qualitySettingsPreset = qualitySettingsPreset;
+            qualitySettingsPresets = qualitySettingsPreset;
             this.audioMixer = audioMixer;
             qualitySettings = graphicsQualitySettingsRepository;
             generalSettings = generalSettingsRepository;
             audioSettings = audioSettingsRepository;
 
             SubscribeToVirtualAudioMixerEvents();
+        }
+        public static Settings i { get; private set; }
+
+        public QualitySettingsData qualitySettingsPresets { get ; }
+
+        public event Action OnResetAllSettings;
+
+        public static void CreateSharedInstance(ISettingsFactory settingsFactory)
+        {
+            if (i != null && !i.isDisposed)
+                return;
+            i = settingsFactory.Build();
         }
 
         public void Dispose()

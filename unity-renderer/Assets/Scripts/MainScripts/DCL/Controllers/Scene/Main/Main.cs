@@ -14,15 +14,15 @@ namespace DCL
     public class Main : MonoBehaviour
     {
         [SerializeField] private bool disableSceneDependencies;
-        public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-
-        private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
+        private PerformanceMetricsController performanceMetricsController;
+
         protected PluginSystem pluginSystem;
-        
+        public static Main i { get; private set; }
+
         protected virtual void Awake()
         {
             if (i != null)
@@ -45,7 +45,7 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
-            
+
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
@@ -54,6 +54,20 @@ namespace DCL
             SetupPlugins();
             InitializeCommunication();
         }
+
+        protected virtual void Start()
+        {
+            // this event should be the last one to be executed after initialization
+            // it is used by the kernel to signal "EngineReady" or something like that
+            // to prevent race conditions like "SceneController is not an object",
+            // aka sending events before unity is ready
+            DCL.Interface.WebInterface.SendSystemInfoReport();
+
+            // We trigger the Decentraland logic once everything is initialized.
+            DCL.Interface.WebInterface.StartDecentraland();
+        }
+
+        protected virtual void Update() { performanceMetricsController?.Update(); }
 
         protected virtual void InitializeDataStore()
         {
@@ -96,38 +110,15 @@ namespace DCL
             pluginSystem.Initialize();
         }
 
-        protected virtual void SetupServices()
-        {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
-        }
+        protected virtual void SetupServices() { Environment.Setup(ServiceLocatorFactory.CreateDefault()); }
 
-        protected virtual void Start()
-        {
-            // this event should be the last one to be executed after initialization
-            // it is used by the kernel to signal "EngineReady" or something like that
-            // to prevent race conditions like "SceneController is not an object",
-            // aka sending events before unity is ready
-            DCL.Interface.WebInterface.SendSystemInfoReport();
-
-            // We trigger the Decentraland logic once everything is initialized.
-            DCL.Interface.WebInterface.StartDecentraland();
-        }
-
-        protected virtual void Update()
-        {
-            performanceMetricsController?.Update();
-        }
-        
         [RuntimeInitializeOnLoadMethod]
-        static void RunOnStart()
-        {
-            Application.wantsToQuit += ApplicationWantsToQuit;
-        }
+        static void RunOnStart() { Application.wantsToQuit += ApplicationWantsToQuit; }
         private static bool ApplicationWantsToQuit()
         {
             if (i != null)
                 i.Dispose();
-    
+
             return true;
         }
 
@@ -141,10 +132,10 @@ namespace DCL
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            
+
             kernelCommunication?.Dispose();
         }
-        
+
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();
