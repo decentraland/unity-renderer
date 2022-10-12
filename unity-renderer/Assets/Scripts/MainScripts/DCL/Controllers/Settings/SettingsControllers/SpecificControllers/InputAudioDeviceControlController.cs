@@ -9,7 +9,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     public class InputAudioDeviceControlController : SpinBoxSettingsControlController
     {
         private IAudioDevicesService audioDevicesService;
-        
+
         public override void Initialize()
         {
             base.Initialize();
@@ -21,9 +21,9 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 RaiseOnOverrideIndicatorLabel(DeviceNames());
                 UpdateSetting(GetStoredValue());
             }
-            else 
+            else
                 audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
-            
+
             void OnAudioDevicesCached()
             {
                 audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
@@ -35,7 +35,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
         public override void OnPointerClicked(PointerEventData eventData)
         {
-            if(!audioDevicesService.HasRecievedKernelMessage)
+            if (!audioDevicesService.HasRecievedKernelMessage)
                 audioDevicesService.RequestAudioDevices();
         }
 
@@ -44,6 +44,9 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             string[] deviceNames = new string[audioDevicesService.InputDevices.Length];
             for (int i = 0; i < audioDevicesService.InputDevices.Length; i++)
                 deviceNames[i] = audioDevicesService.InputDevices[i].label;
+
+            string cleanDeafult = deviceNames[0].Replace("Default", "").Replace(" - ", "");
+            deviceNames[0] = $"Default ({cleanDeafult})";
 
             return deviceNames;
         }
@@ -58,7 +61,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
             currentAudioSettings.inputDevice = (int)newValue;
             ApplySettings();
-            
+
             audioDevicesService.SetInputDevice((int)newValue);
         }
     }
