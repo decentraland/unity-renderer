@@ -4497,7 +4497,7 @@ PrefabInstance:
     - target: {fileID: 4418448828712374068, guid: 5d61006f21f171c498cbb94446263d81,
         type: 3}
       propertyPath: m_text
-      value: Estimamted Graphics Card Memory
+      value: Estimated Graphics Card Memory
       objectReference: {fileID: 0}
     - target: {fileID: 6998178735569955509, guid: 5d61006f21f171c498cbb94446263d81,
         type: 3}
