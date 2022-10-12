@@ -31,12 +31,38 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
 
-    internal float alpha;
-    internal float targetAlpha;
-    internal float previousAlphaStep;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
     internal List<string> hideConstraints = new List<string>();
+
+    private float alpha;
+    private float targetAlpha;
+
+
+    internal float Alpha 
+    {
+        get => alpha;
+        set
+        {
+            alpha = Mathf.Clamp01(value);
+            if (alpha < 0.01f)
+            {
+                UpdateVisuals(0);
+                SetRenderersVisible(false);
+                return;
+            }
+
+            UpdateVisuals(alpha);
+            SetRenderersVisible(true);
+        }
+    }
+
+    internal float TargetAlpha
+    {
+        get => targetAlpha;
+        set => targetAlpha = Mathf.Clamp01(value);
+    }
+
 
     private void Awake()
     {
@@ -74,14 +100,13 @@ public class PlayerName : MonoBehaviour, IPlayerName
             UpdateVisuals(0);
             return;
         }
-        
+
+        float previousAlphaStep = GetNearestAlphaStep(alpha);
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         float currentAlphaStep = GetNearestAlphaStep(alpha);
         if (currentAlphaStep == previousAlphaStep)
             return;
-
-        previousAlphaStep = currentAlphaStep;
 
         if (currentAlphaStep == 0)
         {
@@ -89,6 +114,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
             SetRenderersVisible(false);
             return;
         }
+        else
+            SetRenderersVisible(true);
 
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();

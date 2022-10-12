@@ -13,7 +13,7 @@ public class PlayerNameShould : MonoBehaviour
     public void BeInitializedProperly()
     {
         Assert.AreEqual(PlayerName.DEFAULT_CANVAS_SORTING_ORDER, playerName.canvas.sortingOrder);
-        Assert.AreEqual(PlayerName.TARGET_ALPHA_SHOW, playerName.alpha);
+        Assert.AreEqual(PlayerName.TARGET_ALPHA_SHOW, playerName.Alpha);
         Assert.AreEqual(playerName.backgroundOriginalColor, playerName.background.color);
         Assert.IsTrue(playerName.gameObject.activeSelf);
         Assert.IsTrue(playerName.canvas.enabled);
@@ -67,8 +67,8 @@ public class PlayerNameShould : MonoBehaviour
     [Test]
     public void DisableRenderersIfHidden()
     {
-        playerName.alpha = 0;
-        playerName.targetAlpha = 0;
+        playerName.Alpha = 0;
+        playerName.TargetAlpha = 0;
         playerName.Update(float.MaxValue);
 
         var canvasRenderers = playerName.canvasRenderers;
@@ -81,21 +81,21 @@ public class PlayerNameShould : MonoBehaviour
     [Test]
     public void StepTowardsAlphaTargetProperly_Ascending()
     {
-        playerName.alpha = 0;
-        playerName.targetAlpha = 1;
+        playerName.Alpha = 0;
+        playerName.TargetAlpha = 1;
         playerName.Update(0.01f);
 
-        Assert.AreEqual(PlayerName.ALPHA_TRANSITION_STEP_PER_SECOND * 0.01f, playerName.alpha);
+        Assert.AreEqual(PlayerName.ALPHA_TRANSITION_STEP_PER_SECOND * 0.01f, playerName.Alpha);
     }
 
     [Test]
     public void StepTowardsAlphaTargetProperly_Descending()
     {
-        playerName.alpha = 1;
-        playerName.targetAlpha = 0;
+        playerName.Alpha = 1;
+        playerName.TargetAlpha = 0;
         playerName.Update(0.01f);
 
-        Assert.AreEqual(1f - PlayerName.ALPHA_TRANSITION_STEP_PER_SECOND * 0.01f, playerName.alpha);
+        Assert.AreEqual(1f - PlayerName.ALPHA_TRANSITION_STEP_PER_SECOND * 0.01f, playerName.Alpha);
     }
 
     [Test]
