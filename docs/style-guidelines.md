@@ -61,10 +61,9 @@ namespace MyProject                                     // Namespace -> PascalCa
 * Class members grouped and appears in the following order
 ### Groups order:
   * Enums, delegates declarations
-  * `const` and `static readonly` Fields
-  * Events (and `UnityEvent`'s)
-  * Fields (other `const` and `static readonly`)
+  * Fields (`const` and `static readonly` goes first)
   * Properties
+  * Events (and `UnityEvent`'s)
   * Methods
   * Nested classes
 ### Order inside group:
@@ -144,4 +143,6 @@ private void Awake() { }               // called by Unity
       * other callbacks (with respect to `Enter`-`Stay`-`Exit` order)
     * `internal`
     * `protected`
+  * consider using local function for your helper method if it is small. 
+    * Do not use local functions inside local functions.
   * For more detailed example on the methods ordering rules see methods organization in `CodeStyleExample.cs` file
