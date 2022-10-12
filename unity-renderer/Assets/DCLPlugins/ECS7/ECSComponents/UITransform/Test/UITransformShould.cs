@@ -84,13 +84,13 @@ namespace DCL.ECSComponents.Test
         {
             var model = new PBUiTransform();
             model.Parent = 123;
-            model.Direction = YGDirection.Inherit;
-            model.Display = YGDisplay.Flex;
-            model.Overflow = YGOverflow.Hidden;
-            model.AlignContent = YGAlign.Auto;
+            model.Direction = YGDirection.YgdInherit;
+            model.Display = YGDisplay.YgdFlex;
+            model.Overflow = YGOverflow.YgoHidden;
+            model.AlignContent = YGAlign.YgaAuto;
             model.Flex = 3;
-            model.JustifyContent = YGJustify.Center;
-            model.HeightUnit = YGUnit.Auto;
+            model.JustifyContent = YGJustify.YgjCenter;
+            model.HeightUnit = YGUnit.YguAuto;
             return model;
         }
         

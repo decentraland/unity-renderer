@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Decentraland.Renderer {
+namespace DCL.Interface {
 
   /// <summary>Holder for reflection information generated from engine_interface.proto</summary>
   public static partial class EngineInterfaceReflection {
@@ -349,76 +349,76 @@ namespace Decentraland.Renderer {
             "UgoQUEJfT3Blbk5GVERpYWxvZxIcChRhc3NldENvbnRyYWN0QWRkcmVzcxgB",
             "IAEoCRIPCgd0b2tlbklkGAIgASgJEg8KB2NvbW1lbnQYAyABKAkqNQoVUEJf",
             "VUlTdGFja09yaWVudGF0aW9uEgwKCFZFUlRJQ0FMEAASDgoKSE9SSVpPTlRB",
-            "TBABYgZwcm90bzM="));
+            "TBABQhCqAg1EQ0wuSW50ZXJmYWNlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Renderer.PB_UIStackOrientation), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_CreateEntity), global::Decentraland.Renderer.PB_CreateEntity.Parser, new[]{ "Id" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_RemoveEntity), global::Decentraland.Renderer.PB_RemoveEntity.Parser, new[]{ "Id" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_SetEntityParent), global::Decentraland.Renderer.PB_SetEntityParent.Parser, new[]{ "EntityId", "ParentId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ComponentRemoved), global::Decentraland.Renderer.PB_ComponentRemoved.Parser, new[]{ "EntityId", "Name" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Component), global::Decentraland.Renderer.PB_Component.Parser, new[]{ "Transform", "UuidCallback", "Box", "Sphere", "Plane", "Cone", "Cylinder", "Text", "Nft", "ContainerRect", "ContainerStack", "UiTextShape", "UiInputTextShape", "UiImageShape", "Circle", "Billboard", "Gltf", "Obj", "Avatar", "BasicMaterial", "Texture", "AudioClip", "AudioSource" }, new[]{ "Model" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Color4), global::Decentraland.Renderer.PB_Color4.Parser, new[]{ "R", "G", "B", "A" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Color3), global::Decentraland.Renderer.PB_Color3.Parser, new[]{ "R", "G", "B" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_TextShapeModel), global::Decentraland.Renderer.PB_TextShapeModel.Parser, new[]{ "Billboard", "Value", "Color", "Opacity", "FontSize", "FontAutoSize", "FontWeight", "HTextAlign", "VTextAlign", "Width", "Height", "AdaptWidth", "AdaptHeight", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "OutlineWidth", "OutlineColor" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Vector3), global::Decentraland.Renderer.PB_Vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Quaternion), global::Decentraland.Renderer.PB_Quaternion.Parser, new[]{ "X", "Y", "Z", "W" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Transform), global::Decentraland.Renderer.PB_Transform.Parser, new[]{ "Position", "Rotation", "Scale" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UpdateEntityComponent), global::Decentraland.Renderer.PB_UpdateEntityComponent.Parser, new[]{ "EntityId", "ClassId", "Name", "Data" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ComponentCreated), global::Decentraland.Renderer.PB_ComponentCreated.Parser, new[]{ "Id", "Classid", "Name" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_AttachEntityComponent), global::Decentraland.Renderer.PB_AttachEntityComponent.Parser, new[]{ "EntityId", "Name", "Id" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ComponentDisposed), global::Decentraland.Renderer.PB_ComponentDisposed.Parser, new[]{ "Id" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ComponentUpdated), global::Decentraland.Renderer.PB_ComponentUpdated.Parser, new[]{ "Id", "Json" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Ray), global::Decentraland.Renderer.PB_Ray.Parser, new[]{ "Origin", "Direction", "Distance" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_RayQuery), global::Decentraland.Renderer.PB_RayQuery.Parser, new[]{ "QueryId", "QueryType", "Ray" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Query), global::Decentraland.Renderer.PB_Query.Parser, new[]{ "QueryId", "Payload" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_SendSceneMessage), global::Decentraland.Renderer.PB_SendSceneMessage.Parser, new[]{ "SceneId", "Tag", "CreateEntity", "RemoveEntity", "SetEntityParent", "UpdateEntityComponent", "AttachEntityComponent", "ComponentCreated", "ComponentDisposed", "ComponentRemoved", "ComponentUpdated", "Query", "SceneStarted", "OpenExternalUrl", "OpenNFTDialog", "SceneNumber" }, new[]{ "Payload" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_SetPosition), global::Decentraland.Renderer.PB_SetPosition.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ContentMapping), global::Decentraland.Renderer.PB_ContentMapping.Parser, new[]{ "File", "Hash" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Position), global::Decentraland.Renderer.PB_Position.Parser, new[]{ "X", "Y" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_LoadParcelScenes), global::Decentraland.Renderer.PB_LoadParcelScenes.Parser, new[]{ "Id", "BasePosition", "Parcels", "Contents", "BaseUrl", "SceneNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_CreateUIScene), global::Decentraland.Renderer.PB_CreateUIScene.Parser, new[]{ "Id", "BaseUrl", "SceneNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UnloadScene), global::Decentraland.Renderer.PB_UnloadScene.Parser, new[]{ "SceneId", "SceneNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_DclMessage), global::Decentraland.Renderer.PB_DclMessage.Parser, new[]{ "SetDebug", "SetSceneDebugPanel", "SetEngineDebugPanel", "SendSceneMessage", "LoadParcelScenes", "UnloadScene", "SetPosition", "Reset", "CreateUIScene" }, new[]{ "Message" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_AnimationState), global::Decentraland.Renderer.PB_AnimationState.Parser, new[]{ "Clip", "Looping", "Weight", "Playing", "ShouldReset", "Speed" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Animator), global::Decentraland.Renderer.PB_Animator.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_AudioClip), global::Decentraland.Renderer.PB_AudioClip.Parser, new[]{ "Url", "Loop", "Volume" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_AudioSource), global::Decentraland.Renderer.PB_AudioSource.Parser, new[]{ "AudioClip", "AudioClipId", "Loop", "Volume", "Playing", "Pitch" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_AvatarShape), global::Decentraland.Renderer.PB_AvatarShape.Parser, new[]{ "Id", "BaseUrl", "Name", "BodyShape", "Wearables", "Skin", "Hair", "Eyes", "Eyebrows", "Mouth", "UseDummyModel", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Emotes" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Wearable), global::Decentraland.Renderer.PB_Wearable.Parser, new[]{ "Categody", "ContentName", "Contents" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Face), global::Decentraland.Renderer.PB_Face.Parser, new[]{ "Texture" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Eyes), global::Decentraland.Renderer.PB_Eyes.Parser, new[]{ "Texture", "Mask", "Color" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Hair), global::Decentraland.Renderer.PB_Hair.Parser, new[]{ "Color" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Skin), global::Decentraland.Renderer.PB_Skin.Parser, new[]{ "Color" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_BasicMaterial), global::Decentraland.Renderer.PB_BasicMaterial.Parser, new[]{ "Texture", "AlphaTest" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Billboard), global::Decentraland.Renderer.PB_Billboard.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_BoxShape), global::Decentraland.Renderer.PB_BoxShape.Parser, new[]{ "WithCollisions", "Visible", "Uvs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_CircleShape), global::Decentraland.Renderer.PB_CircleShape.Parser, new[]{ "WithCollisions", "Visible", "Segments", "Arc" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_ConeShape), global::Decentraland.Renderer.PB_ConeShape.Parser, new[]{ "WithCollisions", "Visible", "RadiusTop", "RadiusBottom", "SegmentsHeight", "SegmentsRadial", "OpenEnded", "Radius", "Arc" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_CylinderShape), global::Decentraland.Renderer.PB_CylinderShape.Parser, new[]{ "WithCollisions", "Visible", "RadiusTop", "RadiusBottom", "SegmentsHeight", "SegmentsRadial", "OpenEnded", "Radius", "Arc" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_GlobalPointerDown), global::Decentraland.Renderer.PB_GlobalPointerDown.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_GlobalPointerUp), global::Decentraland.Renderer.PB_GlobalPointerUp.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_GLTFShape), global::Decentraland.Renderer.PB_GLTFShape.Parser, new[]{ "WithCollisions", "Visible", "Src" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Material), global::Decentraland.Renderer.PB_Material.Parser, new[]{ "Alpha", "AlbedoColor", "EmissiveColor", "Metallic", "Roughness", "AmbientColor", "ReflectionColor", "ReflectivityColor", "DirectIntensity", "MicroSurface", "EmissiveIntensity", "EnvironmentIntensity", "SpecularIntensity", "AlbedoTexture", "AlphaTexture", "EmissiveTexture", "BumpTexture", "RefractionTexture", "DisableLighting", "TransparencyMode", "HasAlpha" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_NFTShape), global::Decentraland.Renderer.PB_NFTShape.Parser, new[]{ "WithCollisions", "Visible", "Src", "Color" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_OBJShape), global::Decentraland.Renderer.PB_OBJShape.Parser, new[]{ "WithCollisions", "Visible", "Src" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_PlaneShape), global::Decentraland.Renderer.PB_PlaneShape.Parser, new[]{ "WithCollisions", "Visible", "Width", "Height", "Uvs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Shape), global::Decentraland.Renderer.PB_Shape.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_SphereShape), global::Decentraland.Renderer.PB_SphereShape.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_TextShape), global::Decentraland.Renderer.PB_TextShape.Parser, new[]{ "WithCollisions", "Visible", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontWeight", "Opacity", "Value", "LineSpacing", "LineCount", "ResizeToFit", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "ZIndex", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "IsPickable", "Billboard" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_Texture), global::Decentraland.Renderer.PB_Texture.Parser, new[]{ "Src", "SamplingMode", "Wrap", "HasAlpha" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIButton), global::Decentraland.Renderer.PB_UIButton.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "FontSize", "FontWeight", "Thickness", "CornerRadius", "Color", "Background", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "Text" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UICanvas), global::Decentraland.Renderer.PB_UICanvas.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIContainerRect), global::Decentraland.Renderer.PB_UIContainerRect.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "AdaptWidth", "AdaptHeight", "Thickness", "Color", "AlignmentUsesSize" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIContainerStack), global::Decentraland.Renderer.PB_UIContainerStack.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "AdaptWidth", "AdaptHeight", "Color", "StackOrientation", "Spacing" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIImage), global::Decentraland.Renderer.PB_UIImage.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "SourceLeft", "SourceTop", "SourceWidth", "SourceHeight", "Source", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "SizeInPixels", "OnClick" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UUIDCallback), global::Decentraland.Renderer.PB_UUIDCallback.Parser, new[]{ "Type", "Uuid" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIInputText), global::Decentraland.Renderer.PB_UIInputText.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "OutlineWidth", "OutlineColor", "Color", "Thickness", "FontSize", "FontWeight", "Value", "PlaceholderColor", "Placeholder", "Margin", "MaxWidth", "HTextAlign", "VTextAlign", "AutoStretchWidth", "Background", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextSubmit", "OnChanged", "OnFocus", "OnBlur" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIScrollRect), global::Decentraland.Renderer.PB_UIScrollRect.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "ValueX", "ValueY", "BorderColor", "BackgroundColor", "IsHorizontal", "IsVertical", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnChanged" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UIShape), global::Decentraland.Renderer.PB_UIShape.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_UITextShape), global::Decentraland.Renderer.PB_UITextShape.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontAutoSize", "FontWeight", "Value", "LineSpacing", "LineCount", "AdaptWidth", "AdaptHeight", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_OpenExternalUrl), global::Decentraland.Renderer.PB_OpenExternalUrl.Parser, new[]{ "Url" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.PB_OpenNFTDialog), global::Decentraland.Renderer.PB_OpenNFTDialog.Parser, new[]{ "AssetContractAddress", "TokenId", "Comment" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.Interface.PB_UIStackOrientation), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_CreateEntity), global::DCL.Interface.PB_CreateEntity.Parser, new[]{ "Id" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_RemoveEntity), global::DCL.Interface.PB_RemoveEntity.Parser, new[]{ "Id" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_SetEntityParent), global::DCL.Interface.PB_SetEntityParent.Parser, new[]{ "EntityId", "ParentId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ComponentRemoved), global::DCL.Interface.PB_ComponentRemoved.Parser, new[]{ "EntityId", "Name" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Component), global::DCL.Interface.PB_Component.Parser, new[]{ "Transform", "UuidCallback", "Box", "Sphere", "Plane", "Cone", "Cylinder", "Text", "Nft", "ContainerRect", "ContainerStack", "UiTextShape", "UiInputTextShape", "UiImageShape", "Circle", "Billboard", "Gltf", "Obj", "Avatar", "BasicMaterial", "Texture", "AudioClip", "AudioSource" }, new[]{ "Model" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Color4), global::DCL.Interface.PB_Color4.Parser, new[]{ "R", "G", "B", "A" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Color3), global::DCL.Interface.PB_Color3.Parser, new[]{ "R", "G", "B" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_TextShapeModel), global::DCL.Interface.PB_TextShapeModel.Parser, new[]{ "Billboard", "Value", "Color", "Opacity", "FontSize", "FontAutoSize", "FontWeight", "HTextAlign", "VTextAlign", "Width", "Height", "AdaptWidth", "AdaptHeight", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "OutlineWidth", "OutlineColor" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Vector3), global::DCL.Interface.PB_Vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Quaternion), global::DCL.Interface.PB_Quaternion.Parser, new[]{ "X", "Y", "Z", "W" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Transform), global::DCL.Interface.PB_Transform.Parser, new[]{ "Position", "Rotation", "Scale" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UpdateEntityComponent), global::DCL.Interface.PB_UpdateEntityComponent.Parser, new[]{ "EntityId", "ClassId", "Name", "Data" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ComponentCreated), global::DCL.Interface.PB_ComponentCreated.Parser, new[]{ "Id", "Classid", "Name" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_AttachEntityComponent), global::DCL.Interface.PB_AttachEntityComponent.Parser, new[]{ "EntityId", "Name", "Id" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ComponentDisposed), global::DCL.Interface.PB_ComponentDisposed.Parser, new[]{ "Id" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ComponentUpdated), global::DCL.Interface.PB_ComponentUpdated.Parser, new[]{ "Id", "Json" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Ray), global::DCL.Interface.PB_Ray.Parser, new[]{ "Origin", "Direction", "Distance" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_RayQuery), global::DCL.Interface.PB_RayQuery.Parser, new[]{ "QueryId", "QueryType", "Ray" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Query), global::DCL.Interface.PB_Query.Parser, new[]{ "QueryId", "Payload" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_SendSceneMessage), global::DCL.Interface.PB_SendSceneMessage.Parser, new[]{ "SceneId", "Tag", "CreateEntity", "RemoveEntity", "SetEntityParent", "UpdateEntityComponent", "AttachEntityComponent", "ComponentCreated", "ComponentDisposed", "ComponentRemoved", "ComponentUpdated", "Query", "SceneStarted", "OpenExternalUrl", "OpenNFTDialog", "SceneNumber" }, new[]{ "Payload" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_SetPosition), global::DCL.Interface.PB_SetPosition.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ContentMapping), global::DCL.Interface.PB_ContentMapping.Parser, new[]{ "File", "Hash" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Position), global::DCL.Interface.PB_Position.Parser, new[]{ "X", "Y" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_LoadParcelScenes), global::DCL.Interface.PB_LoadParcelScenes.Parser, new[]{ "Id", "BasePosition", "Parcels", "Contents", "BaseUrl", "SceneNumber" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_CreateUIScene), global::DCL.Interface.PB_CreateUIScene.Parser, new[]{ "Id", "BaseUrl", "SceneNumber" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UnloadScene), global::DCL.Interface.PB_UnloadScene.Parser, new[]{ "SceneId", "SceneNumber" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_DclMessage), global::DCL.Interface.PB_DclMessage.Parser, new[]{ "SetDebug", "SetSceneDebugPanel", "SetEngineDebugPanel", "SendSceneMessage", "LoadParcelScenes", "UnloadScene", "SetPosition", "Reset", "CreateUIScene" }, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_AnimationState), global::DCL.Interface.PB_AnimationState.Parser, new[]{ "Clip", "Looping", "Weight", "Playing", "ShouldReset", "Speed" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Animator), global::DCL.Interface.PB_Animator.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_AudioClip), global::DCL.Interface.PB_AudioClip.Parser, new[]{ "Url", "Loop", "Volume" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_AudioSource), global::DCL.Interface.PB_AudioSource.Parser, new[]{ "AudioClip", "AudioClipId", "Loop", "Volume", "Playing", "Pitch" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_AvatarShape), global::DCL.Interface.PB_AvatarShape.Parser, new[]{ "Id", "BaseUrl", "Name", "BodyShape", "Wearables", "Skin", "Hair", "Eyes", "Eyebrows", "Mouth", "UseDummyModel", "ExpressionTriggerId", "ExpressionTriggerTimestamp", "Emotes" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Wearable), global::DCL.Interface.PB_Wearable.Parser, new[]{ "Categody", "ContentName", "Contents" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Face), global::DCL.Interface.PB_Face.Parser, new[]{ "Texture" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Eyes), global::DCL.Interface.PB_Eyes.Parser, new[]{ "Texture", "Mask", "Color" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Hair), global::DCL.Interface.PB_Hair.Parser, new[]{ "Color" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Skin), global::DCL.Interface.PB_Skin.Parser, new[]{ "Color" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_BasicMaterial), global::DCL.Interface.PB_BasicMaterial.Parser, new[]{ "Texture", "AlphaTest" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Billboard), global::DCL.Interface.PB_Billboard.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_BoxShape), global::DCL.Interface.PB_BoxShape.Parser, new[]{ "WithCollisions", "Visible", "Uvs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_CircleShape), global::DCL.Interface.PB_CircleShape.Parser, new[]{ "WithCollisions", "Visible", "Segments", "Arc" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_ConeShape), global::DCL.Interface.PB_ConeShape.Parser, new[]{ "WithCollisions", "Visible", "RadiusTop", "RadiusBottom", "SegmentsHeight", "SegmentsRadial", "OpenEnded", "Radius", "Arc" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_CylinderShape), global::DCL.Interface.PB_CylinderShape.Parser, new[]{ "WithCollisions", "Visible", "RadiusTop", "RadiusBottom", "SegmentsHeight", "SegmentsRadial", "OpenEnded", "Radius", "Arc" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_GlobalPointerDown), global::DCL.Interface.PB_GlobalPointerDown.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_GlobalPointerUp), global::DCL.Interface.PB_GlobalPointerUp.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_GLTFShape), global::DCL.Interface.PB_GLTFShape.Parser, new[]{ "WithCollisions", "Visible", "Src" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Material), global::DCL.Interface.PB_Material.Parser, new[]{ "Alpha", "AlbedoColor", "EmissiveColor", "Metallic", "Roughness", "AmbientColor", "ReflectionColor", "ReflectivityColor", "DirectIntensity", "MicroSurface", "EmissiveIntensity", "EnvironmentIntensity", "SpecularIntensity", "AlbedoTexture", "AlphaTexture", "EmissiveTexture", "BumpTexture", "RefractionTexture", "DisableLighting", "TransparencyMode", "HasAlpha" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_NFTShape), global::DCL.Interface.PB_NFTShape.Parser, new[]{ "WithCollisions", "Visible", "Src", "Color" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_OBJShape), global::DCL.Interface.PB_OBJShape.Parser, new[]{ "WithCollisions", "Visible", "Src" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_PlaneShape), global::DCL.Interface.PB_PlaneShape.Parser, new[]{ "WithCollisions", "Visible", "Width", "Height", "Uvs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Shape), global::DCL.Interface.PB_Shape.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_SphereShape), global::DCL.Interface.PB_SphereShape.Parser, new[]{ "WithCollisions", "Visible" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_TextShape), global::DCL.Interface.PB_TextShape.Parser, new[]{ "WithCollisions", "Visible", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontWeight", "Opacity", "Value", "LineSpacing", "LineCount", "ResizeToFit", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "ZIndex", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "IsPickable", "Billboard" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_Texture), global::DCL.Interface.PB_Texture.Parser, new[]{ "Src", "SamplingMode", "Wrap", "HasAlpha" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIButton), global::DCL.Interface.PB_UIButton.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "FontSize", "FontWeight", "Thickness", "CornerRadius", "Color", "Background", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "Text" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UICanvas), global::DCL.Interface.PB_UICanvas.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIContainerRect), global::DCL.Interface.PB_UIContainerRect.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "AdaptWidth", "AdaptHeight", "Thickness", "Color", "AlignmentUsesSize" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIContainerStack), global::DCL.Interface.PB_UIContainerStack.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "AdaptWidth", "AdaptHeight", "Color", "StackOrientation", "Spacing" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIImage), global::DCL.Interface.PB_UIImage.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "SourceLeft", "SourceTop", "SourceWidth", "SourceHeight", "Source", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "SizeInPixels", "OnClick" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UUIDCallback), global::DCL.Interface.PB_UUIDCallback.Parser, new[]{ "Type", "Uuid" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIInputText), global::DCL.Interface.PB_UIInputText.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "OutlineWidth", "OutlineColor", "Color", "Thickness", "FontSize", "FontWeight", "Value", "PlaceholderColor", "Placeholder", "Margin", "MaxWidth", "HTextAlign", "VTextAlign", "AutoStretchWidth", "Background", "FocusedBackground", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnTextSubmit", "OnChanged", "OnFocus", "OnBlur" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIScrollRect), global::DCL.Interface.PB_UIScrollRect.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "ValueX", "ValueY", "BorderColor", "BackgroundColor", "IsHorizontal", "IsVertical", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "OnChanged" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UIShape), global::DCL.Interface.PB_UIShape.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_UITextShape), global::DCL.Interface.PB_UITextShape.Parser, new[]{ "Name", "Visible", "Opacity", "HAlign", "VAlign", "Width", "Height", "PositionX", "PositionY", "IsPointerBlocker", "Parent", "OutlineWidth", "OutlineColor", "Color", "FontSize", "FontAutoSize", "FontWeight", "Value", "LineSpacing", "LineCount", "AdaptWidth", "AdaptHeight", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "ShadowColor", "HTextAlign", "VTextAlign", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_OpenExternalUrl), global::DCL.Interface.PB_OpenExternalUrl.Parser, new[]{ "Url" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.Interface.PB_OpenNFTDialog), global::DCL.Interface.PB_OpenNFTDialog.Parser, new[]{ "AssetContractAddress", "TokenId", "Comment" }, null, null, null, null)
           }));
     }
     #endregion
@@ -447,7 +447,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[0]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -636,7 +636,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[1]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -825,7 +825,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[2]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1051,7 +1051,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[3]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1277,7 +1277,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[4]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1382,8 +1382,8 @@ namespace Decentraland.Renderer {
     public const int TransformFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Transform Transform {
-      get { return modelCase_ == ModelOneofCase.Transform ? (global::Decentraland.Renderer.PB_Transform) model_ : null; }
+    public global::DCL.Interface.PB_Transform Transform {
+      get { return modelCase_ == ModelOneofCase.Transform ? (global::DCL.Interface.PB_Transform) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Transform;
@@ -1394,8 +1394,8 @@ namespace Decentraland.Renderer {
     public const int UuidCallbackFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback UuidCallback {
-      get { return modelCase_ == ModelOneofCase.UuidCallback ? (global::Decentraland.Renderer.PB_UUIDCallback) model_ : null; }
+    public global::DCL.Interface.PB_UUIDCallback UuidCallback {
+      get { return modelCase_ == ModelOneofCase.UuidCallback ? (global::DCL.Interface.PB_UUIDCallback) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.UuidCallback;
@@ -1406,8 +1406,8 @@ namespace Decentraland.Renderer {
     public const int BoxFieldNumber = 16;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_BoxShape Box {
-      get { return modelCase_ == ModelOneofCase.Box ? (global::Decentraland.Renderer.PB_BoxShape) model_ : null; }
+    public global::DCL.Interface.PB_BoxShape Box {
+      get { return modelCase_ == ModelOneofCase.Box ? (global::DCL.Interface.PB_BoxShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Box;
@@ -1418,8 +1418,8 @@ namespace Decentraland.Renderer {
     public const int SphereFieldNumber = 17;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_SphereShape Sphere {
-      get { return modelCase_ == ModelOneofCase.Sphere ? (global::Decentraland.Renderer.PB_SphereShape) model_ : null; }
+    public global::DCL.Interface.PB_SphereShape Sphere {
+      get { return modelCase_ == ModelOneofCase.Sphere ? (global::DCL.Interface.PB_SphereShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Sphere;
@@ -1430,8 +1430,8 @@ namespace Decentraland.Renderer {
     public const int PlaneFieldNumber = 18;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_PlaneShape Plane {
-      get { return modelCase_ == ModelOneofCase.Plane ? (global::Decentraland.Renderer.PB_PlaneShape) model_ : null; }
+    public global::DCL.Interface.PB_PlaneShape Plane {
+      get { return modelCase_ == ModelOneofCase.Plane ? (global::DCL.Interface.PB_PlaneShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Plane;
@@ -1442,8 +1442,8 @@ namespace Decentraland.Renderer {
     public const int ConeFieldNumber = 19;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_ConeShape Cone {
-      get { return modelCase_ == ModelOneofCase.Cone ? (global::Decentraland.Renderer.PB_ConeShape) model_ : null; }
+    public global::DCL.Interface.PB_ConeShape Cone {
+      get { return modelCase_ == ModelOneofCase.Cone ? (global::DCL.Interface.PB_ConeShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Cone;
@@ -1454,8 +1454,8 @@ namespace Decentraland.Renderer {
     public const int CylinderFieldNumber = 20;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_CylinderShape Cylinder {
-      get { return modelCase_ == ModelOneofCase.Cylinder ? (global::Decentraland.Renderer.PB_CylinderShape) model_ : null; }
+    public global::DCL.Interface.PB_CylinderShape Cylinder {
+      get { return modelCase_ == ModelOneofCase.Cylinder ? (global::DCL.Interface.PB_CylinderShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Cylinder;
@@ -1466,8 +1466,8 @@ namespace Decentraland.Renderer {
     public const int TextFieldNumber = 21;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_TextShape Text {
-      get { return modelCase_ == ModelOneofCase.Text ? (global::Decentraland.Renderer.PB_TextShape) model_ : null; }
+    public global::DCL.Interface.PB_TextShape Text {
+      get { return modelCase_ == ModelOneofCase.Text ? (global::DCL.Interface.PB_TextShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Text;
@@ -1478,8 +1478,8 @@ namespace Decentraland.Renderer {
     public const int NftFieldNumber = 22;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_NFTShape Nft {
-      get { return modelCase_ == ModelOneofCase.Nft ? (global::Decentraland.Renderer.PB_NFTShape) model_ : null; }
+    public global::DCL.Interface.PB_NFTShape Nft {
+      get { return modelCase_ == ModelOneofCase.Nft ? (global::DCL.Interface.PB_NFTShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Nft;
@@ -1490,8 +1490,8 @@ namespace Decentraland.Renderer {
     public const int ContainerRectFieldNumber = 25;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIContainerRect ContainerRect {
-      get { return modelCase_ == ModelOneofCase.ContainerRect ? (global::Decentraland.Renderer.PB_UIContainerRect) model_ : null; }
+    public global::DCL.Interface.PB_UIContainerRect ContainerRect {
+      get { return modelCase_ == ModelOneofCase.ContainerRect ? (global::DCL.Interface.PB_UIContainerRect) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.ContainerRect;
@@ -1502,8 +1502,8 @@ namespace Decentraland.Renderer {
     public const int ContainerStackFieldNumber = 26;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIContainerStack ContainerStack {
-      get { return modelCase_ == ModelOneofCase.ContainerStack ? (global::Decentraland.Renderer.PB_UIContainerStack) model_ : null; }
+    public global::DCL.Interface.PB_UIContainerStack ContainerStack {
+      get { return modelCase_ == ModelOneofCase.ContainerStack ? (global::DCL.Interface.PB_UIContainerStack) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.ContainerStack;
@@ -1514,8 +1514,8 @@ namespace Decentraland.Renderer {
     public const int UiTextShapeFieldNumber = 27;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UITextShape UiTextShape {
-      get { return modelCase_ == ModelOneofCase.UiTextShape ? (global::Decentraland.Renderer.PB_UITextShape) model_ : null; }
+    public global::DCL.Interface.PB_UITextShape UiTextShape {
+      get { return modelCase_ == ModelOneofCase.UiTextShape ? (global::DCL.Interface.PB_UITextShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.UiTextShape;
@@ -1526,8 +1526,8 @@ namespace Decentraland.Renderer {
     public const int UiInputTextShapeFieldNumber = 28;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIInputText UiInputTextShape {
-      get { return modelCase_ == ModelOneofCase.UiInputTextShape ? (global::Decentraland.Renderer.PB_UIInputText) model_ : null; }
+    public global::DCL.Interface.PB_UIInputText UiInputTextShape {
+      get { return modelCase_ == ModelOneofCase.UiInputTextShape ? (global::DCL.Interface.PB_UIInputText) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.UiInputTextShape;
@@ -1538,8 +1538,8 @@ namespace Decentraland.Renderer {
     public const int UiImageShapeFieldNumber = 29;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIImage UiImageShape {
-      get { return modelCase_ == ModelOneofCase.UiImageShape ? (global::Decentraland.Renderer.PB_UIImage) model_ : null; }
+    public global::DCL.Interface.PB_UIImage UiImageShape {
+      get { return modelCase_ == ModelOneofCase.UiImageShape ? (global::DCL.Interface.PB_UIImage) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.UiImageShape;
@@ -1550,8 +1550,8 @@ namespace Decentraland.Renderer {
     public const int CircleFieldNumber = 31;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_CircleShape Circle {
-      get { return modelCase_ == ModelOneofCase.Circle ? (global::Decentraland.Renderer.PB_CircleShape) model_ : null; }
+    public global::DCL.Interface.PB_CircleShape Circle {
+      get { return modelCase_ == ModelOneofCase.Circle ? (global::DCL.Interface.PB_CircleShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Circle;
@@ -1562,8 +1562,8 @@ namespace Decentraland.Renderer {
     public const int BillboardFieldNumber = 32;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Billboard Billboard {
-      get { return modelCase_ == ModelOneofCase.Billboard ? (global::Decentraland.Renderer.PB_Billboard) model_ : null; }
+    public global::DCL.Interface.PB_Billboard Billboard {
+      get { return modelCase_ == ModelOneofCase.Billboard ? (global::DCL.Interface.PB_Billboard) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Billboard;
@@ -1574,8 +1574,8 @@ namespace Decentraland.Renderer {
     public const int GltfFieldNumber = 54;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_GLTFShape Gltf {
-      get { return modelCase_ == ModelOneofCase.Gltf ? (global::Decentraland.Renderer.PB_GLTFShape) model_ : null; }
+    public global::DCL.Interface.PB_GLTFShape Gltf {
+      get { return modelCase_ == ModelOneofCase.Gltf ? (global::DCL.Interface.PB_GLTFShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Gltf;
@@ -1586,8 +1586,8 @@ namespace Decentraland.Renderer {
     public const int ObjFieldNumber = 55;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_OBJShape Obj {
-      get { return modelCase_ == ModelOneofCase.Obj ? (global::Decentraland.Renderer.PB_OBJShape) model_ : null; }
+    public global::DCL.Interface.PB_OBJShape Obj {
+      get { return modelCase_ == ModelOneofCase.Obj ? (global::DCL.Interface.PB_OBJShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Obj;
@@ -1598,8 +1598,8 @@ namespace Decentraland.Renderer {
     public const int AvatarFieldNumber = 56;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_AvatarShape Avatar {
-      get { return modelCase_ == ModelOneofCase.Avatar ? (global::Decentraland.Renderer.PB_AvatarShape) model_ : null; }
+    public global::DCL.Interface.PB_AvatarShape Avatar {
+      get { return modelCase_ == ModelOneofCase.Avatar ? (global::DCL.Interface.PB_AvatarShape) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Avatar;
@@ -1610,8 +1610,8 @@ namespace Decentraland.Renderer {
     public const int BasicMaterialFieldNumber = 64;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_BasicMaterial BasicMaterial {
-      get { return modelCase_ == ModelOneofCase.BasicMaterial ? (global::Decentraland.Renderer.PB_BasicMaterial) model_ : null; }
+    public global::DCL.Interface.PB_BasicMaterial BasicMaterial {
+      get { return modelCase_ == ModelOneofCase.BasicMaterial ? (global::DCL.Interface.PB_BasicMaterial) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.BasicMaterial;
@@ -1622,8 +1622,8 @@ namespace Decentraland.Renderer {
     public const int TextureFieldNumber = 68;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture Texture {
-      get { return modelCase_ == ModelOneofCase.Texture ? (global::Decentraland.Renderer.PB_Texture) model_ : null; }
+    public global::DCL.Interface.PB_Texture Texture {
+      get { return modelCase_ == ModelOneofCase.Texture ? (global::DCL.Interface.PB_Texture) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.Texture;
@@ -1634,8 +1634,8 @@ namespace Decentraland.Renderer {
     public const int AudioClipFieldNumber = 200;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_AudioClip AudioClip {
-      get { return modelCase_ == ModelOneofCase.AudioClip ? (global::Decentraland.Renderer.PB_AudioClip) model_ : null; }
+    public global::DCL.Interface.PB_AudioClip AudioClip {
+      get { return modelCase_ == ModelOneofCase.AudioClip ? (global::DCL.Interface.PB_AudioClip) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.AudioClip;
@@ -1646,8 +1646,8 @@ namespace Decentraland.Renderer {
     public const int AudioSourceFieldNumber = 201;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_AudioSource AudioSource {
-      get { return modelCase_ == ModelOneofCase.AudioSource ? (global::Decentraland.Renderer.PB_AudioSource) model_ : null; }
+    public global::DCL.Interface.PB_AudioSource AudioSource {
+      get { return modelCase_ == ModelOneofCase.AudioSource ? (global::DCL.Interface.PB_AudioSource) model_ : null; }
       set {
         model_ = value;
         modelCase_ = value == null ? ModelOneofCase.None : ModelOneofCase.AudioSource;
@@ -2072,139 +2072,139 @@ namespace Decentraland.Renderer {
       switch (other.ModelCase) {
         case ModelOneofCase.Transform:
           if (Transform == null) {
-            Transform = new global::Decentraland.Renderer.PB_Transform();
+            Transform = new global::DCL.Interface.PB_Transform();
           }
           Transform.MergeFrom(other.Transform);
           break;
         case ModelOneofCase.UuidCallback:
           if (UuidCallback == null) {
-            UuidCallback = new global::Decentraland.Renderer.PB_UUIDCallback();
+            UuidCallback = new global::DCL.Interface.PB_UUIDCallback();
           }
           UuidCallback.MergeFrom(other.UuidCallback);
           break;
         case ModelOneofCase.Box:
           if (Box == null) {
-            Box = new global::Decentraland.Renderer.PB_BoxShape();
+            Box = new global::DCL.Interface.PB_BoxShape();
           }
           Box.MergeFrom(other.Box);
           break;
         case ModelOneofCase.Sphere:
           if (Sphere == null) {
-            Sphere = new global::Decentraland.Renderer.PB_SphereShape();
+            Sphere = new global::DCL.Interface.PB_SphereShape();
           }
           Sphere.MergeFrom(other.Sphere);
           break;
         case ModelOneofCase.Plane:
           if (Plane == null) {
-            Plane = new global::Decentraland.Renderer.PB_PlaneShape();
+            Plane = new global::DCL.Interface.PB_PlaneShape();
           }
           Plane.MergeFrom(other.Plane);
           break;
         case ModelOneofCase.Cone:
           if (Cone == null) {
-            Cone = new global::Decentraland.Renderer.PB_ConeShape();
+            Cone = new global::DCL.Interface.PB_ConeShape();
           }
           Cone.MergeFrom(other.Cone);
           break;
         case ModelOneofCase.Cylinder:
           if (Cylinder == null) {
-            Cylinder = new global::Decentraland.Renderer.PB_CylinderShape();
+            Cylinder = new global::DCL.Interface.PB_CylinderShape();
           }
           Cylinder.MergeFrom(other.Cylinder);
           break;
         case ModelOneofCase.Text:
           if (Text == null) {
-            Text = new global::Decentraland.Renderer.PB_TextShape();
+            Text = new global::DCL.Interface.PB_TextShape();
           }
           Text.MergeFrom(other.Text);
           break;
         case ModelOneofCase.Nft:
           if (Nft == null) {
-            Nft = new global::Decentraland.Renderer.PB_NFTShape();
+            Nft = new global::DCL.Interface.PB_NFTShape();
           }
           Nft.MergeFrom(other.Nft);
           break;
         case ModelOneofCase.ContainerRect:
           if (ContainerRect == null) {
-            ContainerRect = new global::Decentraland.Renderer.PB_UIContainerRect();
+            ContainerRect = new global::DCL.Interface.PB_UIContainerRect();
           }
           ContainerRect.MergeFrom(other.ContainerRect);
           break;
         case ModelOneofCase.ContainerStack:
           if (ContainerStack == null) {
-            ContainerStack = new global::Decentraland.Renderer.PB_UIContainerStack();
+            ContainerStack = new global::DCL.Interface.PB_UIContainerStack();
           }
           ContainerStack.MergeFrom(other.ContainerStack);
           break;
         case ModelOneofCase.UiTextShape:
           if (UiTextShape == null) {
-            UiTextShape = new global::Decentraland.Renderer.PB_UITextShape();
+            UiTextShape = new global::DCL.Interface.PB_UITextShape();
           }
           UiTextShape.MergeFrom(other.UiTextShape);
           break;
         case ModelOneofCase.UiInputTextShape:
           if (UiInputTextShape == null) {
-            UiInputTextShape = new global::Decentraland.Renderer.PB_UIInputText();
+            UiInputTextShape = new global::DCL.Interface.PB_UIInputText();
           }
           UiInputTextShape.MergeFrom(other.UiInputTextShape);
           break;
         case ModelOneofCase.UiImageShape:
           if (UiImageShape == null) {
-            UiImageShape = new global::Decentraland.Renderer.PB_UIImage();
+            UiImageShape = new global::DCL.Interface.PB_UIImage();
           }
           UiImageShape.MergeFrom(other.UiImageShape);
           break;
         case ModelOneofCase.Circle:
           if (Circle == null) {
-            Circle = new global::Decentraland.Renderer.PB_CircleShape();
+            Circle = new global::DCL.Interface.PB_CircleShape();
           }
           Circle.MergeFrom(other.Circle);
           break;
         case ModelOneofCase.Billboard:
           if (Billboard == null) {
-            Billboard = new global::Decentraland.Renderer.PB_Billboard();
+            Billboard = new global::DCL.Interface.PB_Billboard();
           }
           Billboard.MergeFrom(other.Billboard);
           break;
         case ModelOneofCase.Gltf:
           if (Gltf == null) {
-            Gltf = new global::Decentraland.Renderer.PB_GLTFShape();
+            Gltf = new global::DCL.Interface.PB_GLTFShape();
           }
           Gltf.MergeFrom(other.Gltf);
           break;
         case ModelOneofCase.Obj:
           if (Obj == null) {
-            Obj = new global::Decentraland.Renderer.PB_OBJShape();
+            Obj = new global::DCL.Interface.PB_OBJShape();
           }
           Obj.MergeFrom(other.Obj);
           break;
         case ModelOneofCase.Avatar:
           if (Avatar == null) {
-            Avatar = new global::Decentraland.Renderer.PB_AvatarShape();
+            Avatar = new global::DCL.Interface.PB_AvatarShape();
           }
           Avatar.MergeFrom(other.Avatar);
           break;
         case ModelOneofCase.BasicMaterial:
           if (BasicMaterial == null) {
-            BasicMaterial = new global::Decentraland.Renderer.PB_BasicMaterial();
+            BasicMaterial = new global::DCL.Interface.PB_BasicMaterial();
           }
           BasicMaterial.MergeFrom(other.BasicMaterial);
           break;
         case ModelOneofCase.Texture:
           if (Texture == null) {
-            Texture = new global::Decentraland.Renderer.PB_Texture();
+            Texture = new global::DCL.Interface.PB_Texture();
           }
           Texture.MergeFrom(other.Texture);
           break;
         case ModelOneofCase.AudioClip:
           if (AudioClip == null) {
-            AudioClip = new global::Decentraland.Renderer.PB_AudioClip();
+            AudioClip = new global::DCL.Interface.PB_AudioClip();
           }
           AudioClip.MergeFrom(other.AudioClip);
           break;
         case ModelOneofCase.AudioSource:
           if (AudioSource == null) {
-            AudioSource = new global::Decentraland.Renderer.PB_AudioSource();
+            AudioSource = new global::DCL.Interface.PB_AudioSource();
           }
           AudioSource.MergeFrom(other.AudioSource);
           break;
@@ -2226,7 +2226,7 @@ namespace Decentraland.Renderer {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::Decentraland.Renderer.PB_Transform subBuilder = new global::Decentraland.Renderer.PB_Transform();
+            global::DCL.Interface.PB_Transform subBuilder = new global::DCL.Interface.PB_Transform();
             if (modelCase_ == ModelOneofCase.Transform) {
               subBuilder.MergeFrom(Transform);
             }
@@ -2235,7 +2235,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 66: {
-            global::Decentraland.Renderer.PB_UUIDCallback subBuilder = new global::Decentraland.Renderer.PB_UUIDCallback();
+            global::DCL.Interface.PB_UUIDCallback subBuilder = new global::DCL.Interface.PB_UUIDCallback();
             if (modelCase_ == ModelOneofCase.UuidCallback) {
               subBuilder.MergeFrom(UuidCallback);
             }
@@ -2244,7 +2244,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 130: {
-            global::Decentraland.Renderer.PB_BoxShape subBuilder = new global::Decentraland.Renderer.PB_BoxShape();
+            global::DCL.Interface.PB_BoxShape subBuilder = new global::DCL.Interface.PB_BoxShape();
             if (modelCase_ == ModelOneofCase.Box) {
               subBuilder.MergeFrom(Box);
             }
@@ -2253,7 +2253,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 138: {
-            global::Decentraland.Renderer.PB_SphereShape subBuilder = new global::Decentraland.Renderer.PB_SphereShape();
+            global::DCL.Interface.PB_SphereShape subBuilder = new global::DCL.Interface.PB_SphereShape();
             if (modelCase_ == ModelOneofCase.Sphere) {
               subBuilder.MergeFrom(Sphere);
             }
@@ -2262,7 +2262,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 146: {
-            global::Decentraland.Renderer.PB_PlaneShape subBuilder = new global::Decentraland.Renderer.PB_PlaneShape();
+            global::DCL.Interface.PB_PlaneShape subBuilder = new global::DCL.Interface.PB_PlaneShape();
             if (modelCase_ == ModelOneofCase.Plane) {
               subBuilder.MergeFrom(Plane);
             }
@@ -2271,7 +2271,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 154: {
-            global::Decentraland.Renderer.PB_ConeShape subBuilder = new global::Decentraland.Renderer.PB_ConeShape();
+            global::DCL.Interface.PB_ConeShape subBuilder = new global::DCL.Interface.PB_ConeShape();
             if (modelCase_ == ModelOneofCase.Cone) {
               subBuilder.MergeFrom(Cone);
             }
@@ -2280,7 +2280,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 162: {
-            global::Decentraland.Renderer.PB_CylinderShape subBuilder = new global::Decentraland.Renderer.PB_CylinderShape();
+            global::DCL.Interface.PB_CylinderShape subBuilder = new global::DCL.Interface.PB_CylinderShape();
             if (modelCase_ == ModelOneofCase.Cylinder) {
               subBuilder.MergeFrom(Cylinder);
             }
@@ -2289,7 +2289,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 170: {
-            global::Decentraland.Renderer.PB_TextShape subBuilder = new global::Decentraland.Renderer.PB_TextShape();
+            global::DCL.Interface.PB_TextShape subBuilder = new global::DCL.Interface.PB_TextShape();
             if (modelCase_ == ModelOneofCase.Text) {
               subBuilder.MergeFrom(Text);
             }
@@ -2298,7 +2298,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 178: {
-            global::Decentraland.Renderer.PB_NFTShape subBuilder = new global::Decentraland.Renderer.PB_NFTShape();
+            global::DCL.Interface.PB_NFTShape subBuilder = new global::DCL.Interface.PB_NFTShape();
             if (modelCase_ == ModelOneofCase.Nft) {
               subBuilder.MergeFrom(Nft);
             }
@@ -2307,7 +2307,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 202: {
-            global::Decentraland.Renderer.PB_UIContainerRect subBuilder = new global::Decentraland.Renderer.PB_UIContainerRect();
+            global::DCL.Interface.PB_UIContainerRect subBuilder = new global::DCL.Interface.PB_UIContainerRect();
             if (modelCase_ == ModelOneofCase.ContainerRect) {
               subBuilder.MergeFrom(ContainerRect);
             }
@@ -2316,7 +2316,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 210: {
-            global::Decentraland.Renderer.PB_UIContainerStack subBuilder = new global::Decentraland.Renderer.PB_UIContainerStack();
+            global::DCL.Interface.PB_UIContainerStack subBuilder = new global::DCL.Interface.PB_UIContainerStack();
             if (modelCase_ == ModelOneofCase.ContainerStack) {
               subBuilder.MergeFrom(ContainerStack);
             }
@@ -2325,7 +2325,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 218: {
-            global::Decentraland.Renderer.PB_UITextShape subBuilder = new global::Decentraland.Renderer.PB_UITextShape();
+            global::DCL.Interface.PB_UITextShape subBuilder = new global::DCL.Interface.PB_UITextShape();
             if (modelCase_ == ModelOneofCase.UiTextShape) {
               subBuilder.MergeFrom(UiTextShape);
             }
@@ -2334,7 +2334,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 226: {
-            global::Decentraland.Renderer.PB_UIInputText subBuilder = new global::Decentraland.Renderer.PB_UIInputText();
+            global::DCL.Interface.PB_UIInputText subBuilder = new global::DCL.Interface.PB_UIInputText();
             if (modelCase_ == ModelOneofCase.UiInputTextShape) {
               subBuilder.MergeFrom(UiInputTextShape);
             }
@@ -2343,7 +2343,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 234: {
-            global::Decentraland.Renderer.PB_UIImage subBuilder = new global::Decentraland.Renderer.PB_UIImage();
+            global::DCL.Interface.PB_UIImage subBuilder = new global::DCL.Interface.PB_UIImage();
             if (modelCase_ == ModelOneofCase.UiImageShape) {
               subBuilder.MergeFrom(UiImageShape);
             }
@@ -2352,7 +2352,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 250: {
-            global::Decentraland.Renderer.PB_CircleShape subBuilder = new global::Decentraland.Renderer.PB_CircleShape();
+            global::DCL.Interface.PB_CircleShape subBuilder = new global::DCL.Interface.PB_CircleShape();
             if (modelCase_ == ModelOneofCase.Circle) {
               subBuilder.MergeFrom(Circle);
             }
@@ -2361,7 +2361,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 258: {
-            global::Decentraland.Renderer.PB_Billboard subBuilder = new global::Decentraland.Renderer.PB_Billboard();
+            global::DCL.Interface.PB_Billboard subBuilder = new global::DCL.Interface.PB_Billboard();
             if (modelCase_ == ModelOneofCase.Billboard) {
               subBuilder.MergeFrom(Billboard);
             }
@@ -2370,7 +2370,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 434: {
-            global::Decentraland.Renderer.PB_GLTFShape subBuilder = new global::Decentraland.Renderer.PB_GLTFShape();
+            global::DCL.Interface.PB_GLTFShape subBuilder = new global::DCL.Interface.PB_GLTFShape();
             if (modelCase_ == ModelOneofCase.Gltf) {
               subBuilder.MergeFrom(Gltf);
             }
@@ -2379,7 +2379,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 442: {
-            global::Decentraland.Renderer.PB_OBJShape subBuilder = new global::Decentraland.Renderer.PB_OBJShape();
+            global::DCL.Interface.PB_OBJShape subBuilder = new global::DCL.Interface.PB_OBJShape();
             if (modelCase_ == ModelOneofCase.Obj) {
               subBuilder.MergeFrom(Obj);
             }
@@ -2388,7 +2388,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 450: {
-            global::Decentraland.Renderer.PB_AvatarShape subBuilder = new global::Decentraland.Renderer.PB_AvatarShape();
+            global::DCL.Interface.PB_AvatarShape subBuilder = new global::DCL.Interface.PB_AvatarShape();
             if (modelCase_ == ModelOneofCase.Avatar) {
               subBuilder.MergeFrom(Avatar);
             }
@@ -2397,7 +2397,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 514: {
-            global::Decentraland.Renderer.PB_BasicMaterial subBuilder = new global::Decentraland.Renderer.PB_BasicMaterial();
+            global::DCL.Interface.PB_BasicMaterial subBuilder = new global::DCL.Interface.PB_BasicMaterial();
             if (modelCase_ == ModelOneofCase.BasicMaterial) {
               subBuilder.MergeFrom(BasicMaterial);
             }
@@ -2406,7 +2406,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 546: {
-            global::Decentraland.Renderer.PB_Texture subBuilder = new global::Decentraland.Renderer.PB_Texture();
+            global::DCL.Interface.PB_Texture subBuilder = new global::DCL.Interface.PB_Texture();
             if (modelCase_ == ModelOneofCase.Texture) {
               subBuilder.MergeFrom(Texture);
             }
@@ -2415,7 +2415,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 1602: {
-            global::Decentraland.Renderer.PB_AudioClip subBuilder = new global::Decentraland.Renderer.PB_AudioClip();
+            global::DCL.Interface.PB_AudioClip subBuilder = new global::DCL.Interface.PB_AudioClip();
             if (modelCase_ == ModelOneofCase.AudioClip) {
               subBuilder.MergeFrom(AudioClip);
             }
@@ -2424,7 +2424,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 1610: {
-            global::Decentraland.Renderer.PB_AudioSource subBuilder = new global::Decentraland.Renderer.PB_AudioSource();
+            global::DCL.Interface.PB_AudioSource subBuilder = new global::DCL.Interface.PB_AudioSource();
             if (modelCase_ == ModelOneofCase.AudioSource) {
               subBuilder.MergeFrom(AudioSource);
             }
@@ -2448,7 +2448,7 @@ namespace Decentraland.Renderer {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::Decentraland.Renderer.PB_Transform subBuilder = new global::Decentraland.Renderer.PB_Transform();
+            global::DCL.Interface.PB_Transform subBuilder = new global::DCL.Interface.PB_Transform();
             if (modelCase_ == ModelOneofCase.Transform) {
               subBuilder.MergeFrom(Transform);
             }
@@ -2457,7 +2457,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 66: {
-            global::Decentraland.Renderer.PB_UUIDCallback subBuilder = new global::Decentraland.Renderer.PB_UUIDCallback();
+            global::DCL.Interface.PB_UUIDCallback subBuilder = new global::DCL.Interface.PB_UUIDCallback();
             if (modelCase_ == ModelOneofCase.UuidCallback) {
               subBuilder.MergeFrom(UuidCallback);
             }
@@ -2466,7 +2466,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 130: {
-            global::Decentraland.Renderer.PB_BoxShape subBuilder = new global::Decentraland.Renderer.PB_BoxShape();
+            global::DCL.Interface.PB_BoxShape subBuilder = new global::DCL.Interface.PB_BoxShape();
             if (modelCase_ == ModelOneofCase.Box) {
               subBuilder.MergeFrom(Box);
             }
@@ -2475,7 +2475,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 138: {
-            global::Decentraland.Renderer.PB_SphereShape subBuilder = new global::Decentraland.Renderer.PB_SphereShape();
+            global::DCL.Interface.PB_SphereShape subBuilder = new global::DCL.Interface.PB_SphereShape();
             if (modelCase_ == ModelOneofCase.Sphere) {
               subBuilder.MergeFrom(Sphere);
             }
@@ -2484,7 +2484,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 146: {
-            global::Decentraland.Renderer.PB_PlaneShape subBuilder = new global::Decentraland.Renderer.PB_PlaneShape();
+            global::DCL.Interface.PB_PlaneShape subBuilder = new global::DCL.Interface.PB_PlaneShape();
             if (modelCase_ == ModelOneofCase.Plane) {
               subBuilder.MergeFrom(Plane);
             }
@@ -2493,7 +2493,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 154: {
-            global::Decentraland.Renderer.PB_ConeShape subBuilder = new global::Decentraland.Renderer.PB_ConeShape();
+            global::DCL.Interface.PB_ConeShape subBuilder = new global::DCL.Interface.PB_ConeShape();
             if (modelCase_ == ModelOneofCase.Cone) {
               subBuilder.MergeFrom(Cone);
             }
@@ -2502,7 +2502,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 162: {
-            global::Decentraland.Renderer.PB_CylinderShape subBuilder = new global::Decentraland.Renderer.PB_CylinderShape();
+            global::DCL.Interface.PB_CylinderShape subBuilder = new global::DCL.Interface.PB_CylinderShape();
             if (modelCase_ == ModelOneofCase.Cylinder) {
               subBuilder.MergeFrom(Cylinder);
             }
@@ -2511,7 +2511,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 170: {
-            global::Decentraland.Renderer.PB_TextShape subBuilder = new global::Decentraland.Renderer.PB_TextShape();
+            global::DCL.Interface.PB_TextShape subBuilder = new global::DCL.Interface.PB_TextShape();
             if (modelCase_ == ModelOneofCase.Text) {
               subBuilder.MergeFrom(Text);
             }
@@ -2520,7 +2520,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 178: {
-            global::Decentraland.Renderer.PB_NFTShape subBuilder = new global::Decentraland.Renderer.PB_NFTShape();
+            global::DCL.Interface.PB_NFTShape subBuilder = new global::DCL.Interface.PB_NFTShape();
             if (modelCase_ == ModelOneofCase.Nft) {
               subBuilder.MergeFrom(Nft);
             }
@@ -2529,7 +2529,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 202: {
-            global::Decentraland.Renderer.PB_UIContainerRect subBuilder = new global::Decentraland.Renderer.PB_UIContainerRect();
+            global::DCL.Interface.PB_UIContainerRect subBuilder = new global::DCL.Interface.PB_UIContainerRect();
             if (modelCase_ == ModelOneofCase.ContainerRect) {
               subBuilder.MergeFrom(ContainerRect);
             }
@@ -2538,7 +2538,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 210: {
-            global::Decentraland.Renderer.PB_UIContainerStack subBuilder = new global::Decentraland.Renderer.PB_UIContainerStack();
+            global::DCL.Interface.PB_UIContainerStack subBuilder = new global::DCL.Interface.PB_UIContainerStack();
             if (modelCase_ == ModelOneofCase.ContainerStack) {
               subBuilder.MergeFrom(ContainerStack);
             }
@@ -2547,7 +2547,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 218: {
-            global::Decentraland.Renderer.PB_UITextShape subBuilder = new global::Decentraland.Renderer.PB_UITextShape();
+            global::DCL.Interface.PB_UITextShape subBuilder = new global::DCL.Interface.PB_UITextShape();
             if (modelCase_ == ModelOneofCase.UiTextShape) {
               subBuilder.MergeFrom(UiTextShape);
             }
@@ -2556,7 +2556,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 226: {
-            global::Decentraland.Renderer.PB_UIInputText subBuilder = new global::Decentraland.Renderer.PB_UIInputText();
+            global::DCL.Interface.PB_UIInputText subBuilder = new global::DCL.Interface.PB_UIInputText();
             if (modelCase_ == ModelOneofCase.UiInputTextShape) {
               subBuilder.MergeFrom(UiInputTextShape);
             }
@@ -2565,7 +2565,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 234: {
-            global::Decentraland.Renderer.PB_UIImage subBuilder = new global::Decentraland.Renderer.PB_UIImage();
+            global::DCL.Interface.PB_UIImage subBuilder = new global::DCL.Interface.PB_UIImage();
             if (modelCase_ == ModelOneofCase.UiImageShape) {
               subBuilder.MergeFrom(UiImageShape);
             }
@@ -2574,7 +2574,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 250: {
-            global::Decentraland.Renderer.PB_CircleShape subBuilder = new global::Decentraland.Renderer.PB_CircleShape();
+            global::DCL.Interface.PB_CircleShape subBuilder = new global::DCL.Interface.PB_CircleShape();
             if (modelCase_ == ModelOneofCase.Circle) {
               subBuilder.MergeFrom(Circle);
             }
@@ -2583,7 +2583,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 258: {
-            global::Decentraland.Renderer.PB_Billboard subBuilder = new global::Decentraland.Renderer.PB_Billboard();
+            global::DCL.Interface.PB_Billboard subBuilder = new global::DCL.Interface.PB_Billboard();
             if (modelCase_ == ModelOneofCase.Billboard) {
               subBuilder.MergeFrom(Billboard);
             }
@@ -2592,7 +2592,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 434: {
-            global::Decentraland.Renderer.PB_GLTFShape subBuilder = new global::Decentraland.Renderer.PB_GLTFShape();
+            global::DCL.Interface.PB_GLTFShape subBuilder = new global::DCL.Interface.PB_GLTFShape();
             if (modelCase_ == ModelOneofCase.Gltf) {
               subBuilder.MergeFrom(Gltf);
             }
@@ -2601,7 +2601,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 442: {
-            global::Decentraland.Renderer.PB_OBJShape subBuilder = new global::Decentraland.Renderer.PB_OBJShape();
+            global::DCL.Interface.PB_OBJShape subBuilder = new global::DCL.Interface.PB_OBJShape();
             if (modelCase_ == ModelOneofCase.Obj) {
               subBuilder.MergeFrom(Obj);
             }
@@ -2610,7 +2610,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 450: {
-            global::Decentraland.Renderer.PB_AvatarShape subBuilder = new global::Decentraland.Renderer.PB_AvatarShape();
+            global::DCL.Interface.PB_AvatarShape subBuilder = new global::DCL.Interface.PB_AvatarShape();
             if (modelCase_ == ModelOneofCase.Avatar) {
               subBuilder.MergeFrom(Avatar);
             }
@@ -2619,7 +2619,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 514: {
-            global::Decentraland.Renderer.PB_BasicMaterial subBuilder = new global::Decentraland.Renderer.PB_BasicMaterial();
+            global::DCL.Interface.PB_BasicMaterial subBuilder = new global::DCL.Interface.PB_BasicMaterial();
             if (modelCase_ == ModelOneofCase.BasicMaterial) {
               subBuilder.MergeFrom(BasicMaterial);
             }
@@ -2628,7 +2628,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 546: {
-            global::Decentraland.Renderer.PB_Texture subBuilder = new global::Decentraland.Renderer.PB_Texture();
+            global::DCL.Interface.PB_Texture subBuilder = new global::DCL.Interface.PB_Texture();
             if (modelCase_ == ModelOneofCase.Texture) {
               subBuilder.MergeFrom(Texture);
             }
@@ -2637,7 +2637,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 1602: {
-            global::Decentraland.Renderer.PB_AudioClip subBuilder = new global::Decentraland.Renderer.PB_AudioClip();
+            global::DCL.Interface.PB_AudioClip subBuilder = new global::DCL.Interface.PB_AudioClip();
             if (modelCase_ == ModelOneofCase.AudioClip) {
               subBuilder.MergeFrom(AudioClip);
             }
@@ -2646,7 +2646,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 1610: {
-            global::Decentraland.Renderer.PB_AudioSource subBuilder = new global::Decentraland.Renderer.PB_AudioSource();
+            global::DCL.Interface.PB_AudioSource subBuilder = new global::DCL.Interface.PB_AudioSource();
             if (modelCase_ == ModelOneofCase.AudioSource) {
               subBuilder.MergeFrom(AudioSource);
             }
@@ -2675,7 +2675,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[5]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2975,7 +2975,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[6]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3238,7 +3238,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[7]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3319,10 +3319,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 3;
-    private global::Decentraland.Renderer.PB_Color3 color_;
+    private global::DCL.Interface.PB_Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 Color {
+    public global::DCL.Interface.PB_Color3 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -3571,10 +3571,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "shadowColor" field.</summary>
     public const int ShadowColorFieldNumber = 24;
-    private global::Decentraland.Renderer.PB_Color3 shadowColor_;
+    private global::DCL.Interface.PB_Color3 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 ShadowColor {
+    public global::DCL.Interface.PB_Color3 ShadowColor {
       get { return shadowColor_; }
       set {
         shadowColor_ = value;
@@ -3595,10 +3595,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "outlineColor" field.</summary>
     public const int OutlineColorFieldNumber = 26;
-    private global::Decentraland.Renderer.PB_Color3 outlineColor_;
+    private global::DCL.Interface.PB_Color3 outlineColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 OutlineColor {
+    public global::DCL.Interface.PB_Color3 OutlineColor {
       get { return outlineColor_; }
       set {
         outlineColor_ = value;
@@ -4023,7 +4023,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color3();
+          Color = new global::DCL.Interface.PB_Color3();
         }
         Color.MergeFrom(other.Color);
       }
@@ -4089,7 +4089,7 @@ namespace Decentraland.Renderer {
       }
       if (other.shadowColor_ != null) {
         if (shadowColor_ == null) {
-          ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+          ShadowColor = new global::DCL.Interface.PB_Color3();
         }
         ShadowColor.MergeFrom(other.ShadowColor);
       }
@@ -4098,7 +4098,7 @@ namespace Decentraland.Renderer {
       }
       if (other.outlineColor_ != null) {
         if (outlineColor_ == null) {
-          OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+          OutlineColor = new global::DCL.Interface.PB_Color3();
         }
         OutlineColor.MergeFrom(other.OutlineColor);
       }
@@ -4127,7 +4127,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -4214,7 +4214,7 @@ namespace Decentraland.Renderer {
           }
           case 194: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+              ShadowColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -4225,7 +4225,7 @@ namespace Decentraland.Renderer {
           }
           case 210: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+              OutlineColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
@@ -4255,7 +4255,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -4342,7 +4342,7 @@ namespace Decentraland.Renderer {
           }
           case 194: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+              ShadowColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -4353,7 +4353,7 @@ namespace Decentraland.Renderer {
           }
           case 210: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+              OutlineColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
@@ -4379,7 +4379,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[8]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4642,7 +4642,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[9]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4942,7 +4942,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[10]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4976,10 +4976,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "position" field.</summary>
     public const int PositionFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_Vector3 position_;
+    private global::DCL.Interface.PB_Vector3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Vector3 Position {
+    public global::DCL.Interface.PB_Vector3 Position {
       get { return position_; }
       set {
         position_ = value;
@@ -4988,10 +4988,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "rotation" field.</summary>
     public const int RotationFieldNumber = 2;
-    private global::Decentraland.Renderer.PB_Quaternion rotation_;
+    private global::DCL.Interface.PB_Quaternion rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Quaternion Rotation {
+    public global::DCL.Interface.PB_Quaternion Rotation {
       get { return rotation_; }
       set {
         rotation_ = value;
@@ -5000,10 +5000,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "scale" field.</summary>
     public const int ScaleFieldNumber = 3;
-    private global::Decentraland.Renderer.PB_Vector3 scale_;
+    private global::DCL.Interface.PB_Vector3 scale_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Vector3 Scale {
+    public global::DCL.Interface.PB_Vector3 Scale {
       get { return scale_; }
       set {
         scale_ = value;
@@ -5123,19 +5123,19 @@ namespace Decentraland.Renderer {
       }
       if (other.position_ != null) {
         if (position_ == null) {
-          Position = new global::Decentraland.Renderer.PB_Vector3();
+          Position = new global::DCL.Interface.PB_Vector3();
         }
         Position.MergeFrom(other.Position);
       }
       if (other.rotation_ != null) {
         if (rotation_ == null) {
-          Rotation = new global::Decentraland.Renderer.PB_Quaternion();
+          Rotation = new global::DCL.Interface.PB_Quaternion();
         }
         Rotation.MergeFrom(other.Rotation);
       }
       if (other.scale_ != null) {
         if (scale_ == null) {
-          Scale = new global::Decentraland.Renderer.PB_Vector3();
+          Scale = new global::DCL.Interface.PB_Vector3();
         }
         Scale.MergeFrom(other.Scale);
       }
@@ -5156,21 +5156,21 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (position_ == null) {
-              Position = new global::Decentraland.Renderer.PB_Vector3();
+              Position = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Position);
             break;
           }
           case 18: {
             if (rotation_ == null) {
-              Rotation = new global::Decentraland.Renderer.PB_Quaternion();
+              Rotation = new global::DCL.Interface.PB_Quaternion();
             }
             input.ReadMessage(Rotation);
             break;
           }
           case 26: {
             if (scale_ == null) {
-              Scale = new global::Decentraland.Renderer.PB_Vector3();
+              Scale = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Scale);
             break;
@@ -5192,21 +5192,21 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (position_ == null) {
-              Position = new global::Decentraland.Renderer.PB_Vector3();
+              Position = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Position);
             break;
           }
           case 18: {
             if (rotation_ == null) {
-              Rotation = new global::Decentraland.Renderer.PB_Quaternion();
+              Rotation = new global::DCL.Interface.PB_Quaternion();
             }
             input.ReadMessage(Rotation);
             break;
           }
           case 26: {
             if (scale_ == null) {
-              Scale = new global::Decentraland.Renderer.PB_Vector3();
+              Scale = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Scale);
             break;
@@ -5232,7 +5232,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[11]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5532,7 +5532,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[12]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5795,7 +5795,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[13]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6058,7 +6058,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[14]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6247,7 +6247,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[15]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6473,7 +6473,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[16]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6507,10 +6507,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "origin" field.</summary>
     public const int OriginFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_Vector3 origin_;
+    private global::DCL.Interface.PB_Vector3 origin_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Vector3 Origin {
+    public global::DCL.Interface.PB_Vector3 Origin {
       get { return origin_; }
       set {
         origin_ = value;
@@ -6519,10 +6519,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "direction" field.</summary>
     public const int DirectionFieldNumber = 2;
-    private global::Decentraland.Renderer.PB_Vector3 direction_;
+    private global::DCL.Interface.PB_Vector3 direction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Vector3 Direction {
+    public global::DCL.Interface.PB_Vector3 Direction {
       get { return direction_; }
       set {
         direction_ = value;
@@ -6654,13 +6654,13 @@ namespace Decentraland.Renderer {
       }
       if (other.origin_ != null) {
         if (origin_ == null) {
-          Origin = new global::Decentraland.Renderer.PB_Vector3();
+          Origin = new global::DCL.Interface.PB_Vector3();
         }
         Origin.MergeFrom(other.Origin);
       }
       if (other.direction_ != null) {
         if (direction_ == null) {
-          Direction = new global::Decentraland.Renderer.PB_Vector3();
+          Direction = new global::DCL.Interface.PB_Vector3();
         }
         Direction.MergeFrom(other.Direction);
       }
@@ -6684,14 +6684,14 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (origin_ == null) {
-              Origin = new global::Decentraland.Renderer.PB_Vector3();
+              Origin = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Origin);
             break;
           }
           case 18: {
             if (direction_ == null) {
-              Direction = new global::Decentraland.Renderer.PB_Vector3();
+              Direction = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Direction);
             break;
@@ -6717,14 +6717,14 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (origin_ == null) {
-              Origin = new global::Decentraland.Renderer.PB_Vector3();
+              Origin = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Origin);
             break;
           }
           case 18: {
             if (direction_ == null) {
-              Direction = new global::Decentraland.Renderer.PB_Vector3();
+              Direction = new global::DCL.Interface.PB_Vector3();
             }
             input.ReadMessage(Direction);
             break;
@@ -6754,7 +6754,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[17]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6812,10 +6812,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "ray" field.</summary>
     public const int RayFieldNumber = 3;
-    private global::Decentraland.Renderer.PB_Ray ray_;
+    private global::DCL.Interface.PB_Ray ray_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Ray Ray {
+    public global::DCL.Interface.PB_Ray Ray {
       get { return ray_; }
       set {
         ray_ = value;
@@ -6941,7 +6941,7 @@ namespace Decentraland.Renderer {
       }
       if (other.ray_ != null) {
         if (ray_ == null) {
-          Ray = new global::Decentraland.Renderer.PB_Ray();
+          Ray = new global::DCL.Interface.PB_Ray();
         }
         Ray.MergeFrom(other.Ray);
       }
@@ -6970,7 +6970,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (ray_ == null) {
-              Ray = new global::Decentraland.Renderer.PB_Ray();
+              Ray = new global::DCL.Interface.PB_Ray();
             }
             input.ReadMessage(Ray);
             break;
@@ -7000,7 +7000,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (ray_ == null) {
-              Ray = new global::Decentraland.Renderer.PB_Ray();
+              Ray = new global::DCL.Interface.PB_Ray();
             }
             input.ReadMessage(Ray);
             break;
@@ -7026,7 +7026,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[18]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7252,7 +7252,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[19]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[19]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7354,8 +7354,8 @@ namespace Decentraland.Renderer {
     public const int CreateEntityFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_CreateEntity CreateEntity {
-      get { return payloadCase_ == PayloadOneofCase.CreateEntity ? (global::Decentraland.Renderer.PB_CreateEntity) payload_ : null; }
+    public global::DCL.Interface.PB_CreateEntity CreateEntity {
+      get { return payloadCase_ == PayloadOneofCase.CreateEntity ? (global::DCL.Interface.PB_CreateEntity) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.CreateEntity;
@@ -7366,8 +7366,8 @@ namespace Decentraland.Renderer {
     public const int RemoveEntityFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_RemoveEntity RemoveEntity {
-      get { return payloadCase_ == PayloadOneofCase.RemoveEntity ? (global::Decentraland.Renderer.PB_RemoveEntity) payload_ : null; }
+    public global::DCL.Interface.PB_RemoveEntity RemoveEntity {
+      get { return payloadCase_ == PayloadOneofCase.RemoveEntity ? (global::DCL.Interface.PB_RemoveEntity) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RemoveEntity;
@@ -7378,8 +7378,8 @@ namespace Decentraland.Renderer {
     public const int SetEntityParentFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_SetEntityParent SetEntityParent {
-      get { return payloadCase_ == PayloadOneofCase.SetEntityParent ? (global::Decentraland.Renderer.PB_SetEntityParent) payload_ : null; }
+    public global::DCL.Interface.PB_SetEntityParent SetEntityParent {
+      get { return payloadCase_ == PayloadOneofCase.SetEntityParent ? (global::DCL.Interface.PB_SetEntityParent) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SetEntityParent;
@@ -7390,8 +7390,8 @@ namespace Decentraland.Renderer {
     public const int UpdateEntityComponentFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UpdateEntityComponent UpdateEntityComponent {
-      get { return payloadCase_ == PayloadOneofCase.UpdateEntityComponent ? (global::Decentraland.Renderer.PB_UpdateEntityComponent) payload_ : null; }
+    public global::DCL.Interface.PB_UpdateEntityComponent UpdateEntityComponent {
+      get { return payloadCase_ == PayloadOneofCase.UpdateEntityComponent ? (global::DCL.Interface.PB_UpdateEntityComponent) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UpdateEntityComponent;
@@ -7402,8 +7402,8 @@ namespace Decentraland.Renderer {
     public const int AttachEntityComponentFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_AttachEntityComponent AttachEntityComponent {
-      get { return payloadCase_ == PayloadOneofCase.AttachEntityComponent ? (global::Decentraland.Renderer.PB_AttachEntityComponent) payload_ : null; }
+    public global::DCL.Interface.PB_AttachEntityComponent AttachEntityComponent {
+      get { return payloadCase_ == PayloadOneofCase.AttachEntityComponent ? (global::DCL.Interface.PB_AttachEntityComponent) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AttachEntityComponent;
@@ -7414,8 +7414,8 @@ namespace Decentraland.Renderer {
     public const int ComponentCreatedFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_ComponentCreated ComponentCreated {
-      get { return payloadCase_ == PayloadOneofCase.ComponentCreated ? (global::Decentraland.Renderer.PB_ComponentCreated) payload_ : null; }
+    public global::DCL.Interface.PB_ComponentCreated ComponentCreated {
+      get { return payloadCase_ == PayloadOneofCase.ComponentCreated ? (global::DCL.Interface.PB_ComponentCreated) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentCreated;
@@ -7426,8 +7426,8 @@ namespace Decentraland.Renderer {
     public const int ComponentDisposedFieldNumber = 9;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_ComponentDisposed ComponentDisposed {
-      get { return payloadCase_ == PayloadOneofCase.ComponentDisposed ? (global::Decentraland.Renderer.PB_ComponentDisposed) payload_ : null; }
+    public global::DCL.Interface.PB_ComponentDisposed ComponentDisposed {
+      get { return payloadCase_ == PayloadOneofCase.ComponentDisposed ? (global::DCL.Interface.PB_ComponentDisposed) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentDisposed;
@@ -7438,8 +7438,8 @@ namespace Decentraland.Renderer {
     public const int ComponentRemovedFieldNumber = 10;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_ComponentRemoved ComponentRemoved {
-      get { return payloadCase_ == PayloadOneofCase.ComponentRemoved ? (global::Decentraland.Renderer.PB_ComponentRemoved) payload_ : null; }
+    public global::DCL.Interface.PB_ComponentRemoved ComponentRemoved {
+      get { return payloadCase_ == PayloadOneofCase.ComponentRemoved ? (global::DCL.Interface.PB_ComponentRemoved) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentRemoved;
@@ -7450,8 +7450,8 @@ namespace Decentraland.Renderer {
     public const int ComponentUpdatedFieldNumber = 11;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_ComponentUpdated ComponentUpdated {
-      get { return payloadCase_ == PayloadOneofCase.ComponentUpdated ? (global::Decentraland.Renderer.PB_ComponentUpdated) payload_ : null; }
+    public global::DCL.Interface.PB_ComponentUpdated ComponentUpdated {
+      get { return payloadCase_ == PayloadOneofCase.ComponentUpdated ? (global::DCL.Interface.PB_ComponentUpdated) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ComponentUpdated;
@@ -7462,8 +7462,8 @@ namespace Decentraland.Renderer {
     public const int QueryFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Query Query {
-      get { return payloadCase_ == PayloadOneofCase.Query ? (global::Decentraland.Renderer.PB_Query) payload_ : null; }
+    public global::DCL.Interface.PB_Query Query {
+      get { return payloadCase_ == PayloadOneofCase.Query ? (global::DCL.Interface.PB_Query) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Query;
@@ -7486,8 +7486,8 @@ namespace Decentraland.Renderer {
     public const int OpenExternalUrlFieldNumber = 14;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_OpenExternalUrl OpenExternalUrl {
-      get { return payloadCase_ == PayloadOneofCase.OpenExternalUrl ? (global::Decentraland.Renderer.PB_OpenExternalUrl) payload_ : null; }
+    public global::DCL.Interface.PB_OpenExternalUrl OpenExternalUrl {
+      get { return payloadCase_ == PayloadOneofCase.OpenExternalUrl ? (global::DCL.Interface.PB_OpenExternalUrl) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.OpenExternalUrl;
@@ -7498,8 +7498,8 @@ namespace Decentraland.Renderer {
     public const int OpenNFTDialogFieldNumber = 15;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_OpenNFTDialog OpenNFTDialog {
-      get { return payloadCase_ == PayloadOneofCase.OpenNFTDialog ? (global::Decentraland.Renderer.PB_OpenNFTDialog) payload_ : null; }
+    public global::DCL.Interface.PB_OpenNFTDialog OpenNFTDialog {
+      get { return payloadCase_ == PayloadOneofCase.OpenNFTDialog ? (global::DCL.Interface.PB_OpenNFTDialog) payload_ : null; }
       set {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.OpenNFTDialog;
@@ -7844,61 +7844,61 @@ namespace Decentraland.Renderer {
       switch (other.PayloadCase) {
         case PayloadOneofCase.CreateEntity:
           if (CreateEntity == null) {
-            CreateEntity = new global::Decentraland.Renderer.PB_CreateEntity();
+            CreateEntity = new global::DCL.Interface.PB_CreateEntity();
           }
           CreateEntity.MergeFrom(other.CreateEntity);
           break;
         case PayloadOneofCase.RemoveEntity:
           if (RemoveEntity == null) {
-            RemoveEntity = new global::Decentraland.Renderer.PB_RemoveEntity();
+            RemoveEntity = new global::DCL.Interface.PB_RemoveEntity();
           }
           RemoveEntity.MergeFrom(other.RemoveEntity);
           break;
         case PayloadOneofCase.SetEntityParent:
           if (SetEntityParent == null) {
-            SetEntityParent = new global::Decentraland.Renderer.PB_SetEntityParent();
+            SetEntityParent = new global::DCL.Interface.PB_SetEntityParent();
           }
           SetEntityParent.MergeFrom(other.SetEntityParent);
           break;
         case PayloadOneofCase.UpdateEntityComponent:
           if (UpdateEntityComponent == null) {
-            UpdateEntityComponent = new global::Decentraland.Renderer.PB_UpdateEntityComponent();
+            UpdateEntityComponent = new global::DCL.Interface.PB_UpdateEntityComponent();
           }
           UpdateEntityComponent.MergeFrom(other.UpdateEntityComponent);
           break;
         case PayloadOneofCase.AttachEntityComponent:
           if (AttachEntityComponent == null) {
-            AttachEntityComponent = new global::Decentraland.Renderer.PB_AttachEntityComponent();
+            AttachEntityComponent = new global::DCL.Interface.PB_AttachEntityComponent();
           }
           AttachEntityComponent.MergeFrom(other.AttachEntityComponent);
           break;
         case PayloadOneofCase.ComponentCreated:
           if (ComponentCreated == null) {
-            ComponentCreated = new global::Decentraland.Renderer.PB_ComponentCreated();
+            ComponentCreated = new global::DCL.Interface.PB_ComponentCreated();
           }
           ComponentCreated.MergeFrom(other.ComponentCreated);
           break;
         case PayloadOneofCase.ComponentDisposed:
           if (ComponentDisposed == null) {
-            ComponentDisposed = new global::Decentraland.Renderer.PB_ComponentDisposed();
+            ComponentDisposed = new global::DCL.Interface.PB_ComponentDisposed();
           }
           ComponentDisposed.MergeFrom(other.ComponentDisposed);
           break;
         case PayloadOneofCase.ComponentRemoved:
           if (ComponentRemoved == null) {
-            ComponentRemoved = new global::Decentraland.Renderer.PB_ComponentRemoved();
+            ComponentRemoved = new global::DCL.Interface.PB_ComponentRemoved();
           }
           ComponentRemoved.MergeFrom(other.ComponentRemoved);
           break;
         case PayloadOneofCase.ComponentUpdated:
           if (ComponentUpdated == null) {
-            ComponentUpdated = new global::Decentraland.Renderer.PB_ComponentUpdated();
+            ComponentUpdated = new global::DCL.Interface.PB_ComponentUpdated();
           }
           ComponentUpdated.MergeFrom(other.ComponentUpdated);
           break;
         case PayloadOneofCase.Query:
           if (Query == null) {
-            Query = new global::Decentraland.Renderer.PB_Query();
+            Query = new global::DCL.Interface.PB_Query();
           }
           Query.MergeFrom(other.Query);
           break;
@@ -7910,13 +7910,13 @@ namespace Decentraland.Renderer {
           break;
         case PayloadOneofCase.OpenExternalUrl:
           if (OpenExternalUrl == null) {
-            OpenExternalUrl = new global::Decentraland.Renderer.PB_OpenExternalUrl();
+            OpenExternalUrl = new global::DCL.Interface.PB_OpenExternalUrl();
           }
           OpenExternalUrl.MergeFrom(other.OpenExternalUrl);
           break;
         case PayloadOneofCase.OpenNFTDialog:
           if (OpenNFTDialog == null) {
-            OpenNFTDialog = new global::Decentraland.Renderer.PB_OpenNFTDialog();
+            OpenNFTDialog = new global::DCL.Interface.PB_OpenNFTDialog();
           }
           OpenNFTDialog.MergeFrom(other.OpenNFTDialog);
           break;
@@ -7946,7 +7946,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 26: {
-            global::Decentraland.Renderer.PB_CreateEntity subBuilder = new global::Decentraland.Renderer.PB_CreateEntity();
+            global::DCL.Interface.PB_CreateEntity subBuilder = new global::DCL.Interface.PB_CreateEntity();
             if (payloadCase_ == PayloadOneofCase.CreateEntity) {
               subBuilder.MergeFrom(CreateEntity);
             }
@@ -7955,7 +7955,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 34: {
-            global::Decentraland.Renderer.PB_RemoveEntity subBuilder = new global::Decentraland.Renderer.PB_RemoveEntity();
+            global::DCL.Interface.PB_RemoveEntity subBuilder = new global::DCL.Interface.PB_RemoveEntity();
             if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
               subBuilder.MergeFrom(RemoveEntity);
             }
@@ -7964,7 +7964,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 42: {
-            global::Decentraland.Renderer.PB_SetEntityParent subBuilder = new global::Decentraland.Renderer.PB_SetEntityParent();
+            global::DCL.Interface.PB_SetEntityParent subBuilder = new global::DCL.Interface.PB_SetEntityParent();
             if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
               subBuilder.MergeFrom(SetEntityParent);
             }
@@ -7973,7 +7973,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 50: {
-            global::Decentraland.Renderer.PB_UpdateEntityComponent subBuilder = new global::Decentraland.Renderer.PB_UpdateEntityComponent();
+            global::DCL.Interface.PB_UpdateEntityComponent subBuilder = new global::DCL.Interface.PB_UpdateEntityComponent();
             if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
               subBuilder.MergeFrom(UpdateEntityComponent);
             }
@@ -7982,7 +7982,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 58: {
-            global::Decentraland.Renderer.PB_AttachEntityComponent subBuilder = new global::Decentraland.Renderer.PB_AttachEntityComponent();
+            global::DCL.Interface.PB_AttachEntityComponent subBuilder = new global::DCL.Interface.PB_AttachEntityComponent();
             if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
               subBuilder.MergeFrom(AttachEntityComponent);
             }
@@ -7991,7 +7991,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 66: {
-            global::Decentraland.Renderer.PB_ComponentCreated subBuilder = new global::Decentraland.Renderer.PB_ComponentCreated();
+            global::DCL.Interface.PB_ComponentCreated subBuilder = new global::DCL.Interface.PB_ComponentCreated();
             if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
               subBuilder.MergeFrom(ComponentCreated);
             }
@@ -8000,7 +8000,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 74: {
-            global::Decentraland.Renderer.PB_ComponentDisposed subBuilder = new global::Decentraland.Renderer.PB_ComponentDisposed();
+            global::DCL.Interface.PB_ComponentDisposed subBuilder = new global::DCL.Interface.PB_ComponentDisposed();
             if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
               subBuilder.MergeFrom(ComponentDisposed);
             }
@@ -8009,7 +8009,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 82: {
-            global::Decentraland.Renderer.PB_ComponentRemoved subBuilder = new global::Decentraland.Renderer.PB_ComponentRemoved();
+            global::DCL.Interface.PB_ComponentRemoved subBuilder = new global::DCL.Interface.PB_ComponentRemoved();
             if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
               subBuilder.MergeFrom(ComponentRemoved);
             }
@@ -8018,7 +8018,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 90: {
-            global::Decentraland.Renderer.PB_ComponentUpdated subBuilder = new global::Decentraland.Renderer.PB_ComponentUpdated();
+            global::DCL.Interface.PB_ComponentUpdated subBuilder = new global::DCL.Interface.PB_ComponentUpdated();
             if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
               subBuilder.MergeFrom(ComponentUpdated);
             }
@@ -8027,7 +8027,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 98: {
-            global::Decentraland.Renderer.PB_Query subBuilder = new global::Decentraland.Renderer.PB_Query();
+            global::DCL.Interface.PB_Query subBuilder = new global::DCL.Interface.PB_Query();
             if (payloadCase_ == PayloadOneofCase.Query) {
               subBuilder.MergeFrom(Query);
             }
@@ -8045,7 +8045,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 114: {
-            global::Decentraland.Renderer.PB_OpenExternalUrl subBuilder = new global::Decentraland.Renderer.PB_OpenExternalUrl();
+            global::DCL.Interface.PB_OpenExternalUrl subBuilder = new global::DCL.Interface.PB_OpenExternalUrl();
             if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
               subBuilder.MergeFrom(OpenExternalUrl);
             }
@@ -8054,7 +8054,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 122: {
-            global::Decentraland.Renderer.PB_OpenNFTDialog subBuilder = new global::Decentraland.Renderer.PB_OpenNFTDialog();
+            global::DCL.Interface.PB_OpenNFTDialog subBuilder = new global::DCL.Interface.PB_OpenNFTDialog();
             if (payloadCase_ == PayloadOneofCase.OpenNFTDialog) {
               subBuilder.MergeFrom(OpenNFTDialog);
             }
@@ -8090,7 +8090,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 26: {
-            global::Decentraland.Renderer.PB_CreateEntity subBuilder = new global::Decentraland.Renderer.PB_CreateEntity();
+            global::DCL.Interface.PB_CreateEntity subBuilder = new global::DCL.Interface.PB_CreateEntity();
             if (payloadCase_ == PayloadOneofCase.CreateEntity) {
               subBuilder.MergeFrom(CreateEntity);
             }
@@ -8099,7 +8099,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 34: {
-            global::Decentraland.Renderer.PB_RemoveEntity subBuilder = new global::Decentraland.Renderer.PB_RemoveEntity();
+            global::DCL.Interface.PB_RemoveEntity subBuilder = new global::DCL.Interface.PB_RemoveEntity();
             if (payloadCase_ == PayloadOneofCase.RemoveEntity) {
               subBuilder.MergeFrom(RemoveEntity);
             }
@@ -8108,7 +8108,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 42: {
-            global::Decentraland.Renderer.PB_SetEntityParent subBuilder = new global::Decentraland.Renderer.PB_SetEntityParent();
+            global::DCL.Interface.PB_SetEntityParent subBuilder = new global::DCL.Interface.PB_SetEntityParent();
             if (payloadCase_ == PayloadOneofCase.SetEntityParent) {
               subBuilder.MergeFrom(SetEntityParent);
             }
@@ -8117,7 +8117,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 50: {
-            global::Decentraland.Renderer.PB_UpdateEntityComponent subBuilder = new global::Decentraland.Renderer.PB_UpdateEntityComponent();
+            global::DCL.Interface.PB_UpdateEntityComponent subBuilder = new global::DCL.Interface.PB_UpdateEntityComponent();
             if (payloadCase_ == PayloadOneofCase.UpdateEntityComponent) {
               subBuilder.MergeFrom(UpdateEntityComponent);
             }
@@ -8126,7 +8126,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 58: {
-            global::Decentraland.Renderer.PB_AttachEntityComponent subBuilder = new global::Decentraland.Renderer.PB_AttachEntityComponent();
+            global::DCL.Interface.PB_AttachEntityComponent subBuilder = new global::DCL.Interface.PB_AttachEntityComponent();
             if (payloadCase_ == PayloadOneofCase.AttachEntityComponent) {
               subBuilder.MergeFrom(AttachEntityComponent);
             }
@@ -8135,7 +8135,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 66: {
-            global::Decentraland.Renderer.PB_ComponentCreated subBuilder = new global::Decentraland.Renderer.PB_ComponentCreated();
+            global::DCL.Interface.PB_ComponentCreated subBuilder = new global::DCL.Interface.PB_ComponentCreated();
             if (payloadCase_ == PayloadOneofCase.ComponentCreated) {
               subBuilder.MergeFrom(ComponentCreated);
             }
@@ -8144,7 +8144,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 74: {
-            global::Decentraland.Renderer.PB_ComponentDisposed subBuilder = new global::Decentraland.Renderer.PB_ComponentDisposed();
+            global::DCL.Interface.PB_ComponentDisposed subBuilder = new global::DCL.Interface.PB_ComponentDisposed();
             if (payloadCase_ == PayloadOneofCase.ComponentDisposed) {
               subBuilder.MergeFrom(ComponentDisposed);
             }
@@ -8153,7 +8153,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 82: {
-            global::Decentraland.Renderer.PB_ComponentRemoved subBuilder = new global::Decentraland.Renderer.PB_ComponentRemoved();
+            global::DCL.Interface.PB_ComponentRemoved subBuilder = new global::DCL.Interface.PB_ComponentRemoved();
             if (payloadCase_ == PayloadOneofCase.ComponentRemoved) {
               subBuilder.MergeFrom(ComponentRemoved);
             }
@@ -8162,7 +8162,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 90: {
-            global::Decentraland.Renderer.PB_ComponentUpdated subBuilder = new global::Decentraland.Renderer.PB_ComponentUpdated();
+            global::DCL.Interface.PB_ComponentUpdated subBuilder = new global::DCL.Interface.PB_ComponentUpdated();
             if (payloadCase_ == PayloadOneofCase.ComponentUpdated) {
               subBuilder.MergeFrom(ComponentUpdated);
             }
@@ -8171,7 +8171,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 98: {
-            global::Decentraland.Renderer.PB_Query subBuilder = new global::Decentraland.Renderer.PB_Query();
+            global::DCL.Interface.PB_Query subBuilder = new global::DCL.Interface.PB_Query();
             if (payloadCase_ == PayloadOneofCase.Query) {
               subBuilder.MergeFrom(Query);
             }
@@ -8189,7 +8189,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 114: {
-            global::Decentraland.Renderer.PB_OpenExternalUrl subBuilder = new global::Decentraland.Renderer.PB_OpenExternalUrl();
+            global::DCL.Interface.PB_OpenExternalUrl subBuilder = new global::DCL.Interface.PB_OpenExternalUrl();
             if (payloadCase_ == PayloadOneofCase.OpenExternalUrl) {
               subBuilder.MergeFrom(OpenExternalUrl);
             }
@@ -8198,7 +8198,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 122: {
-            global::Decentraland.Renderer.PB_OpenNFTDialog subBuilder = new global::Decentraland.Renderer.PB_OpenNFTDialog();
+            global::DCL.Interface.PB_OpenNFTDialog subBuilder = new global::DCL.Interface.PB_OpenNFTDialog();
             if (payloadCase_ == PayloadOneofCase.OpenNFTDialog) {
               subBuilder.MergeFrom(OpenNFTDialog);
             }
@@ -8231,7 +8231,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[20]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[20]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8494,7 +8494,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[21]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[21]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8720,7 +8720,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[22]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[22]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8946,7 +8946,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[23]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[23]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8995,10 +8995,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "basePosition" field.</summary>
     public const int BasePositionFieldNumber = 2;
-    private global::Decentraland.Renderer.PB_Position basePosition_;
+    private global::DCL.Interface.PB_Position basePosition_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Position BasePosition {
+    public global::DCL.Interface.PB_Position BasePosition {
       get { return basePosition_; }
       set {
         basePosition_ = value;
@@ -9007,23 +9007,23 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parcels" field.</summary>
     public const int ParcelsFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::Decentraland.Renderer.PB_Position> _repeated_parcels_codec
-        = pb::FieldCodec.ForMessage(26, global::Decentraland.Renderer.PB_Position.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Renderer.PB_Position> parcels_ = new pbc::RepeatedField<global::Decentraland.Renderer.PB_Position>();
+    private static readonly pb::FieldCodec<global::DCL.Interface.PB_Position> _repeated_parcels_codec
+        = pb::FieldCodec.ForMessage(26, global::DCL.Interface.PB_Position.Parser);
+    private readonly pbc::RepeatedField<global::DCL.Interface.PB_Position> parcels_ = new pbc::RepeatedField<global::DCL.Interface.PB_Position>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Renderer.PB_Position> Parcels {
+    public pbc::RepeatedField<global::DCL.Interface.PB_Position> Parcels {
       get { return parcels_; }
     }
 
     /// <summary>Field number for the "contents" field.</summary>
     public const int ContentsFieldNumber = 4;
-    private static readonly pb::FieldCodec<global::Decentraland.Renderer.PB_ContentMapping> _repeated_contents_codec
-        = pb::FieldCodec.ForMessage(34, global::Decentraland.Renderer.PB_ContentMapping.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping> contents_ = new pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping>();
+    private static readonly pb::FieldCodec<global::DCL.Interface.PB_ContentMapping> _repeated_contents_codec
+        = pb::FieldCodec.ForMessage(34, global::DCL.Interface.PB_ContentMapping.Parser);
+    private readonly pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping> contents_ = new pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping> Contents {
+    public pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping> Contents {
       get { return contents_; }
     }
 
@@ -9193,7 +9193,7 @@ namespace Decentraland.Renderer {
       }
       if (other.basePosition_ != null) {
         if (basePosition_ == null) {
-          BasePosition = new global::Decentraland.Renderer.PB_Position();
+          BasePosition = new global::DCL.Interface.PB_Position();
         }
         BasePosition.MergeFrom(other.BasePosition);
       }
@@ -9226,7 +9226,7 @@ namespace Decentraland.Renderer {
           }
           case 18: {
             if (basePosition_ == null) {
-              BasePosition = new global::Decentraland.Renderer.PB_Position();
+              BasePosition = new global::DCL.Interface.PB_Position();
             }
             input.ReadMessage(BasePosition);
             break;
@@ -9268,7 +9268,7 @@ namespace Decentraland.Renderer {
           }
           case 18: {
             if (basePosition_ == null) {
-              BasePosition = new global::Decentraland.Renderer.PB_Position();
+              BasePosition = new global::DCL.Interface.PB_Position();
             }
             input.ReadMessage(BasePosition);
             break;
@@ -9310,7 +9310,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[24]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[24]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9573,7 +9573,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[25]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[25]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9799,7 +9799,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[26]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9898,8 +9898,8 @@ namespace Decentraland.Renderer {
     public const int SendSceneMessageFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_SendSceneMessage SendSceneMessage {
-      get { return messageCase_ == MessageOneofCase.SendSceneMessage ? (global::Decentraland.Renderer.PB_SendSceneMessage) message_ : null; }
+    public global::DCL.Interface.PB_SendSceneMessage SendSceneMessage {
+      get { return messageCase_ == MessageOneofCase.SendSceneMessage ? (global::DCL.Interface.PB_SendSceneMessage) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.SendSceneMessage;
@@ -9910,8 +9910,8 @@ namespace Decentraland.Renderer {
     public const int LoadParcelScenesFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_LoadParcelScenes LoadParcelScenes {
-      get { return messageCase_ == MessageOneofCase.LoadParcelScenes ? (global::Decentraland.Renderer.PB_LoadParcelScenes) message_ : null; }
+    public global::DCL.Interface.PB_LoadParcelScenes LoadParcelScenes {
+      get { return messageCase_ == MessageOneofCase.LoadParcelScenes ? (global::DCL.Interface.PB_LoadParcelScenes) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.LoadParcelScenes;
@@ -9922,8 +9922,8 @@ namespace Decentraland.Renderer {
     public const int UnloadSceneFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UnloadScene UnloadScene {
-      get { return messageCase_ == MessageOneofCase.UnloadScene ? (global::Decentraland.Renderer.PB_UnloadScene) message_ : null; }
+    public global::DCL.Interface.PB_UnloadScene UnloadScene {
+      get { return messageCase_ == MessageOneofCase.UnloadScene ? (global::DCL.Interface.PB_UnloadScene) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.UnloadScene;
@@ -9934,8 +9934,8 @@ namespace Decentraland.Renderer {
     public const int SetPositionFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_SetPosition SetPosition {
-      get { return messageCase_ == MessageOneofCase.SetPosition ? (global::Decentraland.Renderer.PB_SetPosition) message_ : null; }
+    public global::DCL.Interface.PB_SetPosition SetPosition {
+      get { return messageCase_ == MessageOneofCase.SetPosition ? (global::DCL.Interface.PB_SetPosition) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.SetPosition;
@@ -9958,8 +9958,8 @@ namespace Decentraland.Renderer {
     public const int CreateUISceneFieldNumber = 9;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_CreateUIScene CreateUIScene {
-      get { return messageCase_ == MessageOneofCase.CreateUIScene ? (global::Decentraland.Renderer.PB_CreateUIScene) message_ : null; }
+    public global::DCL.Interface.PB_CreateUIScene CreateUIScene {
+      get { return messageCase_ == MessageOneofCase.CreateUIScene ? (global::DCL.Interface.PB_CreateUIScene) message_ : null; }
       set {
         message_ = value;
         messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.CreateUIScene;
@@ -10206,25 +10206,25 @@ namespace Decentraland.Renderer {
           break;
         case MessageOneofCase.SendSceneMessage:
           if (SendSceneMessage == null) {
-            SendSceneMessage = new global::Decentraland.Renderer.PB_SendSceneMessage();
+            SendSceneMessage = new global::DCL.Interface.PB_SendSceneMessage();
           }
           SendSceneMessage.MergeFrom(other.SendSceneMessage);
           break;
         case MessageOneofCase.LoadParcelScenes:
           if (LoadParcelScenes == null) {
-            LoadParcelScenes = new global::Decentraland.Renderer.PB_LoadParcelScenes();
+            LoadParcelScenes = new global::DCL.Interface.PB_LoadParcelScenes();
           }
           LoadParcelScenes.MergeFrom(other.LoadParcelScenes);
           break;
         case MessageOneofCase.UnloadScene:
           if (UnloadScene == null) {
-            UnloadScene = new global::Decentraland.Renderer.PB_UnloadScene();
+            UnloadScene = new global::DCL.Interface.PB_UnloadScene();
           }
           UnloadScene.MergeFrom(other.UnloadScene);
           break;
         case MessageOneofCase.SetPosition:
           if (SetPosition == null) {
-            SetPosition = new global::Decentraland.Renderer.PB_SetPosition();
+            SetPosition = new global::DCL.Interface.PB_SetPosition();
           }
           SetPosition.MergeFrom(other.SetPosition);
           break;
@@ -10236,7 +10236,7 @@ namespace Decentraland.Renderer {
           break;
         case MessageOneofCase.CreateUIScene:
           if (CreateUIScene == null) {
-            CreateUIScene = new global::Decentraland.Renderer.PB_CreateUIScene();
+            CreateUIScene = new global::DCL.Interface.PB_CreateUIScene();
           }
           CreateUIScene.MergeFrom(other.CreateUIScene);
           break;
@@ -10285,7 +10285,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 34: {
-            global::Decentraland.Renderer.PB_SendSceneMessage subBuilder = new global::Decentraland.Renderer.PB_SendSceneMessage();
+            global::DCL.Interface.PB_SendSceneMessage subBuilder = new global::DCL.Interface.PB_SendSceneMessage();
             if (messageCase_ == MessageOneofCase.SendSceneMessage) {
               subBuilder.MergeFrom(SendSceneMessage);
             }
@@ -10294,7 +10294,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 42: {
-            global::Decentraland.Renderer.PB_LoadParcelScenes subBuilder = new global::Decentraland.Renderer.PB_LoadParcelScenes();
+            global::DCL.Interface.PB_LoadParcelScenes subBuilder = new global::DCL.Interface.PB_LoadParcelScenes();
             if (messageCase_ == MessageOneofCase.LoadParcelScenes) {
               subBuilder.MergeFrom(LoadParcelScenes);
             }
@@ -10303,7 +10303,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 50: {
-            global::Decentraland.Renderer.PB_UnloadScene subBuilder = new global::Decentraland.Renderer.PB_UnloadScene();
+            global::DCL.Interface.PB_UnloadScene subBuilder = new global::DCL.Interface.PB_UnloadScene();
             if (messageCase_ == MessageOneofCase.UnloadScene) {
               subBuilder.MergeFrom(UnloadScene);
             }
@@ -10312,7 +10312,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 58: {
-            global::Decentraland.Renderer.PB_SetPosition subBuilder = new global::Decentraland.Renderer.PB_SetPosition();
+            global::DCL.Interface.PB_SetPosition subBuilder = new global::DCL.Interface.PB_SetPosition();
             if (messageCase_ == MessageOneofCase.SetPosition) {
               subBuilder.MergeFrom(SetPosition);
             }
@@ -10330,7 +10330,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 74: {
-            global::Decentraland.Renderer.PB_CreateUIScene subBuilder = new global::Decentraland.Renderer.PB_CreateUIScene();
+            global::DCL.Interface.PB_CreateUIScene subBuilder = new global::DCL.Interface.PB_CreateUIScene();
             if (messageCase_ == MessageOneofCase.CreateUIScene) {
               subBuilder.MergeFrom(CreateUIScene);
             }
@@ -10381,7 +10381,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 34: {
-            global::Decentraland.Renderer.PB_SendSceneMessage subBuilder = new global::Decentraland.Renderer.PB_SendSceneMessage();
+            global::DCL.Interface.PB_SendSceneMessage subBuilder = new global::DCL.Interface.PB_SendSceneMessage();
             if (messageCase_ == MessageOneofCase.SendSceneMessage) {
               subBuilder.MergeFrom(SendSceneMessage);
             }
@@ -10390,7 +10390,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 42: {
-            global::Decentraland.Renderer.PB_LoadParcelScenes subBuilder = new global::Decentraland.Renderer.PB_LoadParcelScenes();
+            global::DCL.Interface.PB_LoadParcelScenes subBuilder = new global::DCL.Interface.PB_LoadParcelScenes();
             if (messageCase_ == MessageOneofCase.LoadParcelScenes) {
               subBuilder.MergeFrom(LoadParcelScenes);
             }
@@ -10399,7 +10399,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 50: {
-            global::Decentraland.Renderer.PB_UnloadScene subBuilder = new global::Decentraland.Renderer.PB_UnloadScene();
+            global::DCL.Interface.PB_UnloadScene subBuilder = new global::DCL.Interface.PB_UnloadScene();
             if (messageCase_ == MessageOneofCase.UnloadScene) {
               subBuilder.MergeFrom(UnloadScene);
             }
@@ -10408,7 +10408,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 58: {
-            global::Decentraland.Renderer.PB_SetPosition subBuilder = new global::Decentraland.Renderer.PB_SetPosition();
+            global::DCL.Interface.PB_SetPosition subBuilder = new global::DCL.Interface.PB_SetPosition();
             if (messageCase_ == MessageOneofCase.SetPosition) {
               subBuilder.MergeFrom(SetPosition);
             }
@@ -10426,7 +10426,7 @@ namespace Decentraland.Renderer {
             break;
           }
           case 74: {
-            global::Decentraland.Renderer.PB_CreateUIScene subBuilder = new global::Decentraland.Renderer.PB_CreateUIScene();
+            global::DCL.Interface.PB_CreateUIScene subBuilder = new global::DCL.Interface.PB_CreateUIScene();
             if (messageCase_ == MessageOneofCase.CreateUIScene) {
               subBuilder.MergeFrom(CreateUIScene);
             }
@@ -10455,7 +10455,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[27]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -10829,7 +10829,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[28]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[28]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11055,7 +11055,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[29]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[29]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11318,7 +11318,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[30]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[30]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11355,10 +11355,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "audioClip" field.</summary>
     public const int AudioClipFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_AudioClip audioClip_;
+    private global::DCL.Interface.PB_AudioClip audioClip_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_AudioClip AudioClip {
+    public global::DCL.Interface.PB_AudioClip AudioClip {
       get { return audioClip_; }
       set {
         audioClip_ = value;
@@ -11577,7 +11577,7 @@ namespace Decentraland.Renderer {
       }
       if (other.audioClip_ != null) {
         if (audioClip_ == null) {
-          AudioClip = new global::Decentraland.Renderer.PB_AudioClip();
+          AudioClip = new global::DCL.Interface.PB_AudioClip();
         }
         AudioClip.MergeFrom(other.AudioClip);
       }
@@ -11613,7 +11613,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (audioClip_ == null) {
-              AudioClip = new global::Decentraland.Renderer.PB_AudioClip();
+              AudioClip = new global::DCL.Interface.PB_AudioClip();
             }
             input.ReadMessage(AudioClip);
             break;
@@ -11655,7 +11655,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (audioClip_ == null) {
-              AudioClip = new global::Decentraland.Renderer.PB_AudioClip();
+              AudioClip = new global::DCL.Interface.PB_AudioClip();
             }
             input.ReadMessage(AudioClip);
             break;
@@ -11701,7 +11701,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[31]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[31]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11782,10 +11782,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "bodyShape" field.</summary>
     public const int BodyShapeFieldNumber = 4;
-    private global::Decentraland.Renderer.PB_Wearable bodyShape_;
+    private global::DCL.Interface.PB_Wearable bodyShape_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Wearable BodyShape {
+    public global::DCL.Interface.PB_Wearable BodyShape {
       get { return bodyShape_; }
       set {
         bodyShape_ = value;
@@ -11794,21 +11794,21 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "wearables" field.</summary>
     public const int WearablesFieldNumber = 5;
-    private static readonly pb::FieldCodec<global::Decentraland.Renderer.PB_Wearable> _repeated_wearables_codec
-        = pb::FieldCodec.ForMessage(42, global::Decentraland.Renderer.PB_Wearable.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Renderer.PB_Wearable> wearables_ = new pbc::RepeatedField<global::Decentraland.Renderer.PB_Wearable>();
+    private static readonly pb::FieldCodec<global::DCL.Interface.PB_Wearable> _repeated_wearables_codec
+        = pb::FieldCodec.ForMessage(42, global::DCL.Interface.PB_Wearable.Parser);
+    private readonly pbc::RepeatedField<global::DCL.Interface.PB_Wearable> wearables_ = new pbc::RepeatedField<global::DCL.Interface.PB_Wearable>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Renderer.PB_Wearable> Wearables {
+    public pbc::RepeatedField<global::DCL.Interface.PB_Wearable> Wearables {
       get { return wearables_; }
     }
 
     /// <summary>Field number for the "skin" field.</summary>
     public const int SkinFieldNumber = 6;
-    private global::Decentraland.Renderer.PB_Skin skin_;
+    private global::DCL.Interface.PB_Skin skin_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Skin Skin {
+    public global::DCL.Interface.PB_Skin Skin {
       get { return skin_; }
       set {
         skin_ = value;
@@ -11817,10 +11817,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "hair" field.</summary>
     public const int HairFieldNumber = 7;
-    private global::Decentraland.Renderer.PB_Hair hair_;
+    private global::DCL.Interface.PB_Hair hair_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Hair Hair {
+    public global::DCL.Interface.PB_Hair Hair {
       get { return hair_; }
       set {
         hair_ = value;
@@ -11829,10 +11829,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "eyes" field.</summary>
     public const int EyesFieldNumber = 8;
-    private global::Decentraland.Renderer.PB_Eyes eyes_;
+    private global::DCL.Interface.PB_Eyes eyes_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Eyes Eyes {
+    public global::DCL.Interface.PB_Eyes Eyes {
       get { return eyes_; }
       set {
         eyes_ = value;
@@ -11841,10 +11841,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "eyebrows" field.</summary>
     public const int EyebrowsFieldNumber = 9;
-    private global::Decentraland.Renderer.PB_Face eyebrows_;
+    private global::DCL.Interface.PB_Face eyebrows_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Face Eyebrows {
+    public global::DCL.Interface.PB_Face Eyebrows {
       get { return eyebrows_; }
       set {
         eyebrows_ = value;
@@ -11853,10 +11853,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "mouth" field.</summary>
     public const int MouthFieldNumber = 10;
-    private global::Decentraland.Renderer.PB_Face mouth_;
+    private global::DCL.Interface.PB_Face mouth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Face Mouth {
+    public global::DCL.Interface.PB_Face Mouth {
       get { return mouth_; }
       set {
         mouth_ = value;
@@ -12159,38 +12159,38 @@ namespace Decentraland.Renderer {
       }
       if (other.bodyShape_ != null) {
         if (bodyShape_ == null) {
-          BodyShape = new global::Decentraland.Renderer.PB_Wearable();
+          BodyShape = new global::DCL.Interface.PB_Wearable();
         }
         BodyShape.MergeFrom(other.BodyShape);
       }
       wearables_.Add(other.wearables_);
       if (other.skin_ != null) {
         if (skin_ == null) {
-          Skin = new global::Decentraland.Renderer.PB_Skin();
+          Skin = new global::DCL.Interface.PB_Skin();
         }
         Skin.MergeFrom(other.Skin);
       }
       if (other.hair_ != null) {
         if (hair_ == null) {
-          Hair = new global::Decentraland.Renderer.PB_Hair();
+          Hair = new global::DCL.Interface.PB_Hair();
         }
         Hair.MergeFrom(other.Hair);
       }
       if (other.eyes_ != null) {
         if (eyes_ == null) {
-          Eyes = new global::Decentraland.Renderer.PB_Eyes();
+          Eyes = new global::DCL.Interface.PB_Eyes();
         }
         Eyes.MergeFrom(other.Eyes);
       }
       if (other.eyebrows_ != null) {
         if (eyebrows_ == null) {
-          Eyebrows = new global::Decentraland.Renderer.PB_Face();
+          Eyebrows = new global::DCL.Interface.PB_Face();
         }
         Eyebrows.MergeFrom(other.Eyebrows);
       }
       if (other.mouth_ != null) {
         if (mouth_ == null) {
-          Mouth = new global::Decentraland.Renderer.PB_Face();
+          Mouth = new global::DCL.Interface.PB_Face();
         }
         Mouth.MergeFrom(other.Mouth);
       }
@@ -12233,7 +12233,7 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (bodyShape_ == null) {
-              BodyShape = new global::Decentraland.Renderer.PB_Wearable();
+              BodyShape = new global::DCL.Interface.PB_Wearable();
             }
             input.ReadMessage(BodyShape);
             break;
@@ -12244,35 +12244,35 @@ namespace Decentraland.Renderer {
           }
           case 50: {
             if (skin_ == null) {
-              Skin = new global::Decentraland.Renderer.PB_Skin();
+              Skin = new global::DCL.Interface.PB_Skin();
             }
             input.ReadMessage(Skin);
             break;
           }
           case 58: {
             if (hair_ == null) {
-              Hair = new global::Decentraland.Renderer.PB_Hair();
+              Hair = new global::DCL.Interface.PB_Hair();
             }
             input.ReadMessage(Hair);
             break;
           }
           case 66: {
             if (eyes_ == null) {
-              Eyes = new global::Decentraland.Renderer.PB_Eyes();
+              Eyes = new global::DCL.Interface.PB_Eyes();
             }
             input.ReadMessage(Eyes);
             break;
           }
           case 74: {
             if (eyebrows_ == null) {
-              Eyebrows = new global::Decentraland.Renderer.PB_Face();
+              Eyebrows = new global::DCL.Interface.PB_Face();
             }
             input.ReadMessage(Eyebrows);
             break;
           }
           case 82: {
             if (mouth_ == null) {
-              Mouth = new global::Decentraland.Renderer.PB_Face();
+              Mouth = new global::DCL.Interface.PB_Face();
             }
             input.ReadMessage(Mouth);
             break;
@@ -12322,7 +12322,7 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (bodyShape_ == null) {
-              BodyShape = new global::Decentraland.Renderer.PB_Wearable();
+              BodyShape = new global::DCL.Interface.PB_Wearable();
             }
             input.ReadMessage(BodyShape);
             break;
@@ -12333,35 +12333,35 @@ namespace Decentraland.Renderer {
           }
           case 50: {
             if (skin_ == null) {
-              Skin = new global::Decentraland.Renderer.PB_Skin();
+              Skin = new global::DCL.Interface.PB_Skin();
             }
             input.ReadMessage(Skin);
             break;
           }
           case 58: {
             if (hair_ == null) {
-              Hair = new global::Decentraland.Renderer.PB_Hair();
+              Hair = new global::DCL.Interface.PB_Hair();
             }
             input.ReadMessage(Hair);
             break;
           }
           case 66: {
             if (eyes_ == null) {
-              Eyes = new global::Decentraland.Renderer.PB_Eyes();
+              Eyes = new global::DCL.Interface.PB_Eyes();
             }
             input.ReadMessage(Eyes);
             break;
           }
           case 74: {
             if (eyebrows_ == null) {
-              Eyebrows = new global::Decentraland.Renderer.PB_Face();
+              Eyebrows = new global::DCL.Interface.PB_Face();
             }
             input.ReadMessage(Eyebrows);
             break;
           }
           case 82: {
             if (mouth_ == null) {
-              Mouth = new global::Decentraland.Renderer.PB_Face();
+              Mouth = new global::DCL.Interface.PB_Face();
             }
             input.ReadMessage(Mouth);
             break;
@@ -12403,7 +12403,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[32]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[32]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -12461,12 +12461,12 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "contents" field.</summary>
     public const int ContentsFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::Decentraland.Renderer.PB_ContentMapping> _repeated_contents_codec
-        = pb::FieldCodec.ForMessage(26, global::Decentraland.Renderer.PB_ContentMapping.Parser);
-    private readonly pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping> contents_ = new pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping>();
+    private static readonly pb::FieldCodec<global::DCL.Interface.PB_ContentMapping> _repeated_contents_codec
+        = pb::FieldCodec.ForMessage(26, global::DCL.Interface.PB_ContentMapping.Parser);
+    private readonly pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping> contents_ = new pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Decentraland.Renderer.PB_ContentMapping> Contents {
+    public pbc::RepeatedField<global::DCL.Interface.PB_ContentMapping> Contents {
       get { return contents_; }
     }
 
@@ -12655,7 +12655,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[33]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[33]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -12844,7 +12844,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[34]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[34]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -12902,10 +12902,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 3;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -13031,7 +13031,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -13060,7 +13060,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13090,7 +13090,7 @@ namespace Decentraland.Renderer {
           }
           case 26: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13116,7 +13116,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[35]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[35]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -13148,10 +13148,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -13245,7 +13245,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -13266,7 +13266,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13288,7 +13288,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13314,7 +13314,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[36]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[36]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -13346,10 +13346,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -13443,7 +13443,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -13464,7 +13464,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13486,7 +13486,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -13512,7 +13512,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[37]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[37]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -13545,10 +13545,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "texture" field.</summary>
     public const int TextureFieldNumber = 1;
-    private global::Decentraland.Renderer.PB_Texture texture_;
+    private global::DCL.Interface.PB_Texture texture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture Texture {
+    public global::DCL.Interface.PB_Texture Texture {
       get { return texture_; }
       set {
         texture_ = value;
@@ -13667,7 +13667,7 @@ namespace Decentraland.Renderer {
       }
       if (other.texture_ != null) {
         if (texture_ == null) {
-          Texture = new global::Decentraland.Renderer.PB_Texture();
+          Texture = new global::DCL.Interface.PB_Texture();
         }
         Texture.MergeFrom(other.Texture);
       }
@@ -13691,7 +13691,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (texture_ == null) {
-              Texture = new global::Decentraland.Renderer.PB_Texture();
+              Texture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(Texture);
             break;
@@ -13717,7 +13717,7 @@ namespace Decentraland.Renderer {
             break;
           case 10: {
             if (texture_ == null) {
-              Texture = new global::Decentraland.Renderer.PB_Texture();
+              Texture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(Texture);
             break;
@@ -13747,7 +13747,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[38]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[38]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -14010,7 +14010,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[39]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[39]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -14264,7 +14264,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[40]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[40]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -14564,7 +14564,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[41]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[41]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -15049,7 +15049,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[42]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[42]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -15534,7 +15534,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[43]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[43]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -15686,7 +15686,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[44]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[44]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -15838,7 +15838,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[45]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[45]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -16101,7 +16101,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[46]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[46]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -16165,10 +16165,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "albedoColor" field.</summary>
     public const int AlbedoColorFieldNumber = 2;
-    private global::Decentraland.Renderer.PB_Color3 albedoColor_;
+    private global::DCL.Interface.PB_Color3 albedoColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 AlbedoColor {
+    public global::DCL.Interface.PB_Color3 AlbedoColor {
       get { return albedoColor_; }
       set {
         albedoColor_ = value;
@@ -16177,10 +16177,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "emissiveColor" field.</summary>
     public const int EmissiveColorFieldNumber = 3;
-    private global::Decentraland.Renderer.PB_Color3 emissiveColor_;
+    private global::DCL.Interface.PB_Color3 emissiveColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 EmissiveColor {
+    public global::DCL.Interface.PB_Color3 EmissiveColor {
       get { return emissiveColor_; }
       set {
         emissiveColor_ = value;
@@ -16213,10 +16213,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "ambientColor" field.</summary>
     public const int AmbientColorFieldNumber = 6;
-    private global::Decentraland.Renderer.PB_Color3 ambientColor_;
+    private global::DCL.Interface.PB_Color3 ambientColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 AmbientColor {
+    public global::DCL.Interface.PB_Color3 AmbientColor {
       get { return ambientColor_; }
       set {
         ambientColor_ = value;
@@ -16225,10 +16225,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "reflectionColor" field.</summary>
     public const int ReflectionColorFieldNumber = 7;
-    private global::Decentraland.Renderer.PB_Color3 reflectionColor_;
+    private global::DCL.Interface.PB_Color3 reflectionColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 ReflectionColor {
+    public global::DCL.Interface.PB_Color3 ReflectionColor {
       get { return reflectionColor_; }
       set {
         reflectionColor_ = value;
@@ -16237,10 +16237,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "reflectivityColor" field.</summary>
     public const int ReflectivityColorFieldNumber = 8;
-    private global::Decentraland.Renderer.PB_Color3 reflectivityColor_;
+    private global::DCL.Interface.PB_Color3 reflectivityColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 ReflectivityColor {
+    public global::DCL.Interface.PB_Color3 ReflectivityColor {
       get { return reflectivityColor_; }
       set {
         reflectivityColor_ = value;
@@ -16309,10 +16309,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "albedoTexture" field.</summary>
     public const int AlbedoTextureFieldNumber = 14;
-    private global::Decentraland.Renderer.PB_Texture albedoTexture_;
+    private global::DCL.Interface.PB_Texture albedoTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture AlbedoTexture {
+    public global::DCL.Interface.PB_Texture AlbedoTexture {
       get { return albedoTexture_; }
       set {
         albedoTexture_ = value;
@@ -16321,10 +16321,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "alphaTexture" field.</summary>
     public const int AlphaTextureFieldNumber = 15;
-    private global::Decentraland.Renderer.PB_Texture alphaTexture_;
+    private global::DCL.Interface.PB_Texture alphaTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture AlphaTexture {
+    public global::DCL.Interface.PB_Texture AlphaTexture {
       get { return alphaTexture_; }
       set {
         alphaTexture_ = value;
@@ -16333,10 +16333,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "emissiveTexture" field.</summary>
     public const int EmissiveTextureFieldNumber = 16;
-    private global::Decentraland.Renderer.PB_Texture emissiveTexture_;
+    private global::DCL.Interface.PB_Texture emissiveTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture EmissiveTexture {
+    public global::DCL.Interface.PB_Texture EmissiveTexture {
       get { return emissiveTexture_; }
       set {
         emissiveTexture_ = value;
@@ -16345,10 +16345,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "bumpTexture" field.</summary>
     public const int BumpTextureFieldNumber = 17;
-    private global::Decentraland.Renderer.PB_Texture bumpTexture_;
+    private global::DCL.Interface.PB_Texture bumpTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture BumpTexture {
+    public global::DCL.Interface.PB_Texture BumpTexture {
       get { return bumpTexture_; }
       set {
         bumpTexture_ = value;
@@ -16357,10 +16357,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "refractionTexture" field.</summary>
     public const int RefractionTextureFieldNumber = 18;
-    private global::Decentraland.Renderer.PB_Texture refractionTexture_;
+    private global::DCL.Interface.PB_Texture refractionTexture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture RefractionTexture {
+    public global::DCL.Interface.PB_Texture RefractionTexture {
       get { return refractionTexture_; }
       set {
         refractionTexture_ = value;
@@ -16753,13 +16753,13 @@ namespace Decentraland.Renderer {
       }
       if (other.albedoColor_ != null) {
         if (albedoColor_ == null) {
-          AlbedoColor = new global::Decentraland.Renderer.PB_Color3();
+          AlbedoColor = new global::DCL.Interface.PB_Color3();
         }
         AlbedoColor.MergeFrom(other.AlbedoColor);
       }
       if (other.emissiveColor_ != null) {
         if (emissiveColor_ == null) {
-          EmissiveColor = new global::Decentraland.Renderer.PB_Color3();
+          EmissiveColor = new global::DCL.Interface.PB_Color3();
         }
         EmissiveColor.MergeFrom(other.EmissiveColor);
       }
@@ -16771,19 +16771,19 @@ namespace Decentraland.Renderer {
       }
       if (other.ambientColor_ != null) {
         if (ambientColor_ == null) {
-          AmbientColor = new global::Decentraland.Renderer.PB_Color3();
+          AmbientColor = new global::DCL.Interface.PB_Color3();
         }
         AmbientColor.MergeFrom(other.AmbientColor);
       }
       if (other.reflectionColor_ != null) {
         if (reflectionColor_ == null) {
-          ReflectionColor = new global::Decentraland.Renderer.PB_Color3();
+          ReflectionColor = new global::DCL.Interface.PB_Color3();
         }
         ReflectionColor.MergeFrom(other.ReflectionColor);
       }
       if (other.reflectivityColor_ != null) {
         if (reflectivityColor_ == null) {
-          ReflectivityColor = new global::Decentraland.Renderer.PB_Color3();
+          ReflectivityColor = new global::DCL.Interface.PB_Color3();
         }
         ReflectivityColor.MergeFrom(other.ReflectivityColor);
       }
@@ -16804,31 +16804,31 @@ namespace Decentraland.Renderer {
       }
       if (other.albedoTexture_ != null) {
         if (albedoTexture_ == null) {
-          AlbedoTexture = new global::Decentraland.Renderer.PB_Texture();
+          AlbedoTexture = new global::DCL.Interface.PB_Texture();
         }
         AlbedoTexture.MergeFrom(other.AlbedoTexture);
       }
       if (other.alphaTexture_ != null) {
         if (alphaTexture_ == null) {
-          AlphaTexture = new global::Decentraland.Renderer.PB_Texture();
+          AlphaTexture = new global::DCL.Interface.PB_Texture();
         }
         AlphaTexture.MergeFrom(other.AlphaTexture);
       }
       if (other.emissiveTexture_ != null) {
         if (emissiveTexture_ == null) {
-          EmissiveTexture = new global::Decentraland.Renderer.PB_Texture();
+          EmissiveTexture = new global::DCL.Interface.PB_Texture();
         }
         EmissiveTexture.MergeFrom(other.EmissiveTexture);
       }
       if (other.bumpTexture_ != null) {
         if (bumpTexture_ == null) {
-          BumpTexture = new global::Decentraland.Renderer.PB_Texture();
+          BumpTexture = new global::DCL.Interface.PB_Texture();
         }
         BumpTexture.MergeFrom(other.BumpTexture);
       }
       if (other.refractionTexture_ != null) {
         if (refractionTexture_ == null) {
-          RefractionTexture = new global::Decentraland.Renderer.PB_Texture();
+          RefractionTexture = new global::DCL.Interface.PB_Texture();
         }
         RefractionTexture.MergeFrom(other.RefractionTexture);
       }
@@ -16862,14 +16862,14 @@ namespace Decentraland.Renderer {
           }
           case 18: {
             if (albedoColor_ == null) {
-              AlbedoColor = new global::Decentraland.Renderer.PB_Color3();
+              AlbedoColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(AlbedoColor);
             break;
           }
           case 26: {
             if (emissiveColor_ == null) {
-              EmissiveColor = new global::Decentraland.Renderer.PB_Color3();
+              EmissiveColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(EmissiveColor);
             break;
@@ -16884,21 +16884,21 @@ namespace Decentraland.Renderer {
           }
           case 50: {
             if (ambientColor_ == null) {
-              AmbientColor = new global::Decentraland.Renderer.PB_Color3();
+              AmbientColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(AmbientColor);
             break;
           }
           case 58: {
             if (reflectionColor_ == null) {
-              ReflectionColor = new global::Decentraland.Renderer.PB_Color3();
+              ReflectionColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ReflectionColor);
             break;
           }
           case 66: {
             if (reflectivityColor_ == null) {
-              ReflectivityColor = new global::Decentraland.Renderer.PB_Color3();
+              ReflectivityColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ReflectivityColor);
             break;
@@ -16925,35 +16925,35 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (albedoTexture_ == null) {
-              AlbedoTexture = new global::Decentraland.Renderer.PB_Texture();
+              AlbedoTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(AlbedoTexture);
             break;
           }
           case 122: {
             if (alphaTexture_ == null) {
-              AlphaTexture = new global::Decentraland.Renderer.PB_Texture();
+              AlphaTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
           case 130: {
             if (emissiveTexture_ == null) {
-              EmissiveTexture = new global::Decentraland.Renderer.PB_Texture();
+              EmissiveTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
           case 138: {
             if (bumpTexture_ == null) {
-              BumpTexture = new global::Decentraland.Renderer.PB_Texture();
+              BumpTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(BumpTexture);
             break;
           }
           case 146: {
             if (refractionTexture_ == null) {
-              RefractionTexture = new global::Decentraland.Renderer.PB_Texture();
+              RefractionTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(RefractionTexture);
             break;
@@ -16991,14 +16991,14 @@ namespace Decentraland.Renderer {
           }
           case 18: {
             if (albedoColor_ == null) {
-              AlbedoColor = new global::Decentraland.Renderer.PB_Color3();
+              AlbedoColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(AlbedoColor);
             break;
           }
           case 26: {
             if (emissiveColor_ == null) {
-              EmissiveColor = new global::Decentraland.Renderer.PB_Color3();
+              EmissiveColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(EmissiveColor);
             break;
@@ -17013,21 +17013,21 @@ namespace Decentraland.Renderer {
           }
           case 50: {
             if (ambientColor_ == null) {
-              AmbientColor = new global::Decentraland.Renderer.PB_Color3();
+              AmbientColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(AmbientColor);
             break;
           }
           case 58: {
             if (reflectionColor_ == null) {
-              ReflectionColor = new global::Decentraland.Renderer.PB_Color3();
+              ReflectionColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ReflectionColor);
             break;
           }
           case 66: {
             if (reflectivityColor_ == null) {
-              ReflectivityColor = new global::Decentraland.Renderer.PB_Color3();
+              ReflectivityColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ReflectivityColor);
             break;
@@ -17054,35 +17054,35 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (albedoTexture_ == null) {
-              AlbedoTexture = new global::Decentraland.Renderer.PB_Texture();
+              AlbedoTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(AlbedoTexture);
             break;
           }
           case 122: {
             if (alphaTexture_ == null) {
-              AlphaTexture = new global::Decentraland.Renderer.PB_Texture();
+              AlphaTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
           case 130: {
             if (emissiveTexture_ == null) {
-              EmissiveTexture = new global::Decentraland.Renderer.PB_Texture();
+              EmissiveTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
           case 138: {
             if (bumpTexture_ == null) {
-              BumpTexture = new global::Decentraland.Renderer.PB_Texture();
+              BumpTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(BumpTexture);
             break;
           }
           case 146: {
             if (refractionTexture_ == null) {
-              RefractionTexture = new global::Decentraland.Renderer.PB_Texture();
+              RefractionTexture = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(RefractionTexture);
             break;
@@ -17120,7 +17120,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[47]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[47]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -17191,10 +17191,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 4;
-    private global::Decentraland.Renderer.PB_Color3 color_;
+    private global::DCL.Interface.PB_Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 Color {
+    public global::DCL.Interface.PB_Color3 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -17336,7 +17336,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color3();
+          Color = new global::DCL.Interface.PB_Color3();
         }
         Color.MergeFrom(other.Color);
       }
@@ -17369,7 +17369,7 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -17403,7 +17403,7 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -17429,7 +17429,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[48]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[48]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -17692,7 +17692,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[49]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[49]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -18020,7 +18020,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[50]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[50]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -18246,7 +18246,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[51]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[51]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -18472,7 +18472,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[52]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[52]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -18567,10 +18567,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "outlineColor" field.</summary>
     public const int OutlineColorFieldNumber = 4;
-    private global::Decentraland.Renderer.PB_Color3 outlineColor_;
+    private global::DCL.Interface.PB_Color3 outlineColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 OutlineColor {
+    public global::DCL.Interface.PB_Color3 OutlineColor {
       get { return outlineColor_; }
       set {
         outlineColor_ = value;
@@ -18579,10 +18579,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 5;
-    private global::Decentraland.Renderer.PB_Color3 color_;
+    private global::DCL.Interface.PB_Color3 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 Color {
+    public global::DCL.Interface.PB_Color3 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -18723,10 +18723,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "shadowColor" field.</summary>
     public const int ShadowColorFieldNumber = 17;
-    private global::Decentraland.Renderer.PB_Color3 shadowColor_;
+    private global::DCL.Interface.PB_Color3 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color3 ShadowColor {
+    public global::DCL.Interface.PB_Color3 ShadowColor {
       get { return shadowColor_; }
       set {
         shadowColor_ = value;
@@ -19312,13 +19312,13 @@ namespace Decentraland.Renderer {
       }
       if (other.outlineColor_ != null) {
         if (outlineColor_ == null) {
-          OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+          OutlineColor = new global::DCL.Interface.PB_Color3();
         }
         OutlineColor.MergeFrom(other.OutlineColor);
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color3();
+          Color = new global::DCL.Interface.PB_Color3();
         }
         Color.MergeFrom(other.Color);
       }
@@ -19357,7 +19357,7 @@ namespace Decentraland.Renderer {
       }
       if (other.shadowColor_ != null) {
         if (shadowColor_ == null) {
-          ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+          ShadowColor = new global::DCL.Interface.PB_Color3();
         }
         ShadowColor.MergeFrom(other.ShadowColor);
       }
@@ -19423,14 +19423,14 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+              OutlineColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 42: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -19481,7 +19481,7 @@ namespace Decentraland.Renderer {
           }
           case 138: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+              ShadowColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -19559,14 +19559,14 @@ namespace Decentraland.Renderer {
           }
           case 34: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color3();
+              OutlineColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 42: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color3();
+              Color = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(Color);
             break;
@@ -19617,7 +19617,7 @@ namespace Decentraland.Renderer {
           }
           case 138: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color3();
+              ShadowColor = new global::DCL.Interface.PB_Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -19687,7 +19687,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[53]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[53]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -19987,7 +19987,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[54]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[54]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -20164,10 +20164,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -20224,10 +20224,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 16;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -20236,10 +20236,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "background" field.</summary>
     public const int BackgroundFieldNumber = 17;
-    private global::Decentraland.Renderer.PB_Color4 background_;
+    private global::DCL.Interface.PB_Color4 background_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Background {
+    public global::DCL.Interface.PB_Color4 Background {
       get { return background_; }
       set {
         background_ = value;
@@ -20332,10 +20332,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "shadowColor" field.</summary>
     public const int ShadowColorFieldNumber = 25;
-    private global::Decentraland.Renderer.PB_Color4 shadowColor_;
+    private global::DCL.Interface.PB_Color4 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 ShadowColor {
+    public global::DCL.Interface.PB_Color4 ShadowColor {
       get { return shadowColor_; }
       set {
         shadowColor_ = value;
@@ -20796,7 +20796,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -20814,13 +20814,13 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
       if (other.background_ != null) {
         if (background_ == null) {
-          Background = new global::Decentraland.Renderer.PB_Color4();
+          Background = new global::DCL.Interface.PB_Color4();
         }
         Background.MergeFrom(other.Background);
       }
@@ -20847,7 +20847,7 @@ namespace Decentraland.Renderer {
       }
       if (other.shadowColor_ != null) {
         if (shadowColor_ == null) {
-          ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+          ShadowColor = new global::DCL.Interface.PB_Color4();
         }
         ShadowColor.MergeFrom(other.ShadowColor);
       }
@@ -20911,7 +20911,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -20934,14 +20934,14 @@ namespace Decentraland.Renderer {
           }
           case 130: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 138: {
             if (background_ == null) {
-              Background = new global::Decentraland.Renderer.PB_Color4();
+              Background = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Background);
             break;
@@ -20976,7 +20976,7 @@ namespace Decentraland.Renderer {
           }
           case 202: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -21042,7 +21042,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -21065,14 +21065,14 @@ namespace Decentraland.Renderer {
           }
           case 130: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 138: {
             if (background_ == null) {
-              Background = new global::Decentraland.Renderer.PB_Color4();
+              Background = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Background);
             break;
@@ -21107,7 +21107,7 @@ namespace Decentraland.Renderer {
           }
           case 202: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -21137,7 +21137,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[55]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[55]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -21299,10 +21299,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -21556,7 +21556,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -21617,7 +21617,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -21679,7 +21679,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -21705,7 +21705,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[56]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[56]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -21872,10 +21872,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -21920,10 +21920,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 15;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -22254,7 +22254,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -22269,7 +22269,7 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -22333,7 +22333,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -22352,7 +22352,7 @@ namespace Decentraland.Renderer {
           }
           case 122: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -22418,7 +22418,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -22437,7 +22437,7 @@ namespace Decentraland.Renderer {
           }
           case 122: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -22467,7 +22467,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[57]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[57]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -22634,10 +22634,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -22670,10 +22670,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 14;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -22682,10 +22682,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "stackOrientation" field.</summary>
     public const int StackOrientationFieldNumber = 15;
-    private global::Decentraland.Renderer.PB_UIStackOrientation stackOrientation_ = global::Decentraland.Renderer.PB_UIStackOrientation.Vertical;
+    private global::DCL.Interface.PB_UIStackOrientation stackOrientation_ = global::DCL.Interface.PB_UIStackOrientation.Vertical;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIStackOrientation StackOrientation {
+    public global::DCL.Interface.PB_UIStackOrientation StackOrientation {
       get { return stackOrientation_; }
       set {
         stackOrientation_ = value;
@@ -22756,7 +22756,7 @@ namespace Decentraland.Renderer {
       if (AdaptWidth != false) hash ^= AdaptWidth.GetHashCode();
       if (AdaptHeight != false) hash ^= AdaptHeight.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
-      if (StackOrientation != global::Decentraland.Renderer.PB_UIStackOrientation.Vertical) hash ^= StackOrientation.GetHashCode();
+      if (StackOrientation != global::DCL.Interface.PB_UIStackOrientation.Vertical) hash ^= StackOrientation.GetHashCode();
       if (Spacing != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Spacing);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -22832,7 +22832,7 @@ namespace Decentraland.Renderer {
         output.WriteRawTag(114);
         output.WriteMessage(Color);
       }
-      if (StackOrientation != global::Decentraland.Renderer.PB_UIStackOrientation.Vertical) {
+      if (StackOrientation != global::DCL.Interface.PB_UIStackOrientation.Vertical) {
         output.WriteRawTag(120);
         output.WriteEnum((int) StackOrientation);
       }
@@ -22906,7 +22906,7 @@ namespace Decentraland.Renderer {
         output.WriteRawTag(114);
         output.WriteMessage(Color);
       }
-      if (StackOrientation != global::Decentraland.Renderer.PB_UIStackOrientation.Vertical) {
+      if (StackOrientation != global::DCL.Interface.PB_UIStackOrientation.Vertical) {
         output.WriteRawTag(120);
         output.WriteEnum((int) StackOrientation);
       }
@@ -22966,7 +22966,7 @@ namespace Decentraland.Renderer {
       if (color_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Color);
       }
-      if (StackOrientation != global::Decentraland.Renderer.PB_UIStackOrientation.Vertical) {
+      if (StackOrientation != global::DCL.Interface.PB_UIStackOrientation.Vertical) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) StackOrientation);
       }
       if (Spacing != 0F) {
@@ -23016,7 +23016,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -23028,11 +23028,11 @@ namespace Decentraland.Renderer {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
-      if (other.StackOrientation != global::Decentraland.Renderer.PB_UIStackOrientation.Vertical) {
+      if (other.StackOrientation != global::DCL.Interface.PB_UIStackOrientation.Vertical) {
         StackOrientation = other.StackOrientation;
       }
       if (other.Spacing != 0F) {
@@ -23095,7 +23095,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -23110,13 +23110,13 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 120: {
-            StackOrientation = (global::Decentraland.Renderer.PB_UIStackOrientation) input.ReadEnum();
+            StackOrientation = (global::DCL.Interface.PB_UIStackOrientation) input.ReadEnum();
             break;
           }
           case 133: {
@@ -23180,7 +23180,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -23195,13 +23195,13 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 120: {
-            StackOrientation = (global::Decentraland.Renderer.PB_UIStackOrientation) input.ReadEnum();
+            StackOrientation = (global::DCL.Interface.PB_UIStackOrientation) input.ReadEnum();
             break;
           }
           case 133: {
@@ -23229,7 +23229,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[58]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[58]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -23402,10 +23402,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -23462,10 +23462,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "source" field.</summary>
     public const int SourceFieldNumber = 16;
-    private global::Decentraland.Renderer.PB_Texture source_;
+    private global::DCL.Interface.PB_Texture source_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Texture Source {
+    public global::DCL.Interface.PB_Texture Source {
       get { return source_; }
       set {
         source_ = value;
@@ -23534,10 +23534,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onClick" field.</summary>
     public const int OnClickFieldNumber = 22;
-    private global::Decentraland.Renderer.PB_UUIDCallback onClick_;
+    private global::DCL.Interface.PB_UUIDCallback onClick_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnClick {
+    public global::DCL.Interface.PB_UUIDCallback OnClick {
       get { return onClick_; }
       set {
         onClick_ = value;
@@ -23934,7 +23934,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -23952,7 +23952,7 @@ namespace Decentraland.Renderer {
       }
       if (other.source_ != null) {
         if (source_ == null) {
-          Source = new global::Decentraland.Renderer.PB_Texture();
+          Source = new global::DCL.Interface.PB_Texture();
         }
         Source.MergeFrom(other.Source);
       }
@@ -23973,7 +23973,7 @@ namespace Decentraland.Renderer {
       }
       if (other.onClick_ != null) {
         if (onClick_ == null) {
-          OnClick = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnClick = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnClick.MergeFrom(other.OnClick);
       }
@@ -24034,7 +24034,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -24057,7 +24057,7 @@ namespace Decentraland.Renderer {
           }
           case 130: {
             if (source_ == null) {
-              Source = new global::Decentraland.Renderer.PB_Texture();
+              Source = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(Source);
             break;
@@ -24084,7 +24084,7 @@ namespace Decentraland.Renderer {
           }
           case 178: {
             if (onClick_ == null) {
-              OnClick = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnClick = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnClick);
             break;
@@ -24146,7 +24146,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -24169,7 +24169,7 @@ namespace Decentraland.Renderer {
           }
           case 130: {
             if (source_ == null) {
-              Source = new global::Decentraland.Renderer.PB_Texture();
+              Source = new global::DCL.Interface.PB_Texture();
             }
             input.ReadMessage(Source);
             break;
@@ -24196,7 +24196,7 @@ namespace Decentraland.Renderer {
           }
           case 178: {
             if (onClick_ == null) {
-              OnClick = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnClick = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnClick);
             break;
@@ -24222,7 +24222,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[59]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[59]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -24448,7 +24448,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[60]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[60]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -24639,10 +24639,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -24663,10 +24663,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "outlineColor" field.</summary>
     public const int OutlineColorFieldNumber = 13;
-    private global::Decentraland.Renderer.PB_Color4 outlineColor_;
+    private global::DCL.Interface.PB_Color4 outlineColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 OutlineColor {
+    public global::DCL.Interface.PB_Color4 OutlineColor {
       get { return outlineColor_; }
       set {
         outlineColor_ = value;
@@ -24675,10 +24675,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 14;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -24735,10 +24735,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "placeholderColor" field.</summary>
     public const int PlaceholderColorFieldNumber = 19;
-    private global::Decentraland.Renderer.PB_Color4 placeholderColor_;
+    private global::DCL.Interface.PB_Color4 placeholderColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 PlaceholderColor {
+    public global::DCL.Interface.PB_Color4 PlaceholderColor {
       get { return placeholderColor_; }
       set {
         placeholderColor_ = value;
@@ -24819,10 +24819,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "background" field.</summary>
     public const int BackgroundFieldNumber = 26;
-    private global::Decentraland.Renderer.PB_Color4 background_;
+    private global::DCL.Interface.PB_Color4 background_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Background {
+    public global::DCL.Interface.PB_Color4 Background {
       get { return background_; }
       set {
         background_ = value;
@@ -24831,10 +24831,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "focusedBackground" field.</summary>
     public const int FocusedBackgroundFieldNumber = 27;
-    private global::Decentraland.Renderer.PB_Color4 focusedBackground_;
+    private global::DCL.Interface.PB_Color4 focusedBackground_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 FocusedBackground {
+    public global::DCL.Interface.PB_Color4 FocusedBackground {
       get { return focusedBackground_; }
       set {
         focusedBackground_ = value;
@@ -24891,10 +24891,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "shadowColor" field.</summary>
     public const int ShadowColorFieldNumber = 32;
-    private global::Decentraland.Renderer.PB_Color4 shadowColor_;
+    private global::DCL.Interface.PB_Color4 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 ShadowColor {
+    public global::DCL.Interface.PB_Color4 ShadowColor {
       get { return shadowColor_; }
       set {
         shadowColor_ = value;
@@ -24951,10 +24951,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onTextSubmit" field.</summary>
     public const int OnTextSubmitFieldNumber = 37;
-    private global::Decentraland.Renderer.PB_UUIDCallback onTextSubmit_;
+    private global::DCL.Interface.PB_UUIDCallback onTextSubmit_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnTextSubmit {
+    public global::DCL.Interface.PB_UUIDCallback OnTextSubmit {
       get { return onTextSubmit_; }
       set {
         onTextSubmit_ = value;
@@ -24963,10 +24963,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onChanged" field.</summary>
     public const int OnChangedFieldNumber = 38;
-    private global::Decentraland.Renderer.PB_UUIDCallback onChanged_;
+    private global::DCL.Interface.PB_UUIDCallback onChanged_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnChanged {
+    public global::DCL.Interface.PB_UUIDCallback OnChanged {
       get { return onChanged_; }
       set {
         onChanged_ = value;
@@ -24975,10 +24975,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onFocus" field.</summary>
     public const int OnFocusFieldNumber = 39;
-    private global::Decentraland.Renderer.PB_UUIDCallback onFocus_;
+    private global::DCL.Interface.PB_UUIDCallback onFocus_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnFocus {
+    public global::DCL.Interface.PB_UUIDCallback OnFocus {
       get { return onFocus_; }
       set {
         onFocus_ = value;
@@ -24987,10 +24987,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onBlur" field.</summary>
     public const int OnBlurFieldNumber = 40;
-    private global::Decentraland.Renderer.PB_UUIDCallback onBlur_;
+    private global::DCL.Interface.PB_UUIDCallback onBlur_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnBlur {
+    public global::DCL.Interface.PB_UUIDCallback OnBlur {
       get { return onBlur_; }
       set {
         onBlur_ = value;
@@ -25621,7 +25621,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -25630,13 +25630,13 @@ namespace Decentraland.Renderer {
       }
       if (other.outlineColor_ != null) {
         if (outlineColor_ == null) {
-          OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+          OutlineColor = new global::DCL.Interface.PB_Color4();
         }
         OutlineColor.MergeFrom(other.OutlineColor);
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -25654,7 +25654,7 @@ namespace Decentraland.Renderer {
       }
       if (other.placeholderColor_ != null) {
         if (placeholderColor_ == null) {
-          PlaceholderColor = new global::Decentraland.Renderer.PB_Color4();
+          PlaceholderColor = new global::DCL.Interface.PB_Color4();
         }
         PlaceholderColor.MergeFrom(other.PlaceholderColor);
       }
@@ -25678,13 +25678,13 @@ namespace Decentraland.Renderer {
       }
       if (other.background_ != null) {
         if (background_ == null) {
-          Background = new global::Decentraland.Renderer.PB_Color4();
+          Background = new global::DCL.Interface.PB_Color4();
         }
         Background.MergeFrom(other.Background);
       }
       if (other.focusedBackground_ != null) {
         if (focusedBackground_ == null) {
-          FocusedBackground = new global::Decentraland.Renderer.PB_Color4();
+          FocusedBackground = new global::DCL.Interface.PB_Color4();
         }
         FocusedBackground.MergeFrom(other.FocusedBackground);
       }
@@ -25702,7 +25702,7 @@ namespace Decentraland.Renderer {
       }
       if (other.shadowColor_ != null) {
         if (shadowColor_ == null) {
-          ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+          ShadowColor = new global::DCL.Interface.PB_Color4();
         }
         ShadowColor.MergeFrom(other.ShadowColor);
       }
@@ -25720,25 +25720,25 @@ namespace Decentraland.Renderer {
       }
       if (other.onTextSubmit_ != null) {
         if (onTextSubmit_ == null) {
-          OnTextSubmit = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnTextSubmit = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnTextSubmit.MergeFrom(other.OnTextSubmit);
       }
       if (other.onChanged_ != null) {
         if (onChanged_ == null) {
-          OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnChanged = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnChanged.MergeFrom(other.OnChanged);
       }
       if (other.onFocus_ != null) {
         if (onFocus_ == null) {
-          OnFocus = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnFocus = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnFocus.MergeFrom(other.OnFocus);
       }
       if (other.onBlur_ != null) {
         if (onBlur_ == null) {
-          OnBlur = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnBlur = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnBlur.MergeFrom(other.OnBlur);
       }
@@ -25799,7 +25799,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -25810,14 +25810,14 @@ namespace Decentraland.Renderer {
           }
           case 106: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+              OutlineColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -25840,7 +25840,7 @@ namespace Decentraland.Renderer {
           }
           case 154: {
             if (placeholderColor_ == null) {
-              PlaceholderColor = new global::Decentraland.Renderer.PB_Color4();
+              PlaceholderColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(PlaceholderColor);
             break;
@@ -25871,14 +25871,14 @@ namespace Decentraland.Renderer {
           }
           case 210: {
             if (background_ == null) {
-              Background = new global::Decentraland.Renderer.PB_Color4();
+              Background = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Background);
             break;
           }
           case 218: {
             if (focusedBackground_ == null) {
-              FocusedBackground = new global::Decentraland.Renderer.PB_Color4();
+              FocusedBackground = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(FocusedBackground);
             break;
@@ -25901,7 +25901,7 @@ namespace Decentraland.Renderer {
           }
           case 258: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -25924,28 +25924,28 @@ namespace Decentraland.Renderer {
           }
           case 298: {
             if (onTextSubmit_ == null) {
-              OnTextSubmit = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnTextSubmit = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnTextSubmit);
             break;
           }
           case 306: {
             if (onChanged_ == null) {
-              OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnChanged = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnChanged);
             break;
           }
           case 314: {
             if (onFocus_ == null) {
-              OnFocus = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnFocus = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnFocus);
             break;
           }
           case 322: {
             if (onBlur_ == null) {
-              OnBlur = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnBlur = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnBlur);
             break;
@@ -26007,7 +26007,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -26018,14 +26018,14 @@ namespace Decentraland.Renderer {
           }
           case 106: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+              OutlineColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -26048,7 +26048,7 @@ namespace Decentraland.Renderer {
           }
           case 154: {
             if (placeholderColor_ == null) {
-              PlaceholderColor = new global::Decentraland.Renderer.PB_Color4();
+              PlaceholderColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(PlaceholderColor);
             break;
@@ -26079,14 +26079,14 @@ namespace Decentraland.Renderer {
           }
           case 210: {
             if (background_ == null) {
-              Background = new global::Decentraland.Renderer.PB_Color4();
+              Background = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Background);
             break;
           }
           case 218: {
             if (focusedBackground_ == null) {
-              FocusedBackground = new global::Decentraland.Renderer.PB_Color4();
+              FocusedBackground = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(FocusedBackground);
             break;
@@ -26109,7 +26109,7 @@ namespace Decentraland.Renderer {
           }
           case 258: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -26132,28 +26132,28 @@ namespace Decentraland.Renderer {
           }
           case 298: {
             if (onTextSubmit_ == null) {
-              OnTextSubmit = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnTextSubmit = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnTextSubmit);
             break;
           }
           case 306: {
             if (onChanged_ == null) {
-              OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnChanged = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnChanged);
             break;
           }
           case 314: {
             if (onFocus_ == null) {
-              OnFocus = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnFocus = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnFocus);
             break;
           }
           case 322: {
             if (onBlur_ == null) {
-              OnBlur = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnBlur = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnBlur);
             break;
@@ -26179,7 +26179,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[61]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[61]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -26352,10 +26352,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -26388,10 +26388,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "borderColor" field.</summary>
     public const int BorderColorFieldNumber = 14;
-    private global::Decentraland.Renderer.PB_Color4 borderColor_;
+    private global::DCL.Interface.PB_Color4 borderColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 BorderColor {
+    public global::DCL.Interface.PB_Color4 BorderColor {
       get { return borderColor_; }
       set {
         borderColor_ = value;
@@ -26400,10 +26400,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "backgroundColor" field.</summary>
     public const int BackgroundColorFieldNumber = 15;
-    private global::Decentraland.Renderer.PB_Color4 backgroundColor_;
+    private global::DCL.Interface.PB_Color4 backgroundColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 BackgroundColor {
+    public global::DCL.Interface.PB_Color4 BackgroundColor {
       get { return backgroundColor_; }
       set {
         backgroundColor_ = value;
@@ -26484,10 +26484,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "onChanged" field.</summary>
     public const int OnChangedFieldNumber = 22;
-    private global::Decentraland.Renderer.PB_UUIDCallback onChanged_;
+    private global::DCL.Interface.PB_UUIDCallback onChanged_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UUIDCallback OnChanged {
+    public global::DCL.Interface.PB_UUIDCallback OnChanged {
       get { return onChanged_; }
       set {
         onChanged_ = value;
@@ -26884,7 +26884,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -26896,13 +26896,13 @@ namespace Decentraland.Renderer {
       }
       if (other.borderColor_ != null) {
         if (borderColor_ == null) {
-          BorderColor = new global::Decentraland.Renderer.PB_Color4();
+          BorderColor = new global::DCL.Interface.PB_Color4();
         }
         BorderColor.MergeFrom(other.BorderColor);
       }
       if (other.backgroundColor_ != null) {
         if (backgroundColor_ == null) {
-          BackgroundColor = new global::Decentraland.Renderer.PB_Color4();
+          BackgroundColor = new global::DCL.Interface.PB_Color4();
         }
         BackgroundColor.MergeFrom(other.BackgroundColor);
       }
@@ -26926,7 +26926,7 @@ namespace Decentraland.Renderer {
       }
       if (other.onChanged_ != null) {
         if (onChanged_ == null) {
-          OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+          OnChanged = new global::DCL.Interface.PB_UUIDCallback();
         }
         OnChanged.MergeFrom(other.OnChanged);
       }
@@ -26987,7 +26987,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -27002,14 +27002,14 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (borderColor_ == null) {
-              BorderColor = new global::Decentraland.Renderer.PB_Color4();
+              BorderColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(BorderColor);
             break;
           }
           case 122: {
             if (backgroundColor_ == null) {
-              BackgroundColor = new global::Decentraland.Renderer.PB_Color4();
+              BackgroundColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(BackgroundColor);
             break;
@@ -27040,7 +27040,7 @@ namespace Decentraland.Renderer {
           }
           case 178: {
             if (onChanged_ == null) {
-              OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnChanged = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnChanged);
             break;
@@ -27102,7 +27102,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -27117,14 +27117,14 @@ namespace Decentraland.Renderer {
           }
           case 114: {
             if (borderColor_ == null) {
-              BorderColor = new global::Decentraland.Renderer.PB_Color4();
+              BorderColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(BorderColor);
             break;
           }
           case 122: {
             if (backgroundColor_ == null) {
-              BackgroundColor = new global::Decentraland.Renderer.PB_Color4();
+              BackgroundColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(BackgroundColor);
             break;
@@ -27155,7 +27155,7 @@ namespace Decentraland.Renderer {
           }
           case 178: {
             if (onChanged_ == null) {
-              OnChanged = new global::Decentraland.Renderer.PB_UUIDCallback();
+              OnChanged = new global::DCL.Interface.PB_UUIDCallback();
             }
             input.ReadMessage(OnChanged);
             break;
@@ -27181,7 +27181,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[62]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[62]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -27343,10 +27343,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -27600,7 +27600,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -27661,7 +27661,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -27723,7 +27723,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -27749,7 +27749,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[63]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[63]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -27933,10 +27933,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "parent" field.</summary>
     public const int ParentFieldNumber = 11;
-    private global::Decentraland.Renderer.PB_UIShape parent_;
+    private global::DCL.Interface.PB_UIShape parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_UIShape Parent {
+    public global::DCL.Interface.PB_UIShape Parent {
       get { return parent_; }
       set {
         parent_ = value;
@@ -27957,10 +27957,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "outlineColor" field.</summary>
     public const int OutlineColorFieldNumber = 13;
-    private global::Decentraland.Renderer.PB_Color4 outlineColor_;
+    private global::DCL.Interface.PB_Color4 outlineColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 OutlineColor {
+    public global::DCL.Interface.PB_Color4 OutlineColor {
       get { return outlineColor_; }
       set {
         outlineColor_ = value;
@@ -27969,10 +27969,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 14;
-    private global::Decentraland.Renderer.PB_Color4 color_;
+    private global::DCL.Interface.PB_Color4 color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 Color {
+    public global::DCL.Interface.PB_Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -28125,10 +28125,10 @@ namespace Decentraland.Renderer {
 
     /// <summary>Field number for the "shadowColor" field.</summary>
     public const int ShadowColorFieldNumber = 27;
-    private global::Decentraland.Renderer.PB_Color4 shadowColor_;
+    private global::DCL.Interface.PB_Color4 shadowColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Renderer.PB_Color4 ShadowColor {
+    public global::DCL.Interface.PB_Color4 ShadowColor {
       get { return shadowColor_; }
       set {
         shadowColor_ = value;
@@ -28740,7 +28740,7 @@ namespace Decentraland.Renderer {
       }
       if (other.parent_ != null) {
         if (parent_ == null) {
-          Parent = new global::Decentraland.Renderer.PB_UIShape();
+          Parent = new global::DCL.Interface.PB_UIShape();
         }
         Parent.MergeFrom(other.Parent);
       }
@@ -28749,13 +28749,13 @@ namespace Decentraland.Renderer {
       }
       if (other.outlineColor_ != null) {
         if (outlineColor_ == null) {
-          OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+          OutlineColor = new global::DCL.Interface.PB_Color4();
         }
         OutlineColor.MergeFrom(other.OutlineColor);
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::Decentraland.Renderer.PB_Color4();
+          Color = new global::DCL.Interface.PB_Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -28797,7 +28797,7 @@ namespace Decentraland.Renderer {
       }
       if (other.shadowColor_ != null) {
         if (shadowColor_ == null) {
-          ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+          ShadowColor = new global::DCL.Interface.PB_Color4();
         }
         ShadowColor.MergeFrom(other.ShadowColor);
       }
@@ -28876,7 +28876,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -28887,14 +28887,14 @@ namespace Decentraland.Renderer {
           }
           case 106: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+              OutlineColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -28949,7 +28949,7 @@ namespace Decentraland.Renderer {
           }
           case 218: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -29035,7 +29035,7 @@ namespace Decentraland.Renderer {
           }
           case 90: {
             if (parent_ == null) {
-              Parent = new global::Decentraland.Renderer.PB_UIShape();
+              Parent = new global::DCL.Interface.PB_UIShape();
             }
             input.ReadMessage(Parent);
             break;
@@ -29046,14 +29046,14 @@ namespace Decentraland.Renderer {
           }
           case 106: {
             if (outlineColor_ == null) {
-              OutlineColor = new global::Decentraland.Renderer.PB_Color4();
+              OutlineColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
           case 114: {
             if (color_ == null) {
-              Color = new global::Decentraland.Renderer.PB_Color4();
+              Color = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -29108,7 +29108,7 @@ namespace Decentraland.Renderer {
           }
           case 218: {
             if (shadowColor_ == null) {
-              ShadowColor = new global::Decentraland.Renderer.PB_Color4();
+              ShadowColor = new global::DCL.Interface.PB_Color4();
             }
             input.ReadMessage(ShadowColor);
             break;
@@ -29158,7 +29158,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[64]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[64]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -29347,7 +29347,7 @@ namespace Decentraland.Renderer {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Decentraland.Renderer.EngineInterfaceReflection.Descriptor.MessageTypes[65]; }
+      get { return global::DCL.Interface.EngineInterfaceReflection.Descriptor.MessageTypes[65]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

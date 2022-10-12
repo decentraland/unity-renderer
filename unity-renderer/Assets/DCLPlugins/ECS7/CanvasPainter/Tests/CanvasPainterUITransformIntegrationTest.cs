@@ -64,7 +64,7 @@ namespace DCL.ECS7.Tests
             var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
             parentModel.Width = 300;
             parentModel.Height = 700;
-            parentModel.FlexDirection = YGFlexDirection.Column;
+            parentModel.FlexDirection = YGFlexDirection.YgfdColumn;
             CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
 
             PBUiTransform childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
@@ -109,32 +109,32 @@ namespace DCL.ECS7.Tests
             parentModel.Height = 700;
             
             parentModel.MaxWidth = 300;
-            parentModel.MaxWidthUnit = YGUnit.Percent;
+            parentModel.MaxWidthUnit = YGUnit.YguPercent;
             parentModel.MaxHeight = 700;
-            parentModel.MaxHeightUnit = YGUnit.Percent;
+            parentModel.MaxHeightUnit = YGUnit.YguPercent;
             
             parentModel.MinWidth = 100;
-            parentModel.MinWidthUnit = YGUnit.Percent;
+            parentModel.MinWidthUnit = YGUnit.YguPercent;
             parentModel.MinHeight = 100;
-            parentModel.MinHeightUnit = YGUnit.Percent;
+            parentModel.MinHeightUnit = YGUnit.YguPercent;
 
             parentModel.PaddingBottom = 20;
-            parentModel.PaddingBottomUnit = YGUnit.Percent;
+            parentModel.PaddingBottomUnit = YGUnit.YguPercent;
             parentModel.PaddingTop = 20;
-            parentModel.PaddingTopUnit = YGUnit.Percent;
+            parentModel.PaddingTopUnit = YGUnit.YguPercent;
             parentModel.PaddingLeft = 20;
-            parentModel.PaddingLeftUnit = YGUnit.Percent;
+            parentModel.PaddingLeftUnit = YGUnit.YguPercent;
             parentModel.PaddingRight = 20;
-            parentModel.PaddingRightUnit = YGUnit.Percent;
+            parentModel.PaddingRightUnit = YGUnit.YguPercent;
             
             parentModel.MarginBottom = 20;
-            parentModel.MarginBottomUnit = YGUnit.Percent;
+            parentModel.MarginBottomUnit = YGUnit.YguPercent;
             parentModel.MarginTop = 20;
-            parentModel.MarginTopUnit = YGUnit.Percent;
+            parentModel.MarginTopUnit = YGUnit.YguPercent;
             parentModel.MarginLeft = 20;
-            parentModel.MarginLeftUnit = YGUnit.Percent;
+            parentModel.MarginLeftUnit = YGUnit.YguPercent;
             parentModel.MarginRight = 20;
-            parentModel.MarginRightUnit = YGUnit.Percent;    
+            parentModel.MarginRightUnit = YGUnit.YguPercent;    
             
             parentModel.BorderBottom = 20;
             parentModel.BorderTop = 20;
@@ -187,9 +187,9 @@ namespace DCL.ECS7.Tests
             var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
             parentModel.Width = 300;
             parentModel.Height = 700;
-            parentModel.FlexDirection = YGFlexDirection.RowReverse;
-            parentModel.AlignContent = YGAlign.Center;
-            parentModel.FlexWrap = YGWrap.WrapReverse;
+            parentModel.FlexDirection = YGFlexDirection.YgfdRowReverse;
+            parentModel.AlignContent = YGAlign.YgaCenter;
+            parentModel.FlexWrap = YGWrap.YgwWrapReverse;
             CreateAndExecuteCRDTMessage(testScene,parentId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(parentModel));
 
             PBUiTransform childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
@@ -200,15 +200,15 @@ namespace DCL.ECS7.Tests
                 childModel.FlexGrow = 1;
                 childModel.FlexShrink = 0;
                 childModel.FlexBasis = 200;
-                childModel.FlexBasisUnit = YGUnit.Percent;
+                childModel.FlexBasisUnit = YGUnit.YguPercent;
                 
                 childModel.Height = 20;
-                childModel.HeightUnit = YGUnit.Percent;
+                childModel.HeightUnit = YGUnit.YguPercent;
                 
                 childModel.Width = 30;
-                childModel.WidthUnit = YGUnit.Percent;
+                childModel.WidthUnit = YGUnit.YguPercent;
                 
-                childModel.AlignSelf = YGAlign.Center;
+                childModel.AlignSelf = YGAlign.YgaCenter;
             
                 CreateAndExecuteCRDTMessage(testScene, childId, ComponentID.UI_TRANSFORM, UITransformSerializer.Serialize(childModel));
             }
@@ -253,8 +253,8 @@ namespace DCL.ECS7.Tests
             var testScene = CreateUITestScene();
 
             var parentModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
-            parentModel.AlignItems = YGAlign.Center;
-            parentModel.JustifyContent = YGJustify.Center;
+            parentModel.AlignItems = YGAlign.YgaCenter;
+            parentModel.JustifyContent = YGJustify.YgjCenter;
             var childModel = ECS7TestUIUtils.CreatePBUiTransformDefaultModel();
             childModel.Parent = parentId;
             childModel.Width = 400;

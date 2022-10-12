@@ -287,61 +287,61 @@ namespace DCL.ECS7.Tests
             var model = new PBUiTransform();
             model.Parent = 123;
             
-            model.Display = YGDisplay.Flex;
-            model.Overflow = YGOverflow.Hidden;
+            model.Display = YGDisplay.YgdFlex;
+            model.Overflow = YGOverflow.YgoHidden;
 
-            model.FlexDirection = YGFlexDirection.Column;
+            model.FlexDirection = YGFlexDirection.YgfdColumn;
             model.FlexBasis = 1;
-            model.FlexBasisUnit = YGUnit.Point;
+            model.FlexBasisUnit = YGUnit.YguPoint;
             model.FlexGrow = 1;
             model.FlexShrink = 0;
-            model.FlexWrap = YGWrap.Wrap;
-            model.PositionType = YGPositionType.Absolute;
+            model.FlexWrap = YGWrap.YgwWrap;
+            model.PositionType = YGPositionType.YgpAbsolute;
 
-            model.AlignContent = YGAlign.Center;
-            model.AlignItems = YGAlign.Center;
-            model.AlignSelf = YGAlign.Center;
-            model.JustifyContent = YGJustify.Center;
+            model.AlignContent = YGAlign.YgaCenter;
+            model.AlignItems = YGAlign.YgaCenter;
+            model.AlignSelf = YGAlign.YgaCenter;
+            model.JustifyContent = YGJustify.YgjCenter;
             
             model.Height = 200;
-            model.HeightUnit = YGUnit.Percent;
+            model.HeightUnit = YGUnit.YguPercent;
             model.Width = 200;
-            model.WidthUnit = YGUnit.Percent;
+            model.WidthUnit = YGUnit.YguPercent;
             
             model.MinHeight = 200;
-            model.MinHeightUnit = YGUnit.Percent;
+            model.MinHeightUnit = YGUnit.YguPercent;
             model.MinWidth = 200;
-            model.MinWidthUnit = YGUnit.Percent;
+            model.MinWidthUnit = YGUnit.YguPercent;
             
             model.MaxHeight = 200;
-            model.MaxHeightUnit = YGUnit.Percent;
+            model.MaxHeightUnit = YGUnit.YguPercent;
             model.MaxWidth = 200;
-            model.MaxWidthUnit = YGUnit.Percent;
+            model.MaxWidthUnit = YGUnit.YguPercent;
 
             model.PaddingBottom = 50;
-            model.PaddingBottomUnit = YGUnit.Percent;
+            model.PaddingBottomUnit = YGUnit.YguPercent;
             model.PaddingTop = 50;
-            model.PaddingTopUnit = YGUnit.Percent;
+            model.PaddingTopUnit = YGUnit.YguPercent;
             model.PaddingRight = 50;
-            model.PaddingRightUnit = YGUnit.Percent;
+            model.PaddingRightUnit = YGUnit.YguPercent;
             model.PaddingLeft = 50;
-            model.PaddingLeftUnit = YGUnit.Percent;
+            model.PaddingLeftUnit = YGUnit.YguPercent;
 
             model.MarginBottom = 50;
-            model.MarginBottomUnit = YGUnit.Percent;
+            model.MarginBottomUnit = YGUnit.YguPercent;
             model.MarginLeft = 50;
-            model.MarginLeftUnit = YGUnit.Percent;
+            model.MarginLeftUnit = YGUnit.YguPercent;
             model.MarginRight = 50;
-            model.MarginRightUnit = YGUnit.Percent;
+            model.MarginRightUnit = YGUnit.YguPercent;
             model.MarginTop = 50;
-            model.MarginTopUnit = YGUnit.Percent;
+            model.MarginTopUnit = YGUnit.YguPercent;
 
             model.BorderBottom = 20;
             model.BorderLeft = 20;
             model.BorderRight = 20;
             model.BorderTop = 20;
 
-            model.PositionType = YGPositionType.Absolute;
+            model.PositionType = YGPositionType.YgpAbsolute;
             
             return model;
         }
