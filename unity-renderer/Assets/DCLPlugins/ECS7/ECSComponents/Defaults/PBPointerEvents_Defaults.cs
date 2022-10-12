@@ -4,7 +4,7 @@ namespace DCL.ECSComponents
     {
         public static ActionButton GetButton(this PBPointerEvents.Types.Info self)
         {
-            return self.HasButton ? self.Button : ActionButton.Any;
+            return self.HasButton ? self.Button : ActionButton.AbAny;
         }
 
         public static string GetHoverText(this PBPointerEvents.Types.Info self)

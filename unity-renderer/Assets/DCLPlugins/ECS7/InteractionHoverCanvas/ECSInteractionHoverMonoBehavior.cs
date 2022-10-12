@@ -31,10 +31,10 @@ public class ECSInteractionHoverMonoBehavior : MonoBehaviour, IECSInteractionHov
     {
         switch (button)
         {
-            case ActionButton.Pointer:
+            case ActionButton.AbPointer:
                 _tooltips[tooltipIndex].SetInputIcon(_icons[0]);
                 break;
-            case ActionButton.Any:
+            case ActionButton.AbAny:
                 _tooltips[tooltipIndex].SetInputIcon(_icons[1]);
                 break;
             default:

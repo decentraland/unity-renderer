@@ -18,7 +18,7 @@ async function buildRendererProtocol() {
   cleanGeneratedCode(rendererProtocolOutputPath)
 
   const rendererProtocolInputPath = normalizePath(
-    path.resolve(protocolPath, 'renderer-protocol/**/*.proto'),
+    path.resolve(protocolPath, 'decentraland/renderer/**/*.proto'),
   )
 
   const protoFiles = glob.sync(rendererProtocolInputPath).join(' ')
@@ -30,7 +30,7 @@ async function buildRendererProtocol() {
   command += ` --csharp_opt=file_extension=.gen.cs`
   command += ` --plugin=protoc-gen-dclunity=${nodeModulesPath}/protoc-gen-dclunity/dist/index.${ext}`
   command += ` --dclunity_out "${rendererProtocolOutputPath}"`
-  command += ` --proto_path "${protocolPath}/renderer-protocol"`
+  command += ` --proto_path "${protocolPath}/decentraland/renderer"`
   command += ` ${protoFiles}`
 
   await execute(command, workingDirectory)
