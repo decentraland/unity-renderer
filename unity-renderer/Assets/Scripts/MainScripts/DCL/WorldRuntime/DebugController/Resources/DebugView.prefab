@@ -2876,11 +2876,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -86
       objectReference: {fileID: 0}
-    - target: {fileID: 7196101457964164588, guid: 343005e32016c60479b0584c59812b4b,
-        type: 3}
-      propertyPath: scaleDownOnBeginDrag
-      value: 0.95
-      objectReference: {fileID: 0}
     - target: {fileID: 7216045483097485647, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_Name
