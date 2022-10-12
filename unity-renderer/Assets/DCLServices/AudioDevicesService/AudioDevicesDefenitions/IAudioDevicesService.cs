@@ -7,7 +7,7 @@ namespace DCL.Services
     {
         public event Action AudioDeviceCached;
 
-        bool HasRecievedKernelMessage { get ;  }
+        bool HasReceivedKernelMessage { get ;  }
         AudioDevice[] InputDevices { get ;  }
 
         void SetInputDevice(int deviceId);
