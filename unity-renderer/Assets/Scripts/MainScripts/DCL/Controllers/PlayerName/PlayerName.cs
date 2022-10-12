@@ -182,7 +182,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal float GetNearestAlphaStep(float alpha)
     {
-        return Mathf.Floor(alpha / ALPHA_STEPS) * ALPHA_STEPS;
+        return Mathf.Floor(alpha * ALPHA_STEPS) / ALPHA_STEPS;
     }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
