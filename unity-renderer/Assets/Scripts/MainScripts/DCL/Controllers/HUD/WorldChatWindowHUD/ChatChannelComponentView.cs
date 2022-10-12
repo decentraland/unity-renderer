@@ -144,13 +144,13 @@ namespace DCL.Chat.HUD
 
             if (isMembersSectionOpen)
             {
-                targetGraphicColor.a = 0f;
+                targetGraphicColor.a = 1f;
                 membersIconButton.targetGraphic.color = targetGraphicColor;
                 OnShowMembersList?.Invoke();
             }
             else
             {
-                targetGraphicColor.a = 1f;
+                targetGraphicColor.a = 0f;
                 membersIconButton.targetGraphic.color = targetGraphicColor;
                 OnHideMembersList?.Invoke();
             }
