@@ -37,7 +37,7 @@ async function main() {
 
   await buildComponents()
 
-  // fs.rmSync(componentsPreProccessInputPath, { recursive: true })
+  fs.rmSync(componentsPreProccessInputPath, { recursive: true })
 }
 
 const regex = new RegExp(/option *\(common.ecs_component_id\) *= *([0-9]+) *;/)
@@ -121,8 +121,10 @@ async function buildComponents() {
   const protoFiles = glob
     .sync(
       normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/sdk/components/**/*.proto')),
-    )
+    ).filter((value) => !value.endsWith('id.proto'))
     .join(' ')
+
+
 
   const commonProtoFiles = glob
     .sync(
