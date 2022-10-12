@@ -1,22 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-public class ObjectsOutlinerPlugin : IPlugin
+public class ObjectsOutlinerController : IDisposable
 {
-    private readonly DataStore_ObjectsOutliner dataStore;
     private readonly OutlinerConfig outlinerConfig;
+    private readonly DataStore_ObjectsOutliner dataStore;
+
     private Dictionary<Renderer, Shader> originalShaders = new Dictionary<Renderer, Shader>();
 
-    public ObjectsOutlinerPlugin()
+    public ObjectsOutlinerController(OutlinerConfig outlinerConfig, DataStore_ObjectsOutliner dataStore)
     {
-        outlinerConfig = Resources.Load<OutlinerConfig>("OutlinerConfig");
-        dataStore = DataStore.i.objectsOutliner;
-        dataStore.renderers.OnSet += OnSet;
-        OnSet(dataStore.renderers.Get());
+        this.outlinerConfig =  outlinerConfig;
+        this.dataStore = dataStore;
+        this.dataStore.renderers.OnSet += OnSet;
+        OnSet(this.dataStore.renderers.Get());
     }
 
     private void OnSet(IEnumerable<Renderer> renderers)
@@ -35,7 +35,7 @@ public class ObjectsOutlinerPlugin : IPlugin
             Material material = renderer.material;
             newOriginalShaders.Add(renderer, material.shader);
             material.shader = outlinerConfig.shaderOutline;
-            ObjectsOutlinerUtils.PrepareMaterial(material, outlinerConfig);
+            OutlinerUtils.PrepareMaterial(material, outlinerConfig);
 
             //Remove from the originalMaterial to leave there the one no longer needed
             originalShaders.Remove(renderer);

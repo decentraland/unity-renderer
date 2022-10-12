@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class ObjectsOutlinerUtils
+public static class OutlinerUtils
 {
     private static readonly int _OverlayColor = Shader.PropertyToID("_OverlayColor");
     private static readonly int _Overlay = Shader.PropertyToID("_Overlay");
