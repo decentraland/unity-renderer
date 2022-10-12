@@ -239,7 +239,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d236563e52f05114daef5a7d9c43e07a, type: 3}
@@ -1013,7 +1013,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d236563e52f05114daef5a7d9c43e07a, type: 3}
@@ -1156,7 +1156,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d82ce71110cc8545a5e2198fa4d3739, type: 2}
+  - {fileID: 2100000, guid: e5652132f4225824c91acb8a56978d77, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
