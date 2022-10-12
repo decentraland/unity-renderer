@@ -28,33 +28,32 @@ namespace DCL.FPSDisplay
                     return coloring[i].color;
                 }
             }
-
             return coloring[coloring.Length - 1].color;
         }
 
         private static Color GetPercentageColoring(float value, float limit)
         {
             float currentPercentage = value / limit;
-            if (currentPercentage > 90)
-            {
-                return BAD_COLOR;
-            }
-            if (currentPercentage > 100)
+            if (currentPercentage > 0.99)
             {
                 return UNBEARABLE_COLOR;
+            }
+            if (currentPercentage > 0.9)
+            {
+                return BAD_COLOR;
             }
             return GOOD_COLOR;
         }
 
         private static Color GetMemoryColoring(float memoryValue)
         {
-            if (memoryValue > 1500)
-            {
-                return BAD_COLOR;
-            }
             if (memoryValue > 1800)
             {
                 return UNBEARABLE_COLOR;
+            }
+            if (memoryValue > 1500)
+            {
+                return BAD_COLOR;
             }
             return GOOD_COLOR;
         }
