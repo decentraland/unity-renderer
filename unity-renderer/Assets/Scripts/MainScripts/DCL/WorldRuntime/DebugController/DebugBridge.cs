@@ -59,9 +59,9 @@ namespace DCL
         public void SetMemoryUsage(string payload)
         {
             var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
-            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize / 1024f / 1024f);
-            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit / 1024f / 1024f);
-            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize / 1024f / 1024f);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize);
+            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize);
         }
 
         public void SetEngineDebugPanel()
