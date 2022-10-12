@@ -139,7 +139,7 @@ namespace Tests
                 { "SansSerif", "Inter-Regular SDF" },
                 { "SansSerif_Heavy", "Inter-Heavy SDF" },
                 { "SansSerif_Bold", "Inter-Bold SDF" },
-                { "SansSerif_SemiBold", "Inter-Regular SDF" }
+                { "SansSerif_SemiBold", "Inter-SemiBold SDF" }
             };
 
             foreach (var fontsMapPair in fonts)
@@ -151,7 +151,7 @@ namespace Tests
 
                 yield return textShapeComponentHandler.fontPromise;
 
-                Assert.AreEqual(fontsMapPair.Value, textShapeComponentHandler.textComponent.font.name);
+                Assert.AreEqual(fontsMapPair.Value, textShapeComponentHandler.textComponent.font.name, $"for key {fontsMapPair.Key}");
             }
         }
 
