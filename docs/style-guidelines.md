@@ -15,6 +15,7 @@ You can find a settings export file in the root of the project called "rider_cod
 
 # Code conventions
 [Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary of our adaptation of it, highlights and specifics related to Unity, which we suggest to follow.
+
 ## Naming conventions
 Use
 * `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
@@ -57,8 +58,10 @@ namespace MyProject                                     // Namespace -> PascalCa
 * `Delegate type` - try to use nouns or noun phrases (take example from .NET built-in delegate types - `Action`/`Function`/`Predicate`)  
 
 ## Ordering conventions
+
 * `using` go first and placed alphabetically
 * Class members grouped and appears in the following order
+
 ### Groups order:
   * Enums, delegates declarations
   * Fields (`const` and `static readonly` goes first)
@@ -106,7 +109,6 @@ private bool isVisible;
   * `get`-only and `set`-only properties goes last.
   * Access modifiers for `set` considered to have higher priority than `get` (considered to be more exposed). 
     * For example, property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get`
-    
 ```csharp
 public bool Property1 { get; set; }                                        // get-set order
 public bool Property2 { private get; set; }
@@ -116,7 +118,7 @@ public bool Property4 { get; }
 protected bool Property5 { get; set; }
 private bool Property6 { get; set; }
 ```
-### **Methods specifics**
+### Methods specifics
   * Helper and supplementary methods which called from another method should be placed after method that calls it (in most cases it is `private` functions).
 ```csharp
 // Note: indentaion for helper methods is used only for clarity. It is not a part of our formating style 
@@ -134,8 +136,8 @@ public void Test1()                   // called by other class
 private void Awake() { }               // called by Unity
 ```
   * Not-helper methods should follow the order (where its helper methods follows previous rule and allowed to be placed in between of this order):
-    * constuctor
-    * destructor 
+    * entry-point/creation/setup methods, like `constuctor` and `initialize`
+    * exit-point methods, like `destructor` and `dispose`
     * `public`
     * `public` with `[PublicApi]` and `[UsedImplicitly]` attributes
     * Unity-callbacks 
@@ -143,6 +145,148 @@ private void Awake() { }               // called by Unity
       * other callbacks (with respect to `Enter`-`Stay`-`Exit` order)
     * `internal`
     * `protected`
-  * consider using local function for your helper method if it is small. 
-    * Do not use local functions inside local functions.
-  * For more detailed example on the methods ordering rules see methods organization in `CodeStyleExample.cs` file
+  * consider using local function for your helper method if it is small 
+    * do not use local functions inside local functions
+  * for more detailed example on the methods ordering rules see methods organization in `CodeStyleExample.cs` file
+
+
+## Formatting and other code conventions
+Most of this formatting conventions will be known by your IDE thanks to the .EditorConfig and applied via auto-formatting on the fly. So there is no need of remembering it.  
+
+* access modifiers are obligatory to use: 🟢 `private void Awake() { }` 🔴 `void Awake() { }`
+* don't omit comparison to `null`: 🟢 `if (character == null)`/`if (character != null)` 🔴 `if (character)`/`if (!character)`
+* one line - one statement. Split chain methods (like LINQ) in several lines starting  with `.` on each line
+```csharp
+List<string> filteredWords = new FilterLogic(listWords)
+              .FilterOutShortWords()
+              .FilterOnlyWordsContainingLetterC()
+              .FilterArbitraryComplexItems()
+              .FilterSomeMoreArbitraryComplexItems()
+              .GetWords();
+```
+
+### Namespaces
+* namespaces are obligatory
+    * Each type (`class`, `enum`, `interface`) should be inside a namespace.
+* namespace name should be meaningful
+    * 🔴 avoid too abstract namespaces like `Scripts`, `Components`, `Contexts`, etc.
+    * 🟢 it should reflect the Domain, area to which the script is belonging - `DCL.UI`, `DCL.NPC`, `DCL.Social.Chat`
+* 🔴 avoid very deep levels of namespaces
+* consider using plural namespace names where appropriate
+* folder structure should be aligned with the namespaces
+    * 🔴 not every folder should be namespace provider, especially folders like `Scripts`, `MainScripts`, `Assets`
+    * 🔴 folders that are deep in the folders hierarchy should be without namespace.
+
+### Whitespaces
+  * **Horizontal spaces**
+    * indentation = `1 tab`
+      * tabs saved as spaces, `1 tab` = `4 spaces` (characters)
+    * only one space between code elements is allowed - 🟢`bool isSmth;` 🔴 `bool  isSmth;`
+    * space after a comma between function arguments - 🟢 `CollectItem(myObject, 0, 1);` 🔴 `CollectItem(myObject,0,1);`
+    * space before flow control conditions - 🟢 `while (x < y)` 🔴 `while(x < y)`
+    * space before and after comparison operators - 🟢 `if (x == y)` 🔴 `if (x==y)`
+  * **Vertical spaces**
+    * one blank line is used for vertical separation and grouping
+    * one blank line is always used to separate groups (field, properties, method definitions)
+    * 🔴 two and more blank lines successively are not allowed
+  * **Line breaks and curly braces** `{}`
+    * Curly brace is always placed on a new line (Allman/BSD style):
+      * line break before the opening brace `{`
+      * line break between the closing brace `}` and `else`
+    * avoid brackets when the body is a one line
+    * put the body on the new line in most cases 
+    * it is allowed to put the body in the same line when it contains only one simple interruption (like `return`/ `break`/ `continue`)
+```csharp
+if(!IsInRange()) return; 
+
+if(IsInRange())
+    Fire()
+else
+{
+    CalculateDistance();
+    MoveToEnemy();
+}
+```
+* **Expression-bodies**
+  * remove brackets in most cases where it is possible (for loops, `if`-`else`, methods, and properties)
+    * exception: always use brackets for **Unity callbacks** 
+  *  **Properties** - placed on the same line 
+  * **Methods** - placed on the new line     
+```csharp
+public bool IsInitialized => isInitialized;
+
+private void Awake()
+{
+    var collider = GetComponent<Collider>;
+}
+
+public void Initialize() =>
+    SubrcribeToEvents();
+
+private void TrimAll()
+{
+    foreach (string device in InputDevices)
+        device.Trim();
+}
+```
+
+### Attribute usages
+* **Class**
+  * Use `[RequireComponent(typeof(MyComponent))]` attribute when you cache components via `GetComponents` on `Awake` and `Start` callbacks
+  * Use `[DisallowMultipleComponent]` attribute when there should be only one `Component` of such type on the `GameObject`
+* **Methods**
+  * Use `[PublicAPI]` attribute if `public method` is exposed to be called from **outside** of the solution 
+  * Use `[UsedImplicitly]` attribute for implicitly called methods, such as calls from Unity animation events, via Unity `GameObject.SendMessage()`, `GameObject.BroadcastMessage()` and similar. 
+  * Use `[Button]` attribute from `EasyButtons` (requires reference in `.asmdef` file) instead of `[ContectMenu]` attribute. Consider using `Mode` parameter of this attribute for `Editor`/`PlayMode`-only methods.
+* **Variables (in Inspector)**
+  * Use `[SerializedField]` for exposing variable in the inspector instead of converting it to public variable 
+  * Use CAPITAL letters for `[Header]` attribute 
+  * Use `[Space]` attribute for better grouping of exposed variables 
+  * Use `[Tooltip]` instead of comments for exposed in inspector variables
+
+### Comments
+* always use XML comments `/// <summary>`  before the `public` class declaration providing appropriate descriptions of their behavior
+ ```csharp 
+/// <summary>
+/// This is the InitialScene entry point.
+/// Most of the application subsystems should be initialized from this class Awake() event.
+/// </summary>
+public class Main: MonoBehaviour
+{
+    /// ...
+}
+```
+* **only** use comments inside of the class when it is very necessary and there is a need to provide additional information which cannot be covered by good naming:
+  * description of not obvious hidden logic behind the solution (such as for complex logic or mathematical algorithms) 
+  * reference to the bug-ticket
+  * "why" description of the hack
+* each comment starts with an uppercase letter and end with a period
+* insert one space between the comment delimiter (`//`) and the comment text
+* remove commented out code
+
+### Tests
+* **Class name** should contain Tests postfix after the feature name to the class that tests the current feature
+* **Test method name**
+  * try to reflect core of the **arrange**/**act**/**assert** part of the test in the test name (especially **assert**)
+  * consider using word `Should` to describe **assert** part and word `When` to describe **act** and **arrange** part of the test
+* The method body should be split by `// arrange` - `// act` - `// assert` comments to respective blocks. 
+  * `Arrange` comment could be omitted if there is no arrangement or it coincide with the acting.
+ ```csharp 
+public class NavmapTests
+{
+    [Test]
+    public void CorectSceneDataShouldBeDisplayedWhenPlayerCoordinatesChanged()
+    {
+        // arrange
+        var navmapView = Object.FindObjectOfType<NavmapView>();
+        MinimapMetadata.GetMetadata();
+        
+        // act
+        CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
+        
+        // assert
+        Assert.AreEqual("SCENE_NAME", navmapView.currentSceneNameText.text);
+        Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);
+    }
+}
+```
