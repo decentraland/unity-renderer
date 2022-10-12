@@ -58,7 +58,7 @@ namespace DCL.ECSComponents
                 lastFontId = fontId;
                 var prevPromise = fontPromise;
 
-                fontPromise = new AssetPromise_Font("SansSerif");
+                fontPromise = new AssetPromise_Font(GetFontName(model.GetFont()));
                 fontPromise.OnSuccessEvent += font =>
                 {
                     uiElement.style.unityFont = font.font.sourceFontFile;
@@ -80,6 +80,23 @@ namespace DCL.ECSComponents
                     return TextAnchor.MiddleRight;
                 default:
                     return TextAnchor.MiddleCenter;
+            }
+        }
+
+        private static string GetFontName(Font font)
+        {
+            // TODO: add support for the rest of the fonts and discuss old font deprecation
+            const string SANS_SERIF = "SansSerif";
+            const string LIBERATION_SANS = "builtin:LiberationSans SDF";
+
+            switch (font)
+            {
+                case Font.LiberationSans:
+                    return LIBERATION_SANS;
+                case Font.SansSerif:
+                    return SANS_SERIF;
+                default:
+                    return SANS_SERIF;
             }
         }
     }
