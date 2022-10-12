@@ -8,7 +8,7 @@ namespace DCL.Chat.HUD
     {
         private readonly IChatController chatController;
         private readonly DataStore dataStore;
-        private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{3,20}$");
+        private readonly Regex nameFormatRegex = new Regex("^[a-zA-Z0-9-]{0,20}$");
         private ICreateChannelWindowView view;
         private string channelName;
 
@@ -86,14 +86,14 @@ namespace DCL.Chat.HUD
             }
             else if (name.Length == 0)
                 view.DisableCreateButton();
-            else if (name.Length < 3)
-            {
-                view.ShowTooShortError();
-                view.DisableCreateButton();
-            }
             else if (!nameFormatRegex.IsMatch(name))
             {
                 view.ShowWrongFormatError();
+                view.DisableCreateButton();
+            }
+            else if (name.Length < 3)
+            {
+                view.ShowTooShortError();
                 view.DisableCreateButton();
             }
             else
