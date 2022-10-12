@@ -3004,7 +3004,7 @@ PrefabInstance:
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
-      value: 2
+      value: 2.7
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
