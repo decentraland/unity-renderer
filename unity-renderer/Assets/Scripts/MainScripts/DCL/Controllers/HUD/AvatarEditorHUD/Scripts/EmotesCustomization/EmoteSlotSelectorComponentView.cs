@@ -121,6 +121,9 @@ namespace DCL.EmotesCustomization
 
         internal List<EmoteSlotCardComponentView> GetAllSlots()
         {
+            if (emotesSlots == null)
+                return new List<EmoteSlotCardComponentView>();
+            
             return emotesSlots
                 .GetItems()
                 .Select(x => x as EmoteSlotCardComponentView)
