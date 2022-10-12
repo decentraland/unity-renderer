@@ -140,10 +140,19 @@ namespace DCL.Chat.HUD
 
             contextualMenu.gameObject.transform.SetParent(this.transform);
 
+            var tempColor = membersIconButton.targetGraphic.color;
             if (isMembersSectionOpen)
+            {
+                tempColor.a = 0f;
+                membersIconButton.targetGraphic.color = tempColor;
                 OnShowMembersList?.Invoke();
+            }
             else
+            {
+                tempColor.a = 1f;
+                membersIconButton.targetGraphic.color = tempColor;
                 OnHideMembersList?.Invoke();
+            }
         }
     }
 }
