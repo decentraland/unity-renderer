@@ -5,7 +5,7 @@ namespace DCL.Services
 {
     public interface IAudioDevicesService : IService
     {
-        public event Action AduioDeviceCached;
+        public event Action AudioDeviceCached;
 
         bool HasRecievedKernelMessage { get ;  }
         AudioDevice[] InputDevices { get ;  }
