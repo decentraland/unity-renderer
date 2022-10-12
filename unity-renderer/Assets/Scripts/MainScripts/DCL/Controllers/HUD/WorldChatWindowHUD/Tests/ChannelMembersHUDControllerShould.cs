@@ -120,8 +120,6 @@ public class ChannelMembersHUDControllerShould
         const string testChannelId = "testChannelId";
         
         // Arrange
-        channelMembersComponentView.Configure().IsActive.Returns(info => true);
-
         var testUserId1Profile = ScriptableObject.CreateInstance<UserProfile>();
         testUserId1Profile.UpdateData(new UserProfileModel
         {

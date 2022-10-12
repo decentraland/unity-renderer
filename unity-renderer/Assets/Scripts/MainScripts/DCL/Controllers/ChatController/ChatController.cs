@@ -293,10 +293,12 @@ public class ChatController : MonoBehaviour, IChatController
     
     public void GetChannelInfo(string[] channelIds) => WebInterface.GetChannelInfo(channelIds);
 
-    public void GetChannelMembers(string channelId, int limit, int skip, string name) => WebInterface.GetChannelMembers(channelId, limit, skip, name);
+    public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
+        WebInterface.GetChannelMembers(channelId, limit, skip, name);
 
-    public void GetChannelMembers(string channelId, int limit, int skip) => WebInterface.GetChannelMembers(channelId, limit, skip, string.Empty);
-    
+    public void GetChannelMembers(string channelId, int limit, int skip) =>
+        WebInterface.GetChannelMembers(channelId, limit, skip, string.Empty);
+
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
     public void MarkMessagesAsSeen(string userId) => WebInterface.MarkMessagesAsSeen(userId);

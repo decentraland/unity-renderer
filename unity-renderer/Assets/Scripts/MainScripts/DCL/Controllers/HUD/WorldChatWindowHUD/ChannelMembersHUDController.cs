@@ -1,7 +1,7 @@
-using Cysharp.Threading.Tasks;
-using DCL.Chat.Channels;
 using System;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using DCL.Chat.Channels;
 
 namespace DCL.Chat.HUD
 {
@@ -26,7 +26,8 @@ namespace DCL.Chat.HUD
         public string CurrentChannelId => currentChannelId;
         public bool IsVisible => isVisible;
 
-        public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController, IUserProfileBridge userProfileBridge)
+        public ChannelMembersHUDController(IChannelMembersComponentView view, IChatController chatController,
+            IUserProfileBridge userProfileBridge)
         {
             this.view = view;
             this.chatController = chatController;
@@ -94,7 +95,7 @@ namespace DCL.Chat.HUD
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
-            string[] channelsToGetInfo = { currentChannelId };
+            string[] channelsToGetInfo = {currentChannelId};
             chatController.GetChannelInfo(channelsToGetInfo);
             chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
@@ -132,7 +133,6 @@ namespace DCL.Chat.HUD
 
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
-            if (!view.IsActive) return;
             SetLoadingMoreVisible(true);
             view.HideLoading();
 
@@ -213,10 +213,10 @@ namespace DCL.Chat.HUD
             while (true)
             {
                 await UniTask.Delay(MINUTES_FOR_AUTOMATIC_RELOADING * 60 * 1000, cancellationToken: cancellationToken);
-                
+
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                
+
                 LoadMembers();
             }
         }

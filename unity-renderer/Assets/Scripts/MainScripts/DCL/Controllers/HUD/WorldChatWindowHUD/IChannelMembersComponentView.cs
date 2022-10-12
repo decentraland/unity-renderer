@@ -9,7 +9,6 @@ namespace DCL.Chat.HUD
         event Action OnRequestMoreMembers;
 
         int EntryCount { get; }
-        bool IsActive { get; }
         void ClearAllEntries();
         void ShowLoading();
         void Dispose();

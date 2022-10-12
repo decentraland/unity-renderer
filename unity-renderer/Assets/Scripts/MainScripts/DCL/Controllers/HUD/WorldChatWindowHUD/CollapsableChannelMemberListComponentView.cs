@@ -14,7 +14,6 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
 
     private readonly Dictionary<string, PoolableObject> pooleableEntries = new Dictionary<string, PoolableObject>();
     private Pool entryPool;
-    private bool releaseEntriesFromPool = true;
 
     public void Filter(string search)
     {
@@ -23,23 +22,17 @@ public class CollapsableChannelMemberListComponentView : CollapsableSortedListCo
         Filter(entry => regex.IsMatch(entry.Model.userName));
     }
 
-    public void Clear(bool releaseEntriesFromPool)
+    public void Clear()
     {
-        // avoids releasing instances from pool just for this clear
-        this.releaseEntriesFromPool = releaseEntriesFromPool;
         base.Clear();
-        this.releaseEntriesFromPool = true;
         pooleableEntries.Clear();
     }
 
     public override ChannelMemberEntry Remove(string key)
     {
-        if (releaseEntriesFromPool)
-        {
-            if (pooleableEntries.ContainsKey(key))
-                pooleableEntries[key].Release();
-            pooleableEntries.Remove(key);
-        }
+        if (pooleableEntries.ContainsKey(key))
+            pooleableEntries[key].Release();
+        pooleableEntries.Remove(key);
 
         return base.Remove(key);
     }
