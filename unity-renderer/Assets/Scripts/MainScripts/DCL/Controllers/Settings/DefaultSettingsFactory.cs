@@ -8,19 +8,9 @@ namespace DCL.SettingsCommon
         const string QUALITY_SETTINGS_KEY = "Settings.Quality";
         const string GENERAL_SETTINGS_KEY = "Settings.General";
         const string AUDIO_SETTINGS_KEY = "Settings.Audio";
-        private string audioMixerPath = "AudioMixer";
 
-        private AudioSettings defaultAudioSettings = new AudioSettings
-        {
-            outputDevice = 0,
-            masterVolume = 1f,
-            voiceChatVolume = 1f,
-            avatarSFXVolume = 1f,
-            uiSFXVolume = 1f,
-            sceneSFXVolume = 1f,
-            musicVolume = 1f,
-            chatSFXEnabled = true
-        };
+        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
+        private string audioMixerPath = "AudioMixer";
 
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
@@ -41,19 +31,16 @@ namespace DCL.SettingsCommon
             firstPersonCameraFOV = 60
         };
 
-        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
-
-        public Settings Build()
+        private AudioSettings defaultAudioSettings = new AudioSettings
         {
-            var graphicsQualitySettingsPreset = Resources.Load<QualitySettingsData>(graphicsQualitySettingsPresetPath);
-            var audioMixer = Resources.Load<AudioMixer>(audioMixerPath);
-
-            return new Settings(graphicsQualitySettingsPreset,
-                audioMixer,
-                CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
-                CreateGeneralSettingsRepository(),
-                CreateAudioSettingsRepository());
-        }
+            masterVolume = 1f,
+            voiceChatVolume = 1f,
+            avatarSFXVolume = 1f,
+            uiSFXVolume = 1f,
+            sceneSFXVolume = 1f,
+            musicVolume = 1f,
+            chatSFXEnabled = true
+        };
 
         public DefaultSettingsFactory WithDefaultGeneralSettings(GeneralSettings settings)
         {
@@ -65,6 +52,18 @@ namespace DCL.SettingsCommon
         {
             graphicsQualitySettingsPresetPath = path;
             return this;
+        }
+
+        public Settings Build()
+        {
+            var graphicsQualitySettingsPreset = Resources.Load<QualitySettingsData>(graphicsQualitySettingsPresetPath);
+            var audioMixer = Resources.Load<AudioMixer>(audioMixerPath);
+
+            return new Settings(graphicsQualitySettingsPreset,
+                audioMixer,
+                CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
+                CreateGeneralSettingsRepository(),
+                CreateAudioSettingsRepository());
         }
 
         private ProxySettingsRepository<AudioSettings> CreateAudioSettingsRepository()
