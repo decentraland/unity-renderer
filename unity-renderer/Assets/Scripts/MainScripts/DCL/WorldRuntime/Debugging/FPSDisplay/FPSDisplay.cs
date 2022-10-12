@@ -5,6 +5,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 using Variables.RealmsInfo;
 
@@ -15,12 +16,14 @@ namespace DCL.FPSDisplay
         private const float REFRESH_SECONDS = 0.1f;
         private const string NO_DECIMALS = "##";
         private const string TWO_DECIMALS = "##.00";
+        private const float BYTES_TO_MEGABYTES = 1048576f;
 
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
         [SerializeField] internal List<DebugValue> valuesToUpdate;
         [SerializeField] private Button closeButton;
         [SerializeField] private CopyToClipboardButton copySceneToClipboard;
         [SerializeField] private DebugSection memorySection;
+        [SerializeField] private RectTransform container;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private int lastPlayerCount;
@@ -31,6 +34,8 @@ namespace DCL.FPSDisplay
         private Dictionary<DebugValueEnum, Func<string>> updateValueDictionary;
         private float fps;
         private string fpsColor;
+        private string sceneID;
+        private string sceneComponents;
         private SceneMetricsModel metrics;
         private SceneMetricsModel limits;
         private IParcelScene activeScene;
@@ -39,6 +44,12 @@ namespace DCL.FPSDisplay
         private BaseVariable<float> jsUsedHeapSize => DataStore.i.debugConfig.jsUsedHeapSize;
         private BaseVariable<float> jsHeapSizeLimit => DataStore.i.debugConfig.jsHeapSizeLimit;
         private BaseVariable<float> jsTotalHeapSize => DataStore.i.debugConfig.jsTotalHeapSize;
+        private Vector3 containerStartAnchoredPosition;
+
+        private void Awake()
+        {
+            containerStartAnchoredPosition = container.anchoredPosition;
+        }
 
         private void Start()
         {
@@ -51,6 +62,8 @@ namespace DCL.FPSDisplay
 
         private void OnEnable()
         {
+            container.anchoredPosition = containerStartAnchoredPosition;
+            
             lastPlayerCount = otherPlayers.Count();
             otherPlayers.OnAdded += OnOtherPlayersModified;
             otherPlayers.OnRemoved += OnOtherPlayersModified;
@@ -101,8 +114,8 @@ namespace DCL.FPSDisplay
             updateValueDictionary.Add(DebugValueEnum.FPS_HiccupsLoss, GetHiccupsLoss);
             updateValueDictionary.Add(DebugValueEnum.FPS_BadFramesPercentiles, () => $"{fpsColor}{((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%</color>");
             
-            updateValueDictionary.Add(DebugValueEnum.Scene_Name, GetSceneID);
-            updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{(float)totalMessagesCurrent / totalMessagesGlobal * 100}%");
+            updateValueDictionary.Add(DebugValueEnum.Scene_Name, () => sceneID);
+            updateValueDictionary.Add(DebugValueEnum.Scene_ProcessedMessages, () =>  $"{((float)totalMessagesCurrent / totalMessagesGlobal * 100).ToString(TWO_DECIMALS)}%");
             updateValueDictionary.Add(DebugValueEnum.Scene_PendingOnQueue, () =>  $"{totalMessagesGlobal - totalMessagesCurrent}");
             updateValueDictionary.Add(DebugValueEnum.Scene_Poly, () => GetSceneMetric(metrics.triangles, limits.triangles));
             updateValueDictionary.Add(DebugValueEnum.Scene_Textures, () => GetSceneMetric(metrics.textures,limits.textures));
@@ -110,11 +123,16 @@ namespace DCL.FPSDisplay
             updateValueDictionary.Add(DebugValueEnum.Scene_Entities, () =>GetSceneMetric(metrics.entities,limits.entities));
             updateValueDictionary.Add(DebugValueEnum.Scene_Meshes, () => GetSceneMetric(metrics.meshes, limits.meshes));
             updateValueDictionary.Add(DebugValueEnum.Scene_Bodies, () => GetSceneMetric(metrics.bodies,limits.bodies));
-            updateValueDictionary.Add(DebugValueEnum.Scene_Components, () => (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString());
+            updateValueDictionary.Add(DebugValueEnum.Scene_Components, () => sceneComponents);
             
-            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  GetMemoryMetric(jsUsedHeapSize.Get()));
-            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => GetMemoryMetric(jsTotalHeapSize.Get()));
-            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"{jsHeapSizeLimit.Get().ToString(TWO_DECIMALS)} Mb");
+            updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  GetMemoryMetric(jsUsedHeapSize.Get() / BYTES_TO_MEGABYTES));
+            updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => GetMemoryMetric(jsTotalHeapSize.Get() / BYTES_TO_MEGABYTES));
+            updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"2048 Mb");
+            
+            updateValueDictionary.Add(DebugValueEnum.Memory_Total_Allocated, () =>  $"{(Profiler.GetTotalAllocatedMemoryLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb"); 
+            updateValueDictionary.Add(DebugValueEnum.Memory_Reserved_Ram, () => $"{(Profiler.GetTotalReservedMemoryLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb"); 
+            updateValueDictionary.Add(DebugValueEnum.Memory_Mono, () => $"{(Profiler.GetMonoUsedSizeLong() / BYTES_TO_MEGABYTES).ToString(NO_DECIMALS)} Mb");
+            Profiler.GetAllocatedMemoryForGraphicsDriver();
         }
         
         private string GetFPSCount()
@@ -132,21 +150,17 @@ namespace DCL.FPSDisplay
         
         private string GetMemoryMetric(float value)
         {
-            return $"{GetColor(GetHexColor(FPSColoring.GetMemoryColoring(value)))}{value.ToString(TWO_DECIMALS)} Mb</color>";
+            return $"{GetColor(GetHexColor(FPSColoring.GetMemoryColoring(value)))}{value.ToString(NO_DECIMALS)} Mb</color>";
         }
         
-        private string GetSceneID()
+        private void SetSceneData()
         {
-            string activeSceneID = activeScene.sceneData.id;
-            if (activeSceneID.Length >= 11)
+            sceneID = activeScene.sceneData.id;
+            if (sceneID.Length >= 11)
             {
-                return $"{activeSceneID.Substring(0, 5)}...{activeSceneID.Substring(activeSceneID.Length - 5, 5)}";
+                sceneID = $"{sceneID.Substring(0, 5)}...{sceneID.Substring(sceneID.Length - 5, 5)}";
             }
-            else
-            {
-                return activeSceneID;
-            }
-                
+            sceneComponents = (activeScene.componentsManagerLegacy.GetSceneSharedComponentsDictionary().Count + activeScene.componentsManagerLegacy.GetComponentsCount()).ToString();
         }
 
         private string GetHiccupsLoss()
@@ -197,6 +211,7 @@ namespace DCL.FPSDisplay
             
             while (true)
             {
+                Profiler.BeginSample("FPS DISPLAY");
                 fps = performanceData.Get().fpsCount;
                 fpsColor = GetColor(GetHexColor(FPSColoring.GetDisplayColor(fps)));
                 activeScene = GetActiveScene();
@@ -205,6 +220,7 @@ namespace DCL.FPSDisplay
                 {
                     metrics = activeScene.metricsCounter.currentCount;
                     limits = activeScene.metricsCounter.maxCount;
+                    SetSceneData();
                 }
                 for (var i = 0; i < valuesToUpdate.Count; i++)
                 {
@@ -213,6 +229,7 @@ namespace DCL.FPSDisplay
                         valuesToUpdate[i].SetValue(updateValueDictionary[valuesToUpdate[i].debugValueEnum].Invoke());
                     }
                 }
+                Profiler.EndSample();
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }
         }
