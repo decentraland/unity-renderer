@@ -326,6 +326,7 @@ namespace DCL.Chat.HUD
 
             var channel = chatController.GetAllocatedChannel(channelId);
             View.Setup(ToPublicChatModel(updatedChannel));
+            channelMembersHUDController.SetMembersCount(updatedChannel.MemberCount);
         }
 
         private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
