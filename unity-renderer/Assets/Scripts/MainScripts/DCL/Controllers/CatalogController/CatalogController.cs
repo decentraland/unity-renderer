@@ -98,6 +98,8 @@ public class CatalogController : MonoBehaviour
             return;
 
         AddWearablesToCatalog(request.wearables);
+        
+        
 
         if (!string.IsNullOrEmpty(request.context))
         {
