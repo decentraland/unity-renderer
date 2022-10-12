@@ -87,6 +87,7 @@ namespace DCL.Chat.HUD
 
             view.Show();
             view.ClearAllEntries();
+            view.HideLoadingMore();
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
@@ -129,6 +130,7 @@ namespace DCL.Chat.HUD
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
             if (!view.IsActive) return;
+            view.ShowLoadingMore();
             view.HideLoading();
 
             foreach (ChannelMember member in channelMembers)
