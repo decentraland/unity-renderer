@@ -16,17 +16,17 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
             audioDevicesService = Environment.i.serviceLocator.Get<IAudioDevicesService>();
 
-            if (audioDevicesService.HasRecievedKernelMessage)
+            if (audioDevicesService.HasReceivedKernelMessage)
             {
                 RaiseOnOverrideIndicatorLabel(DeviceNames());
                 UpdateSetting(GetStoredValue());
             }
             else
-                audioDevicesService.AduioDeviceCached += OnAudioDevicesCached;
+                audioDevicesService.AudioDeviceCached += OnAudioDevicesCached;
 
             void OnAudioDevicesCached()
             {
-                audioDevicesService.AduioDeviceCached -= OnAudioDevicesCached;
+                audioDevicesService.AudioDeviceCached -= OnAudioDevicesCached;
 
                 RaiseOnOverrideIndicatorLabel(DeviceNames());
                 UpdateSetting(GetStoredValue());
@@ -35,7 +35,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
         public override void OnPointerClicked(PointerEventData eventData)
         {
-            if (!audioDevicesService.HasRecievedKernelMessage)
+            if (!audioDevicesService.HasReceivedKernelMessage)
                 audioDevicesService.RequestAudioDevices();
         }
 

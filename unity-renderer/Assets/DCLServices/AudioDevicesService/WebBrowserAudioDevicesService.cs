@@ -8,9 +8,9 @@ namespace DCL.Services
         private readonly IAudioDevicesBridge bridge;
 
         public WebBrowserAudioDevicesService (IAudioDevicesBridge bridge) => this.bridge = bridge;
-        public event Action AduioDeviceCached;
+        public event Action AudioDeviceCached;
 
-        public bool HasRecievedKernelMessage { get; private set; }
+        public bool HasReceivedKernelMessage { get; private set; }
         public AudioDevice[] InputDevices { get; private set; }
 
         public void Initialize() => bridge.OnAudioDevicesRecieved += CacheAudioDevices;
@@ -18,18 +18,18 @@ namespace DCL.Services
 
         private void CacheAudioDevices(AudioDevicesResponse devices)
         {
-            HasRecievedKernelMessage = true;
+            HasReceivedKernelMessage = true;
 
             InputDevices = devices.inputDevices;
 
-            AduioDeviceCached?.Invoke();
+            AudioDeviceCached?.Invoke();
         }
         
         public void RequestAudioDevices() => bridge.RequestAudioDevices();
 
         public void SetInputDevice(int deviceId)
         {
-            if (HasRecievedKernelMessage && deviceId <= InputDevices.Length)
+            if (HasReceivedKernelMessage && deviceId <= InputDevices.Length)
                 WebInterface.SetInputAudioDevice(InputDevices[deviceId].deviceId);
         }
     }
