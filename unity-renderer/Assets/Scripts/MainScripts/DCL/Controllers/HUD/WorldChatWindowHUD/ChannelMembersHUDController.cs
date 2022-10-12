@@ -133,7 +133,6 @@ namespace DCL.Chat.HUD
 
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
-            if (!view.IsActive) return;
             SetLoadingMoreVisible(true);
             view.HideLoading();
 

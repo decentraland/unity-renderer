@@ -32,7 +32,6 @@ namespace DCL.Chat.HUD
         public event Action OnRequestMoreMembers;
 
         public int EntryCount => memberList.Count() + queuedEntries.Count;
-        public bool IsActive => gameObject.activeInHierarchy;
 
         public override void Awake()
         {
