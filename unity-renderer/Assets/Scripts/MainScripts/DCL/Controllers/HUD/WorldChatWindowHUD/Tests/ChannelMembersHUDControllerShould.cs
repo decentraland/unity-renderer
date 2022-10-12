@@ -20,6 +20,7 @@ public class ChannelMembersHUDControllerShould
         chatController = Substitute.For<IChatController>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         channelMembersHUDController = new ChannelMembersHUDController(channelMembersComponentView, chatController, userProfileBridge);
+        channelMembersHUDController.SetMembersCount(100);
     }
 
     [TearDown]
@@ -99,7 +100,7 @@ public class ChannelMembersHUDControllerShould
 
         // Assert
         channelMembersComponentView.Received().ClearAllEntries();
-        channelMembersComponentView.Received(1).HideLoadingMore();
+        channelMembersComponentView.Received().HideLoadingMore();
         channelMembersComponentView.Received().ShowLoading();
         if (string.IsNullOrEmpty(textToSearch))
         {
@@ -167,7 +168,7 @@ public class ChannelMembersHUDControllerShould
         channelMembersComponentView.Received(1).Set(Arg.Is<ChannelMemberEntryModel>(c =>
             c.userName == "testUserId2"));
         channelMembersComponentView.Received(testChannelMembers.Length).Set(Arg.Any<ChannelMemberEntryModel>());
-        channelMembersComponentView.Received(1).ShowLoadingMore();
+        channelMembersComponentView.Received().ShowLoadingMore();
     }
 
     [Test]
@@ -184,7 +185,7 @@ public class ChannelMembersHUDControllerShould
         channelMembersComponentView.OnRequestMoreMembers += Raise.Event<Action>();
 
         // Assert
-        channelMembersComponentView.Received(1).HideLoadingMore();
+        channelMembersComponentView.Received().HideLoadingMore();
         chatController.Received(1).GetChannelMembers(Arg.Any<string>(), 30, channelMembersComponentView.EntryCount);
     }
 }

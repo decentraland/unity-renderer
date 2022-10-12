@@ -20,6 +20,7 @@ namespace DCL.Chat.HUD
         private int lastLimitRequested;
         private bool isSearching;
         private bool isVisible;
+        private int currentMembersCount;
 
         public IChannelMembersComponentView View => view;
         public string CurrentChannelId => currentChannelId;
@@ -47,6 +48,8 @@ namespace DCL.Chat.HUD
                 SetAutomaticReloadingActive(true);
             }
         }
+
+        public void SetMembersCount(int membersCount) => currentMembersCount = membersCount;
 
         public void Dispose()
         {
@@ -88,6 +91,7 @@ namespace DCL.Chat.HUD
 
             view.Show();
             view.ClearAllEntries();
+            SetLoadingMoreVisible(false);
             view.ShowLoading();
 
             loadStartedTimestamp = DateTime.Now;
@@ -104,7 +108,7 @@ namespace DCL.Chat.HUD
         {
             loadStartedTimestamp = DateTime.Now;
             view.ClearAllEntries();
-            view.HideLoadingMore();
+            SetLoadingMoreVisible(false);
             view.ShowLoading();
 
             isSearching = !string.IsNullOrEmpty(searchText);
@@ -130,6 +134,7 @@ namespace DCL.Chat.HUD
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
             if (!view.IsActive) return;
+            SetLoadingMoreVisible(true);
             view.HideLoading();
 
             foreach (ChannelMember member in channelMembers)
@@ -153,7 +158,7 @@ namespace DCL.Chat.HUD
 
             if (isSearching)
             {
-                view.HideLoadingMore();
+                SetLoadingMoreVisible(false);
 
                 if (view.EntryCount > 0)
                     view.ShowResultsHeader();
@@ -162,19 +167,35 @@ namespace DCL.Chat.HUD
             }
             else
             {
-                view.ShowLoadingMore();
+                SetLoadingMoreVisible(true);
             }
         }
 
         private void LoadMoreMembers()
         {
-            if (IsLoading() || isSearching) return;
+            if (IsLoading() || 
+                isSearching ||
+                lastLimitRequested >= currentMembersCount) return;
+
             loadStartedTimestamp = DateTime.Now;
-            view.HideLoadingMore();
+            SetLoadingMoreVisible(false);
             chatController.GetChannelMembers(currentChannelId, LOAD_PAGE_SIZE, view.EntryCount);
 
             if (!isSearching)
                 lastLimitRequested = LOAD_PAGE_SIZE + view.EntryCount;
+        }
+
+        private void SetLoadingMoreVisible(bool isVisible)
+        {
+            if (isVisible)
+            {
+                if (lastLimitRequested >= currentMembersCount)
+                    view.HideLoadingMore();
+                else
+                    view.ShowLoadingMore();
+            }
+            else
+                view.HideLoadingMore();
         }
 
         public void SetAutomaticReloadingActive(bool isActive)
