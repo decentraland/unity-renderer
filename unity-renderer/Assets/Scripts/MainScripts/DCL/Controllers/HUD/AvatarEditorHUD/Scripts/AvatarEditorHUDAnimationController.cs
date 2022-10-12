@@ -9,7 +9,6 @@ public class AvatarEditorHUDAnimationController : IDisposable
     internal string activeCategory;
     private int currentAnimationIndexShown;
 
-
     public AvatarEditorHUDAnimationController(AvatarEditorHUDView avatarEditorHUDView)
     {
         this.hudView = avatarEditorHUDView;
