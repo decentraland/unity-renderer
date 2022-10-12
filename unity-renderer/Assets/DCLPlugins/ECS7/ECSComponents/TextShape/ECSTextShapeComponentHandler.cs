@@ -15,12 +15,12 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
     private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
 
+    internal TextMeshPro textComponent;
     private GameObject textGameObject;
-    private TextMeshPro textComponent;
     private RectTransform rectTransform;
     private Renderer textRenderer;
 
-    private AssetPromise_Font fontPromise;
+    internal AssetPromise_Font fontPromise;
 
     private PBTextShape currentModel;
 
@@ -52,11 +52,6 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         fontPromiseKeeper.Forget(fontPromise);
 
         Object.Destroy(textGameObject);
-
-        textGameObject = null;
-        textComponent = null;
-        rectTransform = null;
-        currentModel = null;
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)
