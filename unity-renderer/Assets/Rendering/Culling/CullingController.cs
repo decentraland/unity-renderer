@@ -175,8 +175,10 @@ namespace DCL.Rendering
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
                 bool shouldBeVisible =
-                    bounds.Contains(playerPosition) ||
                     distance < profile.visibleDistanceThreshold ||
+                    bounds.Contains(playerPosition) ||
+                    // At the end we perform queries for emissive and opaque conditions
+                    // these are the last conditions because IsEmissive and IsOpaque are a bit more costly
                     viewportSize > profile.emissiveSizeThreshold && IsEmissive(r) ||
                     viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
                 ;
@@ -560,8 +562,8 @@ namespace DCL.Rendering
         {
             if (!shouldBeVisible)
             {
-                CullingControllerUtils.DrawBounds(bounds, Color.blue, 1);
-                CullingControllerUtils.DrawBounds(new Bounds() { center = boundingPoint, size = Vector3.one }, Color.red, 1);
+                DrawBounds(bounds, Color.blue, 1);
+                DrawBounds(new Bounds() { center = boundingPoint, size = Vector3.one }, Color.red, 1);
             }
         }
     }
