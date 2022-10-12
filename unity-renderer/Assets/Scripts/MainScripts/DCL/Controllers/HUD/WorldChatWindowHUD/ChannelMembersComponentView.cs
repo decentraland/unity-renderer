@@ -64,7 +64,8 @@ namespace DCL.Chat.HUD
 
         public void ClearAllEntries()
         {
-            memberList.Clear(true);
+            Debug.Log("ChannelMembers: ClearAllEntries");
+            memberList.Clear();
             UpdateLayout();
             UpdateHeaders();
         }

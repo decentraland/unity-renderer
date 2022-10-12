@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Chat.Channels;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace DCL.Chat.HUD
 {
@@ -74,7 +75,7 @@ namespace DCL.Chat.HUD
             }
         }
 
-        private void LoadMembers()
+        private async UniTaskVoid LoadMembers()
         {
             ClearListeners();
 
@@ -89,9 +90,12 @@ namespace DCL.Chat.HUD
             view.ClearAllEntries();
             view.ShowLoading();
 
+            await UniTask.NextFrame();
+
             loadStartedTimestamp = DateTime.Now;
             string[] channelsToGetInfo = { currentChannelId };
             chatController.GetChannelInfo(channelsToGetInfo);
+            Debug.Log("ChannelMembers: chatController.GetChannelMembers");
             chatController.GetChannelMembers(currentChannelId, lastLimitRequested, 0);
 
             loadingCancellationToken.Cancel();
@@ -128,6 +132,7 @@ namespace DCL.Chat.HUD
 
         private void UpdateChannelMembers(string channelId, ChannelMember[] channelMembers)
         {
+            Debug.Log("ChannelMembers: UpdateChannelMembers");
             if (!view.IsActive) return;
             view.HideLoading();
 
