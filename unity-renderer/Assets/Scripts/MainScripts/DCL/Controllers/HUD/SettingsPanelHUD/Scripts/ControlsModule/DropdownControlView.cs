@@ -39,8 +39,7 @@ namespace DCL.SettingsPanelHUD.Controls
             
             pointerClick.PointerClicked += spinBoxController.OnPointerClicked;
         }
-        
-        
+
         private void SetOption(string option)
         {
             dropdown.captionText.text = option;
