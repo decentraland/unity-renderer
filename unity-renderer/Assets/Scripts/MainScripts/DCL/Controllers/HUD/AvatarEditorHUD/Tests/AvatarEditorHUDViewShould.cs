@@ -57,7 +57,7 @@ namespace AvatarEditorHUD_Tests
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog, Substitute.For<IAvatarEditorHUDAnimationController>());
+            controller.Initialize(userProfile, catalog);
         }
 
         [Test]

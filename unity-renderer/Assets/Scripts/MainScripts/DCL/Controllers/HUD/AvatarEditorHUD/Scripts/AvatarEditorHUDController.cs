@@ -77,7 +77,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool loadingWearables;
     private WearableItem[] emotesLoadedAsWearables;
-    internal IAvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
+    internal AvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
     public event Action OnOpen;
     public event Action OnClose;
 
@@ -89,8 +89,7 @@ public class AvatarEditorHUDController : IHUD
     }
 
     public void Initialize(UserProfile userProfile, 
-        BaseDictionary<string, WearableItem> catalog, 
-        IAvatarEditorHUDAnimationController avatarEditorHUDAnimationController,
+        BaseDictionary<string, WearableItem> catalog,
         bool bypassUpdateAvatarPreview = false
         )
     {
@@ -144,8 +143,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
-        this.avatarEditorHUDAnimationController = avatarEditorHUDAnimationController;
-        this.avatarEditorHUDAnimationController.Initialize(view);
+        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view);
         
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
@@ -489,7 +487,6 @@ public class AvatarEditorHUDController : IHUD
                 EquipWearable(wearable);
             }
         }
-
 
         UpdateAvatarPreview();
         view.AddFeedbackOnAppear();
@@ -863,7 +860,7 @@ public class AvatarEditorHUDController : IHUD
         UnequipAllWearables();
 
         if (view != null)
-            view.CleanUp();
+            view.Dispose();
 
         this.userProfile.OnUpdate -= LoadUserProfile;
         this.catalog.OnAdded -= AddWearable;

@@ -1,16 +1,16 @@
 using System;
 using UnityEngine;
 
-public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationController
+public class AvatarEditorHUDAnimationController : IDisposable
 {
 
     private CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDView hudView;
-    private string activeCategory;
+    internal string activeCategory;
     private int currentAnimationIndexShown;
 
 
-    public void Initialize(AvatarEditorHUDView avatarEditorHUDView)
+    public AvatarEditorHUDAnimationController(AvatarEditorHUDView avatarEditorHUDView)
     {
         this.hudView = avatarEditorHUDView;
         
@@ -78,11 +78,11 @@ public class AvatarEditorHUDAnimationController : IAvatarEditorHUDAnimationContr
             case "mask":
                 activeCategory = GetRandomizedName("Outfit_Accessories_v0",3);
                 break;
-            case WearableLiterals.Categories.BODY_SHAPE:
-                activeCategory = "";
+            case "skin":
+                activeCategory = GetRandomizedName("Outfit_Upper_v0",3);
                 break;
             default:
-                activeCategory = GetRandomizedName("Outfit_Upper_v0",3);
+                activeCategory = "";
                 break;
         }
     }

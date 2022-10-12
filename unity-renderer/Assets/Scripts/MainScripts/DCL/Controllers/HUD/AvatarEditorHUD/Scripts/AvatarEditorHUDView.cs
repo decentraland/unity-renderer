@@ -13,7 +13,7 @@ using Random = System.Random;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
-public class AvatarEditorHUDView : MonoBehaviour,  IPointerDownHandler
+public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointerDownHandler
 {
     private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -517,7 +517,7 @@ public class AvatarEditorHUDView : MonoBehaviour,  IPointerDownHandler
         isOpen = visible;
     }
 
-    public void CleanUp()
+    public void Dispose()
     {
         loadingSpinnerGameObject = null;
         randomizeAnimator = null;

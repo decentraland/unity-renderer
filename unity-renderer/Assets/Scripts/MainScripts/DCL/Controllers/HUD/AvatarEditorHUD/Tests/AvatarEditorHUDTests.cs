@@ -54,7 +54,7 @@ namespace AvatarEditorHUD_Tests
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog, Substitute.For<IAvatarEditorHUDAnimationController>());
+            controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
@@ -141,13 +141,5 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
-        
-        /*[Test]
-        public void AnimationPlayedOnWearableClicked()
-        {
-            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            controller.WearableClicked(sunglassesId);
-            controller.avatarEditorHUDAnimationController.Received().AvatarAppearFeedback(Arg.Any<AvatarModel>());
-        }*/
     }
 }
