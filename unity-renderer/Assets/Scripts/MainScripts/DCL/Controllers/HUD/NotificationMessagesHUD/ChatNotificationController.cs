@@ -22,7 +22,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
+        private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
 
