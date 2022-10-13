@@ -25,22 +25,22 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjdkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9ldmVudHNf",
-            "cmVzdWx0LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaMGRl",
-            "Y2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9yYXljYXN0X3Jlc3VsdC5wcm90",
-            "bxowZGVjZW50cmFsYW5kL3Nkay9jb21wb25lbnRzL3BvaW50ZXJfZXZlbnRz",
-            "LnByb3RvGjZkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvY29tbW9uL2Fj",
-            "dGlvbl9idXR0b24ucHJvdG8i6AIKFVBCUG9pbnRlckV2ZW50c1Jlc3VsdBJT",
-            "Cghjb21tYW5kcxgBIAMoCzJBLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50",
-            "cy5QQlBvaW50ZXJFdmVudHNSZXN1bHQuUG9pbnRlckNvbW1hbmQa+QEKDlBv",
-            "aW50ZXJDb21tYW5kEkAKBmJ1dHRvbhgBIAEoDjIwLmRlY2VudHJhbGFuZC5z",
-            "ZGsuY29tcG9uZW50cy5jb21tb24uQWN0aW9uQnV0dG9uEjQKA2hpdBgCIAEo",
-            "CzInLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5SYXljYXN0SGl0EjwK",
-            "BXN0YXRlGAQgASgOMi0uZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlBv",
-            "aW50ZXJFdmVudFR5cGUSEQoJdGltZXN0YW1wGAUgASgFEhMKBmFuYWxvZxgG",
-            "IAEoAkgAiAEBQgkKB19hbmFsb2dCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZw",
-            "cm90bzM="));
+            "cmVzdWx0LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaNWRl",
+            "Y2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9jb21tb24vaW5wdXRfYWN0aW9u",
+            "LnByb3RvGjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9l",
+            "dmVudHMucHJvdG8aMGRlY2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9yYXlj",
+            "YXN0X3Jlc3VsdC5wcm90byLnAgoVUEJQb2ludGVyRXZlbnRzUmVzdWx0ElMK",
+            "CGNvbW1hbmRzGAEgAygLMkEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRz",
+            "LlBCUG9pbnRlckV2ZW50c1Jlc3VsdC5Qb2ludGVyQ29tbWFuZBr4AQoOUG9p",
+            "bnRlckNvbW1hbmQSPwoGYnV0dG9uGAEgASgOMi8uZGVjZW50cmFsYW5kLnNk",
+            "ay5jb21wb25lbnRzLmNvbW1vbi5JbnB1dEFjdGlvbhI0CgNoaXQYAiABKAsy",
+            "Jy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUmF5Y2FzdEhpdBI8CgVz",
+            "dGF0ZRgEIAEoDjItLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Qb2lu",
+            "dGVyRXZlbnRUeXBlEhEKCXRpbWVzdGFtcBgFIAEoBRITCgZhbmFsb2cYBiAB",
+            "KAJIAIgBAUIJCgdfYW5hbG9nQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.RaycastResultReflection.Descriptor, global::DCL.ECSComponents.PointerEventsReflection.Descriptor, global::DCL.ECSComponents.ActionButtonReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, global::DCL.ECSComponents.PointerEventsReflection.Descriptor, global::DCL.ECSComponents.RaycastResultReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));
@@ -291,13 +291,13 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "button" field.</summary>
         public const int ButtonFieldNumber = 1;
-        private global::DCL.ECSComponents.ActionButton button_ = global::DCL.ECSComponents.ActionButton.AbPointer;
+        private global::DCL.ECSComponents.InputAction button_ = global::DCL.ECSComponents.InputAction.IaPointer;
         /// <summary>
         /// identifier of the input
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::DCL.ECSComponents.ActionButton Button {
+        public global::DCL.ECSComponents.InputAction Button {
           get { return button_; }
           set {
             button_ = value;
@@ -398,7 +398,7 @@ namespace DCL.ECSComponents {
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override int GetHashCode() {
           int hash = 1;
-          if (Button != global::DCL.ECSComponents.ActionButton.AbPointer) hash ^= Button.GetHashCode();
+          if (Button != global::DCL.ECSComponents.InputAction.IaPointer) hash ^= Button.GetHashCode();
           if (hit_ != null) hash ^= Hit.GetHashCode();
           if (State != global::DCL.ECSComponents.PointerEventType.PetUp) hash ^= State.GetHashCode();
           if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
@@ -421,7 +421,7 @@ namespace DCL.ECSComponents {
         #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           output.WriteRawMessage(this);
         #else
-          if (Button != global::DCL.ECSComponents.ActionButton.AbPointer) {
+          if (Button != global::DCL.ECSComponents.InputAction.IaPointer) {
             output.WriteRawTag(8);
             output.WriteEnum((int) Button);
           }
@@ -451,7 +451,7 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-          if (Button != global::DCL.ECSComponents.ActionButton.AbPointer) {
+          if (Button != global::DCL.ECSComponents.InputAction.IaPointer) {
             output.WriteRawTag(8);
             output.WriteEnum((int) Button);
           }
@@ -481,7 +481,7 @@ namespace DCL.ECSComponents {
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public int CalculateSize() {
           int size = 0;
-          if (Button != global::DCL.ECSComponents.ActionButton.AbPointer) {
+          if (Button != global::DCL.ECSComponents.InputAction.IaPointer) {
             size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Button);
           }
           if (hit_ != null) {
@@ -508,7 +508,7 @@ namespace DCL.ECSComponents {
           if (other == null) {
             return;
           }
-          if (other.Button != global::DCL.ECSComponents.ActionButton.AbPointer) {
+          if (other.Button != global::DCL.ECSComponents.InputAction.IaPointer) {
             Button = other.Button;
           }
           if (other.hit_ != null) {
@@ -542,7 +542,7 @@ namespace DCL.ECSComponents {
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
                 break;
               case 8: {
-                Button = (global::DCL.ECSComponents.ActionButton) input.ReadEnum();
+                Button = (global::DCL.ECSComponents.InputAction) input.ReadEnum();
                 break;
               }
               case 18: {
@@ -580,7 +580,7 @@ namespace DCL.ECSComponents {
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
                 break;
               case 8: {
-                Button = (global::DCL.ECSComponents.ActionButton) input.ReadEnum();
+                Button = (global::DCL.ECSComponents.InputAction) input.ReadEnum();
                 break;
               }
               case 18: {

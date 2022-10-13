@@ -108,7 +108,7 @@ namespace ECSSystems.PointerInputSystem
             {
                 if (!state.lastHoverFeedback.hasValue && state.lastInputDown.entity == colliderData.entity)
                 {
-                    state.interactionHoverCanvas.ShowPointerUpHover(hoverEvents, raycastHit.distance, (ActionButton)currentPointerInput.buttonId);
+                    state.interactionHoverCanvas.ShowPointerUpHover(hoverEvents, raycastHit.distance, (InputAction)currentPointerInput.buttonId);
                     state.lastHoverFeedback.hasValue = true;
                     state.lastHoverFeedback.entity = colliderData.entity;
                     state.lastHoverFeedback.scene = colliderData.scene;
@@ -144,7 +144,7 @@ namespace ECSSystems.PointerInputSystem
                     state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                     {
                         analog = 1,
-                        button = (ActionButton)currentPointerInput.buttonId,
+                        button = (InputAction)currentPointerInput.buttonId,
                         hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
                             raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                         type = PointerEventType.PetDown
@@ -162,7 +162,7 @@ namespace ECSSystems.PointerInputSystem
                         state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                         {
                             analog = 1,
-                            button = (ActionButton)currentPointerInput.buttonId,
+                            button = (InputAction)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
                                 raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.PetUp
@@ -179,7 +179,7 @@ namespace ECSSystems.PointerInputSystem
                             state.inputResultComponent.AddEvent(lastInputDownData.scene, new InternalInputEventResults.EventData()
                             {
                                 analog = 1,
-                                button = (ActionButton)currentPointerInput.buttonId,
+                                button = (InputAction)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
                                     raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
                                 type = PointerEventType.PetUp
@@ -206,7 +206,7 @@ namespace ECSSystems.PointerInputSystem
                             state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
                             {
                                 analog = 1,
-                                button = (ActionButton)currentPointerInput.buttonId,
+                                button = (InputAction)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
                                     raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                                 type = PointerEventType.PetHoverLeave
@@ -225,7 +225,7 @@ namespace ECSSystems.PointerInputSystem
                         state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                         {
                             analog = 1,
-                            button = (ActionButton)currentPointerInput.buttonId,
+                            button = (InputAction)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
                                 raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.PetHoverEnter
@@ -248,7 +248,7 @@ namespace ECSSystems.PointerInputSystem
                             state.inputResultComponent.AddEvent(state.lastInputDown.scene, new InternalInputEventResults.EventData()
                             {
                                 analog = 1,
-                                button = (ActionButton)currentPointerInput.buttonId,
+                                button = (InputAction)currentPointerInput.buttonId,
                                 hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
                                     raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
                                 type = PointerEventType.PetUp
@@ -267,7 +267,7 @@ namespace ECSSystems.PointerInputSystem
                         state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
                         {
                             analog = 1,
-                            button = (ActionButton)currentPointerInput.buttonId,
+                            button = (InputAction)currentPointerInput.buttonId,
                             hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
                                 raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
                             type = PointerEventType.PetHoverLeave
@@ -316,13 +316,13 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowPointerUpHover(this IECSInteractionHoverCanvas canvas,
-            IList<PBPointerEvents.Types.Entry> entityEvents, float distance, ActionButton expectedButton)
+            IList<PBPointerEvents.Types.Entry> entityEvents, float distance, InputAction expectedButton)
         {
             canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
                 pointerEvent.EventType == PointerEventType.PetUp
                 && pointerEvent.EventInfo.GetShowFeedback()
                 && distance <= pointerEvent.EventInfo.GetMaxDistance()
-                && (pointerEvent.EventInfo.GetButton() == expectedButton || pointerEvent.EventInfo.GetButton() == ActionButton.AbAny)
+                && (pointerEvent.EventInfo.GetButton() == expectedButton || pointerEvent.EventInfo.GetButton() == InputAction.IaAny)
             );
         }
 

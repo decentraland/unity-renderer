@@ -25,22 +25,22 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvY29tbW9uL3RleHRzLnBy",
-            "b3RvEiJkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uKjUKCVRl",
-            "eHRBbGlnbhINCglUQV9DRU5URVIQABILCgdUQV9MRUZUEAESDAoIVEFfUklH",
-            "SFQQAiovCgRGb250EhUKEUZfTElCRVJBVElPTl9TQU5TEAASEAoMRl9TQU5T",
-            "X1NFUklGEAFCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "b3RvEiJkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uKjwKDVRl",
+            "eHRBbGlnbk1vZGUSDgoKVEFNX0NFTlRFUhAAEgwKCFRBTV9MRUZUEAESDQoJ",
+            "VEFNX1JJR0hUEAIqLwoERm9udBIVChFGX0xJQkVSQVRJT05fU0FOUxAAEhAK",
+            "DEZfU0FOU19TRVJJRhABQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlign), typeof(global::DCL.ECSComponents.Font), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlignMode), typeof(global::DCL.ECSComponents.Font), }, null, null));
     }
     #endregion
 
   }
   #region Enums
-  public enum TextAlign {
-    [pbr::OriginalName("TA_CENTER")] TaCenter = 0,
-    [pbr::OriginalName("TA_LEFT")] TaLeft = 1,
-    [pbr::OriginalName("TA_RIGHT")] TaRight = 2,
+  public enum TextAlignMode {
+    [pbr::OriginalName("TAM_CENTER")] TamCenter = 0,
+    [pbr::OriginalName("TAM_LEFT")] TamLeft = 1,
+    [pbr::OriginalName("TAM_RIGHT")] TamRight = 2,
   }
 
   public enum Font {
