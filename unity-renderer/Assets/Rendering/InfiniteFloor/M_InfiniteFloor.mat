@@ -114,13 +114,13 @@ Material:
     - _Color04: {r: 0.26303354, g: 0.426, b: 0.28876507, a: 1}
     - _Color04_1: {r: 0.21895385, g: 0.109692074, b: 0.27358484, a: 0}
     - _Color05: {r: 0, g: 0.103773594, b: 0.030372756, a: 1}
-    - _ColorDistricts: {r: 0.38039207, g: 0.6431373, b: 0.38431367, a: 1}
+    - _ColorDistricts: {r: 0.16078432, g: 0.80784315, b: 0.8862745, a: 1}
     - _ColorEmpty: {r: 0.38039207, g: 0.6431373, b: 0.38431367, a: 1}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
     - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
     - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006038, a: 1}
     - _ColorParcels: {r: 0.3818399, g: 0.64499986, b: 0.38315284, a: 1}
-    - _ColorPlazas: {r: 0.38039207, g: 0.6431373, b: 0.38431367, a: 1}
+    - _ColorPlazas: {r: 1, g: 0.59607846, b: 0, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
     - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933604, a: 1}
