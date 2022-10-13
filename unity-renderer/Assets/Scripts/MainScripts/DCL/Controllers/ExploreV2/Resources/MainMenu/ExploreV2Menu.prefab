@@ -3826,7 +3826,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sectionsContent: {fileID: 1615518836687384758}
   radialGradient: {fileID: 5211940635867006629}
-  navMapSection: {fileID: 6541208048180886267}
 --- !u!1 &7387171519451911844
 GameObject:
   m_ObjectHideFlags: 0
@@ -7423,7 +7422,7 @@ PrefabInstance:
     - target: {fileID: 3337524177640211239, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -63.8
+      value: -63.80005
       objectReference: {fileID: 0}
     - target: {fileID: 3337524177640211239, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
@@ -7893,7 +7892,7 @@ PrefabInstance:
     - target: {fileID: 2314960794579368015, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 9.799988
+      value: 9.800049
       objectReference: {fileID: 0}
     - target: {fileID: 2314960794579368015, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
@@ -7943,7 +7942,7 @@ PrefabInstance:
     - target: {fileID: 4530796322385634827, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4530796322385634827, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
@@ -7968,7 +7967,7 @@ PrefabInstance:
     - target: {fileID: 4827303874560641976, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4827303874560641976, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
@@ -8003,7 +8002,7 @@ PrefabInstance:
     - target: {fileID: 8285787130800403574, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 44.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8285787130800403574, guid: ba8633baa70b8a74b8a1e8eb812d5527,
         type: 3}
@@ -8386,11 +8385,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlacesAndEventsSection
-      objectReference: {fileID: 0}
-    - target: {fileID: 1447187945983909996, guid: 01095a78852393446834e68bf8628274,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1483135933473731128, guid: 01095a78852393446834e68bf8628274,
         type: 3}
