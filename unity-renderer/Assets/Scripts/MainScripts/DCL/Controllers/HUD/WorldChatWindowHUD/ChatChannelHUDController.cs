@@ -244,7 +244,7 @@ namespace DCL.Chat.HUD
         private void HandlePressBack() => OnPressBack?.Invoke();
 
         private bool IsMessageFomCurrentChannel(ChatMessage message) =>
-            message.sender == channelId || message.recipient == channelId;
+            message.sender == channelId || message.recipient == channelId || (View.IsActive && message.messageType == ChatMessage.Type.SYSTEM);
 
         private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
