@@ -9,8 +9,8 @@ using UnityEngine;
 
 public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 {
-    private static readonly int underlayColorShaderProp = Shader.PropertyToID("_UnderlayColor");
-    private static readonly int underlaySoftnessShaderProp = Shader.PropertyToID("_UnderlaySoftness");
+    private static readonly int UNDERLAY_COLOR_SHADER_PROP = Shader.PropertyToID("_UnderlayColor");
+    private static readonly int UNDERLAY_SOFTNESS_SHADER_PROP = Shader.PropertyToID("_UnderlaySoftness");
 
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
     private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
@@ -106,8 +106,8 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         if (shadowOffsetX != 0 || shadowOffsetY != 0)
         {
             fontMaterial.EnableKeyword(UNDERLAY_ON_KERYWORD);
-            fontMaterial.SetColor(underlayColorShaderProp, shadowColor.ToUnityColor());
-            fontMaterial.SetFloat(underlaySoftnessShaderProp, shadowBlur);
+            fontMaterial.SetColor(UNDERLAY_COLOR_SHADER_PROP, shadowColor.ToUnityColor());
+            fontMaterial.SetFloat(UNDERLAY_SOFTNESS_SHADER_PROP, shadowBlur);
         }
         else if (fontMaterial.IsKeywordEnabled(UNDERLAY_ON_KERYWORD))
         {
