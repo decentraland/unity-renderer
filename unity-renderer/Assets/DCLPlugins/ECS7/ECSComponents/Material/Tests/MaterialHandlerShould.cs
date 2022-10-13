@@ -45,7 +45,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }
@@ -62,7 +62,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }
@@ -85,7 +85,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }
@@ -96,7 +96,7 @@ namespace Tests
 
             Material firstMaterial = handler.promiseMaterial.asset.material;
 
-            PBMaterial model2 = new PBMaterial(model) { SrcTexture = { WrapMode = TextureWrapMode.TwmMirror } };
+            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.TwmMirror } };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
 
@@ -108,7 +108,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }
@@ -127,7 +127,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }
@@ -143,7 +143,7 @@ namespace Tests
 
             internalMaterialComponent.ClearReceivedCalls();
 
-            PBMaterial model2 = new PBMaterial(model) { SrcTexture = { WrapMode = TextureWrapMode.TwmMirror } };
+            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.TwmMirror } };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
             currentMaterial = handler.promiseMaterial.asset.material;
@@ -158,7 +158,7 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                SrcTexture = new PBMaterial.Types.Texture()
+                Texture = new PBMaterial.Types.Texture()
                 {
                     Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                 }

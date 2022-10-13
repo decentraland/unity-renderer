@@ -26,53 +26,53 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
-            "bW1vbi9jb2xvcnMucHJvdG8iqwwKClBCTWF0ZXJpYWwSRgoLc3JjX3RleHR1",
-            "cmUYASABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUEJNYXRl",
-            "cmlhbC5UZXh0dXJlSAASTwoOYXZhdGFyX3RleHR1cmUYAiABKAsyNS5kZWNl",
-            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUEJNYXRlcmlhbC5BdmF0YXJUZXh0",
-            "dXJlSAASFwoKYWxwaGFfdGVzdBgDIAEoAkgBiAEBEhkKDGNhc3Rfc2hhZG93",
-            "cxgEIAEoCEgCiAEBEksKDWFscGhhX3RleHR1cmUYBSABKAsyLy5kZWNlbnRy",
-            "YWxhbmQuc2RrLmNvbXBvbmVudHMuUEJNYXRlcmlhbC5UZXh0dXJlSAOIAQES",
-            "TgoQZW1pc3NpdmVfdGV4dHVyZRgGIAEoCzIvLmRlY2VudHJhbGFuZC5zZGsu",
-            "Y29tcG9uZW50cy5QQk1hdGVyaWFsLlRleHR1cmVIBIgBARJKCgxidW1wX3Rl",
-            "eHR1cmUYByABKAsyLy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUEJN",
-            "YXRlcmlhbC5UZXh0dXJlSAWIAQESNgoMYWxiZWRvX2NvbG9yGAggASgLMhsu",
-            "ZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIBogBARI4Cg5lbWlzc2l2ZV9j",
-            "b2xvchgJIAEoCzIbLmRlY2VudHJhbGFuZC5jb21tb24uQ29sb3IzSAeIAQES",
-            "PAoScmVmbGVjdGl2aXR5X2NvbG9yGAogASgLMhsuZGVjZW50cmFsYW5kLmNv",
-            "bW1vbi5Db2xvcjNICIgBARJVChF0cmFuc3BhcmVuY3lfbW9kZRgLIAEoDjI1",
-            "LmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5NYXRlcmlhbFRyYW5zcGFy",
-            "ZW5jeU1vZGVICYgBARIVCghtZXRhbGxpYxgMIAEoAkgKiAEBEhYKCXJvdWdo",
-            "bmVzcxgNIAEoAkgLiAEBEhcKCmdsb3NzaW5lc3MYDiABKAJIDIgBARIfChJz",
-            "cGVjdWxhcl9pbnRlbnNpdHkYDyABKAJIDYgBARIfChJlbWlzc2l2ZV9pbnRl",
-            "bnNpdHkYECABKAJIDogBARIdChBkaXJlY3RfaW50ZW5zaXR5GBEgASgCSA+I",
-            "AQEaxAEKB1RleHR1cmUSCwoDc3JjGAEgASgJEkQKCXdyYXBfbW9kZRgCIAEo",
-            "DjIsLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5UZXh0dXJlV3JhcE1v",
-            "ZGVIAIgBARJICgtmaWx0ZXJfbW9kZRgDIAEoDjIuLmRlY2VudHJhbGFuZC5z",
-            "ZGsuY29tcG9uZW50cy5UZXh0dXJlRmlsdGVyTW9kZUgBiAEBQgwKCl93cmFw",
-            "X21vZGVCDgoMX2ZpbHRlcl9tb2RlGs4BCg1BdmF0YXJUZXh0dXJlEg8KB3Vz",
-            "ZXJfaWQYASABKAkSRAoJd3JhcF9tb2RlGAIgASgOMiwuZGVjZW50cmFsYW5k",
-            "LnNkay5jb21wb25lbnRzLlRleHR1cmVXcmFwTW9kZUgAiAEBEkgKC2ZpbHRl",
-            "cl9tb2RlGAMgASgOMi4uZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlRl",
-            "eHR1cmVGaWx0ZXJNb2RlSAGIAQFCDAoKX3dyYXBfbW9kZUIOCgxfZmlsdGVy",
-            "X21vZGVCCQoHdGV4dHVyZUINCgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFk",
-            "b3dzQhAKDl9hbHBoYV90ZXh0dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJlQg8K",
-            "DV9idW1wX3RleHR1cmVCDwoNX2FsYmVkb19jb2xvckIRCg9fZW1pc3NpdmVf",
-            "Y29sb3JCFQoTX3JlZmxlY3Rpdml0eV9jb2xvckIUChJfdHJhbnNwYXJlbmN5",
-            "X21vZGVCCwoJX21ldGFsbGljQgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5l",
-            "c3NCFQoTX3NwZWN1bGFyX2ludGVuc2l0eUIVChNfZW1pc3NpdmVfaW50ZW5z",
-            "aXR5QhMKEV9kaXJlY3RfaW50ZW5zaXR5KlUKD1RleHR1cmVXcmFwTW9kZRIO",
-            "CgpUV01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJPUhAC",
-            "EhMKD1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2RlEg0K",
-            "CVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklMSU5F",
-            "QVIQAiqFAQoYTWF0ZXJpYWxUcmFuc3BhcmVuY3lNb2RlEg4KCk1UTV9PUEFR",
-            "VUUQABISCg5NVE1fQUxQSEFfVEVTVBABEhMKD01UTV9BTFBIQV9CTEVORBAC",
-            "EiIKHk1UTV9BTFBIQV9URVNUX0FORF9BTFBIQV9CTEVORBADEgwKCE1UTV9B",
-            "VVRPEARCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "bW1vbi9jb2xvcnMucHJvdG8irgwKClBCTWF0ZXJpYWwSQgoHdGV4dHVyZRgB",
+            "IAEoCzIvLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFs",
+            "LlRleHR1cmVIABJPCg5hdmF0YXJfdGV4dHVyZRgCIAEoCzI1LmRlY2VudHJh",
+            "bGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFsLkF2YXRhclRleHR1cmVI",
+            "ABIXCgphbHBoYV90ZXN0GAMgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAQg",
+            "ASgISAKIAQESSwoNYWxwaGFfdGV4dHVyZRgFIAEoCzIvLmRlY2VudHJhbGFu",
+            "ZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFsLlRleHR1cmVIA4gBARJOChBl",
+            "bWlzc2l2ZV90ZXh0dXJlGAYgASgLMi8uZGVjZW50cmFsYW5kLnNkay5jb21w",
+            "b25lbnRzLlBCTWF0ZXJpYWwuVGV4dHVyZUgEiAEBEkoKDGJ1bXBfdGV4dHVy",
+            "ZRgHIAEoCzIvLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVy",
+            "aWFsLlRleHR1cmVIBYgBARI2CgxhbGJlZG9fY29sb3IYCCABKAsyGy5kZWNl",
+            "bnRyYWxhbmQuY29tbW9uLkNvbG9yM0gGiAEBEjgKDmVtaXNzaXZlX2NvbG9y",
+            "GAkgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIB4gBARI8ChJy",
+            "ZWZsZWN0aXZpdHlfY29sb3IYCiABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9u",
+            "LkNvbG9yM0gIiAEBElUKEXRyYW5zcGFyZW5jeV9tb2RlGAsgASgOMjUuZGVj",
+            "ZW50cmFsYW5kLnNkay5jb21wb25lbnRzLk1hdGVyaWFsVHJhbnNwYXJlbmN5",
+            "TW9kZUgJiAEBEhUKCG1ldGFsbGljGAwgASgCSAqIAQESFgoJcm91Z2huZXNz",
+            "GA0gASgCSAuIAQESFwoKZ2xvc3NpbmVzcxgOIAEoAkgMiAEBEh8KEnNwZWN1",
+            "bGFyX2ludGVuc2l0eRgPIAEoAkgNiAEBEh8KEmVtaXNzaXZlX2ludGVuc2l0",
+            "eRgQIAEoAkgOiAEBEh0KEGRpcmVjdF9pbnRlbnNpdHkYESABKAJID4gBARrE",
+            "AQoHVGV4dHVyZRILCgNzcmMYASABKAkSRAoJd3JhcF9tb2RlGAIgASgOMiwu",
+            "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlRleHR1cmVXcmFwTW9kZUgA",
+            "iAEBEkgKC2ZpbHRlcl9tb2RlGAMgASgOMi4uZGVjZW50cmFsYW5kLnNkay5j",
+            "b21wb25lbnRzLlRleHR1cmVGaWx0ZXJNb2RlSAGIAQFCDAoKX3dyYXBfbW9k",
+            "ZUIOCgxfZmlsdGVyX21vZGUazgEKDUF2YXRhclRleHR1cmUSDwoHdXNlcl9p",
+            "ZBgBIAEoCRJECgl3cmFwX21vZGUYAiABKA4yLC5kZWNlbnRyYWxhbmQuc2Rr",
+            "LmNvbXBvbmVudHMuVGV4dHVyZVdyYXBNb2RlSACIAQESSAoLZmlsdGVyX21v",
+            "ZGUYAyABKA4yLi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuVGV4dHVy",
+            "ZUZpbHRlck1vZGVIAYgBAUIMCgpfd3JhcF9tb2RlQg4KDF9maWx0ZXJfbW9k",
+            "ZUIQCg5hbGJlZG9fdGV4dHVyZUINCgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9z",
+            "aGFkb3dzQhAKDl9hbHBoYV90ZXh0dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJl",
+            "Qg8KDV9idW1wX3RleHR1cmVCDwoNX2FsYmVkb19jb2xvckIRCg9fZW1pc3Np",
+            "dmVfY29sb3JCFQoTX3JlZmxlY3Rpdml0eV9jb2xvckIUChJfdHJhbnNwYXJl",
+            "bmN5X21vZGVCCwoJX21ldGFsbGljQgwKCl9yb3VnaG5lc3NCDQoLX2dsb3Nz",
+            "aW5lc3NCFQoTX3NwZWN1bGFyX2ludGVuc2l0eUIVChNfZW1pc3NpdmVfaW50",
+            "ZW5zaXR5QhMKEV9kaXJlY3RfaW50ZW5zaXR5KlUKD1RleHR1cmVXcmFwTW9k",
+            "ZRIOCgpUV01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJP",
+            "UhACEhMKD1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2Rl",
+            "Eg0KCVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklM",
+            "SU5FQVIQAiqFAQoYTWF0ZXJpYWxUcmFuc3BhcmVuY3lNb2RlEg4KCk1UTV9P",
+            "UEFRVUUQABISCg5NVE1fQUxQSEFfVEVTVBABEhMKD01UTV9BTFBIQV9CTEVO",
+            "RBACEiIKHk1UTV9BTFBIQV9URVNUX0FORF9BTFBIQV9CTEVORBADEgwKCE1U",
+            "TV9BVVRPEARCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.TextureFilterMode), typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "SrcTexture", "AvatarTexture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Texture", "AvatarTexture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "AlbedoTexture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture), global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture.Parser, new[]{ "UserId", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
           }));
     }
@@ -155,11 +155,11 @@ namespace DCL.ECSComponents {
       specularIntensity_ = other.specularIntensity_;
       emissiveIntensity_ = other.emissiveIntensity_;
       directIntensity_ = other.directIntensity_;
-      switch (other.TextureCase) {
-        case TextureOneofCase.SrcTexture:
-          SrcTexture = other.SrcTexture.Clone();
+      switch (other.AlbedoTextureCase) {
+        case AlbedoTextureOneofCase.Texture:
+          Texture = other.Texture.Clone();
           break;
-        case TextureOneofCase.AvatarTexture:
+        case AlbedoTextureOneofCase.AvatarTexture:
           AvatarTexture = other.AvatarTexture.Clone();
           break;
       }
@@ -173,18 +173,18 @@ namespace DCL.ECSComponents {
       return new PBMaterial(this);
     }
 
-    /// <summary>Field number for the "src_texture" field.</summary>
-    public const int SrcTextureFieldNumber = 1;
+    /// <summary>Field number for the "texture" field.</summary>
+    public const int TextureFieldNumber = 1;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBMaterial.Types.Texture SrcTexture {
-      get { return textureCase_ == TextureOneofCase.SrcTexture ? (global::DCL.ECSComponents.PBMaterial.Types.Texture) texture_ : null; }
+    public global::DCL.ECSComponents.PBMaterial.Types.Texture Texture {
+      get { return albedoTextureCase_ == AlbedoTextureOneofCase.Texture ? (global::DCL.ECSComponents.PBMaterial.Types.Texture) albedoTexture_ : null; }
       set {
-        texture_ = value;
-        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.SrcTexture;
+        albedoTexture_ = value;
+        albedoTextureCase_ = value == null ? AlbedoTextureOneofCase.None : AlbedoTextureOneofCase.Texture;
       }
     }
 
@@ -196,10 +196,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture AvatarTexture {
-      get { return textureCase_ == TextureOneofCase.AvatarTexture ? (global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture) texture_ : null; }
+      get { return albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture ? (global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture) albedoTexture_ : null; }
       set {
-        texture_ = value;
-        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.AvatarTexture;
+        albedoTexture_ = value;
+        albedoTextureCase_ = value == null ? AlbedoTextureOneofCase.None : AlbedoTextureOneofCase.AvatarTexture;
       }
     }
 
@@ -545,25 +545,25 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~256;
     }
 
-    private object texture_;
-    /// <summary>Enum of possible cases for the "texture" oneof.</summary>
-    public enum TextureOneofCase {
+    private object albedoTexture_;
+    /// <summary>Enum of possible cases for the "albedo_texture" oneof.</summary>
+    public enum AlbedoTextureOneofCase {
       None = 0,
-      SrcTexture = 1,
+      Texture = 1,
       AvatarTexture = 2,
     }
-    private TextureOneofCase textureCase_ = TextureOneofCase.None;
+    private AlbedoTextureOneofCase albedoTextureCase_ = AlbedoTextureOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public TextureOneofCase TextureCase {
-      get { return textureCase_; }
+    public AlbedoTextureOneofCase AlbedoTextureCase {
+      get { return albedoTextureCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearTexture() {
-      textureCase_ = TextureOneofCase.None;
-      texture_ = null;
+    public void ClearAlbedoTexture() {
+      albedoTextureCase_ = AlbedoTextureOneofCase.None;
+      albedoTexture_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -581,7 +581,7 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(SrcTexture, other.SrcTexture)) return false;
+      if (!object.Equals(Texture, other.Texture)) return false;
       if (!object.Equals(AvatarTexture, other.AvatarTexture)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(AlphaTest, other.AlphaTest)) return false;
       if (CastShadows != other.CastShadows) return false;
@@ -598,7 +598,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(SpecularIntensity, other.SpecularIntensity)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(EmissiveIntensity, other.EmissiveIntensity)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DirectIntensity, other.DirectIntensity)) return false;
-      if (TextureCase != other.TextureCase) return false;
+      if (AlbedoTextureCase != other.AlbedoTextureCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -606,8 +606,8 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (textureCase_ == TextureOneofCase.SrcTexture) hash ^= SrcTexture.GetHashCode();
-      if (textureCase_ == TextureOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) hash ^= Texture.GetHashCode();
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
       if (HasAlphaTest) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(AlphaTest);
       if (HasCastShadows) hash ^= CastShadows.GetHashCode();
       if (alphaTexture_ != null) hash ^= AlphaTexture.GetHashCode();
@@ -623,7 +623,7 @@ namespace DCL.ECSComponents {
       if (HasSpecularIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(SpecularIntensity);
       if (HasEmissiveIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(EmissiveIntensity);
       if (HasDirectIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DirectIntensity);
-      hash ^= (int) textureCase_;
+      hash ^= (int) albedoTextureCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -642,11 +642,11 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) {
         output.WriteRawTag(10);
-        output.WriteMessage(SrcTexture);
+        output.WriteMessage(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
@@ -720,11 +720,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) {
         output.WriteRawTag(10);
-        output.WriteMessage(SrcTexture);
+        output.WriteMessage(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
@@ -798,10 +798,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SrcTexture);
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AvatarTexture);
       }
       if (HasAlphaTest) {
@@ -924,14 +924,14 @@ namespace DCL.ECSComponents {
       if (other.HasDirectIntensity) {
         DirectIntensity = other.DirectIntensity;
       }
-      switch (other.TextureCase) {
-        case TextureOneofCase.SrcTexture:
-          if (SrcTexture == null) {
-            SrcTexture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
+      switch (other.AlbedoTextureCase) {
+        case AlbedoTextureOneofCase.Texture:
+          if (Texture == null) {
+            Texture = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
           }
-          SrcTexture.MergeFrom(other.SrcTexture);
+          Texture.MergeFrom(other.Texture);
           break;
-        case TextureOneofCase.AvatarTexture:
+        case AlbedoTextureOneofCase.AvatarTexture:
           if (AvatarTexture == null) {
             AvatarTexture = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
           }
@@ -956,16 +956,16 @@ namespace DCL.ECSComponents {
             break;
           case 10: {
             global::DCL.ECSComponents.PBMaterial.Types.Texture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
-            if (textureCase_ == TextureOneofCase.SrcTexture) {
-              subBuilder.MergeFrom(SrcTexture);
+            if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
             input.ReadMessage(subBuilder);
-            SrcTexture = subBuilder;
+            Texture = subBuilder;
             break;
           }
           case 18: {
             global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
-            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+            if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) {
               subBuilder.MergeFrom(AvatarTexture);
             }
             input.ReadMessage(subBuilder);
@@ -1067,16 +1067,16 @@ namespace DCL.ECSComponents {
             break;
           case 10: {
             global::DCL.ECSComponents.PBMaterial.Types.Texture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.Texture();
-            if (textureCase_ == TextureOneofCase.SrcTexture) {
-              subBuilder.MergeFrom(SrcTexture);
+            if (albedoTextureCase_ == AlbedoTextureOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
             input.ReadMessage(subBuilder);
-            SrcTexture = subBuilder;
+            Texture = subBuilder;
             break;
           }
           case 18: {
             global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture subBuilder = new global::DCL.ECSComponents.PBMaterial.Types.AvatarTexture();
-            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+            if (albedoTextureCase_ == AlbedoTextureOneofCase.AvatarTexture) {
               subBuilder.MergeFrom(AvatarTexture);
             }
             input.ReadMessage(subBuilder);

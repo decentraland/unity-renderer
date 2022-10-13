@@ -61,7 +61,7 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            if (model.TextureCase == PBMaterial.TextureOneofCase.AvatarTexture)
+            if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
             {
                 CoroutineStarter.Start(FetchUserProfileAvatarSnapshotSrc(model.AvatarTexture.UserId, (albedoTextureUrl) =>
                 {
@@ -78,7 +78,7 @@ namespace DCL.ECSComponents
                 return;
             }
 
-            CreateAndConfigureMaterialPromise(scene, entity, model, CreateMaterialPromiseTextureModel(model.SrcTexture, scene));
+            CreateAndConfigureMaterialPromise(scene, entity, model, CreateMaterialPromiseTextureModel(model.Texture, scene));
         }
 
         private IEnumerator FetchUserProfileAvatarSnapshotSrc(string userId, Action<string> finishCallback)
