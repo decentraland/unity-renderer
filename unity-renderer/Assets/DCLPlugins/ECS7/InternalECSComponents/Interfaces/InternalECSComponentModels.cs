@@ -42,7 +42,7 @@ namespace DCL.ECS7.InternalComponents
     {
         public class EventData
         {
-            public ActionButton button;
+            public InputAction button;
             public RaycastHit hit;
             public PointerEventType type;
             public int timestamp;

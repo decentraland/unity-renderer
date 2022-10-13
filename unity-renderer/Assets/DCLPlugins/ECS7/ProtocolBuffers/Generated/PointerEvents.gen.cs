@@ -25,23 +25,23 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9ldmVudHMu",
-            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxo2ZGVjZW50cmFs",
-            "YW5kL3Nkay9jb21wb25lbnRzL2NvbW1vbi9hY3Rpb25fYnV0dG9uLnByb3Rv",
-            "Is4DCg9QQlBvaW50ZXJFdmVudHMSSgoOcG9pbnRlcl9ldmVudHMYASADKAsy",
-            "Mi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUEJQb2ludGVyRXZlbnRz",
-            "LkVudHJ5GtoBCgRJbmZvEkUKBmJ1dHRvbhgBIAEoDjIwLmRlY2VudHJhbGFu",
-            "ZC5zZGsuY29tcG9uZW50cy5jb21tb24uQWN0aW9uQnV0dG9uSACIAQESFwoK",
-            "aG92ZXJfdGV4dBgCIAEoCUgBiAEBEhkKDG1heF9kaXN0YW5jZRgDIAEoAkgC",
-            "iAEBEhoKDXNob3dfZmVlZGJhY2sYBCABKAhIA4gBAUIJCgdfYnV0dG9uQg0K",
-            "C19ob3Zlcl90ZXh0Qg8KDV9tYXhfZGlzdGFuY2VCEAoOX3Nob3dfZmVlZGJh",
-            "Y2sakQEKBUVudHJ5EkEKCmV2ZW50X3R5cGUYASABKA4yLS5kZWNlbnRyYWxh",
-            "bmQuc2RrLmNvbXBvbmVudHMuUG9pbnRlckV2ZW50VHlwZRJFCgpldmVudF9p",
-            "bmZvGAIgASgLMjEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlBCUG9p",
-            "bnRlckV2ZW50cy5JbmZvKlYKEFBvaW50ZXJFdmVudFR5cGUSCgoGUEVUX1VQ",
-            "EAASDAoIUEVUX0RPV04QARITCg9QRVRfSE9WRVJfRU5URVIQAhITCg9QRVRf",
-            "SE9WRVJfTEVBVkUQA0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxo1ZGVjZW50cmFs",
+            "YW5kL3Nkay9jb21wb25lbnRzL2NvbW1vbi9pbnB1dF9hY3Rpb24ucHJvdG8i",
+            "zQMKD1BCUG9pbnRlckV2ZW50cxJKCg5wb2ludGVyX2V2ZW50cxgBIAMoCzIy",
+            "LmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQlBvaW50ZXJFdmVudHMu",
+            "RW50cnka2QEKBEluZm8SRAoGYnV0dG9uGAEgASgOMi8uZGVjZW50cmFsYW5k",
+            "LnNkay5jb21wb25lbnRzLmNvbW1vbi5JbnB1dEFjdGlvbkgAiAEBEhcKCmhv",
+            "dmVyX3RleHQYAiABKAlIAYgBARIZCgxtYXhfZGlzdGFuY2UYAyABKAJIAogB",
+            "ARIaCg1zaG93X2ZlZWRiYWNrGAQgASgISAOIAQFCCQoHX2J1dHRvbkINCgtf",
+            "aG92ZXJfdGV4dEIPCg1fbWF4X2Rpc3RhbmNlQhAKDl9zaG93X2ZlZWRiYWNr",
+            "GpEBCgVFbnRyeRJBCgpldmVudF90eXBlGAEgASgOMi0uZGVjZW50cmFsYW5k",
+            "LnNkay5jb21wb25lbnRzLlBvaW50ZXJFdmVudFR5cGUSRQoKZXZlbnRfaW5m",
+            "bxgCIAEoCzIxLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQlBvaW50",
+            "ZXJFdmVudHMuSW5mbypWChBQb2ludGVyRXZlbnRUeXBlEgoKBlBFVF9VUBAA",
+            "EgwKCFBFVF9ET1dOEAESEwoPUEVUX0hPVkVSX0VOVEVSEAISEwoPUEVUX0hP",
+            "VkVSX0xFQVZFEANCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ActionButtonReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PointerEventType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents), global::DCL.ECSComponents.PBPointerEvents.Parser, new[]{ "PointerEvents" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Info), global::DCL.ECSComponents.PBPointerEvents.Types.Info.Parser, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, new[]{ "Button", "HoverText", "MaxDistance", "ShowFeedback" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEvents.Types.Entry), global::DCL.ECSComponents.PBPointerEvents.Types.Entry.Parser, new[]{ "EventType", "EventInfo" }, null, null, null, null)})
@@ -293,14 +293,14 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "button" field.</summary>
         public const int ButtonFieldNumber = 1;
-        private global::DCL.ECSComponents.ActionButton button_;
+        private global::DCL.ECSComponents.InputAction button_;
         /// <summary>
-        /// default=ActionButton.ANY
+        /// default=InputAction.ANY
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::DCL.ECSComponents.ActionButton Button {
-          get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::DCL.ECSComponents.ActionButton.AbPointer; } }
+        public global::DCL.ECSComponents.InputAction Button {
+          get { if ((_hasBits0 & 1) != 0) { return button_; } else { return global::DCL.ECSComponents.InputAction.IaPointer; } }
           set {
             _hasBits0 |= 1;
             button_ = value;
@@ -554,7 +554,7 @@ namespace DCL.ECSComponents {
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
                 break;
               case 8: {
-                Button = (global::DCL.ECSComponents.ActionButton) input.ReadEnum();
+                Button = (global::DCL.ECSComponents.InputAction) input.ReadEnum();
                 break;
               }
               case 18: {
@@ -585,7 +585,7 @@ namespace DCL.ECSComponents {
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
                 break;
               case 8: {
-                Button = (global::DCL.ECSComponents.ActionButton) input.ReadEnum();
+                Button = (global::DCL.ECSComponents.InputAction) input.ReadEnum();
                 break;
               }
               case 18: {

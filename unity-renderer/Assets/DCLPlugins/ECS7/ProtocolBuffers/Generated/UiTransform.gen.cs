@@ -79,28 +79,28 @@ namespace DCL.ECSComponents {
             "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSFgoOcGFkZGluZ19ib3R0",
             "b20YRCABKAISEwoLYm9yZGVyX2xlZnQYSCABKAISEgoKYm9yZGVyX3RvcBhK",
             "IAEoAhIUCgxib3JkZXJfcmlnaHQYTCABKAISFQoNYm9yZGVyX2JvdHRvbRhO",
-            "IAEoAkoECCgQKUoECEcQSEoECEkQSkoECEsQTEoECE0QTipECg5ZR1Bvc2l0",
-            "aW9uVHlwZRIOCgpZR1BfU1RBVElDEAASEAoMWUdQX1JFTEFUSVZFEAESEAoM",
-            "WUdQX0FCU09MVVRFEAIqnQEKB1lHQWxpZ24SDAoIWUdBX0FVVE8QABISCg5Z",
-            "R0FfRkxFWF9TVEFSVBABEg4KCllHQV9DRU5URVIQAhIQCgxZR0FfRkxFWF9F",
-            "TkQQAxIPCgtZR0FfU1RSRVRDSBAEEhAKDFlHQV9CQVNFTElORRAFEhUKEVlH",
-            "QV9TUEFDRV9CRVRXRUVOEAYSFAoQWUdBX1NQQUNFX0FST1VORBAHKkkKBllH",
-            "VW5pdBIRCg1ZR1VfVU5ERUZJTkVEEAASDQoJWUdVX1BPSU5UEAESDwoLWUdV",
-            "X1BFUkNFTlQQAhIMCghZR1VfQVVUTxADKjgKC1lHRGlyZWN0aW9uEg8KC1lH",
-            "RF9JTkhFUklUEAASCwoHWUdEX0xUUhABEgsKB1lHRF9SVEwQAipfCg9ZR0Zs",
-            "ZXhEaXJlY3Rpb24SDwoLWUdGRF9DT0xVTU4QABIXChNZR0ZEX0NPTFVNTl9S",
-            "RVZFUlNFEAESDAoIWUdGRF9ST1cQAhIUChBZR0ZEX1JPV19SRVZFUlNFEAMq",
-            "PQoGWUdXcmFwEg8KC1lHV19OT19XUkFQEAASDAoIWUdXX1dSQVAQARIUChBZ",
-            "R1dfV1JBUF9SRVZFUlNFEAIqhAEKCVlHSnVzdGlmeRISCg5ZR0pfRkxFWF9T",
-            "VEFSVBAAEg4KCllHSl9DRU5URVIQARIQCgxZR0pfRkxFWF9FTkQQAhIVChFZ",
-            "R0pfU1BBQ0VfQkVUV0VFThADEhQKEFlHSl9TUEFDRV9BUk9VTkQQBBIUChBZ",
-            "R0pfU1BBQ0VfRVZFTkxZEAUqPQoKWUdPdmVyZmxvdxIPCgtZR09fVklTSUJM",
-            "RRAAEg4KCllHT19ISURERU4QARIOCgpZR09fU0NST0xMEAIqJwoJWUdEaXNw",
-            "bGF5EgwKCFlHRF9GTEVYEAASDAoIWUdEX05PTkUQASqRAQoGWUdFZGdlEgwK",
-            "CFlHRV9MRUZUEAASCwoHWUdFX1RPUBABEg0KCVlHRV9SSUdIVBACEg4KCllH",
-            "RV9CT1RUT00QAxINCglZR0VfU1RBUlQQBBILCgdZR0VfRU5EEAUSEgoOWUdF",
-            "X0hPUklaT05UQUwQBhIQCgxZR0VfVkVSVElDQUwQBxILCgdZR0VfQUxMEAhC",
-            "FKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "IAEoAkoECCgQKUoECEcQSEoECEkQSkoECEsQTEoECE0QTipHCg5ZR1Bvc2l0",
+            "aW9uVHlwZRIPCgtZR1BUX1NUQVRJQxAAEhEKDVlHUFRfUkVMQVRJVkUQARIR",
+            "Cg1ZR1BUX0FCU09MVVRFEAIqnQEKB1lHQWxpZ24SDAoIWUdBX0FVVE8QABIS",
+            "Cg5ZR0FfRkxFWF9TVEFSVBABEg4KCllHQV9DRU5URVIQAhIQCgxZR0FfRkxF",
+            "WF9FTkQQAxIPCgtZR0FfU1RSRVRDSBAEEhAKDFlHQV9CQVNFTElORRAFEhUK",
+            "EVlHQV9TUEFDRV9CRVRXRUVOEAYSFAoQWUdBX1NQQUNFX0FST1VORBAHKkkK",
+            "BllHVW5pdBIRCg1ZR1VfVU5ERUZJTkVEEAASDQoJWUdVX1BPSU5UEAESDwoL",
+            "WUdVX1BFUkNFTlQQAhIMCghZR1VfQVVUTxADKjgKC1lHRGlyZWN0aW9uEg8K",
+            "C1lHRF9JTkhFUklUEAASCwoHWUdEX0xUUhABEgsKB1lHRF9SVEwQAipfCg9Z",
+            "R0ZsZXhEaXJlY3Rpb24SDwoLWUdGRF9DT0xVTU4QABIXChNZR0ZEX0NPTFVN",
+            "Tl9SRVZFUlNFEAESDAoIWUdGRF9ST1cQAhIUChBZR0ZEX1JPV19SRVZFUlNF",
+            "EAMqPQoGWUdXcmFwEg8KC1lHV19OT19XUkFQEAASDAoIWUdXX1dSQVAQARIU",
+            "ChBZR1dfV1JBUF9SRVZFUlNFEAIqhAEKCVlHSnVzdGlmeRISCg5ZR0pfRkxF",
+            "WF9TVEFSVBAAEg4KCllHSl9DRU5URVIQARIQCgxZR0pfRkxFWF9FTkQQAhIV",
+            "ChFZR0pfU1BBQ0VfQkVUV0VFThADEhQKEFlHSl9TUEFDRV9BUk9VTkQQBBIU",
+            "ChBZR0pfU1BBQ0VfRVZFTkxZEAUqPQoKWUdPdmVyZmxvdxIPCgtZR09fVklT",
+            "SUJMRRAAEg4KCllHT19ISURERU4QARIOCgpZR09fU0NST0xMEAIqJwoJWUdE",
+            "aXNwbGF5EgwKCFlHRF9GTEVYEAASDAoIWUdEX05PTkUQASqRAQoGWUdFZGdl",
+            "EgwKCFlHRV9MRUZUEAASCwoHWUdFX1RPUBABEg0KCVlHRV9SSUdIVBACEg4K",
+            "CllHRV9CT1RUT00QAxINCglZR0VfU1RBUlQQBBILCgdZR0VfRU5EEAUSEgoO",
+            "WUdFX0hPUklaT05UQUwQBhIQCgxZR0VfVkVSVElDQUwQBxILCgdZR0VfQUxM",
+            "EAhCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGDirection), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -112,9 +112,9 @@ namespace DCL.ECSComponents {
   }
   #region Enums
   public enum YGPositionType {
-    [pbr::OriginalName("YGP_STATIC")] YgpStatic = 0,
-    [pbr::OriginalName("YGP_RELATIVE")] YgpRelative = 1,
-    [pbr::OriginalName("YGP_ABSOLUTE")] YgpAbsolute = 2,
+    [pbr::OriginalName("YGPT_STATIC")] YgptStatic = 0,
+    [pbr::OriginalName("YGPT_RELATIVE")] YgptRelative = 1,
+    [pbr::OriginalName("YGPT_ABSOLUTE")] YgptAbsolute = 2,
   }
 
   public enum YGAlign {
@@ -315,7 +315,7 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "position_type" field.</summary>
     public const int PositionTypeFieldNumber = 1;
-    private global::DCL.ECSComponents.YGPositionType positionType_ = global::DCL.ECSComponents.YGPositionType.YgpStatic;
+    private global::DCL.ECSComponents.YGPositionType positionType_ = global::DCL.ECSComponents.YGPositionType.YgptStatic;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGPositionType PositionType {
@@ -1057,7 +1057,7 @@ namespace DCL.ECSComponents {
       int hash = 1;
       if (Parent != 0) hash ^= Parent.GetHashCode();
       if (RightOf != 0) hash ^= RightOf.GetHashCode();
-      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgpStatic) hash ^= PositionType.GetHashCode();
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptStatic) hash ^= PositionType.GetHashCode();
       if (AlignContent != global::DCL.ECSComponents.YGAlign.YgaAuto) hash ^= AlignContent.GetHashCode();
       if (AlignItems != global::DCL.ECSComponents.YGAlign.YgaAuto) hash ^= AlignItems.GetHashCode();
       if (AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) hash ^= AlignSelf.GetHashCode();
@@ -1130,7 +1130,7 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgpStatic) {
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptStatic) {
         output.WriteRawTag(8);
         output.WriteEnum((int) PositionType);
       }
@@ -1368,7 +1368,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgpStatic) {
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptStatic) {
         output.WriteRawTag(8);
         output.WriteEnum((int) PositionType);
       }
@@ -1612,7 +1612,7 @@ namespace DCL.ECSComponents {
       if (RightOf != 0) {
         size += 2 + pb::CodedOutputStream.ComputeInt32Size(RightOf);
       }
-      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgpStatic) {
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptStatic) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) PositionType);
       }
       if (AlignContent != global::DCL.ECSComponents.YGAlign.YgaAuto) {
@@ -1795,7 +1795,7 @@ namespace DCL.ECSComponents {
       if (other.RightOf != 0) {
         RightOf = other.RightOf;
       }
-      if (other.PositionType != global::DCL.ECSComponents.YGPositionType.YgpStatic) {
+      if (other.PositionType != global::DCL.ECSComponents.YGPositionType.YgptStatic) {
         PositionType = other.PositionType;
       }
       if (other.AlignContent != global::DCL.ECSComponents.YGAlign.YgaAuto) {

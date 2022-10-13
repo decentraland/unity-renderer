@@ -26,72 +26,72 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CitkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbmZ0X3NoYXBlLnByb3Rv",
             "EhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaIGRlY2VudHJhbGFuZC9j",
-            "b21tb24vY29sb3JzLnByb3RvIqIBCgpQQk5GVFNoYXBlEgsKA3NyYxgBIAEo",
-            "CRJCCgVzdHlsZRgCIAEoDjIuLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50",
-            "cy5QaWN0dXJlRnJhbWVTdHlsZUgAiAEBEi8KBWNvbG9yGAMgASgLMhsuZGVj",
-            "ZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIAYgBAUIICgZfc3R5bGVCCAoGX2Nv",
-            "bG9yKt0DChFQaWN0dXJlRnJhbWVTdHlsZRIPCgtQRlNfQ0xBU1NJQxAAEhgK",
-            "FFBGU19CQVJPUVVFX09STkFNRU5UEAESGAoUUEZTX0RJQU1PTkRfT1JOQU1F",
-            "TlQQAhIUChBQRlNfTUlOSU1BTF9XSURFEAMSFAoQUEZTX01JTklNQUxfR1JF",
-            "WRAEEg4KClBGU19CTE9DS1kQBRISCg5QRlNfR09MRF9FREdFUxAGEhMKD1BG",
-            "U19HT0xEX0NBUlZFRBAHEhEKDVBGU19HT0xEX1dJREUQCBIUChBQRlNfR09M",
-            "RF9ST1VOREVEEAkSFAoQUEZTX01FVEFMX01FRElVTRAKEhIKDlBGU19NRVRB",
-            "TF9XSURFEAsSEgoOUEZTX01FVEFMX1NMSU0QDBIVChFQRlNfTUVUQUxfUk9V",
-            "TkRFRBANEgwKCFBGU19QSU5TEA4SFQoRUEZTX01JTklNQUxfQkxBQ0sQDxIV",
-            "ChFQRlNfTUlOSU1BTF9XSElURRAQEgwKCFBGU19UQVBFEBESEQoNUEZTX1dP",
-            "T0RfU0xJTRASEhEKDVBGU19XT09EX1dJREUQExISCg5QRlNfV09PRF9UV0lH",
-            "UxAUEg4KClBGU19DQU5WQVMQFRIMCghQRlNfTk9ORRAWQhSqAhFEQ0wuRUNT",
-            "Q29tcG9uZW50c2IGcHJvdG8z"));
+            "b21tb24vY29sb3JzLnByb3RvIp0BCgpQQk5mdFNoYXBlEgsKA3NyYxgBIAEo",
+            "CRI9CgVzdHlsZRgCIAEoDjIpLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50",
+            "cy5OZnRGcmFtZVR5cGVIAIgBARIvCgVjb2xvchgDIAEoCzIbLmRlY2VudHJh",
+            "bGFuZC5jb21tb24uQ29sb3IzSAGIAQFCCAoGX3N0eWxlQggKBl9jb2xvcirY",
+            "AwoMTmZ0RnJhbWVUeXBlEg8KC05GVF9DTEFTU0lDEAASGAoUTkZUX0JBUk9R",
+            "VUVfT1JOQU1FTlQQARIYChRORlRfRElBTU9ORF9PUk5BTUVOVBACEhQKEE5G",
+            "VF9NSU5JTUFMX1dJREUQAxIUChBORlRfTUlOSU1BTF9HUkVZEAQSDgoKTkZU",
+            "X0JMT0NLWRAFEhIKDk5GVF9HT0xEX0VER0VTEAYSEwoPTkZUX0dPTERfQ0FS",
+            "VkVEEAcSEQoNTkZUX0dPTERfV0lERRAIEhQKEE5GVF9HT0xEX1JPVU5ERUQQ",
+            "CRIUChBORlRfTUVUQUxfTUVESVVNEAoSEgoOTkZUX01FVEFMX1dJREUQCxIS",
+            "Cg5ORlRfTUVUQUxfU0xJTRAMEhUKEU5GVF9NRVRBTF9ST1VOREVEEA0SDAoI",
+            "TkZUX1BJTlMQDhIVChFORlRfTUlOSU1BTF9CTEFDSxAPEhUKEU5GVF9NSU5J",
+            "TUFMX1dISVRFEBASDAoITkZUX1RBUEUQERIRCg1ORlRfV09PRF9TTElNEBIS",
+            "EQoNTkZUX1dPT0RfV0lERRATEhIKDk5GVF9XT09EX1RXSUdTEBQSDgoKTkZU",
+            "X0NBTlZBUxAVEgwKCE5GVF9OT05FEBZCFKoCEURDTC5FQ1NDb21wb25lbnRz",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.PictureFrameStyle), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNFTShape), global::DCL.ECSComponents.PBNFTShape.Parser, new[]{ "Src", "Style", "Color" }, new[]{ "Style", "Color" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.NftFrameType), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBNftShape), global::DCL.ECSComponents.PBNftShape.Parser, new[]{ "Src", "Style", "Color" }, new[]{ "Style", "Color" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Enums
-  public enum PictureFrameStyle {
-    [pbr::OriginalName("PFS_CLASSIC")] PfsClassic = 0,
-    [pbr::OriginalName("PFS_BAROQUE_ORNAMENT")] PfsBaroqueOrnament = 1,
-    [pbr::OriginalName("PFS_DIAMOND_ORNAMENT")] PfsDiamondOrnament = 2,
-    [pbr::OriginalName("PFS_MINIMAL_WIDE")] PfsMinimalWide = 3,
-    [pbr::OriginalName("PFS_MINIMAL_GREY")] PfsMinimalGrey = 4,
-    [pbr::OriginalName("PFS_BLOCKY")] PfsBlocky = 5,
-    [pbr::OriginalName("PFS_GOLD_EDGES")] PfsGoldEdges = 6,
-    [pbr::OriginalName("PFS_GOLD_CARVED")] PfsGoldCarved = 7,
-    [pbr::OriginalName("PFS_GOLD_WIDE")] PfsGoldWide = 8,
-    [pbr::OriginalName("PFS_GOLD_ROUNDED")] PfsGoldRounded = 9,
-    [pbr::OriginalName("PFS_METAL_MEDIUM")] PfsMetalMedium = 10,
-    [pbr::OriginalName("PFS_METAL_WIDE")] PfsMetalWide = 11,
-    [pbr::OriginalName("PFS_METAL_SLIM")] PfsMetalSlim = 12,
-    [pbr::OriginalName("PFS_METAL_ROUNDED")] PfsMetalRounded = 13,
-    [pbr::OriginalName("PFS_PINS")] PfsPins = 14,
-    [pbr::OriginalName("PFS_MINIMAL_BLACK")] PfsMinimalBlack = 15,
-    [pbr::OriginalName("PFS_MINIMAL_WHITE")] PfsMinimalWhite = 16,
-    [pbr::OriginalName("PFS_TAPE")] PfsTape = 17,
-    [pbr::OriginalName("PFS_WOOD_SLIM")] PfsWoodSlim = 18,
-    [pbr::OriginalName("PFS_WOOD_WIDE")] PfsWoodWide = 19,
-    [pbr::OriginalName("PFS_WOOD_TWIGS")] PfsWoodTwigs = 20,
-    [pbr::OriginalName("PFS_CANVAS")] PfsCanvas = 21,
-    [pbr::OriginalName("PFS_NONE")] PfsNone = 22,
+  public enum NftFrameType {
+    [pbr::OriginalName("NFT_CLASSIC")] NftClassic = 0,
+    [pbr::OriginalName("NFT_BAROQUE_ORNAMENT")] NftBaroqueOrnament = 1,
+    [pbr::OriginalName("NFT_DIAMOND_ORNAMENT")] NftDiamondOrnament = 2,
+    [pbr::OriginalName("NFT_MINIMAL_WIDE")] NftMinimalWide = 3,
+    [pbr::OriginalName("NFT_MINIMAL_GREY")] NftMinimalGrey = 4,
+    [pbr::OriginalName("NFT_BLOCKY")] NftBlocky = 5,
+    [pbr::OriginalName("NFT_GOLD_EDGES")] NftGoldEdges = 6,
+    [pbr::OriginalName("NFT_GOLD_CARVED")] NftGoldCarved = 7,
+    [pbr::OriginalName("NFT_GOLD_WIDE")] NftGoldWide = 8,
+    [pbr::OriginalName("NFT_GOLD_ROUNDED")] NftGoldRounded = 9,
+    [pbr::OriginalName("NFT_METAL_MEDIUM")] NftMetalMedium = 10,
+    [pbr::OriginalName("NFT_METAL_WIDE")] NftMetalWide = 11,
+    [pbr::OriginalName("NFT_METAL_SLIM")] NftMetalSlim = 12,
+    [pbr::OriginalName("NFT_METAL_ROUNDED")] NftMetalRounded = 13,
+    [pbr::OriginalName("NFT_PINS")] NftPins = 14,
+    [pbr::OriginalName("NFT_MINIMAL_BLACK")] NftMinimalBlack = 15,
+    [pbr::OriginalName("NFT_MINIMAL_WHITE")] NftMinimalWhite = 16,
+    [pbr::OriginalName("NFT_TAPE")] NftTape = 17,
+    [pbr::OriginalName("NFT_WOOD_SLIM")] NftWoodSlim = 18,
+    [pbr::OriginalName("NFT_WOOD_WIDE")] NftWoodWide = 19,
+    [pbr::OriginalName("NFT_WOOD_TWIGS")] NftWoodTwigs = 20,
+    [pbr::OriginalName("NFT_CANVAS")] NftCanvas = 21,
+    [pbr::OriginalName("NFT_NONE")] NftNone = 22,
   }
 
   #endregion
 
   #region Messages
-  public sealed partial class PBNFTShape : pb::IMessage<PBNFTShape>
+  public sealed partial class PBNftShape : pb::IMessage<PBNftShape>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<PBNFTShape> _parser = new pb::MessageParser<PBNFTShape>(() => new PBNFTShape());
+    private static readonly pb::MessageParser<PBNftShape> _parser = new pb::MessageParser<PBNftShape>(() => new PBNftShape());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<PBNFTShape> Parser { get { return _parser; } }
+    public static pb::MessageParser<PBNftShape> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -107,7 +107,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBNFTShape() {
+    public PBNftShape() {
       OnConstruction();
     }
 
@@ -115,7 +115,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBNFTShape(PBNFTShape other) : this() {
+    public PBNftShape(PBNftShape other) : this() {
       _hasBits0 = other._hasBits0;
       src_ = other.src_;
       style_ = other.style_;
@@ -125,8 +125,8 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public PBNFTShape Clone() {
-      return new PBNFTShape(this);
+    public PBNftShape Clone() {
+      return new PBNftShape(this);
     }
 
     /// <summary>Field number for the "src" field.</summary>
@@ -143,14 +143,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "style" field.</summary>
     public const int StyleFieldNumber = 2;
-    private global::DCL.ECSComponents.PictureFrameStyle style_;
+    private global::DCL.ECSComponents.NftFrameType style_;
     /// <summary>
     /// default = PictureFrameStyle.Classic
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PictureFrameStyle Style {
-      get { if ((_hasBits0 & 1) != 0) { return style_; } else { return global::DCL.ECSComponents.PictureFrameStyle.PfsClassic; } }
+    public global::DCL.ECSComponents.NftFrameType Style {
+      get { if ((_hasBits0 & 1) != 0) { return style_; } else { return global::DCL.ECSComponents.NftFrameType.NftClassic; } }
       set {
         _hasBits0 |= 1;
         style_ = value;
@@ -187,12 +187,12 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as PBNFTShape);
+      return Equals(other as PBNftShape);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(PBNFTShape other) {
+    public bool Equals(PBNftShape other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -291,7 +291,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(PBNFTShape other) {
+    public void MergeFrom(PBNftShape other) {
       if (other == null) {
         return;
       }
@@ -327,7 +327,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Style = (global::DCL.ECSComponents.PictureFrameStyle) input.ReadEnum();
+            Style = (global::DCL.ECSComponents.NftFrameType) input.ReadEnum();
             break;
           }
           case 26: {
@@ -357,7 +357,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Style = (global::DCL.ECSComponents.PictureFrameStyle) input.ReadEnum();
+            Style = (global::DCL.ECSComponents.NftFrameType) input.ReadEnum();
             break;
           }
           case 26: {
