@@ -96,7 +96,7 @@ namespace Tests
 
             Material firstMaterial = handler.promiseMaterial.asset.material;
 
-            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.Mirror } };
+            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.TwmMirror } };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
 
@@ -143,7 +143,7 @@ namespace Tests
 
             internalMaterialComponent.ClearReceivedCalls();
 
-            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.Mirror } };
+            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.TwmMirror } };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
             currentMaterial = handler.promiseMaterial.asset.material;

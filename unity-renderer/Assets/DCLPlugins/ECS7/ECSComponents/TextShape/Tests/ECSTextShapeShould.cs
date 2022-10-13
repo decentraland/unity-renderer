@@ -11,6 +11,7 @@ using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Tests
 {

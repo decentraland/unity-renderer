@@ -6,6 +6,7 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 {

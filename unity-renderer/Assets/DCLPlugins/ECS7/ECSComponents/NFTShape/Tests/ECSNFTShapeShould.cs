@@ -113,11 +113,11 @@ namespace Tests
         [Test]
         public void UpdateStyle()
         {
-            PBNFTShape model = new PBNFTShape() { Style = PBNFTShape.Types.PictureFrameStyle.GoldEdges };
+            PBNFTShape model = new PBNFTShape() { Style = PictureFrameStyle.PfsGoldEdges };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Golden_01", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
-            model = new PBNFTShape() { Style = PBNFTShape.Types.PictureFrameStyle.Classic };
+            model = new PBNFTShape() { Style = PictureFrameStyle.PfsClassic };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Classic", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
