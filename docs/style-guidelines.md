@@ -154,10 +154,13 @@ private void Awake() { }               // called by Unity
 ## Formatting and other code conventions
 Most of this formatting conventions will be known by your IDE thanks to the .EditorConfig and applied via auto-formatting on the fly. So there is no need of remembering it.  
 
+### General
 * keep each `public` type (like `class`/`enum`/`struct`/`interface`) in a separate file with the name equal to the type name
 * access modifiers are obligatory to use: 🟢 `private void Awake() { }` 🔴 `void Awake() { }`
 * don't omit comparison to `null`: 🟢 `if (character == null)`/`if (character != null)` 🔴 `if (character)`/`if (!character)`
 * use `nameof` where it is possible 
+* Use `Action`/`Func` delegate in most cases
+  * when the amount of `event`/`delegate` parameters is higher than 3 then define a custom `EventArg` (either `System.EventArgs` or a custom `struct`) or define a custom `delegate`.
 * one line - one statement. Split chain methods (like LINQ) in several lines starting  with `.` on each line
 ```csharp
 List<string> filteredWords = new FilterLogic(listWords)
