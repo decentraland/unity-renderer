@@ -27,9 +27,9 @@ namespace DCL.ECSComponents
             return self.ReflectivityColor ?? new Color3(Color3_Defaults.colorWhite);
         }
 
-        public static TransparencyMode GetTransparencyMode(this PBMaterial self)
+        public static MaterialTransparencyMode GetTransparencyMode(this PBMaterial self)
         {
-            return self.HasTransparencyMode ? self.TransparencyMode : TransparencyMode.TmAuto;
+            return self.HasTransparencyMode ? self.TransparencyMode : MaterialTransparencyMode.MtmAuto;
         }
 
         public static float GetMetallic(this PBMaterial self)
@@ -67,9 +67,9 @@ namespace DCL.ECSComponents
             return self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp;
         }
 
-        public static FilterMode GetFilterMode(this PBMaterial.Types.Texture self)
+        public static TextureFilterMode GetFilterMode(this PBMaterial.Types.Texture self)
         {
-            return self.HasFilterMode ? self.FilterMode : FilterMode.FmBilinear;
+            return self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear;
         }
     }
 }

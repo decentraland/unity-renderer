@@ -237,9 +237,9 @@ namespace DCL.ECSComponents
         {
             switch (positionType)
             {
-                case YGPositionType.YgpRelative:
+                case YGPositionType.YgptRelative:
                     return UnityEngine.UIElements.Position.Relative;
-                case YGPositionType.YgpAbsolute:
+                case YGPositionType.YgptAbsolute:
                     return UnityEngine.UIElements.Position.Absolute;
                 default:
                     return UnityEngine.UIElements.Position.Relative;

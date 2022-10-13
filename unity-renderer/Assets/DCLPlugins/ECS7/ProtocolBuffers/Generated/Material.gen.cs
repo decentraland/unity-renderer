@@ -26,7 +26,7 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
-            "bW1vbi9jb2xvcnMucHJvdG8i+gkKClBCTWF0ZXJpYWwSRQoHdGV4dHVyZRgB",
+            "bW1vbi9jb2xvcnMucHJvdG8iiQoKClBCTWF0ZXJpYWwSRQoHdGV4dHVyZRgB",
             "IAEoCzIvLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFs",
             "LlRleHR1cmVIAIgBARIXCgphbHBoYV90ZXN0GAIgASgCSAGIAQESGQoMY2Fz",
             "dF9zaGFkb3dzGAMgASgISAKIAQESSwoNYWxwaGFfdGV4dHVyZRgEIAEoCzIv",
@@ -38,33 +38,34 @@ namespace DCL.ECSComponents {
             "ByABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gGiAEBEjgKDmVt",
             "aXNzaXZlX2NvbG9yGAggASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xv",
             "cjNIB4gBARI8ChJyZWZsZWN0aXZpdHlfY29sb3IYCSABKAsyGy5kZWNlbnRy",
-            "YWxhbmQuY29tbW9uLkNvbG9yM0gIiAEBEk0KEXRyYW5zcGFyZW5jeV9tb2Rl",
-            "GAogASgOMi0uZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlRyYW5zcGFy",
-            "ZW5jeU1vZGVICYgBARIVCghtZXRhbGxpYxgLIAEoAkgKiAEBEhYKCXJvdWdo",
-            "bmVzcxgMIAEoAkgLiAEBEhcKCmdsb3NzaW5lc3MYDSABKAJIDIgBARIfChJz",
-            "cGVjdWxhcl9pbnRlbnNpdHkYDiABKAJIDYgBARIfChJlbWlzc2l2ZV9pbnRl",
-            "bnNpdHkYDyABKAJIDogBARIdChBkaXJlY3RfaW50ZW5zaXR5GBAgASgCSA+I",
-            "AQEavQEKB1RleHR1cmUSCwoDc3JjGAEgASgJEkQKCXdyYXBfbW9kZRgCIAEo",
-            "DjIsLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5UZXh0dXJlV3JhcE1v",
-            "ZGVIAIgBARJBCgtmaWx0ZXJfbW9kZRgDIAEoDjInLmRlY2VudHJhbGFuZC5z",
-            "ZGsuY29tcG9uZW50cy5GaWx0ZXJNb2RlSAGIAQFCDAoKX3dyYXBfbW9kZUIO",
-            "CgxfZmlsdGVyX21vZGVCCgoIX3RleHR1cmVCDQoLX2FscGhhX3Rlc3RCDwoN",
-            "X2Nhc3Rfc2hhZG93c0IQCg5fYWxwaGFfdGV4dHVyZUITChFfZW1pc3NpdmVf",
-            "dGV4dHVyZUIPCg1fYnVtcF90ZXh0dXJlQg8KDV9hbGJlZG9fY29sb3JCEQoP",
-            "X2VtaXNzaXZlX2NvbG9yQhUKE19yZWZsZWN0aXZpdHlfY29sb3JCFAoSX3Ry",
-            "YW5zcGFyZW5jeV9tb2RlQgsKCV9tZXRhbGxpY0IMCgpfcm91Z2huZXNzQg0K",
-            "C19nbG9zc2luZXNzQhUKE19zcGVjdWxhcl9pbnRlbnNpdHlCFQoTX2VtaXNz",
-            "aXZlX2ludGVuc2l0eUITChFfZGlyZWN0X2ludGVuc2l0eSpVCg9UZXh0dXJl",
-            "V3JhcE1vZGUSDgoKVFdNX1JFUEVBVBAAEg0KCVRXTV9DTEFNUBABEg4KClRX",
-            "TV9NSVJST1IQAhITCg9UV01fTUlSUk9SX09OQ0UQAyo9CgpGaWx0ZXJNb2Rl",
-            "EgwKCEZNX1BPSU5UEAASDwoLRk1fQklMSU5FQVIQARIQCgxGTV9UUklMSU5F",
-            "QVIQAip4ChBUcmFuc3BhcmVuY3lNb2RlEg0KCVRNX09QQVFVRRAAEhEKDVRN",
-            "X0FMUEhBX1RFU1QQARISCg5UTV9BTFBIQV9CTEVORBACEiEKHVRNX0FMUEhB",
-            "X1RFU1RfQU5EX0FMUEhBX0JMRU5EEAMSCwoHVE1fQVVUTxAEQhSqAhFEQ0wu",
-            "RUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "YWxhbmQuY29tbW9uLkNvbG9yM0gIiAEBElUKEXRyYW5zcGFyZW5jeV9tb2Rl",
+            "GAogASgOMjUuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLk1hdGVyaWFs",
+            "VHJhbnNwYXJlbmN5TW9kZUgJiAEBEhUKCG1ldGFsbGljGAsgASgCSAqIAQES",
+            "FgoJcm91Z2huZXNzGAwgASgCSAuIAQESFwoKZ2xvc3NpbmVzcxgNIAEoAkgM",
+            "iAEBEh8KEnNwZWN1bGFyX2ludGVuc2l0eRgOIAEoAkgNiAEBEh8KEmVtaXNz",
+            "aXZlX2ludGVuc2l0eRgPIAEoAkgOiAEBEh0KEGRpcmVjdF9pbnRlbnNpdHkY",
+            "ECABKAJID4gBARrEAQoHVGV4dHVyZRILCgNzcmMYASABKAkSRAoJd3JhcF9t",
+            "b2RlGAIgASgOMiwuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlRleHR1",
+            "cmVXcmFwTW9kZUgAiAEBEkgKC2ZpbHRlcl9tb2RlGAMgASgOMi4uZGVjZW50",
+            "cmFsYW5kLnNkay5jb21wb25lbnRzLlRleHR1cmVGaWx0ZXJNb2RlSAGIAQFC",
+            "DAoKX3dyYXBfbW9kZUIOCgxfZmlsdGVyX21vZGVCCgoIX3RleHR1cmVCDQoL",
+            "X2FscGhhX3Rlc3RCDwoNX2Nhc3Rfc2hhZG93c0IQCg5fYWxwaGFfdGV4dHVy",
+            "ZUITChFfZW1pc3NpdmVfdGV4dHVyZUIPCg1fYnVtcF90ZXh0dXJlQg8KDV9h",
+            "bGJlZG9fY29sb3JCEQoPX2VtaXNzaXZlX2NvbG9yQhUKE19yZWZsZWN0aXZp",
+            "dHlfY29sb3JCFAoSX3RyYW5zcGFyZW5jeV9tb2RlQgsKCV9tZXRhbGxpY0IM",
+            "Cgpfcm91Z2huZXNzQg0KC19nbG9zc2luZXNzQhUKE19zcGVjdWxhcl9pbnRl",
+            "bnNpdHlCFQoTX2VtaXNzaXZlX2ludGVuc2l0eUITChFfZGlyZWN0X2ludGVu",
+            "c2l0eSpVCg9UZXh0dXJlV3JhcE1vZGUSDgoKVFdNX1JFUEVBVBAAEg0KCVRX",
+            "TV9DTEFNUBABEg4KClRXTV9NSVJST1IQAhITCg9UV01fTUlSUk9SX09OQ0UQ",
+            "AypHChFUZXh0dXJlRmlsdGVyTW9kZRINCglURk1fUE9JTlQQABIQCgxURk1f",
+            "QklMSU5FQVIQARIRCg1URk1fVFJJTElORUFSEAIqhQEKGE1hdGVyaWFsVHJh",
+            "bnNwYXJlbmN5TW9kZRIOCgpNVE1fT1BBUVVFEAASEgoOTVRNX0FMUEhBX1RF",
+            "U1QQARITCg9NVE1fQUxQSEFfQkxFTkQQAhIiCh5NVE1fQUxQSEFfVEVTVF9B",
+            "TkRfQUxQSEFfQkxFTkQQAxIMCghNVE1fQVVUTxAEQhSqAhFEQ0wuRUNTQ29t",
+            "cG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.FilterMode), typeof(global::DCL.ECSComponents.TransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.TextureFilterMode), typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.Texture), global::DCL.ECSComponents.PBMaterial.Types.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null)})
           }));
     }
@@ -79,18 +80,18 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("TWM_MIRROR_ONCE")] TwmMirrorOnce = 3,
   }
 
-  public enum FilterMode {
-    [pbr::OriginalName("FM_POINT")] FmPoint = 0,
-    [pbr::OriginalName("FM_BILINEAR")] FmBilinear = 1,
-    [pbr::OriginalName("FM_TRILINEAR")] FmTrilinear = 2,
+  public enum TextureFilterMode {
+    [pbr::OriginalName("TFM_POINT")] TfmPoint = 0,
+    [pbr::OriginalName("TFM_BILINEAR")] TfmBilinear = 1,
+    [pbr::OriginalName("TFM_TRILINEAR")] TfmTrilinear = 2,
   }
 
-  public enum TransparencyMode {
-    [pbr::OriginalName("TM_OPAQUE")] TmOpaque = 0,
-    [pbr::OriginalName("TM_ALPHA_TEST")] TmAlphaTest = 1,
-    [pbr::OriginalName("TM_ALPHA_BLEND")] TmAlphaBlend = 2,
-    [pbr::OriginalName("TM_ALPHA_TEST_AND_ALPHA_BLEND")] TmAlphaTestAndAlphaBlend = 3,
-    [pbr::OriginalName("TM_AUTO")] TmAuto = 4,
+  public enum MaterialTransparencyMode {
+    [pbr::OriginalName("MTM_OPAQUE")] MtmOpaque = 0,
+    [pbr::OriginalName("MTM_ALPHA_TEST")] MtmAlphaTest = 1,
+    [pbr::OriginalName("MTM_ALPHA_BLEND")] MtmAlphaBlend = 2,
+    [pbr::OriginalName("MTM_ALPHA_TEST_AND_ALPHA_BLEND")] MtmAlphaTestAndAlphaBlend = 3,
+    [pbr::OriginalName("MTM_AUTO")] MtmAuto = 4,
   }
 
   #endregion
@@ -320,14 +321,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "transparency_mode" field.</summary>
     public const int TransparencyModeFieldNumber = 10;
-    private global::DCL.ECSComponents.TransparencyMode transparencyMode_;
+    private global::DCL.ECSComponents.MaterialTransparencyMode transparencyMode_;
     /// <summary>
     /// default = TransparencyMode.Auto
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.TransparencyMode TransparencyMode {
-      get { if ((_hasBits0 & 4) != 0) { return transparencyMode_; } else { return global::DCL.ECSComponents.TransparencyMode.TmOpaque; } }
+    public global::DCL.ECSComponents.MaterialTransparencyMode TransparencyMode {
+      get { if ((_hasBits0 & 4) != 0) { return transparencyMode_; } else { return global::DCL.ECSComponents.MaterialTransparencyMode.MtmOpaque; } }
       set {
         _hasBits0 |= 4;
         transparencyMode_ = value;
@@ -936,7 +937,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 80: {
-            TransparencyMode = (global::DCL.ECSComponents.TransparencyMode) input.ReadEnum();
+            TransparencyMode = (global::DCL.ECSComponents.MaterialTransparencyMode) input.ReadEnum();
             break;
           }
           case 93: {
@@ -1036,7 +1037,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 80: {
-            TransparencyMode = (global::DCL.ECSComponents.TransparencyMode) input.ReadEnum();
+            TransparencyMode = (global::DCL.ECSComponents.MaterialTransparencyMode) input.ReadEnum();
             break;
           }
           case 93: {
@@ -1163,14 +1164,14 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "filter_mode" field.</summary>
         public const int FilterModeFieldNumber = 3;
-        private global::DCL.ECSComponents.FilterMode filterMode_;
+        private global::DCL.ECSComponents.TextureFilterMode filterMode_;
         /// <summary>
         /// default = FilterMode.Bilinear
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::DCL.ECSComponents.FilterMode FilterMode {
-          get { if ((_hasBits0 & 2) != 0) { return filterMode_; } else { return global::DCL.ECSComponents.FilterMode.FmPoint; } }
+        public global::DCL.ECSComponents.TextureFilterMode FilterMode {
+          get { if ((_hasBits0 & 2) != 0) { return filterMode_; } else { return global::DCL.ECSComponents.TextureFilterMode.TfmPoint; } }
           set {
             _hasBits0 |= 2;
             filterMode_ = value;
@@ -1333,7 +1334,7 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 24: {
-                FilterMode = (global::DCL.ECSComponents.FilterMode) input.ReadEnum();
+                FilterMode = (global::DCL.ECSComponents.TextureFilterMode) input.ReadEnum();
                 break;
               }
             }
@@ -1360,7 +1361,7 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 24: {
-                FilterMode = (global::DCL.ECSComponents.FilterMode) input.ReadEnum();
+                FilterMode = (global::DCL.ECSComponents.TextureFilterMode) input.ReadEnum();
                 break;
               }
             }

@@ -25,18 +25,18 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CilkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfdGV4dC5wcm90bxIb",
-            "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGi5kZWNlbnRyYWxhbmQvc2Rr",
-            "L2NvbXBvbmVudHMvY29tbW9uL3RleHRzLnByb3RvGiBkZWNlbnRyYWxhbmQv",
-            "Y29tbW9uL2NvbG9ycy5wcm90byKXAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
+            "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxhbmQvY29t",
+            "bW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25lbnRz",
+            "L2NvbW1vbi90ZXh0cy5wcm90byKbAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
             "KAkSLwoFY29sb3IYAiABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9y",
-            "M0gAiAEBEkYKCnRleHRfYWxpZ24YAyABKA4yLS5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbkgBiAEBEjsKBGZvbnQYBCAB",
-            "KA4yKC5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uLkZvbnRI",
-            "AogBARIWCglmb250X3NpemUYBSABKAVIA4gBAUIICgZfY29sb3JCDQoLX3Rl",
-            "eHRfYWxpZ25CBwoFX2ZvbnRCDAoKX2ZvbnRfc2l6ZUIUqgIRRENMLkVDU0Nv",
-            "bXBvbmVudHNiBnByb3RvMw=="));
+            "M0gAiAEBEkoKCnRleHRfYWxpZ24YAyABKA4yMS5kZWNlbnRyYWxhbmQuc2Rr",
+            "LmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbk1vZGVIAYgBARI7CgRmb250",
+            "GAQgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5G",
+            "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQFCCAoGX2NvbG9yQg0K",
+            "C190ZXh0X2FsaWduQgcKBV9mb250QgwKCl9mb250X3NpemVCFKoCEURDTC5F",
+            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.TextsReflection.Descriptor, global::DCL.ECSComponents.ColorsReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
@@ -124,14 +124,14 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "text_align" field.</summary>
     public const int TextAlignFieldNumber = 3;
-    private global::DCL.ECSComponents.TextAlign textAlign_;
+    private global::DCL.ECSComponents.TextAlignMode textAlign_;
     /// <summary>
     /// default='center'
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.TextAlign TextAlign {
-      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlign.TaCenter; } }
+    public global::DCL.ECSComponents.TextAlignMode TextAlign {
+      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamCenter; } }
       set {
         _hasBits0 |= 1;
         textAlign_ = value;
@@ -388,7 +388,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 24: {
-            TextAlign = (global::DCL.ECSComponents.TextAlign) input.ReadEnum();
+            TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
           case 32: {
@@ -426,7 +426,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 24: {
-            TextAlign = (global::DCL.ECSComponents.TextAlign) input.ReadEnum();
+            TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
           case 32: {

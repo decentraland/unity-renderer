@@ -297,7 +297,7 @@ namespace Tests
                             EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbAny,
+                                Button = InputAction.IaAny,
                                 HoverText = "Temptation"
                             }
                         }
@@ -312,7 +312,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
             interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbAny);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, InputAction.IaAny);
             interactionHoverCanvas.Received(1).Show();
         }
 
@@ -339,7 +339,7 @@ namespace Tests
                             EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbAny,
+                                Button = InputAction.IaAny,
                                 HoverText = "Temptation",
                                 MaxDistance = 1
                             }
@@ -354,7 +354,7 @@ namespace Tests
 
             interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
             interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
-            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<InputAction>());
             interactionHoverCanvas.DidNotReceive().Show();
         }
 
@@ -372,7 +372,7 @@ namespace Tests
                             EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbPointer,
+                                Button = InputAction.IaPointer,
                                 HoverText = "Temptation"
                             }
                         }
@@ -382,7 +382,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -403,7 +403,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
             interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbPointer);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
         }
 
@@ -421,7 +421,7 @@ namespace Tests
                             EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbPointer,
+                                Button = InputAction.IaPointer,
                                 HoverText = "Temptation",
                                 MaxDistance = 1
                             }
@@ -432,7 +432,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -453,7 +453,7 @@ namespace Tests
 
             interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
             interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
-            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<InputAction>());
             interactionHoverCanvas.DidNotReceive().Show();
         }
 
@@ -471,7 +471,7 @@ namespace Tests
                             EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbSecondary,
+                                Button = InputAction.IaSecondary,
                                 HoverText = "Temptation"
                             }
                         }
@@ -481,7 +481,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -501,7 +501,7 @@ namespace Tests
 
             interactionHoverCanvas.Received(MAX_TOOLTIPS).SetTooltipActive(Arg.Any<int>(), false);
             interactionHoverCanvas.DidNotReceive().SetTooltipText(Arg.Any<int>(), Arg.Any<string>());
-            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<ActionButton>());
+            interactionHoverCanvas.DidNotReceive().SetTooltipInput(Arg.Any<int>(), Arg.Any<InputAction>());
             interactionHoverCanvas.DidNotReceive().Show();
         }
 
@@ -527,7 +527,7 @@ namespace Tests
                             EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbAny,
+                                Button = InputAction.IaAny,
                                 HoverText = "Temptation"
                             }
                         },
@@ -536,7 +536,7 @@ namespace Tests
                             EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbPointer,
+                                Button = InputAction.IaPointer,
                                 HoverText = "Temptation2"
                             }
                         },
@@ -545,7 +545,7 @@ namespace Tests
                             EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.AbPrimary,
+                                Button = InputAction.IaPrimary,
                                 HoverText = "Temptation3"
                             }
                         }
@@ -561,8 +561,8 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(1, true);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
             interactionHoverCanvas.Received(1).SetTooltipText(1, "Temptation2");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbAny);
-            interactionHoverCanvas.Received(1).SetTooltipInput(1, ActionButton.AbPointer);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, InputAction.IaAny);
+            interactionHoverCanvas.Received(1).SetTooltipInput(1, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
         }
     }

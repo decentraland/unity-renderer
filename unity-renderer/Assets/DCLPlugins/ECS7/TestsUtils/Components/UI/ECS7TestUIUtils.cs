@@ -72,7 +72,7 @@ namespace DCLPlugins.ECS7.TestsUtils
             model.PositionTop = 0;
             model.PositionTopUnit = YGUnit.YguPoint;
 
-            model.PositionType = YGPositionType.YgpRelative;
+            model.PositionType = YGPositionType.YgptRelative;
             return model;
         }
     }
