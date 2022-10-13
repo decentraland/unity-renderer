@@ -18,13 +18,13 @@ namespace DCL.ECS7.InternalComponents
                 return;
 
             model.renderers.Remove(renderer);
-            
+
             if (model.renderers.Count == 0)
             {
                 renderersInternalComponent.RemoveFor(scene, entity);
                 return;
             }
-            
+
             renderersInternalComponent.PutFor(scene, entity, model);
         }
 
@@ -36,7 +36,6 @@ namespace DCL.ECS7.InternalComponents
 
             var model = renderesInternalComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
             model.renderers.Add(renderer);
-            model.dirty = true;
             renderesInternalComponent.PutFor(scene, entity, model);
         }
     }

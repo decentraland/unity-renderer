@@ -13,7 +13,7 @@ import * as fs from 'node:fs'
 import * as fse from 'fs-extra'
 
 const componentsRawInputPath = normalizePath(
-  path.resolve(protocolPath, 'ecs/components/'),
+  path.resolve(protocolPath),
 )
 
 const componentsPreProccessInputPath = normalizePath(
@@ -77,7 +77,7 @@ function generateComponentsEnum(components: ComponentData[]) {
 
 async function preProcessComponents() {
   const protoFiles = glob.sync(
-    normalizePath(path.resolve(componentsPreProccessInputPath, '**/*.proto')),
+    normalizePath(path.resolve(componentsPreProccessInputPath, 'ecs/components/**/*.proto')),
   )
   const components: ComponentData[] = []
 
@@ -120,7 +120,7 @@ async function buildComponents() {
 
   const protoFiles = glob
     .sync(
-      normalizePath(path.resolve(componentsPreProccessInputPath, '**/*.proto')),
+      normalizePath(path.resolve(componentsPreProccessInputPath, 'ecs/components/**/*.proto')),
     )
     .join(' ')
 

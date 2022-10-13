@@ -155,7 +155,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private DataStore_Camera cameraDataStore;
 
-    private  Dictionary<ExploreSection, FeatureEncapsulatorComponentView> exploreSectionsById;
+    private Dictionary<ExploreSection, FeatureEncapsulatorComponentView> exploreSectionsById;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     private RectTransform profileCardRectTranform;

@@ -150,24 +150,6 @@ public class ECSTestScene : MonoBehaviour
             model);
     }
 
-    private static void AddPlaneShapeComponent(string sceneId, IECSComponentWriter componentWriter)
-    {
-        PBPlaneShape model = new PBPlaneShape();
-        model.Visible = true;
-        model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId, 3, ComponentID.PLANE_SHAPE,
-            model);
-    }
-
-    private static void AddBoxComponent(string sceneId, IECSComponentWriter componentWriter)
-    {
-        PBBoxShape model = new PBBoxShape();
-        model.Visible = true;
-        model.WithCollisions = true;
-        componentWriter.PutComponent(sceneId, 2, ComponentID.BOX_SHAPE,
-            model);
-    }
-
     private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
     {
         PBNFTShape model = new PBNFTShape();
