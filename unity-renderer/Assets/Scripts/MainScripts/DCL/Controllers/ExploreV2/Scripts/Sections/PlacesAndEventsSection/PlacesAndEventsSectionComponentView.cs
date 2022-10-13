@@ -43,9 +43,20 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal HighlightsSubSectionComponentView highlightsSubSection;
     [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
+    
+    private Canvas canvas;
 
-    public override void Start() =>
+    public override void Awake()
+    {
+        base.Awake();
+        canvas = GetComponent<Canvas>();
+    }
+
+    public override void Start()
+    {
         CreateSubSectionSelectorMappings();
+        SetActive(false);
+    }
 
     public IHighlightsSubSectionComponentView currentHighlightsSubSectionComponentView => highlightsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
@@ -54,11 +65,8 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public void GoToSubsection(int subSectionIndex) =>
         subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
 
-    public void SetActive(bool isActive)
-    {
-        GetComponent<Canvas>().enabled = isActive;
-        // gameObject.SetActive(isActive);
-    }
+    public void SetActive(bool isActive) => 
+        canvas.enabled = isActive;
 
     public override void RefreshControl()
     {
@@ -79,23 +87,14 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)
-                          ?.onSelect.AddListener((isOn) =>
-                          {
-                              highlightsSubSection.gameObject.SetActive(isOn);
-                          });
+        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect
+                          .AddListener(isOn => highlightsSubSection.gameObject.SetActive(isOn));
 
-        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)
-                          ?.onSelect.AddListener((isOn) =>
-                          {
-                              placesSubSection.gameObject.SetActive(isOn);
-                          });
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect
+                          .AddListener(isOn => placesSubSection.gameObject.SetActive(isOn));
 
-        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)
-                          ?.onSelect.AddListener((isOn) =>
-                          {
-                              eventsSubSection.gameObject.SetActive(isOn);
-                          });
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect
+                          .AddListener(isOn => eventsSubSection.gameObject.SetActive(isOn));
 
         subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
     }
