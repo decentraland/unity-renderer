@@ -26,36 +26,36 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CixkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdGV4dF9zaGFwZS5wcm90",
             "bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxhbmQv",
-            "Y29tbW9uL2NvbG9ycy5wcm90byKyCAoLUEJUZXh0U2hhcGUSDAoEdGV4dBgB",
-            "IAEoCRIUCgd2aXNpYmxlGAIgASgISACIAQESEQoEZm9udBgDIAEoCUgBiAEB",
-            "EhQKB29wYWNpdHkYBCABKAJIAogBARIWCglmb250X3NpemUYBSABKAJIA4gB",
-            "ARIbCg5mb250X2F1dG9fc2l6ZRgGIAEoCEgEiAEBEhkKDGhfdGV4dF9hbGln",
-            "bhgHIAEoCUgFiAEBEhkKDHZfdGV4dF9hbGlnbhgIIAEoCUgGiAEBEhIKBXdp",
-            "ZHRoGAkgASgCSAeIAQESEwoGaGVpZ2h0GAogASgCSAiIAQESGAoLcGFkZGlu",
-            "Z190b3AYCyABKAJICYgBARIaCg1wYWRkaW5nX3JpZ2h0GAwgASgCSAqIAQES",
-            "GwoOcGFkZGluZ19ib3R0b20YDSABKAJIC4gBARIZCgxwYWRkaW5nX2xlZnQY",
-            "DiABKAJIDIgBARIZCgxsaW5lX3NwYWNpbmcYDyABKAJIDYgBARIXCgpsaW5l",
-            "X2NvdW50GBAgASgFSA6IAQESGgoNdGV4dF93cmFwcGluZxgRIAEoCEgPiAEB",
-            "EhgKC3NoYWRvd19ibHVyGBIgASgCSBCIAQESHAoPc2hhZG93X29mZnNldF94",
-            "GBMgASgCSBGIAQESHAoPc2hhZG93X29mZnNldF95GBQgASgCSBKIAQESGgoN",
-            "b3V0bGluZV93aWR0aBgVIAEoAkgTiAEBEjYKDHNoYWRvd19jb2xvchgWIAEo",
-            "CzIbLmRlY2VudHJhbGFuZC5jb21tb24uQ29sb3IzSBSIAQESNwoNb3V0bGlu",
-            "ZV9jb2xvchgXIAEoCzIbLmRlY2VudHJhbGFuZC5jb21tb24uQ29sb3IzSBWI",
-            "AQESNAoKdGV4dF9jb2xvchgYIAEoCzIbLmRlY2VudHJhbGFuZC5jb21tb24u",
-            "Q29sb3IzSBaIAQFCCgoIX3Zpc2libGVCBwoFX2ZvbnRCCgoIX29wYWNpdHlC",
-            "DAoKX2ZvbnRfc2l6ZUIRCg9fZm9udF9hdXRvX3NpemVCDwoNX2hfdGV4dF9h",
-            "bGlnbkIPCg1fdl90ZXh0X2FsaWduQggKBl93aWR0aEIJCgdfaGVpZ2h0Qg4K",
-            "DF9wYWRkaW5nX3RvcEIQCg5fcGFkZGluZ19yaWdodEIRCg9fcGFkZGluZ19i",
-            "b3R0b21CDwoNX3BhZGRpbmdfbGVmdEIPCg1fbGluZV9zcGFjaW5nQg0KC19s",
-            "aW5lX2NvdW50QhAKDl90ZXh0X3dyYXBwaW5nQg4KDF9zaGFkb3dfYmx1ckIS",
-            "ChBfc2hhZG93X29mZnNldF94QhIKEF9zaGFkb3dfb2Zmc2V0X3lCEAoOX291",
-            "dGxpbmVfd2lkdGhCDwoNX3NoYWRvd19jb2xvckIQCg5fb3V0bGluZV9jb2xv",
-            "ckINCgtfdGV4dF9jb2xvckIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3Rv",
-            "Mw=="));
+            "Y29tbW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25l",
+            "bnRzL2NvbW1vbi90ZXh0cy5wcm90byKbCAoLUEJUZXh0U2hhcGUSDAoEdGV4",
+            "dBgBIAEoCRI7CgRmb250GAMgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21w",
+            "b25lbnRzLmNvbW1vbi5Gb250SACIAQESFgoJZm9udF9zaXplGAUgASgCSAGI",
+            "AQESGwoOZm9udF9hdXRvX3NpemUYBiABKAhIAogBARJKCgp0ZXh0X2FsaWdu",
+            "GAcgASgOMjEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5U",
+            "ZXh0QWxpZ25Nb2RlSAOIAQESEgoFd2lkdGgYCSABKAJIBIgBARITCgZoZWln",
+            "aHQYCiABKAJIBYgBARIYCgtwYWRkaW5nX3RvcBgLIAEoAkgGiAEBEhoKDXBh",
+            "ZGRpbmdfcmlnaHQYDCABKAJIB4gBARIbCg5wYWRkaW5nX2JvdHRvbRgNIAEo",
+            "AkgIiAEBEhkKDHBhZGRpbmdfbGVmdBgOIAEoAkgJiAEBEhkKDGxpbmVfc3Bh",
+            "Y2luZxgPIAEoAkgKiAEBEhcKCmxpbmVfY291bnQYECABKAVIC4gBARIaCg10",
+            "ZXh0X3dyYXBwaW5nGBEgASgISAyIAQESGAoLc2hhZG93X2JsdXIYEiABKAJI",
+            "DYgBARIcCg9zaGFkb3dfb2Zmc2V0X3gYEyABKAJIDogBARIcCg9zaGFkb3df",
+            "b2Zmc2V0X3kYFCABKAJID4gBARIaCg1vdXRsaW5lX3dpZHRoGBUgASgCSBCI",
+            "AQESNgoMc2hhZG93X2NvbG9yGBYgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1v",
+            "bi5Db2xvcjNIEYgBARI3Cg1vdXRsaW5lX2NvbG9yGBcgASgLMhsuZGVjZW50",
+            "cmFsYW5kLmNvbW1vbi5Db2xvcjNIEogBARI0Cgp0ZXh0X2NvbG9yGBggASgL",
+            "MhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjRIE4gBAUIHCgVfZm9udEIM",
+            "CgpfZm9udF9zaXplQhEKD19mb250X2F1dG9fc2l6ZUINCgtfdGV4dF9hbGln",
+            "bkIICgZfd2lkdGhCCQoHX2hlaWdodEIOCgxfcGFkZGluZ190b3BCEAoOX3Bh",
+            "ZGRpbmdfcmlnaHRCEQoPX3BhZGRpbmdfYm90dG9tQg8KDV9wYWRkaW5nX2xl",
+            "ZnRCDwoNX2xpbmVfc3BhY2luZ0INCgtfbGluZV9jb3VudEIQCg5fdGV4dF93",
+            "cmFwcGluZ0IOCgxfc2hhZG93X2JsdXJCEgoQX3NoYWRvd19vZmZzZXRfeEIS",
+            "ChBfc2hhZG93X29mZnNldF95QhAKDl9vdXRsaW5lX3dpZHRoQg8KDV9zaGFk",
+            "b3dfY29sb3JCEAoOX291dGxpbmVfY29sb3JCDQoLX3RleHRfY29sb3JCFKoC",
+            "EURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTextShape), global::DCL.ECSComponents.PBTextShape.Parser, new[]{ "Text", "Visible", "Font", "Opacity", "FontSize", "FontAutoSize", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, new[]{ "Visible", "Font", "Opacity", "FontSize", "FontAutoSize", "HTextAlign", "VTextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTextShape), global::DCL.ECSComponents.PBTextShape.Parser, new[]{ "Text", "Font", "FontSize", "FontAutoSize", "TextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, new[]{ "Font", "FontSize", "FontAutoSize", "TextAlign", "Width", "Height", "PaddingTop", "PaddingRight", "PaddingBottom", "PaddingLeft", "LineSpacing", "LineCount", "TextWrapping", "ShadowBlur", "ShadowOffsetX", "ShadowOffsetY", "OutlineWidth", "ShadowColor", "OutlineColor", "TextColor" }, null, null, null)
           }));
     }
     #endregion
@@ -99,13 +99,10 @@ namespace DCL.ECSComponents {
     public PBTextShape(PBTextShape other) : this() {
       _hasBits0 = other._hasBits0;
       text_ = other.text_;
-      visible_ = other.visible_;
       font_ = other.font_;
-      opacity_ = other.opacity_;
       fontSize_ = other.fontSize_;
       fontAutoSize_ = other.fontAutoSize_;
-      hTextAlign_ = other.hTextAlign_;
-      vTextAlign_ = other.vTextAlign_;
+      textAlign_ = other.textAlign_;
       width_ = other.width_;
       height_ = other.height_;
       paddingTop_ = other.paddingTop_;
@@ -143,84 +140,32 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "visible" field.</summary>
-    public const int VisibleFieldNumber = 2;
-    private bool visible_;
+    /// <summary>Field number for the "font" field.</summary>
+    public const int FontFieldNumber = 3;
+    private global::DCL.ECSComponents.Font font_;
     /// <summary>
     /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Visible {
-      get { if ((_hasBits0 & 1) != 0) { return visible_; } else { return false; } }
+    public global::DCL.ECSComponents.Font Font {
+      get { if ((_hasBits0 & 1) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.FLiberationSans; } }
       set {
         _hasBits0 |= 1;
-        visible_ = value;
-      }
-    }
-    /// <summary>Gets whether the "visible" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasVisible {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "visible" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearVisible() {
-      _hasBits0 &= ~1;
-    }
-
-    /// <summary>Field number for the "font" field.</summary>
-    public const int FontFieldNumber = 3;
-    private string font_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Font {
-      get { return font_ ?? ""; }
-      set {
-        font_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        font_ = value;
       }
     }
     /// <summary>Gets whether the "font" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFont {
-      get { return font_ != null; }
+      get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "font" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFont() {
-      font_ = null;
-    }
-
-    /// <summary>Field number for the "opacity" field.</summary>
-    public const int OpacityFieldNumber = 4;
-    private float opacity_;
-    /// <summary>
-    /// default=1.0f
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Opacity {
-      get { if ((_hasBits0 & 2) != 0) { return opacity_; } else { return 0F; } }
-      set {
-        _hasBits0 |= 2;
-        opacity_ = value;
-      }
-    }
-    /// <summary>Gets whether the "opacity" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasOpacity {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "opacity" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearOpacity() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "font_size" field.</summary>
@@ -232,9 +177,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FontSize {
-      get { if ((_hasBits0 & 4) != 0) { return fontSize_; } else { return 0F; } }
+      get { if ((_hasBits0 & 2) != 0) { return fontSize_; } else { return 0F; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         fontSize_ = value;
       }
     }
@@ -242,13 +187,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFontSize {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "font_size" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFontSize() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "font_auto_size" field.</summary>
@@ -257,9 +202,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool FontAutoSize {
-      get { if ((_hasBits0 & 8) != 0) { return fontAutoSize_; } else { return false; } }
+      get { if ((_hasBits0 & 4) != 0) { return fontAutoSize_; } else { return false; } }
       set {
-        _hasBits0 |= 8;
+        _hasBits0 |= 4;
         fontAutoSize_ = value;
       }
     }
@@ -267,67 +212,41 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFontAutoSize {
-      get { return (_hasBits0 & 8) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "font_auto_size" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFontAutoSize() {
+      _hasBits0 &= ~4;
+    }
+
+    /// <summary>Field number for the "text_align" field.</summary>
+    public const int TextAlignFieldNumber = 7;
+    private global::DCL.ECSComponents.TextAlignMode textAlign_;
+    /// <summary>
+    /// default=TAM_CENTER_CENTER
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.TextAlignMode TextAlign {
+      get { if ((_hasBits0 & 8) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamTopLeft; } }
+      set {
+        _hasBits0 |= 8;
+        textAlign_ = value;
+      }
+    }
+    /// <summary>Gets whether the "text_align" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTextAlign {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "text_align" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTextAlign() {
       _hasBits0 &= ~8;
-    }
-
-    /// <summary>Field number for the "h_text_align" field.</summary>
-    public const int HTextAlignFieldNumber = 7;
-    private string hTextAlign_;
-    /// <summary>
-    /// default='center'
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string HTextAlign {
-      get { return hTextAlign_ ?? ""; }
-      set {
-        hTextAlign_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "h_text_align" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasHTextAlign {
-      get { return hTextAlign_ != null; }
-    }
-    /// <summary>Clears the value of the "h_text_align" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearHTextAlign() {
-      hTextAlign_ = null;
-    }
-
-    /// <summary>Field number for the "v_text_align" field.</summary>
-    public const int VTextAlignFieldNumber = 8;
-    private string vTextAlign_;
-    /// <summary>
-    /// default='center'
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string VTextAlign {
-      get { return vTextAlign_ ?? ""; }
-      set {
-        vTextAlign_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "v_text_align" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasVTextAlign {
-      get { return vTextAlign_ != null; }
-    }
-    /// <summary>Clears the value of the "v_text_align" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearVTextAlign() {
-      vTextAlign_ = null;
     }
 
     /// <summary>Field number for the "width" field.</summary>
@@ -693,13 +612,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "text_color" field.</summary>
     public const int TextColorFieldNumber = 24;
-    private global::DCL.ECSComponents.Color3 textColor_;
+    private global::DCL.ECSComponents.Color4 textColor_;
     /// <summary>
     /// default=(1.0,1.0,1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color3 TextColor {
+    public global::DCL.ECSComponents.Color4 TextColor {
       get { return textColor_; }
       set {
         textColor_ = value;
@@ -722,13 +641,10 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Text != other.Text) return false;
-      if (Visible != other.Visible) return false;
       if (Font != other.Font) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Opacity, other.Opacity)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FontSize, other.FontSize)) return false;
       if (FontAutoSize != other.FontAutoSize) return false;
-      if (HTextAlign != other.HTextAlign) return false;
-      if (VTextAlign != other.VTextAlign) return false;
+      if (TextAlign != other.TextAlign) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Width, other.Width)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Height, other.Height)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PaddingTop, other.PaddingTop)) return false;
@@ -753,13 +669,10 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Text.Length != 0) hash ^= Text.GetHashCode();
-      if (HasVisible) hash ^= Visible.GetHashCode();
       if (HasFont) hash ^= Font.GetHashCode();
-      if (HasOpacity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Opacity);
       if (HasFontSize) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FontSize);
       if (HasFontAutoSize) hash ^= FontAutoSize.GetHashCode();
-      if (HasHTextAlign) hash ^= HTextAlign.GetHashCode();
-      if (HasVTextAlign) hash ^= VTextAlign.GetHashCode();
+      if (HasTextAlign) hash ^= TextAlign.GetHashCode();
       if (HasWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Width);
       if (HasHeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Height);
       if (HasPaddingTop) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingTop);
@@ -798,17 +711,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Text);
       }
-      if (HasVisible) {
-        output.WriteRawTag(16);
-        output.WriteBool(Visible);
-      }
       if (HasFont) {
-        output.WriteRawTag(26);
-        output.WriteString(Font);
-      }
-      if (HasOpacity) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Opacity);
+        output.WriteRawTag(24);
+        output.WriteEnum((int) Font);
       }
       if (HasFontSize) {
         output.WriteRawTag(45);
@@ -818,13 +723,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(48);
         output.WriteBool(FontAutoSize);
       }
-      if (HasHTextAlign) {
-        output.WriteRawTag(58);
-        output.WriteString(HTextAlign);
-      }
-      if (HasVTextAlign) {
-        output.WriteRawTag(66);
-        output.WriteString(VTextAlign);
+      if (HasTextAlign) {
+        output.WriteRawTag(56);
+        output.WriteEnum((int) TextAlign);
       }
       if (HasWidth) {
         output.WriteRawTag(77);
@@ -904,17 +805,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Text);
       }
-      if (HasVisible) {
-        output.WriteRawTag(16);
-        output.WriteBool(Visible);
-      }
       if (HasFont) {
-        output.WriteRawTag(26);
-        output.WriteString(Font);
-      }
-      if (HasOpacity) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Opacity);
+        output.WriteRawTag(24);
+        output.WriteEnum((int) Font);
       }
       if (HasFontSize) {
         output.WriteRawTag(45);
@@ -924,13 +817,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(48);
         output.WriteBool(FontAutoSize);
       }
-      if (HasHTextAlign) {
-        output.WriteRawTag(58);
-        output.WriteString(HTextAlign);
-      }
-      if (HasVTextAlign) {
-        output.WriteRawTag(66);
-        output.WriteString(VTextAlign);
+      if (HasTextAlign) {
+        output.WriteRawTag(56);
+        output.WriteEnum((int) TextAlign);
       }
       if (HasWidth) {
         output.WriteRawTag(77);
@@ -1009,14 +898,8 @@ namespace DCL.ECSComponents {
       if (Text.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
       }
-      if (HasVisible) {
-        size += 1 + 1;
-      }
       if (HasFont) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Font);
-      }
-      if (HasOpacity) {
-        size += 1 + 4;
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Font);
       }
       if (HasFontSize) {
         size += 1 + 4;
@@ -1024,11 +907,8 @@ namespace DCL.ECSComponents {
       if (HasFontAutoSize) {
         size += 1 + 1;
       }
-      if (HasHTextAlign) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(HTextAlign);
-      }
-      if (HasVTextAlign) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(VTextAlign);
+      if (HasTextAlign) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TextAlign);
       }
       if (HasWidth) {
         size += 1 + 4;
@@ -1093,14 +973,8 @@ namespace DCL.ECSComponents {
       if (other.Text.Length != 0) {
         Text = other.Text;
       }
-      if (other.HasVisible) {
-        Visible = other.Visible;
-      }
       if (other.HasFont) {
         Font = other.Font;
-      }
-      if (other.HasOpacity) {
-        Opacity = other.Opacity;
       }
       if (other.HasFontSize) {
         FontSize = other.FontSize;
@@ -1108,11 +982,8 @@ namespace DCL.ECSComponents {
       if (other.HasFontAutoSize) {
         FontAutoSize = other.FontAutoSize;
       }
-      if (other.HasHTextAlign) {
-        HTextAlign = other.HTextAlign;
-      }
-      if (other.HasVTextAlign) {
-        VTextAlign = other.VTextAlign;
+      if (other.HasTextAlign) {
+        TextAlign = other.TextAlign;
       }
       if (other.HasWidth) {
         Width = other.Width;
@@ -1167,7 +1038,7 @@ namespace DCL.ECSComponents {
       }
       if (other.textColor_ != null) {
         if (textColor_ == null) {
-          TextColor = new global::DCL.ECSComponents.Color3();
+          TextColor = new global::DCL.ECSComponents.Color4();
         }
         TextColor.MergeFrom(other.TextColor);
       }
@@ -1190,16 +1061,8 @@ namespace DCL.ECSComponents {
             Text = input.ReadString();
             break;
           }
-          case 16: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 26: {
-            Font = input.ReadString();
-            break;
-          }
-          case 37: {
-            Opacity = input.ReadFloat();
+          case 24: {
+            Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
             break;
           }
           case 45: {
@@ -1210,12 +1073,8 @@ namespace DCL.ECSComponents {
             FontAutoSize = input.ReadBool();
             break;
           }
-          case 58: {
-            HTextAlign = input.ReadString();
-            break;
-          }
-          case 66: {
-            VTextAlign = input.ReadString();
+          case 56: {
+            TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
           case 77: {
@@ -1286,7 +1145,7 @@ namespace DCL.ECSComponents {
           }
           case 194: {
             if (textColor_ == null) {
-              TextColor = new global::DCL.ECSComponents.Color3();
+              TextColor = new global::DCL.ECSComponents.Color4();
             }
             input.ReadMessage(TextColor);
             break;
@@ -1310,16 +1169,8 @@ namespace DCL.ECSComponents {
             Text = input.ReadString();
             break;
           }
-          case 16: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 26: {
-            Font = input.ReadString();
-            break;
-          }
-          case 37: {
-            Opacity = input.ReadFloat();
+          case 24: {
+            Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
             break;
           }
           case 45: {
@@ -1330,12 +1181,8 @@ namespace DCL.ECSComponents {
             FontAutoSize = input.ReadBool();
             break;
           }
-          case 58: {
-            HTextAlign = input.ReadString();
-            break;
-          }
-          case 66: {
-            VTextAlign = input.ReadString();
+          case 56: {
+            TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
           case 77: {
@@ -1406,7 +1253,7 @@ namespace DCL.ECSComponents {
           }
           case 194: {
             if (textColor_ == null) {
-              TextColor = new global::DCL.ECSComponents.Color3();
+              TextColor = new global::DCL.ECSComponents.Color4();
             }
             input.ReadMessage(TextColor);
             break;

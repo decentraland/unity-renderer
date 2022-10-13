@@ -11,6 +11,7 @@ using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Font = DCL.ECSComponents.Font;
 using Vector2 = UnityEngine.Vector2;
 
 namespace Tests
@@ -95,7 +96,7 @@ namespace Tests
         public void UpdateTextColorCorrectly()
         {
             PBTextShape model = new PBTextShape();
-            Color3 color = new Color3();
+            Color4 color = new Color4();
             color.B = 1f;
             color.R = 0f;
             color.B = 0f;
@@ -131,16 +132,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator UpdateFontTextCorrectly()
         {
-            var fonts = new Dictionary<string, string>()
+            var fonts = new Dictionary<Font, string>()
             {
-                { "builtin:SF-UI-Text-Regular SDF", "Inter-Regular SDF" },
-                { "builtin:SF-UI-Text-Heavy SDF", "Inter-Heavy SDF" },
-                { "builtin:SF-UI-Text-Semibold SDF", "Inter-SemiBold SDF" },
-                { "builtin:LiberationSans SDF", "LiberationSans SDF" },
-                { "SansSerif", "Inter-Regular SDF" },
-                { "SansSerif_Heavy", "Inter-Heavy SDF" },
-                { "SansSerif_Bold", "Inter-Bold SDF" },
-                { "SansSerif_SemiBold", "Inter-SemiBold SDF" }
+                { Font.FSansSerif, "Inter-Regular SDF" },
+                { Font.FLiberationSans, "LiberationSans SDF" },
             };
 
             foreach (var fontsMapPair in fonts)
@@ -161,8 +156,7 @@ namespace Tests
         {
             PBTextShape model = new PBTextShape
             {
-                Opacity = 0.5f,
-                TextColor = new Color3()
+                TextColor = new Color4()
             };
 
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -201,12 +195,11 @@ namespace Tests
         [TestCase("right", "bottom", ExpectedResult = TextAlignmentOptions.BottomRight)]
         [TestCase("right", "top", ExpectedResult = TextAlignmentOptions.TopRight)]
         [TestCase("left", "bottom", ExpectedResult = TextAlignmentOptions.BottomLeft)]
-        public TextAlignmentOptions UpdateFontAutoSizeCorrectly(string hAlignment, string vAlignment)
+        public TextAlignmentOptions UpdateFontAutoSizeCorrectly(TextAlignMode alignment)
         {
             PBTextShape model = new PBTextShape
             {
-                VTextAlign = vAlignment,
-                HTextAlign = hAlignment
+                TextAlign = alignment
             };
 
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
