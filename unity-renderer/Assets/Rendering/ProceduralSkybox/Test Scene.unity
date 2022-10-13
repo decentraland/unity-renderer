@@ -15,14 +15,14 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.13534454, g: 0.00065322215, b: 0.2827618, a: 1}
+  m_FogColor: {r: 0.13333333, g: 0, b: 0.28235295, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.04
   m_LinearFogStart: 0
   m_LinearFogEnd: 1500
-  m_AmbientSkyColor: {r: 0.45732322, g: 0.83717334, b: 0.99945664, a: 1}
-  m_AmbientEquatorColor: {r: 0.13534454, g: 0.00065322215, b: 0.2827618, a: 1}
-  m_AmbientGroundColor: {r: 0.4414138, g: 0.07775236, b: 0.97962475, a: 1}
+  m_AmbientSkyColor: {r: 0.6039216, g: 0.5294118, b: 0.94509804, a: 1}
+  m_AmbientEquatorColor: {r: 0.7271467, g: 0.54187435, b: 0.9339623, a: 1}
+  m_AmbientGroundColor: {r: 0.2117647, g: 0.039215684, b: 0.47058824, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -203,6 +203,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
+      propertyPath: m_DirtyAABB
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Center.y
+      value: 0.004966
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.x
+      value: 0.050662365
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.y
+      value: 0.005066
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.z
+      value: 0.050662365
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 80e1cd524228670489424c5604fed42d, type: 2}
@@ -214,12 +239,12 @@ PrefabInstance:
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[0]
-      value: 91.7
+      value: 76
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[1]
-      value: 38.3
+      value: 57.2
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
@@ -239,7 +264,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d236563e52f05114daef5a7d9c43e07a, type: 3}
@@ -833,8 +858,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.9889937, b: 0.9009434, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 0.6862745, g: 0.654902, b: 0.737255, a: 1}
+  m_Intensity: 0.2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -891,7 +916,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1057681564}
-  m_LocalRotation: {x: 0.9375135, y: -0.000000025770683, z: -0.000000025770683, w: 0.34794897}
+  m_LocalRotation: {x: 0.32600605, y: -0.21316819, z: -0.6274712, w: 0.6742102}
   m_LocalPosition: {x: 0, y: 5.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -977,6 +1002,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
+      propertyPath: m_DirtyAABB
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Center.y
+      value: 0.004966
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.x
+      value: 0.050662365
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.y
+      value: 0.005066
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.z
+      value: 0.050662365
+      objectReference: {fileID: 0}
+    - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 1f01f60dff35cb5449e3e84008d11d8e, type: 2}
@@ -988,12 +1038,12 @@ PrefabInstance:
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[0]
-      value: 48.8
+      value: 3.1
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[1]
-      value: 41.7
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: -3887185075125053422, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
@@ -1013,7 +1063,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d236563e52f05114daef5a7d9c43e07a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d236563e52f05114daef5a7d9c43e07a, type: 3}
@@ -1156,7 +1206,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e5652132f4225824c91acb8a56978d77, type: 2}
+  - {fileID: 2100000, guid: e8a0b641ef118064d845f4a4e1f1c176, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

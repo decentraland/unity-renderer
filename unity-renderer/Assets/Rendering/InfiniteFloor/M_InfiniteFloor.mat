@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_InfiniteFloor
-  m_Shader: {fileID: 4800000, guid: 674b9a9156a542d45b31caf7b32f4542, type: 3}
+  m_Shader: {fileID: 4800000, guid: 22c5fc686cb3e584eb95d58b80f321c8, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -98,6 +98,11 @@ Material:
     - _StencilWriteMask: 255
     - _ThicknessOffset: 1500
     - _Zoom: 8192
+    - _colorArea: 0
+    - _fade: 0
+    - _horizonStartPoint: 0
+    - _opacity: 0
+    - _pusleOpacity: 0
     m_Colors:
     - Color_cd6df74b8fc14dfaa1ce8907510737b8: {r: 0, g: 1.4142135, b: 0.97608465,
         a: 1}
@@ -118,6 +123,7 @@ Material:
     - _ColorPlazas: {r: 0.3803921, g: 0.6431373, b: 0.3843137, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
     - _GrassGridColor: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 1}
+    - _GrassGridColorVariation: {r: 0, g: 0, b: 0, a: 0}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighlightColor: {r: 0, g: 0.6943347, b: 1, a: 1}
@@ -127,4 +133,6 @@ Material:
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
     - _UnownedVariationRange: {r: 0.6, g: 1.25, b: 0, a: 0}
+    - _colorFloor: {r: 0, g: 0, b: 0, a: 0}
+    - _colorSky: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
