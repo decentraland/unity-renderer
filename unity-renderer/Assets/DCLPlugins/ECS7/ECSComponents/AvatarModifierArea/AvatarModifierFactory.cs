@@ -11,12 +11,12 @@ namespace DCL.ECSComponents
         {
             switch (modifier)
             {
-                case AvatarModifier.HideAvatars:
+                case AvatarModifier.AmHideAvatars:
                     if (hideModifier == null)
                         hideModifier = new HideAvatarsModifier();
                     return hideModifier;
                     break;
-                case AvatarModifier.DisablePassports:
+                case AvatarModifier.AmDisablePassports:
                     if (hidePassportModifier == null)
                         hidePassportModifier = new HidePassportModifier();
                     return hidePassportModifier;
