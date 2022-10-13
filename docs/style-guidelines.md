@@ -262,12 +262,14 @@ public class Main: MonoBehaviour
     /// ...
 }
 ```
-* **only** use comments inside of the class when it is very necessary and there is a need to provide additional information which cannot be covered by good naming:
+* **only** use comments `//` inside of the class when it is necessary and there is a need to provide additional information which cannot be covered by good naming:
   * description of not obvious hidden logic behind the solution (such as for complex logic or mathematical algorithms) 
   * reference to the bug-ticket
   * "why" description of the hack
+  * XML comments `/// <summary>` for not obvious public methods 
 * each comment starts with an uppercase letter and end with a period
 * insert one space between the comment delimiter (`//`) and the comment text
+* don't use asterix syntax for comments 🔴 `/* comment */`
 * remove commented out code
 
 ### Tests
