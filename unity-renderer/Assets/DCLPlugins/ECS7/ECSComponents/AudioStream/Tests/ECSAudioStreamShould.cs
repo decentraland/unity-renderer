@@ -1,59 +1,43 @@
-﻿using System.Collections;
-using DCL.Controllers;
+﻿using DCL.Controllers;
+using DCL.ECSComponents;
 using DCL.Models;
 using DCL.SettingsCommon;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
-using Tests;
-using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace DCL.ECSComponents.Test
+namespace Tests
 {
-    public class ECSAudioStreamShould : IntegrationTestSuite
+    public class ECSAudioStreamShould
     {
         private IDCLEntity entity;
         private IParcelScene scene;
         private ECSAudioStreamComponentHandler audioSourceComponentHandler;
-        private GameObject gameObject;
 
-        protected override void InitializeServices(ServiceLocator serviceLocator)
+        [SetUp]
+        public void SetUp()
         {
-            base.InitializeServices(serviceLocator);
-            serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
-        }
-
-        [UnitySetUp]
-        protected override IEnumerator SetUp()
-        {
-            yield return base.SetUp();
-
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
-            gameObject = new GameObject();
+
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             audioSourceComponentHandler = new ECSAudioStreamComponentHandler();
 
             entity.entityId.Returns(1);
-            entity.gameObject.Returns(gameObject);
-            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
-
-            ContentProvider_Dummy providerDummy = new ContentProvider_Dummy();
+            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
+            {
+                id = "1"
+            };
 
             scene.sceneData.Configure().Returns(sceneData);
-            scene.Configure().contentProvider.Returns(providerDummy);
 
             audioSourceComponentHandler.OnComponentCreated(scene, entity);
         }
 
-        [UnityTearDown]
-        protected override IEnumerator TearDown()
+        [TearDown]
+        public void TearDown()
         {
-            yield return base.TearDown();
             audioSourceComponentHandler.OnComponentRemoved(scene, entity);
-            GameObject.Destroy(gameObject);
         }
 
         [Test]
@@ -64,6 +48,7 @@ namespace DCL.ECSComponents.Test
             // We prepare the componentHandler
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
+            audioSourceComponentHandler.wasCursorLocked = true;
 
             // We prepare the models
             PBAudioStream model = CreateAudioStreamModel();
@@ -125,6 +110,7 @@ namespace DCL.ECSComponents.Test
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
+            audioSourceComponentHandler.wasCursorLocked = true;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
