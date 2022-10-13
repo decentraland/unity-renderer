@@ -51,6 +51,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<Transform> topNotificationPanelTransform => DataStore.i.HUDs.topNotificationPanelTransform;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
+    internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
     public TaskbarHUDController(IChatController chatController)
     {
@@ -372,6 +373,7 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChat(string userId)
     {
+        openedChat.Set(userId);
         privateChatWindow.Setup(userId);
         worldChatWindowHud.SetVisibility(false);
         publicChatWindow.SetVisibility(false);
@@ -434,6 +436,7 @@ public class TaskbarHUDController : IHUD
 
     public void OpenChannelChat(string channelId)
     {
+        openedChat.Set(channelId);
         channelChatWindow?.Setup(channelId);
         channelChatWindow?.SetVisibility(true);
         publicChatWindow?.SetVisibility(false);
@@ -454,6 +457,7 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPublicChat(string channelId, bool focusInputField)
     {
+        openedChat.Set(channelId);
         publicChatWindow?.Setup(channelId);
         publicChatWindow?.SetVisibility(true, focusInputField);
         channelChatWindow?.SetVisibility(false);
