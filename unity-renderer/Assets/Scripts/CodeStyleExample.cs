@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace UIComponents.Scripts.Components.SectionSelector
+namespace DCL.UIComponents
 {
     //------------------------------------------------------------------------------------------------  Enum, delegates, interfaces declaration group (public/internal) 
     public enum Side { Left, Right }
