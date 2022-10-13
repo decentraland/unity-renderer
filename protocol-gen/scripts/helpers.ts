@@ -8,7 +8,7 @@ export const isWin = process.platform === 'win32'
 export const workingDirectory = __dirname
 export const nodeModulesPath = path.resolve(__dirname, '../node_modules/')
 export const protocPath = path.resolve(nodeModulesPath, '.bin/protoc')
-export const protocolPath = path.resolve(nodeModulesPath, '@dcl/protocol')
+export const protocolPath = path.resolve(nodeModulesPath, '@dcl/protocol', 'proto')
 
 export function normalizePath(path: string) {
   if (isWin) {

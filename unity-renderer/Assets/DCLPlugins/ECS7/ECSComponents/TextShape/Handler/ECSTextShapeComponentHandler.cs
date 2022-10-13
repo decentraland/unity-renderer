@@ -112,11 +112,11 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     private void PrepareRectTransform(PBTextShape model)
     {
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.one;
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
-        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.anchorMin = UnityEngine.Vector2.zero;
+        rectTransform.anchorMax = UnityEngine.Vector2.one;
+        rectTransform.offsetMin = UnityEngine.Vector2.zero;
+        rectTransform.offsetMax = UnityEngine.Vector2.zero;
+        rectTransform.sizeDelta = UnityEngine.Vector2.zero;
         
         // NOTE: previously width and height weren't working (setting sizeDelta before anchors and offset result in
         // sizeDelta being reset to 0,0)
@@ -124,11 +124,11 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         // we only set it if textWrapping is enabled.
         if (model.TextWrapping)
         {
-            rectTransform.sizeDelta = new Vector2(model.GetWidth(), model.GetHeight());
+            rectTransform.sizeDelta = new UnityEngine.Vector2(model.GetWidth(), model.GetHeight());
         }
         else
         {
-            rectTransform.sizeDelta = Vector2.zero;
+            rectTransform.sizeDelta = UnityEngine.Vector2.zero;
         }
     }
     

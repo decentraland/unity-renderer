@@ -112,7 +112,7 @@ namespace Tests
                                 scenes[0].sceneData.id,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.FirstPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.CmvFirstPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
 
             componentsWriter.ClearReceivedCalls();
@@ -125,7 +125,7 @@ namespace Tests
                                 scenes[0].sceneData.id,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.ThirdPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.CmvThirdPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
         }
 

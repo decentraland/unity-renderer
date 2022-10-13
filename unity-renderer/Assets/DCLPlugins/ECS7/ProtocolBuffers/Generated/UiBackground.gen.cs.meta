@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/UiBackground.gen.cs.meta
-guid: 0cc217a67006b4e069a4f990d6be4e91
-=======
-guid: 41c277d3ff1164a5fb894b76c718d96a
->>>>>>> 5e289eebd8aa847c05afeefd222783f038d8e1d0:unity-renderer/Assets/Scripts/MainScripts/DCL/Controllers/HUD/NavMap/NavmapVisibilityBehaviour.cs.meta
+guid: a75d4149d94a00f45b536ea7076411fe
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

@@ -1,8 +1,6 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System.Collections;
+using AssetPromiseKeeper_Tests;
 using DCL;
-using DCL.Helpers;
-using System.Collections;
-using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -14,7 +12,7 @@ namespace AssetPromiseKeeper_Font_Tests
         AssetLibrary_RefCounted<Asset_Font>>
     {
         private const string fontName = "SansSerif";
-        
+
         protected AssetPromise_Font CreatePromise()
         {
             var prom = new AssetPromise_Font(fontName);
@@ -82,6 +80,36 @@ namespace AssetPromiseKeeper_Font_Tests
             Assert.IsNotNull(loadedAsset2.font);
 
             Assert.IsTrue(loadedAsset.font == loadedAsset2.font);
+        }
+
+        [UnityTest]
+        public IEnumerator KeepRefCountCorrectly()
+        {
+            var model = fontName;
+            var prom = new AssetPromise_Font(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            var prom2 = new AssetPromise_Font(model);
+            keeper.Keep(prom2);
+            yield return prom2;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+
+            keeper.Forget(prom);
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            prom = new AssetPromise_Font(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+            keeper.Forget(prom);
+            keeper.Forget(prom2);
+
+            Assert.AreEqual(0, keeper.library.masterAssets.Count);
         }
     }
 }

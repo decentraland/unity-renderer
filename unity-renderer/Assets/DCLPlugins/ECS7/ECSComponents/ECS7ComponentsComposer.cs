@@ -29,6 +29,7 @@ namespace DCL.ECSComponents
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
+        private readonly UiTextRegister uiTextRegister;
         private readonly UIBackgroundRegister uiBackgroundRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
@@ -59,6 +60,7 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
             uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
 
             // Components without a handler
@@ -91,6 +93,7 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister.Dispose();
+            uiTextRegister.Dispose();
             uiBackgroundRegister.Dispose();
 
             // Components without a handler
