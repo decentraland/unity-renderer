@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -15,7 +13,7 @@ namespace DCL
         private const string DEFAULT_SANS_SERIF_BOLD = "Inter-Bold SDF";
         private const string DEFAULT_SANS_SERIF_SEMIBOLD = "Inter-SemiBold SDF";
         private const string DEFAULT_SANS_SERIF = "Inter-Regular SDF";
-        
+
         private readonly Dictionary<string, string> fontsMapping = new Dictionary<string, string>()
         {
             { "builtin:SF-UI-Text-Regular SDF", DEFAULT_SANS_SERIF },
@@ -30,12 +28,15 @@ namespace DCL
 
         private string src;
         private Coroutine fontCoroutine;
-        
-        public AssetPromise_Font(string src) { this.src = src; }
 
-        protected override void OnAfterLoadOrReuse() {  }
+        public AssetPromise_Font(string src)
+        {
+            this.src = src;
+        }
 
-        protected override void OnBeforeLoadOrReuse() {  }
+        protected override void OnAfterLoadOrReuse() { }
+
+        protected override void OnBeforeLoadOrReuse() { }
 
         protected override void OnCancelLoading()
         {
@@ -52,15 +53,29 @@ namespace DCL
         {
             if (fontsMapping.TryGetValue(src, out string fontResourceName))
             {
-                fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess,OnFail,fontResourceName));
+                fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess, OnFail, fontResourceName));
             }
             else
             {
                 OnFail?.Invoke(new Exception("Font doesn't correspond with any know font"));
             }
         }
-        
-        public override object GetId() { return src; }
+
+        protected override bool AddToLibrary()
+        {
+            if (!library.Add(asset))
+            {
+                return false;
+            }
+
+            asset = library.Get(asset.id);
+            return true;
+        }
+
+        public override object GetId()
+        {
+            return src;
+        }
 
         IEnumerator GetFontFromResources(Action OnSuccess, Action<Exception> OnFail, string fontResourceName)
         {
