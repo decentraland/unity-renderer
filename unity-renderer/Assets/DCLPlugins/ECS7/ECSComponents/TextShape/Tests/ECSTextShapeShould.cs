@@ -240,7 +240,7 @@ namespace DCL.ECSComponents.Test
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            Assert.AreEqual(textShapeComponentHandler.rectTransform.sizeDelta,new Vector2(width,height));
+            Assert.AreEqual(textShapeComponentHandler.rectTransform.sizeDelta,new UnityEngine.Vector2(width,height));
         }
         
         [Test]
@@ -270,7 +270,7 @@ namespace DCL.ECSComponents.Test
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
-            Assert.AreEqual(Vector2.zero, textShapeComponentHandler.rectTransform.sizeDelta);
+            Assert.AreEqual(UnityEngine.Vector2.zero, textShapeComponentHandler.rectTransform.sizeDelta);
         }
 
         [Test]

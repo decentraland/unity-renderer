@@ -85,11 +85,11 @@ namespace DCL.ECSComponents
             element.style.flexWrap = GetWrap(model.FlexWrap);
 
             // Align 
-            if (model.AlignContent != YGAlign.FlexStart)
+            if (model.AlignContent != YGAlign.YgaFlexStart)
                 element.style.alignContent = GetAlign(model.AlignContent);
-            if (model.AlignItems != YGAlign.Auto)
+            if (model.AlignItems != YGAlign.YgaAuto)
                 element.style.alignItems = GetAlign(model.AlignItems);
-            if (model.AlignSelf != YGAlign.Auto)
+            if (model.AlignSelf != YGAlign.YgaAuto)
                 element.style.alignSelf = GetAlign(model.AlignSelf);
             element.style.justifyContent = GetJustify(model.JustifyContent);
 
@@ -147,9 +147,9 @@ namespace DCL.ECSComponents
         {
             switch (unit)
             {
-                case YGUnit.Point:
+                case YGUnit.YguPoint:
                     return LengthUnit.Pixel;
-                case YGUnit.Percent:
+                case YGUnit.YguPercent:
                     return LengthUnit.Percent;
                 default:
                     return LengthUnit.Pixel;
@@ -160,9 +160,9 @@ namespace DCL.ECSComponents
         {
             switch (overflow)
             {
-                case YGOverflow.Visible:
+                case YGOverflow.YgoVisible:
                     return Overflow.Visible;
-                case YGOverflow.Hidden:
+                case YGOverflow.YgoHidden:
                     return Overflow.Hidden;
                 default:
                     return Overflow.Visible;
@@ -173,9 +173,9 @@ namespace DCL.ECSComponents
         {
             switch (display)
             {
-                case YGDisplay.Flex:
+                case YGDisplay.YgdFlex:
                     return DisplayStyle.Flex;
-                case YGDisplay.None:
+                case YGDisplay.YgdNone:
                     return DisplayStyle.None;
                 default:
                     return DisplayStyle.Flex;
@@ -186,15 +186,15 @@ namespace DCL.ECSComponents
         {
             switch (justify)
             {
-                case YGJustify.FlexStart:
+                case YGJustify.YgjFlexStart:
                     return Justify.FlexStart;
-                case YGJustify.Center:
+                case YGJustify.YgjCenter:
                     return Justify.Center;
-                case YGJustify.FlexEnd:
+                case YGJustify.YgjFlexEnd:
                     return Justify.FlexEnd;
-                case YGJustify.SpaceBetween:
+                case YGJustify.YgjSpaceBetween:
                     return Justify.SpaceBetween;
-                case YGJustify.SpaceAround:
+                case YGJustify.YgjSpaceAround:
                     return Justify.SpaceAround;
                 default:
                     return Justify.FlexStart;
@@ -205,11 +205,11 @@ namespace DCL.ECSComponents
         {
             switch (wrap)
             {
-                case YGWrap.NoWrap:
+                case YGWrap.YgwNoWrap:
                     return Wrap.NoWrap;
-                case YGWrap.Wrap:
+                case YGWrap.YgwWrap:
                     return Wrap.Wrap;
-                case YGWrap.WrapReverse:
+                case YGWrap.YgwWrapReverse:
                     return Wrap.WrapReverse;
                 default:
                     return Wrap.Wrap;
@@ -220,29 +220,29 @@ namespace DCL.ECSComponents
         {
             switch (direction)
             {
-                case YGFlexDirection.Column:
+                case YGFlexDirection.YgfdColumn:
                     return FlexDirection.Column;
-                case YGFlexDirection.ColumnReverse:
+                case YGFlexDirection.YgfdColumnReverse:
                     return FlexDirection.ColumnReverse;
-                case YGFlexDirection.Row:
+                case YGFlexDirection.YgfdRow:
                     return FlexDirection.Row;
-                case YGFlexDirection.RowReverse:
+                case YGFlexDirection.YgfdRowReverse:
                     return FlexDirection.RowReverse;
                 default:
                     return FlexDirection.Row;
             }
         }
 
-        private static StyleEnum<Position> GetPosition(YGPositionType positionType)
+        private static StyleEnum<UnityEngine.UIElements.Position> GetPosition(YGPositionType positionType)
         {
             switch (positionType)
             {
-                case YGPositionType.Relative:
-                    return Position.Relative;
-                case YGPositionType.Absolute:
-                    return Position.Absolute;
+                case YGPositionType.YgpRelative:
+                    return UnityEngine.UIElements.Position.Relative;
+                case YGPositionType.YgpAbsolute:
+                    return UnityEngine.UIElements.Position.Absolute;
                 default:
-                    return Position.Relative;
+                    return UnityEngine.UIElements.Position.Relative;
             }
         }
 
@@ -250,15 +250,15 @@ namespace DCL.ECSComponents
         {
             switch (align)
             {
-                case YGAlign.Auto:
+                case YGAlign.YgaAuto:
                     return Align.Auto;
-                case YGAlign.FlexStart:
+                case YGAlign.YgaFlexStart:
                     return Align.FlexStart;
-                case YGAlign.Center:
+                case YGAlign.YgaCenter:
                     return Align.Center;
-                case YGAlign.FlexEnd:
+                case YGAlign.YgaFlexEnd:
                     return Align.FlexEnd;
-                case YGAlign.Stretch:
+                case YGAlign.YgaStretch:
                     return Align.Stretch;
                 default:
                     return Align.Auto;
