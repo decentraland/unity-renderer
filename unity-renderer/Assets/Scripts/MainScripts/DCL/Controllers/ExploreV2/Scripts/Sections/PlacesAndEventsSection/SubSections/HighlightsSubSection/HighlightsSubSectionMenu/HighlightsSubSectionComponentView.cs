@@ -370,4 +370,19 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
+    
+    [SerializeField] private Canvas canvas;
+
+    public void SetActive(bool isActive)
+    {
+        if (isActive && !gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        canvas.enabled = isActive;
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
+    }
 }

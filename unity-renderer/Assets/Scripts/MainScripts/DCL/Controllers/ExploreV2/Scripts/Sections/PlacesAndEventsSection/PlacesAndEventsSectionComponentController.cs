@@ -36,7 +36,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         EventsAPIController eventsAPI = new EventsAPIController();
 
         highlightsSubSectionComponentController = new HighlightsSubSectionComponentController(
-            view.currentHighlightsSubSectionComponentView,
+            view.HighlightsSubSectionView,
             placesAPI,
             eventsAPI,
             FriendsController.i,
@@ -47,7 +47,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
 
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
-            view.currentPlacesSubSectionComponentView,
+            view.PlacesSubSectionView,
             placesAPI,
             FriendsController.i,
             exploreV2Analytics,
@@ -56,7 +56,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
-            view.currentEventsSubSectionComponentView,
+            view.EventsSubSectionView,
             eventsAPI,
             exploreV2Analytics,
             dataStore);

@@ -370,4 +370,19 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 
     public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
+
+    [SerializeField] private Canvas canvas;
+
+    public void SetActive(bool isActive)
+    {
+        if (isActive && !gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        canvas.enabled = isActive;
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
+    }
 }
