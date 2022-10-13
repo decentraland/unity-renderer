@@ -24,6 +24,7 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly IProfanityFilter profanityFilter;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
@@ -43,7 +44,8 @@ namespace DCL.Chat.HUD
             IChatController chatController,
             IMouseCatcher mouseCatcher,
             InputAction_Trigger toggleChatTrigger,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            IProfanityFilter profanityFilter)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
@@ -51,6 +53,7 @@ namespace DCL.Chat.HUD
             this.mouseCatcher = mouseCatcher;
             this.toggleChatTrigger = toggleChatTrigger;
             this.socialAnalytics = socialAnalytics;
+            this.profanityFilter = profanityFilter;
         }
 
         public void Initialize(IChatChannelWindowView view = null)
@@ -67,7 +70,7 @@ namespace DCL.Chat.HUD
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
-            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
+            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, profanityFilter);
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
 

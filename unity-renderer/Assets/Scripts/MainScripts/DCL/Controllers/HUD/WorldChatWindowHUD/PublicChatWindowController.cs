@@ -1,19 +1,13 @@
 using System;
-using System.Threading;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Chat;
 using DCL.Interface;
-using SocialFeaturesAnalytics;
-using UnityEngine;
-using System.Collections.Generic;
 
 public class PublicChatWindowController : IHUD
 {
     public IPublicChatWindowView View { get; private set; }
     
-    private const int FADEOUT_DELAY = 30000;
-
     public event Action OnBack;
     public event Action OnClosed;
 
@@ -25,13 +19,9 @@ public class PublicChatWindowController : IHUD
     private readonly InputAction_Trigger toggleChatTrigger;
     private ChatHUDController chatHudController;
     private string channelId;
-    private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
-
     private bool skipChatInputTrigger;
-    private string lastPrivateMessageRecipient = string.Empty;
 
-    private UserProfile ownProfile => userProfileBridge.GetOwn();
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
@@ -202,18 +192,8 @@ public class PublicChatWindowController : IHUD
         if (View.IsActive)
             MarkChannelMessagesAsRead();
     }
-    
-    private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
-    {
-        await UniTask.SwitchToMainThread(cancellationToken);
-        if (cancellationToken.IsCancellationRequested) return;
-        chatHudController.FadeOutMessages();
-    }
 
-    public void Hide()
-    {
-        SetVisibility(false);
-    }
+    private void Hide() => SetVisibility(false);
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {

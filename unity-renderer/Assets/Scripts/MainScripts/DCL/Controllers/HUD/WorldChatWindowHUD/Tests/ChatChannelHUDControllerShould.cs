@@ -20,6 +20,7 @@ namespace DCL.Chat.HUD
         private IChatController chatController;
         private DataStore dataStore;
         private ISocialAnalytics socialAnalytics;
+        private IProfanityFilter profanityFilter;
 
         [SetUp]
         public void SetUp()
@@ -40,12 +41,14 @@ namespace DCL.Chat.HUD
 
             dataStore = new DataStore();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
+            profanityFilter = Substitute.For<IProfanityFilter>();
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
                 ScriptableObject.CreateInstance<InputAction_Trigger>(),
-                socialAnalytics);
+                socialAnalytics,
+                profanityFilter);
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
