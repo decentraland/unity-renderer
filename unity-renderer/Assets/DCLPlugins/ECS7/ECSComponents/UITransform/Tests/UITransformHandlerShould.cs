@@ -64,17 +64,17 @@ namespace Tests
         {
             var model = new PBUiTransform()
             {
-                Display = YGDisplay.Flex,
-                Overflow = YGOverflow.Visible,
-                FlexDirection = YGFlexDirection.ColumnReverse,
+                Display = YGDisplay.YgdFlex,
+                Overflow = YGOverflow.YgoVisible,
+                FlexDirection = YGFlexDirection.YgfdColumnReverse,
                 FlexBasis = float.NaN,
                 FlexGrow = 23,
                 FlexShrink = 1,
-                FlexWrap = YGWrap.WrapReverse,
-                AlignContent = YGAlign.Center,
-                AlignItems = YGAlign.Stretch,
-                AlignSelf = YGAlign.Center,
-                JustifyContent = YGJustify.SpaceAround,
+                FlexWrap = YGWrap.YgwWrapReverse,
+                AlignContent = YGAlign.YgaCenter,
+                AlignItems = YGAlign.YgaStretch,
+                AlignSelf = YGAlign.YgaCenter,
+                JustifyContent = YGJustify.YgjSpaceAround,
                 Height = 99,
                 Width = 34,
                 MaxWidth = float.NaN,
@@ -82,26 +82,26 @@ namespace Tests
                 MinHeight = 0,
                 MinWidth = 0,
                 PaddingBottom = 10,
-                PaddingBottomUnit = YGUnit.Percent,
+                PaddingBottomUnit = YGUnit.YguPercent,
                 PaddingLeft = 0,
-                PaddingLeftUnit = YGUnit.Point,
+                PaddingLeftUnit = YGUnit.YguPoint,
                 PaddingRight = 111,
-                PaddingRightUnit = YGUnit.Point,
+                PaddingRightUnit = YGUnit.YguPoint,
                 PaddingTop = 5,
-                PaddingTopUnit = YGUnit.Percent,
+                PaddingTopUnit = YGUnit.YguPercent,
                 MarginBottom = 10,
-                MarginBottomUnit = YGUnit.Percent,
+                MarginBottomUnit = YGUnit.YguPercent,
                 MarginLeft = 0,
-                MarginLeftUnit = YGUnit.Point,
+                MarginLeftUnit = YGUnit.YguPoint,
                 MarginRight = 111,
-                MarginRightUnit = YGUnit.Point,
+                MarginRightUnit = YGUnit.YguPoint,
                 MarginTop = 5,
-                MarginTopUnit = YGUnit.Percent,
+                MarginTopUnit = YGUnit.YguPercent,
                 BorderBottom = 1,
                 BorderTop = 2,
                 BorderRight = 3,
                 BorderLeft = 4,
-                PositionType = YGPositionType.Absolute
+                PositionType = YGPositionType.YgpAbsolute
             };
 
             Action<InternalUiContainer> styleCheck = m =>
@@ -144,7 +144,7 @@ namespace Tests
                 Assert.AreEqual(2, style.borderTopWidth.value);
                 Assert.AreEqual(3, style.borderRightWidth.value);
                 Assert.AreEqual(4, style.borderLeftWidth.value);
-                Assert.AreEqual(Position.Absolute, style.position.value);
+                Assert.AreEqual(UnityEngine.UIElements.Position.Absolute, style.position.value);
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);

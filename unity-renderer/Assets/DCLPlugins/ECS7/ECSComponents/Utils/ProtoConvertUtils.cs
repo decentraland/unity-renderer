@@ -66,9 +66,9 @@ namespace DCL.ECSComponents
         {
             switch (mode)
             {
-                case CameraModeValue.FirstPerson:
+                case CameraModeValue.CmvFirstPerson:
                     return CameraMode.ModeId.FirstPerson;
-                case CameraModeValue.ThirdPerson:
+                case CameraModeValue.CmvThirdPerson:
                     return CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
@@ -80,10 +80,10 @@ namespace DCL.ECSComponents
             switch (mode)
             {
                 case CameraMode.ModeId.FirstPerson:
-                    return CameraModeValue.FirstPerson;
+                    return CameraModeValue.CmvFirstPerson;
                 case CameraMode.ModeId.ThirdPerson:
                 default:
-                    return CameraModeValue.ThirdPerson;
+                    return CameraModeValue.CmvThirdPerson;
             }
         }
 
