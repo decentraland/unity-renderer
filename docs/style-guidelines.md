@@ -23,6 +23,7 @@ Use
 * `CAPITALS_SNAKE_CASE` - Constants;
 * `I` prefix in front of Interface name;
 * Events name is in past tens and without `On` prefix
+* `_`, `__`, `___` for unused parameters of the method (which happens for events subscribers, interface implementation and inheritance overriden methods)
 
 ```csharp
 namespace MyProject                                     // Namespace -> PascalCase
@@ -38,14 +39,14 @@ namespace MyProject                                     // Namespace -> PascalCa
         public int PublicField;                         // public Field -> PascalCase
         private bool isVisible;                         // Field -> camelCase
 
-        public bool IsInitialized { get; set; }           // public Property -> PascalCase
-        private bool isVisitble { get; }                  // non-public Property -> camelCase
+        public bool IsInitialized { get; set; }         // public Property -> PascalCase
+        private bool isVisitble { get; }                // non-public Property -> camelCase
 
         public event Interaction<bool> Interacted;      // event -> PascalCase, without On prefix
         
-        public void Play(float speed)                   // Method -> PascalCase. Method parameters -> camelCase
+        public override void Play(float speed, int _)   // Method -> PascalCase. Method parameters -> camelCase. Not-used parameter -> underscore
         {
-            AnimationClip animationClip;                // local variable -> camelCase
+            var velocity = speed;                       // local variable -> camelCase
             Interacted += OnInteracted;                 // for event subscribers 'On' prefix can be used
         }              
     }
@@ -156,6 +157,7 @@ Most of this formatting conventions will be known by your IDE thanks to the .Edi
 * keep each `public` type (like `class`/`enum`/`struct`/`interface`) in a separate file with the name equal to the type name
 * access modifiers are obligatory to use: 🟢 `private void Awake() { }` 🔴 `void Awake() { }`
 * don't omit comparison to `null`: 🟢 `if (character == null)`/`if (character != null)` 🔴 `if (character)`/`if (!character)`
+* use `nameof` where it is possible 
 * one line - one statement. Split chain methods (like LINQ) in several lines starting  with `.` on each line
 ```csharp
 List<string> filteredWords = new FilterLogic(listWords)
