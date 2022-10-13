@@ -1,9 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
-using DCL.ECSComponents;
-using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
 using NSubstitute;
@@ -12,7 +8,6 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents.Test
 {
@@ -26,14 +21,14 @@ namespace DCL.ECSComponents.Test
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
             base.InitializeServices(serviceLocator);
-            serviceLocator.Register<IWebRequestController>( WebRequestController.Create );
+            serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
         }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            
+
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
@@ -60,12 +55,12 @@ namespace DCL.ECSComponents.Test
             audioSourceComponentHandler.OnComponentRemoved(scene, entity);
             GameObject.Destroy(gameObject);
         }
-        
+
         [Test]
         public void UpdatePlayingModelComponentCorrectly()
         {
             // Arrange
-            
+
             // We prepare the componentHandler
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
@@ -74,17 +69,17 @@ namespace DCL.ECSComponents.Test
             PBAudioStream model = CreateAudioStreamModel();
             model.Playing = false;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-            
+
             PBAudioStream model2 = CreateAudioStreamModel();
             model2.Playing = true;
-            
+
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
             Assert.AreEqual(audioSourceComponentHandler.isPlaying, true);
         }
-        
+
         [Test]
         public void UpdateVolumeModelComponentCorrectly()
         {
@@ -92,17 +87,17 @@ namespace DCL.ECSComponents.Test
             PBAudioStream model = CreateAudioStreamModel();
             model.Volume = 0f;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-            
+
             PBAudioStream model2 = CreateAudioStreamModel();
             model2.Volume = 1f;
-            
+
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(1f,audioSourceComponentHandler.currentVolume);
+            Assert.AreEqual(1f, audioSourceComponentHandler.currentVolume);
         }
-        
+
         [Test]
         public void UpdateUrlModelComponentCorrectly()
         {
@@ -111,17 +106,17 @@ namespace DCL.ECSComponents.Test
             PBAudioStream model = CreateAudioStreamModel();
             model.Url = "OldUrl";
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-            
+
             PBAudioStream model2 = CreateAudioStreamModel();
             model2.Url = expectedUrl;
-            
+
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(expectedUrl,audioSourceComponentHandler.model.Url);
+            Assert.AreEqual(expectedUrl, audioSourceComponentHandler.model.Url);
         }
-        
+
         [Test]
         public void PlayAudioIfConditionsAreMeet()
         {
@@ -130,14 +125,14 @@ namespace DCL.ECSComponents.Test
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            
+
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
             Assert.IsTrue(audioSourceComponentHandler.isPlaying);
         }
-        
+
         [Test]
         public void StopAudioIfRendererIsDisable()
         {
@@ -146,7 +141,7 @@ namespace DCL.ECSComponents.Test
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = false;
-            
+
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
@@ -170,21 +165,6 @@ namespace DCL.ECSComponents.Test
             Assert.IsFalse(audioSourceComponentHandler.isPlaying);
         }
 
-        [UnityTest]
-        public IEnumerator DisposeComponentCorrectly()
-        {
-            // Arrange
-            PBAudioStream model = CreateAudioStreamModel();
-            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
-        
-            // Act
-            audioSourceComponentHandler.OnComponentRemoved(scene, entity);
-            yield return null;
-        
-            // Assert
-            Assert.IsNull(audioSourceComponentHandler.audioSource);
-        }
-
         private PBAudioStream CreateAudioStreamModel()
         {
             PBAudioStream model = new PBAudioStream()
@@ -195,6 +175,6 @@ namespace DCL.ECSComponents.Test
             };
             return model;
         }
-        
+
     }
 }
