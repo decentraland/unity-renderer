@@ -312,7 +312,7 @@
         "m_GuidSerialized": "f5f386e7-e62c-4cab-b479-b7ffcbe78e6c"
     },
     "m_Name": "Vector1",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector1_02bec6c1d6f0489f9a964e467f6e94c2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
@@ -384,7 +384,7 @@
         "m_GuidSerialized": "fee68be6-cc03-41c7-802e-5ce5b3ddce57"
     },
     "m_Name": "Vector4",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector4_0ffabab804be4ad1a0f42e76c2e53611",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
@@ -917,7 +917,7 @@
         "m_GuidSerialized": "f97b92cd-28bd-437d-9835-87aecdecf70d"
     },
     "m_Name": "Vector1 (1)",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector1_74c36c03a509466fac0b299e66413a23",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
@@ -1138,7 +1138,7 @@
         "m_GuidSerialized": "85a86f6c-dccf-4414-bda9-18b9d81888b3"
     },
     "m_Name": "PusleOpacity",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector1_957d8007fab14a22b5024625c4d61be2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
@@ -1405,7 +1405,7 @@
         "m_GuidSerialized": "448e855d-a048-4c06-9820-41b93efa394e"
     },
     "m_Name": "Vector4 (1)",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector4_d9f3ae8d02324915a23c4dc5cc90198b",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
