@@ -72,11 +72,11 @@ namespace DCL.ECSComponents
         {
             switch (align)
             {
-                case TextAlign.Center:
+                case TextAlign.TaCenter:
                     return TextAnchor.MiddleCenter;
-                case TextAlign.Left:
+                case TextAlign.TaLeft:
                     return TextAnchor.MiddleLeft;
-                case TextAlign.Right:
+                case TextAlign.TaRight:
                     return TextAnchor.MiddleRight;
                 default:
                     return TextAnchor.MiddleCenter;
@@ -91,9 +91,9 @@ namespace DCL.ECSComponents
 
             switch (font)
             {
-                case Font.LiberationSans:
+                case Font.FLiberationSans:
                     return LIBERATION_SANS;
-                case Font.SansSerif:
+                case Font.FSansSerif:
                     return SANS_SERIF;
                 default:
                     return SANS_SERIF;

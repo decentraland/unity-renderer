@@ -72,7 +72,7 @@ namespace Tests
                 Value = "temptation",
                 FontSize = 34,
                 Color = new Color3() { R = 0.1f, G = 0.2f, B = 0.3f },
-                TextAlign = TextAlign.Right
+                TextAlign = TextAlign.TaRight
             });
 
             Assert.AreEqual("temptation", handler.uiElement.text);

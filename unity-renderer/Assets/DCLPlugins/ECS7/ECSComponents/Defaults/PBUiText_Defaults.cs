@@ -9,12 +9,12 @@ namespace DCL.ECSComponents
 
         public static TextAlign GetTextAlign(this PBUiText self)
         {
-            return self.HasTextAlign ? self.TextAlign : TextAlign.Center;
+            return self.HasTextAlign ? self.TextAlign : TextAlign.TaCenter;
         }
 
         public static Font GetFont(this PBUiText self)
         {
-            return self.HasFont ? self.Font : Font.LiberationSans;
+            return self.HasFont ? self.Font : Font.FSansSerif;
         }
 
         public static float GetFontSize(this PBUiText self)
