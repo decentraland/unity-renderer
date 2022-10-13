@@ -43,7 +43,7 @@ public class ECSTestScene : MonoBehaviour
 
         PBMaterial model = new PBMaterial()
         {
-            Texture = new PBMaterial.Types.Texture()
+            SrcTexture = new PBMaterial.Types.Texture()
             {
                 Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
             }
