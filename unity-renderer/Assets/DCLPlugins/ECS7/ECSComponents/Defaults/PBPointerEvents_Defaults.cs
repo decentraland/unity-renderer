@@ -2,9 +2,9 @@ namespace DCL.ECSComponents
 {
     public static class PBPointerEvents_Extensions
     {
-        public static ActionButton GetButton(this PBPointerEvents.Types.Info self)
+        public static InputAction GetButton(this PBPointerEvents.Types.Info self)
         {
-            return self.HasButton ? self.Button : ActionButton.Any;
+            return self.HasButton ? self.Button : InputAction.IaAny;
         }
 
         public static string GetHoverText(this PBPointerEvents.Types.Info self)

@@ -50,7 +50,7 @@ namespace DCLPlugins.ECSComponents.Raycast
             result.Timestamp = model.Timestamp;
             
             RaycastHit[] hits = null;
-            if (model.QueryType == RaycastQueryType.HitFirst)
+            if (model.QueryType == RaycastQueryType.RqtHitFirst)
             {
                 bool hasHit = Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMaskTarget);
                 if (hasHit)
@@ -59,7 +59,7 @@ namespace DCLPlugins.ECSComponents.Raycast
                     hits[0] = hit;
                 }
             }
-            else if (model.QueryType == RaycastQueryType.QueryAll)
+            else if (model.QueryType == RaycastQueryType.RqtQueryAll)
             {
                 hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMaskTarget);
             }
