@@ -5,8 +5,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
     {
         _RadialScale("RadialScale", Range(0, 1)) = 0
         _OpacityFade("OpacityFade", Range(0, 1)) = 0
-        _Color("Color", Color) = (0, 0, 0, 0)
-        _FadeColorOpacity("FadeColorOpaciy", Float) = 0
+        _FadeColorOpacity("FadeColorOpaciy", Range(0, 1)) = 0
+        _FogColor("FogColor", Color) = (0.5471698, 0.1419544, 0.1419544, 0)
+        _FogIntensityMultiplier("FogIntensityMultiplier", Range(0, 2)) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -189,8 +190,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -233,19 +235,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             Out = lerp(Base, Out, Opacity);
         }
 
-        void Unity_Saturation_float(float3 In, float Saturation, out float3 Out)
+        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
         {
-            float luma = dot(In, float3(0.2126729, 0.7151522, 0.0721750));
-            Out =  luma.xxx + Saturation.xxx * (In - luma.xxx);
-        }
-
-        void Unity_Blend_Overlay_float3(float3 Base, float3 Blend, out float3 Out, float Opacity)
-        {
-            float3 result1 = 1.0 - 2.0 * (1.0 - Base) * (1.0 - Blend);
-            float3 result2 = 2.0 * Base * Blend;
-            float3 zeroOrOne = step(Base, 0.5);
-            Out = result2 * zeroOrOne + (1 - zeroOrOne) * result1;
-            Out = lerp(Base, Out, Opacity);
+            Out = lerp(A, B, T);
         }
 
         void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
@@ -310,19 +302,19 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float4 _Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0;
-            float _Fog_655d47dadfe84ca49f53248c2d2a5375_Density_1;
-            Unity_Fog_float(_Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0, _Fog_655d47dadfe84ca49f53248c2d2a5375_Density_1, IN.ObjectSpacePosition);
-            float4 _Property_e4e926f3a63149d7b06e45813c3a0df3_Out_0 = _Color;
-            float _Property_5166aa6ca0b64070aedb70e57428f2be_Out_0 = _FadeColorOpacity;
-            float4 _Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2;
-            Unity_Blend_Multiply_float4(_Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0, _Property_e4e926f3a63149d7b06e45813c3a0df3_Out_0, _Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2, _Property_5166aa6ca0b64070aedb70e57428f2be_Out_0);
-            float4 _UV_86b3f061103848d4952745b64cef5368_Out_0 = IN.uv0;
-            float3 _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2;
-            Unity_Saturation_float((_UV_86b3f061103848d4952745b64cef5368_Out_0.xyz), 0, _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2);
-            float3 _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2;
-            Unity_Blend_Overlay_float3((_Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2.xyz), _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2, _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2, 1);
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            float4 _Fog_4755462bc8c9469fad0b5939129adfb6_Color_0;
+            float _Fog_4755462bc8c9469fad0b5939129adfb6_Density_1;
+            Unity_Fog_float(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, _Fog_4755462bc8c9469fad0b5939129adfb6_Density_1, IN.ObjectSpacePosition);
+            float _Property_91c8475966d040479517d814744e1e88_Out_0 = _FogIntensityMultiplier;
+            float4 _Blend_56cdf566219642f59cad6883035bf0e4_Out_2;
+            Unity_Blend_Multiply_float4(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, (_Fog_4755462bc8c9469fad0b5939129adfb6_Density_1.xxxx), _Blend_56cdf566219642f59cad6883035bf0e4_Out_2, _Property_91c8475966d040479517d814744e1e88_Out_0);
+            float4 _Property_9a3aefdb91354c7aafa61658447c9547_Out_0 = _FogColor;
+            float4 _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3;
+            Unity_Lerp_float4(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, _Property_9a3aefdb91354c7aafa61658447c9547_Out_0, float4(0, 0, 0, 1), _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3);
+            float _Property_b0d2cfab10f24efcaaffc5c788f021d3_Out_0 = _FadeColorOpacity;
+            float4 _Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2;
+            Unity_Blend_Multiply_float4(_Blend_56cdf566219642f59cad6883035bf0e4_Out_2, _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3, _Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2, _Property_b0d2cfab10f24efcaaffc5c788f021d3_Out_0);
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
@@ -332,7 +324,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             float _Property_9b6f237f36d04047a2bf8ce213599f6a_Out_0 = _OpacityFade;
             float4 _Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2;
             Unity_Multiply_float(_SampleGradient_a8400b325df84babbbdc1348c1ae1cb0_Out_2, (_Property_9b6f237f36d04047a2bf8ce213599f6a_Out_0.xxxx), _Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2);
-            surface.BaseColor = _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2;
+            surface.BaseColor = (_Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2.xyz);
             surface.Alpha = (_Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2).x;
             return surface;
         }
@@ -542,8 +534,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -636,7 +629,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
@@ -854,8 +847,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -948,7 +942,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
@@ -1183,8 +1177,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -1227,19 +1222,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             Out = lerp(Base, Out, Opacity);
         }
 
-        void Unity_Saturation_float(float3 In, float Saturation, out float3 Out)
+        void Unity_Lerp_float4(float4 A, float4 B, float4 T, out float4 Out)
         {
-            float luma = dot(In, float3(0.2126729, 0.7151522, 0.0721750));
-            Out =  luma.xxx + Saturation.xxx * (In - luma.xxx);
-        }
-
-        void Unity_Blend_Overlay_float3(float3 Base, float3 Blend, out float3 Out, float Opacity)
-        {
-            float3 result1 = 1.0 - 2.0 * (1.0 - Base) * (1.0 - Blend);
-            float3 result2 = 2.0 * Base * Blend;
-            float3 zeroOrOne = step(Base, 0.5);
-            Out = result2 * zeroOrOne + (1 - zeroOrOne) * result1;
-            Out = lerp(Base, Out, Opacity);
+            Out = lerp(A, B, T);
         }
 
         void Unity_PolarCoordinates_float(float2 UV, float2 Center, float RadialScale, float LengthScale, out float2 Out)
@@ -1304,19 +1289,19 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float4 _Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0;
-            float _Fog_655d47dadfe84ca49f53248c2d2a5375_Density_1;
-            Unity_Fog_float(_Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0, _Fog_655d47dadfe84ca49f53248c2d2a5375_Density_1, IN.ObjectSpacePosition);
-            float4 _Property_e4e926f3a63149d7b06e45813c3a0df3_Out_0 = _Color;
-            float _Property_5166aa6ca0b64070aedb70e57428f2be_Out_0 = _FadeColorOpacity;
-            float4 _Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2;
-            Unity_Blend_Multiply_float4(_Fog_655d47dadfe84ca49f53248c2d2a5375_Color_0, _Property_e4e926f3a63149d7b06e45813c3a0df3_Out_0, _Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2, _Property_5166aa6ca0b64070aedb70e57428f2be_Out_0);
-            float4 _UV_86b3f061103848d4952745b64cef5368_Out_0 = IN.uv0;
-            float3 _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2;
-            Unity_Saturation_float((_UV_86b3f061103848d4952745b64cef5368_Out_0.xyz), 0, _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2);
-            float3 _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2;
-            Unity_Blend_Overlay_float3((_Blend_bc24a7dbc0d14995b8756be8034f636f_Out_2.xyz), _Saturation_5656db5cd0054c98b99b179eaacddc7c_Out_2, _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2, 1);
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            float4 _Fog_4755462bc8c9469fad0b5939129adfb6_Color_0;
+            float _Fog_4755462bc8c9469fad0b5939129adfb6_Density_1;
+            Unity_Fog_float(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, _Fog_4755462bc8c9469fad0b5939129adfb6_Density_1, IN.ObjectSpacePosition);
+            float _Property_91c8475966d040479517d814744e1e88_Out_0 = _FogIntensityMultiplier;
+            float4 _Blend_56cdf566219642f59cad6883035bf0e4_Out_2;
+            Unity_Blend_Multiply_float4(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, (_Fog_4755462bc8c9469fad0b5939129adfb6_Density_1.xxxx), _Blend_56cdf566219642f59cad6883035bf0e4_Out_2, _Property_91c8475966d040479517d814744e1e88_Out_0);
+            float4 _Property_9a3aefdb91354c7aafa61658447c9547_Out_0 = _FogColor;
+            float4 _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3;
+            Unity_Lerp_float4(_Fog_4755462bc8c9469fad0b5939129adfb6_Color_0, _Property_9a3aefdb91354c7aafa61658447c9547_Out_0, float4(0, 0, 0, 1), _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3);
+            float _Property_b0d2cfab10f24efcaaffc5c788f021d3_Out_0 = _FadeColorOpacity;
+            float4 _Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2;
+            Unity_Blend_Multiply_float4(_Blend_56cdf566219642f59cad6883035bf0e4_Out_2, _Lerp_4bf43afc91e54215ab1fb94e972e3f3a_Out_3, _Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2, _Property_b0d2cfab10f24efcaaffc5c788f021d3_Out_0);
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
@@ -1326,7 +1311,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             float _Property_9b6f237f36d04047a2bf8ce213599f6a_Out_0 = _OpacityFade;
             float4 _Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2;
             Unity_Multiply_float(_SampleGradient_a8400b325df84babbbdc1348c1ae1cb0_Out_2, (_Property_9b6f237f36d04047a2bf8ce213599f6a_Out_0.xxxx), _Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2);
-            surface.BaseColor = _Blend_634cd9dd555d4d45a40471a7d3be9f96_Out_2;
+            surface.BaseColor = (_Blend_cb5f88dd7a454b3cafe3ae331bf29fba_Out_2.xyz);
             surface.Alpha = (_Multiply_4e450374eb3e4e9a9e0c4e76301ad09f_Out_2).x;
             return surface;
         }
@@ -1535,8 +1520,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -1629,7 +1615,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
@@ -1846,8 +1832,9 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
             CBUFFER_START(UnityPerMaterial)
         float _RadialScale;
         float _OpacityFade;
-        float4 _Color;
         float _FadeColorOpacity;
+        float4 _FogColor;
+        float _FogIntensityMultiplier;
         CBUFFER_END
 
         // Object and Global properties
@@ -1940,7 +1927,7 @@ Shader "CustomShader/CGGen/Unlit/RoundEdgesInterpolator"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1499962),float4(0, 0, 0, 0.2529488),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            Gradient _Gradient_3714d01f03aa40a5920580898647a247_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.1558862),float4(0, 0, 0, 0.2852979),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
             float4 _UV_b86cb0d754894339a0e8026e368383ce_Out_0 = IN.uv0;
             float _Property_80d9f4c9b03644c1907b079900978375_Out_0 = _RadialScale;
             float2 _PolarCoordinates_9dabeacc0ec24df99e96e379860d2e39_Out_4;
