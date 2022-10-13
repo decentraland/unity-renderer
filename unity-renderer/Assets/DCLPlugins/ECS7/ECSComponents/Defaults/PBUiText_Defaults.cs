@@ -7,9 +7,9 @@ namespace DCL.ECSComponents
             return self.Color ?? Color3_Defaults.colorWhite;
         }
 
-        public static TextAlign GetTextAlign(this PBUiText self)
+        public static TextAlignMode GetTextAlign(this PBUiText self)
         {
-            return self.HasTextAlign ? self.TextAlign : TextAlign.TaCenter;
+            return self.HasTextAlign ? self.TextAlign : TextAlignMode.TamCenter;
         }
 
         public static Font GetFont(this PBUiText self)
