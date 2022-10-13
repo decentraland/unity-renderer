@@ -79,12 +79,12 @@ Material:
     - _FogIntensity: 0.1
     - _GrassGridFade: 4500
     - _GrassGridFade_1: 12.4
-    - _GrassGridFarFade: 5500
-    - _GrassGridIntenseFade: 3000
-    - _GrassGridThickness: 0.04
-    - _GrassGridThicknessVariation: 0.065
-    - _GrassGridTiling: 4
-    - _GrassGridVariationFrequency: 2
+    - _GrassGridFarFade: 5000
+    - _GrassGridIntenseFade: 0
+    - _GrassGridThickness: 0.05
+    - _GrassGridThicknessVariation: 0.01
+    - _GrassGridTiling: 2
+    - _GrassGridVariationFrequency: 0.5
     - _GrassScale: 0.0005
     - _GridOffset: 1
     - _GridThickness: 0.05
@@ -101,7 +101,7 @@ Material:
     - _StencilWriteMask: 255
     - _ThicknessOffset: 1500
     - _Zoom: 8192
-    - _pusleOpacity: 1
+    - _pusleOpacity: 0
     m_Colors:
     - Color_cc0a35f9eaad4b40962ddcb04d8b6963: {r: 0.5333698, g: 0.9811321, b: 0.254539,
         a: 0}
@@ -123,8 +123,8 @@ Material:
     - _ColorParcels: {r: 0.3818399, g: 0.64499986, b: 0.38315284, a: 1}
     - _ColorPlazas: {r: 0.38039207, g: 0.6431373, b: 0.38431367, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
-    - _GrassGridColor: {r: 0.93725497, g: 0.9803922, b: 1, a: 1}
-    - _GrassGridColorVariation: {r: 0.59607846, g: 0.53333336, b: 0.10980393, a: 1}
+    - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
+    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933604, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _GrassVariationRange: {r: 0.5, g: 2.5, b: 0, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}

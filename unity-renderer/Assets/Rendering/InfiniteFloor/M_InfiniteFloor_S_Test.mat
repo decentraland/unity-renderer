@@ -76,12 +76,12 @@ Material:
     - _FogFade: 7500
     - _FogIntensity: 0.1
     - _GrassGridFade: 45000
-    - _GrassGridFarFade: 5500
-    - _GrassGridIntenseFade: 3000
-    - _GrassGridThickness: 0.04
-    - _GrassGridThicknessVariation: 0.065
-    - _GrassGridTiling: 4
-    - _GrassGridVariationFrequency: 2
+    - _GrassGridFarFade: 5000
+    - _GrassGridIntenseFade: 0
+    - _GrassGridThickness: 0.05
+    - _GrassGridThicknessVariation: 0.01
+    - _GrassGridTiling: 2
+    - _GrassGridVariationFrequency: 0.5
     - _GrassScale: 0.0005
     - _GridOffset: 1
     - _GridThickness: 0.05
@@ -98,6 +98,7 @@ Material:
     - _StencilWriteMask: 255
     - _ThicknessOffset: 1500
     - _Zoom: 8192
+    - _pusleOpacity: 0
     m_Colors:
     - Color_cc0a35f9eaad4b40962ddcb04d8b6963: {r: 0, g: 0, b: 0, a: 0}
     - Color_cd6df74b8fc14dfaa1ce8907510737b8: {r: 0, g: 1.4142135, b: 0.97608465,
