@@ -492,7 +492,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 45d3b70a16ff3bd42979469a84160b7e, type: 2}
     maleAnimation: {fileID: 7400000, guid: 45d3b70a16ff3bd42979469a84160b7e, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -516,7 +516,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
     maleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -540,7 +540,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 0ced2ca364b8ee04895e3121897e60ad, type: 2}
     maleAnimation: {fileID: 7400000, guid: 0ced2ca364b8ee04895e3121897e60ad, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -564,7 +564,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: e20f3d4dba221fc42ae5cd827c7066f7, type: 2}
     maleAnimation: {fileID: 7400000, guid: e20f3d4dba221fc42ae5cd827c7066f7, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -588,7 +588,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 2872158ae1038f44caeb563cd7907727, type: 2}
     maleAnimation: {fileID: 7400000, guid: 2872158ae1038f44caeb563cd7907727, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -612,7 +612,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 5b7834be0b67e164a86e1a656f2fecfa, type: 2}
     maleAnimation: {fileID: 7400000, guid: 5b7834be0b67e164a86e1a656f2fecfa, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -636,7 +636,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 8cfedfa628a166447a1f8f51d691d8cd, type: 2}
     maleAnimation: {fileID: 7400000, guid: 8cfedfa628a166447a1f8f51d691d8cd, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -660,7 +660,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: a721652055da83a4f9b45006368e02ab, type: 2}
     maleAnimation: {fileID: 7400000, guid: a721652055da83a4f9b45006368e02ab, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -684,7 +684,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: b36c7fb112becf140b38c2e92201c94e, type: 2}
     maleAnimation: {fileID: 7400000, guid: b36c7fb112becf140b38c2e92201c94e, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -708,7 +708,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 95c3c3e1cf152d244b537c3683352050, type: 2}
     maleAnimation: {fileID: 7400000, guid: 95c3c3e1cf152d244b537c3683352050, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -732,7 +732,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 95355e76e9a17b44a9f6b63cb66524b7, type: 2}
     maleAnimation: {fileID: 7400000, guid: 95355e76e9a17b44a9f6b63cb66524b7, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
   - data:
       representations: []
       category: 
@@ -756,4 +756,4 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
     maleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
-    dontShowInBackpack: 0
+    dontShowInBackpack: 1
