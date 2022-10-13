@@ -44,8 +44,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
-    internal bool isDefaultSubSectionLoadedByFirstTime = false;
-
     public override void Start() =>
         CreateSubSectionSelectorMappings();
 
@@ -56,8 +54,11 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public void GoToSubsection(int subSectionIndex) =>
         subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
 
-    public void SetActive(bool isActive) =>
-        gameObject.SetActive(isActive);
+    public void SetActive(bool isActive)
+    {
+        GetComponent<Canvas>().enabled = isActive;
+        // gameObject.SetActive(isActive);
+    }
 
     public override void RefreshControl()
     {
@@ -82,8 +83,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
                           ?.onSelect.AddListener((isOn) =>
                           {
                               highlightsSubSection.gameObject.SetActive(isOn);
-
-                              isDefaultSubSectionLoadedByFirstTime = true;
                           });
 
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)

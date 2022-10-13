@@ -86,5 +86,5 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }
 
-    internal void PlacesAndEventsVisibleChanged(bool current, bool previous) { view.SetActive(current); }
+    internal void PlacesAndEventsVisibleChanged(bool current, bool _) => view.SetActive(current);
 }
