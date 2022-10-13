@@ -25,15 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci9kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXZhdGFyX2F0dGFjaC5w",
-            "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzImwKDlBCQXZhdGFy",
-            "QXR0YWNoEhEKCWF2YXRhcl9pZBgBIAEoCRJHCg9hbmNob3JfcG9pbnRfaWQY",
-            "AiABKA4yLi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuQXZhdGFyQW5j",
-            "aG9yUG9pbnQqXgoRQXZhdGFyQW5jaG9yUG9pbnQSEAoMQUFQX1BPU0lUSU9O",
-            "EAASEAoMQUFQX05BTUVfVEFHEAESEQoNQUFQX0xFRlRfSEFORBACEhIKDkFB",
-            "UF9SSUdIVF9IQU5EEANCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzInAKDlBCQXZhdGFy",
+            "QXR0YWNoEhEKCWF2YXRhcl9pZBgBIAEoCRJLCg9hbmNob3JfcG9pbnRfaWQY",
+            "AiABKA4yMi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuQXZhdGFyQW5j",
+            "aG9yUG9pbnRUeXBlKmYKFUF2YXRhckFuY2hvclBvaW50VHlwZRIRCg1BQVBU",
+            "X1BPU0lUSU9OEAASEQoNQUFQVF9OQU1FX1RBRxABEhIKDkFBUFRfTEVGVF9I",
+            "QU5EEAISEwoPQUFQVF9SSUdIVF9IQU5EEANCFKoCEURDTC5FQ1NDb21wb25l",
+            "bnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarAnchorPoint), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarAnchorPointType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarAttach), global::DCL.ECSComponents.PBAvatarAttach.Parser, new[]{ "AvatarId", "AnchorPointId" }, null, null, null, null)
           }));
     }
@@ -41,11 +42,11 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
-  public enum AvatarAnchorPoint {
-    [pbr::OriginalName("AAP_POSITION")] AapPosition = 0,
-    [pbr::OriginalName("AAP_NAME_TAG")] AapNameTag = 1,
-    [pbr::OriginalName("AAP_LEFT_HAND")] AapLeftHand = 2,
-    [pbr::OriginalName("AAP_RIGHT_HAND")] AapRightHand = 3,
+  public enum AvatarAnchorPointType {
+    [pbr::OriginalName("AAPT_POSITION")] AaptPosition = 0,
+    [pbr::OriginalName("AAPT_NAME_TAG")] AaptNameTag = 1,
+    [pbr::OriginalName("AAPT_LEFT_HAND")] AaptLeftHand = 2,
+    [pbr::OriginalName("AAPT_RIGHT_HAND")] AaptRightHand = 3,
   }
 
   #endregion
@@ -110,10 +111,10 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "anchor_point_id" field.</summary>
     public const int AnchorPointIdFieldNumber = 2;
-    private global::DCL.ECSComponents.AvatarAnchorPoint anchorPointId_ = global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition;
+    private global::DCL.ECSComponents.AvatarAnchorPointType anchorPointId_ = global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.AvatarAnchorPoint AnchorPointId {
+    public global::DCL.ECSComponents.AvatarAnchorPointType AnchorPointId {
       get { return anchorPointId_; }
       set {
         anchorPointId_ = value;
@@ -145,7 +146,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (AvatarId.Length != 0) hash ^= AvatarId.GetHashCode();
-      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition) hash ^= AnchorPointId.GetHashCode();
+      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition) hash ^= AnchorPointId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -168,7 +169,7 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(AvatarId);
       }
-      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition) {
+      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition) {
         output.WriteRawTag(16);
         output.WriteEnum((int) AnchorPointId);
       }
@@ -186,7 +187,7 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(AvatarId);
       }
-      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition) {
+      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition) {
         output.WriteRawTag(16);
         output.WriteEnum((int) AnchorPointId);
       }
@@ -203,7 +204,7 @@ namespace DCL.ECSComponents {
       if (AvatarId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AvatarId);
       }
-      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition) {
+      if (AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AnchorPointId);
       }
       if (_unknownFields != null) {
@@ -221,7 +222,7 @@ namespace DCL.ECSComponents {
       if (other.AvatarId.Length != 0) {
         AvatarId = other.AvatarId;
       }
-      if (other.AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPoint.AapPosition) {
+      if (other.AnchorPointId != global::DCL.ECSComponents.AvatarAnchorPointType.AaptPosition) {
         AnchorPointId = other.AnchorPointId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -244,7 +245,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPoint) input.ReadEnum();
+            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPointType) input.ReadEnum();
             break;
           }
         }
@@ -267,7 +268,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPoint) input.ReadEnum();
+            AnchorPointId = (global::DCL.ECSComponents.AvatarAnchorPointType) input.ReadEnum();
             break;
           }
         }

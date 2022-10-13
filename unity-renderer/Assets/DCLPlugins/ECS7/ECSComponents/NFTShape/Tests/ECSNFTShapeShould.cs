@@ -62,7 +62,7 @@ namespace Tests
             infoRetriever.FetchNFTInfo(Arg.Any<string>()).Returns(UniTask.FromResult(new NFTInfo()));
             assetRetriever.LoadNFTAsset(Arg.Any<string>()).Returns(UniTask.FromResult(Substitute.For<INFTAsset>()));
 
-            PBNFTShape model = new PBNFTShape()
+            PBNftShape model = new PBNftShape()
             {
                 Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722"
             };
@@ -79,7 +79,7 @@ namespace Tests
         [Test]
         public void CreateFrame()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
 
             NFTShapeFrame frame = (NFTShapeFrame)handler.shapeFrame;
             Assert.IsTrue(frame);
@@ -90,7 +90,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator DestroyFrame()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
 
             NFTShapeFrame frame = (NFTShapeFrame)handler.shapeFrame;
 
@@ -103,7 +103,7 @@ namespace Tests
         [Test]
         public void AddAndRemoveRenderer()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
             Assert.IsTrue(renderersComponent.GetFor(scene, entity).model.renderers.Contains(handler.shapeFrame.frameRenderer));
 
             handler.OnComponentRemoved(scene, entity);
@@ -113,11 +113,11 @@ namespace Tests
         [Test]
         public void UpdateStyle()
         {
-            PBNFTShape model = new PBNFTShape() { Style = PictureFrameStyle.PfsGoldEdges };
+            PBNftShape model = new PBNftShape() { Style = NftFrameType.NftGoldEdges };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Golden_01", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
-            model = new PBNFTShape() { Style = PictureFrameStyle.PfsClassic };
+            model = new PBNftShape() { Style = NftFrameType.NftClassic };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Classic", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
@@ -127,7 +127,7 @@ namespace Tests
         [Test]
         public void UpdateColor()
         {
-            PBNFTShape model = new PBNFTShape() { Color = new Color3() { R = 1, G = 1, B = 1 } };
+            PBNftShape model = new PBNftShape() { Color = new Color3() { R = 1, G = 1, B = 1 } };
             handler.OnComponentModelUpdated(scene, entity, model);
 
             MeshRenderer renderer = (MeshRenderer)handler.shapeFrame.frameRenderer;
@@ -135,7 +135,7 @@ namespace Tests
             Assert.AreEqual(model.Color.G, renderer.sharedMaterials[1].color.g);
             Assert.AreEqual(model.Color.B, renderer.sharedMaterials[1].color.b);
 
-            model = new PBNFTShape() { Color = new Color3() { R = 0, G = 0, B = 0 } };
+            model = new PBNftShape() { Color = new Color3() { R = 0, G = 0, B = 0 } };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(model.Color.R, renderer.sharedMaterials[1].color.r);
             Assert.AreEqual(model.Color.G, renderer.sharedMaterials[1].color.g);

@@ -68,15 +68,15 @@ namespace DCL.ECSComponents
             }
         }
 
-        private static TextAnchor ToUnityTextAlign(TextAlign align)
+        private static TextAnchor ToUnityTextAlign(TextAlignMode align)
         {
             switch (align)
             {
-                case TextAlign.TaCenter:
+                case TextAlignMode.TamCenter:
                     return TextAnchor.MiddleCenter;
-                case TextAlign.TaLeft:
+                case TextAlignMode.TamLeft:
                     return TextAnchor.MiddleLeft;
-                case TextAlign.TaRight:
+                case TextAlignMode.TamRight:
                     return TextAnchor.MiddleRight;
                 default:
                     return TextAnchor.MiddleCenter;

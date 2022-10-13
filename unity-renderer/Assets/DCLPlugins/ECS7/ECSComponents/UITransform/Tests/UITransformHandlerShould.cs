@@ -103,7 +103,7 @@ namespace Tests
                 BorderTop = 2,
                 BorderRight = 3,
                 BorderLeft = 4,
-                PositionType = YGPositionType.YgpAbsolute
+                PositionType = YGPositionType.YgptAbsolute
             };
 
             Action<InternalUiContainer> styleCheck = m =>

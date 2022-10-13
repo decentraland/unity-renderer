@@ -62,28 +62,28 @@ namespace DCL.ECSComponents
             return vector;
         }
 
-        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
+        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraType mode)
         {
             switch (mode)
             {
-                case CameraModeValue.CmvFirstPerson:
+                case CameraType.CtFirstPerson:
                     return CameraMode.ModeId.FirstPerson;
-                case CameraModeValue.CmvThirdPerson:
+                case CameraType.CtThirdPerson:
                     return CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }
         }
 
-        public static CameraModeValue UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
+        public static CameraType UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
         {
             switch (mode)
             {
                 case CameraMode.ModeId.FirstPerson:
-                    return CameraModeValue.CmvFirstPerson;
+                    return CameraType.CtFirstPerson;
                 case CameraMode.ModeId.ThirdPerson:
                 default:
-                    return CameraModeValue.CmvThirdPerson;
+                    return CameraType.CtThirdPerson;
             }
         }
 
