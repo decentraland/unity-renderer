@@ -22,6 +22,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+        private BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
 
@@ -82,7 +83,10 @@ namespace DCL.Chat.Notifications
                         mainChatNotificationView.AddNewChatNotification(privateModel);
 
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-                            topNotificationView.AddNewChatNotification(privateModel);
+                        {
+                            if(message.sender != openedChat.Get())
+                                topNotificationView.AddNewChatNotification(privateModel);
+                        }
                         break;
                     case ChatMessage.Type.PUBLIC:
                         var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
@@ -91,7 +95,10 @@ namespace DCL.Chat.Notifications
                         mainChatNotificationView.AddNewChatNotification(publicModel);
 
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-                            topNotificationView.AddNewChatNotification(publicModel);
+                        {
+                            if(channel?.ChannelId != openedChat.Get())
+                                topNotificationView.AddNewChatNotification(publicModel);
+                        }
                         break;
                 }
             }
