@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Networking;
 using Variables.RealmsInfo;
 
 public class Catalyst : ICatalyst
@@ -198,6 +199,33 @@ public class Catalyst : ICatalyst
         {
             promise.Reject($"{request.webRequest.error} {request.webRequest.downloadHandler.text} at url {url}");
         });
+
+        return promise;
+    }
+
+    public Promise<CatalystUserProfilePayload.Avatar> GetUserProfileData(string userId)
+    {
+        Promise<CatalystUserProfilePayload.Avatar> promise = new Promise<CatalystUserProfilePayload.Avatar>();
+
+        string url = lambdasUrl + "/profiles?id=" + userId;
+        DCL.Environment.i.platform.webRequest.Get(
+            url: url,
+            downloadHandler: null,
+            timeout: 10,
+            disposeOnCompleted: false,
+            OnSuccess: request =>
+            {
+                CatalystUserProfilePayload[] data = Utils.ParseJsonArray<CatalystUserProfilePayload[]>(request.webRequest.downloadHandler.text);
+                
+                if(data[0] == null || data[0].avatars[0] == null)
+                    promise.Reject("Request error! user profile data couldn't be fetched!");
+                else
+                    promise.Resolve(data[0].avatars[0].avatar);
+            }, 
+            OnFail: request =>
+            {
+                promise.Reject($"Request error! user profile data couldn't be fetched! -- {request.webRequest.error} {request.webRequest.downloadHandler.text} at url {url}");
+            });
 
         return promise;
     }

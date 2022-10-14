@@ -113,3 +113,29 @@ public class CatalystSceneEntityMetadata
     public string[] tags;
     public string[] requiredPermissions;
 }
+
+// TODO: Do we have a more complete structure with the response elsewhere ???
+[Serializable]
+public class CatalystUserProfilePayload
+{
+    [Serializable]
+    public class Avatars
+    {
+        public Avatar avatar;
+    }
+
+    [Serializable]
+    public class Avatar
+    {
+        public Snapshots snapshots;
+    }
+
+    [Serializable]
+    public class Snapshots
+    {
+        public string face256;
+        public string body;
+    }
+
+    public Avatars[] avatars;
+}
