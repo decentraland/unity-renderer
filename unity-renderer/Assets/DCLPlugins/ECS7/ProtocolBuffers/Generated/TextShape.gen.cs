@@ -144,7 +144,7 @@ namespace DCL.ECSComponents {
     public const int FontFieldNumber = 3;
     private global::DCL.ECSComponents.Font font_;
     /// <summary>
-    /// @deprecated use HiddenComponent instead https://github.com/decentraland/sdk/issues/353
+    /// default=F_SANS_SERIF
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

@@ -156,7 +156,7 @@ namespace Tests
         {
             PBTextShape model = new PBTextShape
             {
-                TextColor = new Color4()
+                TextColor = new Color4() { R = 1.0f, G = 1.0f, B = 1.0f, A = 0.5f}
             };
 
             textShapeComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -191,10 +191,10 @@ namespace Tests
             Assert.AreEqual(enabled, textShapeComponentHandler.textComponent.enableAutoSizing);
         }
 
-        [TestCase("left", "top", ExpectedResult = TextAlignmentOptions.TopLeft)]
-        [TestCase("right", "bottom", ExpectedResult = TextAlignmentOptions.BottomRight)]
-        [TestCase("right", "top", ExpectedResult = TextAlignmentOptions.TopRight)]
-        [TestCase("left", "bottom", ExpectedResult = TextAlignmentOptions.BottomLeft)]
+        [TestCase(TextAlignMode.TamTopLeft, ExpectedResult = TextAlignmentOptions.TopLeft)]
+        [TestCase(TextAlignMode.TamBottomRight, ExpectedResult = TextAlignmentOptions.BottomRight)]
+        [TestCase(TextAlignMode.TamTopRight, ExpectedResult = TextAlignmentOptions.TopRight)]
+        [TestCase(TextAlignMode.TamBottomLeft, ExpectedResult = TextAlignmentOptions.BottomLeft)]
         public TextAlignmentOptions UpdateFontAutoSizeCorrectly(TextAlignMode alignment)
         {
             PBTextShape model = new PBTextShape
