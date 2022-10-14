@@ -196,12 +196,6 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         canvas.enabled = isActive;
 
-        if (isActive && !gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-            return;
-        }
-
         if (isActive)
             OnEnable();
         else
@@ -228,7 +222,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.RemoveItems();
 
         viewAllEventsButton.onClick.AddListener(() => OnViewAllEventsClicked?.Invoke());
-
+        
+        Debug.Log("[OnReady]");
         OnReady?.Invoke();
     }
 

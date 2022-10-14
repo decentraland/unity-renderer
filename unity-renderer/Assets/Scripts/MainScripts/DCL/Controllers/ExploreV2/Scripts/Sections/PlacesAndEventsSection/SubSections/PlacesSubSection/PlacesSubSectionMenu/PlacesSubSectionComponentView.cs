@@ -175,6 +175,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             OnJumpInClicked);
 
         this.places.SetItems(placeComponentsToAdd);
+        
         placesNoDataText.gameObject.SetActive(places.Count == 0);
     }
 
@@ -194,12 +195,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
-
-        if (isActive && !gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-            return;
-        }
 
         if (isActive)
             OnEnable();

@@ -185,8 +185,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
     
-
-   
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
         featuredEvents.ExtractItems();
@@ -349,12 +347,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
-
-        if (isActive && !gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-            return;
-        }
 
         if (isActive)
             OnEnable();

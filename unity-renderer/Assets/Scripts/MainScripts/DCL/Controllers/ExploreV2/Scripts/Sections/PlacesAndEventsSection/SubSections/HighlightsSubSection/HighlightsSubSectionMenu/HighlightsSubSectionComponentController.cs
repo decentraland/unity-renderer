@@ -44,7 +44,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 {
     public event Action OnCloseExploreV2;
     public event Action OnGoToEventsSubSection;
-    internal event Action OnPlacesAndEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
@@ -86,7 +85,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
-        OnPlacesAndEventsFromAPIUpdated += OnRequestedPlacesAndEventsUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -97,6 +95,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void FirstLoading()
     {
+        Debug.Log("[First Loading]");
+
         reloadHighlights = true;
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlacesAndEvents();
@@ -144,19 +144,25 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void RequestAllPlacesAndEventsFromAPI()
     {
+        Debug.Log($"0 - {nameof(RequestAllPlacesAndEventsFromAPI)}");
+
+        
         placesAPIApiController.GetAllPlaces(
             (placeList) =>
             {
+                Debug.Log(1);
                 placesFromAPI = placeList;
                 eventsAPIApiController.GetAllEvents(
                     (eventList) =>
                     {
+                        Debug.Log(2);
                         eventsFromAPI = eventList;
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        OnRequestedPlacesAndEventsUpdated();
                     },
                     (error) =>
                     {
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        Debug.Log(3);
+                        OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
             });
@@ -164,6 +170,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void OnRequestedPlacesAndEventsUpdated()
     {
+        Debug.Log($"1 - {nameof(OnRequestedPlacesAndEventsUpdated)}");
+
         friendsTrackerController.RemoveAllHandlers();
 
         LoadTrendingPlacesAndEvents();

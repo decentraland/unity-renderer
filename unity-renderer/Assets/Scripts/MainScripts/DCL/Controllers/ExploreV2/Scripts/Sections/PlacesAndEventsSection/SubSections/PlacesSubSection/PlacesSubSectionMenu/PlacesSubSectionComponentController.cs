@@ -21,7 +21,8 @@ public interface IPlacesSubSectionComponentController : IDisposable
     /// <summary>
     /// Load the places with the last requested ones.
     /// </summary>
-    void LoadPlaces();
+    /// <param name="placeList"></param>
+    void LoadPlaces(List<HotSceneInfo> placeList);
 
     /// <summary>
     /// Increment the number of places loaded.
@@ -32,7 +33,6 @@ public interface IPlacesSubSectionComponentController : IDisposable
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
-    internal event Action OnPlacesFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 5;
     internal const int SHOW_MORE_ROWS_INCREMENT = 3;
@@ -44,14 +44,12 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal bool reloadPlaces = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
-    private DataStore dataStore;
 
     public PlacesSubSectionComponentController(
         IPlacesSubSectionComponentView view,
         IPlacesAPIController placesAPI,
         IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics,
-        DataStore dataStore)
+        IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -59,11 +57,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
-        this.dataStore = dataStore;
-        this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
-        OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -79,7 +74,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllPlaces();
 
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -107,32 +102,26 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
-        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
+        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesFromAPI();
         else
-            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += DelayedRequestAllPlacesFromAPI;
     }
 
-    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
+    private void DelayedRequestAllPlacesFromAPI(bool current, bool previous)
     {
-        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= DelayedRequestAllPlacesFromAPI;
         RequestAllPlacesFromAPI();
     }
 
     internal void RequestAllPlacesFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(
-            (placeList) =>
-            {
-                placesFromAPI = placeList;
-                OnPlacesFromAPIUpdated?.Invoke();
-            });
+        placesAPIApiController.GetAllPlaces(OnCompleted: LoadPlaces);
     }
 
-    internal void OnRequestedPlacesUpdated() { LoadPlaces(); }
-
-    public void LoadPlaces()
+    public void LoadPlaces(List<HotSceneInfo> placeList)
     {
+        placesFromAPI = placeList;
         friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
@@ -142,7 +131,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
-
+        
         view.SetPlaces(places);
         view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
         view.SetPlacesAsLoading(false);
@@ -183,36 +172,22 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
-        OnPlacesFromAPIUpdated -= OnRequestedPlacesUpdated;
-        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
-        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
-        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
     internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
-
-    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
-    {
-        if (!string.IsNullOrEmpty(currentChannelId))
-            return;
-
-        view.HidePlaceModal();
-        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
-        OnCloseExploreV2?.Invoke();
-    }
 }

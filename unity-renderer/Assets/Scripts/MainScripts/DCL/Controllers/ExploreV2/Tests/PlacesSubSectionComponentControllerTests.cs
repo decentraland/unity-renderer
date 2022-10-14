@@ -110,7 +110,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        placesSubSectionComponentController.OnRequestedPlacesUpdated();
+        placesSubSectionComponentController.LoadPlaces(placesSubSectionComponentController.placesFromAPI);
 
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
@@ -126,7 +126,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        placesSubSectionComponentController.LoadPlaces();
+        placesSubSectionComponentController.LoadPlaces(placesSubSectionComponentController.placesFromAPI);
 
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
