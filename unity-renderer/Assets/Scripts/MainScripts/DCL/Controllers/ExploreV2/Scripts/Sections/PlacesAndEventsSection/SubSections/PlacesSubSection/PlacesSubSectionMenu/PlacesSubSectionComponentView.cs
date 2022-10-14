@@ -111,6 +111,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal GameObject showMorePlacesButtonContainer;
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
 
+    [SerializeField] private Canvas canvas;
+
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
     public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
@@ -124,14 +126,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public Color[] currentFriendColors => friendColors;
 
     public int currentPlacesPerRow => places.currentItemsPerRow;
-
-    public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
-
-    public void ConfigurePools()
-    {
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
-    }
-
+    
     public override void Start()
     {
         placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
@@ -144,7 +139,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         OnReady?.Invoke();
     }
 
-    public override void RefreshControl() { places.RefreshControl(); }
+    public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
+
+    public void ConfigurePools() =>
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+
+    public override void RefreshControl() =>
+        places.RefreshControl();
 
     public override void Dispose()
     {
@@ -186,11 +187,27 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             OnInfoClicked,
             OnJumpInClicked);
 
-        foreach (var place in placeComponentsToAdd)
-        {
+        foreach (BaseComponentView place in placeComponentsToAdd)
             this.places.AddItem(place);
-        }
     }
+
+    public void SetActive(bool isActive)
+    {
+        canvas.enabled = isActive;
+
+        if (isActive && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+            return;
+        }
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
+    }
+
+    public void SetShowMorePlacesButtonActive(bool isActive) => showMorePlacesButtonContainer.gameObject.SetActive(isActive);
 
     public void SetPlacesAsLoading(bool isVisible)
     {
@@ -200,37 +217,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         if (isVisible)
             placesNoDataText.gameObject.SetActive(false);
     }
-
-    public void SetShowMorePlacesButtonActive(bool isActive) { showMorePlacesButtonContainer.gameObject.SetActive(isActive); }
-
+    
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
-    public void HidePlaceModal()
-    {
-        if (placeModal == null)
-            return;
+    public void HidePlaceModal() => placeModal.Hide();
 
-        placeModal.Hide();
-    }
-
-    public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
-
-    [SerializeField] private Canvas canvas;
-
-    public void SetActive(bool isActive)
-    {
-        if (isActive && !gameObject.activeSelf)
-            gameObject.SetActive(true);
-
-        canvas.enabled = isActive;
-
-        if (isActive)
-            OnEnable();
-        else
-            OnDisable();
-    }
+    public void RestartScrollViewPosition() => scrollView.verticalNormalizedPosition = 1;
 }

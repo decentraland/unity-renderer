@@ -170,6 +170,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     [SerializeField] internal ButtonComponentView viewAllEventsButton;
     [SerializeField] internal Color[] friendColors = null;
 
+    [SerializeField] private Canvas canvas;
+
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
@@ -187,9 +189,25 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     internal Pool trendingEventCardsPool;
     internal Pool featuredPlaceCardsPool;
     internal Pool liveEventCardsPool;
-
+    
     public Color[] currentFriendColors => friendColors;
+    
+    public void SetActive(bool isActive)
+    {
+        canvas.enabled = isActive;
 
+        if (isActive && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+            return;
+        }
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
+    }
+    
     public override void OnEnable() { OnHighlightsSubSectionEnable?.Invoke(); }
 
     public void ConfigurePools()
@@ -346,43 +364,16 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         placeModal.Show();
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
-
-    public void HidePlaceModal()
-    {
-        if (placeModal == null)
-            return;
-
-        placeModal.Hide();
-    }
-
+    
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
         ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
-    public void HideEventModal()
-    {
-        if (eventModal == null)
-            return;
+    public void HidePlaceModal() { placeModal.Hide(); }
 
-        eventModal.Hide();
-    }
+    public void HideEventModal() { eventModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
-    
-    [SerializeField] private Canvas canvas;
-
-    public void SetActive(bool isActive)
-    {
-        if (isActive && !gameObject.activeSelf)
-            gameObject.SetActive(true);
-
-        canvas.enabled = isActive;
-
-        if (isActive)
-            OnEnable();
-        else
-            OnDisable();
-    }
 }

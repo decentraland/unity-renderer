@@ -167,6 +167,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal GameObject showMoreUpcomingEventsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
+    [SerializeField] private Canvas canvas;
+
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
@@ -182,58 +184,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal Pool goingEventCardsPool;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
+    
 
-    public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
-
-    public void ConfigurePools()
-    {
-        ExploreEventsUtils.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
-    }
-
-    public override void Start()
-    {
-        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
-
-        featuredEvents.RemoveItems();
-        trendingEvents.RemoveItems();
-        upcomingEvents.RemoveItems();
-        goingEvents.RemoveItems();
-
-        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
-        showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
-
-        OnReady?.Invoke();
-    }
-
-    public override void RefreshControl()
-    {
-        featuredEvents.RefreshControl();
-        trendingEvents.RefreshControl();
-        upcomingEvents.RefreshControl();
-        goingEvents.RefreshControl();
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
-
-        featuredEvents.Dispose();
-        upcomingEvents.Dispose();
-        trendingEvents.Dispose();
-        goingEvents.Dispose();
-
-        if (eventModal != null)
-        {
-            eventModal.Dispose();
-            Destroy(eventModal.gameObject);
-        }
-    }
-
+   
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
         featuredEvents.ExtractItems();
@@ -275,7 +228,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEvents.SetItems(eventComponentsToAdd);
         trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
-
+    
     public void SetTrendingEventsAsLoading(bool isVisible)
     {
         trendingEvents.gameObject.SetActive(!isVisible);
@@ -284,7 +237,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         if (isVisible)
             trendingEventsNoDataText.gameObject.SetActive(false);
     }
-
+    
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
     {
         upcomingEvents.ExtractItems();
@@ -302,22 +255,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
-    public void AddUpcomingEvents(List<EventCardComponentModel> events)
-    {
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            upcomingEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
-
-        foreach (var eventToAdd in eventComponentsToAdd)
-        {
-            upcomingEvents.AddItem(eventToAdd);
-        }
-    }
-
     public void SetUpcomingEventsAsLoading(bool isVisible)
     {
         upcomingEvents.gameObject.SetActive(!isVisible);
@@ -325,6 +262,57 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         if (isVisible)
             upcomingEventsNoDataText.gameObject.SetActive(false);
+    }
+    
+    public override void Start()
+    {
+        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
+
+        featuredEvents.RemoveItems();
+        trendingEvents.RemoveItems();
+        upcomingEvents.RemoveItems();
+        goingEvents.RemoveItems();
+
+        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
+        showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
+
+        OnReady?.Invoke();
+    }
+    
+    public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
+
+    public void ConfigurePools()
+    {
+        ExploreEventsUtils.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+    }
+    
+    public override void RefreshControl()
+    {
+        featuredEvents.RefreshControl();
+        trendingEvents.RefreshControl();
+        upcomingEvents.RefreshControl();
+        goingEvents.RefreshControl();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
+
+        featuredEvents.Dispose();
+        upcomingEvents.Dispose();
+        trendingEvents.Dispose();
+        goingEvents.Dispose();
+
+        if (eventModal != null)
+        {
+            eventModal.Dispose();
+            Destroy(eventModal.gameObject);
+        }
     }
 
     public void SetGoingEvents(List<EventCardComponentModel> events)
@@ -343,6 +331,38 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEvents.SetItems(eventComponentsToAdd);
         goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
+    
+    public void AddUpcomingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
+            events,
+            upcomingEventCardsPool,
+            OnInfoClicked,
+            OnJumpInClicked,
+            OnSubscribeEventClicked,
+            OnUnsubscribeEventClicked);
+
+        foreach (BaseComponentView eventToAdd in eventComponentsToAdd)
+            upcomingEvents.AddItem(eventToAdd);
+    }
+    
+    public void SetActive(bool isActive)
+    {
+        canvas.enabled = isActive;
+
+        if (isActive && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+            return;
+        }
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
+    }
+    
+    public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
 
     public void SetGoingEventsAsLoading(bool isVisible)
     {
@@ -352,7 +372,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         if (isVisible)
             goingEventsNoDataText.gameObject.SetActive(false);
     }
-
+    
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
@@ -368,21 +388,4 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
-
-    public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
-
-    [SerializeField] private Canvas canvas;
-
-    public void SetActive(bool isActive)
-    {
-        if (isActive && !gameObject.activeSelf)
-            gameObject.SetActive(true);
-
-        canvas.enabled = isActive;
-
-        if (isActive)
-            OnEnable();
-        else
-            OnDisable();
-    }
 }
