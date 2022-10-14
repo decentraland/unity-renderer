@@ -131,7 +131,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.TextAlignMode TextAlign {
-      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamCenter; } }
+      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamTopLeft; } }
       set {
         _hasBits0 |= 1;
         textAlign_ = value;

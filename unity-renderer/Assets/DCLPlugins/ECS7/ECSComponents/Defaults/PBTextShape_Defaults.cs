@@ -4,24 +4,14 @@ namespace DCL.ECSComponents
 {
     public static class PBTextShape_Defaults
     {
-        public static float GetOpacity(this PBTextShape self)
-        {
-            return self.HasOpacity ? self.Opacity : 1.0f;
-        }
-
         public static float GetFontSize(this PBTextShape self)
         {
             return self.HasFontSize ? self.FontSize : 10.0f;
         }
 
-        public static string GetHTextAlign(this PBTextShape self)
+        public static TextAlignMode GetTextAlign(this PBTextShape self)
         {
-            return self.HasHTextAlign ? self.HTextAlign : "center";
-        }
-
-        public static string GetVTextAlign(this PBTextShape self)
-        {
-            return self.HasVTextAlign ? self.VTextAlign : "center";
+            return self.HasTextAlign ? self.TextAlign : TextAlignMode.TamMiddleCenter;
         }
 
         public static float GetWidth(this PBTextShape self)
@@ -44,9 +34,9 @@ namespace DCL.ECSComponents
             return self.OutlineColor ?? new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
         }
 
-        public static Color3 GetTextColor(this PBTextShape self)
+        public static Color4 GetTextColor(this PBTextShape self)
         {
-            return self.TextColor ?? new Color3() { R = 1.0f, G = 1.0f, B = 1.0f };
+            return self.TextColor ?? new Color4() { R = 1.0f, G = 1.0f, B = 1.0f, A = 1.0f};
         }
 
         public static bool GetTextWrapping(this PBTextShape self)
@@ -79,9 +69,9 @@ namespace DCL.ECSComponents
             return self.HasLineSpacing ? self.LineSpacing : 0;
         }
 
-        public static string GetFont(this PBTextShape self)
+        public static Font GetFont(this PBTextShape self)
         {
-            return self.HasFont ? self.Font : "SansSerif";
+            return self.HasFont ? self.Font : Font.FSansSerif;
         }
 
         public static float GetShadowOffsetX(this PBTextShape self)
