@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.Networking;
 using Variables.RealmsInfo;
 
 public class Catalyst : ICatalyst
@@ -20,6 +19,7 @@ public class Catalyst : ICatalyst
     private string realmContentServerUrl = "https://peer.decentraland.org/content";
 
     private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
+    private readonly IDataCache<CatalystUserProfilePayload.Avatar> userProfilesDataCache = new DataCache<CatalystUserProfilePayload.Avatar>();
 
     public Catalyst()
     {
@@ -36,6 +36,7 @@ public class Catalyst : ICatalyst
     {
         DataStore.i.realm.playerRealm.OnChange -= PlayerRealmOnOnChange;
         deployedScenesCache.Dispose();
+        userProfilesDataCache.Dispose();
     }
 
     public async UniTask<string> GetContent(string hash)
@@ -206,6 +207,15 @@ public class Catalyst : ICatalyst
     public Promise<CatalystUserProfilePayload.Avatar> GetUserProfileData(string userId)
     {
         Promise<CatalystUserProfilePayload.Avatar> promise = new Promise<CatalystUserProfilePayload.Avatar>();
+        
+        if (userProfilesDataCache.TryGet(userId, out CatalystUserProfilePayload.Avatar cacheValue, out float lastUpdate))
+        {
+            if (Time.unscaledTime - lastUpdate <= DEFAULT_CACHE_TIME)
+            {
+                promise.Resolve(cacheValue);
+                return promise;
+            }
+        }
 
         string url = lambdasUrl + "/profiles?id=" + userId;
         DCL.Environment.i.platform.webRequest.Get(
@@ -216,11 +226,17 @@ public class Catalyst : ICatalyst
             OnSuccess: request =>
             {
                 CatalystUserProfilePayload[] data = Utils.ParseJsonArray<CatalystUserProfilePayload[]>(request.webRequest.downloadHandler.text);
-                
-                if(data[0] == null || data[0].avatars[0] == null)
+
+                if (data[0] == null || data[0].avatars[0] == null)
+                {
                     promise.Reject("Request error! user profile data couldn't be fetched!");
+                }
                 else
-                    promise.Resolve(data[0].avatars[0].avatar);
+                {
+                    var userProfileData = data[0].avatars[0].avatar;
+                    userProfilesDataCache.Add(userId, userProfileData, DEFAULT_CACHE_TIME);
+                    promise.Resolve(userProfileData);
+                }
             }, 
             OnFail: request =>
             {
