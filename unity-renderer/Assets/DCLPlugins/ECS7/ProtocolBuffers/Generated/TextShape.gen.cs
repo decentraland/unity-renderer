@@ -28,21 +28,21 @@ namespace DCL.ECSComponents {
             "bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxhbmQv",
             "Y29tbW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25l",
             "bnRzL2NvbW1vbi90ZXh0cy5wcm90byKbCAoLUEJUZXh0U2hhcGUSDAoEdGV4",
-            "dBgBIAEoCRI7CgRmb250GAMgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21w",
-            "b25lbnRzLmNvbW1vbi5Gb250SACIAQESFgoJZm9udF9zaXplGAUgASgCSAGI",
-            "AQESGwoOZm9udF9hdXRvX3NpemUYBiABKAhIAogBARJKCgp0ZXh0X2FsaWdu",
-            "GAcgASgOMjEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5U",
-            "ZXh0QWxpZ25Nb2RlSAOIAQESEgoFd2lkdGgYCSABKAJIBIgBARITCgZoZWln",
-            "aHQYCiABKAJIBYgBARIYCgtwYWRkaW5nX3RvcBgLIAEoAkgGiAEBEhoKDXBh",
-            "ZGRpbmdfcmlnaHQYDCABKAJIB4gBARIbCg5wYWRkaW5nX2JvdHRvbRgNIAEo",
-            "AkgIiAEBEhkKDHBhZGRpbmdfbGVmdBgOIAEoAkgJiAEBEhkKDGxpbmVfc3Bh",
-            "Y2luZxgPIAEoAkgKiAEBEhcKCmxpbmVfY291bnQYECABKAVIC4gBARIaCg10",
-            "ZXh0X3dyYXBwaW5nGBEgASgISAyIAQESGAoLc2hhZG93X2JsdXIYEiABKAJI",
-            "DYgBARIcCg9zaGFkb3dfb2Zmc2V0X3gYEyABKAJIDogBARIcCg9zaGFkb3df",
-            "b2Zmc2V0X3kYFCABKAJID4gBARIaCg1vdXRsaW5lX3dpZHRoGBUgASgCSBCI",
-            "AQESNgoMc2hhZG93X2NvbG9yGBYgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1v",
-            "bi5Db2xvcjNIEYgBARI3Cg1vdXRsaW5lX2NvbG9yGBcgASgLMhsuZGVjZW50",
-            "cmFsYW5kLmNvbW1vbi5Db2xvcjNIEogBARI0Cgp0ZXh0X2NvbG9yGBggASgL",
+            "dBgBIAEoCRI7CgRmb250GAIgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21w",
+            "b25lbnRzLmNvbW1vbi5Gb250SACIAQESFgoJZm9udF9zaXplGAMgASgCSAGI",
+            "AQESGwoOZm9udF9hdXRvX3NpemUYBCABKAhIAogBARJKCgp0ZXh0X2FsaWdu",
+            "GAUgASgOMjEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5U",
+            "ZXh0QWxpZ25Nb2RlSAOIAQESEgoFd2lkdGgYBiABKAJIBIgBARITCgZoZWln",
+            "aHQYByABKAJIBYgBARIYCgtwYWRkaW5nX3RvcBgIIAEoAkgGiAEBEhoKDXBh",
+            "ZGRpbmdfcmlnaHQYCSABKAJIB4gBARIbCg5wYWRkaW5nX2JvdHRvbRgKIAEo",
+            "AkgIiAEBEhkKDHBhZGRpbmdfbGVmdBgLIAEoAkgJiAEBEhkKDGxpbmVfc3Bh",
+            "Y2luZxgMIAEoAkgKiAEBEhcKCmxpbmVfY291bnQYDSABKAVIC4gBARIaCg10",
+            "ZXh0X3dyYXBwaW5nGA4gASgISAyIAQESGAoLc2hhZG93X2JsdXIYDyABKAJI",
+            "DYgBARIcCg9zaGFkb3dfb2Zmc2V0X3gYECABKAJIDogBARIcCg9zaGFkb3df",
+            "b2Zmc2V0X3kYESABKAJID4gBARIaCg1vdXRsaW5lX3dpZHRoGBIgASgCSBCI",
+            "AQESNgoMc2hhZG93X2NvbG9yGBMgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1v",
+            "bi5Db2xvcjNIEYgBARI3Cg1vdXRsaW5lX2NvbG9yGBQgASgLMhsuZGVjZW50",
+            "cmFsYW5kLmNvbW1vbi5Db2xvcjNIEogBARI0Cgp0ZXh0X2NvbG9yGBUgASgL",
             "MhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjRIE4gBAUIHCgVfZm9udEIM",
             "CgpfZm9udF9zaXplQhEKD19mb250X2F1dG9fc2l6ZUINCgtfdGV4dF9hbGln",
             "bkIICgZfd2lkdGhCCQoHX2hlaWdodEIOCgxfcGFkZGluZ190b3BCEAoOX3Bh",
@@ -141,7 +141,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "font" field.</summary>
-    public const int FontFieldNumber = 3;
+    public const int FontFieldNumber = 2;
     private global::DCL.ECSComponents.Font font_;
     /// <summary>
     /// default=F_SANS_SERIF
@@ -169,7 +169,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "font_size" field.</summary>
-    public const int FontSizeFieldNumber = 5;
+    public const int FontSizeFieldNumber = 3;
     private float fontSize_;
     /// <summary>
     /// default=10
@@ -197,7 +197,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "font_auto_size" field.</summary>
-    public const int FontAutoSizeFieldNumber = 6;
+    public const int FontAutoSizeFieldNumber = 4;
     private bool fontAutoSize_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -222,7 +222,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "text_align" field.</summary>
-    public const int TextAlignFieldNumber = 7;
+    public const int TextAlignFieldNumber = 5;
     private global::DCL.ECSComponents.TextAlignMode textAlign_;
     /// <summary>
     /// default=TAM_CENTER_CENTER
@@ -250,7 +250,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "width" field.</summary>
-    public const int WidthFieldNumber = 9;
+    public const int WidthFieldNumber = 6;
     private float width_;
     /// <summary>
     /// default=1
@@ -278,7 +278,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "height" field.</summary>
-    public const int HeightFieldNumber = 10;
+    public const int HeightFieldNumber = 7;
     private float height_;
     /// <summary>
     /// default=1
@@ -306,7 +306,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "padding_top" field.</summary>
-    public const int PaddingTopFieldNumber = 11;
+    public const int PaddingTopFieldNumber = 8;
     private float paddingTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -331,7 +331,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "padding_right" field.</summary>
-    public const int PaddingRightFieldNumber = 12;
+    public const int PaddingRightFieldNumber = 9;
     private float paddingRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -356,7 +356,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "padding_bottom" field.</summary>
-    public const int PaddingBottomFieldNumber = 13;
+    public const int PaddingBottomFieldNumber = 10;
     private float paddingBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -381,7 +381,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "padding_left" field.</summary>
-    public const int PaddingLeftFieldNumber = 14;
+    public const int PaddingLeftFieldNumber = 11;
     private float paddingLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -406,7 +406,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "line_spacing" field.</summary>
-    public const int LineSpacingFieldNumber = 15;
+    public const int LineSpacingFieldNumber = 12;
     private float lineSpacing_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -431,7 +431,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "line_count" field.</summary>
-    public const int LineCountFieldNumber = 16;
+    public const int LineCountFieldNumber = 13;
     private int lineCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -456,7 +456,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "text_wrapping" field.</summary>
-    public const int TextWrappingFieldNumber = 17;
+    public const int TextWrappingFieldNumber = 14;
     private bool textWrapping_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -481,7 +481,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "shadow_blur" field.</summary>
-    public const int ShadowBlurFieldNumber = 18;
+    public const int ShadowBlurFieldNumber = 15;
     private float shadowBlur_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -506,7 +506,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "shadow_offset_x" field.</summary>
-    public const int ShadowOffsetXFieldNumber = 19;
+    public const int ShadowOffsetXFieldNumber = 16;
     private float shadowOffsetX_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -531,7 +531,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "shadow_offset_y" field.</summary>
-    public const int ShadowOffsetYFieldNumber = 20;
+    public const int ShadowOffsetYFieldNumber = 17;
     private float shadowOffsetY_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -556,7 +556,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "outline_width" field.</summary>
-    public const int OutlineWidthFieldNumber = 21;
+    public const int OutlineWidthFieldNumber = 18;
     private float outlineWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -581,7 +581,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "shadow_color" field.</summary>
-    public const int ShadowColorFieldNumber = 22;
+    public const int ShadowColorFieldNumber = 19;
     private global::DCL.ECSComponents.Color3 shadowColor_;
     /// <summary>
     /// default=(1.0,1.0,1.0)
@@ -596,7 +596,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "outline_color" field.</summary>
-    public const int OutlineColorFieldNumber = 23;
+    public const int OutlineColorFieldNumber = 20;
     private global::DCL.ECSComponents.Color3 outlineColor_;
     /// <summary>
     /// default=(1.0,1.0,1.0)
@@ -611,7 +611,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "text_color" field.</summary>
-    public const int TextColorFieldNumber = 24;
+    public const int TextColorFieldNumber = 21;
     private global::DCL.ECSComponents.Color4 textColor_;
     /// <summary>
     /// default=(1.0,1.0,1.0)
@@ -712,83 +712,83 @@ namespace DCL.ECSComponents {
         output.WriteString(Text);
       }
       if (HasFont) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(16);
         output.WriteEnum((int) Font);
       }
       if (HasFontSize) {
-        output.WriteRawTag(45);
+        output.WriteRawTag(29);
         output.WriteFloat(FontSize);
       }
       if (HasFontAutoSize) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(32);
         output.WriteBool(FontAutoSize);
       }
       if (HasTextAlign) {
-        output.WriteRawTag(56);
+        output.WriteRawTag(40);
         output.WriteEnum((int) TextAlign);
       }
       if (HasWidth) {
-        output.WriteRawTag(77);
+        output.WriteRawTag(53);
         output.WriteFloat(Width);
       }
       if (HasHeight) {
-        output.WriteRawTag(85);
+        output.WriteRawTag(61);
         output.WriteFloat(Height);
       }
       if (HasPaddingTop) {
-        output.WriteRawTag(93);
+        output.WriteRawTag(69);
         output.WriteFloat(PaddingTop);
       }
       if (HasPaddingRight) {
-        output.WriteRawTag(101);
+        output.WriteRawTag(77);
         output.WriteFloat(PaddingRight);
       }
       if (HasPaddingBottom) {
-        output.WriteRawTag(109);
+        output.WriteRawTag(85);
         output.WriteFloat(PaddingBottom);
       }
       if (HasPaddingLeft) {
-        output.WriteRawTag(117);
+        output.WriteRawTag(93);
         output.WriteFloat(PaddingLeft);
       }
       if (HasLineSpacing) {
-        output.WriteRawTag(125);
+        output.WriteRawTag(101);
         output.WriteFloat(LineSpacing);
       }
       if (HasLineCount) {
-        output.WriteRawTag(128, 1);
+        output.WriteRawTag(104);
         output.WriteInt32(LineCount);
       }
       if (HasTextWrapping) {
-        output.WriteRawTag(136, 1);
+        output.WriteRawTag(112);
         output.WriteBool(TextWrapping);
       }
       if (HasShadowBlur) {
-        output.WriteRawTag(149, 1);
+        output.WriteRawTag(125);
         output.WriteFloat(ShadowBlur);
       }
       if (HasShadowOffsetX) {
-        output.WriteRawTag(157, 1);
+        output.WriteRawTag(133, 1);
         output.WriteFloat(ShadowOffsetX);
       }
       if (HasShadowOffsetY) {
-        output.WriteRawTag(165, 1);
+        output.WriteRawTag(141, 1);
         output.WriteFloat(ShadowOffsetY);
       }
       if (HasOutlineWidth) {
-        output.WriteRawTag(173, 1);
+        output.WriteRawTag(149, 1);
         output.WriteFloat(OutlineWidth);
       }
       if (shadowColor_ != null) {
-        output.WriteRawTag(178, 1);
+        output.WriteRawTag(154, 1);
         output.WriteMessage(ShadowColor);
       }
       if (outlineColor_ != null) {
-        output.WriteRawTag(186, 1);
+        output.WriteRawTag(162, 1);
         output.WriteMessage(OutlineColor);
       }
       if (textColor_ != null) {
-        output.WriteRawTag(194, 1);
+        output.WriteRawTag(170, 1);
         output.WriteMessage(TextColor);
       }
       if (_unknownFields != null) {
@@ -806,83 +806,83 @@ namespace DCL.ECSComponents {
         output.WriteString(Text);
       }
       if (HasFont) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(16);
         output.WriteEnum((int) Font);
       }
       if (HasFontSize) {
-        output.WriteRawTag(45);
+        output.WriteRawTag(29);
         output.WriteFloat(FontSize);
       }
       if (HasFontAutoSize) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(32);
         output.WriteBool(FontAutoSize);
       }
       if (HasTextAlign) {
-        output.WriteRawTag(56);
+        output.WriteRawTag(40);
         output.WriteEnum((int) TextAlign);
       }
       if (HasWidth) {
-        output.WriteRawTag(77);
+        output.WriteRawTag(53);
         output.WriteFloat(Width);
       }
       if (HasHeight) {
-        output.WriteRawTag(85);
+        output.WriteRawTag(61);
         output.WriteFloat(Height);
       }
       if (HasPaddingTop) {
-        output.WriteRawTag(93);
+        output.WriteRawTag(69);
         output.WriteFloat(PaddingTop);
       }
       if (HasPaddingRight) {
-        output.WriteRawTag(101);
+        output.WriteRawTag(77);
         output.WriteFloat(PaddingRight);
       }
       if (HasPaddingBottom) {
-        output.WriteRawTag(109);
+        output.WriteRawTag(85);
         output.WriteFloat(PaddingBottom);
       }
       if (HasPaddingLeft) {
-        output.WriteRawTag(117);
+        output.WriteRawTag(93);
         output.WriteFloat(PaddingLeft);
       }
       if (HasLineSpacing) {
-        output.WriteRawTag(125);
+        output.WriteRawTag(101);
         output.WriteFloat(LineSpacing);
       }
       if (HasLineCount) {
-        output.WriteRawTag(128, 1);
+        output.WriteRawTag(104);
         output.WriteInt32(LineCount);
       }
       if (HasTextWrapping) {
-        output.WriteRawTag(136, 1);
+        output.WriteRawTag(112);
         output.WriteBool(TextWrapping);
       }
       if (HasShadowBlur) {
-        output.WriteRawTag(149, 1);
+        output.WriteRawTag(125);
         output.WriteFloat(ShadowBlur);
       }
       if (HasShadowOffsetX) {
-        output.WriteRawTag(157, 1);
+        output.WriteRawTag(133, 1);
         output.WriteFloat(ShadowOffsetX);
       }
       if (HasShadowOffsetY) {
-        output.WriteRawTag(165, 1);
+        output.WriteRawTag(141, 1);
         output.WriteFloat(ShadowOffsetY);
       }
       if (HasOutlineWidth) {
-        output.WriteRawTag(173, 1);
+        output.WriteRawTag(149, 1);
         output.WriteFloat(OutlineWidth);
       }
       if (shadowColor_ != null) {
-        output.WriteRawTag(178, 1);
+        output.WriteRawTag(154, 1);
         output.WriteMessage(ShadowColor);
       }
       if (outlineColor_ != null) {
-        output.WriteRawTag(186, 1);
+        output.WriteRawTag(162, 1);
         output.WriteMessage(OutlineColor);
       }
       if (textColor_ != null) {
-        output.WriteRawTag(194, 1);
+        output.WriteRawTag(170, 1);
         output.WriteMessage(TextColor);
       }
       if (_unknownFields != null) {
@@ -932,13 +932,13 @@ namespace DCL.ECSComponents {
         size += 1 + 4;
       }
       if (HasLineCount) {
-        size += 2 + pb::CodedOutputStream.ComputeInt32Size(LineCount);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(LineCount);
       }
       if (HasTextWrapping) {
-        size += 2 + 1;
+        size += 1 + 1;
       }
       if (HasShadowBlur) {
-        size += 2 + 4;
+        size += 1 + 4;
       }
       if (HasShadowOffsetX) {
         size += 2 + 4;
@@ -1061,89 +1061,89 @@ namespace DCL.ECSComponents {
             Text = input.ReadString();
             break;
           }
-          case 24: {
+          case 16: {
             Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
             break;
           }
-          case 45: {
+          case 29: {
             FontSize = input.ReadFloat();
             break;
           }
-          case 48: {
+          case 32: {
             FontAutoSize = input.ReadBool();
             break;
           }
-          case 56: {
+          case 40: {
             TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
-          case 77: {
+          case 53: {
             Width = input.ReadFloat();
             break;
           }
-          case 85: {
+          case 61: {
             Height = input.ReadFloat();
             break;
           }
-          case 93: {
+          case 69: {
             PaddingTop = input.ReadFloat();
             break;
           }
-          case 101: {
+          case 77: {
             PaddingRight = input.ReadFloat();
             break;
           }
-          case 109: {
+          case 85: {
             PaddingBottom = input.ReadFloat();
             break;
           }
-          case 117: {
+          case 93: {
             PaddingLeft = input.ReadFloat();
             break;
           }
-          case 125: {
+          case 101: {
             LineSpacing = input.ReadFloat();
             break;
           }
-          case 128: {
+          case 104: {
             LineCount = input.ReadInt32();
             break;
           }
-          case 136: {
+          case 112: {
             TextWrapping = input.ReadBool();
             break;
           }
-          case 149: {
+          case 125: {
             ShadowBlur = input.ReadFloat();
             break;
           }
-          case 157: {
+          case 133: {
             ShadowOffsetX = input.ReadFloat();
             break;
           }
-          case 165: {
+          case 141: {
             ShadowOffsetY = input.ReadFloat();
             break;
           }
-          case 173: {
+          case 149: {
             OutlineWidth = input.ReadFloat();
             break;
           }
-          case 178: {
+          case 154: {
             if (shadowColor_ == null) {
               ShadowColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
           }
-          case 186: {
+          case 162: {
             if (outlineColor_ == null) {
               OutlineColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
-          case 194: {
+          case 170: {
             if (textColor_ == null) {
               TextColor = new global::DCL.ECSComponents.Color4();
             }
@@ -1169,89 +1169,89 @@ namespace DCL.ECSComponents {
             Text = input.ReadString();
             break;
           }
-          case 24: {
+          case 16: {
             Font = (global::DCL.ECSComponents.Font) input.ReadEnum();
             break;
           }
-          case 45: {
+          case 29: {
             FontSize = input.ReadFloat();
             break;
           }
-          case 48: {
+          case 32: {
             FontAutoSize = input.ReadBool();
             break;
           }
-          case 56: {
+          case 40: {
             TextAlign = (global::DCL.ECSComponents.TextAlignMode) input.ReadEnum();
             break;
           }
-          case 77: {
+          case 53: {
             Width = input.ReadFloat();
             break;
           }
-          case 85: {
+          case 61: {
             Height = input.ReadFloat();
             break;
           }
-          case 93: {
+          case 69: {
             PaddingTop = input.ReadFloat();
             break;
           }
-          case 101: {
+          case 77: {
             PaddingRight = input.ReadFloat();
             break;
           }
-          case 109: {
+          case 85: {
             PaddingBottom = input.ReadFloat();
             break;
           }
-          case 117: {
+          case 93: {
             PaddingLeft = input.ReadFloat();
             break;
           }
-          case 125: {
+          case 101: {
             LineSpacing = input.ReadFloat();
             break;
           }
-          case 128: {
+          case 104: {
             LineCount = input.ReadInt32();
             break;
           }
-          case 136: {
+          case 112: {
             TextWrapping = input.ReadBool();
             break;
           }
-          case 149: {
+          case 125: {
             ShadowBlur = input.ReadFloat();
             break;
           }
-          case 157: {
+          case 133: {
             ShadowOffsetX = input.ReadFloat();
             break;
           }
-          case 165: {
+          case 141: {
             ShadowOffsetY = input.ReadFloat();
             break;
           }
-          case 173: {
+          case 149: {
             OutlineWidth = input.ReadFloat();
             break;
           }
-          case 178: {
+          case 154: {
             if (shadowColor_ == null) {
               ShadowColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(ShadowColor);
             break;
           }
-          case 186: {
+          case 162: {
             if (outlineColor_ == null) {
               OutlineColor = new global::DCL.ECSComponents.Color3();
             }
             input.ReadMessage(OutlineColor);
             break;
           }
-          case 194: {
+          case 170: {
             if (textColor_ == null) {
               TextColor = new global::DCL.ECSComponents.Color4();
             }
