@@ -128,6 +128,7 @@ public class ChatController : MonoBehaviour, IChatController
     [PublicAPI]
     public void UpdateChannelMembers(string payload)
     {
+        Debug.Log($"ChatController.UpdateChannelMembers: {payload}");
         var msg = JsonUtility.FromJson<UpdateChannelMembersPayload>(payload);
         OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
     }
