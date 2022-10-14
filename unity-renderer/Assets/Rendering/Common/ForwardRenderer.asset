@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50f1d0221b22e7a49bcc0ef7dca40b67, type: 3}
   m_Name: Occluded
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   _outlineResources: {fileID: 11400000, guid: b4bcd554b71bea14e8dfeab9f695327e, type: 2}
   _outlineLayers: {fileID: 11400000, guid: 059d229f23209a74687769672d1084b8, type: 2}
   _outlineSettings:
@@ -25,7 +25,7 @@ MonoBehaviour:
     _filterMode: 1
     _layerMask:
       serializedVersion: 2
-      m_Bits: 67108864
+      m_Bits: 134217728
     _renderingLayerMask: 1
   _renderPassEvent: 400
   _shaderPassNames: []
@@ -145,7 +145,7 @@ MonoBehaviour:
     _filterMode: 1
     _layerMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 67108864
     _renderingLayerMask: 1
   _renderPassEvent: 1000
   _shaderPassNames: []
