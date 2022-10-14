@@ -135,6 +135,7 @@ public class ChatController : MonoBehaviour, IChatController
     [PublicAPI]
     public void UpdateChannelInfo(string payload)
     {
+        Debug.Log($"ChatController.UpdateChannelInfo: {payload}");
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
         var anyChannelLeft = false;
 
@@ -293,11 +294,18 @@ public class ChatController : MonoBehaviour, IChatController
     
     public void GetChannelInfo(string[] channelIds) => WebInterface.GetChannelInfo(channelIds);
 
-    public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
+    public void GetChannelMembers(string channelId, int limit, int skip, string name)
+    {
+        Debug.Log($"ChatController.GetChannelMembers: {channelId}, {limit}, {skip}");
         WebInterface.GetChannelMembers(channelId, limit, skip, name);
+    }
 
-    public void GetChannelMembers(string channelId, int limit, int skip) =>
+    public void GetChannelMembers(string channelId, int limit, int skip)
+    {
+        Debug.Log($"ChatController.GetChannelMembers: {channelId}, {limit}, {skip}");
+        // UpdateChannelMembers("{\"channelId\":\"!ctnRbfjxAkbMGQullS:decentraland.zone\",\"members\":[{\"userId\":\"0x43d803d72ba0a4a785f0e46d3b2366cd224e49df\",\"isOnline\":false},{\"userId\":\"0xac72c31403d0f30e24a937a1154ccf3e1ba04542\",\"isOnline\":false}]}");
         WebInterface.GetChannelMembers(channelId, limit, skip, string.Empty);
+    }
 
     public void Send(ChatMessage message) => WebInterface.SendChatMessage(message);
 
