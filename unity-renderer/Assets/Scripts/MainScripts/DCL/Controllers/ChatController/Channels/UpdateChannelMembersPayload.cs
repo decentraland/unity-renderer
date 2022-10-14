@@ -7,6 +7,7 @@ namespace DCL.Chat.Channels
     {
         public string userId;
         public bool isOnline;
+        public string name;
     }
 
     [Serializable]

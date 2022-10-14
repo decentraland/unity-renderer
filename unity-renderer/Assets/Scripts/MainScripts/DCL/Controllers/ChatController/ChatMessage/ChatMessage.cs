@@ -40,6 +40,7 @@ namespace DCL.Interface
         public string messageId;
         public Type messageType;
         public string sender;
+        public string senderName;
         public string recipient;
         public ulong timestamp;
         public string body;
