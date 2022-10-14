@@ -206,7 +206,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
 
         // We download the "preview" 256px image
         yield return nftAssetRetriever.LoadNFTAsset(
-            nftInfo.previewImageUrl,
+            "https://api.codetabs.com/v1/proxy/?quest=" + nftInfo.previewImageUrl,
             (result) =>
             {
                 PrepareFrame(result, nftInfo.name, nftInfo.imageUrl);
