@@ -11,10 +11,12 @@ namespace DCL.ECSComponents
         internal AssetPromise_Material promiseMaterial;
 
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
+        private readonly ICatalyst catalyst;
 
-        public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent)
+        public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent, ICatalyst catalyst)
         {
             this.materialInternalComponent = materialInternalComponent;
+            this.catalyst = catalyst;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -34,8 +36,8 @@ namespace DCL.ECSComponents
 
             if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
             {
-                Environment.i.platform.serviceProviders.catalyst.GetUserProfileData(model.AvatarTexture.UserId)
-                           .Then((userData) =>
+                catalyst.GetUserProfileData(model.AvatarTexture.UserId)
+                            .Then((userData) =>
                            {
                                AssetPromise_Material_Model.Texture materialModel = new AssetPromise_Material_Model.Texture(userData.snapshots.face256,
                                    (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
@@ -43,7 +45,7 @@ namespace DCL.ECSComponents
 
                                CreateAndConfigureMaterialPromise(scene, entity, model, materialModel);
                            });
-                    
+
                 return;
             }
 
