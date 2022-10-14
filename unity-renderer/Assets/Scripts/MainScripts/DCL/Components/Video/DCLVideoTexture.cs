@@ -194,7 +194,7 @@ namespace DCL.Components
         {
             if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
             {
-                currUpdateIntervalTime += Time.unscaledDeltaTime;
+                currUpdateIntervalTime += Time.deltaTime;
             }
             else if (texturePlayer != null)
             {
@@ -316,7 +316,11 @@ namespace DCL.Components
             SetPlayStateDirty();
         }
 
-        private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
+        private void OnSceneIDChanged(string current, string previous) 
+        { 
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            Debug.Log("FD:: Player in scene " + current);
+        }
 
         public override void AttachTo(ISharedComponent component)
         {
