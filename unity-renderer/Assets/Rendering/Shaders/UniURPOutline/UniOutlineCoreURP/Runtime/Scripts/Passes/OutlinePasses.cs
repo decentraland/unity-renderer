@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 using UniOutline.Outline;
-
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -17,9 +17,12 @@ namespace UniOutline
 		private readonly List<OutlineRenderObject> _renderObjects = new List<OutlineRenderObject>();
 		private readonly List<ShaderTagId> _shaderTagIdList = new List<ShaderTagId>();
 
+        private readonly bool isDebug = true;
+
 		private ScriptableRenderer _renderer;
 
-		public OutlinePasses(OutlineRenderFeature renderFeature, string[] shaderTags)
+        
+		public OutlinePasses(OutlineRenderFeature renderFeature, string[] shaderTags) // Outline Passes
 		{
 			_renderFeature = renderFeature;
 
@@ -38,7 +41,7 @@ namespace UniOutline
 			}
 		}
 
-		public void Initialization(ScriptableRenderer renderer)
+		public void Init(ScriptableRenderer renderer)
 		{
 			_renderer = renderer;
 		}
@@ -89,17 +92,26 @@ namespace UniOutline
 
 			if (_renderFeature.OutlineLayers)
 			{
-				var cmd = CommandBufferPool.Get(OutlineResources.EffectName);
+                
+                // TODO Bypass ??
+				CommandBuffer cmdBuf = CommandBufferPool.Get(OutlineResources.EffectName);
 
-				using (var renderer = new OutlineRenderer(cmd, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
+				using (OutlineRenderer renderer = new OutlineRenderer(cmdBuf, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
 				{
 					_renderObjects.Clear();
 					_renderFeature.OutlineLayers.GetRenderObjects(_renderObjects);
+                    if (isDebug)
+                    {
+                        foreach (var renderObject in _renderObjects)
+                        {
+                            Debug.Log(renderObject.ToString());
+                        }
+                    }
 					renderer.Render(_renderObjects);
 				}
 
-				context.ExecuteCommandBuffer(cmd);
-				CommandBufferPool.Release(cmd);
+				context.ExecuteCommandBuffer(cmdBuf);
+				CommandBufferPool.Release(cmdBuf);
 			}
 		}
 	}

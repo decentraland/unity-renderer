@@ -21,6 +21,10 @@ public class UniformOutlineControl : MonoBehaviour
     
     [Tooltip("The layer to set the object to default after mouse exit")]
     [SerializeField] private OutlineLayerDefault outlineLayerDefault;
+
+    [Header("Layer Control")]
+    [Tooltip("The layer to set the object to when the mouse is over it")]
+    [SerializeField] private bool isLayerChangedOnMouseOver;
     
     #endregion
     
@@ -60,21 +64,26 @@ public class UniformOutlineControl : MonoBehaviour
     // change the layer of the object
     void OnMouseEnter()
     {
-        switch (outlineRenderFlags)
+        //TODO // check the object tag
+
+        if (isLayerChangedOnMouseOver)
         {
-            case OutlineRenderFlags.Standard :
-                gameObject.layer = 26;
+            switch (outlineRenderFlags)
+            {
+                case OutlineRenderFlags.Standard :
+                    gameObject.layer = 26;
                 
-                break;
+                    break;
             
-            case OutlineRenderFlags.Occluded :
-                gameObject.layer = 27;
+                case OutlineRenderFlags.Occluded :
+                    gameObject.layer = 27;
                 
-                break;
-            case OutlineRenderFlags.Blurred :
-                gameObject.layer = 28;
+                    break;
+                case OutlineRenderFlags.Blurred :
+                    gameObject.layer = 28;
                 
-                break;
+                    break;
+            }
         }
         
     }

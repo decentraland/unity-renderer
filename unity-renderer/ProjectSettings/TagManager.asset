@@ -8,6 +8,8 @@ TagManager:
   - MiniMapCamera
   - Voxel
   - FromAssetBundle
+  - Occluded
+  - Standard
   layers:
   - Default
   - TransparentFX
