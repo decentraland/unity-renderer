@@ -194,6 +194,15 @@ public class AvatarEditorHUDController : IHUD
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
+                             //TODO ANTON
+                             string wearableNames = "OWNED WEARABLE NAMES: ";
+                             foreach (var wearable in ownedWearables)
+                             {
+                                wearableNames += wearable.GetName();
+                             }
+                             Debug.LogError(wearableNames);
+                             //
+                             
                              ownedWearablesAlreadyLoaded = true;
                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly 
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
