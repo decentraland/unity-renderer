@@ -14,7 +14,7 @@ public interface IECSInteractionHoverCanvas
     int tooltipsCount { get; }
     void Show();
     void Hide();
-    void SetTooltipInput(int tooltipIndex, ActionButton button);
+    void SetTooltipInput(int tooltipIndex, InputAction button);
     void SetTooltipText(int tooltipIndex, string text);
     void SetTooltipActive(int tooltipIndex, bool active);
 }

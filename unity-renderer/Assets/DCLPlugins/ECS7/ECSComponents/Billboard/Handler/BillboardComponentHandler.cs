@@ -15,22 +15,16 @@ namespace DCL.ECSComponents
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
         private UnityEngine.Vector3 lastPosition;
 
-        private IDCLEntity entity;
-        private IParcelScene scene;
         private PBBillboard model;
         
-        public BillboardComponentHandler(DataStore_Player playerDataStore, IUpdateEventHandler updateEventHandler)
+        public BillboardComponentHandler(IUpdateEventHandler updateEventHandler)
         {
-            this.playerDataStore = playerDataStore;
             this.updateEventHandler = updateEventHandler;
             updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            this.entity = entity;
-            this.scene = scene;
-
             // The billboard will rotate the entity transform toward the camera
             entityTransform = entity.gameObject.transform;
         }
@@ -56,12 +50,10 @@ namespace DCL.ECSComponents
             if (entityTransform == null)
                 return;
        
-            UnityEngine.Vector3 playerPosition = playerDataStore.playerUnityPosition.Get();
-            
-            if (playerPosition == lastPosition)
+            if (cameraPosition == lastPosition)
                 return;
-
-            lastPosition = playerPosition;
+            
+            lastPosition = cameraPosition;
 
             ChangeOrientation();
         }
@@ -72,19 +64,12 @@ namespace DCL.ECSComponents
         /// <returns></returns>
         private UnityEngine.Vector3 GetLookAtVector()
         {
-            UnityEngine.Vector3 lookAtDir =(cameraPosition - entityTransform.position);
-
-            // Note (Zak): This check is here to avoid normalizing twice if not needed
-            if (!(model.GetX() && model.GetY() && model.GetZ()))
+            UnityEngine.Vector3 lookAtDir = model.OppositeDirection ? (cameraPosition - entityTransform.position) : (entityTransform.position - cameraPosition);
+            
+            if (model.BillboardMode == BillboardMode.BmYAxe)
             {
                 lookAtDir.Normalize();
-
-                // Note (Zak): Model x,y,z are axis that we want to enable/disable
-                // while lookAtDir x,y,z are the components of the look-at vector
-                if (!model.GetX() || model.GetZ())
-                    lookAtDir.y = entityTransform.forward.y;
-                if (!model.GetY())
-                    lookAtDir.x = entityTransform.forward.x;
+                lookAtDir.y = entityTransform.forward.y;
             }
 
             return lookAtDir.normalized;

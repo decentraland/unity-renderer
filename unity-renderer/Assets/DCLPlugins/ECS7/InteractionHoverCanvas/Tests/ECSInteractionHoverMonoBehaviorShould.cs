@@ -27,20 +27,20 @@ namespace Tests
         [Test]
         public void SetInputTooltip()
         {
-            interactionHoverCanvas.SetTooltipInput(0, ActionButton.Pointer);
+            interactionHoverCanvas.SetTooltipInput(0, InputAction.IaPointer);
             Assert.AreEqual(interactionHoverCanvas._icons[0], interactionHoverCanvas._tooltips[0]._icon.sprite);
             Assert.IsTrue(interactionHoverCanvas._tooltips[0]._iconGameObject.activeSelf);
             Assert.IsFalse(interactionHoverCanvas._tooltips[0]._inputTextGameObject.activeSelf);
 
-            interactionHoverCanvas.SetTooltipInput(0, ActionButton.Any);
+            interactionHoverCanvas.SetTooltipInput(0, InputAction.IaAny);
             Assert.AreEqual(interactionHoverCanvas._icons[1], interactionHoverCanvas._tooltips[0]._icon.sprite);
             Assert.IsTrue(interactionHoverCanvas._tooltips[0]._iconGameObject.activeSelf);
             Assert.IsFalse(interactionHoverCanvas._tooltips[0]._inputTextGameObject.activeSelf);
 
-            for (int i = 0; i < Enum.GetNames(typeof(ActionButton)).Length; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(InputAction)).Length; i++)
             {
-                ActionButton button = (ActionButton)i;
-                if (button == ActionButton.Any || button == ActionButton.Pointer)
+                InputAction button = (InputAction)i;
+                if (button == InputAction.IaAny || button == InputAction.IaPointer)
                     continue;
 
                 interactionHoverCanvas.SetTooltipInput(0, button);

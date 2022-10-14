@@ -5,8 +5,6 @@ using DCL.ECSRuntime;
 using ECSSystems.VisibilitySystem;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -16,7 +14,7 @@ namespace Tests
         private ECS7TestScene scene1;
         private InternalECSComponents internalEcsComponents;
         private ECS7TestUtilsScenesAndEntities testUtils;
-        private Action VisibilitySystemUpdate;
+        private Action systemsUpdate;
 
         [SetUp]
         public void SetUp()
@@ -28,10 +26,16 @@ namespace Tests
 
             var visibilityGroup = componentsManager.CreateComponentGroup<InternalRenderers, InternalVisibility>
                 ((int)InternalECSComponentsId.RENDERERS, (int)InternalECSComponentsId.VISIBILITY);
-            
-            VisibilitySystemUpdate = ECSVisibilitySystem.CreateSystem(visibilityGroup,
+
+            var visibilitySystemUpdate = ECSVisibilitySystem.CreateSystem(visibilityGroup,
                 internalEcsComponents.renderersComponent,
                 internalEcsComponents.visibilityComponent);
+
+            systemsUpdate = () =>
+            {
+                visibilitySystemUpdate();
+                internalEcsComponents.WriteSystemUpdate();
+            };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene0 = testUtils.CreateScene("temptation0");
@@ -73,7 +77,7 @@ namespace Tests
             });
 
             // update system
-            VisibilitySystemUpdate();
+            systemsUpdate();
 
             // all renderers should be enabled, since we didn't add a visibility component
             Assert.IsTrue(renderer00.enabled);
@@ -91,7 +95,7 @@ namespace Tests
             });
 
             // update system
-            VisibilitySystemUpdate();
+            systemsUpdate();
 
             // scene0's entities should have been affected by the visibility
             Assert.IsTrue(renderer00.enabled);
@@ -113,7 +117,7 @@ namespace Tests
             });
 
             // update system
-            VisibilitySystemUpdate();
+            systemsUpdate();
 
             // scene1's entity should have been affected by the visibility
             Assert.IsFalse(renderer10.enabled);
@@ -129,7 +133,7 @@ namespace Tests
             });
 
             // update system
-            VisibilitySystemUpdate();
+            systemsUpdate();
 
             // Check final state
             Assert.IsTrue(renderer00.enabled);

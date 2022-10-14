@@ -14,7 +14,6 @@ namespace DCL.ECS7
         private readonly ECSComponentsFactory componentsFactory;
         private readonly ECSComponentsManager componentsManager;
         private readonly InternalECSComponents internalEcsComponents;
-        private readonly CanvasPainter canvasPainter;
 
         private readonly ISceneController sceneController;
 
@@ -40,8 +39,6 @@ namespace DCL.ECS7
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
 
-            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
-
             sceneController.OnNewSceneAdded += OnSceneAdded;
         }
 
@@ -52,8 +49,6 @@ namespace DCL.ECS7
             componentWriter.Dispose();
             systemsController.Dispose();
             internalEcsComponents.Dispose();
-
-            canvasPainter.Dispose();
 
             sceneController.OnNewSceneAdded -= OnSceneAdded;
         }

@@ -8,10 +8,6 @@ namespace DCL.ECSComponents
     public class ECS7ComponentsComposer : IDisposable
     {
         private readonly TransformRegister transformRegister;
-        private readonly SphereShapeRegister sphereShapeRegister;
-        private readonly BoxShapeRegister boxShapeRegister;
-        private readonly PlaneShapeRegister planeShapeRegister;
-        private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
         private readonly GltfContainerRegister gltfRegister;
@@ -33,7 +29,7 @@ namespace DCL.ECSComponents
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
-        private readonly UITextRegister uiTextRegister;
+        private readonly UiTextRegister uiTextRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
         private readonly PointerEventResultRegister pointerEventResultRegister;
@@ -43,14 +39,10 @@ namespace DCL.ECSComponents
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
             transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
-            sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            boxShapeRegister = new BoxShapeRegister(ComponentID.BOX_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            planeShapeRegister = new PlaneShapeRegister(ComponentID.PLANE_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter, internalComponents);
-            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter, internalComponents);
             gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentsWriter, internalComponents);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
@@ -66,8 +58,8 @@ namespace DCL.ECSComponents
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
 
             // UI components
-            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);
-            uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
+            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
 
             // Components without a handler
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
@@ -79,11 +71,7 @@ namespace DCL.ECSComponents
         public void Dispose()
         {
             transformRegister.Dispose();
-            sphereShapeRegister.Dispose();
-            boxShapeRegister.Dispose();
             billboardRegister.Dispose();
-            planeShapeRegister.Dispose();
-            cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
@@ -103,7 +91,6 @@ namespace DCL.ECSComponents
 
             // UI components
             uiTransformRegister.Dispose();
-            uiTextRegister.Dispose();
 
             // Components without a handler
             pointerEventResultRegister.Dispose();
