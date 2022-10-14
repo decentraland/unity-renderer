@@ -26,16 +26,16 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CjZkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXZhdGFyX21vZGlmaWVy",
             "X2FyZWEucHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVj",
-            "ZW50cmFsYW5kL2NvbW1vbi92ZWN0b3JzLnByb3RvIpcBChRQQkF2YXRhck1v",
+            "ZW50cmFsYW5kL2NvbW1vbi92ZWN0b3JzLnByb3RvIpsBChRQQkF2YXRhck1v",
             "ZGlmaWVyQXJlYRIqCgRhcmVhGAEgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1v",
-            "bi5WZWN0b3IzEhMKC2V4Y2x1ZGVfaWRzGAIgAygJEj4KCW1vZGlmaWVycxgD",
-            "IAMoDjIrLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5BdmF0YXJNb2Rp",
-            "Zmllcio/Cg5BdmF0YXJNb2RpZmllchITCg9BTV9ISURFX0FWQVRBUlMQABIY",
-            "ChRBTV9ESVNBQkxFX1BBU1NQT1JUUxABQhSqAhFEQ0wuRUNTQ29tcG9uZW50",
-            "c2IGcHJvdG8z"));
+            "bi5WZWN0b3IzEhMKC2V4Y2x1ZGVfaWRzGAIgAygJEkIKCW1vZGlmaWVycxgD",
+            "IAMoDjIvLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5BdmF0YXJNb2Rp",
+            "ZmllclR5cGUqRQoSQXZhdGFyTW9kaWZpZXJUeXBlEhQKEEFNVF9ISURFX0FW",
+            "QVRBUlMQABIZChVBTVRfRElTQUJMRV9QQVNTUE9SVFMQAUIUqgIRRENMLkVD",
+            "U0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.VectorsReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarModifier), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarModifierType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarModifierArea), global::DCL.ECSComponents.PBAvatarModifierArea.Parser, new[]{ "Area", "ExcludeIds", "Modifiers" }, null, null, null, null)
           }));
     }
@@ -43,9 +43,9 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
-  public enum AvatarModifier {
-    [pbr::OriginalName("AM_HIDE_AVATARS")] AmHideAvatars = 0,
-    [pbr::OriginalName("AM_DISABLE_PASSPORTS")] AmDisablePassports = 1,
+  public enum AvatarModifierType {
+    [pbr::OriginalName("AMT_HIDE_AVATARS")] AmtHideAvatars = 0,
+    [pbr::OriginalName("AMT_DISABLE_PASSPORTS")] AmtDisablePassports = 1,
   }
 
   #endregion
@@ -122,12 +122,12 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "modifiers" field.</summary>
     public const int ModifiersFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::DCL.ECSComponents.AvatarModifier> _repeated_modifiers_codec
-        = pb::FieldCodec.ForEnum(26, x => (int) x, x => (global::DCL.ECSComponents.AvatarModifier) x);
-    private readonly pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier> modifiers_ = new pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier>();
+    private static readonly pb::FieldCodec<global::DCL.ECSComponents.AvatarModifierType> _repeated_modifiers_codec
+        = pb::FieldCodec.ForEnum(26, x => (int) x, x => (global::DCL.ECSComponents.AvatarModifierType) x);
+    private readonly pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType> modifiers_ = new pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifier> Modifiers {
+    public pbc::RepeatedField<global::DCL.ECSComponents.AvatarModifierType> Modifiers {
       get { return modifiers_; }
     }
 
