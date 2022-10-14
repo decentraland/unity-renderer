@@ -191,16 +191,23 @@ public class AvatarEditorHUDController : IHUD
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
+        var temp = Debug.unityLogger.logEnabled;
+        Debug.unityLogger.logEnabled = true;
+        Debug.LogError("OWNED WEARABLE REQUESTED: ");
+        Debug.unityLogger.logEnabled = temp;
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
                              //TODO ANTON
+                             //var temp = Debug.unityLogger.logEnabled;
+                             Debug.unityLogger.logEnabled = true;
                              string wearableNames = "OWNED WEARABLE NAMES: ";
                              foreach (var wearable in ownedWearables)
                              {
                                 wearableNames += wearable.GetName();
                              }
                              Debug.LogError(wearableNames);
+                             Debug.unityLogger.logEnabled = temp;
                              //
                              
                              ownedWearablesAlreadyLoaded = true;
