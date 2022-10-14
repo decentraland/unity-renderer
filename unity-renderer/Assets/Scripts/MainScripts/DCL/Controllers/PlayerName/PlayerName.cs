@@ -105,8 +105,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         float currentAlphaStep = GetNearestAlphaStep(alpha);
-        if (currentAlphaStep == previousAlphaStep)
-            return;
 
         if (currentAlphaStep == 0)
         {
