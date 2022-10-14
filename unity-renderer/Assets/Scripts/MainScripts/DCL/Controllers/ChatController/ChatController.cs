@@ -70,6 +70,7 @@ public class ChatController : MonoBehaviour, IChatController
     [PublicAPI]
     public void AddChatMessages(string jsonMessage)
     {
+        Debug.Log($"{Time.realtimeSinceStartup} ChatController.AddChatMessages: {jsonMessage}");
         var messages = JsonUtility.FromJson<ChatMessageListPayload>(jsonMessage);
 
         if (messages == null) return;
@@ -172,6 +173,7 @@ public class ChatController : MonoBehaviour, IChatController
     [PublicAPI]
     public void JoinChannelConfirmation(string payload)
     {
+        Debug.Log($"{Time.realtimeSinceStartup} ChatController.JoinChannelConfirmation: {payload}");
         var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
 
         if (msg.channelInfoPayload.Length == 0)
@@ -244,11 +246,19 @@ public class ChatController : MonoBehaviour, IChatController
         OnChannelSearchResult?.Invoke(msg.since, channelsResult);
     }
     
-    public void JoinOrCreateChannel(string channelId) => WebInterface.JoinOrCreateChannel(channelId);
+    public void JoinOrCreateChannel(string channelId)
+    {
+        Debug.Log($"{Time.realtimeSinceStartup} ChatController.JoinOrCreateChannel: {channelId}");
+        WebInterface.JoinOrCreateChannel(channelId);
+    }
 
     public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
 
-    public void GetChannelMessages(string channelId, int limit, string fromMessageId) => WebInterface.GetChannelMessages(channelId, limit, fromMessageId);
+    public void GetChannelMessages(string channelId, int limit, string fromMessageId)
+    {
+        Debug.Log($"{Time.realtimeSinceStartup} ChatController.GetChannelMessages: {channelId}, {limit}, {fromMessageId ?? "null"}");
+        WebInterface.GetChannelMessages(channelId, limit, fromMessageId);
+    }
 
     public void GetJoinedChannels(int limit, int skip) => WebInterface.GetJoinedChannels(limit, skip);
 
