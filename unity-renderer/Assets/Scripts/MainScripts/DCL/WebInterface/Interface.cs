@@ -1763,5 +1763,9 @@ namespace DCL.Interface
                 sentLimit = sentLimit
             });
         }
+        public static void UpdateMemoryUsage()
+        {
+            SendMessage("UpdateMemoryUsage");
+        }
     }
 }
