@@ -144,11 +144,15 @@ public class ItemSelector : MonoBehaviour
         
         if (totalWearables.ContainsKey(item.id))
             return;
-        
-        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy, incompatibleWearableToastStrategy);
-        totalWearables.Add(item.id, wearableSettings);
 
-        availableWearables.Add(wearableSettings);
+        for (int i = 0; i < 10; i++)
+        {
+            string idSuffix = i > 0 ? i.ToString() : "";
+            WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy, incompatibleWearableToastStrategy);
+            totalWearables.Add(item.id + idSuffix, wearableSettings);
+
+            availableWearables.Add(wearableSettings);
+        }
     }
 
     public void RemoveWearable(string itemID)
