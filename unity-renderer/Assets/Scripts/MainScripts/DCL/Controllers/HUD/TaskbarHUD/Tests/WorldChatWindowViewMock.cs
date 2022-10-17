@@ -12,6 +12,8 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public event Action OnOpenChannelSearch;
     public event Action<string> OnLeaveChannel;
     public event Action OnCreateChannel;
+    public event Action OnSignUp;
+    public event Action OnRequireWalletReadme;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
@@ -82,14 +84,6 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void ShowMoreChatsLoading()
-    {
-    }
-
-    public void HideMoreChatsLoading()
-    {
-    }
-
     public void ShowChannelsLoading()
     {
     }
@@ -117,6 +111,14 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public void SetSearchAndCreateContainerActive(bool isActive)
+    {
+    }
+
+    public void ShowConnectWallet()
+    {
+    }
+
+    public void HideConnectWallet()
     {
     }
 }

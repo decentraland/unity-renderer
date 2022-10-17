@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
@@ -75,7 +76,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new DataStore(),
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IChannelsFeatureFlagService>());
+            Substitute.For<IChannelsFeatureFlagService>(),
+            Substitute.For<IBrowserBridge>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -122,7 +124,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new DataStore(),
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IChannelsFeatureFlagService>());
+            Substitute.For<IChannelsFeatureFlagService>(),
+            Substitute.For<IBrowserBridge>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 

@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
@@ -74,7 +75,8 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
+                    new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()),
+                    new WebInterfaceBrowserBridge());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(

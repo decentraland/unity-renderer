@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Friends.WebApi;
@@ -25,6 +26,7 @@ public class WorldChatWindowControllerShould
     private ISocialAnalytics socialAnalytics;
     private IChannelsFeatureFlagService channelsFeatureFlagService;
     private DataStore dataStore;
+    private IBrowserBridge browserBridge;
 
     [SetUp]
     public void SetUp()
@@ -43,13 +45,15 @@ public class WorldChatWindowControllerShould
         channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
         channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
         dataStore = new DataStore();
+        browserBridge = Substitute.For<IBrowserBridge>();
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
             dataStore,
             mouseCatcher,
             socialAnalytics,
-            channelsFeatureFlagService);
+            channelsFeatureFlagService,
+            browserBridge);
         view = Substitute.For<IWorldChatWindowView>();
     }
 

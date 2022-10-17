@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DCL.Browser;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
@@ -26,6 +27,7 @@ public class WorldChatWindowController : IHUD
     private readonly IMouseCatcher mouseCatcher;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
+    private readonly IBrowserBridge browserBridge;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
@@ -61,7 +63,8 @@ public class WorldChatWindowController : IHUD
         DataStore dataStore,
         IMouseCatcher mouseCatcher,
         ISocialAnalytics socialAnalytics,
-        IChannelsFeatureFlagService channelsFeatureFlagService) 
+        IChannelsFeatureFlagService channelsFeatureFlagService,
+        IBrowserBridge browserBridge) 
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -70,6 +73,7 @@ public class WorldChatWindowController : IHUD
         this.mouseCatcher = mouseCatcher;
         this.socialAnalytics = socialAnalytics;
         this.channelsFeatureFlagService = channelsFeatureFlagService;
+        this.browserBridge = browserBridge;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -85,6 +89,8 @@ public class WorldChatWindowController : IHUD
         view.OnOpenPublicChat += OpenPublicChat;
         view.OnSearchChatRequested += SearchChats;
         view.OnRequireMorePrivateChats += ShowMorePrivateChats;
+        view.OnSignUp += SignUp;
+        view.OnRequireWalletReadme += OpenWalletReadme;
 
         ownUserProfile = userProfileBridge.GetOwn();
         if (ownUserProfile != null)
@@ -145,6 +151,8 @@ public class WorldChatWindowController : IHUD
         view.OnRequireMorePrivateChats -= ShowMorePrivateChats;
         view.OnOpenChannelSearch -= OpenChannelSearch;
         view.OnCreateChannel -= OpenChannelCreationWindow;
+        view.OnSignUp -= SignUp;
+        view.OnRequireWalletReadme -= OpenWalletReadme;
         view.Dispose();
         chatController.OnInitialized -= HandleChatInitialization;
         chatController.OnAddMessage -= HandleMessageAdded;
@@ -172,6 +180,7 @@ public class WorldChatWindowController : IHUD
     public void SetVisibility(bool visible)
     {
         SetVisiblePanelList(visible);
+        
         if (visible)
         {
             view.Show();
@@ -195,6 +204,11 @@ public class WorldChatWindowController : IHUD
                     SetAutomaticChannelsInfoUpdatingActive(true);
                 }
             }
+
+            if (ownUserProfile?.isGuest ?? false)
+                view.ShowConnectWallet();
+            else
+                view.HideConnectWallet();
         }
         else
         {
@@ -377,8 +391,10 @@ public class WorldChatWindowController : IHUD
     {
         view.RefreshBlockedDirectMessages(profile.blocked);
 
-        if (!profile.hasConnectedWeb3)
-            view.HidePrivateChatsLoading();
+        if (profile.isGuest)
+            view.ShowConnectWallet();
+        else
+            view.HideConnectWallet();
     }
 
     private void SearchChats(string search)
@@ -569,4 +585,8 @@ public class WorldChatWindowController : IHUD
                 .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
                 .ToArray());
     }
+
+    private void OpenWalletReadme() => browserBridge.OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
+
+    private void SignUp() => userProfileBridge.SignUp();
 }
