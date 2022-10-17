@@ -520,7 +520,13 @@ public class WorldChatWindowController : IHUD
 
     private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
 
-    private void OpenChannelSearch() => OnOpenChannelSearch?.Invoke();
+    private void OpenChannelSearch()
+    {
+        if (!ownUserProfile.isGuest)
+            OnOpenChannelSearch?.Invoke();
+        else
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
+    }
     
     private async UniTask HideSearchLoadingWhenTimeout(CancellationToken cancellationToken)
     {

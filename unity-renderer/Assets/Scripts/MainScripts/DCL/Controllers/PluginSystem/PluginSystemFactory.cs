@@ -46,6 +46,7 @@ namespace DCL
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
+            pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
