@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
 using UnityEngine;
+using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
@@ -50,5 +51,13 @@ namespace DCL.ECS7.InternalComponents
 
         public Queue<EventData> events;
         public int lastTimestamp;
+    }
+
+    public class InternalUiContainer : InternalComponent
+    {
+        public readonly VisualElement rootElement = new VisualElement();
+        public VisualElement parentElement;
+        public long parentId;
+        public bool hasTransform;
     }
 }

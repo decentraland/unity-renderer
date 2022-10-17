@@ -164,7 +164,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = (int)ColliderLayer.Physics
+                CollisionMask = (int)ColliderLayer.ClPhysics
             });
 
             // physics layer
@@ -174,7 +174,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = (int)ColliderLayer.Pointer
+                CollisionMask = (int)ColliderLayer.ClPointer
             });
 
             // pointer layer
@@ -184,7 +184,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = (int)ColliderLayer.None
+                CollisionMask = (int)ColliderLayer.ClNone
             });
 
             // "none" layer
@@ -194,7 +194,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Box = new PBMeshCollider.Types.BoxMesh(),
-                CollisionMask = (int)ColliderLayer.Pointer | (int)ColliderLayer.Physics
+                CollisionMask = (int)ColliderLayer.ClPointer | (int)ColliderLayer.ClPhysics
             });
 
             // physics and pointer layer
@@ -218,7 +218,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
-                CollisionMask = (int)ColliderLayer.Physics
+                CollisionMask = (int)ColliderLayer.ClPhysics
             });
 
             BoxCollider boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
@@ -231,7 +231,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
-                CollisionMask = (int)ColliderLayer.Pointer
+                CollisionMask = (int)ColliderLayer.ClPointer
             });
 
             boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();
@@ -244,7 +244,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
             {
                 Plane = new PBMeshCollider.Types.PlaneMesh(),
-                CollisionMask = (int)ColliderLayer.Pointer | (int)ColliderLayer.Physics
+                CollisionMask = (int)ColliderLayer.ClPointer | (int)ColliderLayer.ClPhysics
             });
 
             boxCollider = handler.colliderGameObject.GetComponent<BoxCollider>();

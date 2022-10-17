@@ -40,7 +40,7 @@ async function main() {
   fs.rmSync(componentsPreProccessInputPath, { recursive: true })
 }
 
-const regex = new RegExp(/option *\(ecs_component_id\) *= *([0-9]+) *;/)
+const regex = new RegExp(/option *\(common.ecs_component_id\) *= *([0-9]+) *;/)
 
 const getComponentId = (text: string): string | null => {
   const res = text.match(regex)
@@ -77,7 +77,7 @@ function generateComponentsEnum(components: ComponentData[]) {
 
 async function preProcessComponents() {
   const protoFiles = glob.sync(
-    normalizePath(path.resolve(componentsPreProccessInputPath, 'ecs/components/**/*.proto')),
+    normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/**/*.proto')),
   )
   const components: ComponentData[] = []
 
@@ -96,7 +96,7 @@ async function preProcessComponents() {
       }
     }
 
-    outputLines.push('package decentraland.ecs;')
+    // outputLines.push('package decentraland.ecs;')
     outputLines.push('option csharp_namespace = "DCL.ECSComponents";')
 
     if (newComponentId) {
@@ -120,7 +120,15 @@ async function buildComponents() {
 
   const protoFiles = glob
     .sync(
-      normalizePath(path.resolve(componentsPreProccessInputPath, 'ecs/components/**/*.proto')),
+      normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/sdk/components/**/*.proto')),
+    ).filter((value) => !value.endsWith('id.proto'))
+    .join(' ')
+
+
+
+  const commonProtoFiles = glob
+    .sync(
+      normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/common/**/*.proto')),
     )
     .join(' ')
 
@@ -128,7 +136,7 @@ async function buildComponents() {
   command += ` --csharp_out "${componentsOutputPath}"`
   command += ` --csharp_opt=file_extension=.gen.cs`
   command += ` --proto_path "${componentsPreProccessInputPath}/"`
-  command += ` ${protoFiles}`
+  command += ` ${protoFiles} ${commonProtoFiles}`
 
   await execute(command, workingDirectory)
 

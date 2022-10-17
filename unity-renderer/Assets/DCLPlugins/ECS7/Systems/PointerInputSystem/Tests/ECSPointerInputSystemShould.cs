@@ -104,7 +104,7 @@ namespace Tests
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.Down);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace Tests
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.Up);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetUp);
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace Tests
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
-            Assert.IsTrue(enqueuedEvent.type == PointerEventType.HoverEnter);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetHoverEnter);
         }
 
         [Test]
@@ -244,8 +244,8 @@ namespace Tests
 
             Assert.AreEqual(entity2.entityId, enqueuedEventNewHoverEnter.hit.EntityId);
             Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
-            Assert.IsTrue(enqueuedEventNewHoverEnter.type == PointerEventType.HoverEnter);
-            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.HoverLeave);
+            Assert.IsTrue(enqueuedEventNewHoverEnter.type == PointerEventType.PetHoverEnter);
+            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.PetHoverLeave);
         }
 
         [Test]
@@ -272,7 +272,7 @@ namespace Tests
             var enqueuedEventHoverExit = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
-            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.HoverLeave);
+            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.PetHoverLeave);
         }
 
         [Test]
@@ -294,10 +294,10 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Down,
+                            EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Any,
+                                Button = ActionButton.AbAny,
                                 HoverText = "Temptation"
                             }
                         }
@@ -312,7 +312,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
             interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Any);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbAny);
             interactionHoverCanvas.Received(1).Show();
         }
 
@@ -336,10 +336,10 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Down,
+                            EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Any,
+                                Button = ActionButton.AbAny,
                                 HoverText = "Temptation",
                                 MaxDistance = 1
                             }
@@ -369,10 +369,10 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Up,
+                            EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Pointer,
+                                Button = ActionButton.AbPointer,
                                 HoverText = "Temptation"
                             }
                         }
@@ -382,7 +382,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -403,7 +403,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(0, true);
             interactionHoverCanvas.Received(MAX_TOOLTIPS - 1).SetTooltipActive(Arg.Is<int>(i => i != 0), false);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Pointer);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbPointer);
             interactionHoverCanvas.Received(1).Show();
         }
 
@@ -418,10 +418,10 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Up,
+                            EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Pointer,
+                                Button = ActionButton.AbPointer,
                                 HoverText = "Temptation",
                                 MaxDistance = 1
                             }
@@ -432,7 +432,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -468,10 +468,10 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Up,
+                            EventType = PointerEventType.PetUp,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Secondary,
+                                Button = ActionButton.AbSecondary,
                                 HoverText = "Temptation"
                             }
                         }
@@ -481,7 +481,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.Pointer;
+            dataStoreEcs7.lastPointerInputEvent.buttonId = (int)ActionButton.AbPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
 
@@ -524,28 +524,28 @@ namespace Tests
                     {
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Down,
+                            EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Any,
+                                Button = ActionButton.AbAny,
                                 HoverText = "Temptation"
                             }
                         },
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Down,
+                            EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Pointer,
+                                Button = ActionButton.AbPointer,
                                 HoverText = "Temptation2"
                             }
                         },
                         new PBPointerEvents.Types.Entry()
                         {
-                            EventType = PointerEventType.Down,
+                            EventType = PointerEventType.PetDown,
                             EventInfo = new PBPointerEvents.Types.Info()
                             {
-                                Button = ActionButton.Primary,
+                                Button = ActionButton.AbPrimary,
                                 HoverText = "Temptation3"
                             }
                         }
@@ -561,8 +561,8 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipActive(1, true);
             interactionHoverCanvas.Received(1).SetTooltipText(0, "Temptation");
             interactionHoverCanvas.Received(1).SetTooltipText(1, "Temptation2");
-            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.Any);
-            interactionHoverCanvas.Received(1).SetTooltipInput(1, ActionButton.Pointer);
+            interactionHoverCanvas.Received(1).SetTooltipInput(0, ActionButton.AbAny);
+            interactionHoverCanvas.Received(1).SetTooltipInput(1, ActionButton.AbPointer);
             interactionHoverCanvas.Received(1).Show();
         }
     }
