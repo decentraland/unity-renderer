@@ -1,13 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
     public class StickersController : MonoBehaviour
     {
+        private const int POOL_PREWARM_COUNT = 10;
+        private Dictionary<string, Pool> pools = new Dictionary<string, Pool>();
         private StickersFactory stickersFactory;
         private bool isInHideArea;
 
-        private void Awake() { stickersFactory = Resources.Load<StickersFactory>("StickersFactory"); }
+        private void Awake()
+        {
+            stickersFactory = Resources.Load<StickersFactory>("StickersFactory");
+
+            ConfigurePools();
+        }
 
         public void PlaySticker(string id)
         {
@@ -38,6 +46,29 @@ namespace DCL
         public void ToggleHideArea(bool entered)
         {
             isInHideArea = entered;
+        }
+
+        internal void ConfigurePools()
+        {
+            List<StickersFactory.StickerFactoryEntry> stickers = stickersFactory.GetStickersList();
+
+            foreach (StickersFactory.StickerFactoryEntry stricker in stickers)
+            {
+                string nameID = $"Sticker {stricker.id}";
+                Pool pool = PoolManager.i.GetPool(nameID);
+                if (pool == null)
+                {
+                    pool = PoolManager.i.AddPool(
+                        nameID,
+                        Instantiate(stricker.stickerPrefab),
+                        maxPrewarmCount: POOL_PREWARM_COUNT,
+                        isPersistent: true);
+
+                    pool.ForcePrewarm();
+                }
+
+                pools.Add(stricker.id, pool);
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
+using DCL;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "StickersFactory", menuName = "Variables/StickersFactory")]
@@ -25,6 +27,11 @@ public class StickersFactory : ScriptableObject
         {
             stickers.Add(stickersList[i].id, stickersList[i].stickerPrefab);
         }
+    }
+
+    public List<StickerFactoryEntry> GetStickersList()
+    {
+        return new List<StickerFactoryEntry>(stickersList);
     }
 
     public bool TryGet(string id, out GameObject stickerPrefab)

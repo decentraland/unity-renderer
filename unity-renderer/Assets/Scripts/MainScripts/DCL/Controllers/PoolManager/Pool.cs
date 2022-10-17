@@ -49,6 +49,15 @@ namespace DCL
 
         public int usedObjectsCount { get { return usedObjects.Count; } }
 
+        public Pool(string name, GameObject original, int maxPrewarmCount)
+        {
+            if (PoolManager.USE_POOL_CONTAINERS)
+                container = new GameObject("Pool - " + name);
+
+            this.original = original;
+            this.maxPrewarmCount = maxPrewarmCount;
+        }
+
         public Pool(string name, int maxPrewarmCount)
         {
             if (PoolManager.USE_POOL_CONTAINERS)
