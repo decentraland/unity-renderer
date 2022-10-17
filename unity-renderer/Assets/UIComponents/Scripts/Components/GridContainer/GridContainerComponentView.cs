@@ -65,7 +65,7 @@ public interface IGridContainerComponentView
     /// Adds a new item in the grid.
     /// </summary>
     /// <param name="item">An UI component.</param>
-    void AddItem(BaseComponentView item);
+    void AddItemWithResize(BaseComponentView item);
 
     /// <summary>
     /// Remove an item from the grid.
@@ -370,22 +370,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItemSize(model.itemSize);
     }
 
-    public void SetItemSizeForModel() =>
-        SetItemSize(model.itemSize);
-
-    public void AddItem(BaseComponentView item)
+    public void AddItemWithResize(BaseComponentView item)
     {
         CreateItem(item, $"Item{instantiatedItems.Count}");
         SetItemSize(model.itemSize);
     }
     
-    public void AddItems(List<BaseComponentView> items)
-    {
-        for (int i = 0; i < items.Count; i++)
-        {
-            CreateItem(items[i], $"Item{instantiatedItems.Count}");
-        }
-    }
+    public void SetItemSizeForModel() =>
+        SetItemSize(model.itemSize);
+    
+    public void AddItem(BaseComponentView item) => 
+        CreateItem(item, $"Item{instantiatedItems.Count}");
 
     public void RemoveItem(BaseComponentView item)
     {

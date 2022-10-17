@@ -341,7 +341,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             OnUnsubscribeEventClicked);
 
         foreach (BaseComponentView eventToAdd in eventComponentsToAdd)
-            upcomingEvents.AddItem(eventToAdd);
+            upcomingEvents.AddItemWithResize(eventToAdd);
     }
     
     public void SetActive(bool isActive)

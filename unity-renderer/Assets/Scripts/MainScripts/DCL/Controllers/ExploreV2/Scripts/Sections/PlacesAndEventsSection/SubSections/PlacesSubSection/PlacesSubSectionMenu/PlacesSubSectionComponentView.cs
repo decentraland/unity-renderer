@@ -172,7 +172,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.RemoveItems();
 
         StartCoroutine(SetPlacesIteratively(places));
-
+        this.places.SetItemSizeForModel();
+    }
+    
+    public void AddPlaces(List<PlaceCardComponentModel> places)
+    {
+        StartCoroutine(SetPlacesIteratively(places));
         this.places.SetItemSizeForModel();
     }
 
@@ -180,26 +185,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            this.places.AddItemWithoutResize(
+            this.places.AddItem(
                 ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
 
             yield return null;
         }
     }
-
-    public void AddPlaces(List<PlaceCardComponentModel> places)
-    {
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
-            places,
-            placeCardsPool,
-            OnFriendHandlerAdded,
-            OnInfoClicked,
-            OnJumpInClicked);
-
-        foreach (BaseComponentView place in placeComponentsToAdd)
-            this.places.AddItem(place);
-    }
-
+    
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;

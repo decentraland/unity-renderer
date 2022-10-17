@@ -141,6 +141,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
+        
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentPlacesShowed / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentPlacesShowed;
         int numberOfItemsToAdd = view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT + numberOfExtraItemsToAdd;
 
