@@ -178,7 +178,7 @@ namespace DCL
         private void OnGotoClick()
         {
             DataStore.i.HUDs.navmapVisible.Set(false);
-            WebInterface.GoTo(location.x, location.y);
+            Environment.i.world.teleportController.Teleport(location.x, location.y);
 
             Close();
         }

@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -79,7 +80,7 @@ namespace Tests
             Assert.IsFalse(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
 
             // but should be applied when component exist
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer() { hasTransform = true });
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer());
             Assert.IsTrue(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
         }
@@ -94,7 +95,9 @@ namespace Tests
 
             // add ui element to scene
             const int entityId = 111;
-            uiContainerComponent.PutFor(scene, entityId, new InternalUiContainer() { hasTransform = true });
+            var model = new InternalUiContainer();
+            model.components.Add(1);
+            uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
             ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
@@ -115,11 +118,10 @@ namespace Tests
             const int childEntityId = 111;
             const int parentEntityId = 112;
 
-            uiContainerComponent.PutFor(scene, childEntityId, new InternalUiContainer()
-            {
-                hasTransform = true,
-                parentId = parentEntityId
-            });
+            var childModel = new InternalUiContainer() { parentId = parentEntityId };
+            childModel.components.Add(1);
+
+            uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
             ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
@@ -128,7 +130,9 @@ namespace Tests
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
 
             // create parent container
-            uiContainerComponent.PutFor(scene, parentEntityId, new InternalUiContainer() { hasTransform = true });
+            var parentModel = new InternalUiContainer();
+            parentModel.components.Add(1);
+            uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
             ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
@@ -155,7 +159,7 @@ namespace Tests
                 worldState);
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer() { hasTransform = true };
+            InternalUiContainer rootSceneContainer = new InternalUiContainer();
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -181,7 +185,7 @@ namespace Tests
                 worldState);
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer() { hasTransform = true };
+            InternalUiContainer rootSceneContainer = new InternalUiContainer();
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -223,8 +227,8 @@ namespace Tests
                 worldState);
 
             // create root ui for scenes
-            InternalUiContainer rootScene1Container = new InternalUiContainer() { hasTransform = true };
-            InternalUiContainer rootScene2Container = new InternalUiContainer() { hasTransform = true };
+            InternalUiContainer rootScene1Container = new InternalUiContainer();
+            InternalUiContainer rootScene2Container = new InternalUiContainer();
             uiContainerComponent.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene1Container);
             uiContainerComponent.PutFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene2Container);
 

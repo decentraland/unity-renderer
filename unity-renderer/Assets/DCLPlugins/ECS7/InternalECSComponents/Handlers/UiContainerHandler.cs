@@ -27,7 +27,7 @@ public class UiContainerHandler : IECSComponentHandler<InternalUiContainer>
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, InternalUiContainer model)
     {
-        if (model.rootElement.childCount == 0 && !model.hasTransform)
+        if (model.rootElement.childCount == 0 && model.components.Count == 0 && entity.entityId != SpecialEntityId.SCENE_ROOT_ENTITY)
         {
             thisComponent.RemoveFor(scene, entity);
         }

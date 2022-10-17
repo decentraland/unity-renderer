@@ -27,9 +27,9 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new BillboardComponentHandler(DataStore.i.player,Substitute.For<IUpdateEventHandler>());
+            componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
 
-            entity.entityId.Returns(1);
+            entity.entityId.Returns(1); 
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.id = "1";
@@ -71,9 +71,8 @@ namespace DCL.ECSComponents.Test
             var newModel = SerializaAndDeserialize(model);
 
             // Assert
-            Assert.AreEqual(model.X, newModel.X);
-            Assert.AreEqual(model.Y, newModel.Y);
-            Assert.AreEqual(model.Z, newModel.Z);
+            Assert.AreEqual(model.BillboardMode, newModel.BillboardMode);
+            Assert.AreEqual(model.OppositeDirection, newModel.OppositeDirection);
         }
 
         private PBBillboard SerializaAndDeserialize(PBBillboard pb)
@@ -85,9 +84,8 @@ namespace DCL.ECSComponents.Test
         private PBBillboard CreateModel()
         {
             PBBillboard model = new PBBillboard();
-            model.X = true;
-            model.Y = false;
-            model.Z = false;
+            model.BillboardMode = BillboardMode.BmYAxe;
+            model.OppositeDirection = true;
             return model;
         }
     }
