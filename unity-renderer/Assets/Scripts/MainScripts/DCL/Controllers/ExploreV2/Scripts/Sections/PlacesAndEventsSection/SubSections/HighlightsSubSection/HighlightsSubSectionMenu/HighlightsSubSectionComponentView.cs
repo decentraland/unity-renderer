@@ -223,7 +223,6 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         viewAllEventsButton.onClick.AddListener(() => OnViewAllEventsClicked?.Invoke());
         
-        Debug.Log("[OnReady]");
         OnReady?.Invoke();
     }
 

@@ -101,7 +101,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         currentUriLoading = null;
         lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
-        Destroy(currentSprite);
+   
+        if(!Application.isEditor)
+            Destroy(currentSprite);
     }
 
     public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
