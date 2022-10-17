@@ -162,7 +162,7 @@ namespace DCL.EmotesCustomization
             emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
             emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
 
-            if (emote.DontShowInBackpack())
+            if (!emote.ShowInBackpack())
                 return;
             
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(emote);

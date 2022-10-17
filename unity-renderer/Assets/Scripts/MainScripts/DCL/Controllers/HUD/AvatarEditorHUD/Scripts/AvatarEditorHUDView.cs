@@ -140,6 +140,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     public event Action<AvatarModel> OnAvatarAppearFeedback;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
+    public event Action<string> WearableSelectorClicked;
     
     private void Awake()
     {
@@ -171,6 +172,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
 
         clickBlocker.OnClicked += ClickBlockerClicked;
+        
+        for (int i = 0; i < wearableGridPairs.Length; i++)
+        {
+            wearableGridPairs[i].selector.OnItemClicked += OnWearablesSelectorsClicked;
+        }
+        collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked; ;
         
         ConfigureSectionSelector();
     }
@@ -480,6 +487,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         facialHairColorPickerComponent.SetActive(false);
         eyeBrowsColorPickerComponent.SetActive(false);
     }
+    
+    private void OnWearablesSelectorsClicked(string obj)
+    {
+        WearableSelectorClicked?.Invoke(obj);
+    }
 
     private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
     {
@@ -531,6 +543,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 {
                     itemSelector.OnItemClicked -= controller.WearableClicked;
                     itemSelector.OnSellClicked -= controller.SellCollectible;
+                    itemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
                 }
             }
         }
@@ -539,6 +552,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         {
             collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
             collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
+            collectiblesItemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
         }
 
         if (skinColorSelector != null)

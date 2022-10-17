@@ -4,23 +4,19 @@ using UnityEngine;
 public class AvatarEditorHUDAnimationController : IDisposable
 {
 
-    private CharacterPreviewController characterPreviewController;
-    private AvatarEditorHUDView hudView;
+    private ICharacterPreviewController characterPreviewController;
+    private readonly IAvatarEditorHUDView hudView;
     internal string activeCategory;
     private int currentAnimationIndexShown;
 
-    public AvatarEditorHUDAnimationController(AvatarEditorHUDView avatarEditorHUDView)
+    public AvatarEditorHUDAnimationController(IAvatarEditorHUDView avatarEditorHUDView, ICharacterPreviewController characterPreviewController)
     {
         this.hudView = avatarEditorHUDView;
+        this.characterPreviewController = characterPreviewController;
         
-        characterPreviewController = hudView.characterPreviewController;
-        hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
         hudView.OnRandomize += OnClickRandomize;
-        for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
-        {
-            hudView.wearableGridPairs[i].selector.OnItemClicked += OnSelectWearable;
-        }
-        hudView.collectiblesItemSelector.OnItemClicked += OnSelectWearable;
+        hudView.WearableSelectorClicked += OnSelectWearable;
+        hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
     }
     
     public void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
@@ -96,10 +92,6 @@ public class AvatarEditorHUDAnimationController : IDisposable
     {
         hudView.OnAvatarAppearFeedback -= AvatarAppearFeedback;
         hudView.OnRandomize -= OnClickRandomize;
-        for (int i = 0; i < hudView.wearableGridPairs.Length; i++)
-        {
-            hudView.wearableGridPairs[i].selector.OnItemClicked -= OnSelectWearable;
-        }
-        hudView.collectiblesItemSelector.OnItemClicked -= OnSelectWearable;
+        hudView.WearableSelectorClicked -= OnSelectWearable;
     }
 }

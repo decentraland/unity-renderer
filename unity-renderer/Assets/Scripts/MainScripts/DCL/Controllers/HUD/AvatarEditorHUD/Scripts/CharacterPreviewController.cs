@@ -10,7 +10,7 @@ using GPUSkinning;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class CharacterPreviewController : MonoBehaviour
+public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
 {
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;

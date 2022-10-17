@@ -143,7 +143,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
-        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view);
+        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view, view.characterPreviewController);
         
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }

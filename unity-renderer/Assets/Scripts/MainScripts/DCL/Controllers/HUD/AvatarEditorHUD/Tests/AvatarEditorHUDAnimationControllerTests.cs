@@ -1,76 +1,78 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using AvatarEditorHUD_Tests;
 using DCL;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
-public class AvatarEditorHUDAnimationControllerTests : IntegrationTestSuite_Legacy
+public class AvatarEditorHUDAnimationControllerTests
 {
-    private AvatarEditorHUDController_Mock controller;
-    private UserProfile userProfile;
-    private BaseDictionary<string, WearableItem> catalog;
+
+    private IAvatarEditorHUDView editorHUDView;
+    private AvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
+    private ICharacterPreviewController characterPreviewController;
     private CatalogController catalogController;
-    private ColorList skinColorList;
-    private ColorList hairColorList;
-    private ColorList eyeColorList;
+    private BaseDictionary<string, WearableItem> catalog;
 
     
-    [UnitySetUp]
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
-        yield return base.SetUp();
-        
-        if (controller == null)
-        {
-            skinColorList = Resources.Load<ColorList>("SkinTone");
-            hairColorList = Resources.Load<ColorList>("HairColor");
-            eyeColorList = Resources.Load<ColorList>("EyeColor");
-
-            userProfile = ScriptableObject.CreateInstance<UserProfile>();
-        }
-
-        IAnalytics analytics = Substitute.For<IAnalytics>();
+        editorHUDView = Substitute.For<IAvatarEditorHUDView>();
+        characterPreviewController = Substitute.For<ICharacterPreviewController>();
         catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-        controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
-        // TODO: We should convert the WearablesFetchingHelper static class into a non-static one and make it implement an interface. It would allow us to inject it
-        //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
-        //       the use of 'collectionsAlreadyLoaded = true'.
-        controller.collectionsAlreadyLoaded = true;
-        controller.Initialize(userProfile, catalog);
-        controller.SetVisibility(true);
-        DataStore.i.common.isPlayerRendererLoaded.Set(true);
-
-        userProfile.UpdateData(new UserProfileModel()
-        {
-            name = "name",
-            email = "mail",
-            avatar = new AvatarModel()
-            {
-                bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                wearables = new List<string>() { },
-            }
-        });
-            
-        controller.avatarIsDirty = false;
+        avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView, characterPreviewController);
     }
 
     [Test]
+    [TestCase("Outfit_Accessories_v0", "urn:decentraland:off-chain:base-avatars:blue_bandana")]
+    [TestCase("Outfit_Accessories_v0", "urn:decentraland:off-chain:base-avatars:black_sun_glasses")]
+    [TestCase("Outfit_Shoes_v0", "urn:decentraland:off-chain:base-avatars:sneakers")]
+    [TestCase("Outfit_Lower_v0", "urn:decentraland:off-chain:base-avatars:f_african_leggins")]
+    [TestCase("Outfit_Upper_v0", "urn:decentraland:off-chain:base-avatars:green_hoodie")]
+
+    public void ActiveCategoryHasCorrectValueOnSelected(string expectedAnimationStart, string selectedWearable)
+    {
+        editorHUDView.WearableSelectorClicked += Raise.Event<Action<string>>(selectedWearable);
+        Assert.True(avatarEditorHUDAnimationController.activeCategory.StartsWith(expectedAnimationStart));
+    }
+    
+    [Test]
+    [TestCase("urn:decentraland:off-chain:base-avatars:BaseFemale")]
+    [TestCase( "urn:decentraland:off-chain:base-avatars:eyes_00")]
+    public void ActiveCategoryIsEmptyOnSelected(string selectedWearable)
+    {
+        editorHUDView.WearableSelectorClicked += Raise.Event<Action<string>>(selectedWearable);
+        Assert.True(string.IsNullOrEmpty(avatarEditorHUDAnimationController.activeCategory));
+    }
+    
+    [Test]
+    public void ActiveCategoryIsEmptyOnRandomize()
+    {
+        editorHUDView.OnRandomize += Raise.Event<Action>();
+        Assert.True(string.IsNullOrEmpty(avatarEditorHUDAnimationController.activeCategory));
+    }
+    
+    [Test]
     public void AnimationRunOnSelected()
     {
-        controller.view.wearableGridPairs[2].selector.ToggleClicked(controller.view.wearableGridPairs[2].selector.itemToggles["urn:decentraland:off-chain:base-avatars:green_hoodie"]);
-        Assert.IsTrue(controller.avatarEditorHUDAnimationController.activeCategory.StartsWith("Outfit_Upper_v0"));
+        editorHUDView.WearableSelectorClicked += Raise.Event<Action<string>>("urn:decentraland:off-chain:base-avatars:blue_bandana");
+        editorHUDView.OnAvatarAppearFeedback += Raise.Event<Action<AvatarModel>>(new AvatarModel());
+        characterPreviewController.Received().PlayEmote(Arg.Any<string>(), Arg.Any<long>());
     }
     
     [TearDown]
     public void TearDown()
     {
-        Object.Destroy(catalogController.gameObject);
-        controller.Dispose();
+        editorHUDView.Dispose();
     }
 
     
