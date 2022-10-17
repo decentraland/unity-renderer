@@ -1119,7 +1119,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1"
             #pragma target 4.5
         #pragma exclude_renderers gles gles3 glcore
         #pragma multi_compile_instancing
-        #pragma multi_compile_fog
+        //#pragma multi_compile_fog
         #pragma multi_compile _ DOTS_INSTANCING_ON
         #pragma vertex vert
         #pragma fragment frag
@@ -4940,7 +4940,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1"
             #pragma target 2.0
         #pragma only_renderers gles gles3 glcore d3d11
         #pragma multi_compile_instancing
-        #pragma multi_compile_fog
+        //#pragma multi_compile_fog
         #pragma vertex vert
         #pragma fragment frag
 
