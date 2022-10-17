@@ -324,7 +324,7 @@ namespace DCL.Components
         private void OnSceneIDChanged(string current, string previous) 
         { 
             isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene + " - previous: "+ previous);
+            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
         public override void AttachTo(ISharedComponent component)
