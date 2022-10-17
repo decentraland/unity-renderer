@@ -31,20 +31,22 @@ namespace DCL.ECSComponents
                 return;
 
             lastModel = model;
-
+            AssetPromise_Material_Model.Texture? albedoTextureModel = null;
+            
             if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
             {
                 string avatarTexUrl = Configuration.APIUrls.AVATAR_TEXTURE_API_URL + model.AvatarTexture.UserId;
-                AssetPromise_Material_Model.Texture materialModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
+                albedoTextureModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
                     (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
                     (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
 
-                CreateAndConfigureMaterialPromise(scene, entity, model, materialModel);
+                CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
 
                 return;
             }
 
-            CreateAndConfigureMaterialPromise(scene, entity, model, CreateMaterialPromiseTextureModel(model.Texture, scene));
+            albedoTextureModel = CreateMaterialPromiseTextureModel(model.Texture, scene);
+            CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
         }
 
         private void CreateAndConfigureMaterialPromise(IParcelScene scene, IDCLEntity entity, PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
