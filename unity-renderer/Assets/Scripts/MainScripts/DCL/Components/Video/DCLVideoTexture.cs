@@ -44,6 +44,7 @@ namespace DCL.Components
         private bool isPlayStateDirty = false;
         internal bool isVisible = false;
 
+        private bool isInitialized = false;
         private bool isPlayerInScene = true;
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
@@ -156,6 +157,10 @@ namespace DCL.Components
 
         private void Initialize(DCLVideoClip dclVideoClip)
         {
+            if (isInitialized) return;
+            isInitialized = true;
+
+            Debug.Log ("FD:: DCLVideoTexture::Initialize() called");
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
@@ -319,7 +324,7 @@ namespace DCL.Components
         private void OnSceneIDChanged(string current, string previous) 
         { 
             isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-            Debug.Log("FD:: Player in scene " + current);
+            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene + " - previous: "+ previous);
         }
 
         public override void AttachTo(ISharedComponent component)
@@ -368,6 +373,10 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            if (!isInitialized) return;
+            isInitialized = false;
+
+            Debug.Log ("FD:: DCLVideoTexture::Dispose() called");
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
