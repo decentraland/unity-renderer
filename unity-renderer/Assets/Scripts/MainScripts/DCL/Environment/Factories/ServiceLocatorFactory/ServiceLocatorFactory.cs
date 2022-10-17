@@ -1,6 +1,7 @@
 ﻿using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Rendering;
+using DCL.Services;
 using UnityEngine;
 
 namespace DCL
@@ -38,6 +39,8 @@ namespace DCL
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
+
+            result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             return result;
         }
