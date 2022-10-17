@@ -38,6 +38,7 @@ namespace DCL
             result.Register<IMessagingControllersManager>(() => Substitute.For<IMessagingControllersManager>());
             result.Register<IWorldState>(() => Substitute.For<IWorldState>());
             result.Register<ISceneController>(() => Substitute.For<ISceneController>());
+            result.Register<ITeleportController>(() => Substitute.For<ITeleportController>());
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());

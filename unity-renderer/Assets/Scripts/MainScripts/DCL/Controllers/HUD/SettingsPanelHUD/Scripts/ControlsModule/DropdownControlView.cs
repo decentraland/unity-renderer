@@ -11,10 +11,16 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private TMP_Dropdown dropdown;
         
         private SpinBoxSettingsControlController spinBoxController;
+        private PointerClickEventInterceptor pointerClick;
+        
+        private void Awake()
+        {
+            pointerClick = dropdown.GetComponent<PointerClickEventInterceptor>();
+        }
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
-            //we use spinbox control model and control controller for compatibility
+            // we use spinbox control model and control controller for compatibility
             SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
 
             spinBoxController = (SpinBoxSettingsControlController)settingsControlController;
@@ -28,7 +34,10 @@ namespace DCL.SettingsPanelHUD.Controls
             {
                 ApplySetting(spinBoxValue);
             });
+            
+            pointerClick.PointerClicked += spinBoxController.OnPointerClicked;
         }
+
         private void SetOption(string option)
         {
             dropdown.captionText.text = option;
@@ -44,12 +53,15 @@ namespace DCL.SettingsPanelHUD.Controls
             {
                 dropdown.options.Add(data);
             }
+            
+            dropdown.Hide();
             dropdown.RefreshShownValue();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            pointerClick.PointerClicked -= spinBoxController.OnPointerClicked;
 
             if (spinBoxController != null)
             {
