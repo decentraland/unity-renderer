@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
         {
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBMaterial>,
-                () => new MaterialHandler(internalComponents.materialComponent, Environment.i.platform.serviceProviders.catalyst));
+                () => new MaterialHandler(internalComponents.materialComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBMaterial>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

@@ -53,11 +53,4 @@ public interface ICatalyst : IDisposable
     /// <param name="url">url to make the request to</param>
     /// <returns>promise of the server response</returns>
     Promise<string> Get(string url);
-
-    /// <summary>
-    /// get user profile data
-    /// </summary>
-    /// <param name="userId">the user id to fetch user profile data for</param>
-    /// <returns>promise of a CatalystUserProfilePayload</returns>
-    Promise<CatalystUserProfilePayload.Avatar> GetUserProfileData(string userId);
 }

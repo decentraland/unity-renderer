@@ -24,8 +24,7 @@ namespace Tests
         public void SetUp()
         {
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
-            catalyst = Substitute.For<ICatalyst>();
-            handler = new MaterialHandler(internalMaterialComponent, catalyst);
+            handler = new MaterialHandler(internalMaterialComponent);
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(1000);

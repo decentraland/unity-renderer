@@ -1,7 +1,6 @@
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCL.Models;
 
 namespace DCL.ECSComponents
@@ -9,17 +8,13 @@ namespace DCL.ECSComponents
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
         private PBMaterial lastModel = null;
-        
-        private Promise<CatalystUserProfilePayload.Avatar> avatarTextureUrlPromise;
         internal AssetPromise_Material promiseMaterial;
 
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
-        private readonly ICatalyst catalyst;
 
-        public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent, ICatalyst catalyst)
+        public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent)
         {
             this.materialInternalComponent = materialInternalComponent;
-            this.catalyst = catalyst;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -28,7 +23,6 @@ namespace DCL.ECSComponents
         {
             materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
             AssetPromiseKeeper_Material.i.Forget(promiseMaterial);
-            avatarTextureUrlPromise?.Dispose();
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBMaterial model)
@@ -37,19 +31,15 @@ namespace DCL.ECSComponents
                 return;
 
             lastModel = model;
-            avatarTextureUrlPromise?.Dispose();
 
             if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
             {
-                avatarTextureUrlPromise = catalyst.GetUserProfileData(model.AvatarTexture.UserId);
-                avatarTextureUrlPromise.Then((userData) =>
-                                        {
-                                          AssetPromise_Material_Model.Texture materialModel = new AssetPromise_Material_Model.Texture(userData.snapshots.face256,
-                                              (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
-                                              (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
+                string avatarTexUrl = Configuration.APIUrls.AVATAR_TEXTURE_API_URL + model.AvatarTexture.UserId;
+                AssetPromise_Material_Model.Texture materialModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
+                    (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
+                    (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
 
-                                          CreateAndConfigureMaterialPromise(scene, entity, model, materialModel);
-                                        });
+                CreateAndConfigureMaterialPromise(scene, entity, model, materialModel);
 
                 return;
             }
