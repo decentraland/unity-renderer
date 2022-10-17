@@ -63,7 +63,9 @@ namespace UniOutline
 				var drawingSettings = CreateDrawingSettings(_shaderTagIdList, ref renderingData, sortingCriteria);
 
 				drawingSettings.enableDynamicBatching = true;
-				drawingSettings.overrideMaterial = outlineResources.RenderMaterial;
+				
+                // override boost transparency
+                drawingSettings.overrideMaterial = outlineResources.RenderMaterial;
 
 				if (outlineSettings.IsAlphaTestingEnabled())
 				{
@@ -77,6 +79,7 @@ namespace UniOutline
 
 				using (var renderer = new OutlineRenderer(cmd, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
 				{
+                    
 					renderer.RenderObjectClear(outlineSettings.OutlineRenderMode);
 					context.ExecuteCommandBuffer(cmd);
 
@@ -100,6 +103,7 @@ namespace UniOutline
 				{
 					_renderObjects.Clear();
 					_renderFeature.OutlineLayers.GetRenderObjects(_renderObjects);
+                    
                     if (isDebug)
                     {
                         foreach (var renderObject in _renderObjects)
@@ -107,6 +111,10 @@ namespace UniOutline
                             Debug.Log(renderObject.ToString());
                         }
                     }
+                    
+                    // Quick re;ease / clear from the list _renderObjects
+                    _renderObjects.Clear();
+                    
 					renderer.Render(_renderObjects);
 				}
 

@@ -7,6 +7,24 @@
 
 Shader "CustomShaders/HLSL/URPUniOutline/Outline"
 {
+    properties
+    {
+        // Main Text
+        //_MainTex ("Texture", 2D) = "white" {}
+        // Masked texture
+        //_MaskTex ("Masked Texture", 2D) = "white" {}
+        
+        // space
+        [Space(10)]
+        // color 
+        _Color ("Outline Color", Color) = (0,0,0,1)
+        // intensity
+        _Intensity ("Outline Intensity", Range(0, 1)) = 1
+        // width
+        _Width ("Outline Width", Range(0, 1)) = 1
+        // gauss samples
+        //_GaussSamples ("Gauss Samples", Float ) = 32
+    }
 	HLSLINCLUDE
 
 		#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -107,12 +125,14 @@ Shader "CustomShaders/HLSL/URPUniOutline/Outline"
 		{
 			float intensity = 0;
 
-			// Accumulates horizontal or vertical blur intensity for the specified texture position.
+			// Receives horizontal or vertical blur intensity for the specified texture position.
 			// Set offset = (tx, 0) for horizontal sampling and offset = (0, ty) for vertical.
 			// 
-			// NOTE: Unroll directive is needed to make the method function on platforms like WebGL 1.0 where loops are not supported.
+			// NOTE: Unroll directive is needed to make the method function on platforms like
+			// WebGL 1.0 where loops are not supported.
 			// If maximum outline width is changed here, it should be changed in OutlineResources.MaxWidth as well.
 			//
+		    
 			[unroll(32)]
 			for (int k = 1; k <= _Width; ++k)
 			{
@@ -141,7 +161,7 @@ Shader "CustomShaders/HLSL/URPUniOutline/Outline"
 
 			if (SAMPLE_TEXTURE2D_X(_MaskTex, sampler_MaskTex, uv).r > 0)
 			{
-				// TODO: Avoid discard/clip to improve performance on mobiles.
+				
 				discard;
 			}
 

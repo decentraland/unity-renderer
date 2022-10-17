@@ -135,8 +135,7 @@ GameObject:
   - component: {fileID: 72188213}
   - component: {fileID: 72188212}
   - component: {fileID: 72188211}
-  - component: {fileID: 72188214}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +154,7 @@ Transform:
   m_LocalScale: {x: 0.32473728, y: 0.32473728, z: 0.32473728}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &72188211
 BoxCollider:
@@ -219,22 +218,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72188209}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &72188214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72188209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 2
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
 --- !u!1 &129550691
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,7 +312,7 @@ Transform:
   m_LocalScale: {x: 2.8318, y: 2.8318, z: 2.8318}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &135023107
 GameObject:
@@ -343,9 +326,8 @@ GameObject:
   - component: {fileID: 135023111}
   - component: {fileID: 135023110}
   - component: {fileID: 135023109}
-  - component: {fileID: 135023112}
-  m_Layer: 26
-  m_Name: w
+  m_Layer: 0
+  m_Name: TestPlane1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -363,7 +345,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 38.166, z: 0}
 --- !u!64 &135023109
 MeshCollider:
@@ -428,22 +410,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135023107}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &135023112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135023107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 0
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
 --- !u!1 &505066911
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,14 +437,14 @@ Transform:
   m_LocalPosition: {x: -2.2061617, y: 0.48999882, z: 8.229454}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 657652080}
+  - {fileID: 135023108}
+  - {fileID: 516718978}
   - {fileID: 1993989802}
   - {fileID: 1200460296}
-  - {fileID: 135023108}
   - {fileID: 1569973346}
   - {fileID: 72188210}
-  - {fileID: 657652080}
   - {fileID: 129550695}
-  - {fileID: 516718978}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -494,9 +460,8 @@ GameObject:
   - component: {fileID: 516718981}
   - component: {fileID: 516718980}
   - component: {fileID: 516718979}
-  - component: {fileID: 516718982}
-  m_Layer: 26
-  m_Name: w (2)
+  m_Layer: 0
+  m_Name: TestPlane2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -514,7 +479,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 7
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 38.166, z: 0}
 --- !u!64 &516718979
 MeshCollider:
@@ -580,22 +545,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 516718977}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &516718982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 516718977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 0
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
 --- !u!1 &657652079
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,9 +557,9 @@ GameObject:
   - component: {fileID: 657652083}
   - component: {fileID: 657652082}
   - component: {fileID: 657652081}
-  - component: {fileID: 657652084}
-  m_Layer: 26
-  m_Name: Cube (3)
+  - component: {fileID: 657652085}
+  m_Layer: 0
+  m_Name: TestCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -628,7 +577,7 @@ Transform:
   m_LocalScale: {x: 0.50892, y: 0.50892, z: 0.50892}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &657652081
 BoxCollider:
@@ -663,6 +612,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: a5a0808a44f089e4e82f0eb0455c93b8, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -692,7 +642,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 657652079}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &657652084
+--- !u!114 &657652085
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -701,13 +651,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 657652079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
+  m_Script: {fileID: 11500000, guid: 427e9ef4684c30c47a5ac7cc82f95308, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
   outlineRenderFlags: 0
   outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
+  isLayerChangedOnMouseOver: 0
+  isExcludedFromDepthNormals: 1
+  outlineShader: {fileID: 4800000, guid: 8bc4a0e0047fec143b794491518cfd34, type: 3}
+  isDebug: 1
 --- !u!1 &800638759
 GameObject:
   m_ObjectHideFlags: 0
@@ -746,7 +699,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800638759}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f070117e4cf143c4095c15275f4657d3, type: 3}
   m_Name: 
@@ -978,8 +931,7 @@ GameObject:
   - component: {fileID: 1200460299}
   - component: {fileID: 1200460298}
   - component: {fileID: 1200460297}
-  - component: {fileID: 1200460300}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -998,7 +950,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 1
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1200460297
 BoxCollider:
@@ -1062,22 +1014,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200460295}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1200460300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200460295}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 2
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
 --- !u!1 &1569973345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,8 +1026,7 @@ GameObject:
   - component: {fileID: 1569973349}
   - component: {fileID: 1569973348}
   - component: {fileID: 1569973347}
-  - component: {fileID: 1569973350}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1110,7 +1045,7 @@ Transform:
   m_LocalScale: {x: 0.32473728, y: 0.32473728, z: 0.32473728}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1569973347
 BoxCollider:
@@ -1174,22 +1109,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569973345}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1569973350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1569973345}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 2
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1
 --- !u!1 &1993989801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,8 +1121,7 @@ GameObject:
   - component: {fileID: 1993989805}
   - component: {fileID: 1993989804}
   - component: {fileID: 1993989803}
-  - component: {fileID: 1993989806}
-  m_Layer: 26
+  m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1222,7 +1140,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 505066912}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &1993989803
 SphereCollider:
@@ -1286,19 +1204,3 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993989801}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1993989806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993989801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52634f0c4634504f97e9ad9e7969ca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 099fc9c1332b008458c2081a697964bb, type: 2}
-  outlineRenderFlags: 0
-  outlineLayerDefault: 0
-  isLayerChangedOnMouseOver: 1

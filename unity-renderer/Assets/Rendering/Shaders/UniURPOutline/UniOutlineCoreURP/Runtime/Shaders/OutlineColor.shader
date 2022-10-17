@@ -11,7 +11,7 @@ Shader "CustomShaders/HLSL/URPUniOutline/OutlineColor"
     {
         // is enabled as a toggle in the inspector
         
-        [Toggle] _IsEnabled("Is Enabled", Float) = 1
+        [Toggle] _IsEnabled("Is Enabled", Float) = 0
     }
 	HLSLINCLUDE
 
@@ -33,23 +33,32 @@ Shader "CustomShaders/HLSL/URPUniOutline/OutlineColor"
             }
 		    else
 		    {
-		        return 1;
+		        return 0;
 		    }
 			
 		}
 
 		half4 FragmentAlphaTest(Varyings input) : SV_Target
 		{
-            if (_IsEnabled)
+            if (_IsEnabled == true)
             {
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-			    clip(c.a - _Cutoff);
+                
+                clip(c.a - _Cutoff * 0);                
+			    
 			    return 1;
             }
-		    else
-		    {
-		        return 0;
-		    }
+		    
+            if (_IsEnabled == false)
+            {
+                half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+                
+                clip(0);
+
+                return 0;                
+            }
+
+		    return 1; // should never get here
 			
 		}
 
