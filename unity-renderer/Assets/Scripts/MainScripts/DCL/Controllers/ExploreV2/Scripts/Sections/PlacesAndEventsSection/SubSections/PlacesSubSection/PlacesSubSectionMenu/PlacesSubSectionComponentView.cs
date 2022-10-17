@@ -178,16 +178,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
     {
-        int chunkSize = 3;
-
-        for (int i = 0; i < places.Count; i += chunkSize)
+        foreach (PlaceCardComponentModel place in places)
         {
-            var amount = i + chunkSize < places.Count ? chunkSize : places.Count - (i + chunkSize);
+            this.places.AddItemWithoutResize(
+                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
 
-            List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
-                places.GetRange(i, amount), placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked);
-
-            this.places.AddItems(placeComponentsToAdd);
             yield return null;
         }
     }
