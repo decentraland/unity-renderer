@@ -11,15 +11,18 @@ namespace DCL.ECSComponents
     {
         private readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+        private readonly int componentId;
 
         internal Label uiElement;
         private AssetPromise_Font fontPromise;
         private int lastFontId = -1;
 
-        public UiTextHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, AssetPromiseKeeper_Font fontPromiseKeeper)
+        public UiTextHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer,
+            AssetPromiseKeeper_Font fontPromiseKeeper, int componentId)
         {
             this.internalUiContainer = internalUiContainer;
             this.fontPromiseKeeper = fontPromiseKeeper;
+            this.componentId = componentId;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -28,6 +31,7 @@ namespace DCL.ECSComponents
 
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
             containerModel.rootElement.Add(uiElement);
+            containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);
         }
@@ -39,6 +43,7 @@ namespace DCL.ECSComponents
             {
                 var containerModel = containerData.model;
                 containerModel.rootElement.Remove(uiElement);
+                containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
             }
             uiElement = null;

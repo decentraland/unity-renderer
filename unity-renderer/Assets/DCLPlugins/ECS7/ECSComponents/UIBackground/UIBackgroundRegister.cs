@@ -4,21 +4,18 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class UiTextRegister : IDisposable
+    public class UIBackgroundRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public UiTextRegister(int componentId, ECSComponentsFactory factory,
+        public UIBackgroundRegister(int componentId, ECSComponentsFactory factory,
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
-            AssetPromiseKeeper_Font fontPromiseKeeper = AssetPromiseKeeper_Font.i;
-
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiText>,
-                () => new UiTextHandler(internalUiContainer, fontPromiseKeeper, componentId));
-
-            componentWriter.AddOrReplaceComponentSerializer<PBUiText>(componentId, ProtoSerialization.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiBackground>,
+                () => new UIBackgroundHandler(internalUiContainer, componentId));
+            componentWriter.AddOrReplaceComponentSerializer<PBUiBackground>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

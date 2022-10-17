@@ -10,17 +10,15 @@ namespace DCL.ECSComponents
     public class UITransformHandler : IECSComponentHandler<PBUiTransform>
     {
         private readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
-        private bool debugRandomColorSet = false;
+        private readonly int componentId;
 
-        public UITransformHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer)
+        public UITransformHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId)
         {
             this.internalUiContainer = internalUiContainer;
+            this.componentId = componentId;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
-        {
-            debugRandomColorSet = false;
-        }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
@@ -28,7 +26,7 @@ namespace DCL.ECSComponents
             if (containerData != null)
             {
                 var containerModel = containerData.model;
-                containerModel.hasTransform = false;
+                containerModel.components.Remove(componentId);
 
                 // do parent detach only if not child of root entity
                 // since ui element without transform should be always attached
@@ -47,7 +45,7 @@ namespace DCL.ECSComponents
         {
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
 
-            containerModel.hasTransform = true;
+            containerModel.components.Add(componentId);
 
             if (containerModel.parentId != model.Parent)
             {
@@ -57,12 +55,6 @@ namespace DCL.ECSComponents
             }
 
             VisualElement element = containerModel.rootElement;
-
-            if (!debugRandomColorSet)
-            {
-                element.style.backgroundColor = Random.ColorHSV(); // temp for debugging
-                debugRandomColorSet = true;
-            }
 
             SetUpVisualElement(element, model);
             internalUiContainer.PutFor(scene, entity, containerModel);
