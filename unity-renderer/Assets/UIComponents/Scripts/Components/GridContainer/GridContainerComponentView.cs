@@ -386,11 +386,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             CreateItem(items[i], $"Item{instantiatedItems.Count}");
         }
     }
-    
-    public void CreateItem(BaseComponentView item)
-    {
-        CreateItem(item, $"Item{instantiatedItems.Count}");
-    }
 
     public void RemoveItem(BaseComponentView item)
     {
