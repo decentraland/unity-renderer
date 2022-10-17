@@ -77,9 +77,9 @@ namespace DCL.Helpers
             int originalRenderQueue = material.renderQueue;
             material.shader = Shader.Find("DCL/Universal Render Pipeline/Lit");
             material.renderQueue = originalRenderQueue;
-            if (material.HasTexture( BumpMap))
+            if (material.HasTexture( BumpMap) && material.GetTexture(BumpMap) != null)
                 material.EnableKeyword(NormalMapKeyword);
-            if (material.HasTexture(MetallicGlossMap))
+            if (material.HasTexture(MetallicGlossMap) && material.GetTexture(MetallicGlossMap) != null)
                 material.EnableKeyword(MetallicSpecGlossmapKeyword);
 
             if (originalRenderQueue == (int)RenderQueue.Transparent)
