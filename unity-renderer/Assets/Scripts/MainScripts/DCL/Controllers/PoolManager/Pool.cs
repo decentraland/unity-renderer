@@ -45,9 +45,9 @@ namespace DCL
 
         public int objectsCount => unusedObjectsCount + usedObjectsCount;
 
-        public int unusedObjectsCount { get { return unusedObjects.Count; } }
+        public int unusedObjectsCount => unusedObjects.Count;
 
-        public int usedObjectsCount { get { return usedObjects.Count; } }
+        public int usedObjectsCount => usedObjects.Count;
 
         public Pool(string name, int maxPrewarmCount)
         {
@@ -79,12 +79,9 @@ namespace DCL
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-                int count = usedObjectsCount;
 
-                for (int i = unusedObjectsCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
-                {
+                for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();
-                }
 
                 Instantiate();
             }
@@ -110,6 +107,8 @@ namespace DCL
 #if UNITY_EDITOR
             RefreshName();
 #endif
+            // TODO: Prewarm if last object extracted
+            
             return po;
         }
 
