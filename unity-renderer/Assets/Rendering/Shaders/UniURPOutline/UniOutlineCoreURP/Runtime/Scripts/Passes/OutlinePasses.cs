@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 using UniOutline.Outline;
-using UnityEngine;
+
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -17,12 +17,9 @@ namespace UniOutline
 		private readonly List<OutlineRenderObject> _renderObjects = new List<OutlineRenderObject>();
 		private readonly List<ShaderTagId> _shaderTagIdList = new List<ShaderTagId>();
 
-        private readonly bool isDebug = true;
-
 		private ScriptableRenderer _renderer;
 
-        
-		public OutlinePasses(OutlineRenderFeature renderFeature, string[] shaderTags) // Outline Passes
+		public OutlinePasses(OutlineRenderFeature renderFeature, string[] shaderTags)
 		{
 			_renderFeature = renderFeature;
 
@@ -41,7 +38,7 @@ namespace UniOutline
 			}
 		}
 
-		public void Init(ScriptableRenderer renderer)
+		public void Initialization(ScriptableRenderer renderer)
 		{
 			_renderer = renderer;
 		}
@@ -63,9 +60,7 @@ namespace UniOutline
 				var drawingSettings = CreateDrawingSettings(_shaderTagIdList, ref renderingData, sortingCriteria);
 
 				drawingSettings.enableDynamicBatching = true;
-				
-                // override boost transparency
-                drawingSettings.overrideMaterial = outlineResources.RenderMaterial;
+				drawingSettings.overrideMaterial = outlineResources.RenderMaterial;
 
 				if (outlineSettings.IsAlphaTestingEnabled())
 				{
@@ -79,7 +74,6 @@ namespace UniOutline
 
 				using (var renderer = new OutlineRenderer(cmd, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
 				{
-                    
 					renderer.RenderObjectClear(outlineSettings.OutlineRenderMode);
 					context.ExecuteCommandBuffer(cmd);
 
@@ -95,31 +89,17 @@ namespace UniOutline
 
 			if (_renderFeature.OutlineLayers)
 			{
-                
-                // TODO Bypass ??
-				CommandBuffer cmdBuf = CommandBufferPool.Get(OutlineResources.EffectName);
+				var cmd = CommandBufferPool.Get(OutlineResources.EffectName);
 
-				using (OutlineRenderer renderer = new OutlineRenderer(cmdBuf, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
+				using (var renderer = new OutlineRenderer(cmd, outlineResources, _renderer.cameraColorTarget, depthTexture, camData.cameraTargetDescriptor))
 				{
 					_renderObjects.Clear();
 					_renderFeature.OutlineLayers.GetRenderObjects(_renderObjects);
-                    
-                    if (isDebug)
-                    {
-                        foreach (var renderObject in _renderObjects)
-                        {
-                            Debug.Log(renderObject.ToString());
-                        }
-                    }
-                    
-                    // Quick re;ease / clear from the list _renderObjects
-                    _renderObjects.Clear();
-                    
 					renderer.Render(_renderObjects);
 				}
 
-				context.ExecuteCommandBuffer(cmdBuf);
-				CommandBufferPool.Release(cmdBuf);
+				context.ExecuteCommandBuffer(cmd);
+				CommandBufferPool.Release(cmd);
 			}
 		}
 	}

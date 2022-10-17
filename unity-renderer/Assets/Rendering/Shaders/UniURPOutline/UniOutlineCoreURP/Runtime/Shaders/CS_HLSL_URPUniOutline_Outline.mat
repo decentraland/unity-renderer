@@ -19,6 +19,9 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
+    m_Floats:
+    - _Intensity: 0.404
+    - _Width: 0.535
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

@@ -71,7 +71,7 @@ namespace UniOutline.Outline
 		{
 			if (_outlineResources && _outlineResources.IsValid)
 			{
-				_outlinePasses.Init(renderer);
+				_outlinePasses.Initialization(renderer);
 				renderer.EnqueuePass(_outlinePasses);
 			}
 		}
