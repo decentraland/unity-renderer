@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MaterialHelpers;
 using UnityEngine;
 using UnityGLTF.Cache;
 
@@ -28,18 +29,25 @@ namespace DCL.Helpers
 
         public static string ComputeHash(Material mat) { return mat.ComputeCRC().ToString(); }
 
-        static Shader EnsureMainShader()
+        static void EnsureMainShader()
         {
             if (mainShader == null)
-            {
                 mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
-            }
-
-            return mainShader;
         }
 
         public static Material ProcessSingleMaterial(Material mat, Mode cachingFlags = Mode.CACHE_EVERYTHING)
         {
+            EnsureMainShader();
+
+            bool alreadyCopied = false;
+            if (mat.shader.name.ToLower().Contains("gltf/"))
+            {
+                var newMaterial = new Material(mainShader);
+                GLTFastMaterialConverter.Convert(mat, newMaterial);
+                mat = newMaterial;
+                alreadyCopied = true;
+            }
+
             if ((cachingFlags & Mode.CACHE_SHADERS) != 0)
             {
                 string shaderHash = mat.shader.name;
@@ -52,15 +60,21 @@ namespace DCL.Helpers
                     }
                     else
                     {
-                        shaderByHash.Add(shaderHash, EnsureMainShader());
+                        shaderByHash.Add(shaderHash, mainShader);
                     }
                 }
 
                 mat.shader = shaderByHash[shaderHash];
             }
 
-            //NOTE(Brian): Have to copy material because will be unloaded later.
-            var materialCopy = new Material(mat);
+            Material materialCopy = mat;
+
+            if (!alreadyCopied)
+            {
+                //NOTE(Brian): Have to copy material because will be unloaded later.
+                materialCopy = new Material(mat);
+            }
+            
             SRPBatchingHelper.OptimizeMaterial(materialCopy);
 
             if ((cachingFlags & Mode.CACHE_MATERIALS) != 0)
@@ -80,6 +94,7 @@ namespace DCL.Helpers
 
                 refCountedMat = PersistentAssetCache.MaterialCacheByCRC[hash];
                 refCountedMat.IncreaseRefCount();
+
                 return refCountedMat.material;
             }
 
@@ -102,6 +117,9 @@ namespace DCL.Helpers
             {
                 Renderer r = renderers[i];
 
+                if (r.name.ToLower().Contains("_collider"))
+                    continue;
+
                 if (!enableRenderers)
                     r.enabled = false;
 
@@ -112,6 +130,9 @@ namespace DCL.Helpers
                 for (int i1 = 0; i1 < sharedMats.Length; i1++)
                 {
                     Material mat = sharedMats[i1];
+
+                    if (mat == null)
+                        continue;
 
                     float elapsedTime = Time.realtimeSinceStartup;
 
@@ -125,6 +146,7 @@ namespace DCL.Helpers
                         if (timeBudget < 0)
                         {
                             yield return null;
+
                             timeBudget += timeBudgetMax;
                         }
                     }

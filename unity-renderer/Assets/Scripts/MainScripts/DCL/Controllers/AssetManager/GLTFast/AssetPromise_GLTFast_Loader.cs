@@ -40,8 +40,7 @@ namespace DCL
             
             gltFastDownloadProvider = new GLTFastDownloadProvider(requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
-            //gltFastMaterialGenerator = new GLTFastMaterialGenerator();
-            gltFastMaterialGenerator = new GLTFastDCLMaterialGenerator("DCL/Universal Render Pipeline/Lit");
+            gltFastMaterialGenerator = new DecentralandMaterialGenerator("DCL/Universal Render Pipeline/Lit");
             consoleLogger = new ConsoleLogger();
         }
 

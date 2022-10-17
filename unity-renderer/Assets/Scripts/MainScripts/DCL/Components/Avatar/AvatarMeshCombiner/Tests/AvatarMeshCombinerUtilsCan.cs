@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using DCL.Shaders;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Unity.Collections;

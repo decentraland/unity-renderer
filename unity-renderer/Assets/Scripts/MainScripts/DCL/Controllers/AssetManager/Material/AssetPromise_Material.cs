@@ -2,6 +2,7 @@
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
+using DCL.Shaders;
 
 namespace DCL
 {

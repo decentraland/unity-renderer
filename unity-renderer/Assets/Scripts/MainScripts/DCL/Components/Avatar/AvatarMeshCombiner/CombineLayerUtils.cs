@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 using UnityEngine.Rendering;
 
