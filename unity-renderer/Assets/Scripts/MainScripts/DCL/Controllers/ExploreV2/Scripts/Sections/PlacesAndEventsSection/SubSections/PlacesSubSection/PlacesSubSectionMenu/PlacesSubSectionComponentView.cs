@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -126,7 +127,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public Color[] currentFriendColors => friendColors;
 
     public int currentPlacesPerRow => places.currentItemsPerRow;
-    
+
     public override void Start()
     {
         placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
@@ -164,19 +165,32 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
-        this.places.ExtractItems();
         placeCardsPool.ReleaseAll();
-
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
-            places,
-            placeCardsPool,
-            OnFriendHandlerAdded,
-            OnInfoClicked,
-            OnJumpInClicked);
-
-        this.places.SetItems(placeComponentsToAdd);
-        
         placesNoDataText.gameObject.SetActive(places.Count == 0);
+
+        this.places.ExtractItems();
+        this.places.RemoveItems();
+
+        StartCoroutine(SetPlacesIteratively(places));
+
+        this.places.SetItemSizeForModel();
+    }
+
+    private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
+    {
+        int chunkSize = places.Count;
+
+        for (int i = 0; i < places.Count; i += chunkSize)
+        {
+            // var rangeMax = i + chunkSize < places.Count ? i + chunkSize : places.Count;
+            // List<PlaceCardComponentModel> placesChunk = places.GetRange(i, rangeMax);
+            
+            List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
+                places, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked);
+
+            this.places.AddItems(placeComponentsToAdd);
+            yield return null;
+        }
     }
 
     public void AddPlaces(List<PlaceCardComponentModel> places)
@@ -206,13 +220,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetPlacesAsLoading(bool isVisible)
     {
-        places.gameObject.SetActive(!isVisible);
+        places.GetComponent<Canvas>().enabled = !isVisible;
+
         placesLoading.SetActive(isVisible);
 
         if (isVisible)
             placesNoDataText.gameObject.SetActive(false);
     }
-    
+
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();

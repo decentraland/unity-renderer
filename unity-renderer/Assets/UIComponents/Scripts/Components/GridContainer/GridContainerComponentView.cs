@@ -370,10 +370,26 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItemSize(model.itemSize);
     }
 
+    public void SetItemSizeForModel() =>
+        SetItemSize(model.itemSize);
+
     public void AddItem(BaseComponentView item)
     {
         CreateItem(item, $"Item{instantiatedItems.Count}");
         SetItemSize(model.itemSize);
+    }
+    
+    public void AddItems(List<BaseComponentView> items)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            CreateItem(items[i], $"Item{instantiatedItems.Count}");
+        }
+    }
+    
+    public void CreateItem(BaseComponentView item)
+    {
+        CreateItem(item, $"Item{instantiatedItems.Count}");
     }
 
     public void RemoveItem(BaseComponentView item)
