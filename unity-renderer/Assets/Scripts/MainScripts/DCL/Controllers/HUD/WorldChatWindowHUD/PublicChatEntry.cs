@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,7 +62,7 @@ namespace DCL.Chat.HUD
             if (unreadNotifications)
                 unreadNotifications.Initialize(chatController, model.channelId);
             if (memberCountLabel)
-                memberCountLabel.SetText($"{model.memberCount} members");
+                memberCountLabel.SetText($"{model.memberCount} members {(model.showOnlyOnlineMembers ? "online" : "joined")}");
             if (joinedContainer)
                 joinedContainer.SetActive(model.isJoined);
             if (leaveButtonContainer)

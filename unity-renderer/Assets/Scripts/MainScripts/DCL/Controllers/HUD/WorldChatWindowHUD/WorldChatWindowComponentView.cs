@@ -307,7 +307,7 @@ namespace DCL.Chat.HUD
         private void Set(PublicChatModel model)
         {
             var channelId = model.channelId;
-            var entryModel = new PublicChatEntryModel(channelId, model.name, model.joined, model.memberCount, model.muted);
+            var entryModel = new PublicChatEntryModel(channelId, model.name, model.joined, model.memberCount, showOnlyOnlineMembers: true, model.muted);
             PublicChatEntry entry;
 
             if (isSearchMode)

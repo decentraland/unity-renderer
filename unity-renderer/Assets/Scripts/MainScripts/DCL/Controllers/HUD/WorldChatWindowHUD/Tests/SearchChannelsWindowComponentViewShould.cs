@@ -49,7 +49,7 @@ namespace DCL.Chat.HUD
             var entry = view.channelList.Get("bleh");
             Assert.AreEqual("#blehName", entry.nameLabel.text);
             Assert.AreEqual(false, entry.joinedContainer.activeSelf);
-            Assert.AreEqual("4 members", entry.memberCountLabel.text);
+            Assert.AreEqual("4 members joined", entry.memberCountLabel.text);
         }
         
         [Test]
@@ -63,7 +63,7 @@ namespace DCL.Chat.HUD
             var entry = view.channelList.Get("bleh");
             Assert.AreEqual("#blehName", entry.nameLabel.text);
             Assert.AreEqual(true, entry.joinedContainer.activeSelf);
-            Assert.AreEqual("4 members", entry.memberCountLabel.text);
+            Assert.AreEqual("4 members joined", entry.memberCountLabel.text);
         }
 
         [Test]
