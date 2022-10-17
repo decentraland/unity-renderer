@@ -106,7 +106,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         float currentAlphaStep = GetNearestAlphaStep(alpha);
 
-        if (currentAlphaStep == 0)
+        if (currentAlphaStep == 0 && previousAlphaStep != currentAlphaStep)
         {
             UpdateVisuals(0);
             SetRenderersVisible(false);
@@ -114,6 +114,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         }
         else
             SetRenderersVisible(true);
+
 
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
@@ -124,11 +125,15 @@ public class PlayerName : MonoBehaviour, IPlayerName
          * instead we should have a provider so all the subsystems can use it
          */
         float distanceToCamera = Vector3.Distance(cameraPosition, gameObject.transform.position);
-        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
-        UpdateVisuals(resolvedAlpha);
         ScalePivotByDistance(distanceToCamera);
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
         pivot.transform.localPosition = Vector3.up * GetPivotYOffsetByDistance(distanceToCamera);
+
+        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
+        float resolvedAlphaStep = GetNearestAlphaStep(resolvedAlpha);
+        float canvasAlphaStep = GetNearestAlphaStep(canvasGroup.alpha);
+        if (resolvedAlphaStep != canvasAlphaStep)
+            UpdateVisuals(resolvedAlpha);
     }
 
     internal void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
