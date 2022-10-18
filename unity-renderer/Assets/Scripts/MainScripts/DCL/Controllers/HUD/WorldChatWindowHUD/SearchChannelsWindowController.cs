@@ -98,6 +98,7 @@ namespace DCL.Chat.HUD
                 view.OnLeaveChannel += HandleLeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
                 chatController.OnChannelSearchResult += ShowRequestedChannels;
+                chatController.OnChannelUpdated += UpdateChannelInfo;
                 
                 view.Show();
                 view.ClearAllEntries();
@@ -175,6 +176,8 @@ namespace DCL.Chat.HUD
                 view.ShowLoadingMore();
         }
 
+        private void UpdateChannelInfo(Channel updatedChannel) => view.Set(updatedChannel);
+
         private void LoadMoreChannels()
         {
             if (IsLoading()) return;
@@ -198,6 +201,7 @@ namespace DCL.Chat.HUD
         private void ClearListeners()
         {
             chatController.OnChannelSearchResult -= ShowRequestedChannels;
+            chatController.OnChannelUpdated -= UpdateChannelInfo;
             view.OnSearchUpdated -= SearchChannels;
             view.OnRequestMoreChannels -= LoadMoreChannels;
             view.OnBack -= HandleViewBacked;
