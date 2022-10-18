@@ -6,7 +6,6 @@ namespace DCL.Guests.HUD.ConnectWallet
 {
     public class ConnectWalletComponentView : BaseComponentView, IConnectWalletComponentView
     {
-        [Header("Prefab References")]
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal ButtonComponentView connectButton;
