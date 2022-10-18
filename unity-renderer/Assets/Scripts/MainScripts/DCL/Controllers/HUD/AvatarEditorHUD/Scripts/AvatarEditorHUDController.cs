@@ -196,6 +196,7 @@ public class AvatarEditorHUDController : IHUD
                          .Then((ownedWearables) =>
                         {           
                              //TODO ANTON remove this later
+                             Debug.unityLogger.logEnabled = true;
                              var ownedWearablesString = "";
                              foreach (var wearable in ownedWearables)
                              {
@@ -227,6 +228,7 @@ public class AvatarEditorHUDController : IHUD
                                  Debug.LogError("SELECTIVE LOADING BUG: emotesLoadedAsWearables: " + emotesLoadedAsWearablesStr);
                              }
                              loadingWearables = false;
+                            Debug.unityLogger.logEnabled = false;
                          })
                          .Catch((error) =>
                          {
