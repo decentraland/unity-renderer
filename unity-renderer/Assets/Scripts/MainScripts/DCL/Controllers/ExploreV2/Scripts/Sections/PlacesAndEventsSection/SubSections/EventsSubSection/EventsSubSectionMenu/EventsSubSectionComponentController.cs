@@ -115,12 +115,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             return;
 
         currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+        
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
-        view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
         
+        view.SetShowMoreUpcomingEventsButtonActive(false);
+
         reloadEvents = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
@@ -173,8 +175,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetFeaturedEvents(featuredEvents);
-        view.SetFeaturedEventsAsLoading(false);
-        view.SetFeaturedEventsActive(featuredEvents.Count > 0);
     }
 
     public void LoadTrendingEvents()
@@ -189,7 +189,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetTrendingEvents(trendingEvents);
-        view.SetTrendingEventsAsLoading(false);
     }
 
     public void LoadUpcomingEvents()
@@ -205,7 +204,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.SetUpcomingEvents(upcomingEvents);
         view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
-        view.SetUpcomingEventsAsLoading(false);
     }
 
     public void ShowMoreUpcomingEvents()
@@ -247,7 +245,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetGoingEvents(goingEvents);
-        view.SetGoingEventsAsLoading(false);
     }
 
     public void Dispose()

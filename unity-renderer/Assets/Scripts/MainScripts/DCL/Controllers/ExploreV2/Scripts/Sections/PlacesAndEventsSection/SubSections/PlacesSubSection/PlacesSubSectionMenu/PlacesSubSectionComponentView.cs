@@ -175,9 +175,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
-        placeCardsPool.ReleaseAll();
+        SetPlacesAsLoading(false);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
-
+        
+        placeCardsPool.ReleaseAll();
+        
         this.places.ExtractItems();
         this.places.RemoveItems();
 

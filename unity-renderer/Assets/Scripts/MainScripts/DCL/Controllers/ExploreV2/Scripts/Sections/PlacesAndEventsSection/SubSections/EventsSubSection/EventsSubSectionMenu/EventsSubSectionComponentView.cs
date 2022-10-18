@@ -60,13 +60,6 @@ public interface IEventsSubSectionComponentView
     void SetFeaturedEventsAsLoading(bool isVisible);
 
     /// <summary>
-    /// Activates/deactivates the featured events component.
-    /// </summary>
-    /// <param name="isActive"></param>
-    void SetFeaturedEventsActive(bool isActive);
-
-    /// <summary>
-    /// Set the trending events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
     void SetTrendingEvents(List<EventCardComponentModel> events);
@@ -184,84 +177,93 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal Pool goingEventCardsPool;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-    
+
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
-        featuredEvents.ExtractItems();
+        SetFeaturedEventsAsLoading(false);
+        featuredEvents.gameObject.SetActive(events.Count > 0);
+
         featuredEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            featuredEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
-
-        featuredEvents.SetItems(eventComponentsToAdd);
-        SetFeaturedEventsActive(events.Count > 0);
+        featuredEvents.ExtractItems();
+        featuredEvents.SetItems(
+            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, featuredEventCardsPool,
+                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked)
+        );
     }
-
-    public void SetFeaturedEventsAsLoading(bool isVisible)
-    {
-        SetFeaturedEventsActive(!isVisible);
-        featuredEventsLoading.SetActive(isVisible);
-    }
-
-    public void SetFeaturedEventsActive(bool isActive) { featuredEvents.gameObject.SetActive(isActive); }
 
     public void SetTrendingEvents(List<EventCardComponentModel> events)
     {
-        trendingEvents.ExtractItems();
+        SetTrendingEventsAsLoading(false);
+        trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+
         trendingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            trendingEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
+        trendingEvents.ExtractItems();
+        trendingEvents.SetItems(
+            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, trendingEventCardsPool,
+                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
 
-        trendingEvents.SetItems(eventComponentsToAdd);
-        trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
-    
-    public void SetTrendingEventsAsLoading(bool isVisible)
+
+    public void SetGoingEvents(List<EventCardComponentModel> events)
     {
-        trendingEvents.gameObject.SetActive(!isVisible);
-        trendingEventsLoading.SetActive(isVisible);
+        SetGoingEventsAsLoading(false);
+        goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
 
-        if (isVisible)
-            trendingEventsNoDataText.gameObject.SetActive(false);
+        goingEventCardsPool.ReleaseAll();
+
+        goingEvents.ExtractItems();
+        goingEvents.SetItems(
+            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, goingEventCardsPool,
+                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked)
+        );
     }
-    
+
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
     {
-        upcomingEvents.ExtractItems();
+        SetUpcomingEventsAsLoading(false);
+        upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+
         upcomingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            upcomingEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
-
-        upcomingEvents.SetItems(eventComponentsToAdd);
-        upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+        upcomingEvents.ExtractItems();
+        upcomingEvents.SetItems(
+            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, upcomingEventCardsPool,
+                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
     }
 
-    public void SetUpcomingEventsAsLoading(bool isVisible)
+    public void SetFeaturedEventsAsLoading(bool isVisible) => 
+        SetEventsGroupAsLoading(isVisible, featuredEvents.gameObject, featuredEventsLoading);
+
+    public void SetGoingEventsAsLoading(bool isVisible) =>
+        SetEventsGroupAsLoading(isVisible, goingEvents.gameObject, goingEventsLoading, goingEventsNoDataText);
+
+    public void SetTrendingEventsAsLoading(bool isVisible) =>
+        SetEventsGroupAsLoading(isVisible, trendingEvents.gameObject, trendingEventsLoading, trendingEventsNoDataText);
+
+    public void SetUpcomingEventsAsLoading(bool isVisible) =>
+        SetEventsGroupAsLoading(isVisible, upcomingEvents.gameObject, upcomingEventsLoading, upcomingEventsNoDataText);
+
+    private static void SetEventsGroupAsLoading(bool isVisible, GameObject gridGroup, GameObject loadingBar, TMP_Text noDataText = null)
     {
-        upcomingEvents.gameObject.SetActive(!isVisible);
-        upcomingEventsLoading.SetActive(isVisible);
+        gridGroup.SetActive(!isVisible);
+        loadingBar.SetActive(isVisible);
 
-        if (isVisible)
-            upcomingEventsNoDataText.gameObject.SetActive(false);
+        if (isVisible && noDataText != null)
+            noDataText.gameObject.SetActive(false);
     }
-    
+
+    public void AddUpcomingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd =
+            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, upcomingEventCardsPool,
+                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+
+        foreach (BaseComponentView eventToAdd in eventComponentsToAdd)
+            upcomingEvents.AddItemWithResize(eventToAdd);
+    }
+
     public override void Start()
     {
         eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
@@ -276,7 +278,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         OnReady?.Invoke();
     }
-    
+
     public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
     public void ConfigurePools()
@@ -286,7 +288,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         ExploreEventsUtils.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
         ExploreEventsUtils.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
     }
-    
+
     public override void RefreshControl()
     {
         featuredEvents.RefreshControl();
@@ -313,37 +315,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         }
     }
 
-    public void SetGoingEvents(List<EventCardComponentModel> events)
-    {
-        goingEvents.ExtractItems();
-        goingEventCardsPool.ReleaseAll();
-
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            goingEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
-
-        goingEvents.SetItems(eventComponentsToAdd);
-        goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
-    }
-    
-    public void AddUpcomingEvents(List<EventCardComponentModel> events)
-    {
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            upcomingEventCardsPool,
-            OnInfoClicked,
-            OnJumpInClicked,
-            OnSubscribeEventClicked,
-            OnUnsubscribeEventClicked);
-
-        foreach (BaseComponentView eventToAdd in eventComponentsToAdd)
-            upcomingEvents.AddItemWithResize(eventToAdd);
-    }
-    
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
@@ -353,18 +324,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         else
             OnDisable();
     }
-    
-    public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
 
-    public void SetGoingEventsAsLoading(bool isVisible)
-    {
-        goingEvents.gameObject.SetActive(!isVisible);
-        goingEventsLoading.SetActive(isVisible);
+    public void SetShowMoreUpcomingEventsButtonActive(bool isActive) =>
+        showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive);
 
-        if (isVisible)
-            goingEventsNoDataText.gameObject.SetActive(false);
-    }
-    
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();

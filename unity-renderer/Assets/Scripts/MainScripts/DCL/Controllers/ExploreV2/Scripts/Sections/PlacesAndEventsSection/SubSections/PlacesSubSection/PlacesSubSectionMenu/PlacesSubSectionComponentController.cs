@@ -134,7 +134,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         
         view.SetPlaces(places);
         view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
-        view.SetPlacesAsLoading(false);
     }
 
     public void ShowMorePlaces()
