@@ -187,9 +187,17 @@ public class ChatHUDController : IDisposable
         if (IsSpamming(ownProfile.userName)) return;
         
         ApplyWhisperAttributes(message);
-        
+
         if (message.body.ToLower().StartsWith("/join"))
-            dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Command);
+        {
+            if (!ownProfile.isGuest)
+                dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Command);
+            else
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                return;
+            }
+        }
         
         OnSendMessage?.Invoke(message);
     }

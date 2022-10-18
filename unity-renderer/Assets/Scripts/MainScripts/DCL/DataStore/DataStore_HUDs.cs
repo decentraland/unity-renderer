@@ -1,13 +1,13 @@
+using DCL.Components.Interfaces;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using DCL.Components.Interfaces;
 using UnityEngine;
 
 namespace DCL
 {
     public class DataStore_HUDs
     {
+        public readonly BaseVariable<bool> connectWalletModalVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);

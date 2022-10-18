@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using TMPro;
+using UIComponents.CollapsableSortedList;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,12 +38,21 @@ namespace DCL.Chat.HUD
         [SerializeField] internal Button openChannelSearchButton;
         [SerializeField] internal ChannelContextualMenu channelContextualMenu;
         [SerializeField] internal Button createChannelButton;
+        [SerializeField] internal GameObject searchBarContainer;
+        [SerializeField] internal CollapsableListToggleButton directChatsCollapseButton;
+        [SerializeField] internal CollapsableListToggleButton publicChatsChatsCollapseButton;
         [SerializeField] private WorldChatWindowModel model;
 
         [Header("Load More Entries")]
         [SerializeField] internal GameObject loadMoreEntriesContainer;
         [SerializeField] internal TMP_Text loadMoreEntriesLabel;
         [SerializeField] internal GameObject loadMoreEntriesLoading;
+        
+        [Header("Guest")]
+        [SerializeField] internal GameObject connectWalletContainer;
+        [SerializeField] internal GameObject walletConnectedContainer;
+        [SerializeField] internal Button connectWalletButton;
+        [SerializeField] internal Button whatIsWalletButton;
 
         private readonly Dictionary<string, PrivateChatModel> privateChatsCreationQueue =
             new Dictionary<string, PrivateChatModel>();
@@ -59,6 +69,7 @@ namespace DCL.Chat.HUD
         private Vector2 lastScrollPosition;
         private float loadMoreEntriesRestrictionTime;
         private Coroutine requireMoreEntriesRoutine;
+        private bool isConnectWalletMode;
 
         public event Action OnClose;
         public event Action<string> OnOpenPrivateChat;
@@ -68,6 +79,8 @@ namespace DCL.Chat.HUD
         public event Action OnOpenChannelSearch;
         public event Action<string> OnLeaveChannel;
         public event Action OnCreateChannel;
+        public event Action OnSignUp;
+        public event Action OnRequireWalletReadme;
 
         public RectTransform Transform => (RectTransform) transform;
         public bool IsActive => gameObject.activeInHierarchy;
@@ -85,7 +98,7 @@ namespace DCL.Chat.HUD
             {
                 if (u1.Model.name == NEARBY_CHANNEL)
                     return -1;
-                else if (u2.Model.name == NEARBY_CHANNEL)
+                if (u2.Model.name == NEARBY_CHANNEL)
                     return 1;
 
                 return string.Compare(u1.Model.name, u2.Model.name, StringComparison.InvariantCultureIgnoreCase);
@@ -103,6 +116,8 @@ namespace DCL.Chat.HUD
             scroll.onValueChanged.AddListener(RequestMorePrivateChats);
             channelContextualMenu.OnLeave += () => OnLeaveChannel?.Invoke(optionsChannelId);
             createChannelButton.onClick.AddListener(() => OnCreateChannel?.Invoke());
+            connectWalletButton.onClick.AddListener(() => OnSignUp?.Invoke());
+            whatIsWalletButton.onClick.AddListener(() => OnRequireWalletReadme?.Invoke());
             UpdateHeaders();
         }
 
@@ -266,6 +281,26 @@ namespace DCL.Chat.HUD
         public void SetCreateChannelButtonActive(bool isActive) => createChannelButton.gameObject.SetActive(isActive);
 
         public void SetSearchAndCreateContainerActive(bool isActive) => searchAndCreateContainer.SetActive(isActive);
+        
+        public void ShowConnectWallet()
+        {
+            isConnectWalletMode = true;
+            connectWalletContainer.SetActive(true);
+            walletConnectedContainer.SetActive(false);
+            searchBarContainer.SetActive(false);
+            directChatsCollapseButton.SetInteractability(false);
+            publicChatsChatsCollapseButton.SetInteractability(false);
+        }
+
+        public void HideConnectWallet()
+        {
+            isConnectWalletMode = false;
+            connectWalletContainer.SetActive(false);
+            walletConnectedContainer.SetActive(true);
+            searchBarContainer.SetActive(true);
+            directChatsCollapseButton.SetInteractability(true);
+            publicChatsChatsCollapseButton.SetInteractability(true);
+        }
 
         public override void RefreshControl()
         {
@@ -413,9 +448,10 @@ namespace DCL.Chat.HUD
         
         private void RequestMorePrivateChats(Vector2 position)
         {
-            if (!loadMoreEntriesContainer.activeInHierarchy ||
-                loadMoreEntriesLoading.activeInHierarchy ||
-                Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime < MIN_TIME_TO_REQUIRE_MORE_ENTRIES) return;
+            if (!loadMoreEntriesContainer.activeInHierarchy
+                || loadMoreEntriesLoading.activeInHierarchy
+                || Time.realtimeSinceStartup - loadMoreEntriesRestrictionTime < MIN_TIME_TO_REQUIRE_MORE_ENTRIES
+                || isConnectWalletMode) return;
 
             if (position.y < REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD && lastScrollPosition.y >= REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
             {

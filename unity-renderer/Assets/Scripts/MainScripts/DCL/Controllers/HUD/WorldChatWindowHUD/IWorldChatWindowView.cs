@@ -12,6 +12,8 @@ public interface IWorldChatWindowView
     event Action OnOpenChannelSearch;
     event Action<string> OnLeaveChannel;
     event Action OnCreateChannel;
+    event Action OnSignUp;
+    event Action OnRequireWalletReadme;
 
     RectTransform Transform { get; }
     bool IsActive { get; }
@@ -38,4 +40,6 @@ public interface IWorldChatWindowView
     bool ContainsPrivateChannel(string userId);
     void SetCreateChannelButtonActive(bool isActive);
     void SetSearchAndCreateContainerActive(bool isActive);
+    void ShowConnectWallet();
+    void HideConnectWallet();
 }
