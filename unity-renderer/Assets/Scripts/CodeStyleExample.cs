@@ -1,6 +1,6 @@
 ﻿// NOTE: following separation lines are used only for clarity and do not take part of our commenting code style!
-//----------------------------------------------------------------------------------------------------  Usings group
 
+//----------------------------------------------------------------------------------------------------  Usings group
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;

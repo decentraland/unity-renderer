@@ -14,16 +14,16 @@ When working with the Unity Project these guidelines must be followed.
 You can find a settings export file in the root of the project called "rider_codeStyleDCLSetting". Bear in mind that the conversion between VS and Rider is not 1 on 1 but it's good enough.
 
 # Code conventions
-[Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary of our adaptation of it, highlights and specifics related to Unity, which we suggest to follow.
+[Microsoft’s guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) are used as a baseline. Here you will find short summary of its adaptation to the current project, highlights and specifics related to Unity, which we suggest to follow.
 
 ## Naming conventions
 Use
 * `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
 * `camelCase` - non-public Property, non-public Field, methods Parameter, local Variable;
-* `CAPITALS_SNAKE_CASE` - Constants;
+* `CAPITALS_SNAKE_CASE` - Constants, static read-only fields;
 * `I` prefix in front of Interface name;
 * Events name is in past tens and without `On` prefix
-* `_`, `__`, `___` for unused parameters of the method (which happens for events subscribers, interface implementation and inheritance overriden methods)
+* `_`, `__`, `___` for unused parameters of the method (for example, for events subscribers, interface implementation and inheritance overriden methods)
 
 ```csharp
 namespace MyProject                                     // Namespace -> PascalCase
@@ -79,7 +79,7 @@ namespace MyProject                                     // Namespace -> PascalCa
   * `private`
   * methods has additional rule for ordering
 ### Fields specifics
-  * `Const`, `static` and `readonly` goes first (see example below 👇)
+  * `Const`, `static` and `readonly` goes first (see example below)
   * `public` fields with `[HideInInspector]` and `[NonSerialized]` attribute goes after `public`'s
   * `[SerializedFields]` attribute fields goes after all `public` fields and before `internal`-`private`-`protected`)
 ```csharp
@@ -106,7 +106,7 @@ protected float cooldown;                                                     //
 private bool isVisible;                         
 ```
 ### Properties specifics
-  * static and readonly goes first (similar as for fields, see example above 👆)
+  * `static` and `readonly` goes first (similar as for fields, see example above 👆)
   * `get`-only and `set`-only properties goes last.
   * Access modifiers for `set` considered to have higher priority than `get` (considered to be more exposed). 
     * For example, property with `public set` and `private get` goes before `get`-only Property or Property with `private set` and `public get`
@@ -187,7 +187,7 @@ List<string> filteredWords = new FilterLogic(listWords)
   * **Horizontal spaces**
     * indentation = `1 tab`
       * tabs saved as spaces, `1 tab` = `4 spaces` (characters)
-    * only one space between code elements is allowed - 🟢`bool isSmth;` 🔴 `bool  isSmth;`
+    * only one space between code elements is allowed
     * space after a comma between function arguments - 🟢 `CollectItem(myObject, 0, 1);` 🔴 `CollectItem(myObject,0,1);`
     * space before flow control conditions - 🟢 `while (x < y)` 🔴 `while(x < y)`
     * space before and after comparison operators - 🟢 `if (x == y)` 🔴 `if (x==y)`
@@ -203,9 +203,9 @@ List<string> filteredWords = new FilterLogic(listWords)
     * put the body on the new line in most cases 
     * it is allowed to put the body in the same line when it contains only one simple interruption (like `return`/ `break`/ `continue`)
 ```csharp
-if(!IsInRange()) return; 
+if(!IsInRange()) return;    // interruptions are in the same line
 
-if(IsInRange())
+if(IsInRange())             // body on the new line; no brackets
     Fire()
 else
 {
@@ -215,23 +215,23 @@ else
 ```
 * **Expression-bodies**
   * remove brackets in most cases where it is possible (for loops, `if`-`else`, methods, and properties)
-    * exception: always use brackets for **Unity callbacks** 
+    * ⚠️exception: always use brackets for **Unity callbacks** 
   *  **Properties** - placed on the same line 
-  * **Methods** - placed on the new line     
+  * **Methods** - placed on the new line
 ```csharp
-public bool IsInitialized => isInitialized;
+public bool IsInitialized => isInitialized;    // Property - body placed on the same line =>
 
-private void Awake()
+private void Awake()                           // Unity-callback - use brackets even when expression-body is possible  
 {
     var collider = GetComponent<Collider>;
 }
 
-public void Initialize() =>
+public void Initialize() =>                    // Methods - body placed on the new line after =>
     SubrcribeToEvents();
 
 private void TrimAll()
 {
-    foreach (string device in InputDevices)
+    foreach (string device in InputDevices)    // Braces removed
         device.Trim();
 }
 ```
@@ -250,6 +250,18 @@ private void TrimAll()
   * Use `[Space]` attribute for better grouping of exposed variables 
   * Use `[Tooltip]` instead of comments for exposed in inspector variables
 
+### Scripting Symbols
+* try to avoid using Scripting Symbols. Often it can be solved via polymorphism 
+* when using it, try to decorate as less code as possible
+* No tabs when starting Scripting Symbols 
+* No line breaks between Scripting Symbols and its body
+ ```csharp 
+#if UNITY_WEBGL
+    // Here goes WEBGL code
+#elif UNITY_STANDALONE
+    // Here goes Standalone code
+#endif
+```
 ### Comments
 * always use XML comments `/// <summary>`  before the `public` class declaration providing appropriate descriptions of their behavior
  ```csharp 
