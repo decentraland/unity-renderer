@@ -160,7 +160,7 @@ namespace DCL.Components
             if (isInitialized) return;
             isInitialized = true;
 
-            Debug.Log ("FD:: DCLVideoTexture::Initialize() called");
+            // Debug.Log ("FD:: DCLVideoTexture::Initialize() called");
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
@@ -325,7 +325,7 @@ namespace DCL.Components
             {
                 if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
                 {
-                    Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
+                    // Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
                     return true;
                 }
             }
@@ -336,14 +336,14 @@ namespace DCL.Components
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             SetPlayStateDirty();
-            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            // Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
             isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
             // isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
         public override void AttachTo(ISharedComponent component)
@@ -395,7 +395,7 @@ namespace DCL.Components
             if (!isInitialized) return;
             isInitialized = false;
 
-            Debug.Log ("FD:: DCLVideoTexture::Dispose() called");
+            // Debug.Log ("FD:: DCLVideoTexture::Dispose() called");
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
