@@ -189,18 +189,6 @@ public class WorldChatWindowControllerShould
     }
 
     [Test]
-    public void HideChatsLoadingWhenUserUpdatesAsGuest()
-    {
-        friendsController.IsInitialized.Returns(false);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
-
-        controller.Initialize(view);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
-
-        view.Received(1).HidePrivateChatsLoading();
-    }
-
-    [Test]
     public void HideChatsLoadWhenFriendsIsInitialized()
     {
         friendsController.IsInitialized.Returns(false);
@@ -499,6 +487,80 @@ public class WorldChatWindowControllerShould
         chatController.OnInitialized += Raise.Event<Action>();
         
         chatController.Received(1).GetJoinedChannels(10, 0);
+    }
+
+    [Test]
+    public void ShowConnectWalletWhenIsGuest()
+    {
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        
+        view.Received(1).ShowConnectWallet();
+        view.DidNotReceive().HideConnectWallet();
+    }
+    
+    [Test]
+    public void ShowConnectWalletWhenIsGuestAndTheProfileUpdates()
+    {
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        view.ClearReceivedCalls();
+        
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        
+        view.Received(1).ShowConnectWallet();
+        view.DidNotReceive().HideConnectWallet();
+    }
+
+    [Test]
+    public void HideConnectWalletWhenIsAuthenticatedUser()
+    {
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        
+        view.Received(1).HideConnectWallet();
+        view.DidNotReceive().ShowConnectWallet();
+    }
+    
+    [Test]
+    public void HideConnectWalletWhenIsAuthenticatedUserAndProfileUpdates()
+    {
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        
+        controller.Initialize(view);
+        controller.SetVisibility(true);
+        view.ClearReceivedCalls();
+        
+        ownUserProfile.UpdateData(new UserProfileModel{userId = OWN_USER_ID, name = "bleh"});
+        
+        view.Received(1).HideConnectWallet();
+        view.DidNotReceive().ShowConnectWallet();
+    }
+
+    [Test]
+    public void SignUpWhenViewRequires()
+    {
+        controller.Initialize(view);
+        
+        view.OnSignUp += Raise.Event<Action>();
+        
+        userProfileBridge.Received(1).SignUp();
+    }
+
+    [Test]
+    public void OpenWalletWebsite()
+    {
+        controller.Initialize(view);
+        
+        view.OnRequireWalletReadme += Raise.Event<Action>();
+        
+        browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)

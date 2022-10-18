@@ -457,6 +457,48 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(expectedChannelId, leaveChannelId);
     }
 
+    [Test]
+    public void ShowConnectWallet()
+    {
+        view.ShowConnectWallet();
+        
+        Assert.IsTrue(view.connectWalletContainer.activeSelf);
+        Assert.IsFalse(view.walletConnectedContainer.activeSelf);
+        Assert.IsFalse(view.searchBarContainer.activeSelf);
+    }
+
+    [Test]
+    public void HideConnectWallet()
+    {
+        view.HideConnectWallet();
+        
+        Assert.IsFalse(view.connectWalletContainer.activeSelf);
+        Assert.IsTrue(view.walletConnectedContainer.activeSelf);
+        Assert.IsTrue(view.searchBarContainer.activeSelf);
+    }
+
+    [Test]
+    public void TriggerSignUpWhenConnectWalletButtonClicks()
+    {
+        var called = false;
+        view.OnSignUp += () => called = true; 
+        
+        view.connectWalletButton.onClick.Invoke();
+        
+        Assert.IsTrue(called);
+    }
+
+    [Test]
+    public void TriggerWalletReadmeWhenButtonClicks()
+    {
+        var called = false;
+        view.OnRequireWalletReadme += () => called = true;
+
+        view.whatIsWalletButton.onClick.Invoke();
+
+        Assert.IsTrue(called);
+    }
+
     private void GivenPrivateChat(string userId)
     {
         var profile = GivenProfile(userId);
