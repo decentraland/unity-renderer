@@ -200,7 +200,7 @@ public class AvatarEditorHUDController : IHUD
                              var ownedWearablesString = "";
                              foreach (var wearable in ownedWearables)
                              {
-                                 ownedWearablesString += wearable.ToDetailedString() + " ";
+                                 ownedWearablesString += wearable.id + " ";
                              }
                              Debug.LogError("SELECTIVE LOADING BUG: Owned wearables loaded: " + ownedWearablesString);
 
@@ -223,7 +223,7 @@ public class AvatarEditorHUDController : IHUD
                                  var emotesLoadedAsWearablesStr = "";
                                  foreach (var wearable in emotesLoadedAsWearables)
                                  {
-                                     emotesLoadedAsWearablesStr += wearable.ToDetailedString() + " ";
+                                     emotesLoadedAsWearablesStr += wearable.id + " ";
                                  }
                                  Debug.LogError("SELECTIVE LOADING BUG: emotesLoadedAsWearables: " + emotesLoadedAsWearablesStr);
                              }
@@ -691,7 +691,7 @@ public class AvatarEditorHUDController : IHUD
             while (iterator.MoveNext())
             {
                 var wearableItem = iterator.Current.Value;
-                wearableProcessingResult += "For wearable " + wearableItem.ToDetailedString() + "=> ";
+                wearableProcessingResult += "For wearable " + wearableItem.id + "=> ";
 
                 if (wearableItem.IsEmote())
                 {
@@ -712,6 +712,10 @@ public class AvatarEditorHUDController : IHUD
 
                 if (wearableProcessingResult.EndsWith("=> "))
                     wearableProcessingResult += "all okay ";
+                else
+                {
+                    Debug.LogError("Skipped wearable detailed: " + wearableItem.ToDetailedString());
+                }
             }
         }
 
