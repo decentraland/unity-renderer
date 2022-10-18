@@ -3,6 +3,8 @@ using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System.Collections;
+using DCL;
+using NSubstitute.ReceivedExtensions;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -19,6 +21,10 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
+        // This is need to sue the TeleportController
+        ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        DCL.Environment.Setup(serviceLocator);
+        
         Vector2 testCoords = new Vector2(5, 20);
 
         friendsController = new FriendsController_Mock();
@@ -150,6 +156,6 @@ public class JumpInButtonShould : IntegrationTestSuite_Legacy
 
         WebInterface.OnMessageFromEngine -= callback;
 
-        Assert.IsTrue(jumpInCalled);
+        Environment.i.world.teleportController.Received().JumpIn(Arg.Any<int>(),Arg.Any<int>(),Arg.Any<string>(),Arg.Any<string>());
     }
 }
