@@ -294,7 +294,7 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent() /*&& IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get())*/)
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get()))
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
@@ -325,7 +325,7 @@ namespace DCL.Components
             {
                 if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
                 {
-                    // Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
+                    Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
                     return true;
                 }
             }
@@ -336,13 +336,13 @@ namespace DCL.Components
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             SetPlayStateDirty();
-            // Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
             isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            // isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
             // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
