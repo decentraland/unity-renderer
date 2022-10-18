@@ -63,7 +63,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.featuredEventsLoading.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.featuredEvents.gameObject, eventsSubSectionComponent.featuredEventsLoading);
+        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.featuredEvents.GetComponent<Canvas>(), eventsSubSectionComponent.featuredEventsLoading);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.featuredEvents.gameObject.activeSelf);

@@ -84,7 +84,6 @@ namespace DCL
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-                cancellationTokenSource.Cancel();
                 
                 for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();

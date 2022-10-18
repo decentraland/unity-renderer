@@ -144,6 +144,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     [SerializeField] private Canvas canvas;
 
+    private Canvas trendingEventsCanvas;
+    private Canvas upcomingEventsCanvas;
+    private Canvas goingEventsCanvas;
+    
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
@@ -160,19 +164,27 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal EventCardComponentView eventModal;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-    
+
+    public override void Awake()
+    {
+        base.Awake();
+        trendingEventsCanvas = trendingEvents.GetComponent<Canvas>();
+        upcomingEventsCanvas = upcomingEvents.GetComponent<Canvas>();
+        goingEventsCanvas = goingEvents.GetComponent<Canvas>();
+    }
+
     public void SetTrendingEvents(List<EventCardComponentModel> events) => 
-        SetEvents(events, trendingEvents, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
+        SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 
     public void SetGoingEvents(List<EventCardComponentModel> events) => 
-        SetEvents(events, goingEvents, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
+        SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events) => 
-        SetEvents(events, upcomingEvents, upcomingEventCardsPool, upcomingEventsLoading, upcomingEventsNoDataText);
+        SetEvents(events, upcomingEvents, upcomingEventsCanvas, upcomingEventCardsPool, upcomingEventsLoading, upcomingEventsNoDataText);
 
-    private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool eventCardsPool, GameObject loadingBar, TMP_Text eventsNoDataText)
+    private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Canvas gridCanvas, Pool eventCardsPool, GameObject loadingBar, TMP_Text eventsNoDataText)
     {
-        SetEventsGroupAsLoading(false, eventsGrid.gameObject, loadingBar);
+        SetEventsGroupAsLoading(false, gridCanvas, loadingBar);
         eventsNoDataText.gameObject.SetActive(events.Count == 0);
 
         eventCardsPool.ReleaseAll();
@@ -202,7 +214,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
-        SetEventsGroupAsLoading(false, featuredEvents.gameObject, featuredEventsLoading);
+        featuredEventsLoading.SetActive(false);
         featuredEvents.gameObject.SetActive(events.Count > 0);
 
         featuredEventCardsPool.ReleaseAll();
@@ -219,19 +231,21 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void SetAllEventGroupsAsLoading()
     {
-        SetEventsGroupAsLoading(isVisible: true, featuredEvents.gameObject, featuredEventsLoading);
-        SetEventsGroupAsLoading(isVisible: true, goingEvents.gameObject, goingEventsLoading);
-        SetEventsGroupAsLoading(isVisible: true, trendingEvents.gameObject, trendingEventsLoading);
-        SetEventsGroupAsLoading(isVisible: true, upcomingEvents.gameObject, upcomingEventsLoading);
+        featuredEvents.gameObject.SetActive(false);
+        featuredEventsLoading.SetActive(true);
+        
+        SetEventsGroupAsLoading(isVisible: true, goingEventsCanvas, goingEventsLoading);
+        SetEventsGroupAsLoading(isVisible: true, trendingEventsCanvas, trendingEventsLoading);
+        SetEventsGroupAsLoading(isVisible: true, upcomingEventsCanvas, upcomingEventsLoading);
         
         goingEventsNoDataText.gameObject.SetActive(false);
         trendingEventsNoDataText.gameObject.SetActive(false);
         upcomingEventsNoDataText.gameObject.SetActive(false);
     }
 
-    internal void SetEventsGroupAsLoading(bool isVisible, GameObject gridGroup, GameObject loadingBar)
+    internal void SetEventsGroupAsLoading(bool isVisible, Canvas gridCanvas, GameObject loadingBar)
     {
-        gridGroup.SetActive(!isVisible);
+        gridCanvas.enabled = !isVisible;
         loadingBar.SetActive(isVisible);
     }
 
