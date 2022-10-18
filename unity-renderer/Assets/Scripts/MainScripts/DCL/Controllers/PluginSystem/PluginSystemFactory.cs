@@ -5,6 +5,7 @@ using DCL.Emotes;
 using DCL.EmotesWheel;
 using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
+using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;

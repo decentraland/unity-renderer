@@ -1,11 +1,14 @@
 using System;
 
-public interface IConnectWalletComponentView
+namespace DCL.Guests.HUD.ConnectWallet
 {
-    event Action OnCancel;
-    event Action OnConnect;
-    event Action OnHelp;
+    public interface IConnectWalletComponentView
+    {
+        event Action OnCancel;
+        event Action OnConnect;
+        event Action OnHelp;
 
-    void Show(bool instant = false);
-    void Hide(bool instant = false);
+        void Show(bool instant = false);
+        void Hide(bool instant = false);
+    }
 }

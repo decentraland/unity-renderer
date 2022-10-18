@@ -1,63 +1,65 @@
-using DCL;
 using DCL.Browser;
 using System;
 
-public class ConnectWalletComponentController : IDisposable
+namespace DCL.Guests.HUD.ConnectWallet
 {
-    private const string HELP_URL = "https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/";
-
-    private readonly IConnectWalletComponentView connectWalletView;
-    private readonly IBrowserBridge browserBridge;
-    private readonly IUserProfileBridge userProfileBridge;
-    private readonly DataStore dataStore;
-
-    private BaseVariable<bool> connectWalletModalVisible => dataStore.HUDs.connectWalletModalVisible;
-
-    public ConnectWalletComponentController(
-        IConnectWalletComponentView connectWalletView,
-        IBrowserBridge browserBridge,
-        IUserProfileBridge userProfileBridge,
-        DataStore dataStore)
+    public class ConnectWalletComponentController : IDisposable
     {
-        this.connectWalletView = connectWalletView;
-        this.browserBridge = browserBridge;
-        this.userProfileBridge = userProfileBridge;
-        this.dataStore = dataStore;
+        private const string HELP_URL = "https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/";
 
-        this.connectWalletView.OnCancel += OnCancelWalletConnection;
-        this.connectWalletView.OnConnect += OnConfirmWalletConnection;
-        this.connectWalletView.OnHelp += OnConfirmHelp;
-        connectWalletModalVisible.OnChange += OnChangeVisibility;
-    }
+        private readonly IConnectWalletComponentView connectWalletView;
+        private readonly IBrowserBridge browserBridge;
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly DataStore dataStore;
 
-    public void Dispose()
-    {
-        connectWalletView.OnCancel -= OnCancelWalletConnection;
-        connectWalletView.OnConnect -= OnConfirmWalletConnection;
-        connectWalletView.OnHelp -= OnConfirmHelp;
-        connectWalletModalVisible.OnChange -= OnChangeVisibility;
-    }
+        private BaseVariable<bool> connectWalletModalVisible => dataStore.HUDs.connectWalletModalVisible;
 
-    private void OnCancelWalletConnection()
-    {
-        connectWalletView.Hide();
-        connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
-    }
+        public ConnectWalletComponentController(
+            IConnectWalletComponentView connectWalletView,
+            IBrowserBridge browserBridge,
+            IUserProfileBridge userProfileBridge,
+            DataStore dataStore)
+        {
+            this.connectWalletView = connectWalletView;
+            this.browserBridge = browserBridge;
+            this.userProfileBridge = userProfileBridge;
+            this.dataStore = dataStore;
 
-    private void OnConfirmWalletConnection()
-    {
-        connectWalletView.Hide();
-        connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
-        userProfileBridge.SignUp();
-    }
+            this.connectWalletView.OnCancel += OnCancelWalletConnection;
+            this.connectWalletView.OnConnect += OnConfirmWalletConnection;
+            this.connectWalletView.OnHelp += OnConfirmHelp;
+            connectWalletModalVisible.OnChange += OnChangeVisibility;
+        }
 
-    private void OnConfirmHelp() => browserBridge.OpenUrl(HELP_URL);
+        public void Dispose()
+        {
+            connectWalletView.OnCancel -= OnCancelWalletConnection;
+            connectWalletView.OnConnect -= OnConfirmWalletConnection;
+            connectWalletView.OnHelp -= OnConfirmHelp;
+            connectWalletModalVisible.OnChange -= OnChangeVisibility;
+        }
 
-    private void OnChangeVisibility(bool isVisible, bool previousIsVisible)
-    {
-        if (isVisible)
-            connectWalletView.Show();
-        else
+        private void OnCancelWalletConnection()
+        {
             connectWalletView.Hide();
+            connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
+        }
+
+        private void OnConfirmWalletConnection()
+        {
+            connectWalletView.Hide();
+            connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
+            userProfileBridge.SignUp();
+        }
+
+        private void OnConfirmHelp() => browserBridge.OpenUrl(HELP_URL);
+
+        private void OnChangeVisibility(bool isVisible, bool previousIsVisible)
+        {
+            if (isVisible)
+                connectWalletView.Show();
+            else
+                connectWalletView.Hide();
+        }
     }
 }

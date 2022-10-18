@@ -1,21 +1,23 @@
-using DCL;
 using DCL.Browser;
 
-/// <summary>
-/// Plugin feature that initialize the Connect Wallet Modal feature.
-/// </summary>
-public class ConnectWalletModalPlugin : IPlugin
+namespace DCL.Guests.HUD.ConnectWallet
 {
-    private readonly ConnectWalletComponentController joinChannelComponentController;
-
-    public ConnectWalletModalPlugin()
+    /// <summary>
+    /// Plugin feature that initialize the Connect Wallet Modal feature.
+    /// </summary>
+    public class ConnectWalletModalPlugin : IPlugin
     {
-        joinChannelComponentController = new ConnectWalletComponentController(
-            ConnectWalletComponentView.Create(),
-            new WebInterfaceBrowserBridge(),
-            new UserProfileWebInterfaceBridge(),
-            DataStore.i);
-    }
+        private readonly ConnectWalletComponentController joinChannelComponentController;
 
-    public void Dispose() { joinChannelComponentController.Dispose(); }
+        public ConnectWalletModalPlugin()
+        {
+            joinChannelComponentController = new ConnectWalletComponentController(
+                ConnectWalletComponentView.Create(),
+                new WebInterfaceBrowserBridge(),
+                new UserProfileWebInterfaceBridge(),
+                DataStore.i);
+        }
+
+        public void Dispose() { joinChannelComponentController.Dispose(); }
+    }
 }

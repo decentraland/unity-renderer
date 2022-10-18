@@ -1,3 +1,4 @@
+using DCL.Guests.HUD.ConnectWallet;
 using NUnit.Framework;
 
 public class ConnectWalletComponentViewShould

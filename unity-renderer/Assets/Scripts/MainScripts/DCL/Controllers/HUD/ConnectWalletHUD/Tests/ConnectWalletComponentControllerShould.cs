@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Browser;
+using DCL.Guests.HUD.ConnectWallet;
 using NSubstitute;
 using NUnit.Framework;
 using System;
