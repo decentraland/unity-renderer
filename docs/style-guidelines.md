@@ -157,6 +157,7 @@ Most of this formatting conventions will be known by your IDE thanks to the .Edi
 ### General
 * keep each `public` type (like `class`/`enum`/`struct`/`interface`) in a separate file with the name equal to the type name
 * access modifiers are obligatory to use: 🟢 `private void Awake() { }` 🔴 `void Awake() { }`
+* use `var` only when it is evident. In all other cases specify the variable type explicitly.
 * don't omit comparison to `null`: 🟢 `if (character == null)`/`if (character != null)` 🔴 `if (character)`/`if (!character)`
 * use `nameof` where it is possible 
 * Use `Action`/`Func` delegate in most cases
@@ -216,7 +217,7 @@ else
 * **Expression-bodies**
   * remove brackets in most cases where it is possible (for loops, `if`-`else`, methods, and properties)
     * ⚠️exception: always use brackets for **Unity callbacks** 
-  *  **Properties** - placed on the same line 
+  * **Properties** - placed on the same line 
   * **Methods** - placed on the new line
 ```csharp
 public bool IsInitialized => isInitialized;    // Property - body placed on the same line =>
