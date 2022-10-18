@@ -294,7 +294,7 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get()))
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent() /*&& IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get())*/)
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
@@ -313,25 +313,36 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(currentSceneId))
                 return false;
 
+            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+        }
+
+        private bool IsPlayerInSameSceneAsComponent()
+        {
+            if (scene == null)
+                return false;
+
             for (int i = 0; i < scene.sceneData.parcels.Length; i++)
             {
-                if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords)
+                if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
+                {
+                    Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
                     return true;
+                }
             }
 
             return false;
-            // return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             SetPlayStateDirty();
             Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            // isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
             Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
