@@ -13,7 +13,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
-    internal const float ALPHA_STEPS = 16f;
+    internal const float ALPHA_STEPS = 32f;
     internal const float TARGET_ALPHA_SHOW = 1;
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
@@ -37,6 +37,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private float alpha;
     private float targetAlpha;
+    private bool renderersVisible;
 
 
     internal float Alpha 
@@ -90,7 +91,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private void SetRenderersVisible(bool value)
     {
+        if (renderersVisible == value) 
+            return;
+
         canvasRenderers.ForEach(c => c.SetAlpha(value ? 1f : 0f));
+        renderersVisible = value;
     }
 
     internal void Update(float deltaTime)
@@ -101,23 +106,19 @@ public class PlayerName : MonoBehaviour, IPlayerName
             return;
         }
 
-        float previousAlphaStep = GetNearestAlphaStep(alpha);
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         float currentAlphaStep = GetNearestAlphaStep(alpha);
 
-        if (currentAlphaStep == 0)
+        if (currentAlphaStep <= 1)
         {
-            if (previousAlphaStep != currentAlphaStep)
+            if (renderersVisible)
             {
                 UpdateVisuals(0);
                 SetRenderersVisible(false);
             }
             return;
         }
-        else
-            SetRenderersVisible(true);
-
 
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
@@ -135,6 +136,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
         float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
         float resolvedAlphaStep = GetNearestAlphaStep(resolvedAlpha);
         float canvasAlphaStep = GetNearestAlphaStep(canvasGroup.alpha);
+        SetRenderersVisible(true);
+
         if (resolvedAlphaStep != canvasAlphaStep)
             UpdateVisuals(resolvedAlpha);
     }
