@@ -342,7 +342,7 @@ namespace DCL.Components
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            // isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
             // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
