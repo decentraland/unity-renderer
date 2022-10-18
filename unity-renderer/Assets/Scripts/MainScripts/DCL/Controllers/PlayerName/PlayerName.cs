@@ -106,10 +106,13 @@ public class PlayerName : MonoBehaviour, IPlayerName
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         float currentAlphaStep = GetNearestAlphaStep(alpha);
 
-        if (currentAlphaStep == 0 && previousAlphaStep != currentAlphaStep)
+        if (currentAlphaStep == 0)
         {
-            UpdateVisuals(0);
-            SetRenderersVisible(false);
+            if (previousAlphaStep != currentAlphaStep)
+            {
+                UpdateVisuals(0);
+                SetRenderersVisible(false);
+            }
             return;
         }
         else
