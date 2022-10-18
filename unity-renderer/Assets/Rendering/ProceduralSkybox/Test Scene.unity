@@ -14,15 +14,15 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
-  m_FogColor: {r: 0.990566, g: 0.9639329, b: 0.9017889, a: 1}
+  m_Fog: 0
+  m_FogColor: {r: 0.7618348, g: 0.700631, b: 0.5617377, a: 1}
   m_FogMode: 1
-  m_FogDensity: 0.04
+  m_FogDensity: 1
   m_LinearFogStart: 0
-  m_LinearFogEnd: 3500
-  m_AmbientSkyColor: {r: 0.97107637, g: 0.7903683, b: 0.64533246, a: 1}
-  m_AmbientEquatorColor: {r: 0.97168416, g: 0.8786125, b: 0.7999526, a: 1}
-  m_AmbientGroundColor: {r: 0.30930293, g: 0.3131516, b: 0.32945105, a: 1}
+  m_LinearFogEnd: 1500
+  m_AmbientSkyColor: {r: 0.9551742, g: 0.78901035, b: 0.6759617, a: 1}
+  m_AmbientEquatorColor: {r: 0.9443198, g: 0.8592647, b: 0.78440803, a: 1}
+  m_AmbientGroundColor: {r: 0.2942314, g: 0.3155086, b: 0.35038108, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -1651,8 +1651,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.81161976, g: 0.85738957, b: 0.83572197, a: 1}
-  m_Intensity: 1.237
+  m_Color: {r: 0.848924, g: 0.83968806, b: 0.8000964, a: 1}
+  m_Intensity: 1.2954999
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1709,7 +1709,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1057681564}
-  m_LocalRotation: {x: 0.68719614, y: 0.36810005, z: -0.16661914, w: 0.6037399}
+  m_LocalRotation: {x: 0.65335965, y: 0.27078256, z: -0.27040944, w: 0.6532049}
   m_LocalPosition: {x: 0, y: 5.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []

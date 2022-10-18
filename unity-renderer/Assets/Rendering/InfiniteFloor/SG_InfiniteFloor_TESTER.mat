@@ -54,10 +54,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_5bc7625683a84bb5bd04cab40dbaecd8: -1.2
-    - _FloorColorBend: 1
+    - _FloorColorBend: 2.6
+    - _FogBalancer: 0.2
     - _FogColorBend: 1
-    - _FogFade: 7500
-    - _FogIntensity: 0.2
+    - _FogFade: 6000
+    - _FogIntensity: 0.3
     - _GrassGridFarFade: 5000
     - _GrassGridIntenseFade: 0
     - _GrassGridThickness: 0.05
@@ -67,10 +68,10 @@ Material:
     - _GrassScale: 0.0005
     - _GridOffset: 1
     - _GridThickness: 0.05
-    - _InnerFogHardness: 0.975
-    - _InnerRadiusFog: 0.717
-    - _MaskHardness: 0.857
-    - _MaskOpacity: 0.72
+    - _InnerFogHardness: 0.984
+    - _InnerRadiusFog: 0.707
+    - _MaskHardness: 0.877
+    - _MaskOpacity: 0.738
     - _Metallic: 0
     - _OuterHardnessFog: 1
     - _OuterRadiusFog: 2
@@ -83,17 +84,17 @@ Material:
     - _isAdvancedFogOn: 1
     - _pusleOpacity: 0
     m_Colors:
-    - _ColorDistricts: {r: 0.16078416, g: 0.80784315, b: 0.8862745, a: 1}
-    - _ColorEmpty: {r: 0.38039193, g: 0.6431373, b: 0.38431352, a: 1}
-    - _ColorFog: {r: 0.75471693, g: 0.75471693, b: 0.75471693, a: 0}
+    - _ColorDistricts: {r: 0.16078407, g: 0.80784315, b: 0.8862745, a: 1}
+    - _ColorEmpty: {r: 0.38039184, g: 0.6431373, b: 0.38431343, a: 1}
+    - _ColorFog: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrassOuter: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006024, a: 1}
-    - _ColorParcels: {r: 0.38183975, g: 0.64499986, b: 0.38315266, a: 1}
+    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006015, a: 1}
+    - _ColorParcels: {r: 0.38183966, g: 0.64499986, b: 0.38315257, a: 1}
     - _ColorPlazas: {r: 1, g: 0.5960784, b: 0, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
-    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933588, a: 1}
+    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933579, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}

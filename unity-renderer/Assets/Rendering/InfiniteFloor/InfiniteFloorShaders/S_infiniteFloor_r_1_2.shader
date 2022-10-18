@@ -1,4 +1,5 @@
 Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
+
 {
     Properties
     {
@@ -42,6 +43,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         _FogColorBend("FogColorBend", Float) = 0
         _ColorGrassOuter("ColorGrassOuter", Color) = (1, 0, 0, 0)
         _FloorColorBend("FloorColorBend", Float) = 0
+        _FogBalancer("FogBalancer", Range(0, 1)) = 0.2
         _InnerRadiusFog("InnerRadiusFog", Range(0, 1)) = 0.725
         _OuterRadiusFog("OuterRadiusFog", Range(0, 2)) = 0.83
         _InnerFogHardness("InnerFogHardness", Range(0, 1)) = 1
@@ -332,6 +334,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -1018,6 +1021,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -1182,8 +1233,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
@@ -1511,6 +1567,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -2197,6 +2254,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -2361,8 +2466,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
@@ -2633,6 +2743,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -3731,6 +3842,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -4841,6 +4953,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -5941,6 +6054,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -6627,6 +6741,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -6787,8 +6949,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -7048,6 +7215,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -7734,6 +7902,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -7893,8 +8109,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -8226,6 +8447,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -8912,6 +9134,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -9076,8 +9346,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
@@ -9346,6 +9621,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -10443,6 +10719,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -11552,6 +11829,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -12652,6 +12930,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -13338,6 +13617,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -13498,8 +13825,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -13760,6 +14092,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         float _FogColorBend;
         float4 _ColorGrassOuter;
         float _FloorColorBend;
+        float _FogBalancer;
         float _InnerRadiusFog;
         float _OuterRadiusFog;
         float _InnerFogHardness;
@@ -14446,6 +14779,54 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             OutOpacity_1 = _SphereMask_4ee87f8d9d194072bf25948d74816993_Out_4;
         }
 
+        void Unity_WhiteBalance_float(float3 In, float Temperature, float Tint, out float3 Out)
+        {
+                // Range ~[-1.67;1.67] works best
+                float t1 = Temperature * 10 / 6;
+                float t2 = Tint * 10 / 6;
+
+                // Get the CIE xy chromaticity of the reference white point.
+                // Note: 0.31271 = x value on the D65 white point
+                float x = 0.31271 - t1 * (t1 < 0 ? 0.1 : 0.05);
+                float standardIlluminantY = 2.87 * x - 3 * x * x - 0.27509507;
+                float y = standardIlluminantY + t2 * 0.05;
+
+                // Calculate the coefficients in the LMS space.
+                float3 w1 = float3(0.949237, 1.03542, 1.08728); // D65 white point
+
+                // CIExyToLMS
+                float Y = 1;
+                float X = Y * x / y;
+                float Z = Y * (1 - x - y) / y;
+                float L = 0.7328 * X + 0.4296 * Y - 0.1624 * Z;
+                float M = -0.7036 * X + 1.6975 * Y + 0.0061 * Z;
+                float S = 0.0030 * X + 0.0136 * Y + 0.9834 * Z;
+                float3 w2 = float3(L, M, S);
+
+                float3 balance = float3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
+
+                float3x3 LIN_2_LMS_MAT = {
+                3.90405e-1, 5.49941e-1, 8.92632e-3,
+                7.08416e-2, 9.63172e-1, 1.35775e-3,
+                2.31082e-2, 1.28021e-1, 9.36245e-1
+            };
+
+                float3x3 LMS_2_LIN_MAT = {
+                2.85847e+0, -1.62879e+0, -2.48910e-2,
+                -2.10182e-1,  1.15820e+0,  3.24281e-4,
+                -4.18120e-2, -1.18169e-1,  1.06867e+0
+            };
+
+            float3 lms = mul(LIN_2_LMS_MAT, In);
+            lms *= balance;
+            Out = mul(LMS_2_LIN_MAT, lms);
+        }
+
+        void Unity_Lerp_float3(float3 A, float3 B, float3 T, out float3 Out)
+        {
+            Out = lerp(A, B, T);
+        }
+
         void Unity_Branch_float3(float Predicate, float3 True, float3 False, out float3 Out)
         {
             Out = Predicate ? True : False;
@@ -14605,8 +14986,13 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_2e9206c158094780a23d759780bc7070_Out_0 = _FogBalancer;
+            float3 _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3;
+            Unity_WhiteBalance_float(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, -0.34, _Property_2e9206c158094780a23d759780bc7070_Out_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3);
+            float3 _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3;
+            Unity_Lerp_float3(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _WhiteBalance_37a60eb4eaa9461d95b29e9fa2bc3af5_Out_3, float3(1, 1, 1), _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3);
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
-            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
+            Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_SGInfiniteFloorBoarderLines_fe17cb71e6ec4bdc82b8147302ae9427_OutVector4_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
