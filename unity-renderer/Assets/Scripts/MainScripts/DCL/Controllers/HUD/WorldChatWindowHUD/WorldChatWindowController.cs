@@ -212,6 +212,7 @@ public class WorldChatWindowController : IHUD
         }
         else
         {
+            view.DisableSearchMode();
             view.Hide();
             SetAutomaticChannelsInfoUpdatingActive(false);
         }

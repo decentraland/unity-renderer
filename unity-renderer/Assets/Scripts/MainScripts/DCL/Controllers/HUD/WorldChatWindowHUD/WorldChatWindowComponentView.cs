@@ -254,6 +254,7 @@ namespace DCL.Chat.HUD
 
         searchResultsHeader.SetActive(false);
         searchResultsList.Clear();
+        searchBar.ClearSearch(false);
 
         UpdateHeaders();
     }
