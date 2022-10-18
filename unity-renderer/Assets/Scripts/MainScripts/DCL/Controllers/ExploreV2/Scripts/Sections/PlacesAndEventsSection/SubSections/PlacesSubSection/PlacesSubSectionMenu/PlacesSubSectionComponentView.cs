@@ -123,11 +123,18 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     internal PlaceCardComponentView placeModal;
     internal Pool placeCardsPool;
+    private Canvas placesCanvas;
 
     public Color[] currentFriendColors => friendColors;
 
     public int currentPlacesPerRow => places.currentItemsPerRow;
 
+    public override void Awake()
+    {
+        base.Awake();
+        placesCanvas = places.GetComponent<Canvas>();
+    }
+    
     public override void Start()
     {
         placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
@@ -140,7 +147,10 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         OnReady?.Invoke();
     }
 
-    public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
+    public override void OnEnable()
+    {
+        OnPlacesSubSectionEnable?.Invoke();
+    }
 
     public void ConfigurePools() =>
         ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
@@ -172,14 +182,10 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.RemoveItems();
 
         StartCoroutine(SetPlacesIteratively(places));
-        this.places.SetItemSizeForModel();
     }
     
-    public void AddPlaces(List<PlaceCardComponentModel> places)
-    {
+    public void AddPlaces(List<PlaceCardComponentModel> places) => 
         StartCoroutine(SetPlacesIteratively(places));
-        this.places.SetItemSizeForModel();
-    }
 
     private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
     {
@@ -190,6 +196,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
             yield return null;
         }
+        
+        this.places.SetItemSizeForModel();
+        placeCardsPool.IterativePrewarm(places.Count);
     }
     
     public void SetActive(bool isActive)
@@ -206,7 +215,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetPlacesAsLoading(bool isVisible)
     {
-        places.GetComponent<Canvas>().enabled = !isVisible;
+        placesCanvas.enabled = !isVisible;
 
         placesLoading.SetActive(isVisible);
 

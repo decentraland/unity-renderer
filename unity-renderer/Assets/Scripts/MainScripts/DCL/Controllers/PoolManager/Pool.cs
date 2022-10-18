@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DCL.Helpers;
 using UnityEngine.Assertions;
@@ -35,10 +37,13 @@ namespace DCL
 
         public IPooledObjectInstantiator instantiator;
 
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         private readonly LinkedList<PoolableObject> unusedObjects = new LinkedList<PoolableObject>();
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
-        private int maxPrewarmCount = 0;
+        private readonly int maxPrewarmCount;
+        
         private bool isInitialized;
 
         public float lastGetTime { get; private set; }
@@ -79,7 +84,8 @@ namespace DCL
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-
+                cancellationTokenSource.Cancel();
+                
                 for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();
 
@@ -107,9 +113,23 @@ namespace DCL
 #if UNITY_EDITOR
             RefreshName();
 #endif
-            // TODO: Prewarm if last object extracted
-            
             return po;
+        }
+
+
+        public void IterativePrewarm(int prewarmCount) => 
+            IterativePrewarm(prewarmCount, cancellationTokenSource.Token).Forget();
+        
+        private async UniTask IterativePrewarm(int prewarmCount, CancellationToken cancellationToken)
+        {
+            if (unusedObjects.Count > prewarmCount)
+                return;
+                
+            for (int i = 0; i < prewarmCount; i++)
+            {
+                Instantiate();
+                await UniTask.NextFrame(cancellationToken);
+            }
         }
 
         public PoolableObject Instantiate()
