@@ -199,7 +199,7 @@ namespace DCL.Components
         {
             if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
             {
-                currUpdateIntervalTime += Time.deltaTime;
+                currUpdateIntervalTime += Time.unscaledDeltaTime;
             }
             else if (texturePlayer != null)
             {
@@ -313,12 +313,20 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(currentSceneId))
                 return false;
 
-            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            for (int i = 0; i < scene.sceneData.parcels.Length; i++)
+            {
+                if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords)
+                    return true;
+            }
+
+            return false;
+            // return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             SetPlayStateDirty();
+            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
         }
 
         private void OnSceneIDChanged(string current, string previous) 
