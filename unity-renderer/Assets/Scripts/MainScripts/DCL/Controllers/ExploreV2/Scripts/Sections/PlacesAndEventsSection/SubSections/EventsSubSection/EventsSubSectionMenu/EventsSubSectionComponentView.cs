@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -151,11 +152,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action OnShowMoreUpcomingEventsClicked;
     public event Action OnEventsSubSectionEnable;
 
-    internal EventCardComponentView eventModal;
     internal Pool featuredEventCardsPool;
     internal Pool trendingEventCardsPool;
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
+    
+    internal EventCardComponentView eventModal;
 
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
     
@@ -171,30 +173,48 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool eventCardsPool, GameObject loadingBar, TMP_Text eventsNoDataText)
     {
         SetEventsGroupAsLoading(false, eventsGrid.gameObject, loadingBar);
+        eventsNoDataText.gameObject.SetActive(events.Count == 0);
 
         eventCardsPool.ReleaseAll();
 
         eventsGrid.ExtractItems();
-        eventsGrid.SetItems(
-            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, eventCardsPool,
-                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+        eventsGrid.RemoveItems();
         
-        eventsNoDataText.gameObject.SetActive(events.Count == 0);
+        StartCoroutine(SetEventsIteratively(events, eventsGrid, eventCardsPool));
+    }
+    
+    public void AddUpcomingEvents(List<EventCardComponentModel> events) => 
+        StartCoroutine(SetEventsIteratively(events, upcomingEvents, upcomingEventCardsPool));
+
+    private IEnumerator SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
+    {
+        foreach (EventCardComponentModel eventInfo in events)
+        {
+            eventsGrid.AddItem(
+                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
+                    OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+            yield return null;
+        }
+        
+        eventsGrid.SetItemSizeForModel();
+        pool.IterativePrewarm(events.Count);
     }
     
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
         SetEventsGroupAsLoading(false, featuredEvents.gameObject, featuredEventsLoading);
-        
+        featuredEvents.gameObject.SetActive(events.Count > 0);
+
         featuredEventCardsPool.ReleaseAll();
 
         featuredEvents.ExtractItems();
+
         featuredEvents.SetItems(
             ExploreEventsUtils.InstantiateAndConfigureEventCards(events, featuredEventCardsPool,
                 OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked)
         );
         
-        featuredEvents.gameObject.SetActive(events.Count > 0);
+        featuredEventCardsPool.IterativePrewarm(events.Count);
     }
 
     public void SetAllEventGroupsAsLoading()
@@ -213,16 +233,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         gridGroup.SetActive(!isVisible);
         loadingBar.SetActive(isVisible);
-    }
-
-    public void AddUpcomingEvents(List<EventCardComponentModel> events)
-    {
-        List<BaseComponentView> eventComponentsToAdd =
-            ExploreEventsUtils.InstantiateAndConfigureEventCards(events, upcomingEventCardsPool,
-                OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
-
-        foreach (BaseComponentView eventToAdd in eventComponentsToAdd)
-            upcomingEvents.AddItemWithResize(eventToAdd);
     }
 
     public override void Start()

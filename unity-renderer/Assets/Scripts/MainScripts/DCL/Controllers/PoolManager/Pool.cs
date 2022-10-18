@@ -122,7 +122,7 @@ namespace DCL
         
         private async UniTask IterativePrewarm(int prewarmCount, CancellationToken cancellationToken)
         {
-            if (unusedObjects.Count > prewarmCount)
+            if (unusedObjects.Count >= prewarmCount)
                 return;
                 
             for (int i = 0; i < prewarmCount; i++)
