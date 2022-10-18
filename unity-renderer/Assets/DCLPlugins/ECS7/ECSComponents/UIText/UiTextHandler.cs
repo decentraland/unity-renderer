@@ -11,15 +11,18 @@ namespace DCL.ECSComponents
     {
         private readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+        private readonly int componentId;
 
         internal Label uiElement;
         private AssetPromise_Font fontPromise;
         private int lastFontId = -1;
 
-        public UiTextHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, AssetPromiseKeeper_Font fontPromiseKeeper)
+        public UiTextHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer,
+            AssetPromiseKeeper_Font fontPromiseKeeper, int componentId)
         {
             this.internalUiContainer = internalUiContainer;
             this.fontPromiseKeeper = fontPromiseKeeper;
+            this.componentId = componentId;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -28,6 +31,7 @@ namespace DCL.ECSComponents
 
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
             containerModel.rootElement.Add(uiElement);
+            containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);
         }
@@ -39,6 +43,7 @@ namespace DCL.ECSComponents
             {
                 var containerModel = containerData.model;
                 containerModel.rootElement.Remove(uiElement);
+                containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
             }
             uiElement = null;
@@ -58,7 +63,7 @@ namespace DCL.ECSComponents
                 lastFontId = fontId;
                 var prevPromise = fontPromise;
 
-                fontPromise = new AssetPromise_Font(GetFontName(model.GetFont()));
+                fontPromise = new AssetPromise_Font(model.GetFont().ToFontName());
                 fontPromise.OnSuccessEvent += font =>
                 {
                     uiElement.style.unityFont = font.font.sourceFontFile;
@@ -72,32 +77,31 @@ namespace DCL.ECSComponents
         {
             switch (align)
             {
-                case TextAlignMode.TamCenter:
+                case TextAlignMode.TamTopCenter:
+                    return TextAnchor.UpperCenter;
+                case TextAlignMode.TamTopLeft:
+                    return TextAnchor.UpperLeft;
+                case TextAlignMode.TamTopRight:
+                    return TextAnchor.UpperRight;
+                
+                case TextAlignMode.TamBottomCenter:
+                    return TextAnchor.LowerCenter;
+                case TextAlignMode.TamBottomLeft:
+                    return TextAnchor.LowerLeft;
+                case TextAlignMode.TamBottomRight:
+                    return TextAnchor.LowerRight;
+                
+                case TextAlignMode.TamMiddleCenter:
                     return TextAnchor.MiddleCenter;
-                case TextAlignMode.TamLeft:
+                case TextAlignMode.TamMiddleLeft:
                     return TextAnchor.MiddleLeft;
-                case TextAlignMode.TamRight:
+                case TextAlignMode.TamMiddleRight:
                     return TextAnchor.MiddleRight;
+                
                 default:
                     return TextAnchor.MiddleCenter;
             }
         }
-
-        private static string GetFontName(Font font)
-        {
-            // TODO: add support for the rest of the fonts and discuss old font deprecation
-            const string SANS_SERIF = "SansSerif";
-            const string LIBERATION_SANS = "builtin:LiberationSans SDF";
-
-            switch (font)
-            {
-                case Font.FLiberationSans:
-                    return LIBERATION_SANS;
-                case Font.FSansSerif:
-                    return SANS_SERIF;
-                default:
-                    return SANS_SERIF;
-            }
-        }
+        
     }
 }

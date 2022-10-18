@@ -16,7 +16,7 @@ namespace DCL.ECSComponents
             AssetPromiseKeeper_Font fontPromiseKeeper = AssetPromiseKeeper_Font.i;
 
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiText>,
-                () => new UiTextHandler(internalUiContainer, fontPromiseKeeper));
+                () => new UiTextHandler(internalUiContainer, fontPromiseKeeper, componentId));
 
             componentWriter.AddOrReplaceComponentSerializer<PBUiText>(componentId, ProtoSerialization.Serialize);
 

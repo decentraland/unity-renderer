@@ -67,19 +67,18 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent.text = model.Text;
 
         var color = model.GetTextColor().ToUnityColor();
-        color.a = model.GetOpacity();
         textComponent.color = color;
 
         textComponent.fontSize = model.GetFontSize();
         textComponent.enableAutoSizing = model.GetFontAutoSize();
         textComponent.margin = model.GetPadding();
-        textComponent.alignment = GetAlignment(model.GetVTextAlign(), model.GetHTextAlign());
+        textComponent.alignment = GetAlignment(model.GetTextAlign());
         textComponent.lineSpacing = model.GetLineSpacing();
         textComponent.maxVisibleLines = model.GetLineCount() != 0 ? Mathf.Max(model.GetLineCount(), 1) : int.MaxValue;
         textComponent.textWrappingMode = model.GetTextWrapping() && !model.GetFontAutoSize() ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
 
         var prevPromise = fontPromise;
-        fontPromise = new AssetPromise_Font(model.GetFont());
+        fontPromise = new AssetPromise_Font(model.GetFont().ToFontName());
         fontPromise.OnSuccessEvent += assetFont =>
         {
             textComponent.font = assetFont.font;
@@ -134,50 +133,30 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         }
     }
 
-    private static TextAlignmentOptions GetAlignment(string vTextAlign, string hTextAlign)
+    private static TextAlignmentOptions GetAlignment(TextAlignMode value)
     {
-        const string BOTTOM = "bottom";
-        const string TOP = "top";
-        const string LEFT = "left";
-        const string RIGHT = "right";
-
-        vTextAlign = vTextAlign.ToLower();
-        hTextAlign = hTextAlign.ToLower();
-
-        switch (vTextAlign)
+        switch (value)
         {
-            case TOP:
-                switch (hTextAlign)
-                {
-                    case LEFT:
-                        return TextAlignmentOptions.TopLeft;
-                    case RIGHT:
-                        return TextAlignmentOptions.TopRight;
-                    default:
-                        return TextAlignmentOptions.Top;
-                }
-
-            case BOTTOM:
-                switch (hTextAlign)
-                {
-                    case LEFT:
-                        return TextAlignmentOptions.BottomLeft;
-                    case RIGHT:
-                        return TextAlignmentOptions.BottomRight;
-                    default:
-                        return TextAlignmentOptions.Bottom;
-                }
-
-            default: // center
-                switch (hTextAlign)
-                {
-                    case LEFT:
-                        return TextAlignmentOptions.Left;
-                    case RIGHT:
-                        return TextAlignmentOptions.Right;
-                    default:
-                        return TextAlignmentOptions.Center;
-                }
+            case TextAlignMode.TamTopLeft:
+                return TextAlignmentOptions.TopLeft;
+            case TextAlignMode.TamTopRight:
+                return TextAlignmentOptions.TopRight;
+            case TextAlignMode.TamTopCenter:
+                return TextAlignmentOptions.Top;
+            case TextAlignMode.TamBottomLeft:
+                return TextAlignmentOptions.BottomLeft;
+            case TextAlignMode.TamBottomRight:
+                return TextAlignmentOptions.BottomRight;
+            case TextAlignMode.TamBottomCenter:
+                return TextAlignmentOptions.Bottom;
+            case TextAlignMode.TamMiddleLeft:
+                return TextAlignmentOptions.Left;
+            case TextAlignMode.TamMiddleCenter:
+                return TextAlignmentOptions.Center;
+            case TextAlignMode.TamMiddleRight:
+                return TextAlignmentOptions.Right;
+            default: 
+                return TextAlignmentOptions.Center;
         }
     }
 }

@@ -119,6 +119,7 @@ public class PlayerNameShould : MonoBehaviour
     [TestCase("fuckfaceboob", "****face****")]
     public void ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
     {
+        DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
         var defaultName = playerName.nameText.text;
         playerName.SetName(originalName);
         Assert.IsTrue(displayedName.Equals(playerName.nameText.text) || defaultName.Equals(playerName.nameText.text));

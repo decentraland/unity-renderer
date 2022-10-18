@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
         public UITransformRegister(int componentId, ECSComponentsFactory factory,
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
-            var handler = new UITransformHandler(internalUiContainer);
+            var handler = new UITransformHandler(internalUiContainer, componentId);
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiTransform>, () => handler);
             componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, ProtoSerialization.Serialize);
 

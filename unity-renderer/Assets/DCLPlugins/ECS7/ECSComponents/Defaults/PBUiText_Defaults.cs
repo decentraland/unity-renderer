@@ -9,7 +9,7 @@ namespace DCL.ECSComponents
 
         public static TextAlignMode GetTextAlign(this PBUiText self)
         {
-            return self.HasTextAlign ? self.TextAlign : TextAlignMode.TamCenter;
+            return self.HasTextAlign ? self.TextAlign : TextAlignMode.TamMiddleCenter;
         }
 
         public static Font GetFont(this PBUiText self)

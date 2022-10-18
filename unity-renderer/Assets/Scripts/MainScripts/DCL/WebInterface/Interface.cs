@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DCL.CameraTool;
-using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -32,7 +31,7 @@ namespace DCL.Interface
 
             /** Character rotation */
             public Quaternion rotation;
-            
+
             /** Camera rotation */
             public Quaternion cameraRotation;
 
@@ -64,13 +63,14 @@ namespace DCL.Interface
         [System.Serializable]
         public class SceneReady : ControlEvent<SceneReady.Payload>
         {
+
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }) { }
+
             [System.Serializable]
             public class Payload
             {
                 public string sceneId;
             }
-
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
@@ -119,7 +119,7 @@ namespace DCL.Interface
             RIGHT = 6,
             LEFT = 7,
             JUMP = 8,
-            WALK = 9, 
+            WALK = 9,
             ACTION_3 = 10,
             ACTION_4 = 11,
             ACTION_5 = 12,
@@ -134,7 +134,7 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
-        
+
         [System.Serializable]
         public class Web3UseResponsePayload
         {
@@ -210,6 +210,12 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnPointerEventPayload
         {
+
+            public ACTION_BUTTON buttonId;
+            public Vector3 origin;
+            public Vector3 direction;
+            public Hit hit;
+
             [System.Serializable]
             public class Hit
             {
@@ -221,11 +227,6 @@ namespace DCL.Interface
                 public string meshName;
                 public string entityId;
             }
-
-            public ACTION_BUTTON buttonId;
-            public Vector3 origin;
-            public Vector3 direction;
-            public Hit hit;
         }
 
         [System.Serializable]
@@ -256,14 +257,15 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnTextInputChangeTextEventPayload
         {
+
+            public Payload value = new Payload();
+
             [System.Serializable]
             public class Payload
             {
                 public string value;
                 public bool isSubmit;
             }
-
-            public Payload value = new Payload();
         }
 
         [System.Serializable]
@@ -320,8 +322,8 @@ namespace DCL.Interface
 
         public class OnSendScreenshot
         {
-            public string id;
             public string encodedTexture;
+            public string id;
         };
 
         [System.Serializable]
@@ -410,7 +412,7 @@ namespace DCL.Interface
         {
             public string userId;
         }
-        
+
         [Serializable]
         private class SendReportPlayerPayload
         {
@@ -465,11 +467,11 @@ namespace DCL.Interface
             public int processedMessages;
             public int playerCount;
             public int loadRadius;
-            public Dictionary<string, long> sceneScores;
             public object drawCalls; //int *
             public object memoryReserved; //long, in total bytes *
             public object memoryUsage; //long, in total bytes *
             public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
+            public Dictionary<string, long> sceneScores;
 
             //* is NULL if SendProfilerMetrics is false
         }
@@ -483,7 +485,7 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
-            
+
             // TODO: remove useBinaryTransform after ECS7 is fully in prod
             public bool useBinaryTransform = true;
         }
@@ -558,7 +560,7 @@ namespace DCL.Interface
             public float voiceChatVolume;
             public int voiceChatAllowCategory;
         }
-        
+
         [Serializable]
         public class UserRealmPayload
         {
@@ -583,6 +585,10 @@ namespace DCL.Interface
         [System.Serializable]
         public class AnalyticsPayload
         {
+
+            public string name;
+            public Property[] properties;
+
             [System.Serializable]
             public class Property
             {
@@ -595,9 +601,6 @@ namespace DCL.Interface
                     this.value = value;
                 }
             }
-
-            public string name;
-            public Property[] properties;
         }
 
         [System.Serializable]
@@ -753,14 +756,20 @@ namespace DCL.Interface
             public int limit;
             public string fromMessageId;
         }
-        
+
         [Serializable]
         public class FriendshipUpdateStatusMessage
         {
             public string userId;
             public FriendshipAction action;
         }
-        
+
+        [Serializable]
+        public class SetInputAudioDevicePayload
+        {
+            public string deviceId;
+        }
+
         public enum FriendshipAction
         {
             NONE,
@@ -779,7 +788,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-        
+
         [Serializable]
         private class GetFriendRequestsPayload
         {
@@ -927,7 +936,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-        
+
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages
@@ -939,7 +948,7 @@ namespace DCL.Interface
             string messageJson = JsonUtility.ToJson(message);
             SendJson(type, messageJson);
         }
-        
+
         public static void SendJson(string type, string json)
         {
             if (VERBOSE)
@@ -1045,7 +1054,7 @@ namespace DCL.Interface
                 SendAllScenesEvent("cameraModeChanged", cameraModePayload);
             }
         }
-        
+
         public static void Web3UseResponse(string id, bool result)
         {
             web3UseResponsePayload.id = id;
@@ -1135,7 +1144,7 @@ namespace DCL.Interface
                 entityId, meshName, ray, point, normal, distance,
                 isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
-            
+
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
             SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
@@ -1402,10 +1411,7 @@ namespace DCL.Interface
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
-        public static void SendPerformanceReport(string performanceReportPayload)
-        {
-            SendJson("PerformanceReport", performanceReportPayload);
-        }
+        public static void SendPerformanceReport(string performanceReportPayload) { SendJson("PerformanceReport", performanceReportPayload); }
 
         public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
@@ -1543,10 +1549,23 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void GoToCrowd() { SendMessage("GoToCrowd"); }
+        public static void GoToCrowd()
+        {
+            SendMessage("GoToCrowd");
+        }
 
-        public static void GoToMagic() { SendMessage("GoToMagic"); }
+        public static void GoToMagic()
+        {
+            SendMessage("GoToMagic");
+        }
 
+        public static void LoadingHUDReadyForTeleport(int x, int y)
+        {
+            gotoEvent.x = x;
+            gotoEvent.y = y;
+            SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
+        }
+        
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
@@ -1614,7 +1633,7 @@ namespace DCL.Interface
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
         }
-        
+
         public static void RequestThirdPartyWearables(
             string ownedByUser,
             string thirdPartyCollectionId,
@@ -1685,10 +1704,7 @@ namespace DCL.Interface
             SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
 
-        public static void RequestHomeCoordinates()
-        {
-            SendMessage("RequestHomeCoordinates");
-        }
+        public static void RequestHomeCoordinates() { SendMessage("RequestHomeCoordinates"); }
 
         public static void RequestUserProfile(string userId)
         {
@@ -1754,14 +1770,14 @@ namespace DCL.Interface
             avatarOnClickPayload.ray.distance = distance;
 
             SendSceneEvent(sceneId, "playerClicked", avatarOnClickPayload);
-        }        
-        
+        }
+
         public static void ReportOnPointerHoverEnterEvent(string sceneId, string uuid)
         {
             onPointerHoverEnterEvent.uuid = uuid;
             SendSceneEvent(sceneId, "uuidEvent", onPointerHoverEnterEvent);
         }
- 
+
         public static void ReportOnPointerHoverExitEvent(string sceneId, string uuid)
         {
             onPointerHoverExitEvent.uuid = uuid;
@@ -1805,10 +1821,7 @@ namespace DCL.Interface
             SendMessage("MarkChannelMessagesAsSeen", markChannelMessagesAsSeenPayload);
         }
 
-        public static void GetUnseenMessagesByUser()
-        {
-            SendMessage("GetUnseenMessagesByUser");
-        }
+        public static void GetUnseenMessagesByUser() { SendMessage("GetUnseenMessagesByUser"); }
 
         public static void GetUnseenMessagesByChannel()
         {
@@ -1922,6 +1935,21 @@ namespace DCL.Interface
             {
                 channelId = channelId,
                 muted = muted
+            });
+        }
+
+        public static void UpdateMemoryUsage()
+        {
+            SendMessage("UpdateMemoryUsage");
+        }
+        
+        public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
+
+        public static void SetInputAudioDevice(string inputDeviceId)
+        {
+            SendMessage(nameof(SetInputAudioDevice), new SetInputAudioDevicePayload()
+            {
+                deviceId = inputDeviceId
             });
         }
     }
