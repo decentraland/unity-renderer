@@ -63,7 +63,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.featuredEventsLoading.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetFeaturedEventsAsLoading(isVisible);
+        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.featuredEvents.gameObject, eventsSubSectionComponent.featuredEventsLoading);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.featuredEvents.gameObject.activeSelf);
@@ -111,7 +111,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.trendingEventsLoading.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetTrendingEventsAsLoading(isVisible);
+        // eventsSubSectionComponent.SetTrendingEventsAsLoading(isVisible);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.trendingEvents.gameObject.activeSelf);
@@ -163,7 +163,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.upcomingEventsLoading.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetUpcomingEventsAsLoading(isVisible);
+        // eventsSubSectionComponent.SetUpcomingEventsAsLoading(isVisible);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.upcomingEvents.gameObject.activeSelf);
@@ -199,7 +199,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.goingEventsLoading.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetGoingEventsAsLoading(isVisible);
+        // eventsSubSectionComponent.SetGoingEventsAsLoading(isVisible);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.goingEvents.gameObject.activeSelf);

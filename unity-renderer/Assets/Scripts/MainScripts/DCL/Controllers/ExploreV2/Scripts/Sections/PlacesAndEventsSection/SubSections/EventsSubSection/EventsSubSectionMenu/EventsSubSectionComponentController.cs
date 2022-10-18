@@ -116,11 +116,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         
-        view.SetFeaturedEventsAsLoading(true);
-        view.SetTrendingEventsAsLoading(true);
-        view.SetUpcomingEventsAsLoading(true);
-        view.SetGoingEventsAsLoading(true);
-        
+        view.SetAllEventGroupsAsLoading();
         view.SetShowMoreUpcomingEventsButtonActive(false);
 
         reloadEvents = false;
