@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 
 /// <summary>
 /// Plugin feature that initialize the Connect Wallet Modal feature.
@@ -11,6 +12,8 @@ public class ConnectWalletModalPlugin : IPlugin
     {
         joinChannelComponentController = new ConnectWalletComponentController(
             ConnectWalletComponentView.Create(),
+            new WebInterfaceBrowserBridge(),
+            new UserProfileWebInterfaceBridge(),
             DataStore.i);
     }
 

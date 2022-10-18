@@ -1,5 +1,5 @@
 using DCL;
-using DCL.Interface;
+using DCL.Browser;
 using System;
 
 public class ConnectWalletComponentController : IDisposable
@@ -7,13 +7,21 @@ public class ConnectWalletComponentController : IDisposable
     private const string HELP_URL = "https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/";
 
     private readonly IConnectWalletComponentView connectWalletView;
+    private readonly IBrowserBridge browserBridge;
+    private readonly IUserProfileBridge userProfileBridge;
     private readonly DataStore dataStore;
 
     private BaseVariable<bool> connectWalletModalVisible => dataStore.HUDs.connectWalletModalVisible;
 
-    public ConnectWalletComponentController(IConnectWalletComponentView connectWalletView, DataStore dataStore)
+    public ConnectWalletComponentController(
+        IConnectWalletComponentView connectWalletView,
+        IBrowserBridge browserBridge,
+        IUserProfileBridge userProfileBridge,
+        DataStore dataStore)
     {
         this.connectWalletView = connectWalletView;
+        this.browserBridge = browserBridge;
+        this.userProfileBridge = userProfileBridge;
         this.dataStore = dataStore;
 
         this.connectWalletView.OnCancel += OnCancelWalletConnection;
@@ -40,10 +48,10 @@ public class ConnectWalletComponentController : IDisposable
     {
         connectWalletView.Hide();
         connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
-        WebInterface.RedirectToSignUp();
+        userProfileBridge.SignUp();
     }
 
-    private void OnConfirmHelp() => WebInterface.OpenURL(HELP_URL);
+    private void OnConfirmHelp() => browserBridge.OpenUrl(HELP_URL);
 
     private void OnChangeVisibility(bool isVisible, bool previousIsVisible)
     {
