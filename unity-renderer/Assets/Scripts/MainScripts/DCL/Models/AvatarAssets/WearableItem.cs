@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Emotes;
+using Newtonsoft.Json;
 using UnityEngine;
 
 [Serializable]
@@ -287,6 +288,18 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public string ToDetailedString()
+    {
+        var thirdPartyCollectionId = ThirdPartyCollectionId;
+        var jsonString = JsonConvert.SerializeObject(this);
+        return jsonString;
+    }
+
+    public string ToUrlsString()
+    {
+        return $"{{ id={id} baseUrl={baseUrl} baseUrlBundles={baseUrlBundles} }}";
+    }
 
     public override string ToString() { return id; }
 }
