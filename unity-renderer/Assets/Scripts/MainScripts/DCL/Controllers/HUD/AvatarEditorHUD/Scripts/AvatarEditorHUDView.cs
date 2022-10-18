@@ -376,7 +376,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
         Func<WearableItem, bool> replaceOtherWearablesToastStrategy,
-        Func<WearableItem, bool> incompatibleWearableToastStrategy)
+        Func<WearableItem, bool> incompatibleWearableToastStrategy, ref string issueStr)
     {
         if (wearableItem == null)
             return;
@@ -396,7 +396,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
             hideOtherWearablesToastStrategy, 
             replaceOtherWearablesToastStrategy,
             incompatibleWearableToastStrategy);
-
+ 
         if (wearableItem.IsCollectible() || wearableItem.IsFromThirdPartyCollection)
         {
             collectiblesItemSelector.AddWearable(
@@ -406,6 +406,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                 hideOtherWearablesToastStrategy, 
                 replaceOtherWearablesToastStrategy,
                 incompatibleWearableToastStrategy);
+        }
+        else
+        {
+            issueStr += " adding skipped because is collectible = " + wearableItem.IsCollectible()
+                        + " is third party = " +  wearableItem.IsFromThirdPartyCollection;
         }
     }
 

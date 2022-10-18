@@ -168,7 +168,8 @@ public class AvatarEditorHUDController : IHUD
     
     private void OnAdditionalWearableAdded(string id, WearableItem item)
     {
-        AddWearable(id, item); 
+        string _ = "";
+        AddWearable(id, item, ref  _); 
         view.RefreshSelectorsSize();
     }
 
@@ -193,14 +194,37 @@ public class AvatarEditorHUDController : IHUD
         loadingWearables = true;
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
-                         {
+                        {           
+                             //TODO ANTON remove this later
+                             var ownedWearablesString = "";
+                             foreach (var wearable in ownedWearables)
+                             {
+                                 ownedWearablesString += wearable.ToDetailedString() + " ";
+                             }
+                             Debug.LogError("SELECTIVE LOADING BUG: Owned wearables loaded: " + ownedWearablesString);
+
+                             var thirdPartyWearablesLoadedStr = "";
+                             foreach (var wearable in thirdPartyWearablesLoaded)
+                             {
+                                 thirdPartyWearablesLoadedStr += wearable + " ";
+                             }
+                             Debug.LogError("SELECTIVE LOADING BUG: Third party wearables loaded: " + thirdPartyWearablesLoadedStr);
+                             
                              ownedWearablesAlreadyLoaded = true;
                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly 
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id)
+                                 .Concat(thirdPartyWearablesLoaded).ToArray());
+                            
                              LoadUserProfile(userProfile, true);
                              if (userProfile != null && userProfile.avatar != null)
                              {
                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
+                                 var emotesLoadedAsWearablesStr = "";
+                                 foreach (var wearable in emotesLoadedAsWearables)
+                                 {
+                                     emotesLoadedAsWearablesStr += wearable.ToDetailedString() + " ";
+                                 }
+                                 Debug.LogError("SELECTIVE LOADING BUG: emotesLoadedAsWearables: " + emotesLoadedAsWearablesStr);
                              }
                              loadingWearables = false;
                          })
@@ -209,7 +233,7 @@ public class AvatarEditorHUDController : IHUD
                              ownedWearablesRemainingRequests--;
                              if (ownedWearablesRemainingRequests > 0)
                              {
-                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 Debug.LogError("Retrying owned wereables loading...");
                                  LoadOwnedWereables(userProfile);
                              }
                              else
@@ -355,6 +379,10 @@ public class AvatarEditorHUDController : IHUD
     {
         bool avatarEditorNotVisible = renderingEnabled && !view.isOpen;
         bool isPlaying = !Application.isBatchMode;
+        
+        Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: isPlaying={isPlaying} renderingEnabled={renderingEnabled} " +
+                       $"view.isOpen={view.isOpen} avatarEditorNotVisible={avatarEditorNotVisible}" +
+                       $"userProfileIsNull={userProfile == null}");
 
         if (!forceLoading)
         {
@@ -364,6 +392,10 @@ public class AvatarEditorHUDController : IHUD
 
         if (userProfile == null)
             return;
+        
+        Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: " +
+                       $"userProfileAvatarIsNull={userProfile.avatar == null}" +
+                       $" bodyShapeNullOrEmpty={string.IsNullOrEmpty(userProfile.avatar?.bodyShape)}");
 
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
             return;
@@ -374,15 +406,21 @@ public class AvatarEditorHUDController : IHUD
 
         if (bodyShape == null)
         {
+            Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: " +
+                           $"bodyShape {userProfile.avatar.bodyShape} not found in the catalog");
             return;
         }
 
         view.SetIsWeb3(userProfile.hasConnectedWeb3);
 
         ProcessCatalog(this.catalog);
-        
+
         if (avatarIsDirty)
+        {
+            Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: return because avatar dirty");
+            
             return;
+        }
         
         EquipBodyShape(bodyShape);
         EquipSkinColor(userProfile.avatar.skinColor);
@@ -396,6 +434,8 @@ public class AvatarEditorHUDController : IHUD
 
         if (isPlayerRendererLoaded)
         {
+            var wearablesEquippedStr = "";
+            
             for (var i = 0; i < wearablesCount; i++)
             {
                 CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable);
@@ -409,7 +449,11 @@ public class AvatarEditorHUDController : IHUD
                     EquipEmote(wearable);
                 else
                     EquipWearable(wearable);
+
+                wearablesEquippedStr += userProfile.avatar.wearables[i] + " ";
             }
+            
+            Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: Equipping wearables: " + wearablesEquippedStr);
         }
 
         EnsureWearablesCategoriesNotEmpty();
@@ -635,31 +679,59 @@ public class AvatarEditorHUDController : IHUD
         view.RemoveAllWearables();
         bool hasSkin = false;
         bool hasCollectible = false;
+        
+        Debug.LogError("SELECTIVE LOADING BUG: ProcessingCatalog: number of items = " + catalog.Count());
+
+        var wearableProcessingResult = "";
+        
         using (var iterator = catalog.Get().GetEnumerator())
         {
             while (iterator.MoveNext())
             {
-                if (iterator.Current.Value.IsEmote())
-                    continue;
+                var wearableItem = iterator.Current.Value;
+                wearableProcessingResult += "For wearable " + wearableItem.ToDetailedString() + "=> ";
 
-                if (iterator.Current.Value.IsFromThirdPartyCollection 
-                    && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
+                if (wearableItem.IsEmote())
+                {
+                    wearableProcessingResult += " continue for emote ";
                     continue;
+                }
+
+                if (wearableItem.IsFromThirdPartyCollection
+                    && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
+                {
+                    wearableProcessingResult += " continue for third party " + wearableItem.ThirdPartyCollectionId;
+                    continue;
+                }
                         
-                AddWearable(iterator.Current.Key, iterator.Current.Value);
+                AddWearable(iterator.Current.Key, iterator.Current.Value, ref wearableProcessingResult);
                 hasSkin = iterator.Current.Value.IsSkin() || hasSkin;
                 hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
+
+                if (wearableProcessingResult.EndsWith("=> "))
+                    wearableProcessingResult += "all okay ";
             }
         }
+
+        var thirdPartyCollectionsActiveStr = "";
+        foreach (var str in thirdPartyCollectionsActive)
+            thirdPartyCollectionsActiveStr += str + " ";
+        
+        Debug.LogError("SELECTIVE LOADING BUG: Processing wearable from catalog: " + wearableProcessingResult + 
+                       " third party collections: " + thirdPartyCollectionsActiveStr);
+        
         view.ShowSkinPopulatedList(hasSkin);
         view.ShowCollectiblesPopulatedList(hasCollectible);
         view.RefreshSelectorsSize();
     }
 
-    private void AddWearable(string id, WearableItem wearable)
+    private void AddWearable( string id, WearableItem wearable, ref string wearableProcessingResult)
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
+        {
+            wearableProcessingResult += "return because not base wearable and items not found ";
             return;
+        }
 
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
             wearablesByCategory.Add(wearable.data.category, new List<WearableItem>());
@@ -668,7 +740,7 @@ public class AvatarEditorHUDController : IHUD
         view.AddWearable(wearable, userProfile.GetItemAmount(id),
             ShouldShowHideOtherWearablesToast,
             ShouldShowReplaceOtherWearablesToast,
-            ShouldShowIncompatibleWearableToast);
+            ShouldShowIncompatibleWearableToast, ref wearableProcessingResult);
     }
 
     private void RemoveWearable(string id, WearableItem wearable)
@@ -856,7 +928,8 @@ public class AvatarEditorHUDController : IHUD
             view.CleanUp();
 
         this.userProfile.OnUpdate -= LoadUserProfile;
-        this.catalog.OnAdded -= AddWearable;
+        string _ = "";
+        this.catalog.OnAdded -= (id, wearable) => AddWearable(id, wearable, ref _);
         this.catalog.OnRemoved -= RemoveWearable;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
     }
