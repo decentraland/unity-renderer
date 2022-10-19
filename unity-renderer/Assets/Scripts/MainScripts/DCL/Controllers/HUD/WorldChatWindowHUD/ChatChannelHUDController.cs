@@ -74,11 +74,6 @@ namespace DCL.Chat.HUD
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
 
-            chatController.OnAddMessage -= HandleMessageReceived;
-            chatController.OnAddMessage += HandleMessageReceived;
-            chatController.OnChannelLeft += HandleChannelLeft;
-            chatController.OnChannelUpdated += HandleChannelUpdated;
-
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
 
@@ -109,8 +104,15 @@ namespace DCL.Chat.HUD
             if (View.IsActive == visible) return;
 
             SetVisiblePanelList(visible);
+            
             if (visible)
             {
+                ClearChatControllerListeners();
+                
+                chatController.OnAddMessage += HandleMessageReceived;
+                chatController.OnChannelLeft += HandleChannelLeft;
+                chatController.OnChannelUpdated += HandleChannelUpdated;
+                
                 if (channelMembersHUDController.IsVisible)
                     channelMembersHUDController.SetAutomaticReloadingActive(true);
 
@@ -137,6 +139,8 @@ namespace DCL.Chat.HUD
             }
             else
             {
+                ClearChatControllerListeners();
+
                 channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
                 OnClosed?.Invoke();
@@ -144,20 +148,9 @@ namespace DCL.Chat.HUD
             }
         }
 
-        public void Focus()
-        {
-            chatHudController.FocusInputField();
-            MarkChannelMessagesAsRead();
-        }
-
         public void Dispose()
         {
-            if (chatController != null)
-            {
-                chatController.OnAddMessage -= HandleMessageReceived;
-                chatController.OnChannelLeft -= HandleChannelLeft;
-                chatController.OnChannelUpdated -= HandleChannelUpdated;
-            }
+            ClearChatControllerListeners();
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
@@ -360,6 +353,20 @@ namespace DCL.Chat.HUD
         {
             return new PublicChatModel(channelId, channel.Name, channel.Description,
                 channel.Joined, channel.MemberCount, channel.Muted);
+        }
+        
+        private void ClearChatControllerListeners()
+        {
+            if (chatController == null) return;
+            chatController.OnAddMessage -= HandleMessageReceived;
+            chatController.OnChannelLeft -= HandleChannelLeft;
+            chatController.OnChannelUpdated -= HandleChannelUpdated;
+        }
+
+        private void Focus()
+        {
+            chatHudController.FocusInputField();
+            MarkChannelMessagesAsRead();
         }
     }
 }

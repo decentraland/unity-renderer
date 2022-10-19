@@ -80,6 +80,7 @@ namespace DCL.Chat.HUD
         {
             var backCalled = false;
             controller.OnPressBack += () => backCalled = true;
+            controller.SetVisibility(true);
 
             chatController.OnChannelLeft += Raise.Event<Action<string>>(CHANNEL_ID);
 
