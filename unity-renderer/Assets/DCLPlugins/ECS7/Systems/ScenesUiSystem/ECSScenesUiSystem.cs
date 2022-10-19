@@ -61,6 +61,9 @@ namespace ECSSystems.ScenesUiSystem
             {
                 ClearCurrentSceneUI(state.uiDocument);
                 state.isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
+            }
+            if (sceneChanged && state.currentScene != null && currentSceneId != state.currentScene.sceneData.id)
+            {
                 state.currentScene = null;
             }
 
