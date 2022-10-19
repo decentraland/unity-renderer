@@ -177,7 +177,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         {
             wearableGridPairs[i].selector.OnItemClicked += OnWearablesSelectorsClicked;
         }
-        collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked; ;
+        collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked; 
         
         ConfigureSectionSelector();
     }
