@@ -25,7 +25,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
-        private List<string> notificationEntries;
+        private HashSet<string> notificationEntries;
 
         public ChatNotificationController(DataStore dataStore,
             IMainChatNotificationsComponentView mainChatNotificationView,
@@ -37,7 +37,7 @@ namespace DCL.Chat.Notifications
             this.userProfileBridge = userProfileBridge;
             this.mainChatNotificationView = mainChatNotificationView;
             this.topNotificationView = topNotificationView;
-            notificationEntries = new List<string>();
+            notificationEntries = new HashSet<string>();
             mainChatNotificationView.OnResetFade += ResetFadeOut;
             topNotificationView.OnResetFade += ResetFadeOut;
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
