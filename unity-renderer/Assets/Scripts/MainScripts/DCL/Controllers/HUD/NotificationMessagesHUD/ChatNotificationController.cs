@@ -25,6 +25,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
+        private HashSet<string> notificationEntries;
 
         public ChatNotificationController(DataStore dataStore,
             IMainChatNotificationsComponentView mainChatNotificationView,
@@ -36,6 +37,7 @@ namespace DCL.Chat.Notifications
             this.userProfileBridge = userProfileBridge;
             this.mainChatNotificationView = mainChatNotificationView;
             this.topNotificationView = topNotificationView;
+            notificationEntries = new HashSet<string>();
             mainChatNotificationView.OnResetFade += ResetFadeOut;
             topNotificationView.OnResetFade += ResetFadeOut;
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
@@ -68,7 +70,13 @@ namespace DCL.Chat.Notifications
                     ? "nearby"
                     : message.recipient);
                 if (channel?.Muted ?? false) return;
-                
+
+                //TODO: entries may have an inconsistent state. We should update the entry with new data
+                if(notificationEntries.Contains(message.messageId))
+                    return;
+                else
+                    notificationEntries.Add(message.messageId);
+
                 var peerId = ExtractPeerId(message);
                 var peerProfile = userProfileBridge.Get(peerId);
                 var peerName = peerProfile?.userName ?? peerId;
@@ -80,11 +88,10 @@ namespace DCL.Chat.Notifications
                         var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
                             message.sender, message.body, message.timestamp, peerName, peerProfilePicture);
 
-                        mainChatNotificationView.AddNewChatNotification(privateModel);
-
-                        if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                        if(message.sender != openedChat.Get())
                         {
-                            if(message.sender != openedChat.Get())
+                            mainChatNotificationView.AddNewChatNotification(privateModel);
+                            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                                 topNotificationView.AddNewChatNotification(privateModel);
                         }
                         break;
@@ -92,11 +99,10 @@ namespace DCL.Chat.Notifications
                         var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
                             message.body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp, peerName);
 
-                        mainChatNotificationView.AddNewChatNotification(publicModel);
-
-                        if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                        if(channel?.ChannelId != openedChat.Get())
                         {
-                            if(channel?.ChannelId != openedChat.Get())
+                            mainChatNotificationView.AddNewChatNotification(publicModel);
+                            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                                 topNotificationView.AddNewChatNotification(publicModel);
                         }
                         break;
