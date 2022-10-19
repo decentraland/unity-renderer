@@ -294,6 +294,12 @@
       "dependencies": {},
       "hash": "90ffa399087521817ab03ce9213ec33b38e4492f"
     },
+    "com.unity.modules.androidjni": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.modules.animation": {
       "version": "1.0.0",
       "depth": 0,
