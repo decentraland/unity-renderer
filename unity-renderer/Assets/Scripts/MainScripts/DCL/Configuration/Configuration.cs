@@ -236,9 +236,4 @@ namespace DCL.Configuration
         public static int playerInfoCardMenu = LayerMask.NameToLayer("PlayerInfoCardMenu");
         public static int avatarTriggerMask = LayerMask.GetMask("AvatarTriggerDetection");
     }
-
-    public static class APIUrls
-    {
-        public const string AVATAR_TEXTURE_API_URL = "https://synapse.decentraland.org/profile-pictures/";
-    }
 }

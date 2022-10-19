@@ -35,7 +35,7 @@ namespace DCL.ECSComponents
             
             if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
             {
-                string avatarTexUrl = Configuration.APIUrls.AVATAR_TEXTURE_API_URL + model.AvatarTexture.UserId;
+                string avatarTexUrl = KernelConfig.i.Get().avatarTextureAPIBaseUrl + model.AvatarTexture.UserId;
                 albedoTextureModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
                     (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
                     (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
