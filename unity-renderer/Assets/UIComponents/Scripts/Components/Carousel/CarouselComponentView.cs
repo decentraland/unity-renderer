@@ -224,6 +224,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
         background.color = newColor;
     }
+    
+    public void SetManualControlsActive() => 
+        SetManualControlsActive(model.showManualControls);
 
     public void SetManualControlsActive(bool isActived)
     {
@@ -274,7 +277,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     
     public void AddItem(BaseComponentView item) => 
         CreateItem(item, $"Item{instantiatedItems.Count}");
-
+    
     public void RemoveItem(BaseComponentView item)
     {
         BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);

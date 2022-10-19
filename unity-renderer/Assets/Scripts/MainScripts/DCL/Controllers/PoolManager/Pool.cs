@@ -116,8 +116,8 @@ namespace DCL
         }
 
 
-        public void IterativePrewarm(int prewarmCount) => 
-            IterativePrewarm(prewarmCount, cancellationTokenSource.Token).Forget();
+        public async UniTask IterativePrewarm(int prewarmCount) => 
+            await IterativePrewarm(prewarmCount, cancellationTokenSource.Token);
         
         private async UniTask IterativePrewarm(int prewarmCount, CancellationToken cancellationToken)
         {

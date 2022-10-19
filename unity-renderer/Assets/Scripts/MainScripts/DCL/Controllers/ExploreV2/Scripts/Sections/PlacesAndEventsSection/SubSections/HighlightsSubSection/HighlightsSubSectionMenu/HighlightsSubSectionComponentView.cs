@@ -2,6 +2,7 @@ using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -144,6 +145,9 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     internal const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     internal const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
+    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
+    private readonly Queue<Func<UniTask>> poolsIterativePrewarBuffer = new Queue<Func<UniTask>>();
+
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
     [SerializeField] internal EventCardComponentView eventCardLongPrefab;
@@ -184,8 +188,10 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     internal Pool trendingEventCardsPool;
     internal Pool featuredPlaceCardsPool;
     internal Pool liveEventCardsPool;
-    
+
     public Color[] currentFriendColors => friendColors;
+
+    private bool isUpdatingCardsVisual;
 
     public override void Start()
     {
@@ -197,7 +203,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.RemoveItems();
 
         viewAllEventsButton.onClick.AddListener(() => OnViewAllEventsClicked?.Invoke());
-        
+
         OnReady?.Invoke();
     }
 
@@ -235,7 +241,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         viewAllEventsButton.onClick.RemoveAllListeners();
     }
-    
+
     public void ConfigurePools()
     {
         ExplorePlacesUtils.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
@@ -243,12 +249,31 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         ExplorePlacesUtils.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
         ExploreEventsUtils.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
     }
-    
+
     public override void RefreshControl()
     {
         trendingPlacesAndEvents.RefreshControl();
         featuredPlaces.RefreshControl();
         liveEvents.RefreshControl();
+    }
+
+    private void RunShowCards()
+    {
+        if (!isUpdatingCardsVisual)
+            ShowCardsProcess().Forget();
+    }
+
+    private async UniTask ShowCardsProcess()
+    {
+        isUpdatingCardsVisual = true;
+
+        while (cardsVisualUpdateBuffer.Count > 0)
+            await cardsVisualUpdateBuffer.Dequeue().Invoke();
+        
+        while (poolsIterativePrewarBuffer.Count > 0)
+            await poolsIterativePrewarBuffer.Dequeue().Invoke();
+
+        isUpdatingCardsVisual = false;
     }
 
     public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
@@ -260,25 +285,26 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         featuredPlaces.ExtractItems();
         featuredPlaces.RemoveItems();
-        
-        StartCoroutine(SetPlacesIteratively(places));
+
+        cardsVisualUpdateBuffer.Enqueue(() => SetPlacesIteratively(places));
+        RunShowCards();
     }
-    
-    private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
+
+    private async UniTask SetPlacesIteratively(List<PlaceCardComponentModel> places)
     {
         foreach (PlaceCardComponentModel place in places)
         {
             featuredPlaces.AddItem(
-                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, featuredPlaceCardsPool, 
+                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, featuredPlaceCardsPool,
                     OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
 
-            yield return null;
+            await UniTask.NextFrame();
         }
-        
+
         featuredPlaces.SetItemSizeForModel();
-        featuredPlaceCardsPool.IterativePrewarm(places.Count);
+        poolsIterativePrewarBuffer.Enqueue(() => featuredPlaceCardsPool.IterativePrewarm(places.Count));
     }
-    
+
     public void SetLiveEvents(List<EventCardComponentModel> events)
     {
         SetLiveAsLoading(false);
@@ -289,62 +315,71 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.ExtractItems();
         liveEvents.RemoveItems();
 
-        StartCoroutine(SetEventsIteratively(events, liveEvents, liveEventCardsPool));
+        cardsVisualUpdateBuffer.Enqueue(() => SetEventsIteratively(events, liveEvents, liveEventCardsPool));
+        RunShowCards();
     }
-    
-    private IEnumerator SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
+
+    private async UniTask SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
     {
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
                 ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
                     OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
-            yield return null;
+
+            await UniTask.NextFrame();
         }
-        
+
         eventsGrid.SetItemSizeForModel();
-        pool.IterativePrewarm(events.Count);
+
+        poolsIterativePrewarBuffer.Enqueue(() => pool.IterativePrewarm(events.Count));
     }
-    
+
     public void SetTrendingPlacesAndEvents(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
     {
         SetTrendingPlacesAndEventsAsLoading(false);
 
         trendingPlaceCardsPool.ReleaseAll();
         trendingEventCardsPool.ReleaseAll();
-        
+
         trendingPlacesAndEvents.ExtractItems();
         trendingPlacesAndEvents.RemoveItems();
-        
-        StartCoroutine(SetTrendingsIteratively(places, events));
+
+        cardsVisualUpdateBuffer.Enqueue(() => SetTrendingsIteratively(places, events));
+        RunShowCards();
     }
-    
-    private IEnumerator SetTrendingsIteratively(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
+
+    private async UniTask SetTrendingsIteratively(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
     {
         for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
         {
-            if (i < events.Count)
-                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[i], trendingEventCardsPool, 
+            if (i % 2 == 0 && i < events.Count)
+            {
+                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[i], trendingEventCardsPool,
                     OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
-            
-            if (i < places.Count)
-                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[i], trendingPlaceCardsPool, 
+            }
+            else if (i < places.Count)
+            {
+                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[i], trendingPlaceCardsPool,
                     OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
-            
-            yield return null;
+            }
+
+            await UniTask.NextFrame();
         }
-        
+
+        trendingPlacesAndEvents.SetManualControlsActive();
         trendingPlacesAndEvents.GenerateDotsSelector();
-        trendingPlaceCardsPool.IterativePrewarm(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES);
+
+        poolsIterativePrewarBuffer.Enqueue(() => trendingPlaceCardsPool.IterativePrewarm(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES));
     }
-    
+
     public void SetTrendingPlacesAndEventsAsLoading(bool isVisible)
     {
         SetTrendingPlacesAndEventsActive(!isVisible);
         trendingPlacesAndEventsLoading.SetActive(isVisible);
     }
 
-    internal void SetTrendingPlacesAndEventsActive(bool isActive) => 
+    internal void SetTrendingPlacesAndEventsActive(bool isActive) =>
         trendingPlacesAndEvents.gameObject.SetActive(isActive);
 
     public void SetFeaturedPlacesAsLoading(bool isVisible)
@@ -371,15 +406,15 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         placeModal.Show();
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
-    
+
     public void HidePlaceModal() { placeModal.Hide(); }
-    
+
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
         ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
-    
+
     public void HideEventModal() { eventModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
