@@ -337,7 +337,7 @@ Material:
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
     - _horizonPlaneColor: {r: 0.41568437, g: 0.4823491, b: 0.32940963, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
+    - _lightDirection: {r: 88.742584, g: 314.99927, b: 269.9996, a: 0}
     - _lightTint: {r: 0.81375504, g: 0.7830557, b: 0.62035197, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
@@ -355,7 +355,7 @@ Material:
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
     - _skyColor: {r: 0.43069893, g: 0.68991876, b: 0.9672956, a: 1}
-    - _smoothRange: {r: 0, g: 0.15942028, b: 0, a: 0}
+    - _smoothRange: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0.4, b: 0, a: 0}
