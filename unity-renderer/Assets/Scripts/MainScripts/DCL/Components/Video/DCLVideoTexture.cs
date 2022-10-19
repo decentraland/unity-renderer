@@ -313,6 +313,8 @@ namespace DCL.Components
             if (string.IsNullOrEmpty(currentSceneId))
                 return false;
 
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + currentSceneId + " == " + scene.sceneData.id + "? " + scene.sceneData.id == currentSceneId);
             return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
