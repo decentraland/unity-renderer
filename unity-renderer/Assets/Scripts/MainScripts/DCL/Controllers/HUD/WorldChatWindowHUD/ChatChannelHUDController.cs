@@ -101,8 +101,11 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if (View.IsActive == visible) return;
+            if (View.IsActive == visible &&
+                dataStore.channels.channelToBeOpenedFromLink.Get() != channelId)
+                return;
 
+            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
             SetVisiblePanelList(visible);
             
             if (visible)

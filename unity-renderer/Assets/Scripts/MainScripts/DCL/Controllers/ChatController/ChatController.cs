@@ -263,6 +263,9 @@ public class ChatController : MonoBehaviour, IChatController
     public Channel GetAllocatedChannel(string channelId) =>
         channels.ContainsKey(channelId) ? channels[channelId] : null;
     
+    public Channel GetAllocatedChannelByName(string channelName) =>
+        channels.Select(x => x.Value).FirstOrDefault(x => x.Name == channelName);
+    
     public void GetPrivateMessages(string userId, int limit, string fromMessageId) =>
         WebInterface.GetPrivateMessages(userId, limit, fromMessageId);
     

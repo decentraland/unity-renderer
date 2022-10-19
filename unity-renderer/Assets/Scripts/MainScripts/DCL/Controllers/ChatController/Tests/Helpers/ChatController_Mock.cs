@@ -118,4 +118,6 @@ public class ChatController_Mock : IChatController
     public void GetChannelMembers(string channelId, int limit, int skip)
     {
     }
+
+    public Channel GetAllocatedChannelByName(string channelName) => null;
 }
