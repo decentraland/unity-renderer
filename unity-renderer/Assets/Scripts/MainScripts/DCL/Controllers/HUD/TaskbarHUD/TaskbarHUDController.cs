@@ -686,7 +686,12 @@ public class TaskbarHUDController : IHUD
         if (chatId == nearbyChannelId)
             OpenPublicChat(nearbyChannelId, true);
         else if (chatController.GetAllocatedChannel(chatId) != null)
-            OpenChannelChat(chatId);
+        {
+            if(chatController.GetAllocatedChannel(chatId).Joined)
+                OpenChannelChat(chatId);
+            else
+                return;
+        }
         else if(chatId == conversationListId)
             OpenChatList();
         else
