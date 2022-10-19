@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0}
+  horizonPlaneSmoothRange: {x: 0, y: 0.086956516}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
@@ -615,7 +615,7 @@ MonoBehaviour:
     flipbookAnimSpeed: 0
     offset:
     - percentage: 0
-      value: {x: 45, y: -12.9}
+      value: {x: 45, y: 4.04}
     - percentage: 100
       value: {x: 45, y: 174.3}
     satelliteWidthHeight:

@@ -318,10 +318,10 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 1, g: 1, b: 1, a: 0}
-    - _color_1: {r: 13.121331, g: 10.395514, b: 8.197175, a: 1}
-    - _color_2: {r: 0.9792763, g: 0.9792763, b: 0.9792763, a: 1}
-    - _color_3: {r: 0.9998037, g: 0.95683306, b: 0.9458087, a: 0.7671379}
-    - _color_4: {r: 0.5308184, g: 0.4731986, b: 0.45994073, a: 1}
+    - _color_1: {r: 12.791911, g: 2.2078056, b: 0, a: 0.21110569}
+    - _color_2: {r: 0.860873, g: 0.7547273, b: 0.71356887, a: 1}
+    - _color_3: {r: 0.90444976, g: 0.65131146, b: 0.59283185, a: 0.71981436}
+    - _color_4: {r: 0.44216138, g: 0.4221316, b: 0.42518684, a: 1}
     - _distortIntAndSize_0: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -332,13 +332,13 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.14497247, g: 0.21560399, b: 0.29328525, a: 1}
-    - _horizonColor: {r: 0.9725387, g: 0.83135617, b: 0.6195916, a: 1}
+    - _groundColor: {r: 0.14432774, g: 0.21372984, b: 0.29158646, a: 1}
+    - _horizonColor: {r: 0.62669086, g: 0.29166222, b: 0.08768229, a: 1}
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _horizonPlaneColor: {r: 0.41568437, g: 0.4823491, b: 0.32940963, a: 1}
+    - _horizonPlaneColor: {r: 0.35058394, g: 0.35388348, b: 0.25882354, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 88.742584, g: 314.99927, b: 269.9996, a: 0}
-    - _lightTint: {r: 0.81375504, g: 0.7830557, b: 0.62035197, a: 1}
+    - _lightDirection: {r: 1.6008495, g: 134.99998, b: 90.00001, a: 0}
+    - _lightTint: {r: 0.93779296, g: 0.63403314, b: 0.3576091, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -354,8 +354,8 @@ Material:
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
-    - _skyColor: {r: 0.43069893, g: 0.68991876, b: 0.9672956, a: 1}
-    - _smoothRange: {r: 0, g: 0, b: 0, a: 0}
+    - _skyColor: {r: 0.3632421, g: 0.39929873, b: 0.59931433, a: 1}
+    - _smoothRange: {r: 0, g: 0.086956516, b: 0, a: 0}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0.4, b: 0, a: 0}
@@ -368,7 +368,7 @@ Material:
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 3.9333334, g: 3.9333334, b: 45, a: 74.46}
+    - _tilingAndOffset_1: {r: 3.1266665, g: 3.1266665, b: 45, a: 14.823131}
     - _tilingAndOffset_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_4: {r: 0, g: 0, b: 0, a: 0}
