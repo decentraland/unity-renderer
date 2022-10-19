@@ -336,14 +336,19 @@ namespace DCL.Components
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             SetPlayStateDirty();
-            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
-            isPlayerInScene = IsPlayerInSameSceneAsComponent();
+
+            // FD::--Tests-->
+            // Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            // isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            // isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-            // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+
+            // FD::--Tests-->
+            SetPlayStateDirty();
+            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
         public override void AttachTo(ISharedComponent component)
