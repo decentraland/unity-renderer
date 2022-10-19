@@ -362,7 +362,7 @@ namespace Tests
             // remove global scene
             uiContainerComponent.RemoveFor(globalScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
-            // ui document should have only global scene ui set
+            // ui document should not have any ui set
             Assert.IsTrue(uiDocument.rootVisualElement.childCount == 0);
         }
     }
