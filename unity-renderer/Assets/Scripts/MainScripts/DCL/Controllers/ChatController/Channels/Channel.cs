@@ -1,4 +1,4 @@
-﻿namespace DCL.Chat.Channels
+namespace DCL.Chat.Channels
 {
     public class Channel
     {
@@ -23,6 +23,7 @@
 
         public void CopyFrom(Channel channel)
         {
+            Name = channel.Name;
             ChannelId = channel.ChannelId;
             UnseenMessages = channel.UnseenMessages;
             MemberCount = channel.MemberCount;
