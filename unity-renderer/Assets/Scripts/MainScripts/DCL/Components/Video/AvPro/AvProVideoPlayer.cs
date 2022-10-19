@@ -83,7 +83,16 @@ public class AvProVideoPlayer : IVideoPlayer, IDisposable
         if (resizeDone)
         {
             avProTexture = avProMediaPlayer.TextureProducer.GetTexture(0);
-            Graphics.CopyTexture(avProTexture, videoTexture);
+            if (SystemInfo.copyTextureSupport == UnityEngine.Rendering.CopyTextureSupport.None)
+            {
+                //High GC allocs here
+                Color[] pixelBuffer = ((Texture2D)avProTexture).GetPixels();
+                videoTexture.SetPixels(pixelBuffer);
+                videoTexture.Apply();
+            } else {
+                Graphics.CopyTexture(avProTexture, videoTexture);
+            }
+        
         }
     }
 
