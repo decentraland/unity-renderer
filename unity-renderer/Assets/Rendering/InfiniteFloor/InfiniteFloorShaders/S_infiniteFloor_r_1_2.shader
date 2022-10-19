@@ -11,6 +11,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         _GridThickness("GridThickness", Range(0.0001, 10)) = 1
         _GridOffset("GridOffset", Float) = 1
         _ThicknessOffset("ThicknessOffset", Float) = 0
+        [Space(10)]
         _ColorGrid("ColorGrid", Color) = (0, 0, 0, 0)
         _ColorPlazas("ColorPlazas", Color) = (0.1686275, 0.4352941, 0.2156863, 1)
         _ColorDistricts("ColorDistricts", Color) = (0.1372549, 0.6784314, 0.6039216, 1)
@@ -18,6 +19,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         _ColorParcels("ColorParcels", Color) = (0.2627451, 0.427451, 0.2901961, 1)
         _ColorOwnedParcels("ColorOwnedParcels", Color) = (0.5294118, 0.4666667, 0.1686275, 1)
         _ColorEmpty("ColorEmpty", Color) = (0, 0.1019608, 0.03137255, 1)
+        [Space(10)]
         [NoScaleOffset]_GrassTexture("GrassTexture", 2D) = "white" {}
         _GrassScale("GrassScale", Float) = 1
         _OwnedVariationRange("OwnedVariationRange", Vector) = (0.75, 1.75, 0, 0)
@@ -37,18 +39,22 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_2"
         _Smoothness("Smoothness", Range(0, 1)) = 0
         _Metallic("Metallic", Range(0, 1)) = 0
         _PlayerPosition("PlayerPosition", Vector) = (0, 0, 0, 0)
+        [Space(10)]
         _FogFade("FogFade", Float) = 1
         _FogIntensity("FogIntensity", Range(0, 1)) = 1
+        [Space(10)]
         _ColorFog("ColorFog", Color) = (0.9702122, 1, 0.7971698, 0)
         _FogColorBend("FogColorBend", Float) = 0
         _ColorGrassOuter("ColorGrassOuter", Color) = (1, 0, 0, 0)
         _FloorColorBend("FloorColorBend", Float) = 0
         _FogBalancer("FogBalancer", Range(0, 1)) = 0.2
         _FloorColor("FloorColor", Color) = (0, 0, 0, 0)
+        [Space(10)]
         _InnerRadiusFog("InnerRadiusFog", Range(0, 1)) = 0.725
         _OuterRadiusFog("OuterRadiusFog", Range(0, 2)) = 0.83
         _InnerFogHardness("InnerFogHardness", Range(0, 1)) = 1
         _OuterHardnessFog("OuterHardnessFog", Range(0, 1)) = 1
+        [Space(10)]
         _MaskOpacity("MaskOpacity", Range(0, 1)) = 1
         _MaskHardness("MaskHardness", Range(0, 1)) = 1
         [ToggleUI]_isAdvancedFogOn("isAdvanceFogOn", Float) = 0
