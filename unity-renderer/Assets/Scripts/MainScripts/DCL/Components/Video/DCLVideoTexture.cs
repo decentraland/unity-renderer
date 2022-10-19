@@ -347,8 +347,8 @@ namespace DCL.Components
             isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
             // FD::--Tests-->
-            SetPlayStateDirty();
-            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            // SetPlayStateDirty();
+            // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
         }
 
         public override void AttachTo(ISharedComponent component)
