@@ -257,13 +257,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.RefreshControl();
     }
 
-    private void RunShowCards()
+    private void UpdateCardsVisual()
     {
         if (!isUpdatingCardsVisual)
-            ShowCardsProcess().Forget();
+            UpdateCardsVisualProcess().Forget();
     }
 
-    private async UniTask ShowCardsProcess()
+    private async UniTask UpdateCardsVisualProcess()
     {
         isUpdatingCardsVisual = true;
 
@@ -287,7 +287,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         featuredPlaces.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetPlacesIteratively(places));
-        RunShowCards();
+        UpdateCardsVisual();
     }
 
     private async UniTask SetPlacesIteratively(List<PlaceCardComponentModel> places)
@@ -316,7 +316,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsIteratively(events, liveEvents, liveEventCardsPool));
-        RunShowCards();
+        UpdateCardsVisual();
     }
 
     private async UniTask SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
@@ -346,7 +346,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         trendingPlacesAndEvents.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetTrendingsIteratively(places, events));
-        RunShowCards();
+        UpdateCardsVisual();
     }
 
     private async UniTask SetTrendingsIteratively(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)

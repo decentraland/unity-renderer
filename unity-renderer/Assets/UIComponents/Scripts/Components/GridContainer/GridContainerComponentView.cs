@@ -442,7 +442,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         instantiatedItems.Add(newItem);
     }
 
-    internal void ResizeGridContainer()
+    public void ResizeGridContainer()
     {
         int currentNumberOfItems = transform.childCount;
 

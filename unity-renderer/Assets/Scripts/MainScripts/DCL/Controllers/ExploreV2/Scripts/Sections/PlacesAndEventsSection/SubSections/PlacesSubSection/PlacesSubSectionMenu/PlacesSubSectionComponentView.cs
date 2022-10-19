@@ -2,6 +2,7 @@ using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -200,7 +201,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         }
         
         this.places.SetItemSizeForModel();
-        placeCardsPool.IterativePrewarm(places.Count);
+        placeCardsPool.IterativePrewarm(places.Count).Forget();
     }
     
     public void SetActive(bool isActive)
