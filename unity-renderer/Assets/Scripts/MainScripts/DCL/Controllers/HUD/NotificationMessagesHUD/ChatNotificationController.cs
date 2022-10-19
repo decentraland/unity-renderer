@@ -71,6 +71,7 @@ namespace DCL.Chat.Notifications
                     : message.recipient);
                 if (channel?.Muted ?? false) return;
 
+                //TODO: entries may have an inconsistent state. We should update the entry with new data
                 if(notificationEntries.Contains(message.messageId))
                     return;
                 else
