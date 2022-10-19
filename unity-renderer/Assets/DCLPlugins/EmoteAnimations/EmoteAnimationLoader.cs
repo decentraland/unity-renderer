@@ -9,7 +9,7 @@ namespace DCL.Emotes
     public class EmoteAnimationLoader : IEmoteAnimationLoader
     {
         private readonly IWearableRetriever retriever;
-        public AnimationClip animation { get; internal set; }
+        public AnimationClip loadedAnimationClip { get; internal set; }
 
         public EmoteAnimationLoader(IWearableRetriever retriever) { this.retriever = retriever; }
 
@@ -34,10 +34,26 @@ namespace DCL.Emotes
 
             Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
 
-            animation = rendereable.container.GetComponentInChildren<Animation>()?.clip;
+            var animation = rendereable.container.GetComponentInChildren<Animation>();
+            if (animation != null)
+            {
+                var animationClip = animation.clip;
 
-            //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
-            animation.name = emote.id;
+                //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
+                if (animationClip != null)
+                {
+                    this.loadedAnimationClip = animationClip;
+                    animationClip.name = emote.id;
+                }
+                else
+                {
+                    Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
+                }
+            }
+            else
+            {
+                Debug.LogError("Animation component not found in the container for emote " + emote.id);
+            }
         }
 
         public void Dispose() { retriever?.Dispose(); }
