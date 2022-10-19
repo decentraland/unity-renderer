@@ -325,7 +325,9 @@ namespace DCL.Components
             {
                 if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
                 {
+                    UnityEngine.Debug.unityLogger.logEnabled = true;
                     Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
+                    UnityEngine.Debug.unityLogger.logEnabled = false;
                     return true;
                 }
             }
@@ -338,7 +340,9 @@ namespace DCL.Components
             SetPlayStateDirty();
 
             // FD::--Tests-->
-            // Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            UnityEngine.Debug.unityLogger.logEnabled = false;
             // isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
@@ -348,7 +352,9 @@ namespace DCL.Components
 
             // FD::--Tests-->
             // SetPlayStateDirty();
-            // Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            UnityEngine.Debug.unityLogger.logEnabled = false;
         }
 
         public override void AttachTo(ISharedComponent component)
