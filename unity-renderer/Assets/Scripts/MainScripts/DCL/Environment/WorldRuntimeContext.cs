@@ -15,6 +15,8 @@ namespace DCL
         public ISceneBoundsChecker sceneBoundsChecker => serviceLocator.Get<ISceneBoundsChecker>();
         public IWorldBlockersController blockersController => serviceLocator.Get<IWorldBlockersController>();
         public IRuntimeComponentFactory componentFactory => serviceLocator.Get<IRuntimeComponentFactory>();
+        public ITeleportController teleportController => serviceLocator.Get<ITeleportController>();
+
 
         public WorldRuntimeContext (ServiceLocator serviceLocator)
         {

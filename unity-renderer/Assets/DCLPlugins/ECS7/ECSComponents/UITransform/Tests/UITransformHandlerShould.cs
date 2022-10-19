@@ -12,6 +12,8 @@ namespace Tests
 {
     public class UITransformHandlerShould
     {
+        const int COMPONENT_ID = 34;
+
         private ECS7TestEntity entity;
         private ECS7TestScene scene;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
@@ -41,7 +43,7 @@ namespace Tests
                                    internalCompData.model = info.ArgAt<InternalUiContainer>(2);
                                });
 
-            handler = new UITransformHandler(internalUiContainer);
+            handler = new UITransformHandler(internalUiContainer, COMPONENT_ID);
         }
 
         [TearDown]
@@ -56,7 +58,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { Parent = 123123 });
             internalUiContainer.Received(1)
                                .PutFor(scene, entity,
-                                   Arg.Is<InternalUiContainer>(model => model.parentId == 123123 && model.hasTransform));
+                                   Arg.Is<InternalUiContainer>(model => model.parentId == 123123 && model.components.Contains(COMPONENT_ID)));
         }
 
         [Test]
@@ -101,7 +103,7 @@ namespace Tests
                 BorderTop = 2,
                 BorderRight = 3,
                 BorderLeft = 4,
-                PositionType = YGPositionType.YgpAbsolute
+                PositionType = YGPositionType.YgptAbsolute
             };
 
             Action<InternalUiContainer> styleCheck = m =>
@@ -161,9 +163,9 @@ namespace Tests
             var containerModel = new InternalUiContainer()
             {
                 parentId = 2,
-                hasTransform = true,
                 parentElement = parent
             };
+            containerModel.components.Add(COMPONENT_ID);
             parent.Add(containerModel.rootElement);
             internalUiContainer.PutFor(scene, entity, containerModel);
             internalUiContainer.ClearReceivedCalls();
@@ -173,7 +175,7 @@ namespace Tests
                                .PutFor(scene, entity,
                                    Arg.Is<InternalUiContainer>(
                                        model => model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY
-                                                && !model.hasTransform
+                                                && !model.components.Contains(COMPONENT_ID)
                                                 && model.parentElement == null));
             Assert.AreEqual(0, parent.childCount);
         }

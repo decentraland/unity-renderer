@@ -25,22 +25,32 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvY29tbW9uL3RleHRzLnBy",
-            "b3RvEiJkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uKjUKCVRl",
-            "eHRBbGlnbhINCglUQV9DRU5URVIQABILCgdUQV9MRUZUEAESDAoIVEFfUklH",
-            "SFQQAiovCgRGb250EhUKEUZfTElCRVJBVElPTl9TQU5TEAASEAoMRl9TQU5T",
-            "X1NFUklGEAFCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "b3RvEiJkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uKswBCg1U",
+            "ZXh0QWxpZ25Nb2RlEhAKDFRBTV9UT1BfTEVGVBAAEhIKDlRBTV9UT1BfQ0VO",
+            "VEVSEAESEQoNVEFNX1RPUF9SSUdIVBACEhMKD1RBTV9NSURETEVfTEVGVBAD",
+            "EhUKEVRBTV9NSURETEVfQ0VOVEVSEAQSFAoQVEFNX01JRERMRV9SSUdIVBAF",
+            "EhMKD1RBTV9CT1RUT01fTEVGVBAGEhUKEVRBTV9CT1RUT01fQ0VOVEVSEAcS",
+            "FAoQVEFNX0JPVFRPTV9SSUdIVBAIKi8KBEZvbnQSFQoRRl9MSUJFUkFUSU9O",
+            "X1NBTlMQABIQCgxGX1NBTlNfU0VSSUYQAUIUqgIRRENMLkVDU0NvbXBvbmVu",
+            "dHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlign), typeof(global::DCL.ECSComponents.Font), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlignMode), typeof(global::DCL.ECSComponents.Font), }, null, null));
     }
     #endregion
 
   }
   #region Enums
-  public enum TextAlign {
-    [pbr::OriginalName("TA_CENTER")] TaCenter = 0,
-    [pbr::OriginalName("TA_LEFT")] TaLeft = 1,
-    [pbr::OriginalName("TA_RIGHT")] TaRight = 2,
+  public enum TextAlignMode {
+    [pbr::OriginalName("TAM_TOP_LEFT")] TamTopLeft = 0,
+    [pbr::OriginalName("TAM_TOP_CENTER")] TamTopCenter = 1,
+    [pbr::OriginalName("TAM_TOP_RIGHT")] TamTopRight = 2,
+    [pbr::OriginalName("TAM_MIDDLE_LEFT")] TamMiddleLeft = 3,
+    [pbr::OriginalName("TAM_MIDDLE_CENTER")] TamMiddleCenter = 4,
+    [pbr::OriginalName("TAM_MIDDLE_RIGHT")] TamMiddleRight = 5,
+    [pbr::OriginalName("TAM_BOTTOM_LEFT")] TamBottomLeft = 6,
+    [pbr::OriginalName("TAM_BOTTOM_CENTER")] TamBottomCenter = 7,
+    [pbr::OriginalName("TAM_BOTTOM_RIGHT")] TamBottomRight = 8,
   }
 
   public enum Font {

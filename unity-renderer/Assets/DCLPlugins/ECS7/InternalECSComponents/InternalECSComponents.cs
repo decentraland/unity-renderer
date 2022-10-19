@@ -96,7 +96,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         for (int i = 0; i < scheduledWrite.Count; i++)
         {
             var writeData = scheduledWrite[i];
-            if (writeData.scene == null)
+            if (writeData.scene?.crdtExecutor == null)
                 continue;
 
             InternalComponent data = writeData.data;
