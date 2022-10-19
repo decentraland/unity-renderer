@@ -36,7 +36,7 @@ namespace ECSSystems.ScenesUiSystem
                 worldState = worldState,
                 loadedScenes = loadedScenes,
                 lastSceneId = null,
-                isPendingSceneUI = false,
+                isPendingSceneUI = true,
                 currentScene = null
             };
 

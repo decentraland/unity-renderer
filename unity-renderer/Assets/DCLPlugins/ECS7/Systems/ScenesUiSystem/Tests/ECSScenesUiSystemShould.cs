@@ -286,5 +286,32 @@ namespace Tests
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
             Assert.AreEqual(0, uiDocument.rootVisualElement.childCount);
         }
+
+        [Test]
+        public void ApplyGlobalSceneUi()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene("temptation");
+            scene.isPersistent = true;
+            
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneId().Returns("some-other-non-global-scene");
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene>(),
+                worldState);
+
+            // create root ui for scene
+            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
+
+            // do system update
+            system.Update();
+
+            // ui document should have scene ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootSceneContainer.rootElement));
+        }
     }
 }
