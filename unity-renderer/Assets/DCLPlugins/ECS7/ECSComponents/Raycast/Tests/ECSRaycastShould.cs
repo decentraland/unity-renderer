@@ -11,6 +11,7 @@ using DCLPlugins.ECSComponents.Raycast;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using Vector3 = DCL.ECSComponents.Vector3;
 
 namespace Tests
 {
@@ -42,7 +43,6 @@ namespace Tests
             entityRaycaster = scene.CreateEntity(512);
             
             entityCollider1 = scene.CreateEntity(513);
-            entityCollider1.gameObject.layer = LayerMask.NameToLayer("OnPointerEvent");
             entityCollider1.gameObject.transform.position = 
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 8));
             var colliderEntity1 =  entityCollider1.gameObject.AddComponent<BoxCollider>();
@@ -51,7 +51,6 @@ namespace Tests
             
             
             entityCollider2 = scene.CreateEntity(514);
-            entityCollider2.gameObject.layer = LayerMask.NameToLayer("OnPointerEvent");
             entityCollider2.gameObject.transform.position = 
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 12));
             var colliderEntity2 = entityCollider2.gameObject.AddComponent<BoxCollider>();
@@ -76,7 +75,7 @@ namespace Tests
                 Origin = new Vector3() { X = 12.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.HitFirst
+                QueryType = RaycastQueryType.RqtHitFirst
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
@@ -99,7 +98,7 @@ namespace Tests
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.HitFirst
+                QueryType = RaycastQueryType.RqtHitFirst
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
@@ -124,7 +123,7 @@ namespace Tests
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.QueryAll
+                QueryType = RaycastQueryType.RqtQueryAll
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);

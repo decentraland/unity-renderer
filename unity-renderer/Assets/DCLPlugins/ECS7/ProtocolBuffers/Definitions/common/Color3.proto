@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-message Color3 {
-    float r = 1;
-    float g = 2;
-    float b = 3;
-}
-  

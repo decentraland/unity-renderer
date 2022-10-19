@@ -12,6 +12,7 @@ using ECSSystems.CameraSystem;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using CameraType = DCL.ECSComponents.CameraType;
 
 namespace Tests
 {
@@ -112,7 +113,7 @@ namespace Tests
                                 scenes[0].sceneData.id,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.FirstPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraType.CtFirstPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
 
             componentsWriter.ClearReceivedCalls();
@@ -125,7 +126,7 @@ namespace Tests
                                 scenes[0].sceneData.id,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.ThirdPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraType.CtThirdPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
         }
 

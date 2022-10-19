@@ -28,7 +28,7 @@ This is the recommended path for artists.
 
 ### Steps
 
-1. Download and install Unity 2020.3.0f1
+1. Download and install Unity 2020.3.34f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
@@ -133,6 +133,8 @@ If the local WebGL build always fails with the error `System.ComponentModel.Win3
 - [How to connect the Editor with play.decentraland.org](docs/how-to-connect-with-play-decentraland-org.md)
   - For more advanced topics, don't forget to check out our [Architecture Decisions Records](https://github.com/decentraland/adr) (ADR) repository.
 - [How to create new components for ECS7](docs/ecs7-component-creation.md)
+- [How to modify the Renderer Protocol](docs/how-to-renderer-protocol.md)
+- [How to use Asset Bundle Converter](docs/how-to-use-asset-bundle-coverter.md)
 
 ## Setup CircleCI
 

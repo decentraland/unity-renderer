@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class SceneControllerBridge : MonoBehaviour
 
     public void SendSceneMessage(string payload) { Environment.i.world.sceneController.SendSceneMessage(payload); }
 
-    public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId); }
+    public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId);}
 
     public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
 

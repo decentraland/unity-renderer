@@ -33,7 +33,22 @@ namespace DCL
         public  BaseVariable<bool> isPreviewMenuActive = new BaseVariable<bool>();
         
         [System.NonSerialized]
-        public BaseDictionary<string, SceneSpawnPointsData> showSceneSpawnPoints = new BaseDictionary<string, SceneSpawnPointsData>();        
+        public BaseDictionary<string, SceneSpawnPointsData> showSceneSpawnPoints = new BaseDictionary<string, SceneSpawnPointsData>();
+
+        [System.NonSerialized]
+        public BaseVariable<bool> showSceneABDetectionLayer = new BaseVariable<bool>();
+        
+        [System.NonSerialized]
+        public BaseVariable<bool> showGlobalABDetectionLayer = new BaseVariable<bool>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> jsHeapSizeLimit = new BaseVariable<float>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> jsTotalHeapSize = new BaseVariable<float>();
+        
+        [System.NonSerialized]
+        public BaseVariable<float> jsUsedHeapSize = new BaseVariable<float>();
 
         /// <summary>
         /// True when WSS message pipeline is enabled

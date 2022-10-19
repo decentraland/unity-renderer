@@ -13,6 +13,9 @@ namespace DCL.Components
             GLTF_ONLY,
             DEFAULT
         }
+        
+        private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
+        private const string FROM_RAW_GLTF_TAG = "FromRawGLTF";
 
         public static bool VERBOSE = false;
 
@@ -176,6 +179,11 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize
                 };
 
+                foreach (var someRenderer in r.renderers)
+                {
+                    someRenderer.tag = FROM_ASSET_BUNDLE_TAG;
+                }
+
                 OnSuccessWrapper(r, OnSuccess);
             };
 
@@ -221,6 +229,11 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize,
                     animationClips = x.animationClips
                 };
+
+                foreach (var someRenderer in r.renderers)
+                {
+                    someRenderer.tag = FROM_RAW_GLTF_TAG;
+                }
 
                 OnSuccessWrapper(r, OnSuccess);
             };

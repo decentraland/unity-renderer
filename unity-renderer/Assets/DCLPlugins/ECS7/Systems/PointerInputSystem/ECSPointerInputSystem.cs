@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using DCL;
-using DCL.ECS7;
+using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
+using UnityEngine;
+using Ray = UnityEngine.Ray;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -11,151 +15,356 @@ namespace ECSSystems.PointerInputSystem
     {
         private class State
         {
-            public IECSComponentWriter componentWriter;
-            public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup;
-            public IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup;
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
-            public ECSComponent<PBOnPointerDown> pointerDownComponent;
-            public ECSComponent<PBOnPointerUp> pointerUpComponent;
+            public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
+            public ECSComponent<PBPointerEvents> pointerEvents;
             public DataStore_ECS7 dataStoreEcs7;
-            public DataStore_Cursor dataStoreCursor;
-            public bool isPointerDown;
-            public PointerInputResult lastPointerDownResult;
-            public PointerHoverResult lastPointerHoverResult;
+            public bool isLastInputPointerDown;
+            public IWorldState worldState;
+            public EntityInput lastInputDown;
+            public EntityInput lastInputHover;
+            public EntityInput lastHoverFeedback;
+            public IECSInteractionHoverCanvas interactionHoverCanvas;
+        }
+
+        private class EntityInput
+        {
+            public IDCLEntity entity;
+            public IParcelScene scene;
+            public string sceneId;
+            public bool hasValue;
+        }
+
+        private enum InputHitType
+        {
+            None,
+            PointerDown,
+            PointerUp,
+            PointerHover
         }
 
         public static Action CreateSystem(
-            IECSComponentWriter componentWriter,
-            IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerDown> pointerDownGroup,
-            IECSReadOnlyComponentsGroup<InternalColliders, PBOnPointerUp> pointerUpGroup,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            ECSComponent<PBOnPointerDown> pointerDownComponent,
-            ECSComponent<PBOnPointerUp> pointerUpComponent,
-            DataStore_ECS7 dataStoreEcs,
-            DataStore_Cursor dataStoreCursor)
+            IInternalECSComponent<InternalInputEventResults> inputResultComponent,
+            ECSComponent<PBPointerEvents> pointerEvents,
+            IECSInteractionHoverCanvas interactionHoverCanvas,
+            IWorldState worldState,
+            DataStore_ECS7 dataStoreEcs)
         {
             var state = new State()
             {
-                componentWriter = componentWriter,
-                pointerDownGroup = pointerDownGroup,
-                pointerUpGroup = pointerUpGroup,
                 pointerColliderComponent = pointerColliderComponent,
-                pointerDownComponent = pointerDownComponent,
-                pointerUpComponent = pointerUpComponent,
+                inputResultComponent = inputResultComponent,
+                pointerEvents = pointerEvents,
+                interactionHoverCanvas = interactionHoverCanvas,
+                isLastInputPointerDown = false,
                 dataStoreEcs7 = dataStoreEcs,
-                dataStoreCursor = dataStoreCursor,
-                isPointerDown = false,
-                lastPointerDownResult = PointerInputResult.empty,
-                lastPointerHoverResult = PointerHoverResult.empty
+                worldState = worldState,
+                lastInputDown = new EntityInput() { hasValue = false },
+                lastInputHover = new EntityInput() { hasValue = false },
+                lastHoverFeedback = new EntityInput() { hasValue = false },
             };
             return () => Update(state);
         }
 
         private static void Update(State state)
         {
-            bool isPointerDown = state.isPointerDown;
+            DataStore_ECS7.PointerEvent currentPointerInput = state.dataStoreEcs7.lastPointerInputEvent;
 
-            // process pointer down/up input
-            if (state.dataStoreEcs7.lastPointerInputEvent.HasValue)
+            bool isHit = state.dataStoreEcs7.lastPointerRayHit.hasValue && state.dataStoreEcs7.lastPointerRayHit.didHit;
+            bool isPointerDown = currentPointerInput.hasValue && currentPointerInput.isButtonDown;
+            bool isPointerUp = state.isLastInputPointerDown && currentPointerInput.hasValue && !currentPointerInput.isButtonDown;
+
+            DataStore_ECS7.RaycastEvent.Hit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
+            Ray raycastRay = state.dataStoreEcs7.lastPointerRayHit.ray;
+
+            IECSReadOnlyComponentData<InternalColliders> colliderData = isHit
+                ? state.pointerColliderComponent
+                       .GetEntityWithCollider(raycastHit.collider)
+                : null;
+
+            bool isRaycastHitValidEntity = colliderData != null;
+            bool isHoveringInput = !isPointerDown && !isPointerUp && !state.isLastInputPointerDown;
+            bool isHoveringExit = !isRaycastHitValidEntity && state.lastInputHover.hasValue;
+
+            IList<PBPointerEvents.Types.Entry> hoverEvents = isRaycastHitValidEntity
+                ? state.pointerEvents.GetPointerEventsForEntity(colliderData.scene, colliderData.entity)
+                : null;
+
+            // show hover tooltip for pointer down
+            if (hoverEvents != null && isHoveringInput)
             {
-                isPointerDown = state.dataStoreEcs7.lastPointerInputEvent.Value.isButtonDown;
-                DataStore_ECS7.PointerEvent pointerEvent = state.dataStoreEcs7.lastPointerInputEvent.Value;
-
-                PointerInputResult result = PointerDownUpProcessor.ProcessPointerDownUp(pointerEvent,
-                    state.pointerColliderComponent, state.pointerDownComponent, state.pointerUpComponent,
-                    state.lastPointerDownResult);
-
-                state.lastPointerDownResult = result;
-                if (result.hasValue)
+                if (!state.lastHoverFeedback.hasValue || state.lastHoverFeedback.entity != colliderData.entity)
                 {
-                    if (pointerEvent.isButtonDown)
+                    state.interactionHoverCanvas.ShowPointerDownHover(hoverEvents, raycastHit.distance);
+                    state.lastHoverFeedback.hasValue = true;
+                    state.lastHoverFeedback.entity = colliderData.entity;
+                    state.lastHoverFeedback.scene = colliderData.scene;
+                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                }
+            }
+            // show hover tooltip for pointer up
+            else if (hoverEvents != null && state.isLastInputPointerDown && !isPointerUp)
+            {
+                if (!state.lastHoverFeedback.hasValue && state.lastInputDown.entity == colliderData.entity)
+                {
+                    state.interactionHoverCanvas.ShowPointerUpHover(hoverEvents, raycastHit.distance, (InputAction)currentPointerInput.buttonId);
+                    state.lastHoverFeedback.hasValue = true;
+                    state.lastHoverFeedback.entity = colliderData.entity;
+                    state.lastHoverFeedback.scene = colliderData.scene;
+                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                }
+            }
+            // hide hover tooltip
+            else if (state.lastHoverFeedback.hasValue)
+            {
+                state.interactionHoverCanvas.Hide();
+                state.lastHoverFeedback.hasValue = false;
+            }
+
+            InputHitType inputHitType = InputHitType.None;
+
+            if (isRaycastHitValidEntity)
+            {
+                inputHitType = isPointerDown ? InputHitType.PointerDown
+                    : isPointerUp ? InputHitType.PointerUp
+                    : isHoveringInput ? InputHitType.PointerHover
+                    : InputHitType.None;
+            }
+
+            // process entity hit with input
+            switch (inputHitType)
+            {
+                case InputHitType.PointerDown:
+                    state.lastInputDown.entity = colliderData.entity;
+                    state.lastInputDown.scene = colliderData.scene;
+                    state.lastInputDown.sceneId = colliderData.scene.sceneData.id;
+                    state.lastInputDown.hasValue = true;
+
+                    state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                     {
-                        if (result.shouldTriggerEvent)
+                        analog = 1,
+                        button = (InputAction)currentPointerInput.buttonId,
+                        hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
+                            raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
+                        type = PointerEventType.PetDown
+                    });
+                    break;
+
+                case InputHitType.PointerUp:
+                    bool validInputDownExist = state.lastInputDown.hasValue;
+                    EntityInput lastInputDownData = state.lastInputDown;
+
+                    // did it hit same entity as pointer down hit?
+                    if (validInputDownExist && colliderData.entity.entityId == lastInputDownData.entity.entityId
+                                            && colliderData.scene.sceneData.id == lastInputDownData.sceneId)
+                    {
+                        state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                         {
-                            state.componentWriter.PutComponent(result.sceneId, result.entityId,
-                                ComponentID.ON_POINTER_DOWN_RESULT,
-                                ProtoConvertUtils.GetPointerDownResultModel((ActionButton)pointerEvent.buttonId,
-                                    null, pointerEvent.rayResult.ray, pointerEvent.rayResult.hitInfo.hit),
-                                ECSComponentWriteType.SEND_TO_SCENE);
+                            analog = 1,
+                            button = (InputAction)currentPointerInput.buttonId,
+                            hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
+                            type = PointerEventType.PetUp
+                        });
+                    }
+                    // did it hit different entity as pointer down hit?
+                    else if (validInputDownExist)
+                    {
+                        bool isEntityFromSameScene = colliderData.scene.sceneData.id == lastInputDownData.sceneId;
+                        bool isValidScene = isEntityFromSameScene || state.worldState.ContainsScene(lastInputDownData.sceneId);
+
+                        if (isValidScene)
+                        {
+                            state.inputResultComponent.AddEvent(lastInputDownData.scene, new InternalInputEventResults.EventData()
+                            {
+                                analog = 1,
+                                button = (InputAction)currentPointerInput.buttonId,
+                                hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
+                                type = PointerEventType.PetUp
+                            });
                         }
                     }
-                    else
+                    state.lastInputDown.hasValue = false;
+                    break;
+
+                case InputHitType.PointerHover:
+                    bool isPreviouslyHoveredEntity = state.lastInputHover.hasValue;
+                    bool isHoveringNewEntity = !isPreviouslyHoveredEntity
+                                               || state.lastInputHover.entity.entityId != colliderData.entity.entityId
+                                               || state.lastInputHover.sceneId != colliderData.scene.sceneData.id;
+
+                    // was other entity previously hovered?
+                    if (isPreviouslyHoveredEntity && isHoveringNewEntity)
                     {
-                        if (result.shouldTriggerEvent)
+                        bool isValidScene = colliderData.scene.sceneData.id == state.lastInputHover.sceneId
+                                            || state.worldState.ContainsScene(state.lastInputHover.sceneId);
+
+                        if (isValidScene)
                         {
-                            state.componentWriter.PutComponent(result.sceneId, result.entityId,
-                                ComponentID.ON_POINTER_UP_RESULT,
-                                ProtoConvertUtils.GetPointerUpResultModel((ActionButton)pointerEvent.buttonId,
-                                    null, pointerEvent.rayResult.ray, pointerEvent.rayResult.hitInfo.hit),
-                                ECSComponentWriteType.SEND_TO_SCENE);
+                            state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
+                            {
+                                analog = 1,
+                                button = (InputAction)currentPointerInput.buttonId,
+                                hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
+                                type = PointerEventType.PetHoverLeave
+                            });
                         }
-                        state.lastPointerDownResult = PointerInputResult.empty;
                     }
+
+                    // hover enter
+                    if (isHoveringNewEntity)
+                    {
+                        state.lastInputHover.entity = colliderData.entity;
+                        state.lastInputHover.scene = colliderData.scene;
+                        state.lastInputHover.sceneId = colliderData.scene.sceneData.id;
+                        state.lastInputHover.hasValue = true;
+
+                        state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
+                        {
+                            analog = 1,
+                            button = (InputAction)currentPointerInput.buttonId,
+                            hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
+                            type = PointerEventType.PetHoverEnter
+                        });
+                    }
+                    break;
+            }
+
+            // no entity hit
+            if (!isRaycastHitValidEntity)
+            {
+                if (isPointerUp)
+                {
+                    if (state.lastInputDown.hasValue)
+                    {
+                        // input up without hit but with valid input down
+                        bool isValidScene = state.worldState.ContainsScene(state.lastInputDown.sceneId);
+                        if (isValidScene)
+                        {
+                            state.inputResultComponent.AddEvent(state.lastInputDown.scene, new InternalInputEventResults.EventData()
+                            {
+                                analog = 1,
+                                button = (InputAction)currentPointerInput.buttonId,
+                                hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
+                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
+                                type = PointerEventType.PetUp
+                            });
+                        }
+                    }
+
+                    state.lastInputDown.hasValue = false;
+                }
+                if (isHoveringExit)
+                {
+                    bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneId);
+
+                    if (isValidScene)
+                    {
+                        state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
+                        {
+                            analog = 1,
+                            button = (InputAction)currentPointerInput.buttonId,
+                            hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
+                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
+                            type = PointerEventType.PetHoverLeave
+                        });
+                    }
+                    state.lastInputHover.hasValue = false;
                 }
             }
 
-            // process pointer hover
-            if (state.dataStoreEcs7.lastPointerRayHit.HasValue)
-            {
-                PointerHoverResult result = PointerHoverProcessor.ProcessPointerHover(isPointerDown,
-                    state.dataStoreEcs7.lastPointerRayHit.Value, state.pointerDownGroup, state.pointerUpGroup);
+            state.dataStoreEcs7.lastPointerInputEvent.hasValue = false;
+            state.dataStoreEcs7.lastPointerRayHit.hasValue = false;
+            state.isLastInputPointerDown = isPointerDown || (!isPointerUp && state.isLastInputPointerDown);
+        }
 
-                if (isPointerDown)
+        private static IECSReadOnlyComponentData<InternalColliders> GetEntityWithCollider(
+            this IInternalECSComponent<InternalColliders> pointerColliderComponent,
+            Collider collider)
+        {
+            var collidersData = pointerColliderComponent.GetForAll();
+            for (int i = 0; i < collidersData.Count; i++)
+            {
+                var colliderData = collidersData[i].value;
+                if (colliderData.model.colliders.Contains(collider))
                 {
-                    PointerInputResult lastPointerDown = state.lastPointerDownResult;
-                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult) && result.IsSameEntity(lastPointerDown))
+                    return colliderData;
+                }
+            }
+            return null;
+        }
+
+        private static IList<PBPointerEvents.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerEvents> component,
+            IParcelScene scene, IDCLEntity entity)
+        {
+            var componentData = component.Get(scene, entity);
+            return componentData?.model.PointerEvents;
+        }
+
+        private static void ShowPointerDownHover(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, float distance)
+        {
+            canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
+                pointerEvent.EventType == PointerEventType.PetDown
+                && pointerEvent.EventInfo.GetShowFeedback()
+                && distance <= pointerEvent.EventInfo.GetMaxDistance()
+            );
+        }
+
+        private static void ShowPointerUpHover(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, float distance, InputAction expectedButton)
+        {
+            canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
+                pointerEvent.EventType == PointerEventType.PetUp
+                && pointerEvent.EventInfo.GetShowFeedback()
+                && distance <= pointerEvent.EventInfo.GetMaxDistance()
+                && (pointerEvent.EventInfo.GetButton() == expectedButton || pointerEvent.EventInfo.GetButton() == InputAction.IaAny)
+            );
+        }
+
+        private static void ShowHoverTooltips(this IECSInteractionHoverCanvas canvas,
+            IList<PBPointerEvents.Types.Entry> entityEvents, Func<PBPointerEvents.Types.Entry, bool> filter)
+        {
+            if (entityEvents is null)
+                return;
+
+            bool anyTooltipAdded = false;
+            int eventIndex = 0;
+            for (int i = 0; i < canvas.tooltipsCount; i++)
+            {
+                PBPointerEvents.Types.Entry pointerEvent = null;
+                for (; eventIndex < entityEvents.Count; eventIndex++)
+                {
+                    pointerEvent = entityEvents[eventIndex];
+                    if (filter(pointerEvent))
                     {
-                        state.dataStoreCursor.ShowHoverFeedback(result);
+                        eventIndex++;
+                        break;
                     }
+                    pointerEvent = null;
+                }
+
+                if (!(pointerEvent is null))
+                {
+                    anyTooltipAdded = true;
+                    canvas.SetTooltipText(i, pointerEvent.EventInfo.GetHoverText());
+                    canvas.SetTooltipInput(i, pointerEvent.EventInfo.GetButton());
+                    canvas.SetTooltipActive(i, true);
                 }
                 else
                 {
-                    if (result.hasValue && !result.Equals(state.lastPointerHoverResult))
-                    {
-                        state.dataStoreCursor.ShowHoverFeedback(result);
-                    }
+                    canvas.SetTooltipActive(i, false);
                 }
-                state.lastPointerHoverResult = result;
             }
-            else if (state.lastPointerHoverResult.hasValue)
+
+            if (anyTooltipAdded)
             {
-                state.dataStoreCursor.HideHoverFeedback();
-                state.lastPointerHoverResult = PointerHoverResult.empty;
+                canvas.Show();
             }
-
-            state.dataStoreEcs7.lastPointerInputEvent = null;
-            state.dataStoreEcs7.lastPointerRayHit = null;
-            state.isPointerDown = isPointerDown;
-        }
-
-        private static bool IsSameEntity(this PointerHoverResult self, PointerInputResult other)
-        {
-            if (!self.hasValue || !other.hasValue)
-                return false;
-
-            return self.sceneId == other.sceneId && self.entityId == other.entityId;
-        }
-
-        private static void ShowHoverFeedback(this DataStore_Cursor cursor, PointerHoverResult hoverResult)
-        {
-            if (!hoverResult.hasValue)
-                return;
-
-            cursor.hoverFeedbackEnabled.Set(hoverResult.hasFeedback);
-
-            if (hoverResult.hasFeedback)
-            {
-                cursor.cursorType.Set(DataStore_Cursor.CursorType.HOVER);
-                cursor.hoverFeedbackButton.Set(hoverResult.buttonId.ToString());
-                cursor.hoverFeedbackText.Set(hoverResult.text);
-                cursor.hoverFeedbackHoverState.Set(true);
-            }
-        }
-
-        private static void HideHoverFeedback(this DataStore_Cursor cursor)
-        {
-            cursor.cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
-            cursor.hoverFeedbackHoverState.Set(false);
         }
     }
 }

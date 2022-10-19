@@ -1,7 +1,6 @@
 using System;
 using DCL.ECS7;
 using DCL.ECSRuntime;
-using DCL.Helpers;
 using DCLPlugins.ECSComponents;
 
 namespace DCL.ECSComponents
@@ -9,17 +8,11 @@ namespace DCL.ECSComponents
     public class ECS7ComponentsComposer : IDisposable
     {
         private readonly TransformRegister transformRegister;
-        private readonly SphereShapeRegister sphereShapeRegister;
-        private readonly BoxShapeRegister boxShapeRegister;
-        private readonly PlaneShapeRegister planeShapeRegister;
-        private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
-        private readonly GLTFShapeRegister gltfRegister;
+        private readonly GltfContainerRegister gltfRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
-        private readonly OnPointerDownRegister pointerDownRegister;
-        private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
         private readonly BillboardRegister billboardRegister;
         private readonly AvatarShapeRegister avatarShapeRegister;
@@ -32,31 +25,26 @@ namespace DCL.ECSComponents
         private readonly MeshRendererRegister meshRendererRegister;
         private readonly MeshColliderRegister meshColliderRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
+        private readonly PointerEventsRegister pointerEventsRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
-        private readonly UITextRegister uiTextRegister;
+        private readonly UiTextRegister uiTextRegister;
+        private readonly UIBackgroundRegister uiBackgroundRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
-        private readonly OnPointerDownResultRegister pointerDownResultRegister;
-        private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly PointerEventResultRegister pointerEventResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
             transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
-            sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            boxShapeRegister = new BoxShapeRegister(ComponentID.BOX_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            planeShapeRegister = new PlaneShapeRegister(ComponentID.PLANE_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
-            cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter, internalComponents.texturizableComponent);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
             audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
-            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
-            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
-            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
-            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
-            pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentsWriter, internalComponents);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter);
@@ -71,24 +59,21 @@ namespace DCL.ECSComponents
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
 
             // UI components
-            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter);
-            uiTextRegister = new UITextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter);
+            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
 
             // Components without a handler
-            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
-            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
+            pointerEventsRegister = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
         {
             transformRegister.Dispose();
-            sphereShapeRegister.Dispose();
-            boxShapeRegister.Dispose();
             billboardRegister.Dispose();
-            planeShapeRegister.Dispose();
-            cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
@@ -97,8 +82,6 @@ namespace DCL.ECSComponents
             animatorRegister.Dispose();
             avatarAttachRegister.Dispose();
             avatarModifierAreaRegister.Dispose();
-            pointerDownRegister.Dispose();
-            pointerUpRegister.Dispose();
             avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
             materialRegister.Dispose();
@@ -111,12 +94,13 @@ namespace DCL.ECSComponents
             // UI components
             uiTransformRegister.Dispose();
             uiTextRegister.Dispose();
+            uiBackgroundRegister.Dispose();
 
             // Components without a handler
-            pointerDownResultRegister.Dispose();
-            pointerUpResultRegister.Dispose();
+            pointerEventResultRegister.Dispose();
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
+            pointerEventsRegister.Dispose();
         }
     }
 }

@@ -1,62 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
+using DCL.Friends.WebApi;
+using DCL.Interface;
 using UnityEngine;
 
 public class FriendsController : MonoBehaviour, IFriendsController
 {
-    public static bool VERBOSE = false;
+    private const bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
-    public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
+    public event Action<int> OnTotalFriendsUpdated;
+    public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
-    void Awake() { i = this; }
+    private void Awake()
+    {
+        i = this;
+    }
 
-    private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
-    public bool isInitialized { get; private set; } = false;
+    public bool IsInitialized { get; private set; }
 
     public int ReceivedRequestCount =>
         friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
-    
-    public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
-    [System.Serializable]
-    public class UserStatus
-    {
-        [System.Serializable]
-        public class Realm
-        {
-            public string serverName;
-            public string layer;
-        }
+    public int TotalFriendCount { get; private set; }
+    public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
+    public int TotalReceivedFriendRequestCount { get; private set; }
+    public int TotalSentFriendRequestCount { get; private set; }
+    public int TotalFriendsWithDirectMessagesCount { get; private set; }
 
-        public Realm realm;
-        public Vector2 position;
-        public string userId;
-        public FriendshipStatus friendshipStatus;
-        public PresenceStatus presence;
-        [NonSerialized] public DateTime friendshipStartedTime;
-    }
-
-    [System.Serializable]
-    public class FriendshipInitializationMessage
-    {
-        public string[] currentFriends;
-        public string[] requestedTo;
-        public string[] requestedFrom;
-    }
-
-    [System.Serializable]
-    public class FriendshipUpdateStatusMessage
-    {
-        public string userId;
-        public FriendshipAction action;
-    }
+    public readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
-            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND };
+            return new UserStatus {userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND};
 
         return friends[userId];
     }
@@ -71,130 +50,158 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
+    public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
+    public event Action<int, int> OnTotalFriendRequestUpdated;
 
-    public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
+    public Dictionary<string, UserStatus> GetAllocatedFriends()
+    {
+        return new Dictionary<string, UserStatus>(friends);
+    }
 
     public void RejectFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
-            userId = friendUserId,
-            action = FriendshipAction.REJECTED
+            action = WebInterface.FriendshipAction.REJECTED,
+            userId = friendUserId
         });
     }
 
     public bool IsFriend(string userId) => friends.ContainsKey(userId);
-    
+
     public void RemoveFriend(string friendId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
-            action = FriendshipAction.DELETED,
+            action = WebInterface.FriendshipAction.DELETED,
             userId = friendId
         });
     }
 
+    public void GetFriends(int limit, int skip) =>
+        WebInterface.GetFriends(limit, skip);
+
+    public void GetFriends(string usernameOrId, int limit)
+    {
+        WebInterface.GetFriends(usernameOrId, limit);
+    }
+
+    public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit,
+        int receivedSkip)
+    {
+        WebInterface.GetFriendRequests(sentLimit, sentSkip, receivedLimit,
+            receivedSkip);
+    }
+
+    public void GetFriendsWithDirectMessages(int limit, int skip)
+    {
+        WebInterface.GetFriendsWithDirectMessages("", limit, skip);
+    }
+
+    public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
+    {
+        WebInterface.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
+    }
+
     public void RequestFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.REQUESTED_TO
+            action = WebInterface.FriendshipAction.REQUESTED_TO
         });
     }
 
     public void CancelRequest(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.CANCELLED
+            action = WebInterface.FriendshipAction.CANCELLED
         });
     }
 
     public void AcceptFriendship(string friendUserId)
     {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
         {
             userId = friendUserId,
-            action = FriendshipAction.APPROVED
+            action = WebInterface.FriendshipAction.APPROVED
         });
     }
 
-    public void FriendNotFound(string name) { OnFriendNotFound?.Invoke(name); }
+    // called by kernel
+    [UsedImplicitly]
+    public void FriendNotFound(string name)
+    {
+        OnFriendNotFound?.Invoke(name);
+    }
 
+    // called by kernel
+    [UsedImplicitly]
     public void InitializeFriends(string json)
     {
-        isInitialized = true;
+        if (IsInitialized)
+            return;
 
-        FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
-        HashSet<string> processedIds = new HashSet<string>();
+        IsInitialized = true;
 
-        foreach (var userId in msg.currentFriends)
-        {
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                { action = FriendshipAction.APPROVED, userId = userId });
-            if (!processedIds.Contains(userId))
-                processedIds.Add(userId);
-        }
+        var msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
+
+        TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+        OnInitialized?.Invoke();
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriends(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendsPayload>(json);
+
+        TotalFriendCount = msg.totalFriends;
+        OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
+        
+        AddFriends(msg.friends);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriendRequests(string json)
+    {
+        var msg = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
+
+        TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
+        TotalSentFriendRequestCount = msg.totalSentFriendRequests;
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
 
         foreach (var userId in msg.requestedFrom)
         {
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                { action = FriendshipAction.REQUESTED_FROM, userId = userId });
-            if (!processedIds.Contains(userId))
-                processedIds.Add(userId);
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                {action = FriendshipAction.REQUESTED_FROM, userId = userId});
         }
 
         foreach (var userId in msg.requestedTo)
         {
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                { action = FriendshipAction.REQUESTED_TO, userId = userId });
-            if (!processedIds.Contains(userId))
-                processedIds.Add(userId);
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                {action = FriendshipAction.REQUESTED_TO, userId = userId});
         }
-
-        Queue<string> newFriends = new Queue<string>();
-
-        foreach (var kvp in friends)
-        {
-            if (!processedIds.Contains(kvp.Key))
-            {
-                newFriends.Enqueue(kvp.Key);
-            }
-        }
-
-        while (newFriends.Count > 0)
-        {
-            var userId = newFriends.Dequeue();
-
-            if (KERNEL_CAN_REMOVE_ENTRIES)
-            {
-                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                    { action = FriendshipAction.NONE, userId = userId });
-            }
-
-            if (friends.ContainsKey(userId))
-                friends.Remove(userId);
-        }
-
-        OnInitialized?.Invoke();
     }
 
-    public void UpdateUserStatus(UserStatus newUserStatus)
+    // called by kernel
+    [UsedImplicitly]
+    public void AddFriendsWithDirectMessages(string json)
     {
-        if (!friends.ContainsKey(newUserStatus.userId))
-        {
-            friends.Add(newUserStatus.userId, newUserStatus);
-        }
-        else
-        {
-            friends[newUserStatus.userId] = newUserStatus;
-        }
+        var friendsWithDMs = JsonUtility.FromJson<AddFriendsWithDirectMessagesPayload>(json);
+        TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
+        
+        AddFriends(friendsWithDMs.currentFriendsWithDirectMessages.Select(messages => messages.userId));
 
-        OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
+        OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
     }
 
+    // called by kernel
+    [UsedImplicitly]
     public void UpdateUserPresence(string json)
     {
         UserStatus newUserStatus = JsonUtility.FromJson<UserStatus>(json);
@@ -207,8 +214,52 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
         UpdateUserStatus(newUserStatus);
     }
+    
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateFriendshipStatus(string json)
+    {
+        FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
+        UpdateFriendshipStatus(msg);
+    }
 
-    public void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalFriendRequests(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalFriendRequestsPayload>(json);
+        TotalReceivedFriendRequestCount = msg.totalReceivedRequests;
+        TotalSentFriendRequestCount = msg.totalSentRequests;
+        OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+    }
+
+    // called by kernel
+    [UsedImplicitly]
+    public void UpdateTotalFriends(string json)
+    {
+        var msg = JsonUtility.FromJson<UpdateTotalFriendsPayload>(json);
+        TotalFriendCount = msg.totalFriends;
+        OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
+    }
+    
+    private void UpdateUserStatus(UserStatus newUserStatus)
+    {
+        if (!friends.ContainsKey(newUserStatus.userId))
+        {
+            friends.Add(newUserStatus.userId, newUserStatus);
+            OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
+        }
+        else
+        {
+            if (!friends[newUserStatus.userId].Equals(newUserStatus))
+            {
+                friends[newUserStatus.userId] = newUserStatus;
+                OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
+            }
+        }
+    }
+
+    private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
     {
         var friendshipStatus = ToFriendshipStatus(msg.action);
         var userId = msg.userId;
@@ -217,7 +268,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
             return;
 
         if (!friends.ContainsKey(userId))
-            friends.Add(userId, new UserStatus());
+            friends.Add(userId, new UserStatus { userId = userId });
 
         if (ItsAnOutdatedUpdate(userId, friendshipStatus))
             return;
@@ -234,12 +285,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
             friends.Remove(userId);
 
         OnUpdateFriendship?.Invoke(userId, msg.action);
-    }
-
-    public void UpdateFriendshipStatus(string json)
-    {
-        FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
-        UpdateFriendshipStatus(msg);
     }
 
     private bool ItsAnOutdatedUpdate(string userId, FriendshipStatus friendshipStatus)
@@ -272,6 +317,15 @@ public class FriendsController : MonoBehaviour, IFriendsController
         return FriendshipStatus.NOT_FRIEND;
     }
     
+    private void AddFriends(IEnumerable<string> friendIds)
+    {
+        foreach (var friendId in friendIds)
+        {
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                {action = FriendshipAction.APPROVED, userId = friendId});
+        }
+    }
+
     [ContextMenu("Change user stats to online")]
     public void FakeOnlineFriend()
     {
@@ -284,5 +338,11 @@ public class FriendsController : MonoBehaviour, IFriendsController
             friendshipStatus = friend.friendshipStatus,
             friendshipStartedTime = friend.friendshipStartedTime
         });
+    }
+
+    [ContextMenu("Force initialization")]
+    public void ForceInitialization()
+    {
+        InitializeFriends(JsonUtility.ToJson(new FriendshipInitializationMessage()));
     }
 }

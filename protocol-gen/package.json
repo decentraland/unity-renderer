@@ -1,0 +1,33 @@
+{
+  "name": "do-not-publish",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build-renderer-protocol": "ts-node --project scripts/tsconfig.json scripts/build-renderer-protocol.ts",
+    "build-components": "ts-node --project scripts/tsconfig.json scripts/build-components.ts",
+    "build-all": "npm run build-renderer-protocol && npm run build-components"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@dcl/protocol": "^1.0.0-3250759085.commit-6cf3623",
+    "@protobuf-ts/protoc": "^2.8.1",
+    "@types/fs-extra": "^9.0.8",
+    "@types/glob": "^8.0.0",
+    "@types/node-fetch": "^2.5.8",
+    "fs-extra": "^10.1.0",
+    "glob": "^8.0.3",
+    "node-fetch": "^2.6.1",
+    "protoc-gen-dclunity": "^1.0.0-20220912193536.commit-d764204"
+  },
+  "config": {
+    "protocVersion": "3.20.1"
+  }
+}

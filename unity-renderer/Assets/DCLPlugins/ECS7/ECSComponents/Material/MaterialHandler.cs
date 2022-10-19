@@ -21,7 +21,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            materialInternalComponent.RemoveFor(scene, entity);
+            materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
             AssetPromiseKeeper_Material.i.Forget(promiseMaterial);
         }
 
@@ -56,8 +56,7 @@ namespace DCL.ECSComponents
                 {
                     materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                     {
-                        material = materialAsset.material,
-                        dirty = true
+                        material = materialAsset.material
                     });
                 };
                 AssetPromiseKeeper_Material.i.Keep(promiseMaterial);

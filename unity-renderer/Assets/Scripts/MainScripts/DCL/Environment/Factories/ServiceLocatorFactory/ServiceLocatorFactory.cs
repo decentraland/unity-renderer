@@ -1,7 +1,7 @@
 ﻿using DCL.Controllers;
 using DCL.Emotes;
-using DCL.Helpers;
 using DCL.Rendering;
+using DCL.Services;
 using UnityEngine;
 
 namespace DCL
@@ -34,15 +34,14 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
+            result.Register<ITeleportController>(() => new TeleportController());
+            result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
-            result.Register<ILastReadMessagesService>(() => new LastReadMessagesService(
-                CommonScriptableObjects.lastReadChatMessages,
-                ChatController.i,
-                new DefaultPlayerPrefs(),
-                new UserProfileWebInterfaceBridge()));
+
+            result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             return result;
         }

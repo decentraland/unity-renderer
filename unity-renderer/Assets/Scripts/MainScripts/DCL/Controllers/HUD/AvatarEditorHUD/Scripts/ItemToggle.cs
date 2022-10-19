@@ -18,12 +18,16 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] private GameObject incompatibleWarningPanel;
     [SerializeField] private GameObject hideWarningPanel;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
     [SerializeField] internal GameObject root;
+    [SerializeField] private GameObject disabledOverlay;
+    [SerializeField] internal Material grayScaleMaterial;
+    [SerializeField] internal Button selectButton;
 
     private bool selectedValue;
 
@@ -31,6 +35,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private Func<WearableItem, bool> getEquippedWearablesReplacedByFunc;
     private Func<WearableItem, bool> getEquippedWearablesHiddenBy;
+    private Func<WearableItem, bool> getBodyShapeCompatibility;
 
     public string collectionId { get; set; }
 
@@ -58,7 +63,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         thumbnail.sprite = null;
         warningPanel.SetActive(false);
         hideWarningPanel.SetActive(false);
-
+        incompatibleWarningPanel.SetActive(false);
         if (!EnvironmentSettings.RUNNING_TESTS)
             view = GetComponentInParent<AvatarEditorHUDView>();
     }
@@ -84,39 +89,61 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!ShowReplacementWarningPanel())
-            ShowHidingWarningPanel();
+        incompatibleWarningPanel.SetActive(false);
+        warningPanel.SetActive(false);
+        hideWarningPanel.SetActive(false);
+        if(IsIncompatible())
+        {
+            incompatibleWarningPanel.SetActive(true);
+        }
+        else if(IsReplacingWearables())
+        {
+            warningPanel.SetActive(true);
+        }
+        else if(IsHidingWearables())
+        {
+            hideWarningPanel.SetActive(true);
+        }
     }
 
-    private bool ShowReplacementWarningPanel()
+    private bool IsIncompatible()
+    {
+        if(getBodyShapeCompatibility == null) return false;
+        return getBodyShapeCompatibility(wearableItem);
+    }
+
+    private bool IsReplacingWearables()
     {
         if (getEquippedWearablesReplacedByFunc == null) return false;
-        var shouldShow = getEquippedWearablesReplacedByFunc(wearableItem);
-        warningPanel.SetActive(shouldShow);
-        return shouldShow;
+        return getEquippedWearablesReplacedByFunc(wearableItem);
     }
-    
-    private bool ShowHidingWarningPanel()
+
+    private bool IsHidingWearables()
     {
         if (getEquippedWearablesHiddenBy == null) return false;
-        var shouldShow = getEquippedWearablesHiddenBy(wearableItem);
-        hideWarningPanel.SetActive(shouldShow);
-        return shouldShow;
+        return getEquippedWearablesHiddenBy(wearableItem);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         warningPanel.SetActive(false);
         hideWarningPanel.SetActive(false);
+        incompatibleWarningPanel.SetActive(false);
     }
 
     public void SetHideOtherWerablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesHiddenBy = function;
+
+    public void SetBodyShapeCompatibilityStrategy(Func<WearableItem, bool> function) =>
+        getBodyShapeCompatibility = function;
     
     public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesReplacedByFunc = function;
 
-    private void OnEnable() { GetThumbnail(); }
+    private void OnEnable() 
+    { 
+        GetThumbnail(); 
+    }
 
     protected virtual void OnDestroy()
     {
@@ -124,6 +151,23 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     }
 
     protected void CallOnSellClicked() { OnSellClicked?.Invoke(this); }
+
+    private void SetColorScale()
+    {
+        if(getBodyShapeCompatibility != null && getBodyShapeCompatibility(wearableItem))
+        {
+            thumbnail.material = grayScaleMaterial;
+            thumbnail.SetMaterialDirty();
+            disabledOverlay.SetActive(true);
+            selectButton.interactable = false;
+        }
+        else
+        {
+            thumbnail.material = null;
+            disabledOverlay.SetActive(false);
+            selectButton.interactable = true;
+        }
+    }
 
     private void GetThumbnail()
     {
@@ -149,6 +193,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             if (view.avatarEditorCanvas.enabled)
                 AudioScriptableObjects.listItemAppear.Play(true);
         }
+        SetColorScale();
     }
     
     private void SetLoadingAnimationTrigger(int id)

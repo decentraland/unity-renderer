@@ -24,5 +24,6 @@ namespace DCL
         void ShowInfoPanel(string network, string realm);
         void SetRealm(string realm);
         void SetAnimationCulling(bool enabled);
+        void ToggleFPSPanel();
     }
 }

@@ -38,9 +38,9 @@ namespace DCL.Rendering
         // Cache to avoid allocations when getting names
         private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
         private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
-        
+
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
-        
+
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -64,7 +64,7 @@ namespace DCL.Rendering
 
             this.urpAsset = urpAsset;
             this.settings = settings;
-            
+
             featureFlags.OnChange += OnFeatureFlagChange;
             OnFeatureFlagChange(featureFlags.Get(), null);
         }
@@ -134,7 +134,7 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            Renderer[] renderers;
+            IEnumerable<Renderer> renderers = null;
 
             // If profile matches the skinned renderer profile in settings,
             // the skinned renderers are going to be used.
@@ -143,37 +143,31 @@ namespace DCL.Rendering
             else
                 renderers = objectsTracker.GetSkinnedRenderers();
 
+            if (settings.enableShadowCulling)
+                yield return ProcessProfileWithEnabledCulling(profile, renderers);
+            else
+                yield return ProcessProfileWithDisabledCulling(profile, renderers);
+        }
 
-            for (var i = 0; i < renderers.Length; i++)
+        internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
+        {
+            Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
+            float currentStartTime = Time.realtimeSinceStartup;
+            foreach (Renderer r in renderers)
             {
-                if (timeBudgetCount > settings.maxTimeBudget)
-                {
-                    timeBudgetCount = 0;
-                    yield return null;
-                }
-
-                Renderer r = renderers[i];
-
                 if (r == null)
                     continue;
 
-                bool rendererIsInIgnoreLayer = ((1 << r.gameObject.layer) & settings.ignoredLayersMask) != 0;
-
-                if (rendererIsInIgnoreLayer)
+                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
                 {
-                    SetCullingForRenderer(r, true, true);
-                    continue;
+                    yield return null;
+                    playerPosition = CommonScriptableObjects.playerUnityPosition;
+                    currentStartTime = Time.realtimeSinceStartup;
                 }
 
-                float startTime = Time.realtimeSinceStartup;
-
-                //NOTE(Brian): Need to retrieve positions every frame to take into account
-                //             world repositioning.
-                Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
-
                 Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
-
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
+
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
                 float boundsSize = bounds.size.magnitude;
                 float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
@@ -181,16 +175,12 @@ namespace DCL.Rendering
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
                 bool shouldBeVisible =
-                    // all objects are visible if culling is off
-                    !settings.enableObjectCulling
-                    // or if the player is inside the bounding box of the object
-                    || bounds.Contains(playerPosition)
-                    // or if the player distance is below the threshold
-                    || distance < profile.visibleDistanceThreshold
-                    // at last, we perform the expensive queries of emmisiveness and opaque conditions
-                    // these are the last conditions because IsEmissive and IsOpaque perform expensive lookups
-                    || viewportSize > profile.emissiveSizeThreshold && IsEmissive(r)
-                    || viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
+                    distance < profile.visibleDistanceThreshold ||
+                    bounds.Contains(playerPosition) ||
+                    // At the end we perform queries for emissive and opaque conditions
+                    // these are the last conditions because IsEmissive and IsOpaque are a bit more costly
+                    viewportSize > profile.emissiveSizeThreshold && IsEmissive(r) ||
+                    viewportSize > profile.opaqueSizeThreshold && IsOpaque(r)
                 ;
 
                 bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
@@ -200,11 +190,9 @@ namespace DCL.Rendering
                     Material mat = skr.sharedMaterial;
 
                     if (IsAvatarRenderer(mat))
-                    {
                         shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
-                    }
 
-                    skr.updateWhenOffscreen = TestSkinnedRendererOffscreenRule(settings, distance);
+                    skr.updateWhenOffscreen = false;
                 }
 
                 if (OnDataReport != null)
@@ -218,13 +206,56 @@ namespace DCL.Rendering
 
                 SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
-                if (DRAW_GIZMOS) DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
+                if (DRAW_GIZMOS)
+                    DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
-                timeBudgetCount += Time.realtimeSinceStartup - startTime;
-
             }
         }
-        
+
+        internal IEnumerator ProcessProfileWithDisabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
+        {
+            Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
+            float currentStartTime = Time.realtimeSinceStartup;
+            foreach (Renderer r in renderers)
+            {
+                if (r == null)
+                    continue;
+
+                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
+                {
+                    yield return null;
+                    playerPosition = CommonScriptableObjects.playerUnityPosition;
+                    currentStartTime = Time.realtimeSinceStartup;
+                }
+
+                Bounds bounds = MeshesInfoUtils.GetSafeBounds(r.bounds, r.transform.position);
+                Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
+
+                float distance = Vector3.Distance(playerPosition, boundingPoint);
+                float boundsSize = bounds.size.magnitude;
+                float viewportSize = (boundsSize / distance) * Mathf.Rad2Deg;
+
+                float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
+                bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
+
+                if (r is SkinnedMeshRenderer skr)
+                    skr.updateWhenOffscreen = false;
+
+                if (OnDataReport != null)
+                {
+                    if (!shouldHaveShadow && !shadowlessRenderers.Contains(r))
+                        shadowlessRenderers.Add(r);
+                }
+
+                SetCullingForRenderer(r, true, shouldHaveShadow);
+
+#if UNITY_EDITOR
+                if (DRAW_GIZMOS)
+                    DrawDebugGizmos(true, bounds, boundingPoint);
+#endif
+            }
+        }
+
         /// <summary>
         /// Checks if the material is from an Avatar by checking if the shader is DCL/Toon Shader
         /// This Method avoids the allocation of the name getter by storing the result on a HashSet
@@ -249,7 +280,7 @@ namespace DCL.Rendering
                 }
 
                 return avatarShaders.Contains(matShader);
-                
+
             }
 
             return false;
@@ -292,7 +323,7 @@ namespace DCL.Rendering
 
                 int profilesCount = profiles.Count;
 
-                for (var pIndex = 0; pIndex < profilesCount; pIndex++)
+                for (int pIndex = 0; pIndex < profilesCount; pIndex++)
                 {
                     yield return ProcessProfile(profiles[pIndex]);
                 }
@@ -365,26 +396,26 @@ namespace DCL.Rendering
         /// </summary>
         internal void ResetObjects()
         {
-            var skinnedRenderers = objectsTracker.GetSkinnedRenderers();
-            var renderers = objectsTracker.GetRenderers();
-            var animations = objectsTracker.GetAnimations();
+            IEnumerable<Renderer> renderers = objectsTracker.GetRenderers();
+            IEnumerable<SkinnedMeshRenderer> skinnedRenderers = objectsTracker.GetSkinnedRenderers();
+            Animation[] animations = objectsTracker.GetAnimations();
 
-            for (var i = 0; i < skinnedRenderers?.Length; i++)
+            foreach (Renderer renderer in renderers)
             {
-                if (skinnedRenderers[i] != null)
-                    skinnedRenderers[i].updateWhenOffscreen = true;
+                if (renderer != null)
+                    renderer.forceRenderingOff = false;
             }
 
-            for (var i = 0; i < animations?.Length; i++)
+            foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
+            {
+                if (skinnedRenderer != null)
+                    skinnedRenderer.updateWhenOffscreen = true;
+            }
+
+            for (int i = 0; i < animations?.Length; i++)
             {
                 if (animations[i] != null)
                     animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
-            }
-
-            for (var i = 0; i < renderers?.Length; i++)
-            {
-                if (renderers[i] != null)
-                    renderers[i].forceRenderingOff = false;
             }
         }
 
@@ -508,7 +539,7 @@ namespace DCL.Rendering
             if (OnDataReport == null)
                 return;
 
-            int rendererCount = (objectsTracker.GetRenderers()?.Length ?? 0) + (objectsTracker.GetSkinnedRenderers()?.Length ?? 0);
+            int rendererCount = (objectsTracker.GetRenderers()?.Count ?? 0) + (objectsTracker.GetSkinnedRenderers()?.Count ?? 0);
 
             OnDataReport.Invoke(rendererCount, hiddenRenderers.Count, shadowlessRenderers.Count);
         }
@@ -531,8 +562,8 @@ namespace DCL.Rendering
         {
             if (!shouldBeVisible)
             {
-                CullingControllerUtils.DrawBounds(bounds, Color.blue, 1);
-                CullingControllerUtils.DrawBounds(new Bounds() { center = boundingPoint, size = Vector3.one }, Color.red, 1);
+                DrawBounds(bounds, Color.blue, 1);
+                DrawBounds(new Bounds() { center = boundingPoint, size = Vector3.one }, Color.red, 1);
             }
         }
     }

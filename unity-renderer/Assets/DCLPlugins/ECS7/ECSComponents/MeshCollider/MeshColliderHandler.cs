@@ -105,8 +105,8 @@ namespace DCL.ECSComponents
                 colliderGameObject.SetActive(true);
             }
 
-            const int physicsLayer = (int)ColliderLayer.Physics;
-            const int pointerLayer = (int)ColliderLayer.Pointer;
+            const int physicsLayer = (int)ColliderLayer.ClPhysics;
+            const int pointerLayer = (int)ColliderLayer.ClPointer;
             const int pointerAndPhysicsMask = physicsLayer | pointerLayer;
 
             int colliderLayer = model.GetColliderLayer();
@@ -131,8 +131,8 @@ namespace DCL.ECSComponents
 
         private void SetInternalColliderComponents(IParcelScene scene, IDCLEntity entity, PBMeshCollider model)
         {
-            const int physicsLayer = (int)ColliderLayer.Physics;
-            const int pointerLayer = (int)ColliderLayer.Pointer;
+            const int physicsLayer = (int)ColliderLayer.ClPhysics;
+            const int pointerLayer = (int)ColliderLayer.ClPointer;
             int colliderLayer = model.GetColliderLayer();
 
             if ((colliderLayer & pointerLayer) == pointerLayer)

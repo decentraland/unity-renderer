@@ -31,7 +31,7 @@ public static class BIWTeleportAndEdit
 
         DataStore.i.player.lastTeleportPosition.OnChange += OnPlayerTeleportToNewPosition;
 
-        WebInterface.GoTo(targetCoords.x, targetCoords.y);
+        DCL.Environment.i.world.teleportController.Teleport(targetCoords.x, targetCoords.y);
 
         yield return new WaitUntil(() => isPlayerTeleported);
         DataStore.i.player.lastTeleportPosition.OnChange -= OnPlayerTeleportToNewPosition;

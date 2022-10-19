@@ -9,6 +9,7 @@ using DCL.Models;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 using RaycastHit = UnityEngine.RaycastHit;
+using Vector3 = DCL.ECSComponents.Vector3;
 
 namespace DCLPlugins.ECSComponents.Raycast
 {
@@ -22,7 +23,9 @@ namespace DCLPlugins.ECSComponents.Raycast
         {
             this.componentWriter = componentWriter;
             this.physicsColliderComponent = physicsColliderComponent;
-            raycastLayerMaskTarget = PhysicsLayers.physicsCastLayerMask;
+
+            // Cast all layers except the OnPointerEvent one
+            raycastLayerMaskTarget = ~(1 << PhysicsLayers.onPointerEventLayer);
         }
         
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -47,7 +50,7 @@ namespace DCLPlugins.ECSComponents.Raycast
             result.Timestamp = model.Timestamp;
             
             RaycastHit[] hits = null;
-            if (model.QueryType == RaycastQueryType.HitFirst)
+            if (model.QueryType == RaycastQueryType.RqtHitFirst)
             {
                 bool hasHit = Physics.Raycast(ray, out RaycastHit hit, model.MaxDistance, raycastLayerMaskTarget);
                 if (hasHit)
@@ -56,7 +59,7 @@ namespace DCLPlugins.ECSComponents.Raycast
                     hits[0] = hit;
                 }
             }
-            else if (model.QueryType == RaycastQueryType.QueryAll)
+            else if (model.QueryType == RaycastQueryType.RqtQueryAll)
             {
                 hits = Physics.RaycastAll(ray, model.MaxDistance, raycastLayerMaskTarget);
             }

@@ -24,22 +24,29 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] internal Image background;
     [SerializeField] internal Transform pivot;
     [SerializeField] internal Animator talkingAnimator;
+    
+    [SerializeField] internal List<CanvasRenderer> canvasRenderers;
 
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
+    internal BaseVariable<bool> profanityFilterEnabled;
 
     internal float alpha;
     internal float targetAlpha;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
     internal List<string> hideConstraints = new List<string>();
+    internal string currentName = "";
 
     private void Awake()
     {
         backgroundOriginalColor = background.color;
         canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
+        profanityFilterEnabled = DataStore.i.settings.profanityChatFilteringEnabled;
         namesVisible.OnChange += OnNamesVisibleChanged;
         namesOpacity.OnChange += OnNamesOpacityChanged;
+        profanityFilterEnabled.OnChange += OnProfanityFilterChanged;
+        
         OnNamesVisibleChanged(namesVisible.Get(), true);
         OnNamesOpacityChanged(namesOpacity.Get(), 1);
         Show(true);
@@ -47,16 +54,34 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
 
     internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current || forceShow; }
-
+    private void OnProfanityFilterChanged(bool current, bool previous) { SetName(currentName); }
     public void SetName(string name) { AsyncSetName(name).Forget(); }
     private async UniTaskVoid AsyncSetName(string name)
     {
-        name = await ProfanityFilterSharedInstances.regexFilter.Filter(name);
+        currentName = name;
+        name = await FilterName(currentName);
         nameText.text = name;
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
     }
 
+    private async UniTask<string> FilterName(string name)
+    {
+        return IsProfanityFilteringEnabled()
+            ? await ProfanityFilterSharedInstances.regexFilter.Filter(name)
+            : name;
+    }
+
+    private bool IsProfanityFilteringEnabled()
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get();
+    }
+
     private void Update() { Update(Time.deltaTime); }
+
+    private void SetRenderersVisible(bool value)
+    {
+        canvasRenderers.ForEach(c => c.SetAlpha(value ? 1f : 0f));
+    }
 
     internal void Update(float deltaTime)
     {
@@ -74,7 +99,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         {
             UpdateVisuals(0);
             // We are hidden and we dont have to scale, look at camera or anything, we can disable the gameObject
-            gameObject.SetActive(false);
+            SetRenderersVisible(false);
             return;
         }
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
@@ -107,7 +132,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     public void Show(bool instant = false)
     {
         targetAlpha = TARGET_ALPHA_SHOW;
-        gameObject.SetActive(true);
+        SetRenderersVisible(true);
         if (instant)
             alpha = TARGET_ALPHA_SHOW;
     }
@@ -118,7 +143,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         if (instant && !forceShow)
         {
             alpha = TARGET_ALPHA_HIDE;
-            gameObject.SetActive(false);
+            SetRenderersVisible(false);
         }
     }
 
@@ -134,7 +159,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         this.forceShow = forceShow;
         if (this.forceShow)
-            gameObject.SetActive(true);
+            SetRenderersVisible(true);
     }
 
     public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
@@ -162,7 +187,10 @@ public class PlayerName : MonoBehaviour, IPlayerName
         return alphaValue * Mathf.Lerp(1, 0, (distanceToCamera - MIN_DISTANCE) / (DataStore.i.avatarsLOD.LODDistance.Get() - MIN_DISTANCE));
     }
 
-    internal void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
+    internal void UpdateVisuals(float resolvedAlpha)
+    {
+        canvasGroup.alpha = resolvedAlpha;
+    }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
 
@@ -181,5 +209,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     {
         namesVisible.OnChange -= OnNamesVisibleChanged;
         namesOpacity.OnChange -= OnNamesOpacityChanged;
+        profanityFilterEnabled.OnChange -= OnProfanityFilterChanged;
     }
 }

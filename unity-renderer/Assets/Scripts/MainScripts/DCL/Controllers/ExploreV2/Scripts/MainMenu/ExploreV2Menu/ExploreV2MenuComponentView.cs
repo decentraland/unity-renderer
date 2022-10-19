@@ -1,25 +1,13 @@
-using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Events;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
-    /// <summary>
-    /// It will be triggered when the close button is clicked.
-    /// </summary>
-    event Action<bool> OnCloseButtonPressed;
-
-    /// <summary>
-    /// It will be triggered when a section is open.
-    /// </summary>
-    event Action<ExploreSection> OnSectionOpen;
-
-    /// <summary>
-    /// It will be triggered after the show animation has finished.
-    /// </summary>
-    event Action OnAfterShowAnimation;
 
     /// <summary>
     /// Real viewer component.
@@ -80,6 +68,20 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Transform used to positionate the profile section tooltips.
     /// </summary>
     RectTransform currentProfileCardTooltipReference { get; }
+    /// <summary>
+    /// It will be triggered when the close button is clicked.
+    /// </summary>
+    event Action<bool> OnCloseButtonPressed;
+
+    /// <summary>
+    /// It will be triggered when a section is open.
+    /// </summary>
+    event Action<ExploreSection> OnSectionOpen;
+
+    /// <summary>
+    /// It will be triggered after the show animation has finished.
+    /// </summary>
+    event Action OnAfterShowAnimation;
 
     /// <summary>
     /// Shows/Hides the game object of the explore menu.
@@ -90,6 +92,7 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// It is called after the show animation has finished.
     /// </summary>
+    [UsedImplicitly]
     void OnAfterShowAnimationCompleted();
 
     /// <summary>
@@ -115,9 +118,9 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// Configures a encapsulated section.
     /// </summary>
-    /// <param name="section">Section to configure.</param>
+    /// <param name="sectionId">Section to configure.</param>
     /// <param name="featureConfiguratorFlag">Flag used to configurates the feature.</param>
-    void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
+    void ConfigureEncapsulatedSection(ExploreSection sectionId, BaseVariable<Transform> featureConfiguratorFlag);
 
     /// <summary>
     /// Shows the Realm Selector modal.
@@ -127,6 +130,8 @@ public interface IExploreV2MenuComponentView : IDisposable
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
+    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
+
     [Header("Assets References")]
     [SerializeField] internal RealmSelectorComponentView realmSelectorModalPrefab;
 
@@ -148,8 +153,46 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [Header("Tutorial References")]
     [SerializeField] internal RectTransform profileCardTooltipReference;
 
-    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
-    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
+    private DataStore_Camera cameraDataStore;
+
+    private Dictionary<ExploreSection, FeatureEncapsulatorComponentView> exploreSectionsById;
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
+
+    private RectTransform profileCardRectTranform;
+    private RealmSelectorComponentView realmSelectorModal;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
+        realmSelectorModal = ConfigureRealmSelectorModal();
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+
+        exploreSectionsById = new Dictionary<ExploreSection, FeatureEncapsulatorComponentView>()
+        {
+            { ExploreSection.Explore, null },
+            { ExploreSection.Backpack, backpackSection },
+            { ExploreSection.Map, mapSection },
+            { ExploreSection.Builder, builderSection },
+            { ExploreSection.Quest, questSection },
+            { ExploreSection.Settings, settingsSection },
+        };
+    }
+
+    public override void Start()
+    {
+        DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
+        IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
+
+        ConfigureCloseButton();
+    }
+
+    public override void Update() =>
+        CheckIfProfileCardShouldBeClosed();
+
+    public void OnDestroy() =>
+        hudCanvasCameraModeController?.Dispose();
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
@@ -167,56 +210,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action<bool> OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
     public event Action OnAfterShowAnimation;
-
-    internal RectTransform profileCardRectTranform;
-    internal RealmSelectorComponentView realmSelectorModal;
-    internal HUDCanvasCameraModeController hudCanvasCameraModeController;
-    private DataStore_Camera cameraDataStore;
-
-    public override void Awake()
-    {
-        base.Awake();
-
-        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
-        realmSelectorModal = ConfigureRealmSelectorModal();
-        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
-    }
-
-    public void OnDestroy()
-    {
-        hudCanvasCameraModeController?.Dispose();
-    }
-
-    public override void Start()
-    {
-        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
-
-        DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
-        IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
-
-        ConfigureCloseButton();
-    }
-
-    private void IsInitialized_OnChange(bool current, bool previous)
-    {
-        if (!current)
-            return;
-
-        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
-        StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
-    }
-
-    public override void Update() { CheckIfProfileCardShouldBeClosed(); }
-
-    public override void RefreshControl()
-    {
-        placesAndEventsSection.RefreshControl();
-        backpackSection.RefreshControl();
-        mapSection.RefreshControl();
-        builderSection.RefreshControl();
-        questSection.RefreshControl();
-        settingsSection.RefreshControl();
-    }
 
     public override void Dispose()
     {
@@ -240,8 +233,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             Show();
 
             ISectionToggle sectionToGo = sectionSelector.GetSection(DataStore.i.exploreV2.currentSectionIndex.Get());
+
             if (sectionToGo != null && sectionToGo.IsActive())
+            {
                 GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
+            }
             else
             {
                 List<ISectionToggle> allSections = sectionSelector.GetAllSections();
@@ -249,7 +245,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                 {
                     if (section != null && section.IsActive())
                     {
-                        section.SelectToggle(true);
+                        section.SelectToggle(reselectIfAlreadyOn: true);
                         break;
                     }
                 }
@@ -262,147 +258,47 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
+    public void GoToSection(ExploreSection section)
+    {
+        sectionSelector.GetSection((int)section)?.SelectToggle(reselectIfAlreadyOn: true);
+
+        AudioScriptableObjects.dialogOpen.Play(true);
+        AudioScriptableObjects.listItemAppear.ResetPitch();
+    }
+
     public void OnAfterShowAnimationCompleted()
     {
-        if(!DataStore.i.exploreV2.isOpen.Get())
+        if (!DataStore.i.exploreV2.isOpen.Get())
             return;
 
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
         OnAfterShowAnimation?.Invoke();
     }
 
-    public void GoToSection(ExploreSection section)
+    public void SetSectionActive(ExploreSection section, bool isActive) =>
+        sectionSelector.GetSection((int)section).SetActive(isActive);
+
+    public bool IsSectionActive(ExploreSection section) =>
+        sectionSelector.GetSection((int)section).IsActive();
+
+    public void ConfigureEncapsulatedSection(ExploreSection sectionId, BaseVariable<Transform> featureConfiguratorFlag) =>
+        exploreSectionsById[sectionId]?.EncapsulateFeature(featureConfiguratorFlag);
+
+    public void ShowRealmSelectorModal() =>
+        realmSelectorModal.Show();
+
+    public override void RefreshControl()
     {
-        if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
+        placesAndEventsSection.RefreshControl();
 
-        sectionSelector.GetSection((int)section)?.SelectToggle(true);
-
-        AudioScriptableObjects.dialogOpen.Play(true);
-        AudioScriptableObjects.listItemAppear.ResetPitch();
-    }
-
-    public void SetSectionActive(ExploreSection section, bool isActive) { sectionSelector.GetSection((int)section).SetActive(isActive); }
-
-    public bool IsSectionActive(ExploreSection section) { return sectionSelector.GetSection((int)section).IsActive(); }
-
-    public void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag)
-    {
-        FeatureEncapsulatorComponentView sectionView = null;
-        switch (section)
-        {
-            case ExploreSection.Backpack:
-                sectionView = backpackSection;
-                break;
-            case ExploreSection.Map:
-                sectionView = mapSection;
-                break;
-            case ExploreSection.Builder:
-                sectionView = builderSection;
-                break;
-            case ExploreSection.Quest:
-                sectionView = questSection;
-                break;
-            case ExploreSection.Settings:
-                sectionView = settingsSection;
-                break;
-        }
-
-        sectionView?.EncapsulateFeature(featureConfiguratorFlag);
-    }
-
-    public IEnumerator CreateSectionSelectorMappingsAfterDelay()
-    {
-        yield return null;
-        CreateSectionSelectorMappings();
-    }
-
-    internal void CreateSectionSelectorMappings()
-    {
-        sectionSelector.GetSection((int)ExploreSection.Explore)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Explore, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Explore);
-                           }
-                       });
-
-        sectionSelector.GetSection((int)ExploreSection.Backpack)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               backpackSection.Show();
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Backpack);
-                           }
-                           else
-                               backpackSection.Hide();
-                       });
-
-        sectionSelector.GetSection((int)ExploreSection.Map)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               mapSection.Show();
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Map, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Map);
-                           }
-                           else
-                               mapSection.Hide();
-                       });
-
-        sectionSelector.GetSection((int)ExploreSection.Builder)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               builderSection.Show();
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Builder);
-                           }
-                           else
-                               builderSection.Hide();
-                       });
-
-        sectionSelector.GetSection((int)ExploreSection.Quest)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               questSection.Show();
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Quest, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Quest);
-                           }
-                           else
-                               questSection.Hide();
-                       });
-
-        sectionSelector.GetSection((int)ExploreSection.Settings)
-                       ?.onSelect.AddListener((isOn) =>
-                       {
-                           if (isOn)
-                           {
-                               settingsSection.Show();
-                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Settings, false);
-                               OnSectionOpen?.Invoke(ExploreSection.Settings);
-                           }
-                           else
-                               settingsSection.Hide();
-                       });
+        foreach (var section in exploreSectionsById.Keys)
+            exploreSectionsById[section]?.RefreshControl();
     }
 
     internal void RemoveSectionSelectorMappings()
     {
-        sectionSelector.GetSection((int)ExploreSection.Explore)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection((int)ExploreSection.Backpack)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection((int)ExploreSection.Map)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection((int)ExploreSection.Builder)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection((int)ExploreSection.Quest)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection((int)ExploreSection.Settings)?.onSelect.RemoveAllListeners();
+        foreach (int sectionId in Enum.GetValues(typeof(ExploreSection)))
+            sectionSelector.GetSection(sectionId)?.onSelect.RemoveAllListeners();
     }
 
     internal void ConfigureCloseButton()
@@ -410,31 +306,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke(false));
         closeAction.OnTriggered += OnCloseActionTriggered;
         DataStore.i.exploreV2.isSomeModalOpen.OnChange += IsSomeModalOpen_OnChange;
-    }
-
-    internal void IsSomeModalOpen_OnChange(bool current, bool previous)
-    {
-        closeAction.OnTriggered -= OnCloseActionTriggered;
-
-        if (!current)
-            closeAction.OnTriggered += OnCloseActionTriggered;
-    }
-
-    internal void OnCloseActionTriggered(DCLAction_Trigger action) { OnCloseButtonPressed?.Invoke(true); }
-
-    internal void CheckIfProfileCardShouldBeClosed()
-    {
-        if (!DataStore.i.exploreV2.profileCardIsOpen.Get())
-            return;
-
-        cameraDataStore ??= DataStore.i.camera;
-        
-        if (Input.GetMouseButton(0) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
-        {
-            DataStore.i.exploreV2.profileCardIsOpen.Set(false);
-        }
     }
 
     /// <summary>
@@ -446,8 +317,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RealmSelectorComponentView realmSelectorModal = null;
 
         GameObject existingModal = GameObject.Find(REALM_SELECTOR_MODAL_ID);
+
         if (existingModal != null)
+        {
             realmSelectorModal = existingModal.GetComponent<RealmSelectorComponentView>();
+        }
         else
         {
             realmSelectorModal = GameObject.Instantiate(realmSelectorModalPrefab);
@@ -459,13 +333,77 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         return realmSelectorModal;
     }
 
-    public void ShowRealmSelectorModal() { realmSelectorModal.Show(); }
-
     internal static ExploreV2MenuComponentView Create()
     {
         ExploreV2MenuComponentView exploreV2View = Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>();
         exploreV2View.name = "_ExploreV2";
 
         return exploreV2View;
+    }
+
+    private void IsInitialized_OnChange(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+        StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
+    }
+
+    private IEnumerator CreateSectionSelectorMappingsAfterDelay()
+    {
+        yield return null;
+        CreateSectionSelectorMappings();
+    }
+
+    internal void CreateSectionSelectorMappings()
+    {
+        foreach (ExploreSection sectionId in Enum.GetValues(typeof(ExploreSection)))
+            sectionSelector.GetSection((int)sectionId)
+                           ?.onSelect.AddListener(OnSectionSelected(sectionId));
+    }
+
+    private UnityAction<bool> OnSectionSelected(ExploreSection sectionId) =>
+        isOn =>
+        {
+            FeatureEncapsulatorComponentView sectionView = exploreSectionsById[sectionId];
+
+            if (isOn)
+            {
+                // If not an explorer Section, because we do not Show/Hide it
+                if (sectionView != null)
+                    sectionView.Show();
+
+                OnSectionOpen?.Invoke(sectionId);
+            }
+            else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
+            {
+                sectionView.Hide();
+            }
+        };
+
+    private void IsSomeModalOpen_OnChange(bool current, bool previous)
+    {
+        closeAction.OnTriggered -= OnCloseActionTriggered;
+
+        if (!current)
+            closeAction.OnTriggered += OnCloseActionTriggered;
+    }
+
+    private void OnCloseActionTriggered(DCLAction_Trigger action) => OnCloseButtonPressed?.Invoke(true);
+
+    private void CheckIfProfileCardShouldBeClosed()
+    {
+        if (!DataStore.i.exploreV2.profileCardIsOpen.Get())
+            return;
+
+        cameraDataStore ??= DataStore.i.camera;
+
+        if (Input.GetMouseButton(0) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
+        {
+            DataStore.i.exploreV2.profileCardIsOpen.Set(false);
+        }
     }
 }
