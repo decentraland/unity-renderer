@@ -29,19 +29,24 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
+    internal BaseVariable<bool> profanityFilterEnabled;
 
     internal float alpha;
     internal float targetAlpha;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
     internal List<string> hideConstraints = new List<string>();
+    internal string currentName = "";
 
     private void Awake()
     {
         backgroundOriginalColor = background.color;
         canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
+        profanityFilterEnabled = DataStore.i.settings.profanityChatFilteringEnabled;
         namesVisible.OnChange += OnNamesVisibleChanged;
         namesOpacity.OnChange += OnNamesOpacityChanged;
+        profanityFilterEnabled.OnChange += OnProfanityFilterChanged;
+        
         OnNamesVisibleChanged(namesVisible.Get(), true);
         OnNamesOpacityChanged(namesOpacity.Get(), 1);
         Show(true);
@@ -49,13 +54,26 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
 
     internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current || forceShow; }
-
+    private void OnProfanityFilterChanged(bool current, bool previous) { SetName(currentName); }
     public void SetName(string name) { AsyncSetName(name).Forget(); }
     private async UniTaskVoid AsyncSetName(string name)
     {
-        name = await ProfanityFilterSharedInstances.regexFilter.Filter(name);
+        currentName = name;
+        name = await FilterName(currentName);
         nameText.text = name;
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
+    }
+
+    private async UniTask<string> FilterName(string name)
+    {
+        return IsProfanityFilteringEnabled()
+            ? await ProfanityFilterSharedInstances.regexFilter.Filter(name)
+            : name;
+    }
+
+    private bool IsProfanityFilteringEnabled()
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get();
     }
 
     private void Update() { Update(Time.deltaTime); }
@@ -191,5 +209,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     {
         namesVisible.OnChange -= OnNamesVisibleChanged;
         namesOpacity.OnChange -= OnNamesOpacityChanged;
+        profanityFilterEnabled.OnChange -= OnProfanityFilterChanged;
     }
 }
