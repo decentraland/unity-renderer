@@ -110,10 +110,10 @@ MonoBehaviour:
   horizonPlaneOffset: {x: 0, y: 0}
   horizonPlaneColor:
     serializedVersion: 2
-    key0: {r: 0.07058824, g: 0, b: 0.25490198, a: 1}
-    key1: {r: 0.6313726, g: 0.29411766, b: 0.08627451, a: 1}
-    key2: {r: 0.9725491, g: 0.8313726, b: 0.61960787, a: 0}
-    key3: {r: 0.8470589, g: 0.58431375, b: 0.4666667, a: 0}
+    key0: {r: 0.07058824, g: 0, b: 0.25882354, a: 1}
+    key1: {r: 0.3529412, g: 0.35686275, b: 0.25882354, a: 1}
+    key2: {r: 0.41568628, g: 0.48235294, b: 0.32941177, a: 0}
+    key3: {r: 0.3882353, g: 0.32941177, b: 0.21176471, a: 0}
     key4: {r: 0.07058824, g: 0, b: 0.25882354, a: 0}
     key5: {r: 1, g: 0.24847966, b: 0.10849059, a: 0}
     key6: {r: 0.4676065, g: 0.21181916, b: 0.5283019, a: 0}
@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0}
+  horizonPlaneSmoothRange: {x: 0.21739133, y: 0.21739133}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
@@ -490,7 +490,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 1
     enabled: 1
     nameInEditor: Stars
@@ -568,7 +568,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -734,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Moon
