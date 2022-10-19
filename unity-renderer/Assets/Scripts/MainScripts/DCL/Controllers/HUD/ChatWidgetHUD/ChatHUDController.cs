@@ -15,7 +15,6 @@ public class ChatHUDController : IDisposable
     private const int MAX_HISTORY_ITERATION = 10;
 
     public event Action OnInputFieldSelected;
-    public event Action OnInputFieldDeselected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action<string> OnMessageUpdated;
 
@@ -40,8 +39,6 @@ public class ChatHUDController : IDisposable
         this.detectWhisper = detectWhisper;
         this.profanityFilter = profanityFilter;
     }
-
-    public bool IsInputSelected => view.IsInputFieldSelected;
 
     public void Initialize(IChatHUDComponentView view)
     {
@@ -233,11 +230,7 @@ public class ChatHUDController : IDisposable
         OnInputFieldSelected?.Invoke();
     }
 
-    private void HandleInputFieldDeselected()
-    {
-        currentHistoryIteration = 0;
-        OnInputFieldDeselected?.Invoke();
-    }
+    private void HandleInputFieldDeselected() => currentHistoryIteration = 0;
 
     private bool IsSpamming(string senderName)
     {

@@ -17,7 +17,8 @@ namespace DCL.Chat.Notifications
         private ChatNotificationController CreateController() => new ChatNotificationController(DataStore.i,
             MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
             ChatController.i,
-            new UserProfileWebInterfaceBridge());
+            new UserProfileWebInterfaceBridge(),
+            ProfanityFilterSharedInstances.regexFilter);
 
         public void Dispose()
         {
