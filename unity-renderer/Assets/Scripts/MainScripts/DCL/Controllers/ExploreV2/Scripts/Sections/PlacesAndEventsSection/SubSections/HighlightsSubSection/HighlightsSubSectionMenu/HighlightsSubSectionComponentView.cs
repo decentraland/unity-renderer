@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -74,12 +75,6 @@ public interface IHighlightsSubSectionComponentView
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
     void SetTrendingPlacesAndEventsAsLoading(bool isVisible);
-
-    /// <summary>
-    /// Activates/deactivates the trending places and events component.
-    /// </summary>
-    /// <param name="isActive">True for activating.</param>
-    void SetTrendingPlacesAndEventsActive(bool isActive);
 
     /// <summary>
     /// Set the featured places component with a list of places.
@@ -191,26 +186,6 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     internal Pool liveEventCardsPool;
     
     public Color[] currentFriendColors => friendColors;
-    
-    public void SetActive(bool isActive)
-    {
-        canvas.enabled = isActive;
-
-        if (isActive)
-            OnEnable();
-        else
-            OnDisable();
-    }
-    
-    public override void OnEnable() { OnHighlightsSubSectionEnable?.Invoke(); }
-
-    public void ConfigurePools()
-    {
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
-    }
 
     public override void Start()
     {
@@ -226,11 +201,16 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         OnReady?.Invoke();
     }
 
-    public override void RefreshControl()
+    public override void OnEnable() { OnHighlightsSubSectionEnable?.Invoke(); }
+
+    public void SetActive(bool isActive)
     {
-        trendingPlacesAndEvents.RefreshControl();
-        featuredPlaces.RefreshControl();
-        liveEvents.RefreshControl();
+        canvas.enabled = isActive;
+
+        if (isActive)
+            OnEnable();
+        else
+            OnDisable();
     }
 
     public override void Dispose()
@@ -255,67 +235,117 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         viewAllEventsButton.onClick.RemoveAllListeners();
     }
-
-    public void SetTrendingPlacesAndEvents(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
+    
+    public void ConfigurePools()
     {
-        List<BaseComponentView> placesAndEventsToSet = new List<BaseComponentView>();
-
-        trendingPlacesAndEvents.ExtractItems();
-        trendingPlaceCardsPool.ReleaseAll();
-        trendingEventCardsPool.ReleaseAll();
-
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
-            places,
-            trendingPlaceCardsPool,
-            OnFriendHandlerAdded,
-            OnPlaceInfoClicked,
-            OnPlaceJumpInClicked);
-
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            trendingEventCardsPool,
-            OnEventInfoClicked,
-            OnEventJumpInClicked,
-            OnEventSubscribeEventClicked,
-            OnEventUnsubscribeEventClicked);
-
-
-        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
-        {
-            if (eventComponentsToAdd.Count - 1 >= i)
-                placesAndEventsToSet.Add(eventComponentsToAdd[i]);
-
-            if (placeComponentsToAdd.Count - 1 >= i)
-                placesAndEventsToSet.Add(placeComponentsToAdd[i]);
-        }
-
-        trendingPlacesAndEvents.SetItems(placesAndEventsToSet);
-        SetTrendingPlacesAndEventsActive(placesAndEventsToSet.Count > 0);
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+    }
+    
+    public override void RefreshControl()
+    {
+        trendingPlacesAndEvents.RefreshControl();
+        featuredPlaces.RefreshControl();
+        liveEvents.RefreshControl();
     }
 
+    public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
+    {
+        SetFeaturedPlacesAsLoading(false);
+        featuredPlacesNoDataText.gameObject.SetActive(places.Count == 0);
+
+        featuredPlaceCardsPool.ReleaseAll();
+
+        featuredPlaces.ExtractItems();
+        featuredPlaces.RemoveItems();
+        
+        StartCoroutine(SetPlacesIteratively(places));
+    }
+    
+    private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
+    {
+        foreach (PlaceCardComponentModel place in places)
+        {
+            featuredPlaces.AddItem(
+                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, featuredPlaceCardsPool, 
+                    OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
+
+            yield return null;
+        }
+        
+        featuredPlaces.SetItemSizeForModel();
+        featuredPlaceCardsPool.IterativePrewarm(places.Count);
+    }
+    
+    public void SetLiveEvents(List<EventCardComponentModel> events)
+    {
+        SetLiveAsLoading(false);
+        liveEventsNoDataText.gameObject.SetActive(events.Count == 0);
+
+        liveEventCardsPool.ReleaseAll();
+
+        liveEvents.ExtractItems();
+        liveEvents.RemoveItems();
+
+        StartCoroutine(SetEventsIteratively(events, liveEvents, liveEventCardsPool));
+    }
+    
+    private IEnumerator SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
+    {
+        foreach (EventCardComponentModel eventInfo in events)
+        {
+            eventsGrid.AddItem(
+                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
+                    OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+            yield return null;
+        }
+        
+        eventsGrid.SetItemSizeForModel();
+        pool.IterativePrewarm(events.Count);
+    }
+    
+    public void SetTrendingPlacesAndEvents(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
+    {
+        SetTrendingPlacesAndEventsAsLoading(false);
+
+        trendingPlaceCardsPool.ReleaseAll();
+        trendingEventCardsPool.ReleaseAll();
+        
+        trendingPlacesAndEvents.ExtractItems();
+        trendingPlacesAndEvents.RemoveItems();
+        
+        StartCoroutine(SetTrendingsIteratively(places, events));
+    }
+    
+    private IEnumerator SetTrendingsIteratively(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
+    {
+        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
+        {
+            if (i < events.Count)
+                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[i], trendingEventCardsPool, 
+                    OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+            
+            if (i < places.Count)
+                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[i], trendingPlaceCardsPool, 
+                    OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
+            
+            yield return null;
+        }
+        
+        trendingPlacesAndEvents.GenerateDotsSelector();
+        trendingPlaceCardsPool.IterativePrewarm(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES);
+    }
+    
     public void SetTrendingPlacesAndEventsAsLoading(bool isVisible)
     {
         SetTrendingPlacesAndEventsActive(!isVisible);
         trendingPlacesAndEventsLoading.SetActive(isVisible);
     }
 
-    public void SetTrendingPlacesAndEventsActive(bool isActive) { trendingPlacesAndEvents.gameObject.SetActive(isActive); }
-
-    public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
-    {
-        featuredPlaces.ExtractItems();
-        featuredPlaceCardsPool.ReleaseAll();
-
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
-            places,
-            featuredPlaceCardsPool,
-            OnFriendHandlerAdded,
-            OnPlaceInfoClicked,
-            OnPlaceJumpInClicked);
-
-        featuredPlaces.SetItems(placeComponentsToAdd);
-        featuredPlacesNoDataText.gameObject.SetActive(places.Count == 0);
-    }
+    internal void SetTrendingPlacesAndEventsActive(bool isActive) => 
+        trendingPlacesAndEvents.gameObject.SetActive(isActive);
 
     public void SetFeaturedPlacesAsLoading(bool isVisible)
     {
@@ -324,23 +354,6 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         if (isVisible)
             featuredPlacesNoDataText.gameObject.SetActive(false);
-    }
-
-    public void SetLiveEvents(List<EventCardComponentModel> events)
-    {
-        liveEvents.ExtractItems();
-        liveEventCardsPool.ReleaseAll();
-
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
-            events,
-            liveEventCardsPool,
-            OnEventInfoClicked,
-            OnEventJumpInClicked,
-            OnEventSubscribeEventClicked,
-            OnEventUnsubscribeEventClicked);
-
-        liveEvents.SetItems(eventComponentsToAdd);
-        liveEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
     public void SetLiveAsLoading(bool isVisible)
@@ -359,14 +372,14 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
     
+    public void HidePlaceModal() { placeModal.Hide(); }
+    
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
         ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
-
-    public void HidePlaceModal() { placeModal.Hide(); }
-
+    
     public void HideEventModal() { eventModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }

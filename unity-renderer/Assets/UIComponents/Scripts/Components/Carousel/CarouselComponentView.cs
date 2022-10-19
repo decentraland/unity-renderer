@@ -60,7 +60,7 @@ public interface ICarouselComponentView
     /// Adds a new item in the carousel.
     /// </summary>
     /// <param name="item">An UI component.</param>
-    void AddItem(BaseComponentView item);
+    void AddItemWithDotsSelector(BaseComponentView item);
 
     /// <summary>
     /// Remove an item from the carousel.
@@ -265,12 +265,15 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         GenerateDotsSelector();
     }
 
-    public void AddItem(BaseComponentView item)
+    public void AddItemWithDotsSelector(BaseComponentView item)
     {
         CreateItem(item, $"Item{instantiatedItems.Count}");
         SetManualControlsActive(model.showManualControls);
         GenerateDotsSelector();
     }
+    
+    public void AddItem(BaseComponentView item) => 
+        CreateItem(item, $"Item{instantiatedItems.Count}");
 
     public void RemoveItem(BaseComponentView item)
     {
@@ -565,7 +568,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         isInTransition = false;
     }
 
-    internal void GenerateDotsSelector()
+    public void GenerateDotsSelector()
     {
         List<GameObject> dotsToRemove = new List<GameObject>();
         foreach (Transform child in dotsSelector.transform)

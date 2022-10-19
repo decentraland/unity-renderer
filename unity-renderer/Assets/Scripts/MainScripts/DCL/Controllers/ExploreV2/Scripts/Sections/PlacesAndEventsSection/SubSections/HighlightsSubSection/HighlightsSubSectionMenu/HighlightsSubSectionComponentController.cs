@@ -193,7 +193,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             events.Add(eventCardModel);
         }
 
-        view.SetTrendingPlacesAndEventsAsLoading(false);
         view.SetTrendingPlacesAndEvents(places, events);
     }
 
@@ -227,7 +226,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetFeaturedPlaces(places);
-        view.SetFeaturedPlacesAsLoading(false);
     }
 
     public void LoadLiveEvents()
@@ -243,7 +241,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetLiveEvents(events);
-        view.SetLiveAsLoading(false);
     }
 
     public void Dispose()
