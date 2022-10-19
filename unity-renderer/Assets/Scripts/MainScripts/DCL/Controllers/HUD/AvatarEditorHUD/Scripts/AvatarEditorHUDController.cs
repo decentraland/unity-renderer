@@ -200,13 +200,14 @@ public class AvatarEditorHUDController : IHUD
                              var ownedWearablesString = "";
                              foreach (var wearable in ownedWearables)
                              {
-                                 ownedWearablesString += wearable.id + " ";
+                                 if(wearable.IsCollectible())
+                                    ownedWearablesString += wearable.id + " ";
                              }
                              Debug.LogError("SELECTIVE LOADING BUG: Owned wearables loaded: " + ownedWearablesString);
 
                              var thirdPartyWearablesLoadedStr = "";
                              foreach (var wearable in thirdPartyWearablesLoaded)
-                             {
+                             { 
                                  thirdPartyWearablesLoadedStr += wearable + " ";
                              }
                              Debug.LogError("SELECTIVE LOADING BUG: Third party wearables loaded: " + thirdPartyWearablesLoadedStr);
@@ -223,7 +224,8 @@ public class AvatarEditorHUDController : IHUD
                                  var emotesLoadedAsWearablesStr = "";
                                  foreach (var wearable in emotesLoadedAsWearables)
                                  {
-                                     emotesLoadedAsWearablesStr += wearable.id + " ";
+                                     if(wearable.IsCollectible())
+                                        emotesLoadedAsWearablesStr += wearable.id + " ";
                                  }
                                  Debug.LogError("SELECTIVE LOADING BUG: emotesLoadedAsWearables: " + emotesLoadedAsWearablesStr);
                              }
@@ -452,7 +454,8 @@ public class AvatarEditorHUDController : IHUD
                 else
                     EquipWearable(wearable);
 
-                wearablesEquippedStr += userProfile.avatar.wearables[i] + " ";
+                if(wearable.IsCollectible())
+                    wearablesEquippedStr += userProfile.avatar.wearables[i] + " ";
             }
             
             Debug.LogError($"SELECTIVE LOADING BUG: LoadUserProfile: Equipping wearables: " + wearablesEquippedStr);
@@ -695,14 +698,16 @@ public class AvatarEditorHUDController : IHUD
 
                 if (wearableItem.IsEmote())
                 {
-                    wearableProcessingResult += " continue for emote ";
+                    if(wearableItem.IsCollectible())
+                        wearableProcessingResult += " continue for emote ";
                     continue;
                 }
 
                 if (wearableItem.IsFromThirdPartyCollection
                     && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
                 {
-                    wearableProcessingResult += " continue for third party " + wearableItem.ThirdPartyCollectionId;
+                    if(wearableItem.IsCollectible())
+                        wearableProcessingResult += " continue for third party " + wearableItem.ThirdPartyCollectionId;
                     continue;
                 }
                         
@@ -711,10 +716,14 @@ public class AvatarEditorHUDController : IHUD
                 hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
 
                 if (wearableProcessingResult.EndsWith("=> "))
-                    wearableProcessingResult += "all okay ";
+                {
+                    if(wearableItem.IsCollectible())
+                        wearableProcessingResult += "all okay ";
+                }
                 else
                 {
-                    Debug.LogError("Skipped wearable detailed: " + wearableItem.ToDetailedString());
+                    if(wearableItem.IsCollectible())
+                        Debug.LogError("Skipped wearable detailed: " + wearableItem.ToDetailedString());
                 }
             }
         }
@@ -735,7 +744,8 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
         {
-            wearableProcessingResult += "return because not base wearable and items not found ";
+            if(wearable.IsCollectible()) 
+                wearableProcessingResult += "return because not base wearable and items not found ";
             return;
         }
 

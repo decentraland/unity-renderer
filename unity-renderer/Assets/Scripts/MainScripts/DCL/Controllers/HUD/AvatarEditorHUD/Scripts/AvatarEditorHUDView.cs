@@ -407,11 +407,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IPointerDownHandler
                 replaceOtherWearablesToastStrategy,
                 incompatibleWearableToastStrategy);
         }
-        else
-        {
-            issueStr += " adding skipped because is collectible = " + wearableItem.IsCollectible()
-                        + " is third party = " +  wearableItem.IsFromThirdPartyCollection;
-        }
     }
 
     public void RefreshSelectorsSize()
