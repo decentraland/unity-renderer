@@ -98,12 +98,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public event Action OnPreviousChatInHistory;
     public event Action OnNextChatInHistory;
     public event Action<ChatMessage> OnSendMessage;
-    public event Action OnChatContainerResized;
-    public event Action OnChatEntriesSorted;
 
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
-    public bool IsInputFieldSelected => inputField.isFocused;
 
     public static ChatHUDView Create()
     {
@@ -146,10 +143,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             updateLayoutDelayedFrames--;
 
             if (updateLayoutDelayedFrames <= 0)
-            {
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
-                OnChatContainerResized?.Invoke();
-            }
         }
 
         if (isSortingDirty)
@@ -358,8 +352,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (entries[i].transform.GetSiblingIndex() != i)
                 entries[i].transform.SetSiblingIndex(i);
         }
-        
-        OnChatEntriesSorted?.Invoke();
     }
 
     private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
