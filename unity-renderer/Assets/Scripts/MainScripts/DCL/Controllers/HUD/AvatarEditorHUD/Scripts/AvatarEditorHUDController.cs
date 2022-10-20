@@ -698,8 +698,6 @@ public class AvatarEditorHUDController : IHUD
 
                 if (wearableItem.IsEmote())
                 {
-                    if(wearableItem.IsCollectible())
-                        wearableProcessingResult += " continue for emote ";
                     continue;
                 }
 
