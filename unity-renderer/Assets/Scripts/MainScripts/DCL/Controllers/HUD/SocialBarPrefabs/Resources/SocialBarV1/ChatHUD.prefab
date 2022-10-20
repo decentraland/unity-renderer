@@ -404,7 +404,7 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_RichText: 1
   m_GlobalFontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
-  m_OnFocusSelectAll: 1
+  m_OnFocusSelectAll: 0
   m_ResetOnDeActivation: 1
   m_KeepTextSelectionVisible: 0
   m_RestoreOriginalTextOnEscape: 1
@@ -1809,7 +1809,6 @@ MonoBehaviour:
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
   model:
-    isInPreviewMode: 0
     isInputFieldFocused: 0
     inputFieldText: 
     enableFadeoutMode: 0
