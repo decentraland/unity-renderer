@@ -687,14 +687,15 @@ public class AvatarEditorHUDController : IHUD
         
         Debug.LogError("SELECTIVE LOADING BUG: ProcessingCatalog: number of items = " + catalog.Count());
 
-        var wearableProcessingResult = "";
+        var wearableProcessingResultString = "";
         
         using (var iterator = catalog.Get().GetEnumerator())
         {
             while (iterator.MoveNext())
             {
                 var wearableItem = iterator.Current.Value;
-                wearableProcessingResult += "For wearable " + wearableItem.id + "=> ";
+                var prefix = "For wearable " + wearableItem.id + "=> ";
+                wearableProcessingResultString += prefix;
 
                 if (wearableItem.IsEmote())
                 {
@@ -705,24 +706,16 @@ public class AvatarEditorHUDController : IHUD
                     && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
                 {
                     if(wearableItem.IsCollectible())
-                        wearableProcessingResult += " continue for third party " + wearableItem.ThirdPartyCollectionId;
+                        wearableProcessingResultString += " continue for third party " + wearableItem.ThirdPartyCollectionId;
                     continue;
                 }
                         
-                AddWearable(iterator.Current.Key, iterator.Current.Value, ref wearableProcessingResult);
+                AddWearable(iterator.Current.Key, iterator.Current.Value, ref wearableProcessingResultString);
                 hasSkin = iterator.Current.Value.IsSkin() || hasSkin;
                 hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
 
-                if (wearableProcessingResult.EndsWith("=> "))
-                {
-                    if(wearableItem.IsCollectible())
-                        wearableProcessingResult += "all okay ";
-                }
-                else
-                {
-                    if(wearableItem.IsCollectible())
-                        Debug.LogError("Skipped wearable detailed: " + wearableItem.ToDetailedString());
-                }
+                if (wearableProcessingResultString.EndsWith(prefix))
+                    wearableProcessingResultString = wearableProcessingResultString.Replace(prefix, "");
             }
         }
 
@@ -730,7 +723,7 @@ public class AvatarEditorHUDController : IHUD
         foreach (var str in thirdPartyCollectionsActive)
             thirdPartyCollectionsActiveStr += str + " ";
         
-        Debug.LogError("SELECTIVE LOADING BUG: Processing wearable from catalog: " + wearableProcessingResult + 
+        Debug.LogError("SELECTIVE LOADING BUG: Processing wearable from catalog: " + wearableProcessingResultString + 
                        " third party collections: " + thirdPartyCollectionsActiveStr);
         
         view.ShowSkinPopulatedList(hasSkin);
