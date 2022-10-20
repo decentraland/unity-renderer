@@ -694,13 +694,14 @@ public class AvatarEditorHUDController : IHUD
             while (iterator.MoveNext())
             {
                 var wearableItem = iterator.Current.Value;
-                var prefix = "For wearable " + wearableItem.id + "=> ";
-                wearableProcessingResultString += prefix;
 
                 if (wearableItem.IsEmote())
                 {
                     continue;
                 }
+                
+                if(wearableItem.IsCollectible())
+                    wearableProcessingResultString += "For wearable " + wearableItem.id + "=> ";
 
                 if (wearableItem.IsFromThirdPartyCollection
                     && !thirdPartyCollectionsActive.Contains(iterator.Current.Value.ThirdPartyCollectionId))
@@ -713,9 +714,17 @@ public class AvatarEditorHUDController : IHUD
                 AddWearable(iterator.Current.Key, iterator.Current.Value, ref wearableProcessingResultString);
                 hasSkin = iterator.Current.Value.IsSkin() || hasSkin;
                 hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
-
-                if (wearableProcessingResultString.EndsWith(prefix))
-                    wearableProcessingResultString = wearableProcessingResultString.Replace(prefix, "");
+                
+                if (wearableProcessingResultString.EndsWith("=> "))
+                {
+                    if(wearableItem.IsCollectible())
+                        wearableProcessingResultString += "all okay ";
+                }
+                else
+                {
+                    if(wearableItem.IsCollectible())
+                        Debug.LogError("Skipped wearable detailed: " + wearableItem.ToDetailedString());
+                }
             }
         }
 
