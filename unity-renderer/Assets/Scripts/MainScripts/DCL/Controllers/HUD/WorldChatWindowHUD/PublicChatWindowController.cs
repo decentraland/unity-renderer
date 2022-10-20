@@ -22,6 +22,7 @@ public class PublicChatWindowController : IHUD
     private bool skipChatInputTrigger;
 
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
 
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
@@ -193,7 +194,11 @@ public class PublicChatWindowController : IHUD
             MarkChannelMessagesAsRead();
     }
 
-    private void Hide() => SetVisibility(false);
+    private void Hide()
+    {
+        openedChat.Set("");
+        SetVisibility(false);
+    }
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {
