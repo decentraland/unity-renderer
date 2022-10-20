@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -33,19 +34,19 @@ namespace DCL.ECSComponents
             lastModel = model;
             AssetPromise_Material_Model.Texture? albedoTextureModel = null;
             
-            if (model.AlbedoTextureCase == PBMaterial.AlbedoTextureOneofCase.AvatarTexture)
+            if (model.Texture.TextureCase == Texture.TextureOneofCase.AvatarTexture)
             {
-                string avatarTexUrl = KernelConfig.i.Get().avatarTextureAPIBaseUrl + model.AvatarTexture.UserId;
+                string avatarTexUrl = KernelConfig.i.Get().avatarTextureAPIBaseUrl + model.Texture.AvatarTexture.UserId;
                 albedoTextureModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
-                    (UnityEngine.TextureWrapMode)model.AvatarTexture.GetWrapMode(),
-                    (UnityEngine.FilterMode)model.AvatarTexture.GetFilterMode());
+                    (UnityEngine.TextureWrapMode)model.Texture.AvatarTexture.GetWrapMode(),
+                    (UnityEngine.FilterMode)model.Texture.AvatarTexture.GetFilterMode());
 
                 CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
 
                 return;
             }
 
-            albedoTextureModel = CreateMaterialPromiseTextureModel(model.Texture, scene);
+            albedoTextureModel = CreateMaterialPromiseTextureModel(model.Texture.SrcTexture, scene);
             CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
         }
 
@@ -99,7 +100,7 @@ namespace DCL.ECSComponents
             return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest());
         }
 
-        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(PBMaterial.Types.Texture textureModel, IParcelScene scene)
+        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(SRCTexture textureModel, IParcelScene scene)
         {
             if (textureModel == null)
                 return null;
