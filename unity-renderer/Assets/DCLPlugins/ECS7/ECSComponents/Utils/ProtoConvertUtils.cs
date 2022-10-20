@@ -91,11 +91,12 @@ namespace DCL.ECSComponents
         {
             return new Color(color.R, color.G, color.B);
         }
-        
+
         public static Color ToUnityColor(this Color4 color)
         {
             return new Color(color.R, color.G, color.B, color.A);
         }
+
         public static string ToFontName(this Font font)
         {
             // TODO: add support for the rest of the fonts and discuss old font deprecation

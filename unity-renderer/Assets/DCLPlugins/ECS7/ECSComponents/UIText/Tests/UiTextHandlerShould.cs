@@ -13,6 +13,8 @@ namespace Tests
 {
     public class UiTextHandlerShould
     {
+        private const int COMPONENT_ID = 34;
+
         private ECS7TestEntity entity;
         private ECS7TestScene scene;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
@@ -42,7 +44,7 @@ namespace Tests
                                    internalCompData.model = info.ArgAt<InternalUiContainer>(2);
                                });
 
-            handler = new UiTextHandler(internalUiContainer, AssetPromiseKeeper_Font.i);
+            handler = new UiTextHandler(internalUiContainer, AssetPromiseKeeper_Font.i, COMPONENT_ID);
         }
 
         [TearDown]
@@ -60,7 +62,8 @@ namespace Tests
             Assert.IsNotNull(handler.uiElement);
             internalUiContainer.Received(1)
                                .PutFor(scene, entity,
-                                   Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(handler.uiElement)));
+                                   Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(handler.uiElement)
+                                                                    && i.components.Contains(COMPONENT_ID)));
         }
 
         [Test]
@@ -92,7 +95,8 @@ namespace Tests
             Assert.IsNull(handler.uiElement);
             internalUiContainer.Received(1)
                                .PutFor(scene, entity,
-                                   Arg.Is<InternalUiContainer>(i => i.rootElement.childCount == 0));
+                                   Arg.Is<InternalUiContainer>(i => i.rootElement.childCount == 0
+                                                                    && i.components.Count == 0));
         }
     }
 }
