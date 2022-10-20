@@ -35,7 +35,7 @@ namespace DCL.Components.Video.Plugin
         {
             // FD::test-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log ("FD:: WebVideoPlayer Update " + Time.frameCount);
+            Debug.Log ("WebVideoPlayer Update " + Time.frameCount);
 
             switch (plugin.GetState(videoPlayerId))
             {
