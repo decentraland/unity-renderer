@@ -292,7 +292,7 @@ public class WearableItem
 
     public bool IsEmote() { return emoteDataV0 != null; }
 
-    public virtual bool ShowInBackpack() { return false; }
+    public virtual bool ShowInBackpack() { return true; }
 
     public override string ToString() { return id; }
 }
