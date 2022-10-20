@@ -9,14 +9,15 @@ using DCL.Chat;
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 30;
-    private const int TEMPORARILY_MUTE_MINUTES = 10;
-    private const int MAX_CONTINUOUS_MESSAGES = 6;
-    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
+    private const int TEMPORARILY_MUTE_MINUTES = 3;
+    private const int MAX_CONTINUOUS_MESSAGES = 10;
+    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1000;
     private const int MAX_HISTORY_ITERATION = 10;
 
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action<string> OnMessageUpdated;
+    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -179,9 +180,12 @@ public class ChatHUDController : IDisposable
         
         RegisterMessageHistory(message);
         currentHistoryIteration = 0;
-        
-        if (IsSpamming(message.sender)) return;
-        if (IsSpamming(ownProfile.userName)) return;
+
+        if (IsSpamming(message.sender) || IsSpamming(ownProfile.userName))
+        {
+            OnMessageSentBlockedBySpam?.Invoke(message);
+            return;
+        }
         
         ApplyWhisperAttributes(message);
 
@@ -239,9 +243,9 @@ public class ChatHUDController : IDisposable
         var isSpamming = false;
 
         if (!temporarilyMutedSenders.ContainsKey(senderName)) return false;
-        
-        var muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
-        if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+
+        var muteTimestamp = DateTimeOffset.FromUnixTimeMilliseconds((long) temporarilyMutedSenders[senderName]);
+        if ((DateTimeOffset.UtcNow - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
             isSpamming = true;
         else
             temporarilyMutedSenders.Remove(senderName);
@@ -261,7 +265,7 @@ public class ChatHUDController : IDisposable
             {
                 spamMessages.Add(model);
 
-                if (spamMessages.Count == MAX_CONTINUOUS_MESSAGES)
+                if (spamMessages.Count >= MAX_CONTINUOUS_MESSAGES)
                 {
                     temporarilyMutedSenders.Add(model.senderName, model.timestamp);
                     spamMessages.Clear();
@@ -280,14 +284,9 @@ public class ChatHUDController : IDisposable
 
     private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
     {
-        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
-        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+        var oldDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) oldMessageTimeStamp);
+        var newDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) newMessageTimeStamp);
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
-    }
-
-    private DateTime CreateBaseDateTime()
-    {
-        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
     
     private void FillInputWithNextMessage()
