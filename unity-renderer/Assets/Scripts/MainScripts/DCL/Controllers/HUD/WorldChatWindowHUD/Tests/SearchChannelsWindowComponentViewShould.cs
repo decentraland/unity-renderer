@@ -111,6 +111,7 @@ namespace DCL.Chat.HUD
         [Test]
         public void HideLoading()
         {
+            view.SetCreateChannelButtonsActive(true);
             view.HideLoading();
             
             Assert.AreEqual(false, view.loadingContainer.activeSelf);

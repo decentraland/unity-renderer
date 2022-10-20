@@ -29,6 +29,8 @@ namespace DCL.Chat.HUD
         private bool isSortDirty;
         private Vector2 lastScrollPosition;
         private Coroutine requireMoreEntriesRoutine;
+        private bool shouldCreationBeActive;
+        private bool isLoading;
 
         public event Action OnBack;
         public event Action OnClose;
@@ -58,7 +60,7 @@ namespace DCL.Chat.HUD
         public override void Update()
         {
             base.Update();
-            
+
             if (isLayoutDirty)
                 ((RectTransform) scroll.transform).ForceUpdateLayout();
             isLayoutDirty = false;
@@ -79,7 +81,7 @@ namespace DCL.Chat.HUD
         {
             return Instantiate(Resources.Load<SearchChannelsWindowComponentView>("SocialBarV1/ChannelSearchHUD"));
         }
-        
+
         public void ClearAllEntries()
         {
             channelList.Clear();
@@ -89,6 +91,7 @@ namespace DCL.Chat.HUD
 
         public void ShowLoading()
         {
+            isLoading = true;
             loadingContainer.SetActive(true);
             channelList.gameObject.SetActive(false);
             resultsHeaderLabel.gameObject.SetActive(false);
@@ -99,7 +102,8 @@ namespace DCL.Chat.HUD
         public void Set(Channel channel)
         {
             channelList.Set(channel.ChannelId,
-                new PublicChatEntryModel(channel.ChannelId, channel.Name, channel.Joined, channel.MemberCount, showOnlyOnlineMembers: false, channel.Muted));
+                new PublicChatEntryModel(channel.ChannelId, channel.Name, channel.Joined, channel.MemberCount,
+                    showOnlyOnlineMembers: false, channel.Muted));
 
             var entry = channelList.Get(channel.ChannelId);
             entry.OnOpenChat -= HandleJoinRequest;
@@ -124,10 +128,11 @@ namespace DCL.Chat.HUD
 
         public void HideLoading()
         {
+            isLoading = false;
             loadingContainer.SetActive(false);
             channelList.gameObject.SetActive(true);
             resultsHeaderLabel.gameObject.SetActive(true);
-            createChannelOnSearchContent.SetActive(true);
+            createChannelOnSearchContent.SetActive(shouldCreationBeActive);
             loadMoreContent.SetActive(true);
         }
 
@@ -145,8 +150,12 @@ namespace DCL.Chat.HUD
 
         public void SetCreateChannelButtonsActive(bool isActive)
         {
+            shouldCreationBeActive = isActive;
+
             foreach (var button in createChannelButtons)
                 button.gameObject.SetActive(isActive);
+
+            createChannelOnSearchContent.SetActive(isActive && !isLoading);
         }
 
         public override void RefreshControl()
@@ -157,21 +166,21 @@ namespace DCL.Chat.HUD
         private void UpdateLayout() => isLayoutDirty = true;
 
         private void Sort() => isSortDirty = true;
-        
+
         private void UpdateHeaders()
         {
             var text = $"Results ({channelList.Count()})";
-            
+
             if (!string.IsNullOrEmpty(searchBar.Text))
                 text = "Did you mean?";
-            
+
             resultsHeaderLabel.text = text;
         }
-        
+
         private void HandleJoinRequest(PublicChatEntry entry) => OnJoinChannel?.Invoke(entry.Model.channelId);
-        
+
         private void HandleLeaveRequest(PublicChatEntry entry) => OnLeaveChannel?.Invoke(entry.Model.channelId);
-        
+
         private void LoadMoreEntries(Vector2 scrollPosition)
         {
             if (scrollPosition.y < 0.005f && lastScrollPosition.y >= 0.005f)
@@ -185,7 +194,7 @@ namespace DCL.Chat.HUD
 
             lastScrollPosition = scrollPosition;
         }
-        
+
         private IEnumerator WaitThenRequireMoreEntries()
         {
             yield return new WaitForSeconds(1f);
