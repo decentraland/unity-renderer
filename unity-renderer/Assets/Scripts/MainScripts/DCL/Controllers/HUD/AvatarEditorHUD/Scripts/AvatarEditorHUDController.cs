@@ -521,6 +521,8 @@ public class AvatarEditorHUDController : IHUD
         foreach (string emoteId in emotesCustomizationDataStore.currentLoadedEmotes.Get())
         {
             modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
+            if(emoteId.EndsWith("6d"))
+                Debug.LogError("INVALID EMOTE TESTS: UpdateAvatarPreview: Updating avatar preview with emote " + emoteId);
         }
 
         view.UpdateAvatarPreview(modelToUpdate, skipAudio);
@@ -875,6 +877,12 @@ public class AvatarEditorHUDController : IHUD
             var equippedEmote = emotesCustomizationDataStore.unsavedEquippedEmotes[i];
             if (equippedEmote == null)
                 continue;
+
+            if (equippedEmote.id.EndsWith("6d"))
+            {
+                Debug.LogError("INVALID EMOTE TESTS: SaveAvatar: unsavedEquippedEmotes has emote " + equippedEmote.id);
+            }
+            
             emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
         }
         
