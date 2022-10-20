@@ -102,8 +102,6 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if (View.IsActive == visible) return;
-
             SetVisiblePanelList(visible);
             
             if (visible)
@@ -147,6 +145,8 @@ namespace DCL.Chat.HUD
                 OnClosed?.Invoke();
                 View.Hide();
             }
+
+            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
         }
 
         public void Dispose()

@@ -36,6 +36,7 @@ public interface IChatController
     void MuteChannel(string channelId);
     void UnmuteChannel(string channelId);
     Channel GetAllocatedChannel(string channelId);
+    Channel GetAllocatedChannelByName(string channelName);
     void GetUnseenMessagesByUser();
     void GetUnseenMessagesByChannel();
     int GetAllocatedUnseenMessages(string userId);

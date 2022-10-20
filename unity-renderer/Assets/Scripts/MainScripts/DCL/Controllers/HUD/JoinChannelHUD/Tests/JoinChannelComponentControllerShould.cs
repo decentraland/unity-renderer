@@ -86,7 +86,7 @@ public class JoinChannelComponentControllerShould
         joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(testChannelId);
 
         // Assert
-        chatController.Received(1).JoinOrCreateChannel(testChannelId);
+        chatController.Received(1).JoinOrCreateChannel(testChannelId.ToLower());
         joinChannelComponentView.Received(1).Hide();
         Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
     }
@@ -114,6 +114,6 @@ public class JoinChannelComponentControllerShould
         
         joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(channelId);
 
-        socialAnalytics.Received(1).SendChannelLinkClicked(channelId, true, ChannelLinkSource.Profile);
+        socialAnalytics.Received(1).SendChannelLinkClicked(channelId.ToLower(), true, ChannelLinkSource.Profile);
     }
 }

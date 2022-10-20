@@ -1,4 +1,4 @@
-﻿namespace DCL
+namespace DCL
 {
     public class DataStore_Channels
     {
@@ -9,5 +9,6 @@
         public readonly BaseVariable<string> currentChannelLimitReached = new BaseVariable<string>();
         public readonly BaseVariable<string> joinChannelError = new BaseVariable<string>();
         public readonly BaseVariable<string> leaveChannelError = new BaseVariable<string>();
+        public readonly BaseVariable<string> channelToBeOpenedFromLink = new BaseVariable<string>();
     }
 }

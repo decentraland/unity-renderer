@@ -131,6 +131,7 @@ public class WorldChatWindowController : IHUD
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
+            dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
 
             view.ShowChannelsLoading();
             view.SetSearchAndCreateContainerActive(true);
@@ -165,6 +166,7 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
+        dataStore.channels.channelToBeOpenedFromLink.OnChange -= HandleChannelOpenedFromLink;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -532,7 +534,15 @@ public class WorldChatWindowController : IHUD
         view.RemovePublicChat(channelId);
         socialAnalytics.SendLeaveChannel(channelId, dataStore.channels.channelLeaveSource.Get());
     }
-    
+
+    private void HandleChannelOpenedFromLink(string channelId, string previousChannelId)
+    {
+        if (string.IsNullOrEmpty(channelId))
+            return;
+
+        OpenPublicChat(channelId);
+    }
+
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
 
     private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
