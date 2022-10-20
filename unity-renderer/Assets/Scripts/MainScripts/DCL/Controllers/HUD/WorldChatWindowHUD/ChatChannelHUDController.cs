@@ -142,7 +142,6 @@ namespace DCL.Chat.HUD
                 channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
                 OnClosed?.Invoke();
-
                 View.Hide();
             }
 
