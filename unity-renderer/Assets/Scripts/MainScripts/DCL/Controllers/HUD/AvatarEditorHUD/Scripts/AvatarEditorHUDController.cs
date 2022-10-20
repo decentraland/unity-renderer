@@ -881,6 +881,7 @@ public class AvatarEditorHUDController : IHUD
             if (equippedEmote.id.EndsWith("6d"))
             {
                 Debug.LogError("INVALID EMOTE TESTS: SaveAvatar: unsavedEquippedEmotes has emote " + equippedEmote.id);
+                //continue;
             }
             
             emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });

@@ -52,7 +52,21 @@ namespace AvatarSystem
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)
                 {
+                    var testEmoteId = emoteIds.FirstOrDefault(e => e.EndsWith("6d"));
+                    DateTime startLoadTime = default;
+                    if (testEmoteId != null)
+                    {
+                        Debug.LogError("INVALID EMOTE TESTS: Curate: trying to load an emote " + testEmoteId);
+                        startLoadTime = DateTime.Now;
+                    }
+                    
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
+
+                    if (startLoadTime != default)
+                    {
+                        Debug.LogError("INVALID EMOTE TESTS: Curate: emotes load time: " + (DateTime.Now - startLoadTime));
+                    }
+                    
                     if (moreEmotes != null)
                     {
                         //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
