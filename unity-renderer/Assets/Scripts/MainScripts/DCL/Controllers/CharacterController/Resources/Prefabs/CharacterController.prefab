@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   femaleLocomotions:
-    idle: {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
+    idle: {fileID: 7400000, guid: 13e1c313541d1e94eb0f0a9b18ada8fa, type: 2}
     walk: {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
     run: {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
     jump: {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
@@ -151,9 +151,8 @@ MonoBehaviour:
     expressionTriggerId: 
     expressionTriggerTimestamp: 0
     deltaTime: 0
+    shouldLoop: 0
   target: {fileID: 6758273427026275198}
-  runMinSpeed: 6
-  walkMinSpeed: 0.1
 --- !u!114 &2374946182991755626
 MonoBehaviour:
   m_ObjectHideFlags: 0
