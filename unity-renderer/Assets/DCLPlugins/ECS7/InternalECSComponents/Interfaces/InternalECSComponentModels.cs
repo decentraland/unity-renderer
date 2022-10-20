@@ -42,7 +42,7 @@ namespace DCL.ECS7.InternalComponents
     {
         public class EventData
         {
-            public ActionButton button;
+            public InputAction button;
             public RaycastHit hit;
             public PointerEventType type;
             public int timestamp;
@@ -56,8 +56,8 @@ namespace DCL.ECS7.InternalComponents
     public class InternalUiContainer : InternalComponent
     {
         public readonly VisualElement rootElement = new VisualElement();
+        public readonly HashSet<int> components = new HashSet<int>();
         public VisualElement parentElement;
         public long parentId;
-        public bool hasTransform;
     }
 }

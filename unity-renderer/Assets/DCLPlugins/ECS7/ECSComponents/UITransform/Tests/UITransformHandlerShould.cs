@@ -12,6 +12,8 @@ namespace Tests
 {
     public class UITransformHandlerShould
     {
+        const int COMPONENT_ID = 34;
+
         private ECS7TestEntity entity;
         private ECS7TestScene scene;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
@@ -41,7 +43,7 @@ namespace Tests
                                    internalCompData.model = info.ArgAt<InternalUiContainer>(2);
                                });
 
-            handler = new UITransformHandler(internalUiContainer);
+            handler = new UITransformHandler(internalUiContainer, COMPONENT_ID);
         }
 
         [TearDown]
@@ -56,7 +58,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { Parent = 123123 });
             internalUiContainer.Received(1)
                                .PutFor(scene, entity,
-                                   Arg.Is<InternalUiContainer>(model => model.parentId == 123123 && model.hasTransform));
+                                   Arg.Is<InternalUiContainer>(model => model.parentId == 123123 && model.components.Contains(COMPONENT_ID)));
         }
 
         [Test]
@@ -64,17 +66,17 @@ namespace Tests
         {
             var model = new PBUiTransform()
             {
-                Display = YGDisplay.Flex,
-                Overflow = YGOverflow.Visible,
-                FlexDirection = YGFlexDirection.ColumnReverse,
+                Display = YGDisplay.YgdFlex,
+                Overflow = YGOverflow.YgoVisible,
+                FlexDirection = YGFlexDirection.YgfdColumnReverse,
                 FlexBasis = float.NaN,
                 FlexGrow = 23,
                 FlexShrink = 1,
-                FlexWrap = YGWrap.WrapReverse,
-                AlignContent = YGAlign.Center,
-                AlignItems = YGAlign.Stretch,
-                AlignSelf = YGAlign.Center,
-                JustifyContent = YGJustify.SpaceAround,
+                FlexWrap = YGWrap.YgwWrapReverse,
+                AlignContent = YGAlign.YgaCenter,
+                AlignItems = YGAlign.YgaStretch,
+                AlignSelf = YGAlign.YgaCenter,
+                JustifyContent = YGJustify.YgjSpaceAround,
                 Height = 99,
                 Width = 34,
                 MaxWidth = float.NaN,
@@ -82,26 +84,26 @@ namespace Tests
                 MinHeight = 0,
                 MinWidth = 0,
                 PaddingBottom = 10,
-                PaddingBottomUnit = YGUnit.Percent,
+                PaddingBottomUnit = YGUnit.YguPercent,
                 PaddingLeft = 0,
-                PaddingLeftUnit = YGUnit.Point,
+                PaddingLeftUnit = YGUnit.YguPoint,
                 PaddingRight = 111,
-                PaddingRightUnit = YGUnit.Point,
+                PaddingRightUnit = YGUnit.YguPoint,
                 PaddingTop = 5,
-                PaddingTopUnit = YGUnit.Percent,
+                PaddingTopUnit = YGUnit.YguPercent,
                 MarginBottom = 10,
-                MarginBottomUnit = YGUnit.Percent,
+                MarginBottomUnit = YGUnit.YguPercent,
                 MarginLeft = 0,
-                MarginLeftUnit = YGUnit.Point,
+                MarginLeftUnit = YGUnit.YguPoint,
                 MarginRight = 111,
-                MarginRightUnit = YGUnit.Point,
+                MarginRightUnit = YGUnit.YguPoint,
                 MarginTop = 5,
-                MarginTopUnit = YGUnit.Percent,
+                MarginTopUnit = YGUnit.YguPercent,
                 BorderBottom = 1,
                 BorderTop = 2,
                 BorderRight = 3,
                 BorderLeft = 4,
-                PositionType = YGPositionType.Absolute
+                PositionType = YGPositionType.YgptAbsolute
             };
 
             Action<InternalUiContainer> styleCheck = m =>
@@ -144,7 +146,7 @@ namespace Tests
                 Assert.AreEqual(2, style.borderTopWidth.value);
                 Assert.AreEqual(3, style.borderRightWidth.value);
                 Assert.AreEqual(4, style.borderLeftWidth.value);
-                Assert.AreEqual(Position.Absolute, style.position.value);
+                Assert.AreEqual(UnityEngine.UIElements.Position.Absolute, style.position.value);
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
@@ -161,9 +163,9 @@ namespace Tests
             var containerModel = new InternalUiContainer()
             {
                 parentId = 2,
-                hasTransform = true,
                 parentElement = parent
             };
+            containerModel.components.Add(COMPONENT_ID);
             parent.Add(containerModel.rootElement);
             internalUiContainer.PutFor(scene, entity, containerModel);
             internalUiContainer.ClearReceivedCalls();
@@ -173,7 +175,7 @@ namespace Tests
                                .PutFor(scene, entity,
                                    Arg.Is<InternalUiContainer>(
                                        model => model.parentId == SpecialEntityId.SCENE_ROOT_ENTITY
-                                                && !model.hasTransform
+                                                && !model.components.Contains(COMPONENT_ID)
                                                 && model.parentElement == null));
             Assert.AreEqual(0, parent.childCount);
         }
