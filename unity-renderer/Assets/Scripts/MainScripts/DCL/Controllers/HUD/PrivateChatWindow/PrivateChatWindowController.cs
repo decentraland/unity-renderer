@@ -11,15 +11,13 @@ using UnityEngine;
 
 public class PrivateChatWindowController : IHUD
 {
-    internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
+    private const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD = 30;
+    private const float REQUEST_MESSAGES_TIME_OUT = 2;
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
-    internal const float REQUEST_MESSAGES_TIME_OUT = 2;
 
     public IPrivateChatComponentView View { get; private set; }
     
     private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE }
-    private const int FADEOUT_DELAY = 30000;
-
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -78,12 +76,11 @@ public class PrivateChatWindowController : IHUD
 
         view.OnRequireMoreMessages += RequestOldConversations;
 
-
         chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
         chatHudController.Initialize(view.ChatHUD);
-        chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;
+        chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
@@ -156,6 +153,8 @@ public class PrivateChatWindowController : IHUD
         if (chatHudController != null)
         {
             chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
+            chatHudController.OnSendMessage -= HandleSendChatMessage;
+            chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
         }
 
         if (chatController != null)
@@ -359,5 +358,17 @@ public class PrivateChatWindowController : IHUD
 
         View?.SetLoadingMessagesActive(false);
         View?.SetOldMessagesLoadingActive(false);
+    }
+    
+    private void HandleMessageBlockedBySpam(ChatMessage message)
+    {
+        chatHudController.AddChatMessage(new ChatEntryModel
+        {
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
+            messageId = Guid.NewGuid().ToString(),
+            messageType = ChatMessage.Type.SYSTEM,
+            subType = ChatEntryModel.SubType.RECEIVED
+        });
     }
 }
