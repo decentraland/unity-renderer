@@ -105,7 +105,6 @@ namespace DCL.Chat.HUD
                 dataStore.channels.channelToBeOpenedFromLink.Get() != channelId)
                 return;
 
-            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
             SetVisiblePanelList(visible);
             
             if (visible)
@@ -146,9 +145,14 @@ namespace DCL.Chat.HUD
 
                 channelMembersHUDController.SetAutomaticReloadingActive(false);
                 chatHudController.UnfocusInputField();
-                OnClosed?.Invoke();
+
+                if (dataStore.channels.channelToBeOpenedFromLink.Get() != "nearby")
+                    OnClosed?.Invoke();
+
                 View.Hide();
             }
+
+            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
         }
 
         public void Dispose()
