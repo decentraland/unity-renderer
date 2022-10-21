@@ -87,6 +87,7 @@ Material:
     - _Color06: {r: 0.1259542, g: 0, b: 0.26415092, a: 1}
     - _Color07: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
     - _Color08: {r: 0.9056604, g: 0.5172151, b: 0.046991818, a: 1}
+    - _FrameThickness: {r: 1.04, g: 1.04, b: 0, a: 0}
     - _GradientPositions01: {r: 0, g: 0.33299762, b: 0.66599524, a: 1}
     - _GradientPositions02: {r: 1, g: 1, b: 1, a: 1}
     - _InnerColor: {r: 1, g: 1, b: 1, a: 1}
