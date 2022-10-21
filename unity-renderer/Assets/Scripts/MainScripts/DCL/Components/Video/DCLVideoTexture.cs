@@ -345,7 +345,10 @@ namespace DCL.Components
             {
                 testBoolIsPlayerInSameSceneAsComponent = true;
             }
-            testBoolIsPlayerInSameSceneAsComponent = isPlayerInScene;
+            else
+            {
+                testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            }
             
             // FD:: test-->
             // testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
