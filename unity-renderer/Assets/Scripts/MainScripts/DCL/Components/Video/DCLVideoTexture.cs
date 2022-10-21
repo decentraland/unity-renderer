@@ -328,23 +328,23 @@ namespace DCL.Components
             return testBoolIsPlayerInSameSceneAsComponent;//(scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
-        private bool IsPlayerInSameSceneAsComponent()
-        {
-            if (scene == null)
-                return false;
+        // private bool IsPlayerInSameSceneAsComponent()
+        // {
+        //     if (scene == null)
+        //         return false;
 
-            for (int i = 0; i < scene.sceneData.parcels.Length; i++)
-            {
-                if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
-                {
-                    UnityEngine.Debug.unityLogger.logEnabled = true;
-                    Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
-                    return true;
-                }
-            }
+        //     for (int i = 0; i < scene.sceneData.parcels.Length; i++)
+        //     {
+        //         if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
+        //         {
+        //             UnityEngine.Debug.unityLogger.logEnabled = true;
+        //             Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
+        //             return true;
+        //         }
+        //     }
 
-            return false;
-        }
+        //     return false;
+        // }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
@@ -361,9 +361,8 @@ namespace DCL.Components
             isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
             // FD::--Tests-->
-            // SetPlayStateDirty();
             UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD:: In Scene: " + current + " " + isPlayerInScene);
+            Debug.Log("FD::OnSceneIDChanged -SceneCaller: " + scene.sceneData.id + "\n -current scene: " + current + "\n isPlayerInScene " + isPlayerInScene);
         }
 
         public override void AttachTo(ISharedComponent component)
