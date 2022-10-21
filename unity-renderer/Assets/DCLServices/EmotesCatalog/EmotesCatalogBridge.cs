@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -17,7 +16,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
     }
 
     public event Action<WearableItem[]> OnEmotesReceived;
-    public event Action<string, string> OnEmoteRejected;
+    public event EmoteRejectedDelegate OnEmoteRejected;
     public event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
     private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
