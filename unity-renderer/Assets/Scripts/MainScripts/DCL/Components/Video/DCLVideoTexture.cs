@@ -313,7 +313,7 @@ namespace DCL.Components
             texturePlayer.SetVolume(targetVolume);
         }
 
-        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
+        private bool IsPlayerInSameSceneAsComponent(string currentSceneId, string previous = null)
         {
             if (scene == null)
             {
@@ -328,9 +328,27 @@ namespace DCL.Components
                 Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - IsNullOrEmpty(currentSceneId)!!!");
                 return false;
             }
+
+            // FD:: tests-->
+            if (scene.isPersistent)
+            {
+                Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - TRUE - scene.isPersistent");
+                return true;
+            }
+
+            bool testBoolIsPlayerInSameSceneAsComponent;
+            if (isPlayerInScene && previous == scene.sceneData.id && currentSceneId != previous)
+            {
+                testBoolIsPlayerInSameSceneAsComponent = false;
+            }
+            else if (!isPlayerInScene && scene.sceneData.id == currentSceneId && currentSceneId != previous)
+            {
+                testBoolIsPlayerInSameSceneAsComponent = true;
+            }
+            testBoolIsPlayerInSameSceneAsComponent = isPlayerInScene;
             
             // FD:: test-->
-            var testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            // testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
             Debug.Log ("FD:: IsPlayerInSameSceneAsComponent == " + testBoolIsPlayerInSameSceneAsComponent);
             return testBoolIsPlayerInSameSceneAsComponent;//(scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
@@ -360,12 +378,11 @@ namespace DCL.Components
             // FD::--Tests-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
             Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
-            // isPlayerInScene = IsPlayerInSameSceneAsComponent();
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current, previous);
 
             // FD::--Tests-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
