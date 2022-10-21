@@ -57,6 +57,7 @@ namespace DCL.Components
         {
             model = new Model();
 
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
@@ -164,6 +165,12 @@ namespace DCL.Components
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
+            // unsub first
+            CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
+            scene.OnEntityRemoved -= SetPlayStateDirty;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
+            // then resub
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += SetPlayStateDirty;
@@ -380,6 +387,8 @@ namespace DCL.Components
             SetPlayStateDirty();
             attachedMaterials.Add(component.id, component);
 
+            component.OnAttach -= SetPlayStateDirty;
+            component.OnDetach -= SetPlayStateDirty;
             component.OnAttach += SetPlayStateDirty;
             component.OnDetach += SetPlayStateDirty;
             DCLVideoTextureUtils.SubscribeToEntityUpdates(component, SetPlayStateDirty);
