@@ -31,7 +31,6 @@ namespace DCL.Chat.HUD
         [SerializeField] internal ToggleComponentView muteToggle;
 
         private Coroutine alphaRoutine;
-        private Vector2 originalSize;
         private bool isMembersSectionOpen;
         private float collapsableAreaOriginalWidth;
 
@@ -59,7 +58,6 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
-            originalSize = ((RectTransform) transform).sizeDelta;
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             contextualMenu.OnLeave += () => OnLeaveChannel?.Invoke();

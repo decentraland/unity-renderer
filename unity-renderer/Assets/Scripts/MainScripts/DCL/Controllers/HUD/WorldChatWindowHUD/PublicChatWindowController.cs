@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class PublicChatWindowController : IHUD
 {
@@ -22,7 +23,6 @@ public class PublicChatWindowController : IHUD
     private bool skipChatInputTrigger;
 
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-    private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
 
     public PublicChatWindowController(IChatController chatController,
         IUserProfileBridge userProfileBridge,
@@ -45,6 +45,7 @@ public class PublicChatWindowController : IHUD
         View = view;
         view.OnClose += HandleViewClosed;
         view.OnBack += HandleViewBacked;
+        view.OnMuteChanged += MuteChannel;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += Hide;
@@ -59,22 +60,19 @@ public class PublicChatWindowController : IHUD
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
+        chatController.OnChannelUpdated -= HandleChannelUpdated;
+        chatController.OnChannelUpdated += HandleChannelUpdated;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
     }
-
+    
     public void Setup(string channelId)
     {
         if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
         this.channelId = channelId;
 
         var channel = chatController.GetAllocatedChannel(channelId);
-        View.Configure(new PublicChatModel(this.channelId,
-            channel.Name,
-            channel.Description,
-            channel.Joined,
-            channel.MemberCount,
-            false));
+        View.Configure(ToPublicChatModel(channel));
 
         ReloadAllChats().Forget();
     }
@@ -83,9 +81,13 @@ public class PublicChatWindowController : IHUD
     {
         View.OnClose -= HandleViewClosed;
         View.OnBack -= HandleViewBacked;
+        View.OnMuteChanged -= MuteChannel;
 
         if (chatController != null)
+        {
             chatController.OnAddMessage -= HandleMessageReceived;
+            chatController.OnChannelUpdated -= HandleChannelUpdated;
+        }
 
         chatHudController.OnSendMessage -= SendChatMessage;
         chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
@@ -98,6 +100,24 @@ public class PublicChatWindowController : IHUD
         if (View != null)
         {
             View.Dispose();
+        }
+    }
+
+    public void SetVisibility(bool visible, bool focusInputField)
+    {
+        SetVisiblePanelList(visible);
+        if (visible)
+        {
+            View.Show();
+            MarkChannelMessagesAsRead();
+            
+            if (focusInputField)
+                chatHudController.FocusInputField();
+        }
+        else
+        {   
+            chatHudController.UnfocusInputField();
+            View.Hide();
         }
     }
 
@@ -123,24 +143,8 @@ public class PublicChatWindowController : IHUD
 
         chatController.Send(message);
     }
-    
-    public void SetVisibility(bool visible, bool focusInputField)
-    {
-        SetVisiblePanelList(visible);
-        if (visible)
-        {
-            View.Show();
-            MarkChannelMessagesAsRead();
-            
-            if (focusInputField)
-                chatHudController.FocusInputField();
-        }
-        else
-        {   
-            chatHudController.UnfocusInputField();
-            View.Hide();
-        }
-    }
+
+    public void SetVisibility(bool visible) => SetVisibility(visible, false);
 
     private void SetVisiblePanelList(bool visible)
     {
@@ -152,8 +156,6 @@ public class PublicChatWindowController : IHUD
 
         visibleTaskbarPanels.Set(newSet, true);
     }
-
-    public void SetVisibility(bool visible) => SetVisibility(visible, false);
 
     private async UniTaskVoid ReloadAllChats()
     {
@@ -214,5 +216,29 @@ public class PublicChatWindowController : IHUD
             messageType = ChatMessage.Type.SYSTEM,
             subType = ChatEntryModel.SubType.RECEIVED
         });
+    }
+    
+    private void MuteChannel(bool muted)
+    {
+        if (muted)
+            chatController.MuteChannel(channelId);
+        else
+            chatController.UnmuteChannel(channelId);
+    }
+    
+    private PublicChatModel ToPublicChatModel(Channel channel)
+    {
+        return new PublicChatModel(channel.ChannelId,
+            channel.Name,
+            channel.Description,
+            channel.Joined,
+            channel.MemberCount,
+            channel.Muted);
+    }
+    
+    private void HandleChannelUpdated(Channel updatedChannel)
+    {
+        if (updatedChannel.ChannelId != channelId) return;
+        View.Configure(ToPublicChatModel(updatedChannel));
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
+﻿using NUnit.Framework;
 
 public class PublicChatChannelComponentViewShould
 {
@@ -41,6 +38,16 @@ public class PublicChatChannelComponentViewShould
         view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false));
         
         Assert.AreEqual("~nearby", view.nameLabel.text);
+        Assert.IsFalse(view.muteToggle.isOn);
+    }
+    
+    [Test]
+    public void ConfigureAsMuted()
+    {
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true));
+        
+        Assert.AreEqual("~nearby", view.nameLabel.text);
+        Assert.IsTrue(view.muteToggle.isOn);
     }
 
     [Test]

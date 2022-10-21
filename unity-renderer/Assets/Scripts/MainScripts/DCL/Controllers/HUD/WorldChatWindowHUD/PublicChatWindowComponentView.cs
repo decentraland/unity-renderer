@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DCL;
-using DCL.Interface;
 
 public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindowView, IComponentModelConfig<PublicChatModel>, IPointerDownHandler
 {
@@ -14,10 +11,9 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     [SerializeField] internal TMP_Text nameLabel;
     [SerializeField] internal ChatHUDView chatView;
     [SerializeField] internal PublicChatModel model;
+    [SerializeField] internal ToggleComponentView muteToggle;
     
     private Coroutine alphaRoutine;
-    private Vector2 originalSize;
-    internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
     public event Action OnClose;
     public event Action OnBack;
@@ -27,11 +23,11 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         remove => onFocused -= value;
     }
     public event Action OnClickOverWindow;
+    public event Action<bool> OnMuteChanged;
 
     public bool IsActive => gameObject.activeInHierarchy;
     public IChatHUDComponentView ChatHUD => chatView;
     public RectTransform Transform => (RectTransform) transform;
-    public bool IsFocused => isFocused;
 
     public static PublicChatWindowComponentView Create()
     {
@@ -41,14 +37,15 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     public override void Awake()
     {
         base.Awake();
-        originalSize = ((RectTransform) transform).sizeDelta;
         backButton.onClick.AddListener(() => OnBack?.Invoke());
         closeButton.onClick.AddListener(() => OnClose?.Invoke());
+        muteToggle.OnSelectedChanged += (b, s, arg3) => OnMuteChanged?.Invoke(b);
     }
     
     public override void RefreshControl()
     {
         nameLabel.text = $"~{model.name}";
+        muteToggle.SetIsOnWithoutNotify(model.muted);
     }
 
     public void Hide() => gameObject.SetActive(false);
