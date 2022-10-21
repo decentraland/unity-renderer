@@ -380,7 +380,7 @@ namespace DCL.Components
 
             // FD::--Tests-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD:: In Coords: " + coords + " " + isPlayerInScene);
+            Debug.Log("FD:: In Coords: " + coords + " - scene in SO: " + CommonScriptableObjects.sceneID.Get());
         }
 
         private void OnSceneIDChanged(string current, string previous) 
