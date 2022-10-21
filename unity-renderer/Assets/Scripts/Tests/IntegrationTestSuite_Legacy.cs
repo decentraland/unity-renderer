@@ -16,7 +16,6 @@ using UnityEngine.TestTools;
 public class IntegrationTestSuite_Legacy
 {
     private const string VISUAL_TEST_CUBEMAP_PATH = "Assets/Scripts/Tests/VisualTests/Textures/VisualTest Reflection.png";
-    private const string VISUAL_TEST_SKYBOX_MAT_PATH = "Assets/Scripts/Tests/VisualTests/Materials/VisualTest Skybox.mat";
     
     /// <summary>
     /// Use this as a parent for your dynamically created gameobjects in tests
@@ -190,11 +189,10 @@ public class IntegrationTestSuite_Legacy
 
     private void InitializeDefaultRenderSettings()
     {
-
         RenderSettings.customReflection = AssetDatabase.LoadAssetAtPath<Cubemap>(VISUAL_TEST_CUBEMAP_PATH);
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
-        RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>(VISUAL_TEST_SKYBOX_MAT_PATH);
+        RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");
         RenderSettings.ambientEquatorColor = new Color(0.98039216f, 0.8352941f, 0.74509805f);
         RenderSettings.ambientSkyColor = new Color(0.60784316f, 0.92941177f, 1);
         RenderSettings.ambientGroundColor = Color.white;
