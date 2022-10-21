@@ -124,9 +124,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
-        {
             RequestAllPlacesAndEventsFromAPI();
-        }
         else
             DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
     }

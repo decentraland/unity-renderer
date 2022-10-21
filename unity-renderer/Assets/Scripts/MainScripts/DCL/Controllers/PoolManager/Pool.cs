@@ -37,8 +37,6 @@ namespace DCL
 
         public IPooledObjectInstantiator instantiator;
 
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
         private readonly LinkedList<PoolableObject> unusedObjects = new LinkedList<PoolableObject>();
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
@@ -115,11 +113,7 @@ namespace DCL
             return po;
         }
 
-
-        public async UniTask IterativePrewarm(int prewarmCount) => 
-            await IterativePrewarm(prewarmCount, cancellationTokenSource.Token);
-        
-        private async UniTask IterativePrewarm(int prewarmCount, CancellationToken cancellationToken)
+        public async UniTask IterativePrewarm(int prewarmCount)
         {
             if (unusedObjects.Count >= prewarmCount)
                 return;
@@ -127,7 +121,7 @@ namespace DCL
             for (int i = 0; i < prewarmCount; i++)
             {
                 Instantiate();
-                await UniTask.NextFrame(cancellationToken);
+                await UniTask.NextFrame();
             }
         }
 

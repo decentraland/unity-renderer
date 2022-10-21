@@ -58,7 +58,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     [Header("Configuration")]
     [SerializeField] internal ImageComponentModel model;
-    
+
     public event Action<Sprite> OnLoaded;
 
     internal Sprite currentSprite;
@@ -109,8 +109,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
 
-        if (!Application.isEditor)
-            Destroy(currentSprite);
+        DestroyInternally(currentSprite);
     }
 
     public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
@@ -186,14 +185,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     internal void OnImageObserverUpdated(Texture2D texture)
     {
-        if (Application.isPlaying)
-            Destroy(currentSprite);
-        else
-            DestroyImmediate(currentSprite);
+        DestroyInternally(currentSprite);
 
-        currentSprite = texture != null ? 
-            Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), vector2oneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : 
-            null;
+        currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), vector2oneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : null;
 
         SetImage(currentSprite, false);
         SetLoadingIndicatorVisible(false);
