@@ -4,43 +4,43 @@ namespace DCL.ECSComponents
 {
     public static class Texture_Defaults
     {
-        public static string GetTextureUrl(this ECSComponents.Texture self, IParcelScene scene)
+        public static string GetTextureUrl(this TextureUnion self, IParcelScene scene)
         {
-            switch (self.TextureCase)
+            switch (self.TexCase)
             {
-                case ECSComponents.Texture.TextureOneofCase.AvatarTexture:
+                case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetTextureUrl();
-                case ECSComponents.Texture.TextureOneofCase.SrcTexture:
+                case TextureUnion.TexOneofCase.Texture:
                 default:
-                    return self.SrcTexture.GetTextureUrl(scene);
+                    return self.Texture.GetTextureUrl(scene);
             }
         }
         
-        public static UnityEngine.TextureWrapMode GetWrapMode(this ECSComponents.Texture self)
+        public static UnityEngine.TextureWrapMode GetWrapMode(this TextureUnion self)
         {
-            switch (self.TextureCase)
+            switch (self.TexCase)
             {
-                case ECSComponents.Texture.TextureOneofCase.AvatarTexture:
+                case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetWrapMode();
-                case ECSComponents.Texture.TextureOneofCase.SrcTexture:
+                case TextureUnion.TexOneofCase.Texture:
                 default:
-                    return self.SrcTexture.GetWrapMode();
+                    return self.Texture.GetWrapMode();
             }
         }
         
-        public static UnityEngine.FilterMode GetFilterMode(this ECSComponents.Texture self)
+        public static UnityEngine.FilterMode GetFilterMode(this TextureUnion self)
         {
-            switch (self.TextureCase)
+            switch (self.TexCase)
             {
-                case ECSComponents.Texture.TextureOneofCase.AvatarTexture:
+                case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetFilterMode();
-                case ECSComponents.Texture.TextureOneofCase.SrcTexture:
+                case TextureUnion.TexOneofCase.Texture:
                 default:
-                    return self.SrcTexture.GetFilterMode();
+                    return self.Texture.GetFilterMode();
             }
         }
         
-        public static string GetTextureUrl(this SRCTexture self, IParcelScene scene)
+        public static string GetTextureUrl(this ECSComponents.Texture self, IParcelScene scene)
         {
             scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl);
 
@@ -52,7 +52,7 @@ namespace DCL.ECSComponents
             return KernelConfig.i.Get().avatarTextureAPIBaseUrl + self.UserId;
         }
         
-        public static UnityEngine.TextureWrapMode GetWrapMode(this SRCTexture self)
+        public static UnityEngine.TextureWrapMode GetWrapMode(this ECSComponents.Texture self)
         {
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
@@ -62,7 +62,7 @@ namespace DCL.ECSComponents
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this SRCTexture self)
+        public static UnityEngine.FilterMode GetFilterMode(this ECSComponents.Texture self)
         {
             return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
         }

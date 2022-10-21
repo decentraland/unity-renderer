@@ -46,9 +46,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -66,9 +66,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -92,9 +92,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -108,9 +108,9 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
@@ -127,9 +127,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -149,9 +149,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -170,9 +170,9 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
@@ -192,9 +192,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    SrcTexture = new DCL.ECSComponents.SRCTexture()
+                    Texture = new DCL.ECSComponents.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }

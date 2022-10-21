@@ -25,29 +25,28 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiFkZWNlbnRyYWxhbmQvY29tbW9uL3RleHR1cmUucHJvdG8SE2RlY2VudHJh",
-            "bGFuZC5jb21tb24itwEKClNSQ1RleHR1cmUSCwoDc3JjGAEgASgJEjwKCXdy",
-            "YXBfbW9kZRgCIAEoDjIkLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVdy",
-            "YXBNb2RlSACIAQESQAoLZmlsdGVyX21vZGUYAyABKA4yJi5kZWNlbnRyYWxh",
-            "bmQuY29tbW9uLlRleHR1cmVGaWx0ZXJNb2RlSAGIAQFCDAoKX3dyYXBfbW9k",
-            "ZUIOCgxfZmlsdGVyX21vZGUivgEKDUF2YXRhclRleHR1cmUSDwoHdXNlcl9p",
-            "ZBgBIAEoCRI8Cgl3cmFwX21vZGUYAiABKA4yJC5kZWNlbnRyYWxhbmQuY29t",
-            "bW9uLlRleHR1cmVXcmFwTW9kZUgAiAEBEkAKC2ZpbHRlcl9tb2RlGAMgASgO",
-            "MiYuZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlRmlsdGVyTW9kZUgBiAEB",
-            "QgwKCl93cmFwX21vZGVCDgoMX2ZpbHRlcl9tb2RlIooBCgdUZXh0dXJlEjYK",
-            "C3NyY190ZXh0dXJlGAEgASgLMh8uZGVjZW50cmFsYW5kLmNvbW1vbi5TUkNU",
-            "ZXh0dXJlSAASPAoOYXZhdGFyX3RleHR1cmUYAiABKAsyIi5kZWNlbnRyYWxh",
-            "bmQuY29tbW9uLkF2YXRhclRleHR1cmVIAEIJCgd0ZXh0dXJlKlUKD1RleHR1",
-            "cmVXcmFwTW9kZRIOCgpUV01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoK",
-            "VFdNX01JUlJPUhACEhMKD1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVG",
-            "aWx0ZXJNb2RlEg0KCVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEK",
-            "DVRGTV9UUklMSU5FQVIQAkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3Rv",
-            "Mw=="));
+            "bGFuZC5jb21tb24itAEKB1RleHR1cmUSCwoDc3JjGAEgASgJEjwKCXdyYXBf",
+            "bW9kZRgCIAEoDjIkLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVdyYXBN",
+            "b2RlSACIAQESQAoLZmlsdGVyX21vZGUYAyABKA4yJi5kZWNlbnRyYWxhbmQu",
+            "Y29tbW9uLlRleHR1cmVGaWx0ZXJNb2RlSAGIAQFCDAoKX3dyYXBfbW9kZUIO",
+            "CgxfZmlsdGVyX21vZGUivgEKDUF2YXRhclRleHR1cmUSDwoHdXNlcl9pZBgB",
+            "IAEoCRI8Cgl3cmFwX21vZGUYAiABKA4yJC5kZWNlbnRyYWxhbmQuY29tbW9u",
+            "LlRleHR1cmVXcmFwTW9kZUgAiAEBEkAKC2ZpbHRlcl9tb2RlGAMgASgOMiYu",
+            "ZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlRmlsdGVyTW9kZUgBiAEBQgwK",
+            "Cl93cmFwX21vZGVCDgoMX2ZpbHRlcl9tb2RlIoQBCgxUZXh0dXJlVW5pb24S",
+            "LwoHdGV4dHVyZRgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVy",
+            "ZUgAEjwKDmF2YXRhcl90ZXh0dXJlGAIgASgLMiIuZGVjZW50cmFsYW5kLmNv",
+            "bW1vbi5BdmF0YXJUZXh0dXJlSABCBQoDdGV4KlUKD1RleHR1cmVXcmFwTW9k",
+            "ZRIOCgpUV01fUkVQRUFUEAASDQoJVFdNX0NMQU1QEAESDgoKVFdNX01JUlJP",
+            "UhACEhMKD1RXTV9NSVJST1JfT05DRRADKkcKEVRleHR1cmVGaWx0ZXJNb2Rl",
+            "Eg0KCVRGTV9QT0lOVBAAEhAKDFRGTV9CSUxJTkVBUhABEhEKDVRGTV9UUklM",
+            "SU5FQVIQAkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextureWrapMode), typeof(global::DCL.ECSComponents.TextureFilterMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.SRCTexture), global::DCL.ECSComponents.SRCTexture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Texture), global::DCL.ECSComponents.Texture.Parser, new[]{ "Src", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.AvatarTexture), global::DCL.ECSComponents.AvatarTexture.Parser, new[]{ "UserId", "WrapMode", "FilterMode" }, new[]{ "WrapMode", "FilterMode" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Texture), global::DCL.ECSComponents.Texture.Parser, new[]{ "SrcTexture", "AvatarTexture" }, new[]{ "Texture" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.TextureUnion), global::DCL.ECSComponents.TextureUnion.Parser, new[]{ "Texture", "AvatarTexture" }, new[]{ "Tex" }, null, null, null)
           }));
     }
     #endregion
@@ -70,17 +69,17 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
-  public sealed partial class SRCTexture : pb::IMessage<SRCTexture>
+  public sealed partial class Texture : pb::IMessage<Texture>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<SRCTexture> _parser = new pb::MessageParser<SRCTexture>(() => new SRCTexture());
+    private static readonly pb::MessageParser<Texture> _parser = new pb::MessageParser<Texture>(() => new Texture());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<SRCTexture> Parser { get { return _parser; } }
+    public static pb::MessageParser<Texture> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -96,7 +95,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SRCTexture() {
+    public Texture() {
       OnConstruction();
     }
 
@@ -104,7 +103,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SRCTexture(SRCTexture other) : this() {
+    public Texture(Texture other) : this() {
       _hasBits0 = other._hasBits0;
       src_ = other.src_;
       wrapMode_ = other.wrapMode_;
@@ -114,8 +113,8 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SRCTexture Clone() {
-      return new SRCTexture(this);
+    public Texture Clone() {
+      return new Texture(this);
     }
 
     /// <summary>Field number for the "src" field.</summary>
@@ -189,12 +188,12 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as SRCTexture);
+      return Equals(other as Texture);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(SRCTexture other) {
+    public bool Equals(Texture other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -293,7 +292,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(SRCTexture other) {
+    public void MergeFrom(Texture other) {
       if (other == null) {
         return;
       }
@@ -664,16 +663,16 @@ namespace DCL.ECSComponents {
 
   }
 
-  public sealed partial class Texture : pb::IMessage<Texture>
+  public sealed partial class TextureUnion : pb::IMessage<TextureUnion>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Texture> _parser = new pb::MessageParser<Texture>(() => new Texture());
+    private static readonly pb::MessageParser<TextureUnion> _parser = new pb::MessageParser<TextureUnion>(() => new TextureUnion());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Texture> Parser { get { return _parser; } }
+    public static pb::MessageParser<TextureUnion> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -689,7 +688,7 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Texture() {
+    public TextureUnion() {
       OnConstruction();
     }
 
@@ -697,12 +696,12 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Texture(Texture other) : this() {
-      switch (other.TextureCase) {
-        case TextureOneofCase.SrcTexture:
-          SrcTexture = other.SrcTexture.Clone();
+    public TextureUnion(TextureUnion other) : this() {
+      switch (other.TexCase) {
+        case TexOneofCase.Texture:
+          Texture = other.Texture.Clone();
           break;
-        case TextureOneofCase.AvatarTexture:
+        case TexOneofCase.AvatarTexture:
           AvatarTexture = other.AvatarTexture.Clone();
           break;
       }
@@ -712,22 +711,22 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Texture Clone() {
-      return new Texture(this);
+    public TextureUnion Clone() {
+      return new TextureUnion(this);
     }
 
-    /// <summary>Field number for the "src_texture" field.</summary>
-    public const int SrcTextureFieldNumber = 1;
+    /// <summary>Field number for the "texture" field.</summary>
+    public const int TextureFieldNumber = 1;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.SRCTexture SrcTexture {
-      get { return textureCase_ == TextureOneofCase.SrcTexture ? (global::DCL.ECSComponents.SRCTexture) texture_ : null; }
+    public global::DCL.ECSComponents.Texture Texture {
+      get { return texCase_ == TexOneofCase.Texture ? (global::DCL.ECSComponents.Texture) tex_ : null; }
       set {
-        texture_ = value;
-        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.SrcTexture;
+        tex_ = value;
+        texCase_ = value == null ? TexOneofCase.None : TexOneofCase.Texture;
       }
     }
 
@@ -739,52 +738,52 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.AvatarTexture AvatarTexture {
-      get { return textureCase_ == TextureOneofCase.AvatarTexture ? (global::DCL.ECSComponents.AvatarTexture) texture_ : null; }
+      get { return texCase_ == TexOneofCase.AvatarTexture ? (global::DCL.ECSComponents.AvatarTexture) tex_ : null; }
       set {
-        texture_ = value;
-        textureCase_ = value == null ? TextureOneofCase.None : TextureOneofCase.AvatarTexture;
+        tex_ = value;
+        texCase_ = value == null ? TexOneofCase.None : TexOneofCase.AvatarTexture;
       }
     }
 
-    private object texture_;
-    /// <summary>Enum of possible cases for the "texture" oneof.</summary>
-    public enum TextureOneofCase {
+    private object tex_;
+    /// <summary>Enum of possible cases for the "tex" oneof.</summary>
+    public enum TexOneofCase {
       None = 0,
-      SrcTexture = 1,
+      Texture = 1,
       AvatarTexture = 2,
     }
-    private TextureOneofCase textureCase_ = TextureOneofCase.None;
+    private TexOneofCase texCase_ = TexOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public TextureOneofCase TextureCase {
-      get { return textureCase_; }
+    public TexOneofCase TexCase {
+      get { return texCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearTexture() {
-      textureCase_ = TextureOneofCase.None;
-      texture_ = null;
+    public void ClearTex() {
+      texCase_ = TexOneofCase.None;
+      tex_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as Texture);
+      return Equals(other as TextureUnion);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Texture other) {
+    public bool Equals(TextureUnion other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(SrcTexture, other.SrcTexture)) return false;
+      if (!object.Equals(Texture, other.Texture)) return false;
       if (!object.Equals(AvatarTexture, other.AvatarTexture)) return false;
-      if (TextureCase != other.TextureCase) return false;
+      if (TexCase != other.TexCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -792,9 +791,9 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (textureCase_ == TextureOneofCase.SrcTexture) hash ^= SrcTexture.GetHashCode();
-      if (textureCase_ == TextureOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
-      hash ^= (int) textureCase_;
+      if (texCase_ == TexOneofCase.Texture) hash ^= Texture.GetHashCode();
+      if (texCase_ == TexOneofCase.AvatarTexture) hash ^= AvatarTexture.GetHashCode();
+      hash ^= (int) texCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -813,11 +812,11 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
+      if (texCase_ == TexOneofCase.Texture) {
         output.WriteRawTag(10);
-        output.WriteMessage(SrcTexture);
+        output.WriteMessage(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (texCase_ == TexOneofCase.AvatarTexture) {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
@@ -831,11 +830,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
+      if (texCase_ == TexOneofCase.Texture) {
         output.WriteRawTag(10);
-        output.WriteMessage(SrcTexture);
+        output.WriteMessage(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (texCase_ == TexOneofCase.AvatarTexture) {
         output.WriteRawTag(18);
         output.WriteMessage(AvatarTexture);
       }
@@ -849,10 +848,10 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (textureCase_ == TextureOneofCase.SrcTexture) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(SrcTexture);
+      if (texCase_ == TexOneofCase.Texture) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Texture);
       }
-      if (textureCase_ == TextureOneofCase.AvatarTexture) {
+      if (texCase_ == TexOneofCase.AvatarTexture) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AvatarTexture);
       }
       if (_unknownFields != null) {
@@ -863,18 +862,18 @@ namespace DCL.ECSComponents {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Texture other) {
+    public void MergeFrom(TextureUnion other) {
       if (other == null) {
         return;
       }
-      switch (other.TextureCase) {
-        case TextureOneofCase.SrcTexture:
-          if (SrcTexture == null) {
-            SrcTexture = new global::DCL.ECSComponents.SRCTexture();
+      switch (other.TexCase) {
+        case TexOneofCase.Texture:
+          if (Texture == null) {
+            Texture = new global::DCL.ECSComponents.Texture();
           }
-          SrcTexture.MergeFrom(other.SrcTexture);
+          Texture.MergeFrom(other.Texture);
           break;
-        case TextureOneofCase.AvatarTexture:
+        case TexOneofCase.AvatarTexture:
           if (AvatarTexture == null) {
             AvatarTexture = new global::DCL.ECSComponents.AvatarTexture();
           }
@@ -898,17 +897,17 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::DCL.ECSComponents.SRCTexture subBuilder = new global::DCL.ECSComponents.SRCTexture();
-            if (textureCase_ == TextureOneofCase.SrcTexture) {
-              subBuilder.MergeFrom(SrcTexture);
+            global::DCL.ECSComponents.Texture subBuilder = new global::DCL.ECSComponents.Texture();
+            if (texCase_ == TexOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
             input.ReadMessage(subBuilder);
-            SrcTexture = subBuilder;
+            Texture = subBuilder;
             break;
           }
           case 18: {
             global::DCL.ECSComponents.AvatarTexture subBuilder = new global::DCL.ECSComponents.AvatarTexture();
-            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+            if (texCase_ == TexOneofCase.AvatarTexture) {
               subBuilder.MergeFrom(AvatarTexture);
             }
             input.ReadMessage(subBuilder);
@@ -931,17 +930,17 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::DCL.ECSComponents.SRCTexture subBuilder = new global::DCL.ECSComponents.SRCTexture();
-            if (textureCase_ == TextureOneofCase.SrcTexture) {
-              subBuilder.MergeFrom(SrcTexture);
+            global::DCL.ECSComponents.Texture subBuilder = new global::DCL.ECSComponents.Texture();
+            if (texCase_ == TexOneofCase.Texture) {
+              subBuilder.MergeFrom(Texture);
             }
             input.ReadMessage(subBuilder);
-            SrcTexture = subBuilder;
+            Texture = subBuilder;
             break;
           }
           case 18: {
             global::DCL.ECSComponents.AvatarTexture subBuilder = new global::DCL.ECSComponents.AvatarTexture();
-            if (textureCase_ == TextureOneofCase.AvatarTexture) {
+            if (texCase_ == TexOneofCase.AvatarTexture) {
               subBuilder.MergeFrom(AvatarTexture);
             }
             input.ReadMessage(subBuilder);
