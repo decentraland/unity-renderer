@@ -66,18 +66,14 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         }
         else
         {
-            if (context.StartsWith("ownedEmotes:"))
-            {
-                OnOwnedEmotesReceived?.Invoke(request.emotes, request.context);
-            }
-            else if (request.context.StartsWith("emotes:"))
+            if (request.context.StartsWith("emotes:"))
             {
                 ResolveMissingEmotesRejection(request.context, request.emotes);
                 OnEmotesReceived?.Invoke(request.emotes);
             }
             else
             {
-                Debug.LogError("EmotesCatalogBridge error: unsupported context " + request.context);
+                OnOwnedEmotesReceived?.Invoke(request.emotes, request.context);
             }
         }
     }
@@ -104,7 +100,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
             ownedByUser: userId,
             emoteIds: null,
             collectionIds: null,
-            context: $"ownedEmotes:{userId}"
+            context: $"{userId}"
         );
     }
 
