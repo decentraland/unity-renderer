@@ -22,10 +22,15 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             return;
 
         textComponent.OnPreRenderText += OnTextComponentPreRenderText;
-        channelsFeatureFlagService = Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>();
-        isAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled()
-                                    && channelsFeatureFlagService.IsAllowedToCreateChannels();
-        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
+        
+        if (Environment.i != null
+            && Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>() != null)
+        {
+            channelsFeatureFlagService = Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>();
+            isAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled()
+                                        && channelsFeatureFlagService.IsAllowedToCreateChannels();
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
+        }
     }
 
     private void OnDestroy()
@@ -34,7 +39,9 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             return;
 
         textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
-        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
+        
+        if (channelsFeatureFlagService != null)
+            channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
 
     private void OnAllowedToCreateChannelsChanged(bool isAllowed) =>
