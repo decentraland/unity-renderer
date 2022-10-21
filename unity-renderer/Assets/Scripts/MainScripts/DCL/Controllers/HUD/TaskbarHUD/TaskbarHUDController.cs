@@ -315,7 +315,6 @@ public class TaskbarHUDController : IHUD
         CloseVoiceChatWindow();
         isExperiencesViewerOpen.Set(false);
 
-        openedChat.Set("");
         if (!privateChatWindow.View.IsActive
             && !publicChatWindow.View.IsActive
             && !channelChatWindow.View.IsActive)

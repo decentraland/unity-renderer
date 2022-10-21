@@ -196,11 +196,7 @@ public class PublicChatWindowController : IHUD
             MarkChannelMessagesAsRead();
     }
 
-    private void Hide()
-    {
-        openedChat.Set("");
-        SetVisibility(false);
-    }
+    private void Hide() => SetVisibility(false);
 
     private void HandleChatInputTriggered(DCLAction_Trigger action)
     {

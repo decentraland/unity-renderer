@@ -51,11 +51,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         nameLabel.text = $"~{model.name}";
     }
 
-    public void Hide() 
-    { 
-        openedChat.Set("");
-        gameObject.SetActive(false);
-    }
+    public void Hide() => gameObject.SetActive(false);
 
     public void Show() => gameObject.SetActive(true);
     

@@ -234,7 +234,6 @@ public class PrivateChatWindowController : IHUD
 
     private void Hide()
     {
-        openedChat.Set("");
         SetVisibility(false);
         OnClosed?.Invoke();
     }
