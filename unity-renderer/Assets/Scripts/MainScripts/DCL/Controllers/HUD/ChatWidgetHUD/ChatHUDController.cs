@@ -11,7 +11,7 @@ public class ChatHUDController : IDisposable
     public const int MAX_CHAT_ENTRIES = 30;
     private const int TEMPORARILY_MUTE_MINUTES = 3;
     private const int MAX_CONTINUOUS_MESSAGES = 10;
-    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1000;
+    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int MAX_HISTORY_ITERATION = 10;
 
     public event Action OnInputFieldSelected;
