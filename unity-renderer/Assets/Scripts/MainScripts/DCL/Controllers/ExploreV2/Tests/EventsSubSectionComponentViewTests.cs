@@ -70,21 +70,6 @@ public class EventsSubSectionComponentViewTests
         Assert.AreEqual(isVisible, eventsSubSectionComponent.featuredEventsLoading.activeSelf);
     }
 
-    // [Test]
-    // [TestCase(true)]
-    // [TestCase(false)]
-    // public void SetFeaturedEventsActiveCorrectly(bool isActive)
-    // {
-    //     // Arrange
-    //     eventsSubSectionComponent.featuredEvents.gameObject.SetActive(!isActive);
-    //
-    //     // Act
-    //     eventsSubSectionComponent.SetFeaturedEventsActive(isActive);
-    //
-    //     // Assert
-    //     Assert.AreEqual(isActive, eventsSubSectionComponent.featuredEvents.gameObject.activeSelf);
-    // }
-
     [Test]
     public void SetTrendingEventsCorrectly()
     {
@@ -111,7 +96,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.trendingEventsLoading.SetActive(!isVisible);
 
         // Act
-        // eventsSubSectionComponent.SetTrendingEventsAsLoading(isVisible);
+        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.trendingEvents.GetComponent<Canvas>(), eventsSubSectionComponent.trendingEventsLoading);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.trendingEvents.gameObject.activeSelf);
@@ -163,7 +148,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.upcomingEventsLoading.SetActive(!isVisible);
 
         // Act
-        // eventsSubSectionComponent.SetUpcomingEventsAsLoading(isVisible);
+        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.upcomingEvents.GetComponent<Canvas>(), eventsSubSectionComponent.upcomingEventsLoading);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.upcomingEvents.gameObject.activeSelf);
@@ -199,7 +184,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.goingEventsLoading.SetActive(!isVisible);
 
         // Act
-        // eventsSubSectionComponent.SetGoingEventsAsLoading(isVisible);
+        eventsSubSectionComponent.SetEventsGroupAsLoading(isVisible, eventsSubSectionComponent.goingEvents.GetComponent<Canvas>(), eventsSubSectionComponent.goingEventsLoading);
 
         // Assert
         Assert.AreEqual(!isVisible, eventsSubSectionComponent.goingEvents.gameObject.activeSelf);

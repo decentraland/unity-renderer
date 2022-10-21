@@ -19,7 +19,6 @@ public class TagComponentViewTests
     public void TearDown()
     {
         tagComponent.Dispose();
-        GameObject.Destroy(tagComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
     }

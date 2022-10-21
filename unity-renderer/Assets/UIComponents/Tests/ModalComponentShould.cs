@@ -19,7 +19,6 @@ public class ModalComponentShould
     public void TearDown()
     {
         modalComponent.Dispose();
-        GameObject.Destroy(modalComponent.gameObject);
         
         if(modelContent != null)
             GameObject.Destroy(modelContent);

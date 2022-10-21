@@ -249,7 +249,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEventCardsPool.ReleaseAll();
 
         featuredEvents.ExtractItems();
-
         
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsIteratively(events));
         UpdateCardsVisual();

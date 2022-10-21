@@ -19,7 +19,6 @@ public class BaseComponentViewTests
     public void TearDown()
     {
         baseComponent.Dispose();
-        GameObject.Destroy(baseComponent.gameObject);
     }
 
     [Test]

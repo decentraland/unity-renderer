@@ -12,7 +12,6 @@ public class ColumnsOrganizerComponentViewTests
     public void TearDown()
     {
         columnsOrganizerComponent.Dispose();
-        GameObject.Destroy(columnsOrganizerComponent.gameObject);
     }
 
     [Test]

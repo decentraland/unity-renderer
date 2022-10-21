@@ -16,7 +16,6 @@ public class GridContainerComponentViewTests
     public void TearDown()
     {
         gridContainerComponent.Dispose();
-        GameObject.Destroy(gridContainerComponent.gameObject);
     }
 
     [Test]
