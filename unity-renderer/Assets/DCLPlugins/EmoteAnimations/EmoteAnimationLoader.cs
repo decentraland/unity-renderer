@@ -35,24 +35,22 @@ namespace DCL.Emotes
             Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
 
             var animation = rendereable.container.GetComponentInChildren<Animation>();
-            if (animation != null)
-            {
-                var animationClip = animation.clip;
-
-                //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
-                if (animationClip != null)
-                {
-                    this.loadedAnimationClip = animationClip;
-                    animationClip.name = emote.id;
-                }
-                else
-                {
-                    Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
-                }
-            }
-            else
+            if (animation == null)            
             {
                 Debug.LogError("Animation component not found in the container for emote " + emote.id);
+                return;
+             }
+             
+             var animationClip = animation.clip;
+             if(animationClip == null)
+             {
+                 Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
+                 return;
+             }
+
+                //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
+                this.loadedAnimationClip = animationClip;
+                animationClip.name = emote.id;
             }
         }
 
