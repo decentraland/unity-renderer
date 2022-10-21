@@ -61,25 +61,5 @@ namespace DCL.ECSComponents
         {
             return self.HasDirectIntensity ? self.DirectIntensity : 1f;
         }
-
-        public static TextureWrapMode GetWrapMode(this SRCTexture self)
-        {
-            return self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp;
-        }
-        
-        public static TextureWrapMode GetWrapMode(this AvatarTexture self)
-        {
-            return self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp;
-        }
-
-        public static TextureFilterMode GetFilterMode(this SRCTexture self)
-        {
-            return self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear;
-        }
-        
-        public static TextureFilterMode GetFilterMode(this AvatarTexture self)
-        {
-            return self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear;
-        }
     }
 }

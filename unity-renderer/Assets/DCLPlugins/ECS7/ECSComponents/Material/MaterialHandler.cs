@@ -32,21 +32,12 @@ namespace DCL.ECSComponents
                 return;
 
             lastModel = model;
-            AssetPromise_Material_Model.Texture? albedoTextureModel = null;
-            
-            if (model.Texture.TextureCase == Texture.TextureOneofCase.AvatarTexture)
-            {
-                string avatarTexUrl = KernelConfig.i.Get().avatarTextureAPIBaseUrl + model.Texture.AvatarTexture.UserId;
-                albedoTextureModel = new AssetPromise_Material_Model.Texture(avatarTexUrl,
-                    (UnityEngine.TextureWrapMode)model.Texture.AvatarTexture.GetWrapMode(),
-                    (UnityEngine.FilterMode)model.Texture.AvatarTexture.GetFilterMode());
 
-                CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
-
-                return;
-            }
-
-            albedoTextureModel = CreateMaterialPromiseTextureModel(model.Texture.SrcTexture, scene);
+            AssetPromise_Material_Model.Texture? albedoTextureModel = CreateMaterialPromiseTextureModel (
+                model.Texture.GetTextureUrl(scene),
+                model.Texture.GetWrapMode(),
+                model.Texture.GetFilterMode()
+            );
             CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
         }
 
@@ -56,9 +47,24 @@ namespace DCL.ECSComponents
             
             if (IsPbrMaterial(model))
             {
-                AssetPromise_Material_Model.Texture? alphaTexture = CreateMaterialPromiseTextureModel(model.AlphaTexture, scene);
-                AssetPromise_Material_Model.Texture? emissiveTexture = CreateMaterialPromiseTextureModel(model.EmissiveTexture, scene);
-                AssetPromise_Material_Model.Texture? bumpTexture = CreateMaterialPromiseTextureModel(model.BumpTexture, scene);
+                AssetPromise_Material_Model.Texture? alphaTexture = CreateMaterialPromiseTextureModel (
+                    model.AlphaTexture.GetTextureUrl(scene),
+                    model.AlphaTexture.GetWrapMode(),
+                    model.AlphaTexture.GetFilterMode()
+                );
+                
+                AssetPromise_Material_Model.Texture? emissiveTexture = CreateMaterialPromiseTextureModel (
+                    model.EmissiveTexture.GetTextureUrl(scene),
+                    model.EmissiveTexture.GetWrapMode(),
+                    model.EmissiveTexture.GetFilterMode()
+                );
+                
+                AssetPromise_Material_Model.Texture? bumpTexture = CreateMaterialPromiseTextureModel (
+                    model.BumpTexture.GetTextureUrl(scene),
+                    model.BumpTexture.GetWrapMode(),
+                    model.BumpTexture.GetFilterMode()
+                );
+                
                 promiseModel = CreatePBRMaterialPromiseModel(model, albedoTexture, alphaTexture, emissiveTexture, bumpTexture);
             }
             else if (albedoTexture.HasValue)
@@ -100,20 +106,12 @@ namespace DCL.ECSComponents
             return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest());
         }
 
-        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(SRCTexture textureModel, IParcelScene scene)
+        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(string textureUrl, UnityEngine.TextureWrapMode wrapMode, UnityEngine.FilterMode filterMode)
         {
-            if (textureModel == null)
+            if (string.IsNullOrEmpty(textureUrl))
                 return null;
 
-            if (string.IsNullOrEmpty(textureModel.Src))
-                return null;
-
-            if (!scene.contentProvider.TryGetContentsUrl(textureModel.Src, out string url))
-                return null;
-
-            return new AssetPromise_Material_Model.Texture(url,
-                (UnityEngine.TextureWrapMode)textureModel.GetWrapMode(),
-                (UnityEngine.FilterMode)textureModel.GetFilterMode());
+            return new AssetPromise_Material_Model.Texture(textureUrl, wrapMode, filterMode);
         }
 
         private static bool IsPbrMaterial(PBMaterial model)
