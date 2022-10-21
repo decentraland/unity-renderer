@@ -55,6 +55,7 @@ public class PublicChatWindowController : IHUD
             profanityFilter);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnSendMessage += SendChatMessage;
+        chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
 
         chatController.OnAddMessage -= HandleMessageReceived;
         chatController.OnAddMessage += HandleMessageReceived;
@@ -87,6 +88,7 @@ public class PublicChatWindowController : IHUD
             chatController.OnAddMessage -= HandleMessageReceived;
 
         chatHudController.OnSendMessage -= SendChatMessage;
+        chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= Hide;
@@ -204,5 +206,17 @@ public class PublicChatWindowController : IHUD
     {
         if (!View.IsActive) return;
         chatHudController.FocusInputField();
+    }
+    
+    private void HandleMessageBlockedBySpam(ChatMessage message)
+    {
+        chatHudController.AddChatMessage(new ChatEntryModel
+        {
+            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
+            messageId = Guid.NewGuid().ToString(),
+            messageType = ChatMessage.Type.SYSTEM,
+            subType = ChatEntryModel.SubType.RECEIVED
+        });
     }
 }

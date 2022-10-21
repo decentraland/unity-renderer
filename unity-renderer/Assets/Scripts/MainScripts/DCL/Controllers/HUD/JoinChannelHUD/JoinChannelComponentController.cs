@@ -66,9 +66,17 @@ public class JoinChannelComponentController : IDisposable
 
     private void OnConfirmJoin(string channelName)
     {
-        channelName = channelName.Replace("#", "").Replace("~", "");
+        channelName = channelName
+            .Replace("#", "")
+            .Replace("~", "")
+            .ToLower();
 
-        chatController.JoinOrCreateChannel(channelName);
+        var alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
+
+        if (alreadyJoinedChannel == null)
+            chatController.JoinOrCreateChannel(channelName);
+        else
+            dataStore.channels.channelToBeOpenedFromLink.Set(alreadyJoinedChannel.ChannelId);
 
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());

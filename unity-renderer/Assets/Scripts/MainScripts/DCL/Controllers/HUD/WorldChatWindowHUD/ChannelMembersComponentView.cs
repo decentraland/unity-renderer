@@ -83,11 +83,7 @@ namespace DCL.Chat.HUD
 
         public void Set(ChannelMemberEntryModel user) => queuedEntries.Enqueue(user);
 
-        public override void Show(bool instant = false)
-        {
-            gameObject.SetActive(true);
-            searchBar.SetFocus();
-        }
+        public override void Show(bool instant = false) => gameObject.SetActive(true);
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
 

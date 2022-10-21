@@ -345,11 +345,7 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 
-    private void OpenPublicChatOnPreviewMode()
-    {
-        publicChatWindow.SetVisibility(false, false);
-        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
-    }
+    private void OpenPublicChatOnPreviewMode() => view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Chat);
 
     private void OpenFriendsWindow()
     {

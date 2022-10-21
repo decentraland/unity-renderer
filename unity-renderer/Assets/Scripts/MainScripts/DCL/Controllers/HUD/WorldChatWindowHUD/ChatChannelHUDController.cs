@@ -73,6 +73,7 @@ namespace DCL.Chat.HUD
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, profanityFilter);
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
+            chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
@@ -101,8 +102,6 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if (View.IsActive == visible) return;
-
             SetVisiblePanelList(visible);
             
             if (visible)
@@ -146,6 +145,8 @@ namespace DCL.Chat.HUD
                 OnClosed?.Invoke();
                 View.Hide();
             }
+
+            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
         }
 
         public void Dispose()
@@ -156,6 +157,9 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock -= Hide;
 
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
+            
+            chatHudController.OnSendMessage -= HandleSendChatMessage;
+            chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
 
             if (View != null)
             {
@@ -367,6 +371,18 @@ namespace DCL.Chat.HUD
         {
             chatHudController.FocusInputField();
             MarkChannelMessagesAsRead();
+        }
+        
+        private void HandleMessageBlockedBySpam(ChatMessage message)
+        {
+            chatHudController.AddChatMessage(new ChatEntryModel
+            {
+                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
+                messageId = Guid.NewGuid().ToString(),
+                messageType = ChatMessage.Type.SYSTEM,
+                subType = ChatEntryModel.SubType.RECEIVED
+            });
         }
     }
 }

@@ -760,5 +760,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             };
             controller.UpdateChannelMembers(JsonUtility.ToJson(msg));
         }
+
+        public Channel GetAllocatedChannelByName(string channelName) => null;
     }
 }
