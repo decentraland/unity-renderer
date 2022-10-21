@@ -17,7 +17,6 @@ public class ExploreV2MenuComponentViewTests
     public void TearDown()
     {
         exploreV2MenuComponent.Dispose();
-        GameObject.Destroy(exploreV2MenuComponent.gameObject);
     }
 
     [Test]

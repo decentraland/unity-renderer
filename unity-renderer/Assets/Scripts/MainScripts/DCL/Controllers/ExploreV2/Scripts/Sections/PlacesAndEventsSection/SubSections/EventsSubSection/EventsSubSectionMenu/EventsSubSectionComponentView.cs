@@ -109,6 +109,8 @@ public interface IEventsSubSectionComponentView
     /// Show loading bar for all events groups
     /// </summary>
     void SetAllEventGroupsAsLoading();
+
+    void SetEventsGroupAsLoading(bool isVisible, Canvas gridCanvas, GameObject loadingBar);
 }
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -284,7 +286,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEventsNoDataText.gameObject.SetActive(false);
     }
 
-    internal void SetEventsGroupAsLoading(bool isVisible, Canvas gridCanvas, GameObject loadingBar)
+    public void SetEventsGroupAsLoading(bool isVisible, Canvas gridCanvas, GameObject loadingBar)
     {
         gridCanvas.enabled = !isVisible;
         loadingBar.SetActive(isVisible);

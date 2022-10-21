@@ -111,17 +111,16 @@ public class EventsSubSectionComponentControllerTests
 
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated();
-
+        
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        // eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
+        
+        eventsSubSectionComponentView.Received(4).SetEventsGroupAsLoading(false, Arg.Any<Canvas>(), Arg.Any<GameObject>());
+        
+        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
     }
 
     [Test]
@@ -136,8 +135,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
-        // eventsSubSectionComponentView.Received().SetFeaturedEventsActive(Arg.Any<bool>());
+        eventsSubSectionComponentView.Received().SetEventsGroupAsLoading(false, Arg.Any<Canvas>(), Arg.Any<GameObject>());
     }
 
     [Test]
@@ -152,7 +150,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetEventsGroupAsLoading(false, Arg.Any<Canvas>(), Arg.Any<GameObject>());
     }
 
     [Test]
@@ -168,7 +166,7 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        // eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetEventsGroupAsLoading(false, Arg.Any<Canvas>(), Arg.Any<GameObject>());
     }
 
     [Test]
@@ -195,7 +193,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        // eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetEventsGroupAsLoading(false, Arg.Any<Canvas>(), Arg.Any<GameObject>());
     }
 
     [Test]
