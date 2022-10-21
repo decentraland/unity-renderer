@@ -362,7 +362,10 @@ namespace DCL.Components
 
             // FD::--Tests-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD::OnSceneIDChanged -SceneCaller: " + scene.sceneData.id + "\n -current scene: " + current + "\n isPlayerInScene " + isPlayerInScene);
+            Debug.Log("FD::OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
+                + "\n -current scene: " + current 
+                + "\n isPlayerInScene " + isPlayerInScene
+                + "\n CommonScriptableObjects.sceneID.Get(): " + CommonScriptableObjects.sceneID.Get());
         }
 
         public override void AttachTo(ISharedComponent component)
