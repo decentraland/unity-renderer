@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DCL;
+using DCL.Interface;
 
 public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindowView, IComponentModelConfig<PublicChatModel>, IPointerDownHandler
 {
@@ -15,6 +17,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
     
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
+    internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
     public event Action OnClose;
     public event Action OnBack;
@@ -48,7 +51,11 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
         nameLabel.text = $"~{model.name}";
     }
 
-    public void Hide() => gameObject.SetActive(false);
+    public void Hide() 
+    { 
+        openedChat.Set("");
+        gameObject.SetActive(false);
+    }
 
     public void Show() => gameObject.SetActive(true);
     
