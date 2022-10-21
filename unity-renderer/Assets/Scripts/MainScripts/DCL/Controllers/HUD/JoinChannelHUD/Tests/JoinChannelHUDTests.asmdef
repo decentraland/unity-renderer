@@ -10,7 +10,8 @@
         "DataStore",
         "ChatController",
         "BaseVariable",
-        "SocialAnalytics"
+        "SocialAnalytics",
+        "IService"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

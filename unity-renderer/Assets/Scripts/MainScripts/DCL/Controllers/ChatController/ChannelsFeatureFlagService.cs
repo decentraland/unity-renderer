@@ -21,8 +21,16 @@ namespace DCL.Chat.Channels
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
+        }
+        
+        public void Dispose()
+        {
+            userProfileBridge.GetOwn().OnUpdate -= OnUserProfileUpdate;
+        }
 
-            this.userProfileBridge.GetOwn().OnUpdate += OnUserProfileUpdate;
+        public void Initialize()
+        {
+            userProfileBridge.GetOwn().OnUpdate += OnUserProfileUpdate;
         }
 
         public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
@@ -35,7 +43,7 @@ namespace DCL.Chat.Channels
             OnAllowedToCreateChannelsChanged?.Invoke(IsAllowedToCreateChannels());
         }
 
-        private bool IsAllowedToCreateChannels()
+        public bool IsAllowedToCreateChannels()
         {
             if (!featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS))
                 return false;

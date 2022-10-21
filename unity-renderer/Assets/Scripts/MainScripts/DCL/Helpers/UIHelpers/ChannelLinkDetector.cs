@@ -1,7 +1,7 @@
-using DCL;
 using System.Collections;
 using System.Collections.Generic;
-using SocialFeaturesAnalytics;
+using DCL;
+using DCL.Chat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,6 +13,8 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     internal string currentText;
     internal bool hasNoParseLabel;
     internal List<string> channelsFoundInText = new List<string>();
+    private IChannelsFeatureFlagService channelsFeatureFlagService;
+    private bool isAllowedToCreateChannels = true;
 
     private void Awake()
     {
@@ -20,6 +22,10 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             return;
 
         textComponent.OnPreRenderText += OnTextComponentPreRenderText;
+        channelsFeatureFlagService = Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>();
+        isAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled()
+                                    && channelsFeatureFlagService.IsAllowedToCreateChannels();
+        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
     }
 
     private void OnDestroy()
@@ -28,12 +34,16 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             return;
 
         textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
+        channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
+
+    private void OnAllowedToCreateChannelsChanged(bool isAllowed) =>
+        isAllowedToCreateChannels = isAllowed && channelsFeatureFlagService.IsChannelsFeatureEnabled();
 
     private void OnTextComponentPreRenderText(TMP_TextInfo textInfo)
     {
-        if (currentText == textComponent.text)
-            return;
+        if (currentText == textComponent.text) return;
+        if (!isAllowedToCreateChannels) return;
 
         hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
         CoroutineStarter.Start(RefreshChannelPatterns());
@@ -59,6 +69,8 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!isAllowedToCreateChannels) return;
+        
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
