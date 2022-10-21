@@ -50,19 +50,6 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
-
-        var emote = model.avatar.emotes.FirstOrDefault(e => e.urn.EndsWith("6d"));
-        if (emote != null)
-        {
-            Debug.LogError("INVALID EMOTE TESTS: LoadProfile: Profile has emote " + emote.urn);
-        }
-
-        var wearable = model.avatar.wearables.FirstOrDefault(w => w.EndsWith("6d"));
-
-        if (wearable != null)
-        {
-            Debug.LogError("INVALID EMOTE TESTS: LoadProfile: Profile has wearable (emote) " + wearable);
-        }
         
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);

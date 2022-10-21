@@ -52,19 +52,15 @@ namespace AvatarSystem
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)
                 {
-                    var testEmoteId = emoteIds.FirstOrDefault(e => e.EndsWith("6d"));
-                    DateTime startLoadTime = default;
-                    if (testEmoteId != null)
-                    {
-                        Debug.LogError("INVALID EMOTE TESTS: Curate: trying to load an emote " + testEmoteId);
-                        startLoadTime = DateTime.Now;
-                    }
+                    DateTime startLoadTime = DateTime.Now;
                     
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
 
-                    if (startLoadTime != default)
+                    var loadTimeDelta = DateTime.Now - startLoadTime;
+                    if (loadTimeDelta.TotalSeconds > 5)
                     {
-                        Debug.LogError("INVALID EMOTE TESTS: Curate: emotes load time: " + (DateTime.Now - startLoadTime));
+                        //This error is good to have to detect too long load times early
+                        Debug.LogError("Curate: emotes load time is too high: " + (DateTime.Now - startLoadTime));
                     }
                     
                     if (moreEmotes != null)

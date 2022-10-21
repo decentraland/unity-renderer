@@ -53,12 +53,6 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         if (request == null)
             return;
 
-        var emote = request.emotes.FirstOrDefault(e => e.id.EndsWith("6d"));
-        if (emote != null)
-        {
-            Debug.LogError("INVALID EMOTE TESTS: AddEmotesToCatalog: Catalog received an emote " + emote.id);
-        }
-
         var context = request.context;
         if (string.IsNullOrEmpty(context))
         {
