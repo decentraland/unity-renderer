@@ -321,8 +321,11 @@ namespace DCL.Components
                 Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - IsNullOrEmpty(currentSceneId)!!!");
                 return false;
             }
-                
-            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            
+            // FD:: test-->
+            var testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            Debug.Log ("FD:: IsPlayerInSameSceneAsComponent == " + testBoolIsPlayerInSameSceneAsComponent);
+            return testBoolIsPlayerInSameSceneAsComponent;//(scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
         private bool IsPlayerInSameSceneAsComponent()
