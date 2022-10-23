@@ -107,9 +107,8 @@ public class AvatarModel : BaseModel
         stickerTriggerTimestamp = other.stickerTriggerTimestamp;
         wearables = new List<string>(other.wearables);
         emotes = other.emotes.Select(x => new AvatarEmoteEntry() { slot = x.slot, urn = x.urn }).ToList();
-        
-        
     }
 
     public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<AvatarModel>(json); }
+    
 }
