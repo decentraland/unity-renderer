@@ -12,6 +12,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const int DEFAULT_CANVAS_SORTING_ORDER = 0;
     internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
+    internal const float MINIMUM_ALPHA_TO_SHOW =  1f / 32f;
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
     internal const float ALPHA_STEPS = 32f;
     internal const float TARGET_ALPHA_SHOW = 1;
@@ -108,17 +109,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
-        float currentAlphaStep = GetNearestAlphaStep(alpha);
-
-        if (currentAlphaStep <= 1)
-        {
-            if (renderersVisible)
-            {
-                UpdateVisuals(0);
-                SetRenderersVisible(false);
-            }
+        if (ChechHide(alpha))
             return;
-        }
 
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
@@ -134,12 +126,32 @@ public class PlayerName : MonoBehaviour, IPlayerName
         pivot.transform.localPosition = Vector3.up * GetPivotYOffsetByDistance(distanceToCamera);
 
         float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
+        if (ChechHide(resolvedAlpha))
+            return;
+
+        SetRenderersVisible(true);
         float resolvedAlphaStep = GetNearestAlphaStep(resolvedAlpha);
         float canvasAlphaStep = GetNearestAlphaStep(canvasGroup.alpha);
-        SetRenderersVisible(true);
 
         if (resolvedAlphaStep != canvasAlphaStep)
             UpdateVisuals(resolvedAlpha);
+
+
+        // Local Methods
+        bool ChechHide(float checkAlpha)
+        {
+            if (checkAlpha < MINIMUM_ALPHA_TO_SHOW)
+            {
+                if (renderersVisible)
+                {
+                    UpdateVisuals(0);
+                    SetRenderersVisible(false);
+                }
+                return true;
+            }
+
+            return false;
+        }
     }
 
     internal void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
@@ -218,7 +230,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal float GetNearestAlphaStep(float alpha)
     {
-        return Mathf.Floor(alpha * ALPHA_STEPS) / ALPHA_STEPS;
+        return Mathf.Floor(alpha * ALPHA_STEPS);
     }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
