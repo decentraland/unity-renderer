@@ -284,7 +284,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         
         nftAssetRetriever = new NFTAssetRetriever();
         yield return nftAssetRetriever.LoadNFTAsset(
-            nftInfo.previewImageUrl,
+            "https://i.seadn.io/gae/MObaLMuOzC0d3fjiXy9Q-Mz0-Be7uIcuF5dE2Q3qVzVNcT48xcugXXUPcBQEAETn9CGXOLfzvp5-4ZtJo8Kn12Ak?w=500&auto=format",
             OnSuccess: nftAsset =>
             {
                 this.nftAsset = nftAsset;
