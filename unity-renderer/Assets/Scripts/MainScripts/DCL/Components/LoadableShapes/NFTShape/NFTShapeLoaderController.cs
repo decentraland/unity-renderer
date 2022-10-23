@@ -206,7 +206,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
 
         // We download the "preview" 256px image
         yield return nftAssetRetriever.LoadNFTAsset(
-            "https://d3k4yodxx8g2uu.cloudfront.net/gae/MObaLMuOzC0d3fjiXy9Q-Mz0-Be7uIcuF5dE2Q3qVzVNcT48xcugXXUPcBQEAETn9CGXOLfzvp5-4ZtJo8Kn12Ak?w=500&auto=format",
+            "https://i.seadn.io/gae/MObaLMuOzC0d3fjiXy9Q-Mz0-Be7uIcuF5dE2Q3qVzVNcT48xcugXXUPcBQEAETn9CGXOLfzvp5-4ZtJo8Kn12Ak?w=500&auto=format",
             (result) =>
             {
                 PrepareFrame(result, nftInfo.name, nftInfo.imageUrl);
