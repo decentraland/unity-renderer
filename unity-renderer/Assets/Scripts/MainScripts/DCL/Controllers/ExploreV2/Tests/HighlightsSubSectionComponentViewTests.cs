@@ -1,10 +1,16 @@
+using System.Collections;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TestTools;
+using static UnityEngine.GameObject;
+using static UnityEngine.Object;
 
 public class HighlightsSubSectionComponentViewTests
 {
+    private static int[] spritesAmounts = { 0, 1, 5, 6 };
+    
     private HighlightsSubSectionComponentView highlightsSubSectionComponent;
     private Texture2D testTexture;
     private Sprite testSprite;
@@ -12,7 +18,7 @@ public class HighlightsSubSectionComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        highlightsSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/HighlightsSubSection/HighlightsSubSection")).GetComponent<HighlightsSubSectionComponentView>();
+        highlightsSubSectionComponent = Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/HighlightsSubSection/HighlightsSubSection")).GetComponent<HighlightsSubSectionComponentView>();
         highlightsSubSectionComponent.ConfigurePools();
         highlightsSubSectionComponent.Start();
         testTexture = new Texture2D(20, 20);
@@ -29,11 +35,16 @@ public class HighlightsSubSectionComponentViewTests
         highlightsSubSectionComponent.liveEvents.ExtractItems();
         highlightsSubSectionComponent.liveEventCardsPool.ReleaseAll();
         highlightsSubSectionComponent.Dispose();
-        GameObject.Destroy(highlightsSubSectionComponent.placeModal.gameObject);
-        GameObject.Destroy(highlightsSubSectionComponent.eventModal.gameObject);
-        GameObject.Destroy(highlightsSubSectionComponent.gameObject);
-        GameObject.Destroy(testTexture);
-        GameObject.Destroy(testSprite);
+        
+        if(highlightsSubSectionComponent.placeModal!=null)
+            Destroy(highlightsSubSectionComponent.placeModal.gameObject);
+        
+        if(highlightsSubSectionComponent.eventModal!=null)
+            Destroy(highlightsSubSectionComponent.eventModal.gameObject);
+        
+        Destroy(highlightsSubSectionComponent.gameObject);
+        Destroy(testTexture);
+        Destroy(testSprite);
     }
 
     [Test]
@@ -87,20 +98,27 @@ public class HighlightsSubSectionComponentViewTests
         Assert.AreEqual(isActive, highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.activeSelf);
     }
 
-    [Test]
-    public void SetFeaturedPlacesCorrectly()
+    [UnityTest]
+    public IEnumerator SetFeaturedPlacesCorrectly([ValueSource(nameof(spritesAmounts))] int spritesAmount)
     {
         // Arrange
-        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
+        highlightsSubSectionComponent.gameObject.SetActive(false); // hack needed for fix AABB canvas fails on tests (happens only in the tests)
+            
+        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite, spritesAmount);
 
         // Act
         highlightsSubSectionComponent.SetFeaturedPlaces(testPlaces);
-
+        
+        for (int i = 0; i < spritesAmount - 1; i++)
+            yield return null;
+        
         // Assert
-        Assert.AreEqual(2, highlightsSubSectionComponent.featuredPlaces.instantiatedItems.Count, "The number of set places does not match.");
-        Assert.IsTrue(highlightsSubSectionComponent.featuredPlaces.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[0]), "The place 1 is not contained in the places carousel");
-        Assert.IsTrue(highlightsSubSectionComponent.featuredPlaces.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[1]), "The place 2 is not contained in the places carousel");
-        Assert.IsFalse(highlightsSubSectionComponent.featuredPlacesNoDataText.gameObject.activeSelf, "The featuredPlacesNoDataText should be visible.");
+        Assert.AreEqual(spritesAmount, highlightsSubSectionComponent.featuredPlaces.instantiatedItems.Count, "The number of set places does not match.");
+        
+        for (int i = 0; i < spritesAmount; i++)
+            Assert.IsTrue(highlightsSubSectionComponent.featuredPlaces.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), $"The place {i} is not contained in the places grid");
+        
+        Assert.AreEqual(spritesAmount == 0, highlightsSubSectionComponent.featuredPlacesNoDataText.gameObject.activeSelf, "The featuredPlacesNoDataText should be visible.");
     }
 
     [Test]

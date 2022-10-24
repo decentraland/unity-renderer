@@ -58,9 +58,9 @@ public class PlacesSubSectionComponentViewTests
         Assert.AreEqual(spritesAmount, placesSubSectionComponent.places.instantiatedItems.Count, "The number of set places does not match.");
 
         for (int i = 0; i < spritesAmount; i++)
-            Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), "The place 1 is not contained in the places grid");
+            Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), $"The place {i} is not contained in the places grid");
 
-        Assert.AreEqual(spritesAmount == 0, placesSubSectionComponent.placesNoDataText.gameObject.activeSelf, "The placesNoDataText should not be visible.");
+        Assert.AreEqual(spritesAmount == 0, placesSubSectionComponent.placesNoDataText.gameObject.activeSelf, "The placesNoDataText should not be visible when there are places.");
     }
 
     [UnityTest]
