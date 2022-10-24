@@ -19,6 +19,7 @@ public class ButtonComponentViewTests
     public void TearDown()
     {
         buttonComponent.Dispose();
+        GameObject.Destroy(buttonComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
     }

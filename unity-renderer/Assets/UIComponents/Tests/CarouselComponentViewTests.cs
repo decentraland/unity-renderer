@@ -15,6 +15,7 @@ public class CarouselComponentViewTests
     public void TearDown()
     {
         carouselComponent.Dispose();
+        GameObject.Destroy(carouselComponent.gameObject);
     }
 
     [Test]

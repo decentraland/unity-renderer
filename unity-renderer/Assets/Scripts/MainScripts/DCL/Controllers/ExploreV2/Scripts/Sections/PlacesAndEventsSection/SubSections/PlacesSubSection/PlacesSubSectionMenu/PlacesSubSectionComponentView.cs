@@ -196,7 +196,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         {
             this.places.AddItem(
                 ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
-
             yield return null;
         }
         

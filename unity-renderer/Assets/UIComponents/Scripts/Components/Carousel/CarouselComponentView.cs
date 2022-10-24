@@ -193,10 +193,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     public override void Dispose()
     {
+        base.Dispose();
+
         StopCarousel();
         DestroyInstantiatedItems();
-        
-        base.Dispose();
     }
 
     public void SetSpaceBetweenItems(float newSpace)
@@ -447,7 +447,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
             if (itemToDestroy != null)
-                DestroyInternally(itemToDestroy.gameObject);
+                DestroyImmediate(itemToDestroy.gameObject);
         }
         
         itemsToDestroy.Clear();

@@ -109,7 +109,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
 
-        DestroyInternally(currentSprite);
+        if (!Application.isEditor)
+            Destroy(currentSprite);
     }
 
     public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
@@ -185,7 +186,10 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     internal void OnImageObserverUpdated(Texture2D texture)
     {
-        DestroyInternally(currentSprite);
+        if (Application.isPlaying)
+            Destroy(currentSprite);
+        else
+            DestroyImmediate(currentSprite);
 
         currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), vector2oneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : null;
 

@@ -115,7 +115,6 @@ public class PlacesSubSectionComponentControllerTests
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
         placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(placesSubSectionComponentController.currentPlacesShowed < numberOfPlaces);
-        placesSubSectionComponentView.Received().SetPlacesAsLoading(false);
     }
 
     [Test]

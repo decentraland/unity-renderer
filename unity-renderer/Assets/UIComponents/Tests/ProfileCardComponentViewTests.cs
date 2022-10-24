@@ -23,6 +23,7 @@ public class ProfileCardComponentViewTests
     public void TearDown()
     {
         profileCardComponent.Dispose();
+        GameObject.Destroy(profileCardComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
     }

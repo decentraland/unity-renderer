@@ -23,6 +23,7 @@ public class SectionSelectorComponentViewTests
     public void TearDown()
     {
         sectionSelectorComponent.Dispose();
+        GameObject.Destroy(sectionSelectorComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
     }

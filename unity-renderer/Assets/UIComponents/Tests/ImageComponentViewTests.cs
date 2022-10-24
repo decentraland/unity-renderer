@@ -24,6 +24,7 @@ public class ImageComponentViewTests
     public void TearDown()
     {
         imageComponent.Dispose();
+        GameObject.Destroy(imageComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
     }
