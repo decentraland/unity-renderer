@@ -181,7 +181,7 @@ public class ChatHUDController : IDisposable
         RegisterMessageHistory(message);
         currentHistoryIteration = 0;
 
-        if (IsSpamming(message.sender) || IsSpamming(ownProfile.userName))
+        if (IsSpamming(message.sender) || IsSpamming(ownProfile.userName) && !string.IsNullOrEmpty(message.body))
         {
             OnMessageSentBlockedBySpam?.Invoke(message);
             return;
