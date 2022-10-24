@@ -1,5 +1,4 @@
-Shader "DLC/Master_ToonShader_Outline_v2"
-
+Shader "DLC/Master_ToonShader_Outline_v3"
 {
     Properties
     {
@@ -738,7 +737,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -2368,7 +2367,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -3824,7 +3823,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -4546,7 +4545,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-        #include "ShadowCasterPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl"
 
             ENDHLSL
         }
@@ -5060,7 +5059,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -5782,7 +5781,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-       #include "DepthOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl"
 
             ENDHLSL
         }
@@ -6310,7 +6309,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -7038,7 +7037,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-       #include "DepthNormalsOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthNormalsOnlyPass.hlsl"
 
             ENDHLSL
         }
@@ -7648,7 +7647,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -9189,7 +9188,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -10817,7 +10816,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -12271,7 +12270,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -12993,7 +12992,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-        #include "ShadowCasterPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl"
 
             ENDHLSL
         }
@@ -13506,7 +13505,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -14228,7 +14227,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-       #include "DepthOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl"
 
             ENDHLSL
         }
@@ -14755,7 +14754,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -15483,7 +15482,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
 
             #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
-       #include "DepthNormalsOnlyPass.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthNormalsOnlyPass.hlsl"
 
             ENDHLSL
         }
@@ -16093,7 +16092,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
@@ -17635,7 +17634,7 @@ Shader "DLC/Master_ToonShader_Outline_v2"
         }
 
         // 6225d998ca79b73b98fe1c8b8c9e5bd8
-        #include "../ShaderGraph/Includes/SampleTexture.hlsl"
+        #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
         void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
         {
