@@ -41,6 +41,7 @@ public class WorldChatWindowController : IHUD
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
     private bool areJoinedChannelsRequestedByFirstTime;
+    private bool areUnseenMessajesRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
@@ -197,14 +198,12 @@ public class WorldChatWindowController : IHUD
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
                 if (!areJoinedChannelsRequestedByFirstTime)
-                {
                     RequestJoinedChannels();
-                    RequestUnreadChannelsMessages();
-                }
                 else
-                {
                     SetAutomaticChannelsInfoUpdatingActive(true);
-                }
+                
+                if (!areUnseenMessajesRequestedByFirstTime)
+                    RequestUnreadChannelsMessages();
             }
 
             if (ownUserProfile?.isGuest ?? false)
@@ -545,7 +544,11 @@ public class WorldChatWindowController : IHUD
 
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();
 
-    private void RequestUnreadChannelsMessages() => chatController.GetUnseenMessagesByChannel();
+    private void RequestUnreadChannelsMessages()
+    {
+        chatController.GetUnseenMessagesByChannel();
+        areUnseenMessajesRequestedByFirstTime = true;
+    }
 
     private void OpenChannelSearch()
     {
