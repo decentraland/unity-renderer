@@ -274,9 +274,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void SetAllEventGroupsAsLoading()
     {
-        featuredEvents.gameObject.SetActive(false);
-        featuredEventsLoading.SetActive(true);
-
+        SetFeaturedEventsGroupAsLoading();
+        
         SetEventsGroupAsLoading(isVisible: true, goingEventsCanvas, goingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, trendingEventsCanvas, trendingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, upcomingEventsCanvas, upcomingEventsLoading);
@@ -284,6 +283,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEventsNoDataText.gameObject.SetActive(false);
         trendingEventsNoDataText.gameObject.SetActive(false);
         upcomingEventsNoDataText.gameObject.SetActive(false);
+    }
+    
+    internal void SetFeaturedEventsGroupAsLoading()
+    {
+        featuredEvents.gameObject.SetActive(false);
+        featuredEventsLoading.SetActive(true);
     }
 
     public void SetEventsGroupAsLoading(bool isVisible, Canvas gridCanvas, GameObject loadingBar)
