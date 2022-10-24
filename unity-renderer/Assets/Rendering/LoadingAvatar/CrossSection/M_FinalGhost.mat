@@ -23,6 +23,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - Texture2D_E0E90B4F:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_7cfe0fbfe8e84e269806828a0f117264_Texture_1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -45,13 +49,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - EdgeThickness: 2.1
+    - Vector1_533C9C05: 0.4
     - Vector1_61a7a0ad63c841748fe6f6cfb1a67e1f: 0.05
     - Vector1_7db7aa7f94f5470d935a0ff14989164a: 0.05
+    - Vector1_a6322ea535ad4b8ea9f2b0a1ae114a49: 0.993
+    - _CellShading: 251
     - _EdgeThickness: 2.2
+    - _Outline: 7.13
+    - _OutlineFade: 1
     - _PatternSpeed: 0.5
     - _RefractionIntensity: 0
     - _RefractionScale: 0
+    - _isOutlineDisabled: 0
     m_Colors:
+    - Color_5DF75355: {r: 1, g: 0.51855165, b: 0, a: 0}
     - Vector2_a88edb82dce1499a9920d0c1949e324b: {r: 0.05, g: 0.035, b: 0, a: 0}
     - _Color: {r: 0, g: 2.71224, b: 3.441591, a: 0}
     - _PatternSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
