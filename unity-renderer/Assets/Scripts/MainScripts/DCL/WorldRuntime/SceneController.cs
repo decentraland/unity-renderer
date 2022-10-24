@@ -538,7 +538,11 @@ namespace DCL
 
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
-            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.x != currentGridSceneCoordinate.y;
+            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.y != currentGridSceneCoordinate.y;
+
+            Debug.Log ("FD:: SceneController.SetPositionDirty = " + positionDirty +
+                        "\n -              gridPosition x:" +gridPosition.x + " y:" + gridPosition.y +
+                        "\n -currentGridSceneCoordinate x:" +currentGridSceneCoordinate.x + " y:" + currentGridSceneCoordinate.y);
 
             if (positionDirty)
             {
@@ -557,6 +561,7 @@ namespace DCL
 
         public void SortScenesByDistance()
         {
+            Debug.Log ("FD:: SceneController.SortScenesByDistance - begin");
             // if (DCLCharacterController.i == null)
             //     return;
 
