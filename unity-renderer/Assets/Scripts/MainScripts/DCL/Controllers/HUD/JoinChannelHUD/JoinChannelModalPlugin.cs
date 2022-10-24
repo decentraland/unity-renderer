@@ -13,19 +13,15 @@ public class JoinChannelModalPlugin : IPlugin
 
     public JoinChannelModalPlugin()
     {
-        UserProfileWebInterfaceBridge userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
-
         joinChannelComponentController = new JoinChannelComponentController(
             JoinChannelComponentView.Create(),
             ChatController.i,
             DataStore.i,
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
-                userProfileWebInterfaceBridge),
+                new UserProfileWebInterfaceBridge()),
             Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-            new ChannelsFeatureFlagService(
-                DataStore.i,
-                userProfileWebInterfaceBridge));
+            Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
     }
 
     public void Dispose() { joinChannelComponentController.Dispose(); }
