@@ -38,13 +38,20 @@ namespace DCL
             if (DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
                 return;
 
-            GameObject sticker = pools[id].Get().gameObject;
-            sticker.transform.position += position;
-            sticker.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
+            PoolableObject sticker = pools[id].Get();
+            GameObject stickerGo = sticker.gameObject;
+            stickerGo.transform.position += position;
+            stickerGo.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
+
+            DestroyParticlesOnFinish particlesDestroyer = stickerGo.GetComponent<DestroyParticlesOnFinish>();
+            if (particlesDestroyer != null)
+            {
+                particlesDestroyer.Finished += () => { sticker.Release(); };
+            }
 
             if (followTransform)
             {
-                FollowObject stickerFollow = sticker.AddComponent<FollowObject>();
+                FollowObject stickerFollow = stickerGo.AddComponent<FollowObject>();
                 stickerFollow.target = transform;
                 stickerFollow.offset = prefab.transform.position;
             }
