@@ -18,6 +18,14 @@ namespace DCL
             public bool enabled;
         }
 
+        [Serializable]
+        class MemoryDescriptionPayload
+        {
+            public long jsHeapSizeLimit;
+            public long totalJSHeapSize;
+            public long usedJSHeapSize;
+        }
+
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
 
@@ -35,17 +43,25 @@ namespace DCL
 
         public void HideFPSPanel()
         {
-            debugController.HideFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void ShowFPSPanel()
         {
-            debugController.ShowFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void SetSceneDebugPanel()
         {
             debugController.SetSceneDebugPanel();
+        }
+        
+        public void SetMemoryUsage(string payload)
+        {
+            var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize);
+            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize);
         }
 
         public void SetEngineDebugPanel()

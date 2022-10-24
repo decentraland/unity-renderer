@@ -13,7 +13,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         EmotesWheel,
         Shortcut,
-        Command
+        Command,
+        Backpack
     }
 
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

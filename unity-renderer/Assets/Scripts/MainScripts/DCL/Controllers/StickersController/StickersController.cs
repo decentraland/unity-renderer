@@ -22,6 +22,13 @@ namespace DCL
             PlaySticker(id, transform.position, Vector3.zero, true);
         }
 
+        /// <summary>
+        /// Play a sticker
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="position"> if following transform, position must be an offset from the target. Otherwise, it's the particle's world position</param>
+        /// <param name="direction"></param>
+        /// <param name="followTransform"></param>
         public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform)
         {
             if (stickersFactory == null || !stickersFactory.TryGet(id, out GameObject prefab) || isInHideArea)
