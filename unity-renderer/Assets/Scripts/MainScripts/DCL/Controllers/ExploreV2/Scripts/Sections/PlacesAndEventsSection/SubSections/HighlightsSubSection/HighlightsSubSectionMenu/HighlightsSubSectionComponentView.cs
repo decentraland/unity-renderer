@@ -269,7 +269,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         while (cardsVisualUpdateBuffer.Count > 0)
             await cardsVisualUpdateBuffer.Dequeue().Invoke();
-        
+
         while (poolsIterativePrewarBuffer.Count > 0)
             await poolsIterativePrewarBuffer.Dequeue().Invoke();
 
@@ -351,17 +351,22 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     private async UniTask SetTrendingsIteratively(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
     {
-        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
+        int eventId = 0;
+        int placeId = 0;
+
+        for (int i = 0 ; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
         {
-            if (i % 2 == 0 && i < events.Count)
+            if (i % 2 == 0 && eventId < events.Count)
             {
-                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[i], trendingEventCardsPool,
+                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[eventId], trendingEventCardsPool,
                     OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+                eventId++;
             }
-            else if (i < places.Count)
+            else if (placeId < places.Count)
             {
-                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[i], trendingPlaceCardsPool,
+                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[placeId], trendingPlaceCardsPool,
                     OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
+                placeId++;
             }
 
             await UniTask.NextFrame();
