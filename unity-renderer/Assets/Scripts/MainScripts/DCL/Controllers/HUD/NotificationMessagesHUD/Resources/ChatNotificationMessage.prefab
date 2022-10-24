@@ -652,7 +652,7 @@ MonoBehaviour:
   content: {fileID: 0}
   model:
     maxHeaderCharacters: 30
-    maxContentCharacters: 32
+    maxContentCharacters: 28
     maxSenderCharacters: 10
     message: Test shorter
     time: 12:33
