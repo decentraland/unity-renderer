@@ -256,9 +256,61 @@ public class ChatController : MonoBehaviour, IChatController
 
     public void GetChannels(int limit, string paginationToken) => WebInterface.GetChannels(limit, paginationToken, string.Empty);
 
-    public void MuteChannel(string channelId) => WebInterface.MuteChannel(channelId, true);
+    public void MuteChannel(string channelId)
+    {
+        if (channelId == NEARBY_CHANNEL_ID)
+        {
+            var channel = GetAllocatedChannel(NEARBY_CHANNEL_ID);
+            var payload = new ChannelInfoPayloads
+            {
+                channelInfoPayload = new[]
+                {
+                    new ChannelInfoPayload
+                    {
+                        description = channel.Description,
+                        joined = channel.Joined,
+                        channelId = channel.ChannelId,
+                        muted = true,
+                        name = channel.Name,
+                        memberCount = channel.MemberCount,
+                        unseenMessages = channel.UnseenMessages
+                    }
+                }
+            };
+            
+            UpdateChannelInfo(JsonUtility.ToJson(payload));
+        }
+        else
+            WebInterface.MuteChannel(channelId, true);
+    }
 
-    public void UnmuteChannel(string channelId) => WebInterface.MuteChannel(channelId, false);
+    public void UnmuteChannel(string channelId)
+    {
+        if (channelId == NEARBY_CHANNEL_ID)
+        {
+            var channel = GetAllocatedChannel(NEARBY_CHANNEL_ID);
+            var payload = new ChannelInfoPayloads
+            {
+                channelInfoPayload = new[]
+                {
+                    new ChannelInfoPayload
+                    {
+                        description = channel.Description,
+                        joined = channel.Joined,
+                        channelId = channel.ChannelId,
+                        muted = false,
+                        name = channel.Name,
+                        memberCount = channel.MemberCount,
+                        unseenMessages = channel.UnseenMessages
+                    }
+                }
+            };
+            
+            UpdateChannelInfo(JsonUtility.ToJson(payload));
+        }
+        else
+            WebInterface.MuteChannel(channelId, false);
+    }
 
     public Channel GetAllocatedChannel(string channelId) =>
         channels.ContainsKey(channelId) ? channels[channelId] : null;

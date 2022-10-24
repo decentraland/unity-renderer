@@ -6,14 +6,11 @@ public class PublicChatPublicWindowMock : MonoBehaviour, IPublicChatWindowView
 {
     public event Action OnClose;
     public event Action OnBack;
-    public event Action<bool> OnFocused;
-    public event Action OnClickOverWindow;
+    public event Action<bool> OnMuteChanged;
 
     public bool IsActive => gameObject.activeSelf;
     public IChatHUDComponentView ChatHUD => Substitute.For<IChatHUDComponentView>();
     public RectTransform Transform => (RectTransform) transform;
-    public bool IsFocused => false;
-    public bool IsInPreviewMode { get; }
 
     private void Awake()
     {
@@ -32,18 +29,6 @@ public class PublicChatPublicWindowMock : MonoBehaviour, IPublicChatWindowView
     public void Show() => gameObject.SetActive(true);
     
     public void Configure(PublicChatModel model)
-    {
-    }
-
-    public void ActivatePreview()
-    {
-    }
-
-    public void ActivatePreviewInstantly()
-    {
-    }
-
-    public void DeactivatePreview()
     {
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
+using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
@@ -27,6 +29,9 @@ public class PublicChatChannelControllerShould
         GivenUser(TEST_USER_ID, TEST_USER_NAME);
 
         chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby",
+            0, 1, true, false, ""));
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PublicChatWindowController(
             chatController,
@@ -65,7 +70,7 @@ public class PublicChatChannelControllerShould
             && model.bodyText == $"<noparse>{msg.body}</noparse>"
             && model.senderId == msg.sender));
     }
-    
+
     [Test]
     public void FilterMessageWhenIsTooOld()
     {
@@ -93,7 +98,7 @@ public class PublicChatChannelControllerShould
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
     }
-    
+
     [Test]
     public void SendPrivateMessage()
     {
@@ -147,6 +152,39 @@ public class PublicChatChannelControllerShould
         controller.MarkChannelMessagesAsRead();
 
         chatController.Received(1).MarkChannelMessagesAsSeen(Arg.Any<string>());
+    }
+
+    [Test]
+    public void MuteChannel()
+    {
+        controller.Setup("nearby");
+        view.OnMuteChanged += Raise.Event<Action<bool>>(true);
+
+        chatController.Received(1).MuteChannel("nearby");
+    }
+
+    [Test]
+    public void UnmuteChannel()
+    {
+        controller.Setup("nearby");
+        view.OnMuteChanged += Raise.Event<Action<bool>>(false);
+
+        chatController.Received(1).UnmuteChannel("nearby");
+    }
+
+    [Test]
+    public void RefreshChannelInformationWhenChannelUpdates()
+    {
+        controller.Setup("nearby");
+        view.ClearReceivedCalls();
+
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(new Channel("nearby", "nearby",
+            0, 1, true, true, ""));
+
+        view.Received(1).Configure(Arg.Is<PublicChatModel>(p => p.channelId == "nearby"
+                                                                && p.name == "nearby"
+                                                                && p.joined == true
+                                                                && p.muted == true));
     }
 
     private void GivenOwnProfile()
