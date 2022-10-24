@@ -79,7 +79,7 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig<T> where T: BaseComponentModel
+public interface IComponentModelConfig<T> where T : BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
@@ -150,9 +150,13 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose()
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
-        
+
         if (!isDestroyed && !Application.isEditor)
+#if UNITY_EDITOR
+            DestroyImmediate(gameObject);
+#else
             Destroy(gameObject);
+#endif
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }

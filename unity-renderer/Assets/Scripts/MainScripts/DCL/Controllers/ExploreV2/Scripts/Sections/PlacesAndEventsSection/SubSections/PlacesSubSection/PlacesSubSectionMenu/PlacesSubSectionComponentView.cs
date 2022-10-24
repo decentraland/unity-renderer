@@ -1,7 +1,7 @@
 using DCL;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -11,6 +11,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 {
     internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
     private const int PLACE_CARDS_POOL_PREWARM = 20;
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
@@ -68,6 +70,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public override void Dispose()
     {
         base.Dispose();
+        cancellationTokenSource.Cancel();
 
         showMorePlacesButton.onClick.RemoveAllListeners();
 
@@ -96,7 +99,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.ExtractItems();
         this.places.RemoveItems();
 
-        StartCoroutine(SetPlacesIteratively(places));
+        SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
     }
     
     public void SetPlacesAsLoading(bool isVisible)
@@ -108,21 +111,21 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         if (isVisible)
             placesNoDataText.gameObject.SetActive(false);
     }
-    
-    public void AddPlaces(List<PlaceCardComponentModel> places) => 
-        StartCoroutine(SetPlacesIteratively(places));
 
-    private IEnumerator SetPlacesIteratively(List<PlaceCardComponentModel> places)
+    public void AddPlaces(List<PlaceCardComponentModel> places) => 
+        SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
+
+    private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
     {
         foreach (PlaceCardComponentModel place in places)
         {
             this.places.AddItem(
                 ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
-            yield return null;
+            await UniTask.NextFrame(cancellationToken);
         }
         
         this.places.SetItemSizeForModel();
-        placeCardsPool.IterativePrewarm(places.Count).Forget();
+        await placeCardsPool.PrewarmAsync(places.Count, cancellationToken);
     }
     
     public void SetActive(bool isActive)

@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -18,7 +19,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private const int GOING_EVENT_CARDS_POOL_PREWARM = 9;
 
     private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
-    private readonly Queue<Func<UniTask>> poolsIterativePrewarBuffer = new Queue<Func<UniTask>>();
+    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new Queue<Func<UniTask>>();
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     [Header("Assets References")]
     [SerializeField] internal EventCardComponentView eventCardPrefab;
@@ -55,7 +57,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private Canvas goingEventsCanvas;
 
     private bool isUpdatingCardsVisual;
-
+    
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
     
     public event Action OnReady;
@@ -74,7 +76,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEventsCanvas = goingEvents.GetComponent<Canvas>();
     }
 
-     public override void Start()
+    public override void Start()
     {
         eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
 
@@ -97,7 +99,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public override void Dispose()
     {
         base.Dispose();
-
+        cancellationTokenSource.Cancel();
+        
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
 
         featuredEvents.Dispose();
@@ -197,28 +200,28 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         eventsGrid.ExtractItems();
         eventsGrid.RemoveItems();
 
-        cardsVisualUpdateBuffer.Enqueue(() => SetEventsIteratively(events, eventsGrid, eventCardsPool));
+        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
 
     public void AddUpcomingEvents(List<EventCardComponentModel> events)
     {
-        cardsVisualUpdateBuffer.Enqueue(() => SetEventsIteratively(events, upcomingEvents, upcomingEventCardsPool));
+        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, upcomingEvents, upcomingEventCardsPool, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
 
-    private async UniTask SetEventsIteratively(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool)
+    private async UniTask SetEventsAsync(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool, CancellationToken cancellationToken)
     {
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
                 ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
                     OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(cancellationToken);
         }
 
         eventsGrid.SetItemSizeForModel();
-        poolsIterativePrewarBuffer.Enqueue(() => pool.IterativePrewarm(events.Count));
+        poolsPrewarmAsyncsBuffer.Enqueue(() => pool.PrewarmAsync(events.Count, cancellationToken));
     }
 
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
@@ -230,24 +233,24 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEvents.ExtractItems();
         
-        cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsIteratively(events));
+        cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
     
-    private async UniTask SetFeaturedEventsIteratively(List<EventCardComponentModel> events)
+    private async UniTask SetFeaturedEventsAsync(List<EventCardComponentModel> events, CancellationToken cancellationToken)
     {
         foreach (EventCardComponentModel eventInfo in events)
         {
             featuredEvents.AddItem(
                 ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, featuredEventCardsPool,
                     OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(cancellationToken);
         }
 
         featuredEvents.SetManualControlsActive();
         featuredEvents.GenerateDotsSelector();
         
-        poolsIterativePrewarBuffer.Enqueue(() => featuredEventCardsPool.IterativePrewarm(events.Count));
+        poolsPrewarmAsyncsBuffer.Enqueue(() => featuredEventCardsPool.PrewarmAsync(events.Count, cancellationToken));
     }
     
     private void UpdateCardsVisual()
@@ -262,8 +265,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             while (cardsVisualUpdateBuffer.Count > 0)
                 await cardsVisualUpdateBuffer.Dequeue().Invoke();
 
-            while (poolsIterativePrewarBuffer.Count > 0)
-                await poolsIterativePrewarBuffer.Dequeue().Invoke();
+            while (poolsPrewarmAsyncsBuffer.Count > 0)
+                await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
 
             isUpdatingCardsVisual = false;
         }

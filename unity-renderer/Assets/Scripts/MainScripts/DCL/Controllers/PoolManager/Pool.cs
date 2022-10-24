@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -113,7 +112,7 @@ namespace DCL
             return po;
         }
 
-        public async UniTask IterativePrewarm(int prewarmCount)
+        public async UniTask PrewarmAsync(int prewarmCount, CancellationToken cancellationToken)
         {
             if (unusedObjects.Count >= prewarmCount)
                 return;
@@ -121,7 +120,7 @@ namespace DCL
             for (int i = 0; i < prewarmCount; i++)
             {
                 Instantiate();
-                await UniTask.NextFrame();
+                await UniTask.NextFrame(cancellationToken);
             }
         }
 
