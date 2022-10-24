@@ -31,15 +31,15 @@ namespace DCL
             if (DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
                 return;
 
-            GameObject emoteGameObject = Instantiate(prefab);
-            emoteGameObject.transform.position += position;
-            emoteGameObject.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
+            GameObject sticker = pools[id].Get().gameObject;
+            sticker.transform.position += position;
+            sticker.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
             if (followTransform)
             {
-                FollowObject emoteFollow = emoteGameObject.AddComponent<FollowObject>();
-                emoteFollow.target = transform;
-                emoteFollow.offset = prefab.transform.position;
+                FollowObject stickerFollow = sticker.AddComponent<FollowObject>();
+                stickerFollow.target = transform;
+                stickerFollow.offset = prefab.transform.position;
             }
         }
 
