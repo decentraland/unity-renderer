@@ -568,11 +568,13 @@ namespace DCL
 
             if (!DataStore.i.debugConfig.isDebugMode.Get() && string.IsNullOrEmpty(currentSceneId))
             {
+                Debug.Log ("FD:: SceneController.SortScenesByDistance - AddLock");
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
             else
-            {
+            {   
+                Debug.Log ("FD:: SceneController.SortScenesByDistance - else sceneID.Set " + currentSceneId);
                 // 1. Set current scene id
                 CommonScriptableObjects.sceneID.Set(currentSceneId);
 
