@@ -94,7 +94,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public ShowHideAnimator showHideAnimator;
 
     public virtual bool isVisible { get; private set; }
-    private bool isDestroyed = false;
+    protected bool isDestroyed = false;
 
     public event Action<bool> onFocused;
     public bool isFocused { get; private set; }
@@ -151,12 +151,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
 
-        if (!isDestroyed && !Application.isEditor)
-#if UNITY_EDITOR
-            DestroyImmediate(gameObject);
-#else
+        if (!isDestroyed && Application.isPlaying)
             Destroy(gameObject);
-#endif
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData) { OnFocus(); }

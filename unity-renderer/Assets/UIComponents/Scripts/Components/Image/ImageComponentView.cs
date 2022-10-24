@@ -3,6 +3,7 @@ using System;
 using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public interface IImageComponentView
 {
@@ -103,14 +104,22 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     public override void Dispose()
     {
-        base.Dispose();
-
         currentUriLoading = null;
         lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
 
-        if (!Application.isEditor)
-            Destroy(currentSprite);
+        DestroyInterntally(currentSprite);
+        
+        base.Dispose();
+    }
+    
+    private void DestroyInterntally(Object obj)
+    {
+#if UNITY_EDITOR
+        DestroyImmediate(obj);
+#else
+        Destroy(obj);
+#endif
     }
 
     public void SetImage(Sprite sprite, bool cleanLastLoadedUri = true)
@@ -183,14 +192,11 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         image.enabled = !isVisible;
         loadingIndicator.SetActive(isVisible);
     }
-
+    
     internal void OnImageObserverUpdated(Texture2D texture)
     {
-        if (Application.isPlaying)
-            Destroy(currentSprite);
-        else
-            DestroyImmediate(currentSprite);
-
+        DestroyInterntally(currentSprite);
+        
         currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), vector2oneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : null;
 
         SetImage(currentSprite, false);
