@@ -8,12 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Master_ToonShader_Outline_TESTER
-  m_Shader: {fileID: 4800000, guid: 5d7f970a2e46dd9428adcf6881415e49, type: 3}
+  m_Shader: {fileID: 4800000, guid: 0c89c45a683e46c4697501045dea6f9d, type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _EMISSION _GPU_SKINNING _NORMALMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2153
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -88,13 +88,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_c33eb2e02a004cc59ddf4de008209eff: 0
+    - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
     - Vector1_dc63173bc8314416be42ac299256c2a5: 0
     - _CellShading: 255
     - _DitherFade: 1
     - _Outline: 4.07
     - _OutlineFade: 1
-    - _OutlineFade_1: 0.1
+    - _OutlineFade_1: 1
     - _OutlineOpacity: 1
     - _ToonFade: 1
     - _detailsAmount: 50
