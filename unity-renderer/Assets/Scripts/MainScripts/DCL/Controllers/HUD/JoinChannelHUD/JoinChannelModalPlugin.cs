@@ -25,7 +25,8 @@ public class JoinChannelModalPlugin : IPlugin
             Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
             new ChannelsFeatureFlagService(
                 DataStore.i,
-                userProfileWebInterfaceBridge));
+                userProfileWebInterfaceBridge,
+                ChatController.i));
     }
 
     public void Dispose() { joinChannelComponentController.Dispose(); }
