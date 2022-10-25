@@ -1,7 +1,5 @@
-using DCL;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "StickersFactory", menuName = "Variables/StickersFactory")]
