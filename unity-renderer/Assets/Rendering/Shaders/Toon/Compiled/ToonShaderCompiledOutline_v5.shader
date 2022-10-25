@@ -16968,7 +16968,7 @@ Shader "DLC/Master_ToonShader_Outline_v5"
             }
 
             // Render State
-            Cull 
+            //Cull 
 
             Cull [_Cull] Blend [_SrcBlend] [_DstBlend] ZTest LEqual ZWrite [_ZWrite]
 
