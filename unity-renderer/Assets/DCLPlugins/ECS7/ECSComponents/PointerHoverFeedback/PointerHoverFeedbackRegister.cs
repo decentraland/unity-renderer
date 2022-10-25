@@ -3,18 +3,18 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class PointerEventsRegister : IDisposable
+    public class PointerHoverFeedbackRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public PointerHoverFeedbackRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             factory.AddOrReplaceComponent(componentId,
-                ProtoSerialization.Deserialize<PBPointerEvents>,
+                ProtoSerialization.Deserialize<PBPointerHoverFeedback>,
                 null);
-            componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
+            componentWriter.AddOrReplaceComponentSerializer<PBPointerHoverFeedback>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

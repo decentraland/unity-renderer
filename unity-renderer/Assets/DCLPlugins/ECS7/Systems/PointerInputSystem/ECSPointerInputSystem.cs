@@ -17,7 +17,7 @@ namespace ECSSystems.PointerInputSystem
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-            public ECSComponent<PBPointerEvents> pointerEvents;
+            public ECSComponent<PBPointerHoverFeedback> pointerEvents;
             public DataStore_ECS7 dataStoreEcs7;
             public bool isLastInputPointerDown;
             public IWorldState worldState;
@@ -46,7 +46,7 @@ namespace ECSSystems.PointerInputSystem
         public static Action CreateSystem(
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
-            ECSComponent<PBPointerEvents> pointerEvents,
+            ECSComponent<PBPointerHoverFeedback> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
             DataStore_ECS7 dataStoreEcs)
@@ -87,7 +87,7 @@ namespace ECSSystems.PointerInputSystem
             bool isHoveringInput = !isPointerDown && !isPointerUp && !state.isLastInputPointerDown;
             bool isHoveringExit = !isRaycastHitValidEntity && state.lastInputHover.hasValue;
 
-            IList<PBPointerEvents.Types.Entry> hoverEvents = isRaycastHitValidEntity
+            IList<PBPointerHoverFeedback.Types.Entry> hoverEvents = isRaycastHitValidEntity
                 ? state.pointerEvents.GetPointerEventsForEntity(colliderData.scene, colliderData.entity)
                 : null;
 
@@ -298,7 +298,7 @@ namespace ECSSystems.PointerInputSystem
             return null;
         }
 
-        private static IList<PBPointerEvents.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerEvents> component,
+        private static IList<PBPointerHoverFeedback.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerHoverFeedback> component,
             IParcelScene scene, IDCLEntity entity)
         {
             var componentData = component.Get(scene, entity);
@@ -306,7 +306,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowPointerDownHover(this IECSInteractionHoverCanvas canvas,
-            IList<PBPointerEvents.Types.Entry> entityEvents, float distance)
+            IList<PBPointerHoverFeedback.Types.Entry> entityEvents, float distance)
         {
             canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
                 pointerEvent.EventType == PointerEventType.PetDown
@@ -316,7 +316,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowPointerUpHover(this IECSInteractionHoverCanvas canvas,
-            IList<PBPointerEvents.Types.Entry> entityEvents, float distance, InputAction expectedButton)
+            IList<PBPointerHoverFeedback.Types.Entry> entityEvents, float distance, InputAction expectedButton)
         {
             canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
                 pointerEvent.EventType == PointerEventType.PetUp
@@ -327,7 +327,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowHoverTooltips(this IECSInteractionHoverCanvas canvas,
-            IList<PBPointerEvents.Types.Entry> entityEvents, Func<PBPointerEvents.Types.Entry, bool> filter)
+            IList<PBPointerHoverFeedback.Types.Entry> entityEvents, Func<PBPointerHoverFeedback.Types.Entry, bool> filter)
         {
             if (entityEvents is null)
                 return;
@@ -336,7 +336,7 @@ namespace ECSSystems.PointerInputSystem
             int eventIndex = 0;
             for (int i = 0; i < canvas.tooltipsCount; i++)
             {
-                PBPointerEvents.Types.Entry pointerEvent = null;
+                PBPointerHoverFeedback.Types.Entry pointerEvent = null;
                 for (; eventIndex < entityEvents.Count; eventIndex++)
                 {
                     pointerEvent = entityEvents[eventIndex];
