@@ -49,6 +49,7 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
+        
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }

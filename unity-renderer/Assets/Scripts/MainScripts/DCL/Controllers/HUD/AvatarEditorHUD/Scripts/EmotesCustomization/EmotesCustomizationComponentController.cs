@@ -161,6 +161,10 @@ namespace DCL.EmotesCustomization
             emotesCustomizationDataStore.currentLoadedEmotes.Add(emoteId);
             emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
             emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
+
+            if (!emote.ShowInBackpack())
+                return;
+            
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(emote);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
 
@@ -182,7 +186,17 @@ namespace DCL.EmotesCustomization
             UpdateEmoteSlots();
         }
 
-        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) { RefreshEmoteLoadingState(values.emoteId); }
+        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData)
+        {
+            if(emoteClipData.clip != null)
+                RefreshEmoteLoadingState(values.emoteId);
+            else
+            {
+                var emoteId = values.emoteId;
+                RemoveEmote(emoteId);
+                Debug.LogError("Emote " + emoteId + " was not found in emotes data store");
+            }
+        }
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
