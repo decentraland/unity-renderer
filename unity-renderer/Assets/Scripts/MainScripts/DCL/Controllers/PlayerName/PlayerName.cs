@@ -109,7 +109,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
         alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
-        if (ChechHide(alpha))
+        if (CheckAndUpdateVisibility(alpha))
             return;
 
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
@@ -126,7 +126,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         pivot.transform.localPosition = Vector3.up * GetPivotYOffsetByDistance(distanceToCamera);
 
         float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
-        if (ChechHide(resolvedAlpha))
+        if (CheckAndUpdateVisibility(resolvedAlpha))
             return;
 
         SetRenderersVisible(true);
@@ -138,7 +138,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
 
         // Local Methods
-        bool ChechHide(float checkAlpha)
+        bool CheckAndUpdateVisibility(float checkAlpha)
         {
             if (checkAlpha < MINIMUM_ALPHA_TO_SHOW)
             {
