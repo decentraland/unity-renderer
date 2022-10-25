@@ -147,8 +147,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
-    public void HidePlaceModal() => 
-        placeModal.Hide();
+    public void HidePlaceModal()
+    {
+        if (placeModal != null)
+            placeModal.Hide();
+    }
 
     public void RestartScrollViewPosition() => 
         scrollView.verticalNormalizedPosition = 1;
