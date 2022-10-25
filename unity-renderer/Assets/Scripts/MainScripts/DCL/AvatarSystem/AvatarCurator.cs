@@ -52,7 +52,17 @@ namespace AvatarSystem
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)
                 {
+                    DateTime startLoadTime = DateTime.Now;
+                    
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
+
+                    var loadTimeDelta = DateTime.Now - startLoadTime;
+                    if (loadTimeDelta.TotalSeconds > 5)
+                    {
+                        //This error is good to have to detect too long load times early
+                        Debug.LogError("Curate: emotes load time is too high: " + (DateTime.Now - startLoadTime));
+                    }
+                    
                     if (moreEmotes != null)
                     {
                         //this filter is needed to make sure there will be no duplicates coming from two sources of emotes

@@ -87,7 +87,7 @@ namespace DCL.Emotes
                 },
                 "female");
 
-            Assert.AreEqual(clip, loader.animation);
+            Assert.AreEqual(clip, loader.loadedAnimationClip);
         });
     }
 }
