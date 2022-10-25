@@ -151,7 +151,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
 
-        if (!isDestroyed && Application.isPlaying)
+        if (!isDestroyed)
             Destroy(gameObject);
     }
 

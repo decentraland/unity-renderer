@@ -60,6 +60,12 @@ public interface ICarouselComponentView
     /// Adds a new item in the carousel.
     /// </summary>
     /// <param name="item">An UI component.</param>
+    void AddItem(BaseComponentView item);
+    
+    /// <summary>
+    /// Adds a new item in the carousel and update carousel dot selector.
+    /// </summary>
+    /// <param name="item">An UI component.</param>
     void AddItemWithDotsSelector(BaseComponentView item);
 
     /// <summary>

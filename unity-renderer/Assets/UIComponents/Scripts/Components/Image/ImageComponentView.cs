@@ -113,7 +113,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         base.Dispose();
     }
     
-    private void DestroyInterntally(Object obj)
+    private static void DestroyInterntally(Object obj)
     {
 #if UNITY_EDITOR
         DestroyImmediate(obj);

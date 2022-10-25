@@ -35,6 +35,11 @@ public interface IGridContainerComponentView
     /// </summary>
     /// <param name="newItemSize">Size of each child.</param>
     void SetItemSize(Vector2 newItemSize);
+    
+    /// <summary>
+    /// Set item size and resize grid container with respect to the current model.
+    /// </summary>
+    void SetItemSizeForModel();
 
     /// <summary>
     /// Set the space between child items.
@@ -60,9 +65,15 @@ public interface IGridContainerComponentView
     /// </summary>
     /// <param name="items">List of UI components.</param>
     void SetItems(List<BaseComponentView> items);
-
+    
     /// <summary>
     /// Adds a new item in the grid.
+    /// </summary>
+    /// <param name="item">An UI component.</param>
+    void AddItem(BaseComponentView item);
+    
+    /// <summary>
+    /// Adds a new item in the grid and resize the grid.
     /// </summary>
     /// <param name="item">An UI component.</param>
     void AddItemWithResize(BaseComponentView item);
