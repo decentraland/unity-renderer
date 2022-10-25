@@ -99,6 +99,7 @@ Material:
     - _OutlineFade_1: 0.1
     - _OutlineOpacity: 0
     - _ToonFade: 0.4
+    - _ToonMultiplier: 0
     - _detailsAmount: 0.2
     - _isOutlineDisabled: 1
     m_Colors:

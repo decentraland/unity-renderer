@@ -8,13 +8,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DCL_SG_Master_ToonShader_Outliner
-  m_Shader: {fileID: -6465566751694194690, guid: 28e03ca8967da7c4884b7ff2cf65392f,
+  m_Shader: {fileID: -6465566751694194690, guid: fb6c1ddab2fc5c4408a44b091d35d2c0,
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _EMISSION _GPU_SKINNING _NORMALMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -92,11 +92,12 @@ Material:
     - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
     - _CellShading: 255
     - _DitherFade: 1
-    - _Outline: 4.35
+    - _Outline: 3.25
     - _OutlineFade: 1
     - _OutlineFade_1: 1
     - _OutlineOpacity: 1
     - _ToonFade: 1
+    - _ToonMultiplier: 0
     - _isOutlineDisabled: 1
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}

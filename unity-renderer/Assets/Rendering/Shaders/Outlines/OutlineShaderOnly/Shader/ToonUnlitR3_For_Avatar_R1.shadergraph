@@ -325,6 +325,9 @@
         },
         {
             "m_Id": "89605e93228b41cc874167be8da9ace7"
+        },
+        {
+            "m_Id": "d6f0dcaddab84c4e9a09716ba457e1bc"
         }
     ],
     "m_StickyNoteDatas": [
@@ -6744,10 +6747,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1471.999755859375,
-            "y": 1109.9998779296875,
-            "width": 208.000244140625,
-            "height": 326.0001220703125
+            "x": 1266.0,
+            "y": 1072.0001220703125,
+            "width": 208.0,
+            "height": 325.9998779296875
         }
     },
     "m_Slots": [
@@ -9908,6 +9911,17 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.GroupData",
+    "m_ObjectId": "d6f0dcaddab84c4e9a09716ba457e1bc",
+    "m_Title": "THIS MUST BE THE TOON",
+    "m_Position": {
+        "x": 10.0,
+        "y": 10.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicValueMaterialSlot",
     "m_ObjectId": "d757cf4474004d93b61a90fcb2e46c80",
     "m_Id": 1,
@@ -10607,7 +10621,7 @@
     "m_Type": "UnityEditor.ShaderGraph.ColorNode",
     "m_ObjectId": "ed472280622f4c63acacceafa3a9a889",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "d6f0dcaddab84c4e9a09716ba457e1bc"
     },
     "m_Name": "Color",
     "m_DrawState": {
