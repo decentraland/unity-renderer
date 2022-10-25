@@ -27,33 +27,33 @@ namespace DCL.ECSComponents {
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
             "bW1vbi9jb2xvcnMucHJvdG8aIWRlY2VudHJhbGFuZC9jb21tb24vdGV4dHVy",
-            "ZS5wcm90byL7BwoKUEJNYXRlcmlhbBI3Cgd0ZXh0dXJlGAEgASgLMiEuZGVj",
+            "ZS5wcm90byKKCAoKUEJNYXRlcmlhbBI3Cgd0ZXh0dXJlGAEgASgLMiEuZGVj",
             "ZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5pb25IAIgBARIXCgphbHBoYV90",
-            "ZXN0GAIgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAMgASgISAKIAQESOAoN",
-            "YWxwaGFfdGV4dHVyZRgEIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVGV4",
-            "dHVyZUgDiAEBEjsKEGVtaXNzaXZlX3RleHR1cmUYBSABKAsyHC5kZWNlbnRy",
-            "YWxhbmQuY29tbW9uLlRleHR1cmVIBIgBARI3CgxidW1wX3RleHR1cmUYBiAB",
-            "KAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1cmVIBYgBARI2CgxhbGJl",
-            "ZG9fY29sb3IYByABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gG",
-            "iAEBEjgKDmVtaXNzaXZlX2NvbG9yGAggASgLMhsuZGVjZW50cmFsYW5kLmNv",
-            "bW1vbi5Db2xvcjNIB4gBARI8ChJyZWZsZWN0aXZpdHlfY29sb3IYCSABKAsy",
-            "Gy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gIiAEBElUKEXRyYW5zcGFy",
-            "ZW5jeV9tb2RlGAogASgOMjUuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRz",
-            "Lk1hdGVyaWFsVHJhbnNwYXJlbmN5TW9kZUgJiAEBEhUKCG1ldGFsbGljGAsg",
-            "ASgCSAqIAQESFgoJcm91Z2huZXNzGAwgASgCSAuIAQESFwoKZ2xvc3NpbmVz",
-            "cxgNIAEoAkgMiAEBEh8KEnNwZWN1bGFyX2ludGVuc2l0eRgOIAEoAkgNiAEB",
-            "Eh8KEmVtaXNzaXZlX2ludGVuc2l0eRgPIAEoAkgOiAEBEh0KEGRpcmVjdF9p",
-            "bnRlbnNpdHkYECABKAJID4gBAUIKCghfdGV4dHVyZUINCgtfYWxwaGFfdGVz",
-            "dEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9hbHBoYV90ZXh0dXJlQhMKEV9lbWlz",
-            "c2l2ZV90ZXh0dXJlQg8KDV9idW1wX3RleHR1cmVCDwoNX2FsYmVkb19jb2xv",
-            "ckIRCg9fZW1pc3NpdmVfY29sb3JCFQoTX3JlZmxlY3Rpdml0eV9jb2xvckIU",
-            "ChJfdHJhbnNwYXJlbmN5X21vZGVCCwoJX21ldGFsbGljQgwKCl9yb3VnaG5l",
-            "c3NCDQoLX2dsb3NzaW5lc3NCFQoTX3NwZWN1bGFyX2ludGVuc2l0eUIVChNf",
-            "ZW1pc3NpdmVfaW50ZW5zaXR5QhMKEV9kaXJlY3RfaW50ZW5zaXR5KoUBChhN",
-            "YXRlcmlhbFRyYW5zcGFyZW5jeU1vZGUSDgoKTVRNX09QQVFVRRAAEhIKDk1U",
-            "TV9BTFBIQV9URVNUEAESEwoPTVRNX0FMUEhBX0JMRU5EEAISIgoeTVRNX0FM",
-            "UEhBX1RFU1RfQU5EX0FMUEhBX0JMRU5EEAMSDAoITVRNX0FVVE8QBEIUqgIR",
-            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "ZXN0GAIgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAMgASgISAKIAQESPQoN",
+            "YWxwaGFfdGV4dHVyZRgEIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4",
+            "dHVyZVVuaW9uSAOIAQESQAoQZW1pc3NpdmVfdGV4dHVyZRgFIAEoCzIhLmRl",
+            "Y2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSASIAQESPAoMYnVtcF90",
+            "ZXh0dXJlGAYgASgLMiEuZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5p",
+            "b25IBYgBARI2CgxhbGJlZG9fY29sb3IYByABKAsyGy5kZWNlbnRyYWxhbmQu",
+            "Y29tbW9uLkNvbG9yM0gGiAEBEjgKDmVtaXNzaXZlX2NvbG9yGAggASgLMhsu",
+            "ZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIB4gBARI8ChJyZWZsZWN0aXZp",
+            "dHlfY29sb3IYCSABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gI",
+            "iAEBElUKEXRyYW5zcGFyZW5jeV9tb2RlGAogASgOMjUuZGVjZW50cmFsYW5k",
+            "LnNkay5jb21wb25lbnRzLk1hdGVyaWFsVHJhbnNwYXJlbmN5TW9kZUgJiAEB",
+            "EhUKCG1ldGFsbGljGAsgASgCSAqIAQESFgoJcm91Z2huZXNzGAwgASgCSAuI",
+            "AQESFwoKZ2xvc3NpbmVzcxgNIAEoAkgMiAEBEh8KEnNwZWN1bGFyX2ludGVu",
+            "c2l0eRgOIAEoAkgNiAEBEh8KEmVtaXNzaXZlX2ludGVuc2l0eRgPIAEoAkgO",
+            "iAEBEh0KEGRpcmVjdF9pbnRlbnNpdHkYECABKAJID4gBAUIKCghfdGV4dHVy",
+            "ZUINCgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9hbHBoYV90",
+            "ZXh0dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJlQg8KDV9idW1wX3RleHR1cmVC",
+            "DwoNX2FsYmVkb19jb2xvckIRCg9fZW1pc3NpdmVfY29sb3JCFQoTX3JlZmxl",
+            "Y3Rpdml0eV9jb2xvckIUChJfdHJhbnNwYXJlbmN5X21vZGVCCwoJX21ldGFs",
+            "bGljQgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NCFQoTX3NwZWN1bGFy",
+            "X2ludGVuc2l0eUIVChNfZW1pc3NpdmVfaW50ZW5zaXR5QhMKEV9kaXJlY3Rf",
+            "aW50ZW5zaXR5KoUBChhNYXRlcmlhbFRyYW5zcGFyZW5jeU1vZGUSDgoKTVRN",
+            "X09QQVFVRRAAEhIKDk1UTV9BTFBIQV9URVNUEAESEwoPTVRNX0FMUEhBX0JM",
+            "RU5EEAISIgoeTVRNX0FMUEhBX1RFU1RfQU5EX0FMUEhBX0JMRU5EEAMSDAoI",
+            "TVRNX0FVVE8QBEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextureReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -209,13 +209,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "alpha_texture" field.</summary>
     public const int AlphaTextureFieldNumber = 4;
-    private global::DCL.ECSComponents.Texture alphaTexture_;
+    private global::DCL.ECSComponents.TextureUnion alphaTexture_;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Texture AlphaTexture {
+    public global::DCL.ECSComponents.TextureUnion AlphaTexture {
       get { return alphaTexture_; }
       set {
         alphaTexture_ = value;
@@ -224,13 +224,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "emissive_texture" field.</summary>
     public const int EmissiveTextureFieldNumber = 5;
-    private global::DCL.ECSComponents.Texture emissiveTexture_;
+    private global::DCL.ECSComponents.TextureUnion emissiveTexture_;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Texture EmissiveTexture {
+    public global::DCL.ECSComponents.TextureUnion EmissiveTexture {
       get { return emissiveTexture_; }
       set {
         emissiveTexture_ = value;
@@ -239,13 +239,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "bump_texture" field.</summary>
     public const int BumpTextureFieldNumber = 6;
-    private global::DCL.ECSComponents.Texture bumpTexture_;
+    private global::DCL.ECSComponents.TextureUnion bumpTexture_;
     /// <summary>
     /// default = null
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Texture BumpTexture {
+    public global::DCL.ECSComponents.TextureUnion BumpTexture {
       get { return bumpTexture_; }
       set {
         bumpTexture_ = value;
@@ -787,19 +787,19 @@ namespace DCL.ECSComponents {
       }
       if (other.alphaTexture_ != null) {
         if (alphaTexture_ == null) {
-          AlphaTexture = new global::DCL.ECSComponents.Texture();
+          AlphaTexture = new global::DCL.ECSComponents.TextureUnion();
         }
         AlphaTexture.MergeFrom(other.AlphaTexture);
       }
       if (other.emissiveTexture_ != null) {
         if (emissiveTexture_ == null) {
-          EmissiveTexture = new global::DCL.ECSComponents.Texture();
+          EmissiveTexture = new global::DCL.ECSComponents.TextureUnion();
         }
         EmissiveTexture.MergeFrom(other.EmissiveTexture);
       }
       if (other.bumpTexture_ != null) {
         if (bumpTexture_ == null) {
-          BumpTexture = new global::DCL.ECSComponents.Texture();
+          BumpTexture = new global::DCL.ECSComponents.TextureUnion();
         }
         BumpTexture.MergeFrom(other.BumpTexture);
       }
@@ -874,21 +874,21 @@ namespace DCL.ECSComponents {
           }
           case 34: {
             if (alphaTexture_ == null) {
-              AlphaTexture = new global::DCL.ECSComponents.Texture();
+              AlphaTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
           case 42: {
             if (emissiveTexture_ == null) {
-              EmissiveTexture = new global::DCL.ECSComponents.Texture();
+              EmissiveTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
           case 50: {
             if (bumpTexture_ == null) {
-              BumpTexture = new global::DCL.ECSComponents.Texture();
+              BumpTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(BumpTexture);
             break;
@@ -974,21 +974,21 @@ namespace DCL.ECSComponents {
           }
           case 34: {
             if (alphaTexture_ == null) {
-              AlphaTexture = new global::DCL.ECSComponents.Texture();
+              AlphaTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(AlphaTexture);
             break;
           }
           case 42: {
             if (emissiveTexture_ == null) {
-              EmissiveTexture = new global::DCL.ECSComponents.Texture();
+              EmissiveTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(EmissiveTexture);
             break;
           }
           case 50: {
             if (bumpTexture_ == null) {
-              BumpTexture = new global::DCL.ECSComponents.Texture();
+              BumpTexture = new global::DCL.ECSComponents.TextureUnion();
             }
             input.ReadMessage(BumpTexture);
             break;
