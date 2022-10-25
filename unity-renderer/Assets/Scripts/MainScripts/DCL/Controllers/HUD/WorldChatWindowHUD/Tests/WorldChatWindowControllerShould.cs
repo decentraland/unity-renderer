@@ -563,6 +563,23 @@ public class WorldChatWindowControllerShould
         browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
     }
 
+    [Test]
+    public void ClearOfflineMessagesOnlyTheFirstTime()
+    {
+        controller.Initialize(view);
+        chatController.ClearReceivedCalls();
+
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
+            new Channel("channelId", "channelName", 0, 1, true, false, ""));
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
+            new Channel("otherChannelId", "otherChannelName", 0, 1, true, false, ""));
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
+            new Channel("channelId", "channelName", 0, 1, true, false, ""));
+        
+        chatController.Received(1).MarkChannelMessagesAsSeen("channelId");
+        chatController.Received(1).MarkChannelMessagesAsSeen("otherChannelId");
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
