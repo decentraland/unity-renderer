@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class DestroyParticlesOnFinish : MonoBehaviour
@@ -7,8 +6,6 @@ public class DestroyParticlesOnFinish : MonoBehaviour
 
     [SerializeField] private ParticleSystem particles;
     private int index;
-
-    public event Action Finished;
 
 
     private void Awake()
@@ -19,7 +16,7 @@ public class DestroyParticlesOnFinish : MonoBehaviour
             return;
         }
 
-        index = UnityEngine.Random.Range(0, INDEX_AMOUNT);
+        index = Random.Range(0, INDEX_AMOUNT);
     }
 
     public void FixedUpdate()
@@ -29,14 +26,7 @@ public class DestroyParticlesOnFinish : MonoBehaviour
 
         if (particles == null || particles.IsAlive())
           return;
-          
-        if (Finished != null)
-        {
-            Finished.Invoke();
-            Finished = null;
-            gameObject.SetActive(false);
-            return;
-        }
+
         Destroy(gameObject);
     }
 }

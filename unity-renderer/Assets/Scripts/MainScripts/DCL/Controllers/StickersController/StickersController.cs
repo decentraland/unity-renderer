@@ -43,12 +43,6 @@ namespace DCL
             stickerGo.transform.position += position;
             stickerGo.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
-            DestroyParticlesOnFinish particlesDestroyer = stickerGo.GetComponent<DestroyParticlesOnFinish>();
-            if (particlesDestroyer != null)
-            {
-                particlesDestroyer.Finished += () => { sticker.Release(); };
-            }
-
             if (followTransform)
             {
                 FollowObject stickerFollow = stickerGo.AddComponent<FollowObject>();
