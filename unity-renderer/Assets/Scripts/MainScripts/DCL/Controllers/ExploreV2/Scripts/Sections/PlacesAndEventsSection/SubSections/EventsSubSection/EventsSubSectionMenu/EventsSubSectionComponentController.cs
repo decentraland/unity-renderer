@@ -60,11 +60,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal bool reloadEvents = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
+    private DataStore dataStore;
 
     public EventsSubSectionComponentController(
         IEventsSubSectionComponentView view,
         IEventsAPIController eventsAPI,
-        IExploreV2Analytics exploreV2Analytics)
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -73,6 +75,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
+        this.dataStore = dataStore;
+        this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         eventsAPIApiController = eventsAPI;
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
@@ -89,7 +93,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         RequestAllEvents();
 
         view.OnEventsSubSectionEnable += RequestAllEvents;
-        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -120,15 +124,15 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         reloadEvents = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
-        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllEventsFromAPI();
         else
-            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
     }
 
     internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
     {
-        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
         RequestAllEventsFromAPI();
     }
 
@@ -256,7 +260,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
-        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
@@ -309,5 +314,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
+    }
+
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    {
+        if (!string.IsNullOrEmpty(currentChannelId))
+            return;
+
+        view.HideEventModal();
+        OnCloseExploreV2?.Invoke();
     }
 }

@@ -6,4 +6,5 @@
     void AddUserProfileToCatalog(UserProfileModel userProfileModel);
     UserProfile Get(string userId);
     UserProfile GetByName(string userNameOrId);
+    void SignUp();
 }
