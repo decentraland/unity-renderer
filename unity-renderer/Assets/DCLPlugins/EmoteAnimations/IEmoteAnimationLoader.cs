@@ -7,7 +7,7 @@ namespace DCL.Emotes
 {
     public interface IEmoteAnimationLoader : IDisposable
     {
-        AnimationClip animation { get; }
+        AnimationClip loadedAnimationClip { get; }
         UniTask LoadEmote(GameObject container, WearableItem emote, string bodyShapeId, CancellationToken ct = default);
     }
 }
