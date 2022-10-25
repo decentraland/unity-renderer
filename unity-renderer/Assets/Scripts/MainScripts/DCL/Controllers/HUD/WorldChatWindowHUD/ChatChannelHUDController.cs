@@ -32,7 +32,6 @@ namespace DCL.Chat.HUD
         private float lastRequestTime;
         private string channelId;
         private Channel channel;
-        private bool mustRequestMessages;
         private ChatMessage oldestMessage;
 
         public event Action OnPressBack;
@@ -86,9 +85,6 @@ namespace DCL.Chat.HUD
         public void Setup(string channelId)
         {
             channelMembersHUDController.SetChannelId(channelId);
-
-            if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
-
             this.channelId = channelId;
             lastRequestTime = 0;
 
@@ -96,7 +92,6 @@ namespace DCL.Chat.HUD
             View.Setup(ToPublicChatModel(channel));
 
             chatHudController.ClearAllEntries();
-            mustRequestMessages = true;
             oldestMessage = null;
         }
 
@@ -123,14 +118,9 @@ namespace DCL.Chat.HUD
                     var channel = chatController.GetAllocatedChannel(channelId);
                     View.Setup(ToPublicChatModel(channel));
 
-                    if (mustRequestMessages)
-                    {
-                        RequestMessages(
-                            channelId,
-                            INITIAL_PAGE_SIZE);
-                        
-                        mustRequestMessages = false;
-                    }
+                    RequestMessages(
+                        channelId,
+                        INITIAL_PAGE_SIZE);
                 }
 
                 View.Show();
