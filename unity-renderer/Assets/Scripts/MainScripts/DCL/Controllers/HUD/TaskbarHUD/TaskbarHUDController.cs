@@ -259,7 +259,7 @@ public class TaskbarHUDController : IHUD
             publicChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(true);
             chatToggleTargetWindow = worldChatWindowHud;
-            chatInputTargetWindow = worldChatWindowHud;
+            chatInputTargetWindow = publicChatWindow;
         }
         else
         {
@@ -381,7 +381,7 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        chatToggleTargetWindow = privateChatWindow;
+        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = privateChatWindow;
     }
 
@@ -446,7 +446,7 @@ public class TaskbarHUDController : IHUD
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         
-        chatToggleTargetWindow = channelChatWindow;
+        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = channelChatWindow;
     }
 
@@ -467,7 +467,7 @@ public class TaskbarHUDController : IHUD
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         
-        chatToggleTargetWindow = publicChatWindow;
+        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = publicChatWindow;
     }
 
@@ -485,7 +485,6 @@ public class TaskbarHUDController : IHUD
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         
         chatToggleTargetWindow = worldChatWindowHud;
-        chatInputTargetWindow = worldChatWindowHud;
     }
 
     private void CloseChatList()
@@ -855,8 +854,5 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(false);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        
-        chatToggleTargetWindow = worldChatWindowHud;
-        chatInputTargetWindow = worldChatWindowHud;
     }
 }
