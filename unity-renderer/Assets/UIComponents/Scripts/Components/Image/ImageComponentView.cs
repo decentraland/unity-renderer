@@ -1,6 +1,5 @@
 using DCL.Helpers;
 using System;
-using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
