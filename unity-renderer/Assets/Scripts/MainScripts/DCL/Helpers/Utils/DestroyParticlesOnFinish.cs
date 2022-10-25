@@ -8,7 +8,7 @@ public class DestroyParticlesOnFinish : MonoBehaviour
     [SerializeField] private ParticleSystem particles;
     private int index;
 
-    public Action Finished;
+    public event Action Finished;
 
 
     private void Awake()
