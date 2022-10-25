@@ -39,19 +39,18 @@ namespace DCL.Emotes
             {
                 Debug.LogError("Animation component not found in the container for emote " + emote.id);
                 return;
-             }
-             
-             var animationClip = animation.clip;
-             if(animationClip == null)
-             {
-                 Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
-                 return;
-             }
-
-                //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
-                this.loadedAnimationClip = animationClip;
-                animationClip.name = emote.id;
             }
+             
+            var animationClip = animation.clip;
+            if(animationClip == null)
+            {
+                Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
+                return;
+            }
+
+            //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
+            this.loadedAnimationClip = animationClip;
+            animationClip.name = emote.id;
         }
 
         public void Dispose() { retriever?.Dispose(); }
