@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
         private readonly MeshRendererRegister meshRendererRegister;
         private readonly MeshColliderRegister meshColliderRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
-        private readonly PointerEventsRegister pointerEventsRegister;
+        private readonly PointerHoverFeedbackRegister pointerHoverFeedback;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -67,7 +67,7 @@ namespace DCL.ECSComponents
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
-            pointerEventsRegister = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter);
+            pointerHoverFeedback = new PointerHoverFeedbackRegister(ComponentID.POINTER_HOVER_FEEDBACK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -100,7 +100,7 @@ namespace DCL.ECSComponents
             pointerEventResultRegister.Dispose();
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
-            pointerEventsRegister.Dispose();
+            pointerHoverFeedback.Dispose();
         }
     }
 }
