@@ -33,59 +33,51 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            AssetPromise_Material_Model.Texture? albedoTextureModel = CreateMaterialPromiseTextureModel (
+            AssetPromise_Material_Model promiseModel;
+            AssetPromise_Material_Model.Texture? albedoTexture = model.Texture != null ? CreateMaterialPromiseTextureModel (
                 model.Texture.GetTextureUrl(scene),
                 model.Texture.GetWrapMode(),
                 model.Texture.GetFilterMode()
-            );
-            CreateAndConfigureMaterialPromise(scene, entity, model, albedoTextureModel);
-        }
-
-        private void CreateAndConfigureMaterialPromise(IParcelScene scene, IDCLEntity entity, PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
-        {
-            AssetPromise_Material_Model? promiseModel = null;
+            ) : null;
             
             if (IsPbrMaterial(model))
             {
-                AssetPromise_Material_Model.Texture? alphaTexture = CreateMaterialPromiseTextureModel (
+                AssetPromise_Material_Model.Texture? alphaTexture = model.AlphaTexture != null ? CreateMaterialPromiseTextureModel (
                     model.AlphaTexture.GetTextureUrl(scene),
                     model.AlphaTexture.GetWrapMode(),
                     model.AlphaTexture.GetFilterMode()
-                );
+                ) : null;
                 
-                AssetPromise_Material_Model.Texture? emissiveTexture = CreateMaterialPromiseTextureModel (
+                AssetPromise_Material_Model.Texture? emissiveTexture = model.EmissiveTexture != null ? CreateMaterialPromiseTextureModel (
                     model.EmissiveTexture.GetTextureUrl(scene),
                     model.EmissiveTexture.GetWrapMode(),
                     model.EmissiveTexture.GetFilterMode()
-                );
+                ) : null;
                 
-                AssetPromise_Material_Model.Texture? bumpTexture = CreateMaterialPromiseTextureModel (
+                AssetPromise_Material_Model.Texture? bumpTexture = model.BumpTexture != null ? CreateMaterialPromiseTextureModel (
                     model.BumpTexture.GetTextureUrl(scene),
                     model.BumpTexture.GetWrapMode(),
                     model.BumpTexture.GetFilterMode()
-                );
+                ) : null;
                 
                 promiseModel = CreatePBRMaterialPromiseModel(model, albedoTexture, alphaTexture, emissiveTexture, bumpTexture);
             }
-            else if (albedoTexture.HasValue)
+            else
             {
-                promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture.Value);
+                promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture);
             }
 
             AssetPromise_Material prevPromise = promiseMaterial;
 
-            if (promiseModel.HasValue)
+            promiseMaterial = new AssetPromise_Material(promiseModel);
+            promiseMaterial.OnSuccessEvent += materialAsset =>
             {
-                promiseMaterial = new AssetPromise_Material(promiseModel.Value);
-                promiseMaterial.OnSuccessEvent += materialAsset =>
+                materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                 {
-                    materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
-                    {
-                        material = materialAsset.material
-                    });
-                };
-                AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
-            }
+                    material = materialAsset.material
+                });
+            };
+            AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
 
             AssetPromiseKeeper_Material.i.Forget(prevPromise);
         }
@@ -101,7 +93,7 @@ namespace DCL.ECSComponents
                 model.GetEmissiveIntensity(), model.GetDirectIntensity());
         }
 
-        private static AssetPromise_Material_Model CreateBasicMaterialPromiseModel(PBMaterial model, AssetPromise_Material_Model.Texture albedoTexture)
+        private static AssetPromise_Material_Model CreateBasicMaterialPromiseModel(PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
         {
             return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest());
         }

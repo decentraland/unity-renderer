@@ -49,7 +49,7 @@ namespace DCL
         public readonly float emissiveIntensity;
         public readonly float directIntensity;
 
-        public static AssetPromise_Material_Model CreateBasicMaterial(Texture albedoTexture, float alphaTest)
+        public static AssetPromise_Material_Model CreateBasicMaterial(Texture? albedoTexture, float alphaTest)
         {
             Color defaultColor = Color.white;
             return new AssetPromise_Material_Model(false, albedoTexture, null, null, null,

@@ -100,6 +100,36 @@ namespace Tests
                     }
                 }
             };
+            yield return null;
+
+            handler.OnComponentModelUpdated(scene, entity, model);
+            yield return handler.promiseMaterial;
+
+            Material firstMaterial = handler.promiseMaterial.asset.material;
+
+            PBMaterial model2 = new PBMaterial(model);
+            model2.Texture.Texture.WrapMode = TextureWrapMode.TwmMirror;
+            handler.OnComponentModelUpdated(scene, entity, model2);
+            yield return handler.promiseMaterial;
+            
+            Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
+        }
+        
+        [UnityTest]
+        public IEnumerator ChangeMaterialWhenNoTextureSource()
+        {
+            Debug.Log(TestAssetsUtils.GetPath() + "/Images/avatar.png");
+            PBMaterial model = new PBMaterial()
+            {
+                Texture = new DCL.ECSComponents.TextureUnion()
+                {
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
+                }
+            };
+            yield return null;
 
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return handler.promiseMaterial;
@@ -118,7 +148,7 @@ namespace Tests
             };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
-
+            
             Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
         }
 

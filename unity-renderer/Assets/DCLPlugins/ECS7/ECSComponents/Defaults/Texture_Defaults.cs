@@ -42,6 +42,9 @@ namespace DCL.ECSComponents
         
         public static string GetTextureUrl(this ECSComponents.Texture self, IParcelScene scene)
         {
+            if (string.IsNullOrEmpty(self.Src))
+                return self.Src;
+            
             scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl);
 
             return textureUrl;
