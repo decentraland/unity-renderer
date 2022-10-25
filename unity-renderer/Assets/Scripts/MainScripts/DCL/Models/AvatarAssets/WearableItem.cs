@@ -47,14 +47,16 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
-    
+
     private string thirdPartyCollectionId;
     public string ThirdPartyCollectionId
     {
         get
         {
-            if (!string.IsNullOrEmpty(thirdPartyCollectionId)) return thirdPartyCollectionId;
-            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH)) return "";
+            if (!string.IsNullOrEmpty(thirdPartyCollectionId))
+                return thirdPartyCollectionId;
+            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH))
+                return "";
             var paths = id.Split(':');
             var thirdPartyIndex = Array.IndexOf(paths, THIRD_PARTY_COLLECTIONS_PATH);
             thirdPartyCollectionId = string.Join(":", paths, 0, thirdPartyIndex + 2);
@@ -63,7 +65,7 @@ public class WearableItem
     }
 
     public bool IsFromThirdPartyCollection => !string.IsNullOrEmpty(ThirdPartyCollectionId);
-    
+
     public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
@@ -213,13 +215,15 @@ public class WearableItem
 
     public bool IsSmart()
     {
-        if (data?.representations == null) return false;
+        if (data?.representations == null)
+            return false;
 
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
             var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
-            if (containsGameJs) return true;
+            if (containsGameJs)
+                return true;
         }
 
         return false;
@@ -288,12 +292,13 @@ public class WearableItem
 
     public bool IsEmote() { return emoteDataV0 != null; }
 
+    public virtual bool ShowInBackpack() { return true; }
+
     public override string ToString() { return id; }
 }
 
 [Serializable]
-public class EmoteItem : WearableItem{
-}
+public class EmoteItem : WearableItem { }
 
 [Serializable]
 public class WearablesRequestResponse
