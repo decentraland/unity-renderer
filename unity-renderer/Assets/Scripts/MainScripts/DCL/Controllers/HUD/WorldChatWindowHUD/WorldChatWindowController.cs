@@ -30,6 +30,7 @@ public class WorldChatWindowController : IHUD
     private readonly IBrowserBridge browserBridge;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
+    private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private int hiddenDMs;
     private string currentSearch = "";
@@ -497,6 +498,17 @@ public class WorldChatWindowController : IHUD
         
         view.SetPublicChat(model);
         view.HideChannelsLoading();
+
+        // we clear the unseen messages to avoid showing many of them while the user was offline
+        // TODO: we should consider avoid clearing when the channel is private in the future
+        ClearOfflineUnseenMessages(channelId);
+    }
+
+    private void ClearOfflineUnseenMessages(string channelId)
+    {
+        if (channelsClearedUnseenNotifications.Contains(channelId)) return;
+        chatController.MarkChannelMessagesAsSeen(channelId);
+        channelsClearedUnseenNotifications.Add(channelId);
     }
 
     private void HandleChannelJoined(Channel channel)
