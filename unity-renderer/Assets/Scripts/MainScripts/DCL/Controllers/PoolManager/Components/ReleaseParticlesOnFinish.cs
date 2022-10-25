@@ -12,7 +12,7 @@ namespace DCL
         private bool initialized;
 
 
-        private void Initialize(PoolableObject poolableObject)
+        public void Initialize(PoolableObject poolableObject)
         {
             if (particles == null)
             {
