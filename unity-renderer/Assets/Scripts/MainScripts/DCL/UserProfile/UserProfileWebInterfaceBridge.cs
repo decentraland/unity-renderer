@@ -23,4 +23,6 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
     {
         return UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName == userNameOrId);
     }
+
+    public void SignUp() => WebInterface.RedirectToSignUp();
 }

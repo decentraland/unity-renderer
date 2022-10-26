@@ -86,6 +86,12 @@ public static class AudioScriptableObjects
     private static AudioEvent chatSendEvent;
     public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
 
+    private static AudioEvent joinChannelEvent;
+    public static AudioEvent joinChannel => CommonScriptableObjects.GetOrLoad(ref joinChannelEvent, "ScriptableObjects/AudioEvents/HUDCommon/JoinChannel");
+
+    private static AudioEvent leaveChannelEvent;
+    public static AudioEvent leaveChannel => CommonScriptableObjects.GetOrLoad(ref leaveChannelEvent, "ScriptableObjects/AudioEvents/HUDCommon/LeaveChannel");
+
     private static AudioEvent notificationEvent;
     public static AudioEvent notification => CommonScriptableObjects.GetOrLoad(ref notificationEvent, "ScriptableObjects/AudioEvents/HUDCommon/Notification");
 
@@ -129,6 +135,8 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(chatReceiveGlobalEvent);
         Resources.UnloadAsset(chatReceivePrivateEvent);
         Resources.UnloadAsset(chatSendEvent);
+        Resources.UnloadAsset(joinChannelEvent);
+        Resources.UnloadAsset(leaveChannelEvent);
         Resources.UnloadAsset(notificationEvent);
         Resources.UnloadAsset(sliderValueChangeEvent);
         Resources.UnloadAsset(inputFieldFocusEvent);

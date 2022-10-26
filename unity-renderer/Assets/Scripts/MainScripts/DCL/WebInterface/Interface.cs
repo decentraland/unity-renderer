@@ -744,6 +744,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class MarkChannelMessagesAsSeenPayload
+        {
+            public string channelId;
+        }
+
+        [System.Serializable]
         public class GetPrivateMessagesPayload
         {
             public string userId;
@@ -790,6 +796,68 @@ namespace DCL.Interface
             public int sentSkip;
             public int receivedLimit;
             public int receivedSkip;
+        }
+        
+        [Serializable]
+        private class LeaveChannelPayload
+        {
+            public string channelId;
+        }
+        
+        [Serializable]
+        private class CreateChannelPayload
+        {
+            public string channelId;
+        }
+        
+        public struct MuteChannelPayload
+        {
+            public string channelId;
+            public bool muted;
+        }
+
+        [Serializable]
+        private class JoinOrCreateChannelPayload
+        {
+            public string channelId;
+        }
+
+        [Serializable]
+        private class GetChannelMessagesPayload
+        {
+            public string channelId;
+            public int limit;
+            public string from;
+        }
+
+        [Serializable]
+        private class GetJoinedChannelsPayload
+        {
+            public int limit;
+            public int skip;
+        }
+
+        [Serializable]
+        private class GetChannelsPayload
+        {
+            public int limit;
+            public string since;
+            public string name;
+        }
+
+        [Serializable]
+        private class GetChannelInfoPayload
+        {
+            public string[] channelIds;
+        }
+
+        [Serializable]
+        private class GetChannelMembersPayload
+        {
+            public string channelId;
+            public int limit;
+            public int skip;
+            public string userName;
         }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
@@ -940,6 +1008,7 @@ namespace DCL.Interface
         private static TimeReportPayload timeReportPayload = new TimeReportPayload();
         private static GetFriendsWithDirectMessagesPayload getFriendsWithDirectMessagesPayload = new GetFriendsWithDirectMessagesPayload();
         private static MarkMessagesAsSeenPayload markMessagesAsSeenPayload = new MarkMessagesAsSeenPayload();
+        private static MarkChannelMessagesAsSeenPayload markChannelMessagesAsSeenPayload = new MarkChannelMessagesAsSeenPayload();
         private static GetPrivateMessagesPayload getPrivateMessagesPayload = new GetPrivateMessagesPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
@@ -1745,8 +1814,19 @@ namespace DCL.Interface
             getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
+        
+        public static void MarkChannelMessagesAsSeen(string channelId)
+        {
+            markChannelMessagesAsSeenPayload.channelId = channelId;
+            SendMessage("MarkChannelMessagesAsSeen", markChannelMessagesAsSeenPayload);
+        }
 
         public static void GetUnseenMessagesByUser() { SendMessage("GetUnseenMessagesByUser"); }
+
+        public static void GetUnseenMessagesByChannel()
+        {
+            SendMessage("GetUnseenMessagesByChannel");
+        }
 
         public static void GetFriends(int limit, int skip)
         {
@@ -1776,6 +1856,88 @@ namespace DCL.Interface
                 sentLimit = sentLimit
             });
         }
+
+        public static void LeaveChannel(string channelId)
+        {
+            SendMessage("LeaveChannel", new LeaveChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void CreateChannel(string channelId)
+        {
+            SendMessage("CreateChannel", new CreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void JoinOrCreateChannel(string channelId)
+        {
+            SendMessage("JoinOrCreateChannel", new JoinOrCreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void GetChannelMessages(string channelId, int limit, string fromMessageId)
+        {
+            SendMessage("GetChannelMessages", new GetChannelMessagesPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                from = fromMessageId
+            });
+        }
+
+        public static void GetJoinedChannels(int limit, int skip)
+        {
+            SendMessage("GetJoinedChannels", new GetJoinedChannelsPayload
+            {
+                limit = limit,
+                skip = skip
+            });
+        }
+
+        public static void GetChannels(int limit, string since, string name)
+        {
+            SendMessage("GetChannels", new GetChannelsPayload
+            {
+                limit = limit,
+                since = since,
+                name = name
+            });
+        }
+
+        public static void GetChannelInfo(string[] channelIds)
+        {
+            SendMessage("GetChannelInfo", new GetChannelInfoPayload
+            {
+                channelIds = channelIds
+            });
+        }
+
+        public static void GetChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            SendMessage("GetChannelMembers", new GetChannelMembersPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                skip = skip,
+                userName = name
+            });
+        }
+
+        public static void MuteChannel(string channelId, bool muted)
+        {
+            SendMessage("MuteChannel", new MuteChannelPayload
+            {
+                channelId = channelId,
+                muted = muted
+            });
+        }
+
         public static void UpdateMemoryUsage()
         {
             SendMessage("UpdateMemoryUsage");
@@ -1791,5 +1953,4 @@ namespace DCL.Interface
             });
         }
     }
-
 }
