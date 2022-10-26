@@ -136,6 +136,7 @@ var WebVideoPlayer = {
         if (videos[id].state !== 4) return; //PLAYING
 
         console.log(videos[id])
+        console.log("Time: " + videos[id].currentTime)
         const textureId = videos[id].textureId;
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
