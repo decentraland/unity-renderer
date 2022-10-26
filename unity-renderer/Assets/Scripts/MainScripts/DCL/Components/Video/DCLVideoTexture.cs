@@ -161,7 +161,6 @@ namespace DCL.Components
             if (isInitialized) return;
             isInitialized = true;
 
-            // Debug.Log ("FD:: DCLVideoTexture::Initialize() called");
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
@@ -313,86 +312,24 @@ namespace DCL.Components
             texturePlayer.SetVolume(targetVolume);
         }
 
-        private bool IsPlayerInSameSceneAsComponent(string currentSceneId, string previous = null)
+        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
         {
             if (scene == null)
-            {
-                UnityEngine.Debug.unityLogger.logEnabled = true;
-                Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - scene == null !!!");
                 return false;
-            }
-                
             if (string.IsNullOrEmpty(currentSceneId))
-            {
-                UnityEngine.Debug.unityLogger.logEnabled = true;
-                Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - IsNullOrEmpty(currentSceneId)!!!");
                 return false;
-            }
 
-            // FD:: tests-->
-            if (scene.isPersistent)
-            {
-                Debug.Log ("FD:: IsPlayerInSameSceneAsComponent - TRUE - scene.isPersistent");
-                return true;
-            }
-
-            bool testBoolIsPlayerInSameSceneAsComponent;
-            if (isPlayerInScene && previous == scene.sceneData.id && currentSceneId != previous)
-            {
-                testBoolIsPlayerInSameSceneAsComponent = false;
-            }
-            else if (!isPlayerInScene && scene.sceneData.id == currentSceneId && currentSceneId != previous)
-            {
-                testBoolIsPlayerInSameSceneAsComponent = true;
-            }
-            else
-            {
-                testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
-            }
-            
-            // FD:: test-->
-            // testBoolIsPlayerInSameSceneAsComponent = (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
-            Debug.Log ("FD:: IsPlayerInSameSceneAsComponent == " + testBoolIsPlayerInSameSceneAsComponent);
-            return testBoolIsPlayerInSameSceneAsComponent;//(scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
-        // private bool IsPlayerInSameSceneAsComponent()
-        // {
-        //     if (scene == null)
-        //         return false;
-
-        //     for (int i = 0; i < scene.sceneData.parcels.Length; i++)
-        //     {
-        //         if (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords.Get())
-        //         {
-        //             UnityEngine.Debug.unityLogger.logEnabled = true;
-        //             Debug.Log ("FD:: IsPlayerInSameSceneAsComponent: " + scene.sceneData.parcels[i] + " == " + CommonScriptableObjects.playerCoords.Get() + " ? " + (scene.sceneData.parcels[i] == CommonScriptableObjects.playerCoords));
-        //             return true;
-        //         }
-        //     }
-
-        //     return false;
-        // }
-
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
-        {
+        {   
             SetPlayStateDirty();
-
-            // FD::--Tests-->
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD:: In Coords: " + coords + " - scene in SO: " + CommonScriptableObjects.sceneID.Get());
         }
 
         private void OnSceneIDChanged(string current, string previous) 
         { 
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current, previous);
-
-            // FD::--Tests-->
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD::OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
-                + "\n -current scene: " + current 
-                + "\n isPlayerInScene " + isPlayerInScene
-                + "\n CommonScriptableObjects.sceneID.Get(): " + CommonScriptableObjects.sceneID.Get());
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
         }
 
         public override void AttachTo(ISharedComponent component)
@@ -443,10 +380,6 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            if (!isInitialized) return;
-            isInitialized = false;
-
-            // Debug.Log ("FD:: DCLVideoTexture::Dispose() called");
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;

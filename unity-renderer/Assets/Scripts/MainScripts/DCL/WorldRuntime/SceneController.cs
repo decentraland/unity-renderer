@@ -540,10 +540,6 @@ namespace DCL
         {
             positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.y != currentGridSceneCoordinate.y;
 
-            Debug.Log ("FD:: SceneController.SetPositionDirty = " + positionDirty +
-                        "\n -              gridPosition x:" +gridPosition.x + " y:" + gridPosition.y +
-                        "\n -currentGridSceneCoordinate x:" +currentGridSceneCoordinate.x + " y:" + currentGridSceneCoordinate.y);
-
             if (positionDirty)
             {
                 sceneSortDirty = true;
@@ -561,7 +557,6 @@ namespace DCL
 
         public void SortScenesByDistance()
         {
-            Debug.Log ("FD:: SceneController.SortScenesByDistance - begin");
             // if (DCLCharacterController.i == null)
             //     return;
 
@@ -573,13 +568,11 @@ namespace DCL
 
             if (!DataStore.i.debugConfig.isDebugMode.Get() && string.IsNullOrEmpty(currentSceneId))
             {
-                Debug.Log ("FD:: SceneController.SortScenesByDistance - AddLock");
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
             else
             {   
-                Debug.Log ("FD:: SceneController.SortScenesByDistance - else sceneID.Set " + currentSceneId);
                 // 1. Set current scene id
                 CommonScriptableObjects.sceneID.Set(currentSceneId);
 
