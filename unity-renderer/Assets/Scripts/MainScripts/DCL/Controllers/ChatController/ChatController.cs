@@ -17,10 +17,10 @@ public class ChatController : MonoBehaviour, IChatController
 
     private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
     private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
-
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
     private bool chatAlreadyInitialized;
+    private int totalUnseenMessages; 
 
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
@@ -34,9 +34,13 @@ public class ChatController : MonoBehaviour, IChatController
     public event Action<string, int> OnUserUnseenMessagesUpdated;
     public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
     public event Action<string, Channel[]> OnChannelSearchResult;
-
-    public int TotalUnseenMessages { get; private set; }
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
+
+    // since kernel does not calculate the #nearby channel unseen messages, it is handled on renderer side
+    public int TotalUnseenMessages => totalUnseenMessages
+                                      + (unseenMessagesByChannel.ContainsKey(NEARBY_CHANNEL_ID) 
+                                          ? unseenMessagesByChannel[NEARBY_CHANNEL_ID]
+                                          : 0);
 
     public void Awake()
     {
@@ -55,7 +59,7 @@ public class ChatController : MonoBehaviour, IChatController
 
         var msg = JsonUtility.FromJson<InitializeChatPayload>(json);
 
-        TotalUnseenMessages = msg.totalUnseenMessages;
+        totalUnseenMessages = msg.totalUnseenMessages;
         OnInitialized?.Invoke();
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
         chatAlreadyInitialized = true;
@@ -83,7 +87,7 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateTotalUnseenMessages(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesPayload>(json);
-        TotalUnseenMessages = msg.total;
+        totalUnseenMessages = msg.total;
         OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
     }
 
@@ -116,12 +120,8 @@ public class ChatController : MonoBehaviour, IChatController
     public void UpdateTotalUnseenMessagesByChannel(string json)
     {
         var msg = JsonUtility.FromJson<UpdateTotalUnseenMessagesByChannelPayload>(json);
-
         foreach (var unseenMessages in msg.unseenChannelMessages)
-        {
-            unseenMessagesByChannel[unseenMessages.channelId] = unseenMessages.count;
-            OnChannelUnseenMessagesUpdated?.Invoke(unseenMessages.channelId, unseenMessages.count);
-        }
+            UpdateTotalUnseenMessagesByChannel(unseenMessages.channelId, unseenMessages.count);
     }
 
     // called by kernel
@@ -321,7 +321,16 @@ public class ChatController : MonoBehaviour, IChatController
     public void GetPrivateMessages(string userId, int limit, string fromMessageId) =>
         WebInterface.GetPrivateMessages(userId, limit, fromMessageId);
     
-    public void MarkChannelMessagesAsSeen(string channelId) => WebInterface.MarkChannelMessagesAsSeen(channelId);
+    public void MarkChannelMessagesAsSeen(string channelId)
+    {
+        if (channelId == NEARBY_CHANNEL_ID)
+        {
+            UpdateTotalUnseenMessagesByChannel(NEARBY_CHANNEL_ID, 0);
+            OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
+        }
+            
+        WebInterface.MarkChannelMessagesAsSeen(channelId);
+    }
 
     public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(messages);
     
@@ -378,7 +387,27 @@ Invite others to join by quoting the channel name in other chats or include it a
         if (message == null) return;
 
         messages.Add(message);
+        
+        if (message.messageType == ChatMessage.Type.PUBLIC && string.IsNullOrEmpty(message.recipient))
+        {
+            if (!unseenMessagesByChannel.ContainsKey(NEARBY_CHANNEL_ID))
+                unseenMessagesByChannel[NEARBY_CHANNEL_ID] = 0;
+
+            UpdateTotalUnseenMessagesByChannel(NEARBY_CHANNEL_ID, unseenMessagesByChannel[NEARBY_CHANNEL_ID] + 1);
+            OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
+        }
+        
         OnAddMessage?.Invoke(message);
+    }
+
+    private void UpdateTotalUnseenMessagesByChannel(string channelId, int count)
+    {
+        unseenMessagesByChannel[channelId] = count;
+
+        if (channels.ContainsKey(channelId))
+            channels[channelId].UnseenMessages = count;
+            
+        OnChannelUnseenMessagesUpdated?.Invoke(channelId, count);
     }
 
     [ContextMenu("Fake Public Message")]
