@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,13 +44,13 @@ namespace DCL
             stickerGo.transform.position += position;
             stickerGo.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
-            ReleaseParticlesOnFinish releaser = stickerGo.GetComponent<ReleaseParticlesOnFinish>();
+            ReleaseParticlesOnFinish releaser = stickerGo.GetOrCreateComponent<ReleaseParticlesOnFinish>();
             if (releaser != null)
                 releaser.Initialize(sticker);
 
             if (followTransform)
             {
-                FollowObject stickerFollow = stickerGo.AddComponent<FollowObject>();
+                FollowObject stickerFollow = stickerGo.GetOrCreateComponent<FollowObject>();
                 stickerFollow.target = transform;
                 stickerFollow.offset = prefab.transform.position;
             }
