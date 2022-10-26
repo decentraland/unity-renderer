@@ -39,6 +39,7 @@ namespace DCL
             pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
+            pluginSystem.Register<WorldsPlugin>(() => new WorldsPlugin());
             
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
