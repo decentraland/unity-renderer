@@ -47,6 +47,9 @@ namespace DCL.Rendering
             int amount = 0;
             foreach (Renderer renderer in allRenderers)
             {
+                if (renderer == null)
+                    continue;
+
                 if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
                 {
                     yield return null;
