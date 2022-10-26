@@ -12,7 +12,9 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const int DEFAULT_CANVAS_SORTING_ORDER = 0;
     internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
+    internal const float MINIMUM_ALPHA_TO_SHOW =  1f / 32f;
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
+    internal const float ALPHA_STEPS = 32f;
     internal const float TARGET_ALPHA_SHOW = 1;
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
@@ -31,12 +33,40 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
     internal BaseVariable<bool> profanityFilterEnabled;
 
-    internal float alpha;
-    internal float targetAlpha;
     internal bool forceShow = false;
     internal Color backgroundOriginalColor;
     internal List<string> hideConstraints = new List<string>();
     internal string currentName = "";
+
+    private float alpha;
+    private float targetAlpha;
+    private bool renderersVisible;
+
+
+    internal float Alpha 
+    {
+        get => alpha;
+        set
+        {
+            alpha = Mathf.Clamp01(value);
+            if (alpha < 0.01f)
+            {
+                UpdateVisuals(0);
+                SetRenderersVisible(false);
+                return;
+            }
+
+            UpdateVisuals(alpha);
+            SetRenderersVisible(true);
+        }
+    }
+
+    internal float TargetAlpha
+    {
+        get => targetAlpha;
+        set => targetAlpha = Mathf.Clamp01(value);
+    }
+
 
     private void Awake()
     {
@@ -80,7 +110,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private void SetRenderersVisible(bool value)
     {
+        if (renderersVisible == value) 
+            return;
+
         canvasRenderers.ForEach(c => c.SetAlpha(value ? 1f : 0f));
+        renderersVisible = value;
     }
 
     internal void Update(float deltaTime)
@@ -90,18 +124,12 @@ public class PlayerName : MonoBehaviour, IPlayerName
             UpdateVisuals(0);
             return;
         }
-        
-        float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
 
-        if (!Mathf.Approximately(alpha, finalTargetAlpha))
-            alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
-        else if (alpha == 0)
-        {
-            UpdateVisuals(0);
-            // We are hidden and we dont have to scale, look at camera or anything, we can disable the gameObject
-            SetRenderersVisible(false);
+        float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
+        alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
+        if (CheckAndUpdateVisibility(alpha))
             return;
-        }
+
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
         Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
         Quaternion cameraRotation = DataStore.i.camera.rotation.Get();
@@ -111,11 +139,37 @@ public class PlayerName : MonoBehaviour, IPlayerName
          * instead we should have a provider so all the subsystems can use it
          */
         float distanceToCamera = Vector3.Distance(cameraPosition, gameObject.transform.position);
-        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
-        UpdateVisuals(resolvedAlpha);
         ScalePivotByDistance(distanceToCamera);
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
         pivot.transform.localPosition = Vector3.up * GetPivotYOffsetByDistance(distanceToCamera);
+
+        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
+        if (CheckAndUpdateVisibility(resolvedAlpha))
+            return;
+
+        SetRenderersVisible(true);
+        float resolvedAlphaStep = GetNearestAlphaStep(resolvedAlpha);
+        float canvasAlphaStep = GetNearestAlphaStep(canvasGroup.alpha);
+
+        if (resolvedAlphaStep != canvasAlphaStep)
+            UpdateVisuals(resolvedAlpha);
+
+
+        // Local Methods
+        bool CheckAndUpdateVisibility(float checkAlpha)
+        {
+            if (checkAlpha < MINIMUM_ALPHA_TO_SHOW)
+            {
+                if (renderersVisible)
+                {
+                    UpdateVisuals(0);
+                    SetRenderersVisible(false);
+                }
+                return true;
+            }
+
+            return false;
+        }
     }
 
     internal void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
@@ -190,6 +244,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal void UpdateVisuals(float resolvedAlpha)
     {
         canvasGroup.alpha = resolvedAlpha;
+    }
+
+    internal float GetNearestAlphaStep(float alpha)
+    {
+        return Mathf.Floor(alpha * ALPHA_STEPS);
     }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }

@@ -22,7 +22,7 @@ public class PlacesSubSectionComponentControllerTests
         placesAPIController = Substitute.For<IPlacesAPIController>();
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIController, friendsController, exploreV2Analytics);
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIController, friendsController, exploreV2Analytics, DataStore.i);
     }
 
     [TearDown]

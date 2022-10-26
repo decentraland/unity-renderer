@@ -223,10 +223,13 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
+                
+                avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
+            Debug.LogException(ex);
             return;
         }
         catch (Exception e)

@@ -29,7 +29,8 @@ public class HighlightsSubSectionComponentControllerTests
             placesAPIController,
             eventsAPIController,
             friendsController,
-            exploreV2Analytics);
+            exploreV2Analytics,
+            DataStore.i);
     }
 
     [TearDown]

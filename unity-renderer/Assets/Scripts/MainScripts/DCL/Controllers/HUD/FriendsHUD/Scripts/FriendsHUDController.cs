@@ -17,6 +17,8 @@ public class FriendsHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
+    private readonly IMouseCatcher mouseCatcher;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -28,18 +30,21 @@ public class FriendsHUDController : IHUD
     public event Action<string> OnPressWhisper;
     public event Action OnOpened;
     public event Action OnClosed;
+    public event Action OnViewClosed;
 
     public FriendsHUDController(DataStore dataStore,
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        IChatController chatController)
+        IChatController chatController,
+        IMouseCatcher mouseCatcher)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.chatController = chatController;
+        this.mouseCatcher = mouseCatcher;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -60,6 +65,9 @@ public class FriendsHUDController : IHUD
         view.OnSearchFriendsRequested += SearchFriends;
         view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
         view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
+
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock += HandleViewClosed;
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
@@ -85,6 +93,17 @@ public class FriendsHUDController : IHUD
 
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("FriendsPanel");
+        else
+            newSet.Remove("FriendsPanel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     public void Dispose()
@@ -129,6 +148,7 @@ public class FriendsHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             lastSkipForFriends = 0;
@@ -156,7 +176,11 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void HandleViewClosed() => SetVisibility(false);
+    private void HandleViewClosed()
+    {
+        OnViewClosed?.Invoke();
+        SetVisibility(false);
+    }
 
     private void HandleFriendsInitialized()
     {

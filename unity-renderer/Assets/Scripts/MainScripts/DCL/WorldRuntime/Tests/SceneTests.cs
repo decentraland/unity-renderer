@@ -432,6 +432,40 @@ public class SceneTests : IntegrationTestSuite_Legacy
             Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, classId), $"component {component.componentName} id {classId} was not removed from entity components dictionary");
         }
     }
+    
+    // Test scenario when a scene is unloaded
+    // and loaded again before `ParcelScenesCleaner` finishes unloading of the scene
+    // leaving `ParcelScene` `GameObject` instantiated forever
+    [UnityTest]
+    public IEnumerator ReloadedSceneShouldBeCleanedProperly()
+    {
+        const string loadedSceneID = "0,0";
+        string sceneJson = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+        sceneController.LoadParcelScenes(sceneJson);
+        yield return new WaitForAllMessagesProcessed();
+        
+        var loadedScene = Environment.i.world.state.GetScene(loadedSceneID) as ParcelScene;
+        TestUtils.CreateSceneEntity(loadedScene, 6);
+        
+        sceneController.UnloadScene(loadedSceneID);
+        yield return new WaitForAllMessagesProcessed();
+
+        sceneController.LoadParcelScenes(sceneJson);
+        yield return new WaitForAllMessagesProcessed();
+
+        // Force ParcelScenesCleaner clean
+        Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
+        
+        // Wait a frame for Object.Destroy scene
+        yield return null;
+        
+        var loadedScenes = Object.FindObjectsOfType<ParcelScene>(true);
+        
+        // Disregard global scene created on SetUp
+        var loadedScenesCount = loadedScenes.Count(s => s != scene);
+        
+        Assert.AreEqual(1, loadedScenesCount);
+    }    
 
     class DestroyGameObjectCallback : MonoBehaviour
     {
