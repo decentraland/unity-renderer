@@ -313,8 +313,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleUserStatusChanged(string userId, UserStatus status)
     {
-        if (!lastPrivateMessages.ContainsKey(userId)) return;
-
         if (status.friendshipStatus != FriendshipStatus.FRIEND)
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
