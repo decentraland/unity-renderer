@@ -27,20 +27,20 @@ namespace DCL.ECSComponents {
             "CjdkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9ldmVudHNf",
             "cmVzdWx0LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMaNWRl",
             "Y2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9jb21tb24vaW5wdXRfYWN0aW9u",
-            "LnByb3RvGjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9l",
-            "dmVudHMucHJvdG8aMGRlY2VudHJhbGFuZC9zZGsvY29tcG9uZW50cy9yYXlj",
-            "YXN0X3Jlc3VsdC5wcm90byLnAgoVUEJQb2ludGVyRXZlbnRzUmVzdWx0ElMK",
-            "CGNvbW1hbmRzGAEgAygLMkEuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRz",
-            "LlBCUG9pbnRlckV2ZW50c1Jlc3VsdC5Qb2ludGVyQ29tbWFuZBr4AQoOUG9p",
-            "bnRlckNvbW1hbmQSPwoGYnV0dG9uGAEgASgOMi8uZGVjZW50cmFsYW5kLnNk",
-            "ay5jb21wb25lbnRzLmNvbW1vbi5JbnB1dEFjdGlvbhI0CgNoaXQYAiABKAsy",
-            "Jy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUmF5Y2FzdEhpdBI8CgVz",
-            "dGF0ZRgEIAEoDjItLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Qb2lu",
-            "dGVyRXZlbnRUeXBlEhEKCXRpbWVzdGFtcBgFIAEoBRITCgZhbmFsb2cYBiAB",
-            "KAJIAIgBAUIJCgdfYW5hbG9nQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "LnByb3RvGjhkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcG9pbnRlcl9o",
+            "b3Zlcl9mZWVkYmFjay5wcm90bxowZGVjZW50cmFsYW5kL3Nkay9jb21wb25l",
+            "bnRzL3JheWNhc3RfcmVzdWx0LnByb3RvIucCChVQQlBvaW50ZXJFdmVudHNS",
+            "ZXN1bHQSUwoIY29tbWFuZHMYASADKAsyQS5kZWNlbnRyYWxhbmQuc2RrLmNv",
+            "bXBvbmVudHMuUEJQb2ludGVyRXZlbnRzUmVzdWx0LlBvaW50ZXJDb21tYW5k",
+            "GvgBCg5Qb2ludGVyQ29tbWFuZBI/CgZidXR0b24YASABKA4yLy5kZWNlbnRy",
+            "YWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uLklucHV0QWN0aW9uEjQKA2hp",
+            "dBgCIAEoCzInLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5SYXljYXN0",
+            "SGl0EjwKBXN0YXRlGAQgASgOMi0uZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
+            "bnRzLlBvaW50ZXJFdmVudFR5cGUSEQoJdGltZXN0YW1wGAUgASgFEhMKBmFu",
+            "YWxvZxgGIAEoAkgAiAEBQgkKB19hbmFsb2dCFKoCEURDTC5FQ1NDb21wb25l",
+            "bnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, global::DCL.ECSComponents.PointerEventsReflection.Descriptor, global::DCL.ECSComponents.RaycastResultReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::DCL.ECSComponents.InputActionReflection.Descriptor, global::DCL.ECSComponents.PointerHoverFeedbackReflection.Descriptor, global::DCL.ECSComponents.RaycastResultReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult), global::DCL.ECSComponents.PBPointerEventsResult.Parser, new[]{ "Commands" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand), global::DCL.ECSComponents.PBPointerEventsResult.Types.PointerCommand.Parser, new[]{ "Button", "Hit", "State", "Timestamp", "Analog" }, new[]{ "Analog" }, null, null, null)})
           }));

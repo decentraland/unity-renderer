@@ -9,13 +9,18 @@ namespace UIComponents.CollapsableSortedList
         [SerializeField] private bool toggleOnAwake;
         [SerializeField] private Button toggleButton;
         [SerializeField] private Transform toggleButtonIcon;
+        [SerializeField] private Image toggleImage;
         [SerializeField] private RectTransform containerRectTransform;
         [SerializeField] private CollapsableListToggleButtonModel model;
+        [SerializeField] private Color disabledColor;
+        
+        private Color originalColor;
 
         public override void Awake()
         {
             base.Awake();
-            
+
+            originalColor = toggleImage?.color ?? Color.black;
             toggleButton.onClick.AddListener(Toggle);
 
             if (toggleOnAwake)
@@ -35,6 +40,12 @@ namespace UIComponents.CollapsableSortedList
             toggleButtonIcon.localScale = new Vector3(toggleButtonIcon.localScale.x, scale, 1f);
             Utils.ForceRebuildLayoutImmediate(containerRectTransform);
             model.isToggled = toggled;
+        }
+
+        public void SetInteractability(bool interactable)
+        {
+            toggleButton.interactable = interactable;
+            toggleImage.color = interactable ? originalColor : disabledColor;
         }
 
         private void Toggle()

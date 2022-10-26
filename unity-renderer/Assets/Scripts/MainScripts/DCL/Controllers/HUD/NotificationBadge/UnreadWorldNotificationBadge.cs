@@ -52,6 +52,7 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
     /// <param name="chatController">Chat Controlled to be listened</param>
     public void Initialize(IChatController chatController)
     {
+        if (chatController == null) return;
         this.chatController = chatController;
         chatController.OnTotalUnseenMessagesUpdated += UpdateTotalUnseenMessages;
         UpdateTotalUnseenMessages();

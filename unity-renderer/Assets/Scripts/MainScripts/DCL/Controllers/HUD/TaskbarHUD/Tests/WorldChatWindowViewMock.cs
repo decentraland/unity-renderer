@@ -6,13 +6,17 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
 {
     public event Action OnClose;
     public event Action<string> OnOpenPrivateChat;
-    public event Action<string> OnOpenPublicChannel;
-    public event Action<string> OnSearchChannelRequested;
+    public event Action<string> OnOpenPublicChat;
+    public event Action<string> OnSearchChatRequested;
     public event Action OnRequireMorePrivateChats;
+    public event Action OnOpenChannelSearch;
+    public event Action<string> OnLeaveChannel;
+    public event Action OnCreateChannel;
+    public event Action OnSignUp;
+    public event Action OnRequireWalletReadme;
 
     public RectTransform Transform => (RectTransform) transform;
     public bool IsActive => gameObject.activeSelf;
-    public int PrivateChannelsCount { get; }
 
     private bool isDestroyed;
 
@@ -42,7 +46,11 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void SetPublicChannel(PublicChatChannelModel model)
+    public void SetPublicChat(PublicChatModel model)
+    {
+    }
+
+    public void RemovePublicChat(string channelId)
     {
     }
 
@@ -76,6 +84,14 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
+    public void ShowChannelsLoading()
+    {
+    }
+
+    public void HideChannelsLoading()
+    {
+    }
+
     public void ShowSearchLoading()
     {
     }
@@ -89,4 +105,20 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     }
 
     public bool ContainsPrivateChannel(string userId) => false;
+
+    public void SetCreateChannelButtonActive(bool isActive)
+    {
+    }
+
+    public void SetSearchAndCreateContainerActive(bool isActive)
+    {
+    }
+
+    public void ShowConnectWallet()
+    {
+    }
+
+    public void HideConnectWallet()
+    {
+    }
 }
