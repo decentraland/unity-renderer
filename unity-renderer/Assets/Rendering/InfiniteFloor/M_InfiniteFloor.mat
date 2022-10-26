@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_InfiniteFloor
-  m_Shader: {fileID: 4800000, guid: 4d57f396996403d46b18951def09d632, type: 3}
+  m_Shader: {fileID: 4800000, guid: 076109e5026eb624db447732f400d1e9, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
