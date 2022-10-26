@@ -26,6 +26,9 @@ namespace DCL.CRDT
 
         public void Dispose()
         {
+            if (disposed)
+                return;
+
             disposed = true;
             loadedScenes.Remove(ownerScene);
             using (var entities = ownerScene.entities.Values.GetEnumerator())
@@ -55,7 +58,7 @@ namespace DCL.CRDT
             {
                 return;
             }
-            
+
 
             ExecuteWithoutStoringState(crdtMessage.key1, crdtMessage.key2, crdtMessage.data);
         }

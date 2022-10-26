@@ -15,27 +15,30 @@ namespace RPC.Services
 {
     public static class CRDTServiceImpl
     {
-        private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
+        private static readonly CRDTResponse defaultResponse = new CRDTResponse();
         private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
 
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
-        private static readonly CRDTStream crdtStream = new CRDTStream();
-        private static readonly MemoryStream memoryStream = new MemoryStream();
-        private static readonly BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
+            CRDTStream crdtStream = new CRDTStream();
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
             CRDTService<RPCContext>.RegisterService(
                 port,
-                sendCrdt: OnCRDTReceived,
-                pullCrdt: SendCRDT,
+                sendCrdt: (messages, context, ct) => OnCRDTReceived(messages, context, ct, crdtStream),
+                pullCrdt: (request, context, ct) => SendCRDT(request, context, ct, memoryStream, binaryWriter),
                 crdtNotificationStream: CrdtNotificationStream
             );
         }
 
-        private static UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
+        private static async UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context,
+            CancellationToken ct, CRDTStream crdtStream)
         {
+            await UniTask.SwitchToMainThread(ct);
+            
             messages.Payload.WriteTo(crdtStream);
 
             var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
@@ -49,16 +52,7 @@ namespace RPC.Services
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
-                        {
-                            queuedMessage = new QueuedSceneMessage_Scene();
-                        }
-                        queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
-                        queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                        queuedMessage.sceneId = messages.SceneId;
-                        queuedMessage.payload = crdtMessage;
-
-                        context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                        context.crdtContext.CrdtMessageReceived?.Invoke(messages.SceneId, crdtMessage);
                     }
                 }
             }
@@ -70,7 +64,8 @@ namespace RPC.Services
             return defaultResponse;
         }
 
-        private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context, CancellationToken ct)
+        private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context,
+            CancellationToken ct, MemoryStream memoryStream, BinaryWriter binaryWriter)
         {
             string sceneId = request.SceneId;
 
