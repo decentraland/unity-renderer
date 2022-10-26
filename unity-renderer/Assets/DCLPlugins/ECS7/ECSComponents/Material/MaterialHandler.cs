@@ -2,7 +2,6 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
