@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SG_InfiniteFloor_TESTER
-  m_Shader: {fileID: -6465566751694194690, guid: ad2ce2dc8aac5654fb92e62514222ce4,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: 5dd500dc612ea23478afd825c131ef0b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -21,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _EstateIDMap:
-        m_Texture: {fileID: 2800000, guid: 9fd4d3757b5f1c148ac6903817ed6c8a, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GrassTexture:
@@ -33,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Map:
-        m_Texture: {fileID: 2800000, guid: d32d7bccfd7609a4c923dcbf9c154a0e, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RoadTexture:
@@ -74,8 +73,8 @@ Material:
     - _GridThickness: 0.05
     - _InnerFogHardness: 0.8
     - _InnerRadiusFog: 0.26
-    - _MaskHardness: 0.976
-    - _MaskOpacity: 0.71
+    - _MaskHardness: 0.753
+    - _MaskOpacity: 0.371
     - _Metallic: 0
     - _OuterHardnessFog: 1
     - _OuterRadiusFog: 2
@@ -89,21 +88,21 @@ Material:
     - _isAdvancedFogOn: 1
     - _pusleOpacity: 0
     m_Colors:
-    - _ColorDistricts: {r: 0.16078398, g: 0.80784315, b: 0.8862745, a: 1}
-    - _ColorEmpty: {r: 0.38039175, g: 0.6431373, b: 0.38431334, a: 1}
+    - _ColorDistricts: {r: 0.16078395, g: 0.80784315, b: 0.8862745, a: 1}
+    - _ColorEmpty: {r: 0.38039172, g: 0.6431373, b: 0.38431332, a: 1}
     - _ColorFog: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrassOuter: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006006, a: 1}
-    - _ColorParcels: {r: 0.38183954, g: 0.64499986, b: 0.38315248, a: 1}
+    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37006003, a: 1}
+    - _ColorParcels: {r: 0.3818395, g: 0.64499986, b: 0.38315246, a: 1}
     - _ColorPlazas: {r: 1, g: 0.5960784, b: 0, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
-    - _FloorColor: {r: 0.5188678, g: 0.5188678, b: 0.5188678, a: 0}
+    - _FloorColor: {r: 0.51886773, g: 0.51886773, b: 0.51886773, a: 0}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
-    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.1093357, a: 1}
+    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933567, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
-    - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _PlayerPosition: {r: -0.5, g: -0.5, b: 0, a: 0}
     - _RoadsColorBalancer: {r: 0.6792453, g: 0.4877409, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
     - _UnownedVariationRange: {r: 0.6, g: 1.25, b: 0, a: 0}
