@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 using DCL;
@@ -55,9 +54,8 @@ namespace Tests
         {
             TestClient testClient = await TestClient.Create(testClientTransport, CRDTServiceCodeGen.ServiceName);
 
-            var messageQueueHandler = Substitute.For<IMessageQueueHandler>();
-            messageQueueHandler.sceneMessagesPool.Returns(new ConcurrentQueue<QueuedSceneMessage_Scene>());
-            context.crdtContext.messageQueueHandler = messageQueueHandler;
+            var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
+            messagingControllersManager.HasScenePendingMessages(Arg.Any<string>()).Returns(false);
 
             string sceneId = "temptation";
             CRDTMessage crdtMessage = new CRDTMessage()
@@ -66,18 +64,20 @@ namespace Tests
                 timestamp = 799,
                 data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
             };
+            bool messageReceived = false;
 
             // Check if incoming CRDT is dispatched as scene message
-            messageQueueHandler.WhenForAnyArgs(x => x.EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>()))
-                               .Do(info =>
-                               {
-                                   QueuedSceneMessage_Scene message = info.Arg<QueuedSceneMessage_Scene>();
-                                   Assert.AreEqual(message.sceneId, sceneId);
-                                   CRDTMessage received = (CRDTMessage)message.payload;
-                                   Assert.AreEqual(crdtMessage.key1, received.key1);
-                                   Assert.AreEqual(crdtMessage.timestamp, received.timestamp);
-                                   Assert.IsTrue(AreEqual((byte[])received.data, (byte[])crdtMessage.data));
-                               });
+            void OnCrdtMessageReceived(string incommingSceneId, CRDTMessage incommingCrdtMessage)
+            {
+                Assert.AreEqual(sceneId, incommingSceneId);
+                Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
+                Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                messageReceived = true;
+            }
+
+            context.crdtContext.CrdtMessageReceived += OnCrdtMessageReceived;
+            context.crdtContext.MessagingControllersManager = messagingControllersManager;
 
             // Simulate client sending `crdtMessage` CRDT
             try
@@ -92,8 +92,12 @@ namespace Tests
             {
                 Debug.LogError(e);
             }
+            finally
+            {
+                context.crdtContext.CrdtMessageReceived -= OnCrdtMessageReceived;
+            }
 
-            messageQueueHandler.Received(1).EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>());
+            Assert.IsTrue(messageReceived);
         }
 
         [Test]

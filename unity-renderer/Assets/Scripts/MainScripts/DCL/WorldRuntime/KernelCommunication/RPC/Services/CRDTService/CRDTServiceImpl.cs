@@ -28,9 +28,10 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread(ct);
+            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneId),
+                cancellationToken: ct);
 
-            var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
+            await UniTask.SwitchToMainThread(ct);
 
             try
             {
