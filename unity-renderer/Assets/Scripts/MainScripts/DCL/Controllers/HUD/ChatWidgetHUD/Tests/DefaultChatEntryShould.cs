@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
 public class DefaultChatEntryShould
@@ -64,7 +65,7 @@ public class DefaultChatEntryShould
         
         await UniTask.DelayFrame(4);
 
-        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+        Assert.AreEqual("<b><link=username://user-test>user-test</link>:</b> test message", entry.body.text);
     });
     
     [UnityTest]
@@ -106,7 +107,7 @@ public class DefaultChatEntryShould
         
         await UniTask.DelayFrame(4);
 
-        Assert.AreEqual("<b><color=#5EBD3D>From user-test:</color></b> test message", entry.body.text);
+        Assert.AreEqual("<b><color=#5EBD3D>From <link=username://user-test>user-test</link></color>:</b> test message", entry.body.text);
     });
     
     [UnityTest]

@@ -164,9 +164,17 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
         messageTypeToBridgeName["InitializeChat"] = "Main";
         messageTypeToBridgeName["AddChatMessages"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
         messageTypeToBridgeName["UpdateUserUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateChannelInfo"] = "Main";
+        messageTypeToBridgeName["JoinChannelConfirmation"] = "Main";
+        messageTypeToBridgeName["JoinChannelError"] = "Main";
+        messageTypeToBridgeName["LeaveChannelError"] = "Main";
+        messageTypeToBridgeName["MuteChannelError"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessagesByChannel"] = "Main";
+        messageTypeToBridgeName["UpdateChannelMembers"] = "Main";
         messageTypeToBridgeName["UpdateHomeScene"] = "Main";
+        messageTypeToBridgeName["UpdateChannelSearchResults"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
