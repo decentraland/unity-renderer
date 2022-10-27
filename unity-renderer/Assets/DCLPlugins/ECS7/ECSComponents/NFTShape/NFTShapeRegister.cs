@@ -12,12 +12,12 @@ namespace DCL.ECSComponents
         public NFTShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBNFTShape>,
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBNftShape>,
                 () => new ECSNFTShapeComponentHandler(shapeFrameFactory,
                     new NFTInfoRetriever(),
                     new NFTAssetRetriever(),
                     internalComponents.renderersComponent));
-            componentWriter.AddOrReplaceComponentSerializer<PBNFTShape>(componentId, ProtoSerialization.Serialize);
+            componentWriter.AddOrReplaceComponentSerializer<PBNftShape>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

@@ -160,7 +160,7 @@ namespace DCL
             }
             else if (baseUrlMode.Equals(BaseUrl.LOCAL_HOST))
             {
-                baseUrl = "http://localhost:3000/?";
+                baseUrl = "http://localhost:8080/?";
             }
             else if (baseUrlMode.Equals(BaseUrl.ORG))
             {

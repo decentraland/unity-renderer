@@ -15,6 +15,7 @@ namespace Tests
     {
         private MaterialHandler handler;
         private IInternalECSComponent<InternalMaterial> internalMaterialComponent;
+        private ICatalyst catalyst;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
@@ -45,9 +46,12 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
 
@@ -62,9 +66,12 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
 
@@ -85,21 +92,63 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
+            yield return null;
 
             handler.OnComponentModelUpdated(scene, entity, model);
             yield return handler.promiseMaterial;
 
             Material firstMaterial = handler.promiseMaterial.asset.material;
 
-            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.Mirror } };
+            PBMaterial model2 = new PBMaterial(model);
+            model2.Texture.Texture.WrapMode = TextureWrapMode.TwmMirror;
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
+            
+            Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
+        }
+        
+        [UnityTest]
+        public IEnumerator ChangeMaterialWhenNoTextureSource()
+        {
+            Debug.Log(TestAssetsUtils.GetPath() + "/Images/avatar.png");
+            PBMaterial model = new PBMaterial()
+            {
+                Texture = new DCL.ECSComponents.TextureUnion()
+                {
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
+                }
+            };
+            yield return null;
 
+            handler.OnComponentModelUpdated(scene, entity, model);
+            yield return handler.promiseMaterial;
+
+            Material firstMaterial = handler.promiseMaterial.asset.material;
+
+            PBMaterial model2 = new PBMaterial(model)
+            {
+                Texture = new DCL.ECSComponents.TextureUnion()
+                {
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        WrapMode = TextureWrapMode.TwmMirror
+                    }
+                }
+            };
+            handler.OnComponentModelUpdated(scene, entity, model2);
+            yield return handler.promiseMaterial;
+            
             Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
         }
 
@@ -108,9 +157,12 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
 
@@ -127,9 +179,12 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
 
@@ -143,7 +198,16 @@ namespace Tests
 
             internalMaterialComponent.ClearReceivedCalls();
 
-            PBMaterial model2 = new PBMaterial(model) { Texture = { WrapMode = TextureWrapMode.Mirror } };
+            PBMaterial model2 = new PBMaterial(model)
+            {
+                Texture = new DCL.ECSComponents.TextureUnion()
+                {
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        WrapMode = TextureWrapMode.TwmMirror
+                    }
+                }
+            };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
             currentMaterial = handler.promiseMaterial.asset.material;
@@ -158,9 +222,12 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new PBMaterial.Types.Texture()
+                Texture = new DCL.ECSComponents.TextureUnion()
                 {
-                    Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
                 }
             };
 
@@ -186,7 +253,9 @@ namespace Tests
         public void RemoveInternalMaterialOnRemove()
         {
             handler.OnComponentRemoved(scene, entity);
-            internalMaterialComponent.Received(1).RemoveFor(scene, entity);
+            internalMaterialComponent.Received(1)
+                                     .RemoveFor(scene, entity,
+                                         Arg.Is<InternalMaterial>(x => x.material == null));
         }
     }
 }

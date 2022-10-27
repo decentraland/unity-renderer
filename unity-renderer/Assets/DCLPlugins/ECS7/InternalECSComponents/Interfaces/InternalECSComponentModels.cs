@@ -1,46 +1,48 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
 using UnityEngine;
+using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
 {
-    public class InternalTexturizable
+    public class InternalComponent
     {
-        public IList<Renderer> renderers = new List<Renderer>();
-        public bool dirty = true;
+        public bool dirty => _dirty;
+        internal bool _dirty = true;
     }
 
-    public class InternalMaterial
+    public class InternalTexturizable : InternalComponent
+    {
+        public IList<Renderer> renderers = new List<Renderer>();
+    }
+
+    public class InternalMaterial : InternalComponent
     {
         public Material material = null;
         public bool castShadows = true;
-        public IList<Renderer> renderers = null;
-        public bool dirty = true;
     }
 
-    public class InternalColliders
+    public class InternalColliders : InternalComponent
     {
         public IList<Collider> colliders = new List<Collider>();
     }
 
-    public class InternalRenderers
+    public class InternalRenderers : InternalComponent
     {
         public IList<Renderer> renderers = new List<Renderer>();
-        public bool dirty = true;
     }
 
-    public class InternalVisibility
+    public class InternalVisibility : InternalComponent
     {
         public bool visible = true;
-        public bool dirty = true;
     }
 
-    public class InternalInputEventResults
+    public class InternalInputEventResults : InternalComponent
     {
         public class EventData
         {
-            public ActionButton button;
+            public InputAction button;
             public RaycastHit hit;
             public PointerEventType type;
             public int timestamp;
@@ -48,7 +50,14 @@ namespace DCL.ECS7.InternalComponents
         }
 
         public Queue<EventData> events;
-        public bool dirty;
         public int lastTimestamp;
-    }    
+    }
+
+    public class InternalUiContainer : InternalComponent
+    {
+        public readonly VisualElement rootElement = new VisualElement();
+        public readonly HashSet<int> components = new HashSet<int>();
+        public VisualElement parentElement;
+        public long parentId;
+    }
 }

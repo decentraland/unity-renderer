@@ -13,7 +13,8 @@ namespace DCL.NotificationModel
         UI_HIDDEN,
         GRAPHIC_CARD_WARNING,
         WARNING,
-        CAMERA_MODE_LOCKED_BY_SCENE
+        CAMERA_MODE_LOCKED_BY_SCENE,
+        WARNING_NO_ICON
     }
 
     public class Model

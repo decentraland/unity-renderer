@@ -16,5 +16,8 @@ namespace DCL.Emotes
     {
         public AnimationClip femaleAnimation;
         public AnimationClip maleAnimation;
+        public bool dontShowInBackpack;
+
+        public override bool ShowInBackpack() { return !dontShowInBackpack; }
     }
 }

@@ -44,7 +44,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 {
     public event Action OnCloseExploreV2;
     public event Action OnGoToEventsSubSection;
-    internal event Action OnPlacesAndEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
@@ -60,13 +59,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal bool reloadHighlights = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
-
+    private DataStore dataStore;
+    
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
         IPlacesAPIController placesAPI,
         IEventsAPIController eventsAPI,
         IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics)
+        IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -78,10 +79,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
+        
+        this.dataStore = dataStore;
+        this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
-        OnPlacesAndEventsFromAPIUpdated += OnRequestedPlacesAndEventsUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -97,7 +100,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         RequestAllPlacesAndEvents();
 
         view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -125,15 +128,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         reloadHighlights = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
-        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
             RequestAllPlacesAndEventsFromAPI();
         else
-            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
     }
 
     internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
     {
-        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
         RequestAllPlacesAndEventsFromAPI();
     }
 
@@ -147,11 +150,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                     (eventList) =>
                     {
                         eventsFromAPI = eventList;
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        OnRequestedPlacesAndEventsUpdated();
                     },
                     (error) =>
                     {
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
             });
@@ -193,7 +196,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             events.Add(eventCardModel);
         }
 
-        view.SetTrendingPlacesAndEventsAsLoading(false);
         view.SetTrendingPlacesAndEvents(places, events);
     }
 
@@ -227,7 +229,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetFeaturedPlaces(places);
-        view.SetFeaturedPlacesAsLoading(false);
     }
 
     public void LoadLiveEvents()
@@ -243,7 +244,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetLiveEvents(events);
-        view.SetLiveAsLoading(false);
     }
 
     public void Dispose()
@@ -257,18 +257,23 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
+        
+        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
@@ -279,12 +284,14 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         view.ShowEventModal(eventModel);
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
@@ -328,4 +335,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     }
 
     internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
+    
+    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+    {
+        if (!string.IsNullOrEmpty(currentChannelId))
+            return;
+
+        view.HidePlaceModal();
+        view.HideEventModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
+        OnCloseExploreV2?.Invoke();
+    }
 }

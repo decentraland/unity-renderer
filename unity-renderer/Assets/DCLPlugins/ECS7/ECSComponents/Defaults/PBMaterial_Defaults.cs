@@ -2,15 +2,6 @@ namespace DCL.ECSComponents
 {
     public static class PBMaterial_Defaults
     {
-        private static readonly Color3 colorWhite = new Color3()
-        {
-            R = 1, G = 1, B = 1
-        };
-        private static readonly Color3 colorBlack = new Color3()
-        {
-            R = 0, G = 0, B = 0
-        };
-
         public static float GetAlphaTest(this PBMaterial self)
         {
             return self.HasAlphaTest ? self.AlphaTest : 0.5f;
@@ -23,22 +14,22 @@ namespace DCL.ECSComponents
 
         public static Color3 GetAlbedoColor(this PBMaterial self)
         {
-            return self.AlbedoColor ?? new Color3(colorWhite);
+            return self.AlbedoColor ?? new Color3(Color3_Defaults.colorWhite);
         }
 
         public static Color3 GetEmissiveColor(this PBMaterial self)
         {
-            return self.EmissiveColor ?? new Color3(colorBlack);
+            return self.EmissiveColor ?? new Color3(Color3_Defaults.colorBlack);
         }
 
         public static Color3 GetReflectiveColor(this PBMaterial self)
         {
-            return self.ReflectivityColor ?? new Color3(colorWhite);
+            return self.ReflectivityColor ?? new Color3(Color3_Defaults.colorWhite);
         }
 
-        public static TransparencyMode GetTransparencyMode(this PBMaterial self)
+        public static MaterialTransparencyMode GetTransparencyMode(this PBMaterial self)
         {
-            return self.HasTransparencyMode ? self.TransparencyMode : TransparencyMode.Auto;
+            return self.HasTransparencyMode ? self.TransparencyMode : MaterialTransparencyMode.MtmAuto;
         }
 
         public static float GetMetallic(this PBMaterial self)
@@ -69,16 +60,6 @@ namespace DCL.ECSComponents
         public static float GetDirectIntensity(this PBMaterial self)
         {
             return self.HasDirectIntensity ? self.DirectIntensity : 1f;
-        }
-
-        public static TextureWrapMode GetWrapMode(this PBMaterial.Types.Texture self)
-        {
-            return self.HasWrapMode ? self.WrapMode : TextureWrapMode.Clamp;
-        }
-
-        public static FilterMode GetFilterMode(this PBMaterial.Types.Texture self)
-        {
-            return self.HasFilterMode ? self.FilterMode : FilterMode.Bilinear;
         }
     }
 }

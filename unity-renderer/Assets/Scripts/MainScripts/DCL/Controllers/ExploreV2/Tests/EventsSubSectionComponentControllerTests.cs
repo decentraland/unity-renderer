@@ -16,10 +16,14 @@ public class EventsSubSectionComponentControllerTests
     [SetUp]
     public void SetUp()
     {
+        // This is need to sue the TeleportController
+        ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        DCL.Environment.Setup(serviceLocator);
+        
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i);
     }
 
     [TearDown]
@@ -44,11 +48,8 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(true);
+        eventsSubSectionComponentView.Received().SetAllEventGroupsAsLoading();
         eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(false);
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(true);
         Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
     }
 
@@ -85,11 +86,8 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         Assert.AreEqual(eventsSubSectionComponentView.currentUpcomingEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.currentUpcomingEventsShowed);
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(true);
+        eventsSubSectionComponentView.Received().SetAllEventGroupsAsLoading();
         eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(false);
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(true);
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
         Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
     }
@@ -113,17 +111,13 @@ public class EventsSubSectionComponentControllerTests
 
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated();
-
+        
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
     }
 
     [Test]
@@ -138,8 +132,6 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
-        eventsSubSectionComponentView.Received().SetFeaturedEventsActive(Arg.Any<bool>());
     }
 
     [Test]
@@ -154,7 +146,6 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
     }
 
     [Test]
@@ -170,7 +161,6 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
     }
 
     [Test]
@@ -197,7 +187,6 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
     }
 
     [Test]

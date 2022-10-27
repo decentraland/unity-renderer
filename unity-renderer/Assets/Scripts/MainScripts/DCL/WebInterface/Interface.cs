@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DCL.CameraTool;
-using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -33,7 +32,7 @@ namespace DCL.Interface
 
             /** Character rotation */
             public Quaternion rotation;
-            
+
             /** Camera rotation */
             public Quaternion cameraRotation;
 
@@ -65,13 +64,14 @@ namespace DCL.Interface
         [System.Serializable]
         public class SceneReady : ControlEvent<SceneReady.Payload>
         {
+
+            public SceneReady(int sceneNumber) : base("SceneReady", new Payload() { sceneNumber = sceneNumber }) { }
+
             [System.Serializable]
             public class Payload
             {
                 public int sceneNumber;
             }
-
-            public SceneReady(int sceneNumber) : base("SceneReady", new Payload() { sceneNumber = sceneNumber }) { }
         }
 
         [System.Serializable]
@@ -120,7 +120,7 @@ namespace DCL.Interface
             RIGHT = 6,
             LEFT = 7,
             JUMP = 8,
-            WALK = 9, 
+            WALK = 9,
             ACTION_3 = 10,
             ACTION_4 = 11,
             ACTION_5 = 12,
@@ -135,7 +135,7 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
-        
+
         [System.Serializable]
         public class Web3UseResponsePayload
         {
@@ -211,6 +211,12 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnPointerEventPayload
         {
+
+            public ACTION_BUTTON buttonId;
+            public Vector3 origin;
+            public Vector3 direction;
+            public Hit hit;
+
             [System.Serializable]
             public class Hit
             {
@@ -222,11 +228,6 @@ namespace DCL.Interface
                 public string meshName;
                 public string entityId;
             }
-
-            public ACTION_BUTTON buttonId;
-            public Vector3 origin;
-            public Vector3 direction;
-            public Hit hit;
         }
 
         [System.Serializable]
@@ -257,14 +258,15 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnTextInputChangeTextEventPayload
         {
+
+            public Payload value = new Payload();
+
             [System.Serializable]
             public class Payload
             {
                 public string value;
                 public bool isSubmit;
             }
-
-            public Payload value = new Payload();
         }
 
         [System.Serializable]
@@ -321,8 +323,8 @@ namespace DCL.Interface
 
         public class OnSendScreenshot
         {
-            public string id;
             public string encodedTexture;
+            public string id;
         };
 
         [System.Serializable]
@@ -411,7 +413,7 @@ namespace DCL.Interface
         {
             public string userId;
         }
-        
+
         [Serializable]
         private class SendReportPlayerPayload
         {
@@ -466,11 +468,11 @@ namespace DCL.Interface
             public int processedMessages;
             public int playerCount;
             public int loadRadius;
-            public Dictionary<int, long> sceneScores;
             public object drawCalls; //int *
             public object memoryReserved; //long, in total bytes *
             public object memoryUsage; //long, in total bytes *
             public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
+            public Dictionary<int, long> sceneScores;
 
             //* is NULL if SendProfilerMetrics is false
         }
@@ -484,7 +486,7 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
-            
+
             // TODO: remove useBinaryTransform after ECS7 is fully in prod
             public bool useBinaryTransform = true;
         }
@@ -559,7 +561,7 @@ namespace DCL.Interface
             public float voiceChatVolume;
             public int voiceChatAllowCategory;
         }
-        
+
         [Serializable]
         public class UserRealmPayload
         {
@@ -584,6 +586,10 @@ namespace DCL.Interface
         [System.Serializable]
         public class AnalyticsPayload
         {
+
+            public string name;
+            public Property[] properties;
+
             [System.Serializable]
             public class Property
             {
@@ -596,9 +602,6 @@ namespace DCL.Interface
                     this.value = value;
                 }
             }
-
-            public string name;
-            public Property[] properties;
         }
 
         [System.Serializable]
@@ -742,20 +745,32 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class MarkChannelMessagesAsSeenPayload
+        {
+            public string channelId;
+        }
+
+        [System.Serializable]
         public class GetPrivateMessagesPayload
         {
             public string userId;
             public int limit;
             public string fromMessageId;
         }
-        
+
         [Serializable]
         public class FriendshipUpdateStatusMessage
         {
             public string userId;
             public FriendshipAction action;
         }
-        
+
+        [Serializable]
+        public class SetInputAudioDevicePayload
+        {
+            public string deviceId;
+        }
+
         public enum FriendshipAction
         {
             NONE,
@@ -774,7 +789,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-        
+
         [Serializable]
         private class GetFriendRequestsPayload
         {
@@ -782,6 +797,68 @@ namespace DCL.Interface
             public int sentSkip;
             public int receivedLimit;
             public int receivedSkip;
+        }
+        
+        [Serializable]
+        private class LeaveChannelPayload
+        {
+            public string channelId;
+        }
+        
+        [Serializable]
+        private class CreateChannelPayload
+        {
+            public string channelId;
+        }
+        
+        public struct MuteChannelPayload
+        {
+            public string channelId;
+            public bool muted;
+        }
+
+        [Serializable]
+        private class JoinOrCreateChannelPayload
+        {
+            public string channelId;
+        }
+
+        [Serializable]
+        private class GetChannelMessagesPayload
+        {
+            public string channelId;
+            public int limit;
+            public string from;
+        }
+
+        [Serializable]
+        private class GetJoinedChannelsPayload
+        {
+            public int limit;
+            public int skip;
+        }
+
+        [Serializable]
+        private class GetChannelsPayload
+        {
+            public int limit;
+            public string since;
+            public string name;
+        }
+
+        [Serializable]
+        private class GetChannelInfoPayload
+        {
+            public string[] channelIds;
+        }
+
+        [Serializable]
+        private class GetChannelMembersPayload
+        {
+            public string channelId;
+            public int limit;
+            public int skip;
+            public string userName;
         }
 
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
@@ -860,7 +937,7 @@ namespace DCL.Interface
 
         public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
-        
+
         public static void SendMessage(string type)
         {
             // sending an empty JSON object to be compatible with other messages
@@ -872,7 +949,7 @@ namespace DCL.Interface
             string messageJson = JsonUtility.ToJson(message);
             SendJson(type, messageJson);
         }
-        
+
         public static void SendJson(string type, string json)
         {
             if (VERBOSE)
@@ -932,6 +1009,7 @@ namespace DCL.Interface
         private static TimeReportPayload timeReportPayload = new TimeReportPayload();
         private static GetFriendsWithDirectMessagesPayload getFriendsWithDirectMessagesPayload = new GetFriendsWithDirectMessagesPayload();
         private static MarkMessagesAsSeenPayload markMessagesAsSeenPayload = new MarkMessagesAsSeenPayload();
+        private static MarkChannelMessagesAsSeenPayload markChannelMessagesAsSeenPayload = new MarkChannelMessagesAsSeenPayload();
         private static GetPrivateMessagesPayload getPrivateMessagesPayload = new GetPrivateMessagesPayload();
 
         public static void SendSceneEvent<T> (int sceneNumber, string eventType, T payload)
@@ -977,7 +1055,7 @@ namespace DCL.Interface
                 SendAllScenesEvent("cameraModeChanged", cameraModePayload);
             }
         }
-        
+
         public static void Web3UseResponse(string id, bool result)
         {
             web3UseResponsePayload.id = id;
@@ -1067,7 +1145,7 @@ namespace DCL.Interface
                 entityId, meshName, ray, point, normal, distance,
                 isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
-            
+
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
             SendSceneEvent(sceneNumber, "actionButtonEvent", onGlobalPointerEvent);
@@ -1334,10 +1412,7 @@ namespace DCL.Interface
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
-        public static void SendPerformanceReport(string performanceReportPayload)
-        {
-            SendJson("PerformanceReport", performanceReportPayload);
-        }
+        public static void SendPerformanceReport(string performanceReportPayload) { SendJson("PerformanceReport", performanceReportPayload); }
 
         public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
@@ -1475,10 +1550,23 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void GoToCrowd() { SendMessage("GoToCrowd"); }
+        public static void GoToCrowd()
+        {
+            SendMessage("GoToCrowd");
+        }
 
-        public static void GoToMagic() { SendMessage("GoToMagic"); }
+        public static void GoToMagic()
+        {
+            SendMessage("GoToMagic");
+        }
 
+        public static void LoadingHUDReadyForTeleport(int x, int y)
+        {
+            gotoEvent.x = x;
+            gotoEvent.y = y;
+            SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
+        }
+        
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
@@ -1546,7 +1634,7 @@ namespace DCL.Interface
             killPortableExperiencePayload.portableExperienceId = portableExperienceId;
             SendMessage("KillPortableExperience", killPortableExperiencePayload);
         }
-        
+
         public static void RequestThirdPartyWearables(
             string ownedByUser,
             string thirdPartyCollectionId,
@@ -1617,10 +1705,7 @@ namespace DCL.Interface
             SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
 
-        public static void RequestHomeCoordinates()
-        {
-            SendMessage("RequestHomeCoordinates");
-        }
+        public static void RequestHomeCoordinates() { SendMessage("RequestHomeCoordinates"); }
 
         public static void RequestUserProfile(string userId)
         {
@@ -1686,14 +1771,14 @@ namespace DCL.Interface
             avatarOnClickPayload.ray.distance = distance;
 
             SendSceneEvent(sceneNumber, "playerClicked", avatarOnClickPayload);
-        }        
-        
+        }
+
         public static void ReportOnPointerHoverEnterEvent(int sceneNumber, string uuid)
         {
             onPointerHoverEnterEvent.uuid = uuid;
             SendSceneEvent(sceneNumber, "uuidEvent", onPointerHoverEnterEvent);
         }
- 
+
         public static void ReportOnPointerHoverExitEvent(int sceneNumber, string uuid)
         {
             onPointerHoverExitEvent.uuid = uuid;
@@ -1730,10 +1815,18 @@ namespace DCL.Interface
             getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
-
-        public static void GetUnseenMessagesByUser()
+        
+        public static void MarkChannelMessagesAsSeen(string channelId)
         {
-            SendMessage("GetUnseenMessagesByUser");
+            markChannelMessagesAsSeenPayload.channelId = channelId;
+            SendMessage("MarkChannelMessagesAsSeen", markChannelMessagesAsSeenPayload);
+        }
+
+        public static void GetUnseenMessagesByUser() { SendMessage("GetUnseenMessagesByUser"); }
+
+        public static void GetUnseenMessagesByChannel()
+        {
+            SendMessage("GetUnseenMessagesByChannel");
         }
 
         public static void GetFriends(int limit, int skip)
@@ -1762,6 +1855,102 @@ namespace DCL.Interface
                 receivedLimit = receivedLimit,
                 sentSkip = sentSkip,
                 sentLimit = sentLimit
+            });
+        }
+
+        public static void LeaveChannel(string channelId)
+        {
+            SendMessage("LeaveChannel", new LeaveChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void CreateChannel(string channelId)
+        {
+            SendMessage("CreateChannel", new CreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void JoinOrCreateChannel(string channelId)
+        {
+            SendMessage("JoinOrCreateChannel", new JoinOrCreateChannelPayload
+            {
+                channelId = channelId
+            });
+        }
+
+        public static void GetChannelMessages(string channelId, int limit, string fromMessageId)
+        {
+            SendMessage("GetChannelMessages", new GetChannelMessagesPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                from = fromMessageId
+            });
+        }
+
+        public static void GetJoinedChannels(int limit, int skip)
+        {
+            SendMessage("GetJoinedChannels", new GetJoinedChannelsPayload
+            {
+                limit = limit,
+                skip = skip
+            });
+        }
+
+        public static void GetChannels(int limit, string since, string name)
+        {
+            SendMessage("GetChannels", new GetChannelsPayload
+            {
+                limit = limit,
+                since = since,
+                name = name
+            });
+        }
+
+        public static void GetChannelInfo(string[] channelIds)
+        {
+            SendMessage("GetChannelInfo", new GetChannelInfoPayload
+            {
+                channelIds = channelIds
+            });
+        }
+
+        public static void GetChannelMembers(string channelId, int limit, int skip, string name)
+        {
+            SendMessage("GetChannelMembers", new GetChannelMembersPayload
+            {
+                channelId = channelId,
+                limit = limit,
+                skip = skip,
+                userName = name
+            });
+        }
+
+        public static void MuteChannel(string channelId, bool muted)
+        {
+            SendMessage("MuteChannel", new MuteChannelPayload
+            {
+                channelId = channelId,
+                muted = muted
+            });
+        }
+
+        public static void UpdateMemoryUsage()
+        {
+            SendMessage("UpdateMemoryUsage");
+        }
+        
+        public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
+
+        public static void SetInputAudioDevice(string inputDeviceId)
+        {
+            SendMessage(nameof(SetInputAudioDevice), new SetInputAudioDevicePayload()
+            {
+                deviceId = inputDeviceId
             });
         }
     }

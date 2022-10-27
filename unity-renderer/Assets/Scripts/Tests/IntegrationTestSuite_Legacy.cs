@@ -8,12 +8,15 @@ using NSubstitute;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 
 public class IntegrationTestSuite_Legacy
 {
+    private const string VISUAL_TEST_CUBEMAP_PATH = "Assets/Scripts/Tests/VisualTests/Textures/VisualTest Reflection.png";
+    
     /// <summary>
     /// Use this as a parent for your dynamically created gameobjects in tests
     /// so they are cleaned up automatically in the teardown
@@ -186,7 +189,7 @@ public class IntegrationTestSuite_Legacy
 
     private void InitializeDefaultRenderSettings()
     {
-        RenderSettings.customReflection = Resources.Load<Cubemap>("VisualTest Reflection");
+        RenderSettings.customReflection = AssetDatabase.LoadAssetAtPath<Cubemap>(VISUAL_TEST_CUBEMAP_PATH);
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
         RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");

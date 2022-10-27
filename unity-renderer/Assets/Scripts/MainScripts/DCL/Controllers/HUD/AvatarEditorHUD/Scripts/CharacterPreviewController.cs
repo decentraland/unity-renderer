@@ -10,7 +10,7 @@ using GPUSkinning;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class CharacterPreviewController : MonoBehaviour
+public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
 {
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
@@ -46,6 +46,7 @@ public class CharacterPreviewController : MonoBehaviour
     private IAvatar avatar;
     private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
     private CancellationTokenSource loadingCts = new CancellationTokenSource();
+    
 
     private void Awake()
     {
@@ -69,7 +70,7 @@ public class CharacterPreviewController : MonoBehaviour
         ) ;
     }
 
-    public void UpdateModel(AvatarModel newModel, Action onDone)
+    public void UpdateModel(AvatarModel newModel,Action onDone)
     {
         if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
         {

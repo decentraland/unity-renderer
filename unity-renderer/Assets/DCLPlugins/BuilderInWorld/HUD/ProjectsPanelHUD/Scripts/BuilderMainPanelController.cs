@@ -561,7 +561,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void GoToCoords(Vector2Int coords)
     {
-        WebInterface.GoTo(coords.x, coords.y);
+        Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         SetVisibility(false);
         OnJumpInOrEdit?.Invoke();
     }

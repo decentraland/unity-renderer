@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
 
         public static int GetColliderLayer(this PBMeshCollider self)
         {
-            return self.HasCollisionMask ? self.CollisionMask : ((int)ColliderLayer.Physics | (int)ColliderLayer.Pointer);
+            return self.HasCollisionMask ? self.CollisionMask : ((int)ColliderLayer.ClPhysics | (int)ColliderLayer.ClPointer);
         }
     }
 }
