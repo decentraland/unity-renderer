@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 public class TaskbarHUDController : IHUD
 {
     private readonly IChatController chatController;
+    private readonly IFriendsController friendsController;
 
     [Serializable]
     public struct Configuration
@@ -53,9 +54,10 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
-    public TaskbarHUDController(IChatController chatController)
+    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
     {
         this.chatController = chatController;
+        this.friendsController = friendsController;
     }
 
     protected virtual TaskbarHUDView CreateView()
@@ -369,8 +371,6 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChat(string userId)
     {
-        openedChat.Set(userId);
-        privateChatWindow.Setup(userId);
         worldChatWindowHud.SetVisibility(false);
         publicChatWindow.SetVisibility(false);
         channelChatWindow.SetVisibility(false);
@@ -379,6 +379,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
+        openedChat.Set(userId);
+        privateChatWindow.Setup(userId);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
@@ -402,7 +404,7 @@ public class TaskbarHUDController : IHUD
         if (lastActiveWindow == publicChatWindow)
         {
             publicChatWindow.SetVisibility(true, true);
-            visibleWindow = lastActiveWindow;
+            visibleWindow = publicChatWindow;
         }
         else if (lastActiveWindow != null)
         {
@@ -411,8 +413,8 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            worldChatWindowHud.SetVisibility(true);
-            visibleWindow = worldChatWindowHud;
+            publicChatWindow.SetVisibility(true, true);
+            visibleWindow = publicChatWindow;
         }
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
@@ -690,7 +692,10 @@ public class TaskbarHUDController : IHUD
         else if(chatId == conversationListId)
             OpenChatList();
         else
-            OpenPrivateChat(chatId);
+        {
+            if(friendsController.GetUserStatus(chatId).friendshipStatus == FriendshipStatus.FRIEND)
+                OpenPrivateChat(chatId);
+        }
     }
 
     private void IsExperiencesViewerOpenChanged(bool current, bool previous)

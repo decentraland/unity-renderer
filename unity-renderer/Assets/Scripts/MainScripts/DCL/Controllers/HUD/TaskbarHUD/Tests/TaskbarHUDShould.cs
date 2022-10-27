@@ -41,7 +41,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
         userProfileBridge.GetOwn().Returns(ownProfile);
 
-        controller = new TaskbarHUDController(chatController);
+        controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>());
         controller.Initialize(null);
         view = controller.view;
 
@@ -173,8 +173,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsFalse(controller.publicChatWindow.View.IsActive);
-        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
+        Assert.IsTrue(controller.publicChatWindow.View.IsActive);
+        Assert.IsFalse(controller.worldChatWindowHud.View.IsActive);
         Assert.IsFalse(controller.friendsHud.View.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }
