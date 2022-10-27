@@ -42,6 +42,7 @@ public class ChatNotificationMessageComponentViewTest
             message = "Test message",
             time = "12:44",
             messageHeader = "#general",
+            messageSender = "SpottyGoat",
             isPrivate = false,
             imageUri = null,
             notificationTargetId = "testId"
@@ -63,7 +64,8 @@ public class ChatNotificationMessageComponentViewTest
         {
             message = "Test message",
             time = "12:44",
-            messageHeader = "SpottyGoat",
+            messageHeader = "PrivateChat",
+            messageSender = "SpottyGoat",
             isPrivate = true,
             imageUri = null,
             notificationTargetId = "testId"

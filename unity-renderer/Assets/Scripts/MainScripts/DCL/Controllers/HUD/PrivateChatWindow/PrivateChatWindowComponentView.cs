@@ -25,14 +25,11 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     [SerializeField] internal ScrollRect scroll;
     [SerializeField] internal GameObject oldMessagesLoadingContainer;
     [SerializeField] private Model model;
-    [SerializeField] internal CanvasGroup[] previewCanvasGroup;
-    [SerializeField] private Vector2 previewModeSize;
 
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
     private Coroutine alphaRoutine;
     private Vector2 originalSize;
-    private bool isPreviewActivated;
 
     public event Action OnPressBack;
     public event Action OnMinimize;
@@ -71,9 +68,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         userContextMenu.OnBlock += HandleBlockFromContextMenu;
         scroll.onValueChanged.AddListener((scrollPos) =>
         {
-            if (isPreviewActivated)
-                return;
-
             if (scrollPos.y > REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
                 OnRequireMoreMessages?.Invoke();
         });
@@ -94,55 +88,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
-
+        
         base.Dispose();
-    }
-
-    public void ActivatePreview()
-    {
-        if (!this) return;
-        if (!gameObject) return;
-
-        isPreviewActivated = true;
-        SetLoadingMessagesActive(false);
-        SetOldMessagesLoadingActive(false);
-
-        const float alphaTarget = 0f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = previewModeSize;
-    }
-
-    public void DeactivatePreview()
-    {
-        isPreviewActivated = false;
-
-        const float alphaTarget = 1f;
-        
-        if (!gameObject.activeInHierarchy)
-        {
-            foreach (var group in previewCanvasGroup)
-                group.alpha = alphaTarget;
-            
-            return;
-        }
-        
-        if (alphaRoutine != null)
-            StopCoroutine(alphaRoutine);
-        
-        alphaRoutine = StartCoroutine(SetAlpha(alphaTarget, 0.5f));
-        ((RectTransform) transform).sizeDelta = originalSize;
     }
 
     public void SetLoadingMessagesActive(bool isActive)
@@ -208,24 +155,6 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         if (userId != model.userId) return;
         model.isUserBlocked = isBlocked;
         RefreshControl();
-    }
-
-    private IEnumerator SetAlpha(float target, float duration)
-    {
-        var t = 0f;
-        
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            
-            foreach (var group in previewCanvasGroup)
-                group.alpha = Mathf.Lerp(group.alpha, target, t / duration);
-            
-            yield return null;
-        }
-
-        foreach (var group in previewCanvasGroup)
-            group.alpha = target;
     }
 
     [Serializable]

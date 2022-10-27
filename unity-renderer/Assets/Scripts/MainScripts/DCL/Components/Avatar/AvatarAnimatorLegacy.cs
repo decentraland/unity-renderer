@@ -464,6 +464,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null)
             return;
 
+        if (emoteClipData.clip == null)
+        {
+            Debug.LogError("Can't equip null animation clip for emote " + emoteId);
+            return;
+        }
+
         if (animation.GetClip(emoteId) != null)
             animation.RemoveClip(emoteId);
 

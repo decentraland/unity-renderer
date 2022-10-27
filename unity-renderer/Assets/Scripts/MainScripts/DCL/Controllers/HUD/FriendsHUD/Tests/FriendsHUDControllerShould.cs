@@ -44,7 +44,8 @@ public class FriendsHUDControllerShould
             friendsController,
             userProfileBridge,
             socialAnalytics,
-            Substitute.For<IChatController>());
+            Substitute.For<IChatController>(),
+            Substitute.For<IMouseCatcher>());
         view = Substitute.For<IFriendsHUDComponentView>();
         view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);
@@ -389,6 +390,7 @@ public class FriendsHUDControllerShould
         view.Received(1).Set(OTHER_USER_ID, Arg.Is<FriendEntryModel>(f => f.userName == "hehe"));
     }
 
+    [Test]
     public void GetFriendsWhenBecomesVisible()
     {
         view.IsFriendListActive.Returns(true);
@@ -500,7 +502,7 @@ public class FriendsHUDControllerShould
         view.IsFriendListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
         controller.SetVisibility(true);
-
+        
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
         friendsController.Received(1).GetFriends(30, 30);
@@ -572,7 +574,7 @@ public class FriendsHUDControllerShould
         controller.SetVisibility(true);
         controller.SetVisibility(false);
         controller.SetVisibility(true);
-        
+     
         friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
     }
 }
