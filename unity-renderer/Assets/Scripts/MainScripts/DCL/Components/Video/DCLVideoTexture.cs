@@ -59,6 +59,9 @@ namespace DCL.Components
 
             // DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.Log ("FD:: DCLVideoTexture() Contructor - object.id = " + this.id);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -331,7 +334,9 @@ namespace DCL.Components
 
             // FD::--Tests-->
             UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD:: In Coords: " + coords + " - scene in SO: " + CommonScriptableObjects.sceneID.Get());
+            Debug.Log("FD:: In Coords: " + coords + 
+                        "\n scene in SO: " + CommonScriptableObjects.sceneID.Get() +
+                        "\n object id " + this.id);
         }
 
         private void OnSceneIDChanged(string current, string previous) 
@@ -385,12 +390,9 @@ namespace DCL.Components
             SetPlayStateDirty();
         }
 
-        void SetPlayStateDirty(IDCLEntity entity = null)
-        {
-            isPlayStateDirty = true;
-        }
+        private void SetPlayStateDirty(IDCLEntity entity = null) => isPlayStateDirty = true;
 
-        void OnAudioSettingsChanged(AudioSettings settings) { UpdateVolume(); }
+        private void OnAudioSettingsChanged(AudioSettings settings) => UpdateVolume();
 
         public override void Dispose()
         {
