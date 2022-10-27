@@ -44,7 +44,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 {
     public event Action OnCloseExploreV2;
     public event Action OnGoToEventsSubSection;
-    internal event Action OnPlacesAndEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
@@ -61,7 +60,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
     private DataStore dataStore;
-
+    
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
         IPlacesAPIController placesAPI,
@@ -80,13 +79,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
-
+        
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
-        OnPlacesAndEventsFromAPIUpdated += OnRequestedPlacesAndEventsUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -152,11 +150,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                     (eventList) =>
                     {
                         eventsFromAPI = eventList;
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        OnRequestedPlacesAndEventsUpdated();
                     },
                     (error) =>
                     {
-                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
                     });
             });
@@ -198,7 +196,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             events.Add(eventCardModel);
         }
 
-        view.SetTrendingPlacesAndEventsAsLoading(false);
         view.SetTrendingPlacesAndEvents(places, events);
     }
 
@@ -232,7 +229,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetFeaturedPlaces(places);
-        view.SetFeaturedPlacesAsLoading(false);
     }
 
     public void LoadLiveEvents()
@@ -248,7 +244,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetLiveEvents(events);
-        view.SetLiveAsLoading(false);
     }
 
     public void Dispose()
@@ -262,6 +257,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
+        
         dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
@@ -339,7 +335,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     }
 
     internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
-
+    
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
         if (!string.IsNullOrEmpty(currentChannelId))
