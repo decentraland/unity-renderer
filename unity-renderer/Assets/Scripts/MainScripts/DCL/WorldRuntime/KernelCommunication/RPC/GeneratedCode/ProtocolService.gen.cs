@@ -16,8 +16,6 @@ public interface ICRDTService<Context>
 
   UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, Context context, CancellationToken ct);
 
-  IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
-
 }
 
 public static class CRDTServiceCodeGen
@@ -30,7 +28,6 @@ public static class CRDTServiceCodeGen
       
     result.definition.Add("SendCrdt", async (payload, context, ct) => { var res = await service.SendCrdt(CRDTManyMessages.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("PullCrdt", async (payload, context, ct) => { var res = await service.PullCrdt(PullCRDTRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.serverStreamDefinition.Add("CrdtNotificationStream", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<CRDTManyMessages>(service.CrdtNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

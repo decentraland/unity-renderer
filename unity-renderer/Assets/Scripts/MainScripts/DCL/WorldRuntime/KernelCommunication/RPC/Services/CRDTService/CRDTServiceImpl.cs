@@ -93,12 +93,5 @@ namespace RPC.Services
                 return emptyResponse;
             }
         }
-        
-        
-        [Obsolete("deprecated")]
-        public IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
-        {
-            return null;
-        }
     }
 }
