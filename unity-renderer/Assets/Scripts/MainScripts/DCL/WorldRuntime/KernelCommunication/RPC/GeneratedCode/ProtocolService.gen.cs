@@ -9,7 +9,7 @@ using Google.Protobuf;
 using rpc_csharp.protocol;
 using rpc_csharp;
 
-public abstract class ICRDTService<Context>
+public abstract class CRDTServiceBase<Context>
 {
   public const string ServiceName = "CRDTService";
 
@@ -19,7 +19,7 @@ public abstract class ICRDTService<Context>
 
   protected abstract IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
 
-  public static void RegisterService(RpcServerPort<Context> port, ICRDTService<Context> service)
+  public static void RegisterService(RpcServerPort<Context> port, CRDTServiceBase<Context> service)
   {
     var result = new ServerModuleDefinition<Context>();
       

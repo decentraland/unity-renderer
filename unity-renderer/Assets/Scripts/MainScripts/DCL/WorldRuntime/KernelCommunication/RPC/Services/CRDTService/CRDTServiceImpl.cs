@@ -13,7 +13,7 @@ using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
-    public class CRDTServiceImpl : ICRDTService<RPCContext>
+    public class CRDTServiceImpl : CRDTServiceBase<RPCContext>
     {
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
         private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
@@ -26,7 +26,7 @@ namespace RPC.Services
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
-            RegisterService(port, new CRDTServiceImpl());
+            CRDTServiceBase<RPCContext>.RegisterService(port, new CRDTServiceImpl());
         }
 
         protected override UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
