@@ -26,10 +26,16 @@ var WebVideoPlayer = {
             video: vid,
             state: videoState.NONE,
             error: "",
-            textureId: texId
+            textureId: texId,
+            newFrameRendered = false
         };
 
         videos[Pointer_stringify(videoId)] = videoData;
+        videos[Pointer_stringify(videoId)].video.requestVideoFrameCallback((now, metadata) => 
+        {
+            console.log("[Alex] new frame")
+            videos[Pointer_stringify(videoId)].newFrameRendered = false
+        })
 
         if (useHls) {
             var hlsConfig = {
@@ -135,8 +141,13 @@ var WebVideoPlayer = {
 
         if (videos[id].state !== 4) return; //PLAYING
 
-        console.log(JSON.stringify(videos[id].video))
-        console.log("Time: " + videos[id].video.currentTime)
+        if(!videos[id].newFrameRendered)
+        {
+
+        }
+
+        console.log("[Alex] Update requested: " + videos[id].newFrameRendered)
+        videos[id].newFrameRendered = true
         const textureId = videos[id].textureId;
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
