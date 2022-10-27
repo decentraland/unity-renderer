@@ -6,36 +6,26 @@ using Variables.RealmsInfo;
 public class WorldsPlugin : IPlugin
 {
 
-
+    private List<IWorldsModifier> worldsModifiers;
+    private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo; 
+    
     public WorldsPlugin()
     {
+        worldsModifiers = new List<IWorldsModifier> { new WorldsBlockerModifier() };
         DataStore.i.realm.playerRealm.OnChange += RealmChanged;
     }
     
     private void RealmChanged(CurrentRealmModel current, CurrentRealmModel previous)
     {
-        List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
-        if (realmList?.Count == 0)
+        List<RealmModel> currentRealmsList = realmsList.Get().ToList();
+        if (currentRealmsList?.Count() == 0)
             return;
             
-        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == current.serverName);
+        RealmModel currentRealmModel = currentRealmsList.FirstOrDefault(r => r.serverName == current.serverName);
         if (currentRealmModel == null)
-        {
-            EnteredWorld();
-        }
+            worldsModifiers.ForEach(e => e.EnteredWorld());
         else
-        {
-            ExitedWorld();
-        }
-    }
-    private void ExitedWorld()
-    {
-        Environment.i.world.blockersController.SetEnabled(true);
-
-    }
-    private void EnteredWorld()
-    {
-        Environment.i.world.blockersController.SetEnabled(false);
+            worldsModifiers.ForEach(e => e.ExitedWorld());
     }
 
     public void Dispose()
