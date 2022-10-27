@@ -38,6 +38,7 @@ namespace Tests
         public void TearDown()
         {
             testUtils.Dispose();
+            DataStore.Clear();
         }
 
         [Test]
