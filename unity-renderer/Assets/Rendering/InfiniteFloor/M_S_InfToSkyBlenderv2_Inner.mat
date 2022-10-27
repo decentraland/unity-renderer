@@ -38,8 +38,8 @@ Material:
     - _Fade: 0.684
     - _MiddlePoint: 42
     - _colorArea: 0.268
-    - _fade: 0.807
-    - _horizonStartPoint: 0.838
+    - _fade: 0.393
+    - _horizonStartPoint: 0.753
     - _opacity: 0
     m_Colors:
     - _ColorFloor: {r: 0.15036489, g: 0.2924528, b: 0.18413468, a: 1}
