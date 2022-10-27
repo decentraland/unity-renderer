@@ -114,9 +114,11 @@ namespace DCL
 
         public async UniTask PrewarmAsync(int prewarmCount, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (unusedObjects.Count >= prewarmCount)
                 return;
-                
+            
             for (int i = 0; i < prewarmCount; i++)
             {
                 Instantiate();
