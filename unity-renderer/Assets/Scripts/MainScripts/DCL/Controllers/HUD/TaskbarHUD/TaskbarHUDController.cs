@@ -404,7 +404,7 @@ public class TaskbarHUDController : IHUD
         if (lastActiveWindow == publicChatWindow)
         {
             publicChatWindow.SetVisibility(true, true);
-            visibleWindow = lastActiveWindow;
+            visibleWindow = publicChatWindow;
         }
         else if (lastActiveWindow != null)
         {
@@ -413,8 +413,8 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            worldChatWindowHud.SetVisibility(true);
-            visibleWindow = worldChatWindowHud;
+            publicChatWindow.SetVisibility(true, true);
+            visibleWindow = publicChatWindow;
         }
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
