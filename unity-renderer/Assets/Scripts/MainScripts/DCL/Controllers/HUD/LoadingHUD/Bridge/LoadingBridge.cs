@@ -45,9 +45,6 @@ public class LoadingBridge : MonoBehaviour
     
     IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
-        //TODO: Logic to be cleaned by the RFC-1
-        WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
-        
         PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
         if (!string.IsNullOrEmpty(payload.message))
         {
