@@ -9,17 +9,22 @@ using Google.Protobuf;
 using rpc_csharp.protocol;
 using rpc_csharp;
 
-public abstract class CRDTServiceBase<Context>
+public interface ICRDTService<Context>
+{
+
+  UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context, CancellationToken ct);
+
+  UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, Context context, CancellationToken ct);
+
+  IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
+
+}
+
+public static class CRDTServiceCodeGen
 {
   public const string ServiceName = "CRDTService";
 
-  protected abstract UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context, CancellationToken ct);
-
-  protected abstract UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, Context context, CancellationToken ct);
-
-  protected abstract IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
-
-  public static void RegisterService(RpcServerPort<Context> port, CRDTServiceBase<Context> service)
+  public static void RegisterService<Context>(RpcServerPort<Context> port, ICRDTService<Context> service)
   {
     var result = new ServerModuleDefinition<Context>();
       

@@ -13,7 +13,7 @@ using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
-    public class CRDTServiceImpl : CRDTServiceBase<RPCContext>
+    public class CRDTServiceImpl : ICRDTService<RPCContext>
     {
         private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
         private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
@@ -26,10 +26,10 @@ namespace RPC.Services
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
-            CRDTServiceBase<RPCContext>.RegisterService(port, new CRDTServiceImpl());
+            CRDTServiceCodeGen.RegisterService(port, new CRDTServiceImpl());
         }
 
-        protected override UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
+        public UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
             messages.Payload.WriteTo(crdtStream);
 
@@ -64,7 +64,7 @@ namespace RPC.Services
 
             return defaultResponse;
         }
-        protected override UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, RPCContext context, CancellationToken ct)
+        public UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
             string sceneId = request.SceneId;
 
@@ -96,7 +96,7 @@ namespace RPC.Services
         
         
         [Obsolete("deprecated")]
-        protected override IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
+        public IUniTaskAsyncEnumerable<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
         {
             return null;
         }
