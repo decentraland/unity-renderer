@@ -168,7 +168,7 @@ public class GridContainerComponentViewTests
         BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
 
         // Act
-        gridContainerComponent.AddItem(testItem);
+        gridContainerComponent.AddItemWithResize(testItem);
 
         // Assert
         Assert.IsTrue(gridContainerComponent.instantiatedItems.Contains(testItem), "The item does not exist in the instantiatedItems list.");
@@ -179,7 +179,7 @@ public class GridContainerComponentViewTests
     {
         // Arrange
         BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        gridContainerComponent.AddItem(testItem);
+        gridContainerComponent.AddItemWithResize(testItem);
 
         // Act
         gridContainerComponent.RemoveItem(testItem);
