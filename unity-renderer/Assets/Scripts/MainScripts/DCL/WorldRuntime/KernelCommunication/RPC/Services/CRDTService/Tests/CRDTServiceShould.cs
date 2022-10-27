@@ -123,7 +123,7 @@ namespace Tests
                 CRDTManyMessages response1 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
                     new PullCRDTRequest() { SceneId = scene1 });
 
-                var deserializer = KernelBinaryMessageDeserializer.Deserialize(response1.Payload.ToByteArray());
+                var deserializer = CRDTDeserializer.DeserializeBatch(response1.Payload.Memory);
                 deserializer.MoveNext();
                 CRDTMessage message = (CRDTMessage)deserializer.Current;
 
@@ -136,7 +136,7 @@ namespace Tests
                 CRDTManyMessages response2 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
                     new PullCRDTRequest() { SceneId = scene2 });
 
-                deserializer = KernelBinaryMessageDeserializer.Deserialize(response2.Payload.ToByteArray());
+                deserializer = CRDTDeserializer.DeserializeBatch(response2.Payload.Memory);
                 deserializer.MoveNext();
                 message = (CRDTMessage)deserializer.Current;
 
