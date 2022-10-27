@@ -16,7 +16,7 @@ namespace DCL.ECS7
         public const int UI_TRANSFORM = 1050;
         public const int UI_TEXT = 1052;
         public const int UI_BACKGROUND = 1053;
-        public const int POINTER_EVENTS = 1062;
+        public const int POINTER_HOVER_FEEDBACK = 1062;
         public const int POINTER_EVENTS_RESULT = 1063;
         public const int RAYCAST = 1067;
         public const int RAYCAST_RESULT = 1068;

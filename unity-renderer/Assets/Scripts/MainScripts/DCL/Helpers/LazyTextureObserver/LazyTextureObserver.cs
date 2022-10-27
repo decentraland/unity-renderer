@@ -69,8 +69,8 @@ namespace DCL.Helpers
         }
 
         private State state = State.NONE;
-        private Action<Texture2D> OnLoaded;
-        private Action<Exception> OnFail;
+        private event Action<Texture2D> OnLoaded;
+        private event Action<Exception> OnFail;
 
         private HashSet<Action<Texture2D>> subscriptions = new HashSet<Action<Texture2D>>();
 

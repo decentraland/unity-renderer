@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -10,7 +8,6 @@ using DCL.SettingsCommon;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -22,36 +19,23 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private RectTransform contextMenuPositionReference;
     [NonSerialized] public string messageLocalDateTime;
 
-    [Header("Preview Mode")] [SerializeField]
-    internal Image previewBackgroundImage;
-
-    [SerializeField] internal Color previewBackgroundColor;
-    [SerializeField] internal Color previewFontColor;
-
     private float hoverPanelTimer;
     private float hoverGotoPanelTimer;
     private bool isOverCoordinates;
+    private bool isShowingPreview;
     private ParcelCoordinates currentCoordinates;
     private ChatEntryModel model;
 
-    private Color originalBackgroundColor;
-    private Color originalFontColor;
     private readonly CancellationTokenSource populationTaskCancellationTokenSource = new CancellationTokenSource();
 
     public override ChatEntryModel Model => model;
 
-    public event Action<string> OnPress;
-    public event Action<DefaultChatEntry> OnPressRightButton;
+    public event Action<DefaultChatEntry> OnUserNameClicked;
     public event Action<DefaultChatEntry> OnTriggerHover;
     public event Action<DefaultChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
     public event Action OnCancelHover;
     public event Action OnCancelGotoHover;
-
-    private void Awake()
-    {
-        originalBackgroundColor = previewBackgroundImage.color;
-        originalFontColor = body.color;
-    }
+    public event Action OnHover;
 
     public override void Populate(ChatEntryModel chatEntryModel) =>
         PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
@@ -86,30 +70,41 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private string GetUserString(ChatEntryModel chatEntryModel)
     {
-        var userString = GetDefaultSenderString(chatEntryModel.senderName);
-        switch (chatEntryModel.messageType) 
+        if (string.IsNullOrEmpty(model.senderName)) return "";
+
+        var baseName = model.senderName;
+
+        switch (chatEntryModel.subType)
         {
-            case ChatMessage.Type.PUBLIC:
-                userString = chatEntryModel.subType switch
+            case ChatEntryModel.SubType.SENT:
+                switch (chatEntryModel.messageType)
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => userString,
-                    ChatEntryModel.SubType.SENT => $"<b>You:</b>",
-                    _ => userString
-                };
+                    case ChatMessage.Type.PUBLIC:
+                    case ChatMessage.Type.PRIVATE when chatEntryModel.isChannelMessage:
+                        baseName = "You";
+                        break;
+                    case ChatMessage.Type.PRIVATE:
+                        baseName = $"To {chatEntryModel.recipientName}";
+                        break;
+                }
+
                 break;
-            case ChatMessage.Type.PRIVATE:
-                userString = chatEntryModel.subType switch
+            case ChatEntryModel.SubType.RECEIVED:
+                switch (chatEntryModel.messageType)
                 {
-            
-                    ChatEntryModel.SubType.RECEIVED => $"<b><color=#5EBD3D>From {chatEntryModel.senderName}:</color></b>",
-                    ChatEntryModel.SubType.SENT => $"<b>To {chatEntryModel.recipientName}:</b>",
-                    _ => userString
-                };
+                    case ChatMessage.Type.PRIVATE:
+                        baseName = $"<color=#5EBD3D>From <link=username://{baseName}>{baseName}</link></color>";
+                        break;
+                    case ChatMessage.Type.PUBLIC:
+                        baseName = $"<link=username://{baseName}>{baseName}</link>";
+                        break;
+                }
                 break;
         }
 
-        return userString;
+        baseName = $"<b>{baseName}:</b>";
+
+        return baseName;
     }
 
     private string GetCoordinatesLink(string body)
@@ -135,9 +130,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (HUDAudioHandler.i == null)
             return;
 
-        // Check whether or not this message is new, and chat sounds are enabled in settings
-        if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp &&
-            Settings.i.audioSettings.Data.chatSFXEnabled)
+        if (IsRecentMessage(chatEntryModel) && Settings.i.audioSettings.Data.chatSFXEnabled)
         {
             switch (chatEntryModel.messageType)
             {
@@ -157,20 +150,23 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
                         case ChatEntryModel.SubType.SENT:
                             AudioScriptableObjects.chatSend.Play(true);
                             break;
-                        default:
-                            break;
                     }
 
                     break;
                 case ChatMessage.Type.SYSTEM:
                     AudioScriptableObjects.chatReceiveGlobal.Play(true);
                     break;
-                default:
-                    break;
             }
         }
 
         HUDAudioHandler.i.RefreshChatLastCheckedTimestamp();
+    }
+
+    private bool IsRecentMessage(ChatEntryModel chatEntryModel)
+    {
+        return chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp
+               && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp))
+               .TotalSeconds < 30;
     }
 
     private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
@@ -183,28 +179,20 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
-            if (linkIndex != -1)
+            var linkIndex =
+                TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+
+            if (CoordinateUtils.HasValidTextCoordinates(link))
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true);
-                TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-                ParcelCoordinates parcelCoordinate =
-                    CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+                var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
                 DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
-
-            if (Model.messageType != ChatMessage.Type.PRIVATE)
-                return;
-
-            OnPress?.Invoke(Model.otherUserId);
-        }
-        else if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            if ((Model.messageType != ChatMessage.Type.PUBLIC && Model.messageType != ChatMessage.Type.PRIVATE) ||
-                Model.senderId == UserProfile.GetOwnUserProfile().userId)
-                return;
-
-            OnPressRightButton?.Invoke(this);
+            else if (link.StartsWith("username://"))
+                OnUserNameClicked?.Invoke(this);
         }
     }
 
@@ -214,6 +202,8 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = timeToHoverPanel;
+
+        OnHover?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -222,7 +212,9 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             return;
 
         hoverPanelTimer = 0f;
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, DataStore.i.camera.hudsCamera.Get());
+        var linkIndex =
+            TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
+                DataStore.i.camera.hudsCamera.Get());
         if (linkIndex == -1)
         {
             isOverCoordinates = false;
@@ -233,9 +225,15 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         OnCancelHover?.Invoke();
     }
 
-    private void OnDisable() { OnPointerExit(null); }
+    private void OnDisable()
+    {
+        OnPointerExit(null);
+    }
 
-    private void OnDestroy() { populationTaskCancellationTokenSource.Cancel(); }
+    private void OnDestroy()
+    {
+        populationTaskCancellationTokenSource.Cancel();
+    }
 
     public override void SetFadeout(bool enabled)
     {
@@ -249,26 +247,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         fadeEnabled = true;
     }
 
-    public override void DeactivatePreview()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            previewBackgroundImage.color = originalBackgroundColor;
-            body.color = originalFontColor;
-            return;
-        }
-
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
-
-        group.alpha = 1;
-        previewInterpolationRoutine =
-            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
-    }
-    
     public override void FadeOut()
     {
         if (!gameObject.activeInHierarchy)
@@ -276,63 +254,16 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
             group.alpha = 0;
             return;
         }
-        
+
         if (previewInterpolationAlphaRoutine != null)
             StopCoroutine(previewInterpolationAlphaRoutine);
 
         previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
-    public override void ActivatePreview()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            ActivatePreviewInstantly();
-            return;
-        }
-
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
-
-        previewInterpolationRoutine =
-            StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
-
-        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
-    }
-
-    public override void ActivatePreviewInstantly()
-    {
-        if (!gameObject.activeInHierarchy)
-            return;
-        
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
-        previewBackgroundImage.color = previewBackgroundColor;
-        body.color = previewFontColor;
-        group.alpha = 1;
-
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
-
-        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
-    }
-
-    public override void DeactivatePreviewInstantly()
-    {
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
-        previewBackgroundImage.color = originalBackgroundColor;
-        body.color = originalFontColor;
-    }
-
     public void DockContextMenu(RectTransform panel)
     {
-        panel.pivot = new Vector2(0,0);
+        panel.pivot = new Vector2(0, 0);
         panel.position = contextMenuPositionReference.position;
     }
 
@@ -344,6 +275,7 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
 
     private void Update()
     {
+        // TODO: why it needs to be in an update? what about OnPointerEnter/OnPointerExit?
         CheckHoverCoordinates();
         ProcessHoverPanelTimer();
         ProcessHoverGotoPanelTimer();
@@ -354,14 +286,17 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         if (isOverCoordinates)
             return;
 
-        int linkIndex = TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
+        var linkIndex =
+            TMP_TextUtilities.FindIntersectingLink(body, Input.mousePosition, DataStore.i.camera.hudsCamera.Get());
 
         if (linkIndex == -1)
             return;
 
+        var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+        if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
+        
         isOverCoordinates = true;
-        TMP_LinkInfo linkInfo = body.textInfo.linkInfo[linkIndex];
-        currentCoordinates = CoordinateUtils.ParseCoordinatesString(linkInfo.GetLinkID().ToString());
+        currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
         hoverGotoPanelTimer = timeToHoverGotoPanel;
         OnCancelHover?.Invoke();
     }
@@ -402,13 +337,6 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         return text.Replace("\t", "    ");
     }
 
-    private static string GetDefaultSenderString(string sender)
-    {
-        if (!string.IsNullOrEmpty(sender))
-            return $"<b>{sender}:</b>";
-        return "";
-    }
-
     private static DateTime UnixTimeStampToLocalDateTime(ulong unixTimeStampMilliseconds)
     {
         // TODO see if we can simplify with 'DateTimeOffset.FromUnixTimeMilliseconds'
@@ -416,23 +344,4 @@ public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHa
         dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
         return dtDateTime;
     }
-
-    private IEnumerator InterpolatePreviewColor(Color backgroundColor, Color fontColor, float duration)
-    {
-        var t = 0f;
-
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-
-            previewBackgroundImage.color = Color.Lerp(previewBackgroundImage.color, backgroundColor, t / duration);
-            body.color = Color.Lerp(body.color, fontColor, t / duration);
-
-            yield return null;
-        }
-
-        previewBackgroundImage.color = backgroundColor;
-        body.color = fontColor;
-    }
-
 }

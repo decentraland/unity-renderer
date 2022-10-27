@@ -35,6 +35,11 @@ public interface ISearchBarComponentView
     /// </summary>
     /// <param name="idleSearchTime">Time in seconds.</param>
     void SetIdleSearchTime(float idleSearchTime);
+
+    /// <summary>
+    /// Set the focus on the text input.
+    /// </summary>
+    void SetFocus();
 }
 
 public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView, IComponentModelConfig<SearchBarComponentModel>
@@ -62,8 +67,6 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(SubmitSearch);
-        inputField.onSelect.AddListener(SelectInput);
-        inputField.onDeselect.AddListener(DeselectInput);
         clearSearchButton.onClick.AddListener(() => ClearSearch());
 
         SetClearMode();
@@ -115,6 +118,11 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     }
 
     public void SetIdleSearchTime(float idleSearchTime) { model.idleTimeToTriggerSearch = idleSearchTime; }
+
+    public void SetFocus()
+    {
+        inputField.Select();
+    }
 
     public override void Dispose()
     {
@@ -188,15 +196,5 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     {
         clearSearchButton.gameObject.SetActive(false);
         searchSpinner.SetActive(false);
-    }
-
-    internal void SelectInput(string value)
-    {
-        placeHolderText.gameObject.SetActive(false);
-    }
-
-    internal void DeselectInput(string value)
-    {
-        placeHolderText.gameObject.SetActive(true);
     }
 }

@@ -6,12 +6,12 @@ public readonly struct SystemsContext
     public readonly IECSComponentWriter componentWriter;
     public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups componentGroups;
-    public readonly ECSComponent<PBPointerEvents> pointerEvents;
+    public readonly ECSComponent<PBPointerHoverFeedback> pointerEvents;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
-        ECSComponent<PBPointerEvents> pointerEvents)
+        ECSComponent<PBPointerHoverFeedback> pointerEvents)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;

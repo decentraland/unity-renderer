@@ -1,16 +1,13 @@
-﻿using System.Collections;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
+﻿using NUnit.Framework;
 
 public class PublicChatChannelComponentViewShould
 {
-    private PublicChatChannelComponentView view;
+    private PublicChatWindowComponentView view;
     
     [SetUp]
     public void SetUp()
     {
-        view = PublicChatChannelComponentView.Create();
+        view = PublicChatWindowComponentView.Create();
     }
 
     [TearDown]
@@ -38,10 +35,19 @@ public class PublicChatChannelComponentViewShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatChannelModel("nearby", "nearby", "any description"));
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false));
         
-        Assert.AreEqual("#nearby", view.nameLabel.text);
-        Assert.AreEqual("any description", view.descriptionLabel.text);
+        Assert.AreEqual("~nearby", view.nameLabel.text);
+        Assert.IsFalse(view.muteToggle.isOn);
+    }
+    
+    [Test]
+    public void ConfigureAsMuted()
+    {
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true));
+        
+        Assert.AreEqual("~nearby", view.nameLabel.text);
+        Assert.IsTrue(view.muteToggle.isOn);
     }
 
     [Test]
@@ -97,36 +103,5 @@ public class PublicChatChannelComponentViewShould
         view.OnPointerExit(null);
         
         Assert.IsFalse(focused);
-    }
-
-    [UnityTest]
-    public IEnumerator ActivatePreview()
-    {
-        view.ActivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
-    }
-    
-    [UnityTest]
-    public IEnumerator DeactivatePreview()
-    {
-        view.DeactivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(1f, canvas.alpha);
-    }
-    
-    [Test]
-    public void ActivatePreviewInstantly()
-    {
-        view.ActivatePreviewInstantly();
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
     }
 }
