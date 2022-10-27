@@ -130,7 +130,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new LeaveChannelConfirmationWindowController(ChatController.i);
                 break;
             case HUDElementID.TASKBAR:
-                hudElement = new TaskbarHUDController(ChatController.i);
+                hudElement = new TaskbarHUDController(ChatController.i, FriendsController.i);
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();

@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 public class TaskbarHUDController : IHUD
 {
     private readonly IChatController chatController;
+    private readonly IFriendsController friendsController;
 
     [Serializable]
     public struct Configuration
@@ -53,9 +54,10 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
-    public TaskbarHUDController(IChatController chatController)
+    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
     {
         this.chatController = chatController;
+        this.friendsController = friendsController;
     }
 
     protected virtual TaskbarHUDView CreateView()
@@ -690,7 +692,10 @@ public class TaskbarHUDController : IHUD
         else if(chatId == conversationListId)
             OpenChatList();
         else
-            OpenPrivateChat(chatId);
+        {
+            if(friendsController.GetUserStatus(chatId).friendshipStatus == FriendshipStatus.FRIEND)
+                OpenPrivateChat(chatId);
+        }
     }
 
     private void IsExperiencesViewerOpenChanged(bool current, bool previous)
