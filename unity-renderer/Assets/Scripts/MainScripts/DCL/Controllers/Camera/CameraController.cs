@@ -100,6 +100,7 @@ namespace DCL.Camera
 
         void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
         {
+            Debug.Log("LLAME AL ONFULLSCREENUIVISIBILITY CHANGE Y EL RESULTADO DE LA COMPROBACION ES " + (visibleState == prevVisibleState));
             if (visibleState == prevVisibleState)
                 return;
 
@@ -226,6 +227,7 @@ namespace DCL.Camera
 
         private void SetCameraEnabledState(bool enabled)
         {
+            Debug.Log("VOY A CAMBIAR EL ESTADO DE LA CAMARA A " + enabled);
             camera.enabled = enabled;
         }
 

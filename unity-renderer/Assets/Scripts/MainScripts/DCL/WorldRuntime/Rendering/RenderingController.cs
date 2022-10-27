@@ -28,6 +28,8 @@ public class RenderingController : MonoBehaviour
     [ContextMenu("Disable Rendering")]
     public void DeactivateRendering()
     {
+        Debug.Log("ESTOY LLAMANDO AL DEACTIVATE RENDERING");
+        
         if (!CommonScriptableObjects.rendererState.Get())
             return;
 
@@ -44,11 +46,16 @@ public class RenderingController : MonoBehaviour
     [ContextMenu("Enable Rendering")]
     public void ActivateRendering()
     {
+        Debug.Log("ESTOY LLAMANDO AL ACTIVATE RENDERING");
+
+        
         ActivateRendering(forceActivate: false);
     }
 
     public void ForceActivateRendering()
     {
+        Debug.Log("ESTOY LLAMANDO AL FORCE ACTIVATE RENDERING");
+        
         ActivateRendering(forceActivate: true);
     }
 
