@@ -27,7 +27,7 @@ var WebVideoPlayer = {
             state: videoState.NONE,
             error: "",
             textureId: texId,
-            newFrameRendered = false
+            newFrameRendered: false
         };
 
         videos[Pointer_stringify(videoId)] = videoData;
