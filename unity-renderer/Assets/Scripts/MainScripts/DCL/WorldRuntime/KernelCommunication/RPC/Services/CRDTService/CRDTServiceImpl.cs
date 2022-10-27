@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -12,28 +11,22 @@ using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
-    public static class CRDTServiceImpl
+    public class CRDTServiceImpl : ICRDTService<RPCContext>
     {
         private static readonly CRDTResponse defaultResponse = new CRDTResponse();
         private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
 
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
+        private static readonly MemoryStream memoryStream = new MemoryStream();
+        private static readonly BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-            CRDTService<RPCContext>.RegisterService(
-                port,
-                sendCrdt: OnCRDTReceived,
-                pullCrdt: (request, context, ct) => SendCRDT(request, context, ct, memoryStream, binaryWriter),
-                crdtNotificationStream: CrdtNotificationStream
-            );
+            CRDTServiceCodeGen.RegisterService(port, new CRDTServiceImpl());
         }
 
-        private static async UniTask<CRDTResponse> OnCRDTReceived(CRDTManyMessages messages, RPCContext context,
-            CancellationToken ct)
+        public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);
 
@@ -60,8 +53,7 @@ namespace RPC.Services
             return defaultResponse;
         }
 
-        private static UniTask<CRDTManyMessages> SendCRDT(PullCRDTRequest request, RPCContext context,
-            CancellationToken ct, MemoryStream memoryStream, BinaryWriter binaryWriter)
+        public UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
             string sceneId = request.SceneId;
 
@@ -89,12 +81,6 @@ namespace RPC.Services
                 Debug.LogError(e);
                 return emptyResponse;
             }
-        }
-
-        [Obsolete("deprecated")]
-        private static IEnumerator<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, RPCContext context)
-        {
-            yield break;
         }
     }
 }

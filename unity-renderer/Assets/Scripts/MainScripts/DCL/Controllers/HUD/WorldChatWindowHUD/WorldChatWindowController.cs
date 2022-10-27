@@ -313,8 +313,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleUserStatusChanged(string userId, UserStatus status)
     {
-        if (!lastPrivateMessages.ContainsKey(userId)) return;
-
         if (status.friendshipStatus != FriendshipStatus.FRIEND)
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
@@ -514,9 +512,9 @@ public class WorldChatWindowController : IHUD
     private void HandleChannelJoined(Channel channel)
     {
         if (channel.MemberCount <= 1)
-            socialAnalytics.SendEmptyChannelCreated(channel.ChannelId, dataStore.channels.channelJoinedSource.Get());
+            socialAnalytics.SendEmptyChannelCreated(channel.Name, dataStore.channels.channelJoinedSource.Get());
         else
-            socialAnalytics.SendPopulatedChannelJoined(channel.ChannelId, dataStore.channels.channelJoinedSource.Get());
+            socialAnalytics.SendPopulatedChannelJoined(channel.Name, dataStore.channels.channelJoinedSource.Get());
         
         OpenPublicChat(channel.ChannelId);
     }
@@ -543,7 +541,8 @@ public class WorldChatWindowController : IHUD
     {
         publicChannels.Remove(channelId);
         view.RemovePublicChat(channelId);
-        socialAnalytics.SendLeaveChannel(channelId, dataStore.channels.channelLeaveSource.Get());
+        var channel = chatController.GetAllocatedChannel(channelId);
+        socialAnalytics.SendLeaveChannel(channel?.Name ?? channelId, dataStore.channels.channelLeaveSource.Get());
     }
 
     private void HandleChannelOpenedFromLink(string channelId, string previousChannelId)
