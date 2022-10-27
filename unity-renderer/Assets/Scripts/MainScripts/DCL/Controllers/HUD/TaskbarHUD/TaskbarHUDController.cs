@@ -369,8 +369,6 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChat(string userId)
     {
-        openedChat.Set(userId);
-        privateChatWindow.Setup(userId);
         worldChatWindowHud.SetVisibility(false);
         publicChatWindow.SetVisibility(false);
         channelChatWindow.SetVisibility(false);
@@ -379,6 +377,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
+        openedChat.Set(userId);
+        privateChatWindow.Setup(userId);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
