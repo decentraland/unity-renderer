@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static HotScenesController;
-using Environment = DCL.Environment;
 
 /// <summary>
 /// Utils related to the places management in ExploreV2.
@@ -154,8 +153,8 @@ public static class ExplorePlacesUtils
         }
 
         if (string.IsNullOrEmpty(realm.serverName))
-            Environment.i.world.teleportController.Teleport(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
+            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
         else
-            Environment.i.world.teleportController.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
+            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
     }
 }

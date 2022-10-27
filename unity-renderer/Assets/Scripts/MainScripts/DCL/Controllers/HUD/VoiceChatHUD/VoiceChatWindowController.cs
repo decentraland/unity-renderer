@@ -200,10 +200,7 @@ public class VoiceChatWindowController : IHUD
         }
     }
 
-    internal void GoToCrowd()
-    {
-        DCL.Environment.i.world.teleportController.GoToCrowd();
-    }
+    internal void GoToCrowd() { WebInterface.GoToCrowd(); }
 
     internal void OnOtherPlayersStatusAdded(string userId, Player player)
     {

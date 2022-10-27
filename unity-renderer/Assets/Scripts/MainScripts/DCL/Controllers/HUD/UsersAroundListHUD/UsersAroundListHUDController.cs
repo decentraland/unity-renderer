@@ -208,10 +208,7 @@ public class UsersAroundListHUDController : IHUD
         OnMuteUsers(trackedUsersHashSet, mute);
     }
 
-    void OnGoToCrowd()
-    {
-        DCL.Environment.i.world.teleportController.GoToCrowd();
-    }
+    void OnGoToCrowd() { WebInterface.GoToCrowd(); }
 
     void OnListOpen() { OnOpen?.Invoke(); }
 

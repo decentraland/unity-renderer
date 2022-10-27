@@ -1480,23 +1480,10 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void GoToCrowd()
-        {
-            SendMessage("GoToCrowd");
-        }
+        public static void GoToCrowd() { SendMessage("GoToCrowd"); }
 
-        public static void GoToMagic()
-        {
-            SendMessage("GoToMagic");
-        }
+        public static void GoToMagic() { SendMessage("GoToMagic"); }
 
-        public static void LoadingHUDReadyForTeleport(int x, int y)
-        {
-            gotoEvent.x = x;
-            gotoEvent.y = y;
-            SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
-        }
-        
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;

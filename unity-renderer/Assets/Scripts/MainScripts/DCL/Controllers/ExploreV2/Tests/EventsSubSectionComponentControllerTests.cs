@@ -16,10 +16,6 @@ public class EventsSubSectionComponentControllerTests
     [SetUp]
     public void SetUp()
     {
-        // This is need to sue the TeleportController
-        ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-        DCL.Environment.Setup(serviceLocator);
-        
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();

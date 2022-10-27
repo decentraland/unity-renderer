@@ -41,13 +41,6 @@ namespace SignupHUD
             view.OnEditAvatar += OnEditAvatar;
             view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
-            
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingScreenAppear;
-        }
-        private void OnLoadingScreenAppear(bool current, bool previous)
-        {
-            if(signupVisible.Get() && current)
-                signupVisible.Set(false);
         }
 
         private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
@@ -76,6 +69,7 @@ namespace SignupHUD
         {
             WebInterface.SendPassport(name, email);
             DataStore.i.common.isSignUpFlow.Set(false);
+            signupVisible.Set(false);
             newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux();
         }
 
@@ -97,7 +91,6 @@ namespace SignupHUD
             view.OnEditAvatar -= OnEditAvatar;
             view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnLoadingScreenAppear;
             view.Dispose();
         }
     }

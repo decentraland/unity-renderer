@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
-using Environment = DCL.Environment;
 
 /// <summary>
 /// Utils related to the events management in ExploreV2.
@@ -209,8 +208,8 @@ public static class ExploreEventsUtils
         string layerName = realmFromAPI[1];
 
         if (string.IsNullOrEmpty(serverName))
-            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
+            WebInterface.GoTo(coords.x, coords.y);
         else
-            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
+            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 }

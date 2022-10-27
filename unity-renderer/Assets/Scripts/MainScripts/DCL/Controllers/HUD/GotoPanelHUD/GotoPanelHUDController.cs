@@ -48,7 +48,7 @@ namespace GotoPanel
 
         public void Teleport(ParcelCoordinates parcelCoordinates)
         {
-            Environment.i.world.teleportController.Teleport(parcelCoordinates.x, parcelCoordinates.y);
+            WebInterface.GoTo(parcelCoordinates.x, parcelCoordinates.y);
         }
 
         public void ClosePanel()

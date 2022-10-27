@@ -106,17 +106,17 @@ public class TeleportPromptHUDController : IHUD
         switch (teleportData.destination)
         {
             case TELEPORT_COMMAND_CROWD:
-                DCL.Environment.i.world.teleportController.GoToCrowd();
+                WebInterface.GoToCrowd();
                 break;
             case TELEPORT_COMMAND_MAGIC:
-                DCL.Environment.i.world.teleportController.GoToMagic();
+                WebInterface.GoToMagic();
                 break;
             default:
                 int x, y;
                 string[] coordSplit = teleportData.destination.Split(',');
                 if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out x) && int.TryParse(coordSplit[1], out y))
                 {
-                    DCL.Environment.i.world.teleportController.Teleport(x, y);
+                    WebInterface.GoTo(x, y);
                 }
 
                 break;
