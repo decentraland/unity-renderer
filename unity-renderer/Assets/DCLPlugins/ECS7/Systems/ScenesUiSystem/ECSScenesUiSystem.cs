@@ -36,7 +36,7 @@ namespace ECSSystems.ScenesUiSystem
                 worldState = worldState,
                 loadedScenes = loadedScenes,
                 lastSceneNumber = -1,
-                isPendingSceneUI = false,
+                isPendingSceneUI = true,
                 currentScene = null
             };
 
@@ -54,13 +54,17 @@ namespace ECSSystems.ScenesUiSystem
             bool sceneChanged = state.lastSceneNumber != currentSceneNumber;
             state.lastSceneNumber = currentSceneNumber;
 
-            ApplyParenting(state.internalUiContainerComponent);
+            ApplyParenting(state.uiDocument, state.internalUiContainerComponent);
 
             // clear UI if scene changed
-            if (sceneChanged)
+            if (sceneChanged && !state.isPendingSceneUI)
             {
-                ClearUI(state.uiDocument);
+                ClearCurrentSceneUI(state.uiDocument);
                 state.isPendingSceneUI = currentSceneNumber > 0;
+            }
+            
+            if (sceneChanged && state.currentScene != null && currentSceneNumber != state.currentScene.sceneData.sceneNumber)
+            {
                 state.currentScene = null;
             }
 
@@ -89,7 +93,7 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        internal static void ApplyParenting(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
+        internal static void ApplyParenting(UIDocument uiDocument, IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
@@ -97,9 +101,19 @@ namespace ECSSystems.ScenesUiSystem
             {
                 var uiContainerData = allContainers[i].value;
 
-                // skip ui containers on root entity since no parenting is needed
+                // add global scenes ui but
+                // skip non-global scenes ui containers on root entity since no parenting is needed
                 if (uiContainerData.entity.entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                {
+                    var model = uiContainerData.model;
+                    if (uiContainerData.scene.isPersistent && model.parentElement == null)
+                    {
+                        uiDocument.rootVisualElement.Add(model.rootElement);
+                        model.parentElement = uiDocument.rootVisualElement;
+                        internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, model);
+                    }
                     continue;
+                }
 
                 // skip containers with parent already set
                 if (uiContainerData.model.parentElement != null)
@@ -123,11 +137,11 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        internal static void ClearUI(UIDocument uiDocument)
+        internal static void ClearCurrentSceneUI(UIDocument uiDocument)
         {
             if (uiDocument.rootVisualElement.childCount > 0)
             {
-                uiDocument.rootVisualElement.Clear();
+                uiDocument.rootVisualElement.RemoveAt(0);
             }
         }
 
@@ -158,7 +172,7 @@ namespace ECSSystems.ScenesUiSystem
             if (sceneRootUiContainer != null)
             {
                 var model = sceneRootUiContainer.model;
-                uiDocument.rootVisualElement.Add(model.rootElement);
+                uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;

@@ -36,7 +36,7 @@ namespace Tests
 
             rpcServer.SetHandler((port, t, c) =>
             {
-                CRDTServiceImpl.RegisterService(port);
+                CRDTServiceCodeGen.RegisterService(port, new CRDTServiceImpl());
             });
             testClientTransport = clientTransport;
             testCancellationSource = new CancellationTokenSource();
@@ -53,7 +53,7 @@ namespace Tests
         [Test]
         public async void ProcessIncomingCRDT()
         {
-            TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+            TestClient testClient = await TestClient.Create(testClientTransport, CRDTServiceCodeGen.ServiceName);
 
             var messageQueueHandler = Substitute.For<IMessageQueueHandler>();
             messageQueueHandler.sceneMessagesPool.Returns(new ConcurrentQueue<QueuedSceneMessage_Scene>());
@@ -117,7 +117,7 @@ namespace Tests
             // Simulate client requesting scene's crdt
             try
             {
-                TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+                TestClient testClient = await TestClient.Create(testClientTransport, CRDTServiceCodeGen.ServiceName);
 
                 // request for `scene1`
                 CRDTManyMessages response1 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",

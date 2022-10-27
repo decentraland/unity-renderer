@@ -54,22 +54,22 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T : Intern
         scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, model));
     }
 
-    public void RemoveFor(IParcelScene scene, IDCLEntity entity)
+    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel = null)
     {
-        RemoveFor(scene, entity, null);
+        RemoveFor(scene, entity.entityId, defaultModel);
     }
 
-    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel)
+    public void RemoveFor(IParcelScene scene, long entityId, T defaultModel = null)
     {
         if (defaultModel != null)
         {
             defaultModel._dirty = true;
-            scene.crdtExecutor.ExecuteWithoutStoringState(entity.entityId, componentId, defaultModel);
-            scheduledWrite.Add(new InternalComponentWriteData(scene, entity.entityId, componentId, null));
+            scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
+            scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, null));
         }
         else
         {
-            scene.crdtExecutor.ExecuteWithoutStoringState(entity.entityId, componentId, null);
+            scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
         }
     }
 
