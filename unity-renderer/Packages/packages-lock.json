@@ -26,7 +26,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "31340a3706dda78916910dc2b925756fd3ee0ece"
+      "hash": "6fc47e00219e7e2c3c6b990367c373a5b2aec0fc"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
