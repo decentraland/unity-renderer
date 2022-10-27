@@ -409,7 +409,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             friendHeadPrefab);
 
         if (friendsGrid != null)
-            friendsGrid.AddItem(newFriend);
+            friendsGrid.AddItemWithResize(newFriend);
 
         currentFriendHeads.Add(profile.userId, newFriend);
     }

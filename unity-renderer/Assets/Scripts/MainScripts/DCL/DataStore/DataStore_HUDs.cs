@@ -1,12 +1,13 @@
+using DCL.Components.Interfaces;
 using System;
 using System.Collections.Generic;
-using DCL.Components.Interfaces;
 using UnityEngine;
 
 namespace DCL
 {
     public class DataStore_HUDs
     {
+        public readonly BaseVariable<bool> connectWalletModalVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
@@ -22,7 +23,12 @@ namespace DCL
         public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
         public readonly BaseVariable<bool> gotoPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new BaseVariable<ParcelCoordinates>(new ParcelCoordinates(0,0));
+        public readonly BaseVariable<bool> shouldShowNotificationPanel = new BaseVariable<bool>(true);
+        public readonly BaseVariable<Transform> notificationPanelTransform = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> topNotificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
+        public readonly BaseVariable<string> openedChat = new BaseVariable<string>("");
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
         public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
