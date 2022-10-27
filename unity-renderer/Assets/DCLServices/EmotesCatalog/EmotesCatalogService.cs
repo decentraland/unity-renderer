@@ -22,6 +22,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     public void Initialize()
     {
         bridge.OnEmotesReceived += OnEmotesReceived;
+        bridge.OnEmoteRejected += OnEmoteRejected;
         bridge.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
     }
 
@@ -36,16 +37,28 @@ public class EmotesCatalogService : IEmotesCatalogService
 
             emotes[emote.id] = emote;
             
-            
-            
             if (promises.TryGetValue(emote.id, out var emotePromises))
             {
                 foreach (Promise<WearableItem> promise in emotePromises)
                 {
                     promise.Resolve(emote);
                 }
+                
                 promises.Remove(emote.id);
             }
+        }
+    }
+
+    private void OnEmoteRejected(string emoteId, string errorMessage)
+    {
+        if (promises.TryGetValue(emoteId, out var setOfPromises))
+        {
+            foreach(var promise in setOfPromises)
+                promise.Reject(errorMessage);
+
+            promises.Remove(emoteId);
+            emotesOnUse.Remove(emoteId);
+            emotes.Remove(emoteId);
         }
     }
 
@@ -226,6 +239,7 @@ public class EmotesCatalogService : IEmotesCatalogService
     public void Dispose()
     {
         bridge.OnEmotesReceived -= OnEmotesReceived;
+        bridge.OnEmoteRejected -= OnEmoteRejected;
         bridge.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
     }
 }

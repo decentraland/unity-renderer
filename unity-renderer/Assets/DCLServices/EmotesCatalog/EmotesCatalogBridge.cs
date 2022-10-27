@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -17,6 +16,7 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
     }
 
     public event Action<WearableItem[]> OnEmotesReceived;
+    public event EmoteRejectedDelegate OnEmoteRejected;
     public event Action<WearableItem[], string> OnOwnedEmotesReceived;
 
     private readonly HashSet<string> emotesToRequestThisFrame = new HashSet<string>();
@@ -52,10 +52,39 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         if (request == null)
             return;
 
-        if (string.IsNullOrEmpty(request.context))
-            OnEmotesReceived?.Invoke(request.emotes);
+        var context = request.context;
+        if (string.IsNullOrEmpty(context))
+        {
+            Debug.LogError("EmotesCatalogBridge error: empty context is not supposed to be in the wearables request");
+        }
         else
-            OnOwnedEmotesReceived?.Invoke(request.emotes, request.context);
+        {
+            if (request.context.StartsWith("emotes:"))
+            {
+                ResolveMissingEmotesRejection(request.context, request.emotes);
+                OnEmotesReceived?.Invoke(request.emotes);
+            }
+            else
+            {
+                OnOwnedEmotesReceived?.Invoke(request.emotes, request.context);
+            }
+        }
+    }
+
+    private void ResolveMissingEmotesRejection(string requestContext, EmoteItem[] emotes)
+    {
+        var emoteIdsFromContext = ContextStringToEmoteIds(requestContext);
+        var loadedEmoteIds = new HashSet<string>();
+        foreach (var emote in emotes)
+        {
+            loadedEmoteIds.Add(emote.id);
+        }
+        
+        foreach(var emoteId in emoteIdsFromContext)
+            if (!loadedEmoteIds.Contains(emoteId))
+            {
+                OnEmoteRejected?.Invoke(emoteId, "Emote from context not found in response: ");
+            }
     }
 
     public void RequestOwnedEmotes(string userId)
@@ -68,16 +97,30 @@ public class EmotesCatalogBridge : MonoBehaviour, IEmotesCatalogBridge
         );
     }
 
+    private static string EmoteIdsToContextString(IEnumerable<string> emoteIds)
+    {
+        var commaJoinedEmoteIds = string.Join(",", emoteIds);
+        return "emotes:" + commaJoinedEmoteIds;
+    }
+
+    private static string[] ContextStringToEmoteIds(string context)
+    {
+        context = context.Replace("emotes:", "");
+        return context.Split(',');
+    }
+
     private void Update()
     {
         if (emotesToRequestThisFrame.Count == 0)
             return;
 
+        var commaJoinedEmoteIds = string.Join(",", emotesToRequestThisFrame);
+
         WebInterface.RequestEmotes(
             ownedByUser: null,
             emoteIds: emotesToRequestThisFrame.ToArray(),
             collectionIds: null,
-            context: null
+            context: EmoteIdsToContextString(emotesToRequestThisFrame)
         );
 
 

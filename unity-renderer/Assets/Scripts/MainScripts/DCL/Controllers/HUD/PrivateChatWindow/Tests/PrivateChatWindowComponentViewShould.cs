@@ -128,30 +128,6 @@ public class PrivateChatWindowComponentViewShould
         Assert.IsFalse(focused);
     }
 
-    [UnityTest]
-    public IEnumerator ActivatePreview()
-    {
-        view.DeactivatePreview();
-        view.ActivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
-    }
-    
-    [UnityTest]
-    public IEnumerator DeactivatePreview()
-    {
-        view.ActivatePreview();
-        view.DeactivatePreview();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(1f, canvas.alpha);
-    }
-
     [Test]
     [TestCase(true)]
     [TestCase(false)]

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -39,21 +40,8 @@ namespace DCL.Rendering
             List<SkinnedMeshRenderer> skinnedRenderersList = new List<SkinnedMeshRenderer>();
             Renderer[] allRenderers = Object.FindObjectsOfType<Renderer>();
 
-            // TODO new task, avoid FindGameObjectsOfType and use:
-            // SceneManager.GetActiveScene().GetRootGameObjects(), calculate from there.
-
-            yield return null;
-
-            int amount = 0;
             foreach (Renderer renderer in allRenderers)
             {
-                if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
-                {
-                    yield return null;
-                    amount = 0;
-                }
-                amount++;
-
                 if ((((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
                     && !(renderer is ParticleSystemRenderer))
                 {

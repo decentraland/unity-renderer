@@ -9,15 +9,15 @@ using DCL.Chat;
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 30;
-    private const int TEMPORARILY_MUTE_MINUTES = 10;
-    private const int MAX_CONTINUOUS_MESSAGES = 6;
+    private const int TEMPORARILY_MUTE_MINUTES = 3;
+    private const int MAX_CONTINUOUS_MESSAGES = 10;
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int MAX_HISTORY_ITERATION = 10;
 
     public event Action OnInputFieldSelected;
-    public event Action OnInputFieldDeselected;
     public event Action<ChatMessage> OnSendMessage;
     public event Action<string> OnMessageUpdated;
+    public event Action<ChatMessage> OnMessageSentBlockedBySpam;
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
@@ -40,8 +40,6 @@ public class ChatHUDController : IDisposable
         this.detectWhisper = detectWhisper;
         this.profanityFilter = profanityFilter;
     }
-
-    public bool IsInputSelected => view.IsInputFieldSelected;
 
     public void Initialize(IChatHUDComponentView view)
     {
@@ -122,10 +120,6 @@ public class ChatHUDController : IDisposable
     
     public void UnfocusInputField() => view.UnfocusInputField();
 
-    public void ActivatePreview() => view.ActivatePreview();
-    
-    public void DeactivatePreview() => view.DeactivatePreview();
-
     public void FadeOutMessages() => view.FadeOutMessages();
 
 
@@ -138,36 +132,26 @@ public class ChatHUDController : IDisposable
         model.messageType = message.messageType;
         model.bodyText = message.body;
         model.timestamp = message.timestamp;
+        model.isChannelMessage = message.isChannelMessage;
 
         if (message.recipient != null)
         {
             var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
-
+        
         if (message.sender != null)
         {
             var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
-
+        
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
-            if (message.recipient == ownProfile.userId)
-            {
-                model.subType = ChatEntryModel.SubType.RECEIVED;
-                model.otherUserId = message.sender;
-            }
-            else if (message.sender == ownProfile.userId)
-            {
-                model.subType = ChatEntryModel.SubType.SENT;
-                model.otherUserId = message.recipient;
-            }
-            else
-            {
-                model.subType = ChatEntryModel.SubType.NONE;
-            }
+            model.subType = message.sender == ownProfile.userId
+                ? ChatEntryModel.SubType.SENT
+                : ChatEntryModel.SubType.RECEIVED;
         }
         else if (message.messageType == ChatMessage.Type.PUBLIC)
         {
@@ -193,11 +177,29 @@ public class ChatHUDController : IDisposable
     {
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
+        
         RegisterMessageHistory(message);
         currentHistoryIteration = 0;
-        if (IsSpamming(message.sender)) return;
-        if (IsSpamming(ownProfile.userName)) return;
+
+        if (IsSpamming(message.sender) || IsSpamming(ownProfile.userName) && !string.IsNullOrEmpty(message.body))
+        {
+            OnMessageSentBlockedBySpam?.Invoke(message);
+            return;
+        }
+        
         ApplyWhisperAttributes(message);
+
+        if (message.body.ToLower().StartsWith("/join"))
+        {
+            if (!ownProfile.isGuest)
+                dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Command);
+            else
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                return;
+            }
+        }
+        
         OnSendMessage?.Invoke(message);
     }
 
@@ -232,11 +234,7 @@ public class ChatHUDController : IDisposable
         OnInputFieldSelected?.Invoke();
     }
 
-    private void HandleInputFieldDeselected()
-    {
-        currentHistoryIteration = 0;
-        OnInputFieldDeselected?.Invoke();
-    }
+    private void HandleInputFieldDeselected() => currentHistoryIteration = 0;
 
     private bool IsSpamming(string senderName)
     {
@@ -245,9 +243,9 @@ public class ChatHUDController : IDisposable
         var isSpamming = false;
 
         if (!temporarilyMutedSenders.ContainsKey(senderName)) return false;
-        
-        var muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
-        if ((DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+
+        var muteTimestamp = DateTimeOffset.FromUnixTimeMilliseconds((long) temporarilyMutedSenders[senderName]);
+        if ((DateTimeOffset.UtcNow - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
             isSpamming = true;
         else
             temporarilyMutedSenders.Remove(senderName);
@@ -267,7 +265,7 @@ public class ChatHUDController : IDisposable
             {
                 spamMessages.Add(model);
 
-                if (spamMessages.Count == MAX_CONTINUOUS_MESSAGES)
+                if (spamMessages.Count >= MAX_CONTINUOUS_MESSAGES)
                 {
                     temporarilyMutedSenders.Add(model.senderName, model.timestamp);
                     spamMessages.Clear();
@@ -286,14 +284,9 @@ public class ChatHUDController : IDisposable
 
     private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
     {
-        DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
-        DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+        var oldDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) oldMessageTimeStamp);
+        var newDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) newMessageTimeStamp);
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
-    }
-
-    private DateTime CreateBaseDateTime()
-    {
-        return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     }
     
     private void FillInputWithNextMessage()
