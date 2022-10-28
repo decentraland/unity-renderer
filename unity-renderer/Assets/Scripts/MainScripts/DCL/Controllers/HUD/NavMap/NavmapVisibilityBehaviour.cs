@@ -91,7 +91,6 @@ namespace DCL
 
         private void SetVisibility_Internal(bool visible)
         {
-            Debug.Log($"NavmapVisibilityBehaviour {visible}");
             if (MapRenderer.i == null)
                 return;
 
