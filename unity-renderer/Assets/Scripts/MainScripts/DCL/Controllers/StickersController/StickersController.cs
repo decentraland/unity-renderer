@@ -41,7 +41,7 @@ namespace DCL
 
             PoolableObject sticker = pools[id].Get();
             GameObject stickerGo = sticker.gameObject;
-            stickerGo.transform.position += position;
+            stickerGo.transform.position = position;
             stickerGo.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
             ReleaseParticlesOnFinish releaser = stickerGo.GetOrCreateComponent<ReleaseParticlesOnFinish>();
@@ -52,7 +52,7 @@ namespace DCL
             {
                 FollowObject stickerFollow = stickerGo.GetOrCreateComponent<FollowObject>();
                 stickerFollow.target = transform;
-                stickerFollow.offset = prefab.transform.position;
+                stickerFollow.offset = stickerGo.transform.position - transform.position;
             }
         }
 

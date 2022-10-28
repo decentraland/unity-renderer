@@ -84,7 +84,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(clap);
-        PlaySticker("clap", handR.position - transform.position + (Vector3.up * AVATAR_OFFSET), Vector3.up, true);
+        PlaySticker("clap", handR.position + (Vector3.up * AVATAR_OFFSET), Vector3.up, true);
         UpdateEventTime();
     }
 
@@ -97,7 +97,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(throwMoney);
-        PlaySticker("money", handL.position - transform.position + (Vector3.up * AVATAR_OFFSET), handL.rotation.eulerAngles, true);
+        PlaySticker("money", handL.position + (Vector3.up * AVATAR_OFFSET), handL.rotation.eulerAngles, true);
         UpdateEventTime();
     }
 
@@ -117,7 +117,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     IEnumerator EmitHeartParticle()
     {
         yield return new WaitForSeconds(0.8f);
-        PlaySticker("heart", handR.position - transform.position + (Vector3.up * AVATAR_OFFSET), transform.rotation.eulerAngles, true);
+        PlaySticker("heart", handR.position + (Vector3.up * AVATAR_OFFSET), transform.rotation.eulerAngles, true);
     }
 
     public void AnimEvent_Snowflakes()
@@ -128,7 +128,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_SNOWFLAKE))
             return;
 
-        PlaySticker("snowflakes", Vector3.up * AVATAR_OFFSET, Vector3.zero, true);
+        PlaySticker("snowflakes", transform.position + Vector3.up * AVATAR_OFFSET, Vector3.zero, true);
     }
 
     public void AnimEvent_Hohoho()
@@ -139,7 +139,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HOHOHO))
             return;
 
-        PlaySticker("hohoho", Vector3.up * (1.5f + AVATAR_OFFSET), Vector3.zero, true);
+        PlaySticker("hohoho", transform.position + Vector3.up * (1.5f + AVATAR_OFFSET), Vector3.zero, true);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)
