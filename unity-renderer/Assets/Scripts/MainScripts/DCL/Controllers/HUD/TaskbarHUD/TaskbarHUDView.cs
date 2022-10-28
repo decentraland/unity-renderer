@@ -156,6 +156,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnExperiencesToggle?.Invoke(true);
         else if (obj == voiceChatButton)
             OnVoiceChatToggle?.Invoke(true);
+
+        DataStore.i.channels.isPromoteToastVisible.Set(false);
     }
 
     private void ToggleOff(TaskbarButton obj) => ToggleOff(obj, true);
