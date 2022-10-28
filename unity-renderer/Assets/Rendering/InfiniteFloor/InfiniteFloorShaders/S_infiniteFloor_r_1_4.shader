@@ -1,4 +1,5 @@
 Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
+
 {
     Properties
     {
@@ -54,6 +55,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         [ToggleUI]_isAdvancedFogOn("isAdvanceFogOn", Float) = 0
         _AdvanceFogBalancer("AdvanceFogBalancer", Float) = 0
         _PusleOpacity("PusleOpacity", Range(0, 1)) = 0
+        _FogBrightnessFactor("FogBrightnessFactor", Float) = -1
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -357,6 +359,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -836,6 +839,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -943,11 +951,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -1242,12 +1245,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -1666,6 +1672,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -2145,6 +2152,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -2252,11 +2264,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -2551,12 +2558,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -2929,6 +2939,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -3462,6 +3473,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -3995,6 +4007,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -4529,6 +4542,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -5008,6 +5022,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -5115,11 +5134,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -5410,12 +5424,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -5778,6 +5795,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -6257,6 +6275,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -6364,11 +6387,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -6658,12 +6676,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -7086,6 +7107,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -7565,6 +7587,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -7672,11 +7699,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -7971,12 +7993,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -8347,6 +8372,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -8879,6 +8905,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -9411,6 +9438,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -9945,6 +9973,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -10424,6 +10453,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -10531,11 +10565,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -10826,12 +10855,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -11195,6 +11227,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
         float _isAdvancedFogOn;
         float _AdvanceFogBalancer;
         float _PusleOpacity;
+        float _FogBrightnessFactor;
         CBUFFER_END
 
         // Object and Global properties
@@ -11674,6 +11707,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             SHADERGRAPH_FOG(Position, Color, Density);
         }
 
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -11781,11 +11819,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -12075,12 +12108,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_4"
             float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
             float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
             Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
+            float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
+            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Fog_caf07e8785584760b79500664df1fc44_Color_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
