@@ -20,6 +20,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_316d75c1a25e442aad8d48608036b295:
+        m_Texture: {fileID: 2800000, guid: ee0653bc67f6e084b8c0a7f9bad3581e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EstateIDMap:
         m_Texture: {fileID: 2800000, guid: 9fd4d3757b5f1c148ac6903817ed6c8a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -38,6 +42,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _RoadTexture:
         m_Texture: {fileID: 2800000, guid: e3912d8ddb659ed40831389fc0580ac1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_Texture2D79247b8a8f9c4eb88d529c8127ccc8d6_2255024592:
+        m_Texture: {fileID: 2800000, guid: 405ec915fe6b3654c93c750770724aa8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_1968f5ee05c4465e808d5a537901002e_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 405ec915fe6b3654c93c750770724aa8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2f799da0c03243f692d3412a72c0016c_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e1b89ba0ae9d4734bbe9b563cf02e404, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
