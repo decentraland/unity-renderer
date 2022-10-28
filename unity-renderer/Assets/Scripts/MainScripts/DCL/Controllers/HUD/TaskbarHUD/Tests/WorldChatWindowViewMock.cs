@@ -121,4 +121,8 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public void HideConnectWallet()
     {
     }
+
+    public void SetNewLabelActive(bool isActive)
+    {
+    }
 }
