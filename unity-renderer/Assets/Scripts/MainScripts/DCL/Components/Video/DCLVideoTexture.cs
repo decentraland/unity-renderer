@@ -57,7 +57,6 @@ namespace DCL.Components
         {
             model = new Model();
 
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
