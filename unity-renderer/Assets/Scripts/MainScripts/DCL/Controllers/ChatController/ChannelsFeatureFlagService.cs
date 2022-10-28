@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,18 +10,23 @@ namespace DCL.Chat.Channels
         private const string FEATURE_FLAG_FOR_CHANNELS_FEATURE = "matrix_channels_enabled";
         private const string FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "users_allowed_to_create_channels";
         private const string VARIANT_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "allowedUsers";
+        private const string FEATURE_FLAG_FOR_AUTOMATIC_JOIN_CHANNELS = "automatic_joined_channels";
+        private const string VARIANT_FOR_AUTOMATIC_JOIN_CHANNELS = "automaticChannels";
 
         private BaseVariable<FeatureFlag> featureFlags => dataStore.featureFlags.flags;
 
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IChatController chatController;
 
         public event Action<bool> OnAllowedToCreateChannelsChanged;
+        public event Action<AutomaticJoinChannelList> OnAutoJoinChannelsChanged;
 
-        public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge)
+        public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge, IChatController chatController)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
+            this.chatController = chatController;
         }
         
         public void Dispose()
@@ -31,9 +37,23 @@ namespace DCL.Chat.Channels
         public void Initialize()
         {
             userProfileBridge.GetOwn().OnUpdate += OnUserProfileUpdate;
+            this.chatController.OnInitialized += () => OnAutoJoinChannelsChanged?.Invoke(GetAutoJoinChannelsList());
         }
 
         public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
+
+        private AutomaticJoinChannelList GetAutoJoinChannelsList()
+        {
+            if (!featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_AUTOMATIC_JOIN_CHANNELS))
+                return null;
+
+            FeatureFlagVariantPayload ffChannelsList = featureFlags
+                .Get()
+                .GetFeatureFlagVariantPayload($"{FEATURE_FLAG_FOR_AUTOMATIC_JOIN_CHANNELS}:{VARIANT_FOR_AUTOMATIC_JOIN_CHANNELS}");
+
+            AutomaticJoinChannelList autoJoinChannelsList = JsonUtility.FromJson<AutomaticJoinChannelList>(ffChannelsList.value);
+            return autoJoinChannelsList;
+        }
 
         private void OnUserProfileUpdate(UserProfile profile)
         {
