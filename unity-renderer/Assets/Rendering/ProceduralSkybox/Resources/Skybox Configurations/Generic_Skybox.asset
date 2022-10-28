@@ -111,9 +111,9 @@ MonoBehaviour:
   horizonPlaneColor:
     serializedVersion: 2
     key0: {r: 0.07058824, g: 0, b: 0.25882354, a: 1}
-    key1: {r: 0.3529412, g: 0.35686275, b: 0.25882354, a: 1}
-    key2: {r: 0.41568628, g: 0.48235294, b: 0.32941177, a: 0}
-    key3: {r: 0.3882353, g: 0.32941177, b: 0.21176471, a: 0}
+    key1: {r: 0.47058827, g: 0.3372549, b: 0.21568629, a: 1}
+    key2: {r: 0.654902, g: 0.6156863, b: 0.44705886, a: 0}
+    key3: {r: 0.47058827, g: 0.3372549, b: 0.21568629, a: 0}
     key4: {r: 0.07058824, g: 0, b: 0.25882354, a: 0}
     key5: {r: 1, g: 0.24847966, b: 0.10849059, a: 0}
     key6: {r: 0.4676065, g: 0.21181916, b: 0.5283019, a: 0}
@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0.086956516}
+  horizonPlaneSmoothRange: {x: 0.17391303, y: 0.26086956}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:

@@ -612,6 +612,9 @@
         },
         {
             "m_Id": "aac2c23822724ec98fa61dcb48c3e05e"
+        },
+        {
+            "m_Id": "88c9aa910ef54abdbc7438399b7c5903"
         }
     ],
     "m_Edges": [
@@ -9452,6 +9455,26 @@
         "w": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "88c9aa910ef54abdbc7438399b7c5903",
+    "m_Title": "internal Fog Color",
+    "m_Content": "Write something here",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": 2828.0,
+        "y": 3807.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {
