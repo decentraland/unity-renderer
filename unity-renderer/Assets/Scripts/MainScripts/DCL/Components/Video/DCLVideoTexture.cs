@@ -57,11 +57,8 @@ namespace DCL.Components
         {
             model = new Model();
 
-            // DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
-
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log ("FD:: DCLVideoTexture() Contructor - object.id = " + this.id);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -164,22 +161,13 @@ namespace DCL.Components
             if (isInitialized) return;
             isInitialized = true;
 
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log ("FD:: DCLVideoTexture::Initialize() called");
-
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
-            // unsub first
-            // CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
-            // CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-            // scene.OnEntityRemoved -= SetPlayStateDirty;
-            // Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
-            // then resub
+
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += SetPlayStateDirty;
-
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
             OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
@@ -328,28 +316,9 @@ namespace DCL.Components
             return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
-        {   
-            SetPlayStateDirty();
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
 
-            // FD::--Tests-->
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD:: In Coords: " + coords + 
-                        "\n scene in SO: " + CommonScriptableObjects.sceneID.Get() +
-                        "\n object id " + this.id);
-        }
-
-        private void OnSceneIDChanged(string current, string previous) 
-        { 
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-
-            // FD::--Tests-->
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log("FD::OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
-                + "\n -current scene: " + current 
-                + "\n isPlayerInScene " + isPlayerInScene
-                + "\n CommonScriptableObjects.sceneID.Get(): " + CommonScriptableObjects.sceneID.Get());
-        }
+        private void OnSceneIDChanged(string current, string previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -363,8 +332,6 @@ namespace DCL.Components
             SetPlayStateDirty();
             attachedMaterials.Add(component.id, component);
 
-            // component.OnAttach -= SetPlayStateDirty;
-            // component.OnDetach -= SetPlayStateDirty;
             component.OnAttach += SetPlayStateDirty;
             component.OnDetach += SetPlayStateDirty;
             DCLVideoTextureUtils.SubscribeToEntityUpdates(component, SetPlayStateDirty);
@@ -396,15 +363,10 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            UnityEngine.Debug.unityLogger.logEnabled = true;
-            Debug.Log ("FD:: DCLVideoTexture::Dispose() called");
-
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
 
             if (scene != null)
                 scene.OnEntityRemoved -= SetPlayStateDirty;
