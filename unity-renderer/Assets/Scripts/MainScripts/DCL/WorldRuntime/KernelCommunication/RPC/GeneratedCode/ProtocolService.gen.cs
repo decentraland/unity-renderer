@@ -9,23 +9,25 @@ using Google.Protobuf;
 using rpc_csharp.protocol;
 using rpc_csharp;
 
-public abstract class CRDTService<Context>
+public interface ICRDTService<Context>
+{
+
+  UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context, CancellationToken ct);
+
+  UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, Context context, CancellationToken ct);
+
+}
+
+public static class CRDTServiceCodeGen
 {
   public const string ServiceName = "CRDTService";
 
-  public delegate UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request, Context context, CancellationToken ct);
-
-  public delegate UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, Context context, CancellationToken ct);
-
-  public delegate IEnumerator<CRDTManyMessages> CrdtNotificationStream(CRDTStreamRequest request, Context context);
-
-  public static void RegisterService(RpcServerPort<Context> port, SendCrdt sendCrdt, PullCrdt pullCrdt, CrdtNotificationStream crdtNotificationStream)
+  public static void RegisterService<Context>(RpcServerPort<Context> port, ICRDTService<Context> service)
   {
     var result = new ServerModuleDefinition<Context>();
       
-    result.definition.Add("SendCrdt", async (payload, context, ct) => { var res = await sendCrdt(CRDTManyMessages.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.definition.Add("PullCrdt", async (payload, context, ct) => { var res = await pullCrdt(PullCRDTRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.streamDefinition.Add("CrdtNotificationStream", (payload, context) => { return new ProtocolHelpers.StreamEnumerator<CRDTManyMessages>(crdtNotificationStream(CRDTStreamRequest.Parser.ParseFrom(payload), context)); });
+    result.definition.Add("SendCrdt", async (payload, context, ct) => { var res = await service.SendCrdt(CRDTManyMessages.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("PullCrdt", async (payload, context, ct) => { var res = await service.PullCrdt(PullCRDTRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }
