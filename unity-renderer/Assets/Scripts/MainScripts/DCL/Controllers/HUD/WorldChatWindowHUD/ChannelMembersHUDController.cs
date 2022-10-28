@@ -46,6 +46,7 @@ namespace DCL.Chat.HUD
             {
                 LoadMembers();
                 SetAutomaticReloadingActive(true);
+                view.ClearSearchInput();
             }
         }
 
@@ -69,6 +70,7 @@ namespace DCL.Chat.HUD
             {
                 LoadMembers();
                 SetAutomaticReloadingActive(true);
+                view.ClearSearchInput();
             }
             else
             {
@@ -81,8 +83,6 @@ namespace DCL.Chat.HUD
         private void LoadMembers()
         {
             ClearListeners();
-
-            view.ClearSearchInput();
             isSearching = false;
 
             view.OnSearchUpdated += SearchMembers;

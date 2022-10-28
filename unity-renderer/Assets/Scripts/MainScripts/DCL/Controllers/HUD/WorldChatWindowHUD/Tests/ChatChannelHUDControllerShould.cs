@@ -110,7 +110,7 @@ namespace DCL.Chat.HUD
                 messageType = ChatMessage.Type.PUBLIC
             });
             
-            socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_NAME, 3, "chat");
+            socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_NAME, 3, "channel");
         }
 
         [Test]

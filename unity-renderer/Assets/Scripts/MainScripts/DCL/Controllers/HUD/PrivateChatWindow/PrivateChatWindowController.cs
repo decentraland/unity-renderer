@@ -36,7 +36,6 @@ public class PrivateChatWindowController : IHUD
     private bool shouldRequestMessages;
 
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-    internal BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
     internal string ConversationUserId { get; set; } = string.Empty;
 
     public event Action OnBack;
