@@ -12,10 +12,7 @@ namespace DCL
 
         RealmsInfoHandler handler = new RealmsInfoHandler();
 
-        public void UpdateRealmsInfo(string payload)
-        {
-            handler.Set(payload);
-        }
+        public void UpdateRealmsInfo(string payload) { handler.Set(payload); }
 
         public void ConnectionToRealmSuccess(string json)
         {
@@ -28,7 +25,7 @@ namespace DCL
             var realmConnectionFailedPayload = Utils.SafeFromJson<JumpInPayload>(json);
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
         }
-
+        
         public void SetRealmAbout(string payload)
         {
             handler.SetAbout(payload);

@@ -4,6 +4,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -13,7 +14,7 @@ public class Catalyst : ICatalyst
     private const int MAX_POINTERS_PER_REQUEST = 90;
 
     public string contentUrl => realmContentServerUrl;
-    public string lambdasUrl => $"{realmDomain}/lambdas";
+    public string lambdasUrl { get; private set; }
 
     private string realmDomain = "https://peer.decentraland.org";
     private string realmContentServerUrl = "https://peer.decentraland.org/content";
@@ -25,15 +26,22 @@ public class Catalyst : ICatalyst
         if (DataStore.i.realm.playerRealm.Get() != null)
         {
             realmDomain = DataStore.i.realm.playerRealm.Get().domain;
+            lambdasUrl = $"{realmDomain}/lambdas";
             realmContentServerUrl = DataStore.i.realm.playerRealm.Get().contentServerUrl;
+        }else if (DataStore.i.realm.playerRealmAbout.Get() != null)
+        {
+            lambdasUrl = DataStore.i.realm.playerRealmAbout.Get().Lambdas.PublicUrl;
+            realmContentServerUrl = DataStore.i.realm.playerRealmAbout.Get().Content.PublicUrl;
         }
 
-        DataStore.i.realm.playerRealm.OnChange += PlayerRealmOnOnChange;
+        DataStore.i.realm.playerRealm.OnChange += PlayerRealmOnChange;
+        DataStore.i.realm.playerRealmAbout.OnChange += PlayerRealmAboutOnChange;
     }
 
     public void Dispose()
     {
-        DataStore.i.realm.playerRealm.OnChange -= PlayerRealmOnOnChange;
+        DataStore.i.realm.playerRealm.OnChange -= PlayerRealmOnChange;
+        DataStore.i.realm.playerRealmAbout.OnChange -= PlayerRealmAboutOnChange;
         deployedScenesCache.Dispose();
     }
 
@@ -202,9 +210,17 @@ public class Catalyst : ICatalyst
         return promise;
     }
 
-    private void PlayerRealmOnOnChange(CurrentRealmModel current, CurrentRealmModel previous)
+    private void PlayerRealmOnChange(CurrentRealmModel current, CurrentRealmModel previous)
     {
         realmDomain = current.domain;
+        lambdasUrl = $"{realmDomain}/lambdas";
         realmContentServerUrl = current.contentServerUrl;
     }
+
+    private void PlayerRealmAboutOnChange(AboutResponse current, AboutResponse previous)
+    {
+        lambdasUrl = current.Lambdas.PublicUrl;
+        realmContentServerUrl = current.Content.PublicUrl;
+    }
+
 }
