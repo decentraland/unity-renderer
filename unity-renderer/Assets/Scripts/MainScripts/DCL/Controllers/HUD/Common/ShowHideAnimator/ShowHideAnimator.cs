@@ -46,6 +46,7 @@ public class ShowHideAnimator : MonoBehaviour
         }
 
         canvasGroup.DOFade(1, BASE_DURATION * animSpeedFactor)
+                   .SetEase(Ease.InOutQuad)
                    .OnComplete(() => OnWillFinishStart?.Invoke(this))
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDisable);
@@ -63,6 +64,7 @@ public class ShowHideAnimator : MonoBehaviour
         }
 
         canvasGroup.DOFade(0, BASE_DURATION * animSpeedFactor)
+                   .SetEase(Ease.InOutQuad)
                    .OnComplete(() =>
                    {
                        OnWillFinishHide?.Invoke(this);
