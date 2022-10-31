@@ -202,7 +202,8 @@ namespace DCL.Chat.HUD
             UpdateOldestMessage(message);
 
             message.isChannelMessage = true;
-            chatHudController.AddChatMessage(message, limitMaxEntries: false);
+            // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons 
+            chatHudController.AddChatMessage(message, limitMaxEntries: true);
 
             if (View.IsActive)
             {

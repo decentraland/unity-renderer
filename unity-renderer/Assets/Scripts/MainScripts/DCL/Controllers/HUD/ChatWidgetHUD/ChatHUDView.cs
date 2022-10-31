@@ -242,13 +242,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             scrollRect.verticalNormalizedPosition = 0;
     }
 
-    public void RemoveFirstEntry()
+    public void RemoveOldestEntry()
     {
         if (entries.Count <= 0) return;
         var firstEntry = GetFirstEntry();
-        if (firstEntry == null) return;
-        Destroy(firstEntry.gameObject);
+        if (!firstEntry) return;
         entries.Remove(firstEntry.Model.messageId);
+        // must use immediate, for some reason the object is not getting destroyed with Destroy(firstEntry.gameObject)
+        DestroyImmediate(firstEntry.gameObject);
         UpdateLayout();
     }
 
@@ -374,8 +375,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         for (var i = 0; i < chatEntriesContainer.childCount; i++)
         {
             var firstChildTransform = chatEntriesContainer.GetChild(i);
+            if (!firstChildTransform) continue;
             var entry = firstChildTransform.GetComponent<ChatEntry>();
-            if (entry == null) continue;
+            if (!entry) continue;
             firstEntry = entry;
             break;
         }
