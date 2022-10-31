@@ -18,8 +18,19 @@ namespace DCL.Chat.HUD
         {
             this.view = view;
             this.view.OnClose += Dismiss;
+            this.view.Hide();
 
             this.dataStore = dataStore;
+
+            CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+        }
+
+        private void RendererState_OnChange(bool current, bool previous)
+        {
+            if (!current)
+                return;
+
+            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
             isPromoteToastVisible.OnChange += OnToastVisbile;
 
             if (!PlayerPrefsUtils.GetBool(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, false))
@@ -54,6 +65,7 @@ namespace DCL.Chat.HUD
                 view.Dispose();
             }
 
+            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
             isPromoteToastVisible.OnChange -= OnToastVisbile;
         }
     }
