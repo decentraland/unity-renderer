@@ -8,7 +8,7 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "Google.Protobuf.dll",
-        "Google.Apis.dll"
+        "Google.Api.CommonProtos.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
