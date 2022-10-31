@@ -33,8 +33,8 @@ public class DCLWebSocketService : WebSocketBehavior
         if (ConnectionState == WebSocketState.Open)
         {
             var serializeObject = JsonConvert.SerializeObject(x);
-            
-            Send(serializeObject);
+
+            SendAsync(serializeObject, b => { });
         
             if (VERBOSE)
             {
