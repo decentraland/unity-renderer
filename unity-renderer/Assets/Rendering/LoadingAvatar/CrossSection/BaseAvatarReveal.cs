@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using DCL.Helpers;
-using DCL;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using Random = UnityEngine.Random;
@@ -45,10 +42,9 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     {
         _ghostMaterial = meshRenderer.material;
         InitializeColorGradient();
+
         foreach (Renderer r in targets)
-        {
             _materials.Add(r.material);
-        }
     }
 
     public SkinnedMeshRenderer GetMainRenderer()
@@ -80,6 +76,56 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         _materials.Add(newTarget.material);
     }
 
+    public void Reset()
+    {
+        Color gColor = _ghostMaterial.GetColor("_Color");
+        Color tempColor = new Color(gColor.r, gColor.g, gColor.b, 0);
+        _ghostMaterial.SetColor("_Color", tempColor);
+        avatarLoaded = false;
+        meshRenderer.enabled = true;
+        targets = new List<Renderer>();
+        _materials = new List<Material>();
+        revealer.transform.position = Vector3.zero;
+    }
+
+    public void DisableParticleEffects()
+    {
+        foreach (GameObject p in particleEffects)
+            p.SetActive(false);
+    }
+
+    public void OnDisable()
+    {
+        SetFullRendered();
+    }
+
+    public async UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!withTransition)
+            {
+                SetFullRendered();
+                return;
+            }
+
+            isRevealing = true;
+            animation.Play();
+            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            SetFullRendered();
+        }
+    }
+
+    public void OnRevealAnimationEnd()
+    {
+        isRevealing = false;
+        meshRenderer.enabled = false;
+    }
+
+
     private void Update()
     {
         if (lod.lodIndex >= 2)
@@ -88,7 +134,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         UpdateMaterials();
     }
 
-    void UpdateMaterials()
+    private void UpdateMaterials()
     {
         if (avatarLoaded)
             return;
@@ -108,32 +154,6 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         }
     }
 
-    public async UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (!withTransition)
-            {
-                SetFullRendered();
-                return;
-            }
-
-            isRevealing = true;
-            animation.Play();
-            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
-        }
-        catch(OperationCanceledException)
-        {
-            SetFullRendered();
-        }
-    }
-
-    public void OnRevealAnimationEnd()
-    {
-        isRevealing = false;
-        meshRenderer.enabled = false;
-    }
-
     private void SetFullRendered()
     {
         meshRenderer.enabled = false;
@@ -146,30 +166,5 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         _ghostMaterial.SetVector("_RevealPosition", new Vector3(0, 2.5f, 0));
         DisableParticleEffects();
         avatarLoaded = true;
-    }
-
-    public void Reset()
-    {
-        Color gColor = _ghostMaterial.GetColor("_Color");
-        Color tempColor = new Color(gColor.r, gColor.g, gColor.b, 0);
-        _ghostMaterial.SetColor("_Color", tempColor);
-        avatarLoaded = false;
-        meshRenderer.enabled = true;
-        targets = new List<Renderer>();
-        _materials = new List<Material>();
-        revealer.transform.position = Vector3.zero;
-    }
-
-    private void DisableParticleEffects()
-    {
-        foreach (GameObject p in particleEffects)
-        {
-            p.SetActive(false);
-        }
-    }
-
-    public void OnDisable()
-    {
-        SetFullRendered();
     }
 }

@@ -8,13 +8,16 @@ namespace AvatarSystem
 {
     public class BaseAvatar : IBaseAvatar
     {
-        public IBaseAvatarRevealer avatarRevealer { get; set; }
-        private ILOD lod;
-        private Transform avatarRevealerContainer;
+        private readonly ILOD lod;
+        private readonly GameObject armatureContainer;    
+        private readonly Transform avatarRevealerContainer;
+
         private CancellationTokenSource transitionCts = new CancellationTokenSource();
-        
-        public GameObject armatureContainer;
+
+
+        public IBaseAvatarRevealer avatarRevealer { get; set; }
         public SkinnedMeshRenderer meshRenderer { get; private set; }
+
 
         public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer, ILOD lod) 
         {
@@ -33,17 +36,19 @@ namespace AvatarSystem
             return avatarRevealer.GetMainRenderer();
         }
 
-        public void Initialize() 
+        public void Initialize(bool allowSpawnParticles = true)
         {
             if (avatarRevealer == null)
             {
-                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
+                avatarRevealer = Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).
+                    GetComponent<BaseAvatarReveal>();
                 avatarRevealer.InjectLodSystem(lod);
+
+                if (!allowSpawnParticles)
+                    (avatarRevealer as BaseAvatarReveal).DisableParticleEffects();
             }
             else
-            {
                 avatarRevealer.Reset();
-            }
 
             meshRenderer = avatarRevealer.GetMainRenderer();
         }
@@ -71,6 +76,5 @@ namespace AvatarSystem
             transitionCts?.Dispose();
             transitionCts = null;
         }
-
     }
 }
