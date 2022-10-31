@@ -42,7 +42,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal CollapsableListToggleButton directChatsCollapseButton;
         [SerializeField] internal CollapsableListToggleButton publicChatsChatsCollapseButton;
         [SerializeField] private WorldChatWindowModel model;
-        [SerializeField] private GameObject newLabel;
+        [SerializeField] private GameObject channelsPromoteLabel;
 
         [Header("Load More Entries")]
         [SerializeField] internal GameObject loadMoreEntriesContainer;
@@ -304,7 +304,7 @@ namespace DCL.Chat.HUD
             publicChatsChatsCollapseButton.SetInteractability(true);
         }
 
-        public void SetNewLabelActive(bool isActive) => newLabel.SetActive(IsActive);
+        public void SetChannelsPromoteLabelVisible(bool isVisible) => channelsPromoteLabel.SetActive(isVisible);
 
         public override void RefreshControl()
         {

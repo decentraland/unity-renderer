@@ -1,3 +1,5 @@
+using DCL.Helpers;
+
 namespace DCL.Chat.HUD
 {
     public class PromoteChannelsToastPlugin : IPlugin
@@ -8,7 +10,9 @@ namespace DCL.Chat.HUD
         {
             promoteChannelsToastController = new PromoteChannelsToastComponentController(
                 PromoteChannelsToastComponentView.Create(),
-                DataStore.i);
+                new DefaultPlayerPrefs(),
+                DataStore.i,
+                CommonScriptableObjects.rendererState);
         }
 
         public void Dispose() => promoteChannelsToastController.Dispose();

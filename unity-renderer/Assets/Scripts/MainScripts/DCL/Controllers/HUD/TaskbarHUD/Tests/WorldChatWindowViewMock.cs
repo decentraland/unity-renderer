@@ -122,7 +122,7 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
-    public void SetNewLabelActive(bool isActive)
+    public void SetChannelsPromoteLabelVisible(bool isVisible)
     {
     }
 }

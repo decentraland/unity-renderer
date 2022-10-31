@@ -430,7 +430,7 @@ GameObject:
   - component: {fileID: 6221807923844179404}
   - component: {fileID: 649721535901714290}
   m_Layer: 5
-  m_Name: NewLabelContainer
+  m_Name: ChannelsPromoteLabelContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2990,7 +2990,7 @@ MonoBehaviour:
     isLoadingDirectChats: 0
     publicChannels: []
     isLoadingChannels: 0
-  newLabel: {fileID: 936530438778938516}
+  channelsPromoteLabel: {fileID: 936530438778938516}
   loadMoreEntriesContainer: {fileID: 8953413587729228697}
   loadMoreEntriesLabel: {fileID: 335676906559043414}
   loadMoreEntriesLoading: {fileID: 5050351621148873383}
@@ -4400,7 +4400,7 @@ GameObject:
   - component: {fileID: 7637560960668189864}
   - component: {fileID: 3135501511385927747}
   m_Layer: 5
-  m_Name: NewLabel
+  m_Name: ChannelsPromoteLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

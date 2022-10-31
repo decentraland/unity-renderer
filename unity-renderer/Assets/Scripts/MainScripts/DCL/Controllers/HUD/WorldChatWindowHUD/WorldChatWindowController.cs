@@ -144,7 +144,7 @@ public class WorldChatWindowController : IHUD
             view.SetSearchAndCreateContainerActive(false);
         }
 
-        view.SetNewLabelActive(channelsFeatureFlagService.IsPromoteChannelsToastEnabled());
+        view.SetChannelsPromoteLabelVisible(channelsFeatureFlagService.IsPromoteChannelsToastEnabled());
     }
 
     public void Dispose()

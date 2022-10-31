@@ -8,21 +8,28 @@ namespace DCL.Chat.HUD
         internal const string PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY = "PromoteChannelsToastDismissed";
 
         private readonly IPromoteChannelsToastComponentView view;
+        private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
+        private readonly RendererState rendererState;
 
         private BaseVariable<bool> isPromoteToastVisible => dataStore.channels.isPromoteToastVisible;
 
         public PromoteChannelsToastComponentController(
             IPromoteChannelsToastComponentView view,
-            DataStore dataStore)
+            IPlayerPrefs playerPrefs,
+            DataStore dataStore,
+            RendererState rendererState)
         {
             this.view = view;
             this.view.OnClose += Dismiss;
             this.view.Hide();
 
+            this.playerPrefs = playerPrefs;
+
             this.dataStore = dataStore;
 
-            CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+            this.rendererState = rendererState;
+            this.rendererState.OnChange += RendererState_OnChange;
         }
 
         private void RendererState_OnChange(bool current, bool previous)
@@ -30,10 +37,10 @@ namespace DCL.Chat.HUD
             if (!current)
                 return;
 
-            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            rendererState.OnChange -= RendererState_OnChange;
             isPromoteToastVisible.OnChange += OnToastVisbile;
 
-            if (!PlayerPrefsUtils.GetBool(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, false))
+            if (!playerPrefs.GetBool(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, false))
                 isPromoteToastVisible.Set(true, notifyEvent: true);
             else
                 isPromoteToastVisible.Set(false, notifyEvent: true);
@@ -42,8 +49,8 @@ namespace DCL.Chat.HUD
         private void Dismiss()
         {
             isPromoteToastVisible.Set(false);
-            PlayerPrefsUtils.SetBool(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, true);
-            PlayerPrefsUtils.Save();
+            playerPrefs.Set(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, true);
+            playerPrefs.Save();
         }
 
         private void OnToastVisbile(bool isVisible, bool _)
@@ -65,7 +72,7 @@ namespace DCL.Chat.HUD
                 view.Dispose();
             }
 
-            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            rendererState.OnChange -= RendererState_OnChange;
             isPromoteToastVisible.OnChange -= OnToastVisbile;
         }
     }
