@@ -15,13 +15,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
             switch (currentQualitySetting.baseResolution)
             {
-                case QualitySettings.BaseResolution.BaseRes_720:
-                    WebInterface.SetBaseResolution(820);
-                    break;
-                case QualitySettings.BaseResolution.BaseRes_1080:
+                case QualitySettings.BaseResolution.BaseRes_Normal:
                     WebInterface.SetBaseResolution(1080);
                     break;
-                case QualitySettings.BaseResolution.BaseRes_Unlimited:
+                case QualitySettings.BaseResolution.BaseRes_Match_display:
                     WebInterface.SetBaseResolution(9999);
                     break;
             }
