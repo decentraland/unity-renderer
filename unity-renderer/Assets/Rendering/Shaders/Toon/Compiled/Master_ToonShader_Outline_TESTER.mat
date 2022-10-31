@@ -88,16 +88,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
+    - Vector1_c33eb2e02a004cc59ddf4de008209eff: 0.546
     - _CellShading: 255
     - _DitherFade: 1
     - _Outline: 3.48
     - _OutlineFade: 1
     - _OutlineFade_1: 1
-    - _OutlineOpacity: 1
+    - _OutlineOpacity: 0.55
     - _ToonFade: 1
     - _ToonMultiplier: 0
-    - _isOutlineDisabled: 0
+    - _isOutlineDisabled: 1
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
     - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
