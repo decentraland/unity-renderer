@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class WorldsBlockerModifier : IWorldsModifier
 {
-    public void EnteredWorld()
+    public void EnteredRealm(bool isRegularRealm, AboutResponse_AboutConfiguration realmConfiguration)
     {
-        Environment.i.world.blockersController.SetEnabled(false);
-    }
-    public void ExitedWorld()
-    {
-        Environment.i.world.blockersController.SetEnabled(true);
+        if (isRegularRealm)
+        {
+            Environment.i.world.blockersController.SetEnabled(true);
+        }
+        else
+        {
+            Environment.i.world.blockersController.SetEnabled(!string.IsNullOrEmpty(realmConfiguration.cityLoaderContentServer));
+        }
     }
 }

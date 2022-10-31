@@ -1,7 +1,5 @@
 public interface IWorldsModifier
 {
-
-    void EnteredWorld();
-    void ExitedWorld();
+    void EnteredRealm(bool isRegularRealm, AboutResponse_AboutConfiguration realmConfiguration);
 
 }

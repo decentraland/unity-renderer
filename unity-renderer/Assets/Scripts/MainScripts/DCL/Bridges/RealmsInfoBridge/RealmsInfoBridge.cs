@@ -25,5 +25,10 @@ namespace DCL
             var realmConnectionFailedPayload = Utils.SafeFromJson<JumpInPayload>(json);
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
         }
+
+        public void  SetRealmInfo(string json)
+        {
+            DataStore.i.realm.realmInfo.Set(json);
+        }
     }
 }
