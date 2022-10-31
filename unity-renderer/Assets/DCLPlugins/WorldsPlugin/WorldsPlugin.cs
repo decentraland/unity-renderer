@@ -2,57 +2,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
 public class WorldsPlugin : IPlugin
 {
 
-    private List<IWorldsModifier> worldsModifiers;
-    private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo; 
-    
+    internal List<IWorldsModifier> worldsModifiers;
+    private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
+    private BaseVariable<AboutResponse.Types.AboutConfiguration> realmAboutConfiguration => DataStore.i.realm.realmAboutConfiguration;
+    private AboutResponse.Types.AboutConfiguration currentConfiguration;
     public WorldsPlugin()
     {
-        worldsModifiers = new List<IWorldsModifier> { new WorldsBlockerModifier() };
-        DataStore.i.realm.realmInfo.OnChange += RealmChanged;
+        realmAboutConfiguration.OnChange += RealmChanged;
+        realmsList.OnSet += RealmListSet;
     }
-    private void RealmChanged(string current, string previous)
-    {
-        AboutResponse_AboutConfiguration newConfiguration = JsonUtility.FromJson<AboutResponse_AboutConfiguration>(current);
 
+    private void RealmListSet(IEnumerable<RealmModel> obj)
+    {
+        if (currentConfiguration != null)
+            SetWorldModifiers();
+    }
+
+    private void RealmChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration previous)
+    {
+        if (realmsList.Count().Equals(0))
+            return;
+
+        currentConfiguration = current;
+        SetWorldModifiers();
+    }
+
+    private void SetWorldModifiers()
+    {
         List<RealmModel> currentRealmsList = realmsList.Get().ToList();
-        RealmModel currentRealmModel = currentRealmsList.FirstOrDefault(r => r.serverName == newConfiguration.realmName);
-        
-        //worldsModifiers.ForEach(e => e.EnteredRealm((currentRealmsList?.Count() == 0 || currentRealmModel != null), newConfiguration));
+        bool isRegularRealm = currentRealmsList.FirstOrDefault(r => r.serverName == currentConfiguration.RealmName) != null;
+        worldsModifiers.ForEach(e => e.EnteredRealm(isRegularRealm, currentConfiguration));
     }
 
     public void Dispose()
     {
-        DataStore.i.realm.realmInfo.OnChange -= RealmChanged;
+        realmAboutConfiguration.OnChange -= RealmChanged;
+        realmsList.OnSet -= RealmListSet;
+        worldsModifiers.ForEach(e => e.Dispose());
     }
-}
-
-[Serializable]
-public class AboutResponse_AboutConfiguration
-{
-    public string realmName;
-    public int networkId;
-    public string[] globalScenesUrn;
-    public string[] scenesUrn;
-    public AboutResponse_MinimapConfiguration minimap;
-    public AboutResponse_SkyboxConfiguration fixedHour;
-    public string cityLoaderContentServer;
-}
-
-[Serializable]
-public class AboutResponse_MinimapConfiguration
-{
-    public bool enabled;
-    public string dataImage;
-    public string estateImage;
-}
-
-[Serializable]
-public class AboutResponse_SkyboxConfiguration {
-    public int fixedHour;
 }

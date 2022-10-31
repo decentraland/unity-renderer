@@ -1,5 +1,8 @@
-public interface IWorldsModifier
+using System;
+using Decentraland.Bff;
+
+public interface IWorldsModifier : IDisposable
 {
-    void EnteredRealm(bool isRegularRealm, AboutResponse_AboutConfiguration realmConfiguration);
+    void EnteredRealm(bool isCatalyst, AboutResponse.Types.AboutConfiguration realmConfiguration);
 
 }

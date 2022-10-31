@@ -3,6 +3,7 @@ using System;
 using Variables.RealmsInfo;
 using System.Collections.Generic;
 using System.Linq;
+using Decentraland.Bff;
 
 namespace DCL
 {
@@ -24,6 +25,11 @@ namespace DCL
             model = newModel;
             DataStore.i.realm.playerRealm.Set(model.current?.Clone());
             DataStore.i.realm.realmsInfo.Set(newModel.realms != null ? newModel.realms.ToList() : new List<RealmModel>());
+        }
+
+        public void SetAbout(string json)
+        {
+            DataStore.i.realm.realmAboutConfiguration.Set(AboutResponse.Types.AboutConfiguration.Parser.ParseJson(json));
         }
     }
 
