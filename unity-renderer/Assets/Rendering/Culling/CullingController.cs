@@ -142,8 +142,7 @@ namespace DCL.Rendering
                 renderers = objectsTracker.GetRenderers();
             else
                 renderers = objectsTracker.GetSkinnedRenderers();
-
-
+            
             foreach (Renderer r in renderers)
             {
                 if (timeBudgetCount > settings.maxTimeBudget)

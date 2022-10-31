@@ -49,10 +49,16 @@ public class UIPageSelector : MonoBehaviour
         UpdateButtonsStatus();
     }
 
-    public void Setup(int maxPages)
+    public void Setup(int maxPages, bool forceRebuild = false)
     {
-        currentPage = 0;
+        if (maxPages == this.maxPages && !forceRebuild)
+        {
+            return;
+        }
+
         this.maxPages = maxPages;
+        
+        currentPage = Mathf.Clamp(currentPage, 0, maxPages-1);
 
         if (maxPages <= 1)
         {
@@ -112,7 +118,8 @@ public class UIPageSelector : MonoBehaviour
         for (int i = 0; i < buttons.Count; i++)
         {
             var currentButton = buttons[i];
-            currentButton.Toggle(i == currentPage);
+            if (currentButton.isActiveAndEnabled)
+                currentButton.Toggle(i == currentPage);
         }
     }
 
