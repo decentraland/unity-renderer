@@ -343,7 +343,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                     players = realmModel.usersCount,
                     isConnected = realmModel.serverName == serverName
                 };
-
                 currentAvailableRealms.Add(realmToAdd);
             }
         }
