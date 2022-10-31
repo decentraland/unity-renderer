@@ -9,12 +9,6 @@ namespace DCL.Chat
 {
     public partial class ChatController
     {
-        private IEnumerator Start()
-        {
-            yield return new WaitForSeconds(20f);
-            AddManyFakeMessagesToNearby();
-        }
-
         [ContextMenu("Fake Public Message")]
         public void FakePublicMessage()
         {
