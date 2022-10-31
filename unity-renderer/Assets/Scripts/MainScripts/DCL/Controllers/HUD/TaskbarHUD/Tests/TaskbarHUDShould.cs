@@ -1,6 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Browser;
+using DCL.Chat;
+using DCL.Chat.Channels;
+using DCL.Chat.HUD;
+using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -36,7 +41,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
         userProfileBridge.GetOwn().Returns(ownProfile);
 
-        controller = new TaskbarHUDController();
+        controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>());
         controller.Initialize(null);
         view = controller.view;
 
@@ -61,10 +66,18 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
+        var chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore(),
+            Substitute.For<IMouseCatcher>(),
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChannelsFeatureFlagService>(),
+            Substitute.For<IBrowserBridge>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -77,7 +90,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddFriendWindowProperly()
     {
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController);
+            socialAnalytics, chatController,
+            Substitute.For<IMouseCatcher>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
 
@@ -92,36 +106,49 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController = new PrivateChatWindowController(
             new DataStore(),
             userProfileBridge,
-            chatController,
+            this.chatController,
             Substitute.For<IFriendsController>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());
         privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
+        var chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),
-            chatController);
+            chatController,
+            new DataStore(),
+            Substitute.For<IMouseCatcher>(),
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChannelsFeatureFlagService>(),
+            Substitute.For<IBrowserBridge>());
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        var publicChatChannelController = new PublicChatChannelController(
-            chatController,  
+        var publicChatChannelController = new PublicChatWindowController(
+            this.chatController,  
             userProfileBridge,
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IMouseCatcher>(),
             ScriptableObject.CreateInstance<InputAction_Trigger>());
-        publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatChannelWindowMock>());
+        publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatPublicWindowMock>());
         controller.AddPublicChatChannel(publicChatChannelController);
 
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController);
+            socialAnalytics, this.chatController,
+            Substitute.For<IMouseCatcher>());
         friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
         controller.AddFriendsWindow(friendsHudController);
+
+        var channelSearchController = new SearchChannelsWindowController(this.chatController, Substitute.For<IMouseCatcher>(), new DataStore(),
+            Substitute.For<ISocialAnalytics>(), Substitute.For<IUserProfileBridge>(), Substitute.For<IChannelsFeatureFlagService>());
+        channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
+        controller.AddChannelSearch(channelSearchController);
 
         Assert.IsFalse(view.chatButton.toggledOn);
 
@@ -142,11 +169,12 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(controller.privateChatWindow.View.IsActive);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
 
-        //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is showing up.
+        //NOTE(Brian): Toggle friends on, and then chat button on. Then check if world chat window is hidden and private chat is showing up.
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.publicChatChannel.View.IsActive);
+        Assert.IsTrue(controller.publicChatWindow.View.IsActive);
+        Assert.IsFalse(controller.worldChatWindowHud.View.IsActive);
         Assert.IsFalse(controller.friendsHud.View.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

@@ -15,6 +15,7 @@ public class KernelConfigModel
     public string rendererVersion = string.Empty;
     public Debugging debugConfig = new Debugging();
     public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
+    public string avatarTextureAPIBaseUrl = string.Empty;
 
     public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
@@ -40,7 +41,8 @@ public class KernelConfigModel
                && kernelVersion == other.kernelVersion
                && rendererVersion == other.rendererVersion
                && debugConfig.Equals(other.debugConfig)
-               && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig);
+               && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig)
+               && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl;
     }
 
     public KernelConfigModel Clone()
@@ -57,6 +59,7 @@ public class KernelConfigModel
         clone.rendererVersion = rendererVersion;
         clone.debugConfig = debugConfig.Clone();
         clone.proceduralSkyboxConfig = proceduralSkyboxConfig.Clone();
+        clone.avatarTextureAPIBaseUrl = avatarTextureAPIBaseUrl;
         return clone;
     }
 }

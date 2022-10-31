@@ -186,7 +186,17 @@ namespace DCL.EmotesCustomization
             UpdateEmoteSlots();
         }
 
-        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) { RefreshEmoteLoadingState(values.emoteId); }
+        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData)
+        {
+            if(emoteClipData.clip != null)
+                RefreshEmoteLoadingState(values.emoteId);
+            else
+            {
+                var emoteId = values.emoteId;
+                RemoveEmote(emoteId);
+                Debug.LogError("Emote " + emoteId + " was not found in emotes data store");
+            }
+        }
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
