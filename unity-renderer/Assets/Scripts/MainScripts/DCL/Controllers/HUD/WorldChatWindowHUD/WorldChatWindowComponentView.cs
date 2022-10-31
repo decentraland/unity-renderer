@@ -165,6 +165,7 @@ namespace DCL.Chat.HUD
 
         public void RemovePrivateChat(string userId)
         {
+            privateChatsCreationQueue.Remove(userId);
             directChatList.Remove(userId);
             searchResultsList.Remove(userId);
             UpdateHeaders();

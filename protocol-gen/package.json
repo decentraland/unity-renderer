@@ -5,7 +5,8 @@
   "scripts": {
     "build-renderer-protocol": "ts-node --project scripts/tsconfig.json scripts/build-renderer-protocol.ts",
     "build-components": "ts-node --project scripts/tsconfig.json scripts/build-components.ts",
-    "build-all": "npm run build-renderer-protocol && npm run build-components"
+    "build-bff": "ts-node --project scripts/tsconfig.json scripts/build-bff.ts",
+    "build-all": "npm run build-renderer-protocol && npm run build-components && npm run build-bff"
   },
   "private": true,
   "keywords": [],
