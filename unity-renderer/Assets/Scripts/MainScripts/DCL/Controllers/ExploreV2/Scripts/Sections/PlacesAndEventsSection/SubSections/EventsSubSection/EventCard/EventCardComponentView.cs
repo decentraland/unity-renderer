@@ -215,14 +215,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         base.OnFocus();
 
-        cardAnimator.Focus();
+        cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
 
-        cardAnimator.Idle();
+        cardAnimator?.Idle();
     }
 
     public override void Show(bool instant = false)

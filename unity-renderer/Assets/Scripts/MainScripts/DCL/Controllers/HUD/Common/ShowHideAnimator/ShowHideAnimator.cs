@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ShowHideAnimator : MonoBehaviour
 {
-    private const float BASE_DURATION = 0.024f;
+    private const float BASE_DURATION = 0.2f;
 
     public event System.Action<ShowHideAnimator> OnWillFinishHide;
     public event System.Action<ShowHideAnimator> OnWillFinishStart;
@@ -16,7 +16,7 @@ public class ShowHideAnimator : MonoBehaviour
 
     private int? visibleParamHashValue = null;
 
-    public bool isVisible => canvasGroup == null || canvasGroup.alpha >= 0;
+    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
 
     private void Awake()
     {
@@ -38,14 +38,10 @@ public class ShowHideAnimator : MonoBehaviour
     {
         canvasGroup.blocksRaycasts = true;
 
-        if (instant)
-        {
-            canvasGroup.alpha = 1;
-            OnWillFinishStart?.Invoke(this);
-            return;
-        }
-
-        canvasGroup.DOFade(1, BASE_DURATION * animSpeedFactor)
+        //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
+        var duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
+        canvasGroup.DOKill();
+        canvasGroup.DOFade(1, duration)
                    .SetEase(Ease.InOutQuad)
                    .OnComplete(() => OnWillFinishStart?.Invoke(this))
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
@@ -56,14 +52,10 @@ public class ShowHideAnimator : MonoBehaviour
     {
         canvasGroup.blocksRaycasts = false;
 
-        if (instant)
-        {
-            canvasGroup.alpha = 0;
-            OnWillFinishHide?.Invoke(this);
-            return;
-        }
-
-        canvasGroup.DOFade(0, BASE_DURATION * animSpeedFactor)
+        //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
+        var duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
+        canvasGroup.DOKill();
+        canvasGroup.DOFade(0, duration)
                    .SetEase(Ease.InOutQuad)
                    .OnComplete(() =>
                    {
