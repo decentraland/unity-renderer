@@ -61,6 +61,8 @@ public class ToonShaderAutomator : EditorWindow
             //ReplaceText(endFilePath , "" , "");
         }
         
+        Debug.Log("Toon shader has been updated");
+        
     }
     
     // Replace the Text in the file

@@ -787,20 +787,6 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "99942afce4a54654831e16d52070fb6b"
-                },
-                "m_SlotId": 2
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "1bc84fe88c7447ac9cb686812de50216"
-                },
-                "m_SlotId": 1
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
                     "m_Id": "9b35615ee7834379891bee40d9c36a64"
                 },
                 "m_SlotId": 2
@@ -3043,10 +3029,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 2243.25,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
+            "x": 2524.0,
+            "y": -80.0,
+            "width": 121.0,
+            "height": 76.99996948242188
         }
     },
     "m_Slots": [
@@ -4094,7 +4080,7 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_DepthSamplingMode": 2
+    "m_DepthSamplingMode": 1
 }
 
 {
@@ -4210,10 +4196,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1828.249755859375,
-            "y": -482.5,
-            "width": 0.0,
-            "height": 0.0
+            "x": 1836.0,
+            "y": -559.0,
+            "width": 119.0,
+            "height": 34.0
         }
     },
     "m_Slots": [
@@ -5288,10 +5274,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1978.249755859375,
-            "y": -553.5,
-            "width": 130.000244140625,
-            "height": 142.0
+            "x": 2095.0,
+            "y": -558.0000610351563,
+            "width": 130.0,
+            "height": 142.00006103515626
         }
     },
     "m_Slots": [
@@ -5419,8 +5405,8 @@
     "m_ObjectId": "ce397881b8a64719a8b34d4b439b2d6c",
     "m_Title": "Out Base",
     "m_Position": {
-        "x": 40.0,
-        "y": 40.0
+        "x": 2070.0,
+        "y": -617.0000610351563
     }
 }
 

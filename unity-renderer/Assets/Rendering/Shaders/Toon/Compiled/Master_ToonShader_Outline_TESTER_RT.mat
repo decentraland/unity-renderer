@@ -94,9 +94,10 @@ Material:
     - _BaseRF: 1
     - _CellShading: 255
     - _DitherFade: 1
+    - _EmissionL: 0.5
     - _EmissionRF: 1
     - _Outline: 3.48
-    - _OutlineFade: 0
+    - _OutlineFade: 1
     - _OutlineFade_1: 1
     - _OutlineOpacity: 1
     - _ToonFade: 1
@@ -107,7 +108,7 @@ Material:
     - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
     - _GlossIntensity: {r: 0.3396226, g: 0.3396226, b: 0.3396226, a: 1}
     - _MultiplyColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
-    - _OutlineColor: {r: 1, g: 0.71252173, b: 0.4764151, a: 0}
+    - _OutlineColor: {r: 1, g: 0.97479546, b: 0, a: 0}
     - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
     - _RevealPosition: {r: -0, g: -9.694534, b: -0, a: 0}
   m_BuildTextureStacks: []
