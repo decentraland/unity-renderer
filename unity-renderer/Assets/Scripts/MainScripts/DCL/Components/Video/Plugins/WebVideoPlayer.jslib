@@ -140,15 +140,14 @@ var WebVideoPlayer = {
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
         const ext = GLctx.getExtension('EXT_sRGB');
 
-        GLctx.texSubImage2D(
+        GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
-            0,
-            0,
+            ext.SRGB_ALPHA_EXT, 
             videos[id].video.videoWidth,
             videos[id].video.videoHeight,
             0,
-            ext.SRGB_ALPHA_EXT,
+            GLctx.RGBA,
             GLctx.UNSIGNED_BYTE,
             videos[id].video
         );
