@@ -8,9 +8,10 @@ namespace DCL.Controllers
 {
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
+        private const float TIME_BUDGET = 0.5f / 1000f;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => entitiesCheckRoutine != null;
-        public float timeBetweenChecks { get; set; } = 0.5f;
+        public float timeBetweenChecks { get; set; } = TIME_BUDGET;
         public int entitiesToCheckCount => entitiesToCheck.Count;
 
         private const bool VERBOSE = false;
@@ -53,11 +54,12 @@ namespace DCL.Controllers
                 if ((entitiesToCheck.Count > 0) && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
                 {
                     //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
-                    var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+                    //var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+                    var timeBudget = TIME_BUDGET;
 
                     void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
-                        if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                        if (timeBudget <= 0f)
                         {
                             if(VERBOSE)
                                 logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
@@ -67,7 +69,7 @@ namespace DCL.Controllers
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
-                            if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                            if (timeBudget <= 0f)
                             {
                                 if(VERBOSE)
                                     logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
@@ -80,9 +82,8 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
-
-                            if ( messagingManager != null )
-                                messagingManager.timeBudgetCounter -= (finishTime - startTime);
+                            
+                            timeBudget -= (finishTime - startTime);
                         }
                     }
 

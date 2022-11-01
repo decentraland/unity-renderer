@@ -410,6 +410,7 @@ namespace DCL
                 classId = (CLASS_ID_COMPONENT)classIdAsInt;
             }
 
+            bool wasCreated = false;
             if (!HasComponent(entity, classId))
             {
                 targetComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
@@ -424,6 +425,8 @@ namespace DCL
                         targetComponent.UpdateFromJSON(json);
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
+
+                    wasCreated = true;
                 }
             }
             else
@@ -432,7 +435,7 @@ namespace DCL
             }
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM && wasCreated);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();

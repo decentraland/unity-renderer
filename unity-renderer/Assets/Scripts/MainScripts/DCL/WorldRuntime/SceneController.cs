@@ -419,16 +419,13 @@ namespace DCL
             while (true)
             {
                 maxTimeForDecode = CommonScriptableObjects.rendererState.Get() ? MAX_TIME_FOR_DECODE : float.MaxValue;
-
-                if (chunksToDecode.Count > 0)
+                
+                if (chunksToDecode.TryDequeue(out string chunk))
                 {
-                    if (chunksToDecode.TryDequeue(out string chunk))
-                    {
-                        EnqueueChunk(chunk);
+                    EnqueueChunk(chunk);
 
-                        if (Time.realtimeSinceStartup - start < maxTimeForDecode)
-                            continue;
-                    }
+                    if (Time.realtimeSinceStartup - start < maxTimeForDecode)
+                        continue;
                 }
 
                 yield return null;
