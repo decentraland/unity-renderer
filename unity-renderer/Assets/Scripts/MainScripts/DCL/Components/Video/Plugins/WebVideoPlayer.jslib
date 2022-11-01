@@ -143,7 +143,7 @@ var WebVideoPlayer = {
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
-            ext.FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT, 
+            ext.SRGB_EXT, 
             videos[id].video.videoWidth,
             videos[id].video.videoHeight,
             0,
