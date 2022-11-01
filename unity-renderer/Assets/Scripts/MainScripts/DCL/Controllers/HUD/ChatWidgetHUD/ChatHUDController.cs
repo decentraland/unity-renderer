@@ -120,8 +120,6 @@ public class ChatHUDController : IDisposable
     
     public void UnfocusInputField() => view.UnfocusInputField();
 
-    public void FadeOutMessages() => view.FadeOutMessages();
-
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
     {

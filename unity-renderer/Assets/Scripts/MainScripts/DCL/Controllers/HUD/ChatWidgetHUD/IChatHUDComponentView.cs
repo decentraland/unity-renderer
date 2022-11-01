@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Chat.HUD;
 using DCL.Interface;
 
 public interface IChatHUDComponentView
@@ -13,8 +14,6 @@ public interface IChatHUDComponentView
     
     int EntryCount { get; }
 
-    IChatEntryFactory ChatEntryFactory { get; set; }
-
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
     void Dispose();
@@ -24,5 +23,4 @@ public interface IChatHUDComponentView
     void FocusInputField();
     void UnfocusInputField();
     void SetInputFieldText(string text);
-    void FadeOutMessages();
 }
