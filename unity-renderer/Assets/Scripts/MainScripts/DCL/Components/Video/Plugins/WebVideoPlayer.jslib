@@ -136,18 +136,18 @@ var WebVideoPlayer = {
         if (videos[id].state !== 4) return; //PLAYING
 
         const textureId = videos[id].textureId;
-
+        const ext = gl.getExtension('EXT_sRGB');
+        
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
 
-        // Warning! Profile performance when changing internalFormat and format parameters! For more details see PR: https://github.com/decentraland/unity-renderer/pull/3344 
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
-            GLctx.RGBA, 
+            ext.SRGB_EXT, 
             videos[id].video.videoWidth,
             videos[id].video.videoHeight,
             0,
-            GLctx.RGBA,
+            ext.SRGB_EXT,
             GLctx.UNSIGNED_BYTE,
             videos[id].video
         );
