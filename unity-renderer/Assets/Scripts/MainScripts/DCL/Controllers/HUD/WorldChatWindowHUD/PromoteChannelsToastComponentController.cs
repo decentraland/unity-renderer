@@ -13,6 +13,7 @@ namespace DCL.Chat.HUD
         private readonly RendererState rendererState;
 
         private BaseVariable<bool> isPromoteToastVisible => dataStore.channels.isPromoteToastVisible;
+        private BaseVariable<bool> isTutorialRunning => dataStore.common.isTutorialRunning;
 
         public PromoteChannelsToastComponentController(
             IPromoteChannelsToastComponentView view,
@@ -41,9 +42,23 @@ namespace DCL.Chat.HUD
             isPromoteToastVisible.OnChange += OnToastVisbile;
 
             if (!playerPrefs.GetBool(PLAYER_PREFS_PROMOTE_CHANNELS_TOAS_DISMISSED_KEY, false))
-                isPromoteToastVisible.Set(true, notifyEvent: true);
+            {
+                if (!dataStore.common.isSignUpFlow.Get())
+                    isPromoteToastVisible.Set(true, notifyEvent: true);
+                else
+                    isTutorialRunning.OnChange += IsTutorialRunning_OnChange;
+            }
             else
                 isPromoteToastVisible.Set(false, notifyEvent: true);
+        }
+
+        private void IsTutorialRunning_OnChange(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            isTutorialRunning.OnChange -= IsTutorialRunning_OnChange;
+            isPromoteToastVisible.Set(true, notifyEvent: true);
         }
 
         private void Dismiss()
@@ -74,6 +89,7 @@ namespace DCL.Chat.HUD
 
             rendererState.OnChange -= RendererState_OnChange;
             isPromoteToastVisible.OnChange -= OnToastVisbile;
+            isTutorialRunning.OnChange -= IsTutorialRunning_OnChange;
         }
     }
 }
