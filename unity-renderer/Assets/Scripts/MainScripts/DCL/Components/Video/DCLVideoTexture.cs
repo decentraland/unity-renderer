@@ -20,7 +20,7 @@ namespace DCL.Components
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
 
-        public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
+        public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_AVPro();
 
         [System.Serializable]
         new public class Model : BaseModel
