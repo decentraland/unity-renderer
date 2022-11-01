@@ -248,8 +248,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         var firstEntry = GetFirstEntry();
         if (!firstEntry) return;
         entries.Remove(firstEntry.Model.messageId);
-        // must use immediate, for some reason the object is not getting destroyed with Destroy(firstEntry.gameObject)
-        DestroyImmediate(firstEntry.gameObject);
+        // TODO: entries are not being destroyed if many are added in the same frame. Instead use pooling or DestroyImmediate in the worst scenario
+        Destroy(firstEntry.gameObject);
         UpdateLayout();
     }
 

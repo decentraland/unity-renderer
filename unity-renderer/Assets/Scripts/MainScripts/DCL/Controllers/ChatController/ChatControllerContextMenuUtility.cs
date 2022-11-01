@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -99,7 +100,7 @@ namespace DCL.Chat
         }
 
         [ContextMenu("Add fake messages to nearby")]
-        public void AddManyFakeMessagesToNearby()
+        public async UniTask AddManyFakeMessagesToNearby()
         {
             var users = new List<UserProfileModel>();
             
@@ -133,11 +134,14 @@ namespace DCL.Chat
                 };
                 
                 AddMessageToChatWindow(JsonUtility.ToJson(msg));
+
+                // for a real scenario, only one message is added by frame
+                await UniTask.NextFrame();
             }
         }
         
         [ContextMenu("Add fake messages to global")]
-        public void AddManyFakeMessagesToUnityChannel()
+        public async UniTask AddManyFakeMessagesToUnityChannel()
         {
             var users = new List<UserProfileModel>();
             
@@ -171,6 +175,9 @@ namespace DCL.Chat
                 };
                 
                 AddMessageToChatWindow(JsonUtility.ToJson(msg));
+                
+                // for a real scenario, only one message is added by frame
+                await UniTask.NextFrame();
             }
         }
     }
