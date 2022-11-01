@@ -37,10 +37,10 @@ public class WorldsPluginTests
     public void ModifierCalledOnRealmChange()
     {
         SetCatalystRealm();
-        genericModifier.Received().EnteredRealm(true, Arg.Any<AboutResponse.Types.AboutConfiguration >());
+        genericModifier.Received().EnteredRealm(true, Arg.Any<AboutResponse >());
 
         SetWorldsRealm();
-        genericModifier.Received().EnteredRealm(false, Arg.Any<AboutResponse.Types.AboutConfiguration >());
+        genericModifier.Received().EnteredRealm(false, Arg.Any<AboutResponse >());
     }
 
     [Test]
@@ -55,17 +55,27 @@ public class WorldsPluginTests
 
     private void SetCatalystRealm()
     {
-        DataStore.i.realm.realmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration()
+        DataStore.i.realm.playerRealmAbout.Set(new AboutResponse
         {
-            RealmName = catalystRealmName
+            Bff = new AboutResponse.Types.BffInfo(),
+            Comms = new AboutResponse.Types.CommsInfo(),
+            Configurations = new AboutResponse.Types.AboutConfiguration()
+            {
+                RealmName = catalystRealmName
+            }
         });
     }
     
     private void SetWorldsRealm()
     {
-        DataStore.i.realm.realmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration()
+        DataStore.i.realm.playerRealmAbout.Set(new AboutResponse
         {
-            RealmName = worldRealmName
+            Bff = new AboutResponse.Types.BffInfo(),
+            Comms = new AboutResponse.Types.CommsInfo(),
+            Configurations = new AboutResponse.Types.AboutConfiguration()
+            {
+                RealmName = worldRealmName
+            }
         });
     }
 

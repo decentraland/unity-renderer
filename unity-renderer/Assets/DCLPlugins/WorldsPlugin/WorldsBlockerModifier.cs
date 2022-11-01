@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class WorldsBlockerModifier : IWorldsModifier
 {
-    public void EnteredRealm(bool isCatalyst, AboutResponse.Types.AboutConfiguration realmConfiguration)
+    public void EnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
     {
         if (isCatalyst)
         {
@@ -14,7 +14,7 @@ public class WorldsBlockerModifier : IWorldsModifier
         }
         else
         {
-            Environment.i.world.blockersController.SetEnabled(!string.IsNullOrEmpty(realmConfiguration.CityLoaderContentServer));
+            Environment.i.world.blockersController.SetEnabled(!string.IsNullOrEmpty(realmConfiguration.Configurations.CityLoaderContentServer));
         }
     }
     public void Dispose() { }

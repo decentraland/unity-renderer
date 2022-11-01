@@ -28,7 +28,8 @@ public class Catalyst : ICatalyst
             realmDomain = DataStore.i.realm.playerRealm.Get().domain;
             lambdasUrl = $"{realmDomain}/lambdas";
             realmContentServerUrl = DataStore.i.realm.playerRealm.Get().contentServerUrl;
-        }else if (DataStore.i.realm.playerRealmAbout.Get() != null)
+        }
+        else if (DataStore.i.realm.playerRealmAbout.Get() != null)
         {
             //TODO: This checks are going to dissapear when we inject the urls in kernel. Currently they are null,
             //and we dont want to override the ones that have been set up in playerRealm
@@ -223,8 +224,12 @@ public class Catalyst : ICatalyst
 
     private void PlayerRealmAboutOnChange(AboutResponse current, AboutResponse previous)
     {
-        lambdasUrl = current.Lambdas.PublicUrl;
-        realmContentServerUrl = current.Content.PublicUrl;
+        //TODO: This checks are going to dissapear when we inject the urls in kernel. Currently they are null,
+        //and we dont want to override the ones that have been set up in playerRealm
+        if(!string.IsNullOrEmpty(current.Lambdas.PublicUrl))
+            lambdasUrl = current.Lambdas.PublicUrl;
+        if(!string.IsNullOrEmpty(current.Content.PublicUrl))
+            realmContentServerUrl = current.Content.PublicUrl;
     }
 
 }

@@ -3,6 +3,6 @@ using Decentraland.Bff;
 
 public interface IWorldsModifier : IDisposable
 {
-    void EnteredRealm(bool isCatalyst, AboutResponse.Types.AboutConfiguration realmConfiguration);
+    void EnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
 
 }

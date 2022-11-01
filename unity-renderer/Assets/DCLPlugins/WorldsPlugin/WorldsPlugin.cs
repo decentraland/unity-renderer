@@ -11,10 +11,12 @@ public class WorldsPlugin : IPlugin
 
     internal List<IWorldsModifier> worldsModifiers;
     private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
-    private BaseVariable<AboutResponse.Types.AboutConfiguration> realmAboutConfiguration => DataStore.i.realm.realmAboutConfiguration;
-    private AboutResponse.Types.AboutConfiguration currentConfiguration;
+    private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
+    private AboutResponse currentConfiguration;
+    
     public WorldsPlugin()
     {
+        worldsModifiers = new List<IWorldsModifier>() { new WorldsBlockerModifier() };
         realmAboutConfiguration.OnChange += RealmChanged;
         realmsList.OnSet += RealmListSet;
     }
@@ -25,20 +27,20 @@ public class WorldsPlugin : IPlugin
             SetWorldModifiers();
     }
 
-    private void RealmChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration previous)
+    private void RealmChanged(AboutResponse current, AboutResponse previous)
     {
+        currentConfiguration = current;
         if (realmsList.Count().Equals(0))
             return;
-
-        currentConfiguration = current;
+        
         SetWorldModifiers();
     }
 
     private void SetWorldModifiers()
     {
         List<RealmModel> currentRealmsList = realmsList.Get().ToList();
-        bool isRegularRealm = currentRealmsList.FirstOrDefault(r => r.serverName == currentConfiguration.RealmName) != null;
-        worldsModifiers.ForEach(e => e.EnteredRealm(isRegularRealm, currentConfiguration));
+        bool isCatalyst = currentRealmsList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
+        worldsModifiers.ForEach(e => e.EnteredRealm(isCatalyst, currentConfiguration));
     }
 
     public void Dispose()
