@@ -61,7 +61,8 @@ Shader "DLC/Master_ToonShader_Outline_R3_V1_1_RT"
 
             // Render State
             Cull Back
-        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        //Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        Blend[_SrcBlend][_DstBlend]
         ZTest LEqual
         ZWrite Off
 
