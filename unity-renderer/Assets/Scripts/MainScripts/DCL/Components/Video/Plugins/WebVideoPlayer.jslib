@@ -139,10 +139,11 @@ var WebVideoPlayer = {
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
 
+        // Warning! Profile performance when changing internalFormat and format parameters! For more details see PR: https://github.com/decentraland/unity-renderer/pull/3344 
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
-            GLctx.RGBA,
+            GLctx.RGBA, 
             videos[id].video.videoWidth,
             videos[id].video.videoHeight,
             0,
