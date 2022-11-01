@@ -53,6 +53,8 @@ namespace DCL.ECSComponents
                 containerModel.parentElement?.Remove(containerModel.rootElement);
                 containerModel.parentElement = null;
             }
+            containerModel.shouldSort = containerModel.rigthOf != model.RightOf;
+            containerModel.rigthOf = model.RightOf;
 
             VisualElement element = containerModel.rootElement;
 

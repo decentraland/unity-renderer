@@ -99,7 +99,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -123,7 +123,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
@@ -134,7 +134,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
