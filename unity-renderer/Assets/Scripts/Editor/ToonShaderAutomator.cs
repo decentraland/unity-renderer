@@ -46,7 +46,7 @@ public class ToonShaderAutomator : EditorWindow
         string endFilePath = toonShaderPath + toonShader + ".shader";
         string text = File.ReadAllText(toonShaderPath + toonShader + ".shader");
 
-        if (isEssentialsOnlyUpdate)
+        if (isEssentialsOnlyUpdate || isFullUpdate)
         {
             ReplaceText(endFilePath , "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl", "PBRForwardPass.hlsl");
             ReplaceText(endFilePath , "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl" , "DepthOnlyPass.hlsl");
