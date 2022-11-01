@@ -364,7 +364,7 @@
         "m_GuidSerialized": "8347ada7-d2d0-460e-9d02-54681e79d66c"
     },
     "m_Name": "Vector3",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector3_017b4887121a433b87f06ffde4060f38",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
@@ -974,10 +974,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1875.0,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
+            "x": 2066.000244140625,
+            "y": -72.0000228881836,
+            "width": 120.999755859375,
+            "height": 77.00003051757813
         }
     },
     "m_Slots": [
@@ -1392,7 +1392,7 @@
         "m_GuidSerialized": "e962e1de-fb84-4c3f-b2ad-73d43320fa01"
     },
     "m_Name": "OutlineOpacity",
-    "m_DefaultReferenceName": "",
+    "m_DefaultReferenceName": "Vector1_b2acc186d477455791fc5d28a3fefd6a",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,

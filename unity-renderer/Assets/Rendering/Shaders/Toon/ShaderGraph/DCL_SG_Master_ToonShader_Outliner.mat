@@ -89,11 +89,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Boolean_3f40a92111b343f1ba6fb73962044880: 0
     - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
     - _AlphaRF: 1
     - _BaseRF: 1
     - _CellShading: 255
     - _DitherFade: 1
+    - _EmissionRF: 1
     - _Outline: 3.25
     - _OutlineFade: 1
     - _OutlineFade_1: 1

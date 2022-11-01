@@ -88,6 +88,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Boolean_3f40a92111b343f1ba6fb73962044880: 0
     - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
     - _AlphaRF: 1
     - _BaseRF: 1
@@ -100,7 +101,7 @@ Material:
     - _OutlineOpacity: 1
     - _ToonFade: 1
     - _ToonMultiplier: 0
-    - _isOutlineDisabled: 1
+    - _isOutlineDisabled: 0
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
     - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
