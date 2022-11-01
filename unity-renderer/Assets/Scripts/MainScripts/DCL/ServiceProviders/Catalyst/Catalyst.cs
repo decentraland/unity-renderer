@@ -30,8 +30,12 @@ public class Catalyst : ICatalyst
             realmContentServerUrl = DataStore.i.realm.playerRealm.Get().contentServerUrl;
         }else if (DataStore.i.realm.playerRealmAbout.Get() != null)
         {
-            lambdasUrl = DataStore.i.realm.playerRealmAbout.Get().Lambdas.PublicUrl;
-            realmContentServerUrl = DataStore.i.realm.playerRealmAbout.Get().Content.PublicUrl;
+            //TODO: This checks are going to dissapear when we inject the urls in kernel. Currently they are null,
+            //and we dont want to override the ones that have been set up in playerRealm
+            if(!string.IsNullOrEmpty(DataStore.i.realm.playerRealmAbout.Get().Lambdas.PublicUrl))
+                lambdasUrl = DataStore.i.realm.playerRealmAbout.Get().Lambdas.PublicUrl;
+            if(!string.IsNullOrEmpty(DataStore.i.realm.playerRealmAbout.Get().Content.PublicUrl))
+                realmContentServerUrl = DataStore.i.realm.playerRealmAbout.Get().Content.PublicUrl;
         }
 
         DataStore.i.realm.playerRealm.OnChange += PlayerRealmOnChange;
