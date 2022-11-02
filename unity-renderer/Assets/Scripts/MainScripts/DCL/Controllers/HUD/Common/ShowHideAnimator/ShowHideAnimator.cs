@@ -23,7 +23,8 @@ public class ShowHideAnimator : MonoBehaviour
         if (TryGetComponent(out Animator animator)) //Remove old behaviour
             Destroy(animator);
 
-        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void OnEnable()
