@@ -26,7 +26,8 @@ var WebVideoPlayer = {
             video: vid,
             state: videoState.NONE,
             error: "",
-            textureId: texId
+            textureId: texId,
+            playedFrame: 0
         };
 
         videos[Pointer_stringify(videoId)] = videoData;
@@ -135,12 +136,25 @@ var WebVideoPlayer = {
 
         if (videos[id].state !== 4) return; //PLAYING
 
+        const quality = videos[id].video.getVideoPlaybackQuality();
+        console.log("frames = " + quality.totalVideoFrames + "  current = " + videos[id].playedFrame);
+        videos[id].playedFrame = quality.totalVideoFrames;
+        
         const textureId = videos[id].textureId;
         
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
 
-        GLctx.texStorage2D(GLctx.TEXTURE_2D, 1, GLctx.SRGB8_ALPHA8, videos[id].video.videoWidth, videos[id].video.videoHeight);
-        GLctx.texSubImage2D(GLctx.TEXTURE_2D, 0, 0, 0, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videos[id].video);
+        GLctx.texStorage2D(
+            GLctx.TEXTURE_2D,
+            0,
+            GLctx.SRGB8_ALPHA8,
+            videos[id].video.videoWidth,
+            videos[id].video.videoHeight,
+            0,
+            GLctx.RGBA,
+            GLctx.UNSIGNED_BYTE,
+            videos[id].video
+        );
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
