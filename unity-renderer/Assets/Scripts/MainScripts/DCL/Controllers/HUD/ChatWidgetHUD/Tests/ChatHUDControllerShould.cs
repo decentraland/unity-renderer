@@ -65,7 +65,7 @@ public class ChatHUDControllerShould
 
         await controller.AddChatMessage(msg);
 
-        view.Received(1).RemoveFirstEntry();
+        view.Received(1).RemoveOldestEntry();
     });
 
     [UnityTest]
