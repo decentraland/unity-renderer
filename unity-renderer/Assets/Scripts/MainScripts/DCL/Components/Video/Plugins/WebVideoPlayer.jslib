@@ -25,9 +25,9 @@ var WebVideoPlayer = {
                 // newFrame = true
                 // Re-register the callback to be notified about the next frame.
                 console.log("VIDEO PLAYER: new Frame");
-                video.requestVideoFrameCallback(onNewFrame);
+                vid.requestVideoFrameCallback(onNewFrame);
             };
-            video.requestVideoFrameCallback(onNewFrame);
+            vid.requestVideoFrameCallback(onNewFrame);
         } else if ('seekToNextFrame' in HTMLVideoElement.prototype) {
             console.log("VIDEO PLAYER: firefox implementation");
         } else {
