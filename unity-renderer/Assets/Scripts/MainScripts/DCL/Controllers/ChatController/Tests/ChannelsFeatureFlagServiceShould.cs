@@ -24,6 +24,12 @@ namespace DCL.Chat.Channels
             service = new ChannelsFeatureFlagService(dataStore, userProfileBridge);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            service.Dispose();
+        }
+
         [Test]
         public void NotAllowedWhenListIsNull()
         {
