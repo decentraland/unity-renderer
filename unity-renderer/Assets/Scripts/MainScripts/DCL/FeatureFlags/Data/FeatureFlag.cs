@@ -27,6 +27,24 @@ public class FeatureFlag
 
         return false;
     }
+
+    public FeatureFlagVariantPayload GetFeatureFlagVariantPayload(string featureNameLong)
+    {
+        string[] splitFeatureName = featureNameLong.Split(':');
+        string featureName = splitFeatureName[0];
+        FeatureFlagVariantPayload payloadResult = null;
+
+        if (splitFeatureName.Length > 1 && variants.TryGetValue(featureName, out var variant))
+        {
+            string variantName = splitFeatureName[splitFeatureName.Length - 1];
+            if (variant.enabled && variant.name == variantName)
+            {
+                payloadResult = variant.payload;
+            }
+        }
+
+        return payloadResult;
+    }
    
     public string ToString()
     {

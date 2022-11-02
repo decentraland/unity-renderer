@@ -285,7 +285,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5657874010593393711}
   m_LocalRotation: {x: -0, y: 0.999806, z: 0.019699385, w: 0}
-  m_LocalPosition: {x: 0, y: 1.471, z: 1.081}
+  m_LocalPosition: {x: 0, y: 1.4, z: 1.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4315422120597451079}
@@ -358,9 +358,8 @@ MonoBehaviour:
     expressionTriggerId: 
     expressionTriggerTimestamp: 0
     deltaTime: 0
+    shouldLoop: 0
   target: {fileID: 6705057966129581724}
-  runMinSpeed: 6
-  walkMinSpeed: 0.1
 --- !u!1 &8127486274469708600
 GameObject:
   m_ObjectHideFlags: 0

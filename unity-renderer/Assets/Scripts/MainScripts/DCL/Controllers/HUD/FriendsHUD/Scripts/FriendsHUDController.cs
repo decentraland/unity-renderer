@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DCL;
 using SocialFeaturesAnalytics;
@@ -13,34 +11,40 @@ public class FriendsHUDController : IHUD
     private const int MAX_SEARCHED_FRIENDS = 100;
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
+    private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
     private readonly DataStore dataStore;
     private readonly IFriendsController friendsController;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChatController chatController;
+    private readonly IMouseCatcher mouseCatcher;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
-    private int lastSkipForFriends = 0;
-    private int lastSkipForFriendRequests = 0;
+    private int lastSkipForFriends;
+    private int lastSkipForFriendRequests;
 
     public IFriendsHUDComponentView View { get; private set; }
 
     public event Action<string> OnPressWhisper;
     public event Action OnOpened;
     public event Action OnClosed;
+    public event Action OnViewClosed;
 
     public FriendsHUDController(DataStore dataStore,
         IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        IChatController chatController)
+        IChatController chatController,
+        IMouseCatcher mouseCatcher)
     {
         this.dataStore = dataStore;
         this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.chatController = chatController;
+        this.mouseCatcher = mouseCatcher;
     }
 
     public void Initialize(IFriendsHUDComponentView view = null)
@@ -61,6 +65,9 @@ public class FriendsHUDController : IHUD
         view.OnSearchFriendsRequested += SearchFriends;
         view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
         view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
+
+        if(mouseCatcher != null)
+            mouseCatcher.OnMouseLock += HandleViewClosed;
 
         ownUserProfile = userProfileBridge.GetOwn();
         ownUserProfile.OnUpdate -= HandleProfileUpdated;
@@ -86,6 +93,17 @@ public class FriendsHUDController : IHUD
 
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
+    }
+
+    private void SetVisiblePanelList(bool visible)
+    {
+        HashSet<string> newSet = visibleTaskbarPanels.Get();
+        if (visible)
+            newSet.Add("FriendsPanel");
+        else
+            newSet.Remove("FriendsPanel");
+
+        visibleTaskbarPanels.Set(newSet, true);
     }
 
     public void Dispose()
@@ -130,6 +148,7 @@ public class FriendsHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        SetVisiblePanelList(visible);
         if (visible)
         {
             lastSkipForFriends = 0;
@@ -137,6 +156,9 @@ public class FriendsHUDController : IHUD
             View.ClearAll();
             View.Show();
             UpdateNotificationsCounter();
+
+            foreach (var friend in onlineFriends)
+                View.Set(friend.Key, friend.Value);
 
             if (View.IsFriendListActive)
                 DisplayMoreFriends();
@@ -148,11 +170,17 @@ public class FriendsHUDController : IHUD
         else
         {
             View.Hide();
+            View.DisableSearchMode();
+            searchingFriends = false;
             OnClosed?.Invoke();
         }
     }
 
-    private void HandleViewClosed() => SetVisibility(false);
+    private void HandleViewClosed()
+    {
+        OnViewClosed?.Invoke();
+        SetVisibility(false);
+    }
 
     private void HandleFriendsInitialized()
     {
@@ -161,9 +189,9 @@ public class FriendsHUDController : IHUD
 
         if (View.IsActive())
         {
-            if (View.IsFriendListActive)
+            if (View.IsFriendListActive && lastSkipForFriends <= 0)
                 DisplayMoreFriends();
-            else if (View.IsRequestListActive)
+            else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                 DisplayMoreFriendRequests();
         }
         
@@ -243,10 +271,17 @@ public class FriendsHUDController : IHUD
                 friend.blocked = IsUserBlocked(userId);
                 friends[userId] = friend;
                 View.Set(userId, friend);
+
+                if (status.presence == PresenceStatus.ONLINE)
+                    onlineFriends[userId] = friend;
+                else
+                    onlineFriends.Remove(userId);
+
                 break;
             case FriendshipStatus.NOT_FRIEND:
                 View.Remove(userId);
                 friends.Remove(userId);
+                onlineFriends.Remove(userId);
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
@@ -255,6 +290,7 @@ public class FriendsHUDController : IHUD
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
+                onlineFriends.Remove(userId);
                 View.Set(userId, sentRequest);
                 break;
             case FriendshipStatus.REQUESTED_FROM:
@@ -264,6 +300,7 @@ public class FriendsHUDController : IHUD
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
+                onlineFriends.Remove(userId);
                 View.Set(userId, receivedRequest);
                 break;
         }
@@ -293,6 +330,7 @@ public class FriendsHUDController : IHUD
             case FriendshipAction.DELETED:
                 friends.Remove(userId);
                 View.Remove(userId);
+                onlineFriends.Remove(userId);
                 break;
             case FriendshipAction.APPROVED:
                 var approved = friends.ContainsKey(userId)
@@ -399,60 +437,71 @@ public class FriendsHUDController : IHUD
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
+        if (lastSkipForFriends > 0) return;
         DisplayMoreFriends();
     }
 
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
-        ShowOrHideMoreFriendsToLoadHint();
+        
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
 
         // We are not handling properly the case when the friends are not fetched correctly from server.
         // 'lastSkipForFriends' will have an invalid value.
         lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
+        
+        ShowOrHideMoreFriendsToLoadHint();
     }
 
     private void DisplayMoreFriendRequests()
     {
         if (!friendsController.IsInitialized) return;
-        ShowOrHideMoreFriendRequestsToLoadHint();
+        if (searchingFriends) return;
+        
         friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
-
+        
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
+        
+        ShowOrHideMoreFriendRequestsToLoadHint();
     }
     
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
+        if (lastSkipForFriendRequests > 0) return;
         DisplayMoreFriendRequests();
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
     {
-        if (View.FriendRequestCount >= friendsController.TotalFriendRequestCount)
+        if (lastSkipForFriendRequests >= friendsController.TotalFriendRequestCount)
             View.HideMoreRequestsToLoadHint();
         else
-            View.ShowMoreRequestsToLoadHint(friendsController.TotalFriendRequestCount - View.FriendRequestCount);
+            View.ShowMoreRequestsToLoadHint(Mathf.Clamp(friendsController.TotalFriendRequestCount - lastSkipForFriendRequests,
+                0,
+                friendsController.TotalFriendRequestCount));
     }
 
     private void ShowOrHideMoreFriendsToLoadHint()
     {
-        if (View.FriendCount >= friendsController.TotalFriendCount || searchingFriends)
+        if (lastSkipForFriends >= friendsController.TotalFriendCount || searchingFriends)
             View.HideMoreFriendsToLoadHint();
         else
-            View.ShowMoreFriendsToLoadHint(friendsController.TotalFriendCount - View.FriendCount);
+            View.ShowMoreFriendsToLoadHint(Mathf.Clamp(friendsController.TotalFriendCount - lastSkipForFriends,
+                0,
+                friendsController.TotalFriendCount));
     }
 
     private void SearchFriends(string search)
     {
         if (string.IsNullOrEmpty(search))
         {
-            View.ClearFriendFilter();
+            View.DisableSearchMode();
             searchingFriends = false;
             ShowOrHideMoreFriendsToLoadHint();
             return;
@@ -460,21 +509,7 @@ public class FriendsHUDController : IHUD
 
         friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
 
-        Dictionary<string, FriendEntryModel> FilterFriendsByNameOrId(string search)
-        {
-            var regex = new Regex(search, RegexOptions.IgnoreCase);
-
-            return friends.Values.Where(model =>
-            {
-                var status = friendsController.GetUserStatus(model.userId);
-                if (status == null) return false;
-                if (status.friendshipStatus != FriendshipStatus.FRIEND) return false;
-                if (regex.IsMatch(model.userId)) return true;
-                return !string.IsNullOrEmpty(model.userName) && regex.IsMatch(model.userName);
-            }).Take(MAX_SEARCHED_FRIENDS).ToDictionary(model => model.userId, model => model);
-        }
-
-        View.FilterFriends(FilterFriendsByNameOrId(search));
+        View.EnableSearchMode();
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
     }

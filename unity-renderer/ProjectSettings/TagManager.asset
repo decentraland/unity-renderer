@@ -8,8 +8,7 @@ TagManager:
   - MiniMapCamera
   - Voxel
   - FromAssetBundle
-  - Occluded
-  - Standard
+  - FromRawGLTF
   layers:
   - Default
   - TransparentFX
@@ -37,9 +36,9 @@ TagManager:
   - ViewportCullingIgnored
   - FX
   - Skybox
-  - Outlined
-  - OutlinedOccluded
-  - OutlinedBlurred
+  - 
+  - 
+  - 
   - 
   - 
   - 

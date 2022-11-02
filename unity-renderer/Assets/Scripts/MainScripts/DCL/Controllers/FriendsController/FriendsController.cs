@@ -67,7 +67,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         });
     }
 
-    public bool IsFriend(string userId) => friends.ContainsKey(userId);
+    public bool IsFriend(string userId) => friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
 
     public void RemoveFriend(string friendId)
     {
@@ -247,13 +247,16 @@ public class FriendsController : MonoBehaviour, IFriendsController
         if (!friends.ContainsKey(newUserStatus.userId))
         {
             friends.Add(newUserStatus.userId, newUserStatus);
+            OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
         }
         else
         {
-            friends[newUserStatus.userId] = newUserStatus;
+            if (!friends[newUserStatus.userId].Equals(newUserStatus))
+            {
+                friends[newUserStatus.userId] = newUserStatus;
+                OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
+            }
         }
-
-        OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
     }
 
     private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)

@@ -61,6 +61,12 @@ public interface ICarouselComponentView
     /// </summary>
     /// <param name="item">An UI component.</param>
     void AddItem(BaseComponentView item);
+    
+    /// <summary>
+    /// Adds a new item in the carousel and update carousel dot selector.
+    /// </summary>
+    /// <param name="item">An UI component.</param>
+    void AddItemWithDotsSelector(BaseComponentView item);
 
     /// <summary>
     /// Remove an item from the carousel.
@@ -224,6 +230,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
         background.color = newColor;
     }
+    
+    public void SetManualControlsActive() => 
+        SetManualControlsActive(model.showManualControls);
 
     public void SetManualControlsActive(bool isActived)
     {
@@ -265,13 +274,16 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         GenerateDotsSelector();
     }
 
-    public void AddItem(BaseComponentView item)
+    public void AddItemWithDotsSelector(BaseComponentView item)
     {
         CreateItem(item, $"Item{instantiatedItems.Count}");
         SetManualControlsActive(model.showManualControls);
         GenerateDotsSelector();
     }
-
+    
+    public void AddItem(BaseComponentView item) => 
+        CreateItem(item, $"Item{instantiatedItems.Count}");
+    
     public void RemoveItem(BaseComponentView item)
     {
         BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);
@@ -437,11 +449,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void DestroyInstantiatedItems()
     {
         List<BaseComponentView> itemsToDestroy = ExtractItems();
+        
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
             if (itemToDestroy != null)
                 DestroyImmediate(itemToDestroy.gameObject);
         }
+        
         itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
@@ -565,7 +579,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         isInTransition = false;
     }
 
-    internal void GenerateDotsSelector()
+    public void GenerateDotsSelector()
     {
         List<GameObject> dotsToRemove = new List<GameObject>();
         foreach (Transform child in dotsSelector.transform)

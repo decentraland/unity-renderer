@@ -19,10 +19,11 @@ namespace DCL
         }
 
         [Serializable]
-        class DetectABsPayload
+        class MemoryDescriptionPayload
         {
-            public bool isOn;
-            public bool forCurrentScene;
+            public long jsHeapSizeLimit;
+            public long totalJSHeapSize;
+            public long usedJSHeapSize;
         }
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
@@ -42,30 +43,25 @@ namespace DCL
 
         public void HideFPSPanel()
         {
-            debugController.HideFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void ShowFPSPanel()
         {
-            debugController.ShowFPSPanel();
-        }
-
-        public void DetectABs(string payload)
-        {
-            var data = JsonUtility.FromJson<DetectABsPayload>(payload);
-            if (data.forCurrentScene)
-            {
-                DataStore.i.debugConfig.showSceneABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
-            else
-            {
-                DataStore.i.debugConfig.showGlobalABDetectionLayer.Set(data.isOn, notifyEvent:true);
-            }
+            debugController.ToggleFPSPanel();
         }
 
         public void SetSceneDebugPanel()
         {
             debugController.SetSceneDebugPanel();
+        }
+        
+        public void SetMemoryUsage(string payload)
+        {
+            var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize);
+            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize);
         }
 
         public void SetEngineDebugPanel()

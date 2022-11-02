@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// Utils related to the events management in ExploreV2.
@@ -69,24 +70,24 @@ public static class ExploreEventsUtils
     /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
     /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
     /// <returns>A list of instances of events.</returns>
-    public static List<BaseComponentView> InstantiateAndConfigureEventCards(
-        List<EventCardComponentModel> events,
-        Pool pool,
-        Action<EventCardComponentModel> OnEventInfoClicked,
-        Action<EventFromAPIModel> OnEventJumpInClicked,
-        Action<string> OnEventSubscribeEventClicked,
-        Action<string> OnEventUnsubscribeEventClicked)
+    public static List<BaseComponentView> InstantiateAndConfigureEventCards(List<EventCardComponentModel> events, Pool pool,
+        Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked)
     {
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 
         foreach (EventCardComponentModel eventInfo in events)
-        {
-            EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
-            ConfigureEventCard(eventGO, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
-            instantiatedPlaces.Add(eventGO);
-        }
+            instantiatedPlaces.Add(
+                InstantiateConfiguredEventCard(eventInfo, pool, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked)
+                );
 
         return instantiatedPlaces;
+    }
+    
+    public static EventCardComponentView InstantiateConfiguredEventCard(EventCardComponentModel eventInfo, Pool pool, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked)
+    {
+        EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
+        ConfigureEventCard(eventGO, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
+        return eventGO;
     }
 
     /// <summary>
@@ -208,8 +209,8 @@ public static class ExploreEventsUtils
         string layerName = realmFromAPI[1];
 
         if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
+            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 }

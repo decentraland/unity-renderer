@@ -988,7 +988,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4654740177256172370}
   m_HandleRect: {fileID: 6473396510046919356}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1591,7 +1591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 34.8, y: 53.5}
+  m_AnchoredPosition: {x: 34.80005, y: 53.5}
   m_SizeDelta: {x: 79, y: 117}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6657635438524569908
@@ -3381,8 +3381,9 @@ GameObject:
   - component: {fileID: 4944824980815431257}
   - component: {fileID: 5430154721472367846}
   - component: {fileID: 5188948955112179522}
-  - component: {fileID: 1049831892811583427}
   - component: {fileID: 3578851569800893368}
+  - component: {fileID: 5340690109582645380}
+  - component: {fileID: 1481270875036362003}
   m_Layer: 5
   m_Name: NavMap
   m_TagString: Untagged
@@ -3473,7 +3474,19 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1049831892811583427
+--- !u!225 &3578851569800893368
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7061832710791367598}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5340690109582645380
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3482,7 +3495,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7061832710791367598}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c277d3ff1164a5fb894b76c718d96a, type: 3}
+  m_Script: {fileID: 11500000, guid: 92eadf420ad9498593fa1f1a17f8de19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   closeButton: {fileID: 6221079439394858850}
@@ -3491,13 +3504,21 @@ MonoBehaviour:
   currentSceneNameText: {fileID: 2734279282512924330}
   currentSceneCoordsText: {fileID: 8417015326604837885}
   toastView: {fileID: 4118697293185831752}
+  zoom: {fileID: 1481270875036362003}
+--- !u!114 &1481270875036362003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7061832710791367598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb7799ed4671e6748979ae8dbe3553a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
-  zoomIn: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
-  zoomOut: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
-  zoomInButton: {fileID: 7044420972446223561}
-  zoomOutButton: {fileID: 6232309133183881431}
-  zoomInPlus: {fileID: 6752097118152243281}
-  zoomOutMinus: {fileID: 3416978492583913869}
+  containerRectTransform: {fileID: 4562892339457273614}
   zoomCurve:
     serializedVersion: 2
     m_Curve:
@@ -3549,18 +3570,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!225 &3578851569800893368
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7061832710791367598}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
+  zoomIn:
+    InputAction: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
+    Button: {fileID: 7044420972446223561}
+    Image: {fileID: 6752097118152243281}
+  zoomOut:
+    InputAction: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
+    Button: {fileID: 6232309133183881431}
+    Image: {fileID: 3416978492583913869}
 --- !u!1 &7147034322982732920
 GameObject:
   m_ObjectHideFlags: 0
@@ -4003,7 +4020,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3391553934498204799}
   m_HandleRect: {fileID: 8263587515024556417}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

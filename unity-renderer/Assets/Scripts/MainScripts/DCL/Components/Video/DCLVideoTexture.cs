@@ -44,6 +44,7 @@ namespace DCL.Components
         private bool isPlayStateDirty = false;
         internal bool isVisible = false;
 
+        private bool isInitialized = false;
         private bool isPlayerInScene = true;
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
@@ -156,13 +157,16 @@ namespace DCL.Components
 
         private void Initialize(DCLVideoClip dclVideoClip)
         {
+            if (isInitialized) return;
+            isInitialized = true;
+
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
+
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += SetPlayStateDirty;
-
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
             OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
@@ -311,12 +315,9 @@ namespace DCL.Components
             return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
-        {
-            SetPlayStateDirty();
-        }
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
 
-        private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
+        private void OnSceneIDChanged(string current, string previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -355,12 +356,9 @@ namespace DCL.Components
             SetPlayStateDirty();
         }
 
-        void SetPlayStateDirty(IDCLEntity entity = null)
-        {
-            isPlayStateDirty = true;
-        }
+        private void SetPlayStateDirty(IDCLEntity entity = null) => isPlayStateDirty = true;
 
-        void OnAudioSettingsChanged(AudioSettings settings) { UpdateVolume(); }
+        private void OnAudioSettingsChanged(AudioSettings settings) => UpdateVolume();
 
         public override void Dispose()
         {

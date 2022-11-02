@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static HotScenesController;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// Utils related to the places management in ExploreV2.
@@ -78,14 +79,20 @@ public static class ExplorePlacesUtils
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 
         foreach (PlaceCardComponentModel placeInfo in places)
-        {
-            PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();
-            ConfigurePlaceCard(placeGO, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
-            OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            instantiatedPlaces.Add(placeGO);
-        }
+            instantiatedPlaces.Add(
+                InstantiateConfiguredPlaceCard(placeInfo, pool, OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked)
+                );
 
         return instantiatedPlaces;
+    }
+    
+    public static BaseComponentView InstantiateConfiguredPlaceCard(PlaceCardComponentModel placeInfo, Pool pool, 
+        Action<FriendsHandler> OnFriendHandlerAdded, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked)
+    {
+        PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();
+        ConfigurePlaceCard(placeGO, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
+        return placeGO;
     }
 
     /// <summary>
@@ -153,8 +160,8 @@ public static class ExplorePlacesUtils
         }
 
         if (string.IsNullOrEmpty(realm.serverName))
-            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
+            Environment.i.world.teleportController.Teleport(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
         else
-            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
+            Environment.i.world.teleportController.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
     }
 }

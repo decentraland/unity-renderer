@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
+using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,8 +15,8 @@ public class PublicChatChannelControllerShould
     private const string TEST_USER_ID = "otherUserId";
     private const string TEST_USER_NAME = "otherUserName";
 
-    private PublicChatChannelController controller;
-    private IChannelChatWindowView view;
+    private PublicChatWindowController controller;
+    private IPublicChatWindowView view;
     private IChatHUDComponentView internalChatView;
     private IChatController chatController;
     private IUserProfileBridge userProfileBridge;
@@ -27,8 +29,11 @@ public class PublicChatChannelControllerShould
         GivenUser(TEST_USER_ID, TEST_USER_NAME);
 
         chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby",
+            0, 1, true, false, ""));
+        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         mouseCatcher = Substitute.For<IMouseCatcher>();
-        controller = new PublicChatChannelController(
+        controller = new PublicChatWindowController(
             chatController,
             userProfileBridge,
             new DataStore(),
@@ -36,7 +41,7 @@ public class PublicChatChannelControllerShould
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
 
-        view = Substitute.For<IChannelChatWindowView>();
+        view = Substitute.For<IPublicChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
         controller.Initialize(view);
@@ -46,27 +51,6 @@ public class PublicChatChannelControllerShould
     public void TearDown()
     {
         controller.Dispose();
-    }
-
-    [Test]
-    public void AddEntryWhenPrivateMessage()
-    {
-        var msg = new ChatMessage
-        {
-            messageType = ChatMessage.Type.PRIVATE,
-            body = "test message",
-            sender = OWN_USER_ID,
-            recipient = TEST_USER_ID,
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
-
-        internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == msg.messageType
-            && model.bodyText == $"<noparse>{msg.body}</noparse>"
-            && model.senderId == msg.sender
-            && model.otherUserId == msg.recipient));
     }
 
     [Test]
@@ -114,7 +98,7 @@ public class PublicChatChannelControllerShould
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
     }
-    
+
     [Test]
     public void SendPrivateMessage()
     {
@@ -126,21 +110,6 @@ public class PublicChatChannelControllerShould
                                                                  && c.recipient == TEST_USER_ID));
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
-    }
-    
-    [Test]
-    public void ResetInputFieldAndActivatePreviewWhenIsInvalidMessage()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        
-        internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {body = "", messageType = ChatMessage.Type.PUBLIC, recipient = TEST_USER_ID});
-        
-        internalChatView.Received(1).ResetInputField(true);
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
     }
 
     [Test]
@@ -159,108 +128,63 @@ public class PublicChatChannelControllerShould
         Assert.IsFalse(view.IsActive);
     }
 
-    [UnityTest]
-    public IEnumerator ReplyToWhisperingSender()
-    {
-        var msg = new ChatMessage
-        {
-            body = "test message",
-            sender = TEST_USER_ID,
-            recipient = OWN_USER_ID,
-            messageType = ChatMessage.Type.PRIVATE,
-            timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-
-        yield return null;
-
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
-
-        yield return null;
-
-        internalChatView.OnMessageUpdated += Raise.Event<Action<string>>("/r ");
-
-        internalChatView.Received(1).SetInputFieldText($"/w {TEST_USER_NAME} ");
-    }
-
     [Test]
-    public void ActivatePreviewModeInstantly()
+    public void ClosePanelWhenMouseIsLocked()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        controller.SetVisibility(true);
-        controller.ActivatePreviewModeInstantly();
-
-        view.Received(1).ActivatePreviewInstantly();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
-    public void ActivatePreviewMode()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        controller.SetVisibility(true);
-        controller.ActivatePreview();
-
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
-    public void ActivatePreviewModeWhenMouseIsLocked()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
 
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Hide();
     }
 
     [Test]
-    public void DeactivatePreviewMode()
+    public void ShowPanel()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         controller.SetVisibility(true);
-        controller.DeactivatePreview();
 
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
+        view.Received(1).Show();
     }
 
     [Test]
-    public void DeactivatePreviewModeWhenInputFieldIsSelected()
+    public void MarkChannelMessagesAsReadCorrectly()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
+        controller.MarkChannelMessagesAsRead();
 
-        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
-
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
+        chatController.Received(1).MarkChannelMessagesAsSeen(Arg.Any<string>());
     }
 
-    [UnityTest]
-    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
+    [Test]
+    public void MuteChannel()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        view.IsFocused.Returns(false);
+        controller.Setup("nearby");
+        view.OnMuteChanged += Raise.Event<Action<bool>>(true);
 
-        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
-        yield return new WaitForSeconds(4f);
+        chatController.Received(1).MuteChannel("nearby");
+    }
 
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+    [Test]
+    public void UnmuteChannel()
+    {
+        controller.Setup("nearby");
+        view.OnMuteChanged += Raise.Event<Action<bool>>(false);
+
+        chatController.Received(1).UnmuteChannel("nearby");
+    }
+
+    [Test]
+    public void RefreshChannelInformationWhenChannelUpdates()
+    {
+        controller.Setup("nearby");
+        view.ClearReceivedCalls();
+
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(new Channel("nearby", "nearby",
+            0, 1, true, true, ""));
+
+        view.Received(1).Configure(Arg.Is<PublicChatModel>(p => p.channelId == "nearby"
+                                                                && p.name == "nearby"
+                                                                && p.joined == true
+                                                                && p.muted == true));
     }
 
     private void GivenOwnProfile()

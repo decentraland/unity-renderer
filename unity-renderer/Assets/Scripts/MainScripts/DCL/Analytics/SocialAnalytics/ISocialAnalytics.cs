@@ -1,3 +1,4 @@
+using DCL;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -23,5 +24,11 @@ namespace SocialFeaturesAnalytics
         void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source);
         void SendPlayerJoin(PlayerActionSource source);
         void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation);
+        void SendEmptyChannelCreated(string channelName, ChannelJoinedSource source);
+        void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source);
+        void SendLeaveChannel(string channelId, ChannelLeaveSource source);
+        void SendChannelSearch(string text);
+        void SendMessageSentToChannel(string channelName, int bodyLength, string source);
+        void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source);
     }
 }

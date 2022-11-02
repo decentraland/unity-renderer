@@ -108,9 +108,9 @@ public class WebSocketCommunication : IKernelCommunication
         // Please, use `Bridges` as a bridge name, avoid adding messages here. The system will use `Bridges` as the default bridge name.
         messageTypeToBridgeName["SetDebug"] = "Main";
         messageTypeToBridgeName["SetSceneDebugPanel"] = "Main";
+        messageTypeToBridgeName["SetMemoryUsage"] = "Main";
         messageTypeToBridgeName["ShowFPSPanel"] = "Main";
         messageTypeToBridgeName["HideFPSPanel"] = "Main";
-        messageTypeToBridgeName["DetectABs"] = "Main";
         messageTypeToBridgeName["SetEngineDebugPanel"] = "Main";
         messageTypeToBridgeName["SendSceneMessage"] = "Main";
         messageTypeToBridgeName["LoadParcelScenes"] = "Main";
@@ -164,9 +164,17 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
         messageTypeToBridgeName["InitializeChat"] = "Main";
         messageTypeToBridgeName["AddChatMessages"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
         messageTypeToBridgeName["UpdateUserUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
+        messageTypeToBridgeName["UpdateChannelInfo"] = "Main";
+        messageTypeToBridgeName["JoinChannelConfirmation"] = "Main";
+        messageTypeToBridgeName["JoinChannelError"] = "Main";
+        messageTypeToBridgeName["LeaveChannelError"] = "Main";
+        messageTypeToBridgeName["MuteChannelError"] = "Main";
+        messageTypeToBridgeName["UpdateTotalUnseenMessagesByChannel"] = "Main";
+        messageTypeToBridgeName["UpdateChannelMembers"] = "Main";
         messageTypeToBridgeName["UpdateHomeScene"] = "Main";
+        messageTypeToBridgeName["UpdateChannelSearchResults"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

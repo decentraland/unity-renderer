@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
@@ -111,7 +112,7 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key)
+        public void AddVisibilityConstraint(string key)
         {
             visibility.AddGlobalConstrain(key);
             baseAvatar.CancelTransition();
@@ -122,7 +123,10 @@ namespace AvatarSystem
             visibility.RemoveGlobalConstrain(key);
         }
 
-        public void PlayEmote(string emoteId, long timestamps) { animator?.PlayEmote(emoteId, timestamps); }
+        public void PlayEmote(string emoteId, long timestamps)
+        {
+            animator?.PlayEmote(emoteId, timestamps);
+        }
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
 

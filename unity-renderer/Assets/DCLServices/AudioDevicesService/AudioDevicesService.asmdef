@@ -1,0 +1,20 @@
+{
+    "name": "AudioDevicesService",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:570a7a92aac340549a8afe536c29f47a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

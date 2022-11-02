@@ -35,7 +35,7 @@ namespace DCL.Components
         {
             this.scene = scene;
             this.entity = entity;
-        }
+        }   
 
         public void UpdateFromJSON(string json)
         {
@@ -47,7 +47,9 @@ namespace DCL.Components
         {
             DCLTransform.model = model as Model;
 
-            if (entity.OnTransformChange != null) // AvatarShape interpolation hack
+            // AvatarShape interpolation hack: we don't apply avatars position and rotation directly to the transform
+            // and those values are used for the interpolation.
+            if (entity.OnTransformChange != null)
             {
                 entity.OnTransformChange.Invoke(DCLTransform.model);
             }
@@ -55,10 +57,10 @@ namespace DCL.Components
             {
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
-                entity.gameObject.transform.localScale = DCLTransform.model.scale;
-
-                entity.gameObject.transform.CapGlobalValuesToMax();
             }
+            
+            entity.gameObject.transform.localScale = DCLTransform.model.scale;
+            entity.gameObject.transform.CapGlobalValuesToMax();
         }
 
         public IEnumerator ApplyChanges(BaseModel model) { return null; }

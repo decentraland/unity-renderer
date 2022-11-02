@@ -44,7 +44,8 @@ public class FriendsHUDControllerShould
             friendsController,
             userProfileBridge,
             socialAnalytics,
-            Substitute.For<IChatController>());
+            Substitute.For<IChatController>(),
+            Substitute.For<IMouseCatcher>());
         view = Substitute.For<IFriendsHUDComponentView>();
         view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
         controller.Initialize(view);
@@ -389,6 +390,7 @@ public class FriendsHUDControllerShould
         view.Received(1).Set(OTHER_USER_ID, Arg.Is<FriendEntryModel>(f => f.userName == "hehe"));
     }
 
+    [Test]
     public void GetFriendsWhenBecomesVisible()
     {
         view.IsFriendListActive.Returns(true);
@@ -437,7 +439,6 @@ public class FriendsHUDControllerShould
     public void HideMoreFriendsToLoadWhenReachedTotalFriends()
     {
         friendsController.TotalFriendCount.Returns(7);
-        view.FriendCount.Returns(7);
         view.IsFriendListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
         view.ClearReceivedCalls();
@@ -450,8 +451,7 @@ public class FriendsHUDControllerShould
     [Test]
     public void ShowMoreFriendsToLoadWhenMissingFriends()
     {
-        friendsController.TotalFriendCount.Returns(7);
-        view.FriendCount.Returns(3);
+        friendsController.TotalFriendCount.Returns(34);
         view.IsFriendListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
         view.ClearReceivedCalls();
@@ -465,21 +465,19 @@ public class FriendsHUDControllerShould
     public void HideMoreFriendRequestsToLoadWhenReachedTotalFriends()
     {
         friendsController.TotalFriendRequestCount.Returns(16);
-        view.FriendRequestCount.Returns(16);
         view.IsRequestListActive.Returns(true);
-        view.ClearReceivedCalls();
         friendsController.IsInitialized.Returns(true);
+        view.ClearReceivedCalls();
         
         controller.SetVisibility(true);
-        
+
         view.Received(1).HideMoreRequestsToLoadHint();
     }
     
     [Test]
     public void ShowMoreFriendRequestsToLoadWhenMissingRequests()
     {
-        friendsController.TotalFriendRequestCount.Returns(17);
-        view.FriendRequestCount.Returns(8);
+        friendsController.TotalFriendRequestCount.Returns(39);
         view.IsRequestListActive.Returns(true);
         view.ClearReceivedCalls();
         friendsController.IsInitialized.Returns(true);
@@ -504,7 +502,7 @@ public class FriendsHUDControllerShould
         view.IsFriendListActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
         controller.SetVisibility(true);
-
+        
         view.OnRequireMoreFriends += Raise.Event<Action>();
         
         friendsController.Received(1).GetFriends(30, 30);
@@ -543,7 +541,7 @@ public class FriendsHUDControllerShould
         view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
         
         friendsController.Received(1).GetFriends(searchText, 100);
-        view.Received(1).FilterFriends(Arg.Is<Dictionary<string, FriendEntryModel>>(d => d.Count == expectedCount));
+        view.Received(1).EnableSearchMode();
     }
 
     [Test]
@@ -551,7 +549,7 @@ public class FriendsHUDControllerShould
     {
         view.OnSearchFriendsRequested += Raise.Event<Action<string>>("");
         
-        view.Received(1).ClearFriendFilter();
+        view.Received(1).DisableSearchMode();
     }
 
     [Test]
@@ -576,7 +574,7 @@ public class FriendsHUDControllerShould
         controller.SetVisibility(true);
         controller.SetVisibility(false);
         controller.SetVisibility(true);
-        
+     
         friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
     }
 }

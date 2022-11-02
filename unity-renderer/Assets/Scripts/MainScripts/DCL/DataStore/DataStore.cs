@@ -66,6 +66,6 @@ namespace DCL
         public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
         public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
         public DataStore_RpcContext rpcContext => i.Get<DataStore_RpcContext>();
-        public DataStore_ObjectsOutliner objectsOutliner => i.Get<DataStore_ObjectsOutliner>();
+        public DataStore_Channels channels => i.Get<DataStore_Channels>();
     }
 }

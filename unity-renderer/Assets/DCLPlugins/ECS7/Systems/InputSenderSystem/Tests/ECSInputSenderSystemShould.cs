@@ -18,15 +18,16 @@ namespace Tests
 
         private IInternalECSComponent<InternalInputEventResults> inputResultComponent;
         private IECSComponentWriter componentWriter;
+        private InternalECSComponents internalComponents;
 
-        private Action systemUpdate;
+        private Action updateSystems;
 
         [SetUp]
         public void SetUp()
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             inputResultComponent = internalComponents.inputEventResultsComponent;
             componentWriter = Substitute.For<IECSComponentWriter>();
@@ -34,7 +35,12 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             scene = testUtils.CreateScene("temptation");
 
-            systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+            updateSystems = () =>
+            {
+                systemUpdate();
+                internalComponents.WriteSystemUpdate();
+            };
         }
 
         [TearDown]
@@ -48,11 +54,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)
@@ -60,7 +66,7 @@ namespace Tests
                 inputResultComponent.AddEvent(scene, eventData);
             }
 
-            systemUpdate();
+            updateSystems();
 
             componentWriter.Received(1)
                            .PutComponent(
@@ -82,11 +88,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)
@@ -96,11 +102,11 @@ namespace Tests
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             var model = compData.model;
-            model.dirty = false;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            internalComponents.WriteSystemUpdate(); //clean dirty
 
-            systemUpdate();
+            updateSystems();
 
             componentWriter.DidNotReceive()
                            .PutComponent(
@@ -116,11 +122,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)
@@ -128,7 +134,7 @@ namespace Tests
                 inputResultComponent.AddEvent(scene, eventData);
             }
 
-            systemUpdate();
+            updateSystems();
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             var model = compData.model;

@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Helpers.NFT;
 using NFTShape_Internal;
 using NSubstitute;
@@ -26,14 +28,15 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            Environment.Setup(serviceLocator);
+            var factory = new ECSComponentsFactory();
+            var manager = new ECSComponentsManager(factory.componentBuilders);
+            var internalComponent = new InternalECSComponents(manager, factory);
 
-            testUtils = new ECS7TestUtilsScenesAndEntities();
+            testUtils = new ECS7TestUtilsScenesAndEntities(manager);
             scene = testUtils.CreateScene("temptation");
             entity = scene.CreateEntity(10399);
 
-            renderersComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
+            renderersComponent = internalComponent.renderersComponent;
             infoRetriever = Substitute.For<INFTInfoRetriever>();
             assetRetriever = Substitute.For<INFTAssetRetriever>();
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
@@ -41,6 +44,10 @@ namespace Tests
                 infoRetriever,
                 assetRetriever,
                 renderersComponent);
+
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, manager, factory, null, new List<InternalComponentWriteData>());
+            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
         }
 
         [TearDown]
@@ -55,7 +62,7 @@ namespace Tests
             infoRetriever.FetchNFTInfo(Arg.Any<string>()).Returns(UniTask.FromResult(new NFTInfo()));
             assetRetriever.LoadNFTAsset(Arg.Any<string>()).Returns(UniTask.FromResult(Substitute.For<INFTAsset>()));
 
-            PBNFTShape model = new PBNFTShape()
+            PBNftShape model = new PBNftShape()
             {
                 Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722"
             };
@@ -72,7 +79,7 @@ namespace Tests
         [Test]
         public void CreateFrame()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
 
             NFTShapeFrame frame = (NFTShapeFrame)handler.shapeFrame;
             Assert.IsTrue(frame);
@@ -83,7 +90,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator DestroyFrame()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
 
             NFTShapeFrame frame = (NFTShapeFrame)handler.shapeFrame;
 
@@ -96,23 +103,21 @@ namespace Tests
         [Test]
         public void AddAndRemoveRenderer()
         {
-            handler.OnComponentModelUpdated(scene, entity, new PBNFTShape());
-            renderersComponent.Received(1)
-                              .PutFor(scene, entity,
-                                  Arg.Is<InternalRenderers>(r => r.renderers.Contains(handler.shapeFrame.frameRenderer)));
+            handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
+            Assert.IsTrue(renderersComponent.GetFor(scene, entity).model.renderers.Contains(handler.shapeFrame.frameRenderer));
 
             handler.OnComponentRemoved(scene, entity);
-            renderersComponent.Received(1).RemoveFor(scene, entity);
+            Assert.IsNull(renderersComponent.GetFor(scene, entity));
         }
 
         [Test]
         public void UpdateStyle()
         {
-            PBNFTShape model = new PBNFTShape() { Style = PBNFTShape.Types.PictureFrameStyle.GoldEdges };
+            PBNftShape model = new PBNftShape() { Style = NftFrameType.NftGoldEdges };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Golden_01", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
-            model = new PBNFTShape() { Style = PBNFTShape.Types.PictureFrameStyle.Classic };
+            model = new PBNftShape() { Style = NftFrameType.NftClassic };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual("Classic", handler.shapeFrame.gameObject.transform.GetChild(0).name);
 
@@ -122,7 +127,7 @@ namespace Tests
         [Test]
         public void UpdateColor()
         {
-            PBNFTShape model = new PBNFTShape() { Color = new Color3() { R = 1, G = 1, B = 1 } };
+            PBNftShape model = new PBNftShape() { Color = new Color3() { R = 1, G = 1, B = 1 } };
             handler.OnComponentModelUpdated(scene, entity, model);
 
             MeshRenderer renderer = (MeshRenderer)handler.shapeFrame.frameRenderer;
@@ -130,7 +135,7 @@ namespace Tests
             Assert.AreEqual(model.Color.G, renderer.sharedMaterials[1].color.g);
             Assert.AreEqual(model.Color.B, renderer.sharedMaterials[1].color.b);
 
-            model = new PBNFTShape() { Color = new Color3() { R = 0, G = 0, B = 0 } };
+            model = new PBNftShape() { Color = new Color3() { R = 0, G = 0, B = 0 } };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(model.Color.R, renderer.sharedMaterials[1].color.r);
             Assert.AreEqual(model.Color.G, renderer.sharedMaterials[1].color.g);
