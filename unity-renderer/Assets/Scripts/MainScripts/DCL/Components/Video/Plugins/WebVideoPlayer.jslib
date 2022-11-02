@@ -19,7 +19,7 @@ var WebVideoPlayer = {
         vid.autoplay = false;
         
         if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-            const onNewFrame = (now, metadata) => {
+           const onNewFrame = function (now, metadata) {
                 // newFrame = true
                 // Re-register the callback to be notified about the next frame.
                 console.log("VIDEO PLAYER: new Frame");
