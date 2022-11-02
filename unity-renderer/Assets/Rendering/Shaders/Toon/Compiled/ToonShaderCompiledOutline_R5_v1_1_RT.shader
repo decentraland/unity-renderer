@@ -29,7 +29,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         _OutlineFade("Outline Fade", Range(0, 1)) = 0.1
         _OutlineOpacity("OutlineOpacity", Range(0, 1)) = 0
         _CameraFarPlaneFade("CameraFarPlaneFade", Float) = 50
-        [ToggleUI]_isOutlineDisabled("isOutlineEnabled", Float) = 0
+        [ToggleUI]_isOutlineEnabled("isOutlineEnabled", Float) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -592,7 +592,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -1170,7 +1170,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -1229,13 +1229,13 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
             Unity_Branch_float4(_Property_9413652272ce49669ec3d9cf825175d3_Out_0, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Branch_19a0fdd4dcf04e52afd0f116d4e0abf4_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineDisabled;
+            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float _IsFrontFace_8f8917a6a1c044878c1efdea62191f96_Out_0 = max(0, IN.FaceSign);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineDisabled;
+            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float4 _Property_1253a38dea454c04ad6b2acb5a870df2_Out_0 = _OutlineColor;
@@ -2122,7 +2122,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -2700,7 +2700,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -2759,13 +2759,13 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
             Unity_Branch_float4(_Property_9413652272ce49669ec3d9cf825175d3_Out_0, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Branch_19a0fdd4dcf04e52afd0f116d4e0abf4_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineDisabled;
+            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float _IsFrontFace_8f8917a6a1c044878c1efdea62191f96_Out_0 = max(0, IN.FaceSign);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineDisabled;
+            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float4 _Property_1253a38dea454c04ad6b2acb5a870df2_Out_0 = _OutlineColor;
@@ -3569,7 +3569,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -4724,7 +4724,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -5893,7 +5893,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -7059,7 +7059,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -7633,7 +7633,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -7692,13 +7692,13 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
             Unity_Branch_float4(_Property_9413652272ce49669ec3d9cf825175d3_Out_0, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Branch_19a0fdd4dcf04e52afd0f116d4e0abf4_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineDisabled;
+            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float _IsFrontFace_8f8917a6a1c044878c1efdea62191f96_Out_0 = max(0, IN.FaceSign);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineDisabled;
+            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float4 _Property_1253a38dea454c04ad6b2acb5a870df2_Out_0 = _OutlineColor;
@@ -8490,7 +8490,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -9018,7 +9018,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -9759,7 +9759,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -10337,7 +10337,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -10396,13 +10396,13 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
             Unity_Branch_float4(_Property_9413652272ce49669ec3d9cf825175d3_Out_0, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Branch_19a0fdd4dcf04e52afd0f116d4e0abf4_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineDisabled;
+            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float _IsFrontFace_8f8917a6a1c044878c1efdea62191f96_Out_0 = max(0, IN.FaceSign);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineDisabled;
+            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float4 _Property_1253a38dea454c04ad6b2acb5a870df2_Out_0 = _OutlineColor;
@@ -11204,7 +11204,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -12358,7 +12358,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -13526,7 +13526,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -14692,7 +14692,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -15266,7 +15266,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);
@@ -15325,13 +15325,13 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
             Unity_Branch_float4(_Property_9413652272ce49669ec3d9cf825175d3_Out_0, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Preview_566e2813878149f98e47cab5f0c041d5_Out_1, _Branch_19a0fdd4dcf04e52afd0f116d4e0abf4_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineDisabled;
+            float _Property_62f28db9ce5044509a29f60affefa1e4_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float _IsFrontFace_8f8917a6a1c044878c1efdea62191f96_Out_0 = max(0, IN.FaceSign);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineDisabled;
+            float _Property_0984da2ccd3b444895299e5614a9cdfb_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             float4 _Property_1253a38dea454c04ad6b2acb5a870df2_Out_0 = _OutlineColor;
@@ -16124,7 +16124,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         float _OutlineFade;
         float _OutlineOpacity;
         float _CameraFarPlaneFade;
-        float _isOutlineDisabled;
+        float _isOutlineEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -16652,7 +16652,7 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineDisabled;
+            float _Property_9413652272ce49669ec3d9cf825175d3_Out_0 = _isOutlineEnabled;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
             UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(_MatCap);

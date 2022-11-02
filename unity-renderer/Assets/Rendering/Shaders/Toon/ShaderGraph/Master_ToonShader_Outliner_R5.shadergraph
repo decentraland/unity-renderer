@@ -2545,7 +2545,7 @@
     },
     "m_Name": "isOutlineEnabled",
     "m_DefaultReferenceName": "",
-    "m_OverrideReferenceName": "_isOutlineDisabled",
+    "m_OverrideReferenceName": "_isOutlineEnabled",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
