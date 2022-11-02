@@ -5,6 +5,7 @@ public class FloorController : MonoBehaviour
 {
     private static readonly int MAP_PROPERTY = Shader.PropertyToID("_Map");
     private static readonly int ESTATE_ID_PROPERTY = Shader.PropertyToID("_EstateIDMap");
+    private static readonly int PLAYER_POSITION = Shader.PropertyToID("_PlayerPosition");
 
     [SerializeField] private Renderer renderer;
 
@@ -17,7 +18,12 @@ public class FloorController : MonoBehaviour
 
         DataStore.i.HUDs.mapEstatesTexture.OnChange += OnEstateIdTextureChanged;
         OnEstateIdTextureChanged(DataStore.i.HUDs.mapEstatesTexture.Get(), null);
+
+        CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
+        OnPlayerCoordsChanged(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
     }
+
+    private void OnPlayerCoordsChanged(Vector2Int current, Vector2Int previous) { renderer.material.SetVector(PLAYER_POSITION, (Vector2)current); }
 
     private void OnMapTextureChanged(Texture current, Texture previous) { renderer.material.SetTexture(MAP_PROPERTY, current); }
 
@@ -30,5 +36,6 @@ public class FloorController : MonoBehaviour
         CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         DataStore.i.HUDs.mapMainTexture.OnChange -= OnMapTextureChanged;
         DataStore.i.HUDs.mapEstatesTexture.OnChange -= OnEstateIdTextureChanged;
+        CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
     }
 }
