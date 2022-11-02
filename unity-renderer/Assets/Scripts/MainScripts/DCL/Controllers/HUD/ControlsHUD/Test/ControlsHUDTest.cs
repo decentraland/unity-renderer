@@ -32,10 +32,12 @@ namespace Tests
         public IEnumerator OpenAndCloseCorrectly()
         {
             controller.SetVisibility(true);
+            yield return null;
             Assert.IsTrue(controller.view.gameObject.activeSelf, "controls hud should be visible");
+            
             controller.view.showHideAnimator.Hide(true);
+            yield return null;
             Assert.IsFalse(controller.view.gameObject.activeSelf, "controls hud should not be visible");
-            yield break;
         }
     }
 }
