@@ -32,7 +32,7 @@ var WebVideoPlayer = {
             console.log("VIDEO PLAYER: firefox implementation");
         } else {
             console.log("VIDEO PLAYER: ignoreNewFrameOptimization");
-            ignoreNewFrameOptimization = true // we ignore the optimization of the newFrame=true/false, we always copy the texture
+            // ignoreNewFrameOptimization = true // we ignore the optimization of the newFrame=true/false, we always copy the texture
         }
 
         var textureObject = GLctx.createTexture();
