@@ -538,7 +538,7 @@ namespace DCL
 
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
-            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.x != currentGridSceneCoordinate.y;
+            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.y != currentGridSceneCoordinate.y;
 
             if (positionDirty)
             {
@@ -572,7 +572,7 @@ namespace DCL
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
             else
-            {
+            {   
                 // 1. Set current scene id
                 CommonScriptableObjects.sceneID.Set(currentSceneId);
 
