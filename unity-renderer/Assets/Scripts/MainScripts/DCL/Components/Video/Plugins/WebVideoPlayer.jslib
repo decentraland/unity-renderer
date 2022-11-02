@@ -133,17 +133,15 @@ var WebVideoPlayer = {
 
     WebVideoPlayerTextureUpdate: function (videoId) {
         const id = Pointer_stringify(videoId);
-
         if (videos[id].state !== 4) return; //PLAYING
 
         const quality = videos[id].video.getVideoPlaybackQuality();
-        console.log("frames = " + quality.totalVideoFrames + "  current = " + videos[id].playedFrame);
+        if( quality.totalVideoFrames == videos[id].playedFrame) return;
+        
         videos[id].playedFrame = quality.totalVideoFrames;
         
         const textureId = videos[id].textureId;
-        
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
-
         GLctx.texStorage2D(
             GLctx.TEXTURE_2D,
             0,
