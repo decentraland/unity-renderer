@@ -8,7 +8,8 @@ using UnityEngine.UI;
 
 public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 {
-    private static readonly int LOADING_ANIMATOR_TRIGGER_LOADED = Animator.StringToHash("Loaded");
+    private static readonly string ANIMATION_LOADED = "Loaded";
+    private static readonly string ANIMATION_LOADING_IDLE = "LoadingIdle";
 
     public event Action<ItemToggle> OnClicked;
     public event Action<ItemToggle> OnSellClicked;
@@ -22,7 +23,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] private GameObject hideWarningPanel;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
-    [SerializeField] internal Animator loadingAnimator;
+    [SerializeField] internal Animation loadingAnimation;
     [SerializeField] internal TextMeshProUGUI amountText;
     [SerializeField] internal GameObject root;
     [SerializeField] private GameObject disabledOverlay;
@@ -82,9 +83,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         selected = isSelected;
         amountContainer.gameObject.SetActive(amount > 1);
         amountText.text = $"x{amount.ToString()}";
-
-        if (gameObject.activeInHierarchy)
-            GetThumbnail();
+        
+        UpdateThumbnail();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -142,7 +142,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void OnEnable() 
     { 
-        GetThumbnail(); 
+        UpdateThumbnail(); 
     }
 
     protected virtual void OnDestroy()
@@ -169,22 +169,24 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    private void GetThumbnail()
+    private void UpdateThumbnail()
     {
         string url = wearableItem?.ComposeThumbnailUrl();
         
         if (wearableItem == null || string.IsNullOrEmpty(url))
         {
-            SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+            SetLoadingAnimation(ANIMATION_LOADED);
             return;
         }
+
+        SetLoadingAnimation(ANIMATION_LOADING_IDLE);
 
         ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
     }
     
     private void OnThumbnailReady(Asset_Texture texture)
     {
-        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+        SetLoadingAnimation(ANIMATION_LOADED);
 
         thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out var wasCreated);
 
@@ -196,12 +198,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         SetColorScale();
     }
     
-    private void SetLoadingAnimationTrigger(int id)
+    private void SetLoadingAnimation(string id)
     {
-        if (!loadingAnimator.isInitialized || loadingAnimator.runtimeAnimatorController == null)
+        if (!loadingAnimation.isActiveAndEnabled)
             return;
 
-        loadingAnimator.SetTrigger(id);
+        loadingAnimation.Play(id);
     }
     
     public void Hide()
