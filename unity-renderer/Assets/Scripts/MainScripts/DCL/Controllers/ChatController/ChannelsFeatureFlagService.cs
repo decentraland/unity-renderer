@@ -62,7 +62,8 @@ namespace DCL.Chat.Channels
             switch (allowedUsersData.mode)
             {
                 case AllowChannelsCreationMode.ALLOWLIST:
-                    return allowedUsersData.allowList.Any(userId => userId.ToLower() == ownUserProfile.userId.ToLower());
+                    return allowedUsersData.allowList != null
+                           && allowedUsersData.allowList.Any(userId => userId?.ToLower() == ownUserProfile.userId.ToLower());
                 case AllowChannelsCreationMode.NAMES:
                     return ownUserProfile.hasClaimedName;
                 case AllowChannelsCreationMode.WALLET:
