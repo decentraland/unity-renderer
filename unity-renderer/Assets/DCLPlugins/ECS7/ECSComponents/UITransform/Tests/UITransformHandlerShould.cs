@@ -7,6 +7,7 @@ using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine.UIElements;
+using Position = UnityEngine.UIElements.Position;
 
 namespace Tests
 {
@@ -146,7 +147,7 @@ namespace Tests
                 Assert.AreEqual(2, style.borderTopWidth.value);
                 Assert.AreEqual(3, style.borderRightWidth.value);
                 Assert.AreEqual(4, style.borderLeftWidth.value);
-                Assert.AreEqual(UnityEngine.UIElements.Position.Absolute, style.position.value);
+                Assert.AreEqual(Position.Absolute, style.position.value);
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
@@ -178,6 +179,24 @@ namespace Tests
                                                 && !model.components.Contains(COMPONENT_ID)
                                                 && model.parentElement == null));
             Assert.AreEqual(0, parent.childCount);
+        }
+
+        [Test]
+        public void FlagForUiSorting()
+        {
+            // Flag sort on RightOf change
+            handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { RightOf = 1 });
+            var containerModel = internalUiContainer.GetFor(scene, entity).model;
+            Assert.IsTrue(containerModel.shouldSort);
+
+            // Reset data
+            containerModel.shouldSort = false;
+            internalUiContainer.PutFor(scene, entity, containerModel);
+
+            // Do not sort when RightOf is same as before
+            handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { RightOf = 1 });
+            containerModel = internalUiContainer.GetFor(scene, entity).model;
+            Assert.IsFalse(containerModel.shouldSort);
         }
     }
 }

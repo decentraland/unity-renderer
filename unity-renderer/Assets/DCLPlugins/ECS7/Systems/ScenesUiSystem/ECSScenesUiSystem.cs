@@ -5,7 +5,6 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
@@ -211,7 +210,7 @@ namespace ECSSystems.ScenesUiSystem
             return parentDataModel;
         }
 
-        private static void SortSceneUiTree(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+        internal static void SortSceneUiTree(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             ICollection<IParcelScene> scenesToSort)
         {
             Dictionary<VisualElement, Dictionary<long, RightOfData>> sortSceneTree = new Dictionary<VisualElement, Dictionary<long, RightOfData>>();
@@ -259,7 +258,6 @@ namespace ECSSystems.ScenesUiSystem
 
                 while (sceneSort.TryGetValue(nextElementId, out RightOfData rightOfData))
                 {
-                    Debug.Log($"PATO: setting {rightOfData.id} to index {index}/{parentElement.childCount}");
                     parentElement.Remove(rightOfData.element);
                     parentElement.Insert(index, rightOfData.element);
                     nextElementId = rightOfData.id;
