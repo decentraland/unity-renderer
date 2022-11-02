@@ -25,7 +25,7 @@ namespace DCL
         public void Set(RealmsInfoModel newModel)
         {
             model = newModel;
-            if (model.current != null && !string.IsNullOrEmpty(model.current.serverName))
+            if (!string.IsNullOrEmpty(model.current?.serverName))
             {
                 DataStore.i.realm.playerRealm.Set(model.current.Clone());
                 realmName.Set(DataStore.i.realm.playerRealm.Get().serverName);

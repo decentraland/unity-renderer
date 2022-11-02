@@ -1,21 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using Decentraland.Bff;
-using UnityEngine;
 
-public class WorldsBlockerModifier : IWorldsModifier
+namespace DCLPlugins.WorldsPlugin
 {
-    public void EnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
+    public class WorldsBlockerModifier : IWorldsModifier
     {
-        if (isCatalyst)
+        
+        public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration) =>
+            Environment.i.world.blockersController.SetEnabled(isCatalyst || ShouldGreenBlockersBeActive(realmConfiguration.Configurations.CityLoaderContentServer));    
+     
+        public void Dispose() { }
+
+        private bool ShouldGreenBlockersBeActive(string cityLoaderContenrServers)
         {
-            Environment.i.world.blockersController.SetEnabled(true);
+            return !string.IsNullOrEmpty(cityLoaderContenrServers);
         }
-        else
-        {
-            Environment.i.world.blockersController.SetEnabled(!string.IsNullOrEmpty(realmConfiguration.Configurations.CityLoaderContentServer));
-        }
+        
     }
-    public void Dispose() { }
 }

@@ -319,35 +319,37 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
     {
-        if (!NeedToRefreshRealms(currentRealmList))
+        List<RealmModel> realmList = currentRealmList?.ToList();
+        
+        if (!NeedToRefreshRealms(realmList))
             return;
 
         currentAvailableRealms.Clear();
-        string serverName = "";
-        if (DataStore.i.realm.playerRealm.Get() != null)
+        
+        if (realmList != null)
         {
-            serverName = DataStore.i.realm.playerRealm.Get().serverName;
-        }
-        else if(DataStore.i.realm.playerRealmAbout.Get() != null)
-        {
-            serverName = DataStore.i.realm.playerRealmAbout.Get().Configurations.RealmName;
-        }
-
-        if (currentRealmList != null)
-        {
-            foreach (RealmModel realmModel in currentRealmList)
+            string serverName = ServerNameForCurrentRealm();
+            foreach (RealmModel realmModel in realmList)
             {
-                RealmRowComponentModel realmToAdd = new RealmRowComponentModel
+                currentAvailableRealms.Add(new RealmRowComponentModel
                 {
                     name = realmModel.serverName,
                     players = realmModel.usersCount,
                     isConnected = realmModel.serverName == serverName
-                };
-                currentAvailableRealms.Add(realmToAdd);
+                });
             }
         }
 
         view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
+    }
+
+    private string ServerNameForCurrentRealm()
+    {
+        if (DataStore.i.realm.playerRealm.Get() != null)
+            return DataStore.i.realm.playerRealm.Get().serverName;
+        if(DataStore.i.realm.playerRealmAbout.Get() != null)
+            return DataStore.i.realm.playerRealmAbout.Get().Configurations.RealmName;
+        return "";
     }
 
     internal bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)

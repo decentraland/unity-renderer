@@ -1,8 +1,11 @@
 using System;
 using Decentraland.Bff;
 
-public interface IWorldsModifier : IDisposable
+namespace DCLPlugins.WorldsPlugin
 {
-    void EnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
+    public interface IWorldsModifier : IDisposable
+    {
+        void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
 
+    }
 }

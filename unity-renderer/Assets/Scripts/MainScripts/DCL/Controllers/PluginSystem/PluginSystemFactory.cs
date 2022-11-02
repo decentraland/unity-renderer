@@ -10,6 +10,7 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;
 using DCLPlugins.UIRefresherPlugin;
+using DCLPlugins.WorldsPlugin;
 
 namespace DCL
 {
