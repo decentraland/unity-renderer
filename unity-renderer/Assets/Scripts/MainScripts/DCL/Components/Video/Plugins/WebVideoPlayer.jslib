@@ -146,10 +146,8 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerTextureUpdate: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const videoData = videos[Pointer_stringify(videoId)];
         
-        const videoData = videos[id];
-
         if (videoData.state !== 4) return; //PLAYING
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
