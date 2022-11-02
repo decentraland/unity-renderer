@@ -19,16 +19,19 @@ var WebVideoPlayer = {
         vid.autoplay = false;
         
         if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+           console.log("VIDEO PLAYER: supported");
+           
            const onNewFrame = function (now, metadata) {
                 // newFrame = true
                 // Re-register the callback to be notified about the next frame.
                 console.log("VIDEO PLAYER: new Frame");
                 video.requestVideoFrameCallback(onNewFrame);
             };
-            onNewFrame();
+            video.requestVideoFrameCallback(onNewFrame);
         } else if ('seekToNextFrame' in HTMLVideoElement.prototype) {
             console.log("VIDEO PLAYER: firefox implementation");
         } else {
+            console.log("VIDEO PLAYER: ignoreNewFrameOptimization");
             ignoreNewFrameOptimization = true // we ignore the optimization of the newFrame=true/false, we always copy the texture
         }
 
