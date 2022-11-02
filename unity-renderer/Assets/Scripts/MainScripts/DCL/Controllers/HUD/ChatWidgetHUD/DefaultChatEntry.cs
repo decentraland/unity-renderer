@@ -33,7 +33,7 @@ namespace DCL.Chat.HUD
         public override string DateString =>
             DateTimeOffset.FromUnixTimeMilliseconds((long) Model.timestamp)
                 .ToLocalTime()
-                .ToString();
+                .ToString("MM/dd/yyyy h:mm:ss tt");
         public override event Action<ChatEntry> OnUserNameClicked;
         public override event Action<ChatEntry> OnTriggerHover;
         public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
