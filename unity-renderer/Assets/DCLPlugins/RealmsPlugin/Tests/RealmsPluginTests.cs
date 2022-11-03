@@ -21,7 +21,6 @@ namespace DCLPlugins.RealmsPlugin
         [SetUp]
         public void SetUp()
         {
-            // This is need to sue the TeleportController
             serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);
 
@@ -44,7 +43,7 @@ namespace DCLPlugins.RealmsPlugin
             SetRealm(realmName);
         
             // Assert
-            genericModifier.Received().OnEnteredRealm(isCatalist, Arg.Any<AboutResponse >());
+            genericModifier.Received(1).OnEnteredRealm(isCatalist, Arg.Any<AboutResponse >());
         }
         
         [TestCaseSource(nameof(GreenBlockerCases))]
