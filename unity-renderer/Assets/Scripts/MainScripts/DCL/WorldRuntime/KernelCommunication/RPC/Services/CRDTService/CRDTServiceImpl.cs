@@ -50,10 +50,7 @@ namespace RPC.Services
                         }
                         queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
                         queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                        
-                        // TODO: We need to re-build CRDTManyMessages protobuf class to include sceneNumber insdead of SceneId
-                        // queuedMessage.sceneNumber = messages.sceneNumber;
-                        
+                        queuedMessage.sceneNumber = messages.SceneNumber;
                         queuedMessage.payload = crdtMessage;
 
                         context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
@@ -82,7 +79,7 @@ namespace RPC.Services
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
-
+                
                 reusableCrdtMessage.SceneId = request.SceneId;
                 reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
