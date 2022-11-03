@@ -122,8 +122,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
 
-    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
-
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
     [SerializeField] internal TagComponentView liveTag;
@@ -150,10 +148,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
-    [SerializeField] internal Animator cardAnimator;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
+    [SerializeField] internal EventCardAnimator cardAnimator;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -217,16 +215,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         base.OnFocus();
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+        cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+        cardAnimator?.Idle();
     }
 
     public override void Show(bool instant = false)

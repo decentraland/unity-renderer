@@ -7,5 +7,6 @@ namespace DCL.Chat
         event Action<bool> OnAllowedToCreateChannelsChanged;
         bool IsChannelsFeatureEnabled();
         bool IsAllowedToCreateChannels();
+        bool IsPromoteChannelsToastEnabled();
     }
 }
