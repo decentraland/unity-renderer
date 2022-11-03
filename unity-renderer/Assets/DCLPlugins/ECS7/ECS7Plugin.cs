@@ -27,7 +27,7 @@ namespace DCL.ECS7
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpc.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);

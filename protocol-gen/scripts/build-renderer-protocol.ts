@@ -2,16 +2,35 @@ import * as path from 'path'
 import { glob } from 'glob'
 import { cleanGeneratedCode, execute, isWin, nodeModulesPath, normalizePath, protocolPath, protocPath, workingDirectory } from './helpers'
 import { readFileSync, writeFileSync } from 'fs'
+import * as fse from 'fs-extra'
+import * as fs from 'node:fs'
 
 const rendererProtocolOutputPath = path.resolve(
   __dirname,
   '../../unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/GeneratedCode/',
 )
 
+const tempProtocolPath = normalizePath(
+  path.resolve(__dirname, '../temp-components/'),
+)
+
+const rendererProtocolInputPath = normalizePath(
+  path.resolve(tempProtocolPath, 'decentraland/renderer/'),
+)
+
 async function main() {
+  if (fs.existsSync(tempProtocolPath)) {
+    fs.rmSync(tempProtocolPath, { recursive: true })
+  }
+  fse.copySync(protocolPath, tempProtocolPath, {
+    overwrite: true,
+  })
+
   await execute(`${protocPath} --version`, workingDirectory)
 
   await buildRendererProtocol()
+
+  fs.rmSync(tempProtocolPath, { recursive: true })
 }
 
 function fixEngineInterface() {
@@ -26,30 +45,28 @@ function fixEngineInterface() {
   writeFileSync(engineInterfaceProtoPath, newContent)
 }
 
-function removePackageName(protoFilePath: string) {
-  const engineInterfaceProtoPath = normalizePath(
-    path.resolve(protocolPath, protoFilePath),
-  )
-  const content = readFileSync(engineInterfaceProtoPath).toString()
+function removePackageName(protoFiles: string[]) {
+  for (const filePath of protoFiles) {
+    const content = readFileSync(filePath).toString()
 
-  const newContent = content
-    .replace('package decentraland.renderer;', '')
+    const newContent = content
+      .replace('package decentraland.renderer', '// package decentraland.renderer')
 
-  writeFileSync(engineInterfaceProtoPath, newContent)
+    writeFileSync(filePath, newContent)
+  }
 }
 
 async function buildRendererProtocol() {
   console.log('Building Renderer Protocol...')
   cleanGeneratedCode(rendererProtocolOutputPath)
 
-  const rendererProtocolInputPath = normalizePath(
-    path.resolve(protocolPath, 'decentraland/renderer/**/*.proto'),
-  )
-
   fixEngineInterface()
-  removePackageName('decentraland/renderer/protocol.proto')
 
-  const protoFiles = glob.sync(rendererProtocolInputPath).join(' ')
+  const files = glob.sync(rendererProtocolInputPath + '/**/*.proto')
+
+  removePackageName(files)
+
+  const protoFiles = files.join(' ')
 
   const ext = isWin ? 'cmd' : 'js'
 
@@ -58,7 +75,7 @@ async function buildRendererProtocol() {
   command += ` --csharp_opt=file_extension=.gen.cs`
   command += ` --plugin=protoc-gen-dclunity=${nodeModulesPath}/protoc-gen-dclunity/dist/index.${ext}`
   command += ` --dclunity_out "${rendererProtocolOutputPath}"`
-  command += ` --proto_path "${protocolPath}/decentraland/renderer"`
+  command += ` --proto_path "${tempProtocolPath}"`
   command += ` ${protoFiles}`
 
   fixEngineInterface()

@@ -33,7 +33,7 @@ namespace RPC.Services
         {
             messages.Payload.WriteTo(crdtStream);
 
-            var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
+            var sceneMessagesPool = context.crdt.messageQueueHandler.sceneMessagesPool;
 
             try
             {
@@ -53,7 +53,7 @@ namespace RPC.Services
                         queuedMessage.sceneId = messages.SceneId;
                         queuedMessage.payload = crdtMessage;
 
-                        context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                        context.crdt.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
                     }
                 }
             }
@@ -70,14 +70,14 @@ namespace RPC.Services
 
             try
             {
-                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
+                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
                 {
                     return emptyResponse;
                 }
 
                 memoryStream.SetLength(0);
 
-                context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+                context.crdt.scenesOutgoingCrdts.Remove(sceneId);
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();

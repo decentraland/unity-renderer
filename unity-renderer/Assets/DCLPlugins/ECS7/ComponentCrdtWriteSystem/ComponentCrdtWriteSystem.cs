@@ -100,9 +100,9 @@ public class ComponentCrdtWriteSystem : IDisposable
 
                 sceneCrdtState.ProcessMessage(crdt);
 
-                if (!rpcContext.crdtContext.scenesOutgoingCrdts.ContainsKey(message.sceneId))
+                if (!rpcContext.crdt.scenesOutgoingCrdts.ContainsKey(message.sceneId))
                 {
-                    rpcContext.crdtContext.scenesOutgoingCrdts.Add(message.sceneId, sceneCrdtState);
+                    rpcContext.crdt.scenesOutgoingCrdts.Add(message.sceneId, sceneCrdtState);
                 }
             }
         }
@@ -112,6 +112,6 @@ public class ComponentCrdtWriteSystem : IDisposable
     {
         string sceneId = scene.sceneData.id;
         outgoingCrdt.Remove(sceneId);
-        rpcContext.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+        rpcContext.crdt.scenesOutgoingCrdts.Remove(sceneId);
     }
 }

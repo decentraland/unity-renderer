@@ -30,7 +30,7 @@ namespace Tests
             worldState.AddScene(SCENE_ID, scene);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
-                Substitute.For<ISceneController>(), DataStore.i.rpcContext.context);
+                Substitute.For<ISceneController>(), DataStore.i.rpc.context);
         }
 
         [TearDown]
@@ -88,7 +88,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpcContext.context.crdtContext.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
             Assert.NotNull(protocol);
 
             CRDTMessage message = protocol.GetState(ENTITY_ID, COMPONENT_ID);
@@ -108,7 +108,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_ID, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpcContext.context.crdtContext.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_ID, out CRDTProtocol protocol);
             Assert.IsNull(protocol);
         }
 

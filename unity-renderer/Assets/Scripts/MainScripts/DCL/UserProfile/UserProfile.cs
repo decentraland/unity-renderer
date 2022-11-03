@@ -107,7 +107,13 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
-        WebInterface.SendExpression(id, timestamp);
+
+        DataStore.i.rpc.context.rpcClient.emotes?.TriggerExpression(new TriggerExpressionRequest()
+        {
+            Id = id,
+            Timestamp = timestamp
+        });
+        
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
