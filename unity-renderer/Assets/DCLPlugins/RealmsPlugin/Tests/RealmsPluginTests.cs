@@ -7,15 +7,15 @@ using NUnit.Framework;
 using UnityEngine;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.WorldsPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public class WorldsPluginTests
+    public class RealmsPluginTests
     {
-        private WorldsPlugin worldsPlugin;
+        private RealmsPlugin realmsPlugin;
         private const string catalystRealmName = "CatalystRealmName";
         private const string worldRealmName = "WorldRealmName";
-        private IWorldsModifier genericModifier;
-        private WorldsBlockerModifier worldsBlockerModiferSubstitute;
+        private IRealmsModifier genericModifier;
+        private RealmsBlockerModifier realmsBlockerModiferSubstitute;
         private ServiceLocator serviceLocator;
 
         [SetUp]
@@ -25,17 +25,17 @@ namespace DCLPlugins.WorldsPlugin
             serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);
 
-            worldsPlugin = new WorldsPlugin();
-            worldsBlockerModiferSubstitute = Substitute.For<WorldsBlockerModifier>();
-            genericModifier = Substitute.For<IWorldsModifier>();
-            List<IWorldsModifier> substituteModifiers = new List<IWorldsModifier>() { worldsBlockerModiferSubstitute, genericModifier };
-            worldsPlugin.worldsModifiers = substituteModifiers;
+            realmsPlugin = new RealmsPlugin();
+            realmsBlockerModiferSubstitute = Substitute.For<RealmsBlockerModifier>();
+            genericModifier = Substitute.For<IRealmsModifier>();
+            List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier };
+            realmsPlugin.realmsModifiers = substituteModifiers;
 
             SetCatalystRealmsInfo();
         }
         
         [TearDown]
-        public void TearDown() { worldsPlugin.Dispose(); }
+        public void TearDown() { realmsPlugin.Dispose(); }
 
         [TestCaseSource(nameof(GenericCases))]
         public void ModifierCalledOnRealmChange(string realmName, bool isCatalist)

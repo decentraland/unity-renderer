@@ -4,19 +4,19 @@ using DCL;
 using Decentraland.Bff;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.WorldsPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public class WorldsPlugin : IPlugin
+    public class RealmsPlugin : IPlugin
     {
         private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
         private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
         private AboutResponse currentConfiguration;
         
-        internal List<IWorldsModifier> worldsModifiers;
+        internal List<IRealmsModifier> realmsModifiers;
 
-        public WorldsPlugin()
+        public RealmsPlugin()
         {
-            worldsModifiers = new List<IWorldsModifier>() { new WorldsBlockerModifier() };
+            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier() };
             
             realmAboutConfiguration.OnChange += RealmChanged;
             realmsList.OnSet += RealmListSet;
@@ -25,7 +25,7 @@ namespace DCLPlugins.WorldsPlugin
         private void RealmListSet(IEnumerable<RealmModel> _)
         {
             if (currentConfiguration != null)
-                SetWorldModifiers();
+                SetRealmModifiers();
         }
 
         private void RealmChanged(AboutResponse current, AboutResponse _)
@@ -34,19 +34,19 @@ namespace DCLPlugins.WorldsPlugin
             if (realmsList.Count().Equals(0))
                 return;
 
-            SetWorldModifiers();
+            SetRealmModifiers();
         }
 
-        private void SetWorldModifiers()
+        private void SetRealmModifiers()
         {
             List<RealmModel> currentRealmsList = realmsList.Get().ToList();
             bool isCatalyst = currentRealmsList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
-            worldsModifiers.ForEach(e => e.OnEnteredRealm(isCatalyst, currentConfiguration));
+            realmsModifiers.ForEach(e => e.OnEnteredRealm(isCatalyst, currentConfiguration));
         }
 
         public void Dispose()
         {
-            worldsModifiers.ForEach(e => e.Dispose());
+            realmsModifiers.ForEach(e => e.Dispose());
             
             realmAboutConfiguration.OnChange -= RealmChanged;
             realmsList.OnSet -= RealmListSet;

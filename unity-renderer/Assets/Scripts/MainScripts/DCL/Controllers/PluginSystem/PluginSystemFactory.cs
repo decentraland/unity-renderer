@@ -10,7 +10,7 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tutorial;
 using DCLPlugins.UIRefresherPlugin;
-using DCLPlugins.WorldsPlugin;
+using DCLPlugins.RealmsPlugin;
 
 namespace DCL
 {
@@ -47,7 +47,7 @@ namespace DCL
             pluginSystem.Register<AvatarModifierAreaFeedbackPlugin>(() => new AvatarModifierAreaFeedbackPlugin());
             pluginSystem.Register<SpawnPointsDisplayerPlugin>(() => new SpawnPointsDisplayerPlugin());
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
-            pluginSystem.RegisterWithFlag<WorldsPlugin>(() => new WorldsPlugin(), "worlds_plugin");
+            pluginSystem.RegisterWithFlag<RealmsPlugin>(() => new RealmsPlugin(), "realms_modifier_plugin");
 
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());

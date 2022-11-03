@@ -1,9 +1,9 @@
 using DCL;
 using Decentraland.Bff;
 
-namespace DCLPlugins.WorldsPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public class WorldsBlockerModifier : IWorldsModifier
+    public class RealmsBlockerModifier : IRealmsModifier
     {
         
         public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration) =>

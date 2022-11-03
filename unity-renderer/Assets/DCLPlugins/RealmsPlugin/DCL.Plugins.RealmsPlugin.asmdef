@@ -1,5 +1,5 @@
 {
-    "name": "DCL.Plugins.WorldsPlugin",
+    "name": "DCL.Plugins.RealmsPlugin",
     "rootNamespace": "",
     "references": [
         "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
