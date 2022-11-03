@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.Rendering
@@ -9,6 +9,8 @@ namespace DCL.Rendering
     [System.Serializable]
     public class CullingControllerSettings
     {
+        public const int MAX_POPULATING_ELEMENTS_PER_FRAME = 100;
+
         [NonSerialized]
         public float maxTimeBudget = 0.5f / 1000f;
 
