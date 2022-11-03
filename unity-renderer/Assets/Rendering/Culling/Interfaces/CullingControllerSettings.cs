@@ -12,7 +12,7 @@ namespace DCL.Rendering
         public const int MAX_POPULATING_ELEMENTS_PER_FRAME = 100;
 
         [NonSerialized]
-        public float maxTimeBudget = 1f / 1000;
+        public float maxTimeBudget = 0.5f / 1000f;
 
         public bool enableObjectCulling = true;
         public bool enableShadowCulling = true;

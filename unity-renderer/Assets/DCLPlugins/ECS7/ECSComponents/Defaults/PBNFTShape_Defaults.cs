@@ -9,12 +9,12 @@
             B = 0.8584906f
         };
 
-        public static PBNFTShape.Types.PictureFrameStyle GetStyle(this PBNFTShape self)
+        public static DCL.ECSComponents.NftFrameType GetStyle(this PBNftShape self)
         {
-            return self.HasStyle ? self.Style : PBNFTShape.Types.PictureFrameStyle.Classic;
+            return self.HasStyle ? self.Style : DCL.ECSComponents.NftFrameType.NftClassic;
         }
 
-        public static Color3 GetColor(this PBNFTShape self)
+        public static Color3 GetColor(this PBNftShape self)
         {
             return self.Color ?? defaultColor;
         }

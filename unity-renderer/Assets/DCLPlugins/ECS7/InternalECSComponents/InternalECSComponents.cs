@@ -14,6 +14,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
     public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
+    public IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -69,6 +70,13 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             null,
             scheduledWrite);
+
+        uiContainerComponent = new InternalECSComponent<InternalUiContainer>(
+            InternalECSComponentsId.UI_CONTAINER,
+            componentsManager,
+            componentsFactory,
+            () => new UiContainerHandler(() => uiContainerComponent),
+            scheduledWrite);
     }
 
     public void Dispose()
@@ -88,7 +96,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         for (int i = 0; i < scheduledWrite.Count; i++)
         {
             var writeData = scheduledWrite[i];
-            if (writeData.scene == null)
+            if (writeData.scene?.crdtExecutor == null)
                 continue;
 
             InternalComponent data = writeData.data;

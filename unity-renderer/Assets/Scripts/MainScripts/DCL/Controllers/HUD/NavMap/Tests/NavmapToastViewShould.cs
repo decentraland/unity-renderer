@@ -1,10 +1,10 @@
-using DCL;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using NSubstitute;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using NSubstitute;
 
 namespace Tests
 {
@@ -33,7 +33,7 @@ namespace Tests
             navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
-                navmapView.SetVisible(true);
+                navmapView.navmapVisibilityBehaviour.SetVisible(true);
         }
 
         protected override IEnumerator TearDown()
@@ -59,7 +59,7 @@ namespace Tests
 
             navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
-            navmapToastView.OnCloseClick();
+            navmapToastView.Close();
             Assert.IsFalse(navmapToastView.gameObject.activeSelf);
         }
 

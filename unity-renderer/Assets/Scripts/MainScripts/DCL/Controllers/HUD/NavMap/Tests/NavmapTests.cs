@@ -1,9 +1,9 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
-using UnityEngine;
 using NSubstitute;
+using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -11,7 +11,7 @@ namespace Tests
     public class NavmapTests : IntegrationTestSuite_Legacy
     {
         private MinimapHUDController controller;
-        DCL.NavmapView navmapView;
+        private NavmapView navmapView;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {

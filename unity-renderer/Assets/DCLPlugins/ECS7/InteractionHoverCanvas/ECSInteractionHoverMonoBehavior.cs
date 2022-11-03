@@ -27,14 +27,14 @@ public class ECSInteractionHoverMonoBehavior : MonoBehaviour, IECSInteractionHov
         _showHideAnimator.Hide();
     }
 
-    public void SetTooltipInput(int tooltipIndex, ActionButton button)
+    public void SetTooltipInput(int tooltipIndex, InputAction button)
     {
         switch (button)
         {
-            case ActionButton.Pointer:
+            case InputAction.IaPointer:
                 _tooltips[tooltipIndex].SetInputIcon(_icons[0]);
                 break;
-            case ActionButton.Any:
+            case InputAction.IaAny:
                 _tooltips[tooltipIndex].SetInputIcon(_icons[1]);
                 break;
             default:

@@ -169,9 +169,8 @@ MonoBehaviour:
     expressionTriggerId: 
     expressionTriggerTimestamp: 0
     deltaTime: 0
+    shouldLoop: 0
   target: {fileID: 2842120016485600253}
-  runMinSpeed: 6
-  walkMinSpeed: 0.1
 --- !u!114 &3298290865927950122
 MonoBehaviour:
   m_ObjectHideFlags: 0

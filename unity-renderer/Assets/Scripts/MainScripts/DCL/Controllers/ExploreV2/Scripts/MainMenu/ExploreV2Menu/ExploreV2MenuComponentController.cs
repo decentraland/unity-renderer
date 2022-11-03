@@ -61,6 +61,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
     internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
     internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
+    internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
     public void Initialize()
     {
@@ -196,7 +197,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (placesAndEventsSectionController != null)
             return;
 
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics);
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i);
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
 
@@ -245,6 +246,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
             if (DataStore.i.common.isTutorialRunning.Get())
                 view.GoToSection(DEFAULT_SECTION);
+
+            isPromoteChannelsToastVisible.Set(false);
         }
         else
         {

@@ -75,7 +75,7 @@ namespace Tests
                 Origin = new Vector3() { X = 12.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.HitFirst
+                QueryType = RaycastQueryType.RqtHitFirst
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
@@ -98,7 +98,7 @@ namespace Tests
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.HitFirst
+                QueryType = RaycastQueryType.RqtHitFirst
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
@@ -123,7 +123,7 @@ namespace Tests
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
                 Direction = new Vector3() { X = .0f, Y = .0f, Z = 1.0f },
                 MaxDistance = 16.0f,
-                QueryType = RaycastQueryType.QueryAll
+                QueryType = RaycastQueryType.RqtQueryAll
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);

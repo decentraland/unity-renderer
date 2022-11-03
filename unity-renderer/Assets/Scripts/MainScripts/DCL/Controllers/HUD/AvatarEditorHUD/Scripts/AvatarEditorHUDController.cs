@@ -77,7 +77,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool loadingWearables;
     private WearableItem[] emotesLoadedAsWearables;
-
+    internal AvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
     public event Action OnOpen;
     public event Action OnClose;
 
@@ -89,12 +89,13 @@ public class AvatarEditorHUDController : IHUD
     }
 
     public void Initialize(UserProfile userProfile, 
-        BaseDictionary<string, WearableItem> catalog, 
-        bool bypassUpdateAvatarPreview = false)
+        BaseDictionary<string, WearableItem> catalog,
+        bool bypassUpdateAvatarPreview = false
+        )
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
-
+      
         view = AvatarEditorHUDView.Create(this);
 
         view.skinsFeatureContainer.SetActive(true);
@@ -142,6 +143,8 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
+        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view, view.characterPreviewController);
+        
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
@@ -414,7 +417,7 @@ public class AvatarEditorHUDController : IHUD
 
         EnsureWearablesCategoriesNotEmpty();
 
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
         isAvatarPreviewReady = true;
     }
 
@@ -485,7 +488,8 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview(false);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
         avatarIsDirty = true;
     }
 
@@ -493,24 +497,25 @@ public class AvatarEditorHUDController : IHUD
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
-    protected virtual void UpdateAvatarPreview(bool skipAudio)
+    protected virtual void UpdateAvatarPreview()
     {
         if (bypassUpdateAvatarPreview)
             return;
@@ -523,7 +528,7 @@ public class AvatarEditorHUDController : IHUD
             modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
         }
 
-        view.UpdateAvatarPreview(modelToUpdate, skipAudio);
+        view.UpdateAvatarPreview(modelToUpdate);
     }
 
     private void EquipHairColor(Color color)
@@ -660,7 +665,7 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
             return;
-
+        
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
             wearablesByCategory.Add(wearable.data.category, new List<WearableItem>());
 
@@ -720,7 +725,8 @@ public class AvatarEditorHUDController : IHUD
             }
         }
 
-        UpdateAvatarPreview(false);
+        UpdateAvatarPreview();
+        view.AddFeedbackOnAppear();
     }
 
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
@@ -843,6 +849,7 @@ public class AvatarEditorHUDController : IHUD
         emotesCustomizationComponentController.onEmoteUnequipped -= OnEmoteUnequipped;
         emotesCustomizationComponentController.onEmoteSell -= OnRedirectToEmoteSelling;
         
+        avatarEditorHUDAnimationController.Dispose();
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
 
         CleanUp();
@@ -853,7 +860,7 @@ public class AvatarEditorHUDController : IHUD
         UnequipAllWearables();
 
         if (view != null)
-            view.CleanUp();
+            view.Dispose();
 
         this.userProfile.OnUpdate -= LoadUserProfile;
         this.catalog.OnAdded -= AddWearable;
@@ -875,14 +882,14 @@ public class AvatarEditorHUDController : IHUD
             var equippedEmote = emotesCustomizationDataStore.unsavedEquippedEmotes[i];
             if (equippedEmote == null)
                 continue;
+            
             emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
         }
         
         avatarModel.emotes = emoteEntries; 
-
+        
         SendNewEquippedWearablesAnalytics(userProfile.avatar.wearables, avatarModel.wearables);
         emotesCustomizationDataStore.equippedEmotes.Set(emotesCustomizationDataStore.unsavedEquippedEmotes.Get());
-
 
         WebInterface.SendSaveAvatar(avatarModel, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
@@ -892,7 +899,6 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.HUDs.signupVisible.Set(true);
             newUserExperienceAnalytics.AvatarEditSuccessNux();
         }
-
         
         avatarIsDirty = false;
         SetVisibility(false);
@@ -1081,7 +1087,7 @@ public class AvatarEditorHUDController : IHUD
         if (!isAvatarPreviewReady)
             return;
 
-        UpdateAvatarPreview(true);
+        UpdateAvatarPreview();
     }
 
     private void OnPreviewEmote(string emoteId) { view.PlayPreviewEmote(emoteId); }

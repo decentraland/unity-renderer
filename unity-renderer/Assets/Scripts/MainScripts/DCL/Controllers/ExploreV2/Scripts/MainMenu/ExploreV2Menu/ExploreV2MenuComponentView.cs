@@ -90,12 +90,6 @@ public interface IExploreV2MenuComponentView : IDisposable
     void SetVisible(bool isActive);
 
     /// <summary>
-    /// It is called after the show animation has finished.
-    /// </summary>
-    [UsedImplicitly]
-    void OnAfterShowAnimationCompleted();
-
-    /// <summary>
     /// Open a section.
     /// </summary>
     /// <param name="section">Section to go.</param>
@@ -155,7 +149,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private DataStore_Camera cameraDataStore;
 
-    private  Dictionary<ExploreSection, FeatureEncapsulatorComponentView> exploreSectionsById;
+    private Dictionary<ExploreSection, FeatureEncapsulatorComponentView> exploreSectionsById;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     private RectTransform profileCardRectTranform;
@@ -164,6 +158,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public override void Awake()
     {
         base.Awake();
+        showHideAnimator.OnWillFinishStart += OnAfterShowAnimationCompleted;
 
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
         realmSelectorModal = ConfigureRealmSelectorModal();
@@ -266,7 +261,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         AudioScriptableObjects.listItemAppear.ResetPitch();
     }
 
-    public void OnAfterShowAnimationCompleted()
+    public void OnAfterShowAnimationCompleted(ShowHideAnimator _)
     {
         if (!DataStore.i.exploreV2.isOpen.Get())
             return;

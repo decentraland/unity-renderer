@@ -54,11 +54,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)
@@ -88,11 +88,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)
@@ -122,11 +122,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = ActionButton.Primary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Secondary },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action4 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action3 },
-                new InternalInputEventResults.EventData() { button = ActionButton.Action5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
             };
 
             foreach (var eventData in events)

@@ -14,18 +14,15 @@ public interface IChatHUDComponentView
     int EntryCount { get; }
 
     IChatEntryFactory ChatEntryFactory { get; set; }
-    bool IsInputFieldSelected { get; }
 
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
     void Dispose();
-    void RemoveFirstEntry();
+    void RemoveOldestEntry();
     void ClearAllEntries();
     void ResetInputField(bool loseFocus = false);
     void FocusInputField();
     void UnfocusInputField();
     void SetInputFieldText(string text);
-    void ActivatePreview();
-    void DeactivatePreview();
     void FadeOutMessages();
 }

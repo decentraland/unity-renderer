@@ -65,7 +65,7 @@ public class ChatHUDControllerShould
 
         await controller.AddChatMessage(msg);
 
-        view.Received(1).RemoveFirstEntry();
+        view.Received(1).RemoveOldestEntry();
     });
 
     [UnityTest]
@@ -289,30 +289,6 @@ public class ChatHUDControllerShould
         view.Received(1).UnfocusInputField();
     }
 
-    [Test]
-    public void ActivatePreview()
-    {
-        controller.ActivatePreview();
-        
-        view.Received(1).ActivatePreview();
-    }
-
-    [Test]
-    public void DeactivatePreviewFadeOut()
-    {
-        controller.DeactivatePreview();
-        
-        view.Received(1).DeactivatePreview();
-    }
-    
-    [Test]
-    public void DeactivatePreview()
-    {
-        controller.DeactivatePreview();
-        
-        view.Received(1).DeactivatePreview();
-    }
-
     [TestCase("hehe")]
     [TestCase("jojo")]
     [TestCase("lelleolololohohoho")]
@@ -329,6 +305,14 @@ public class ChatHUDControllerShould
         controller.ClearAllEntries();
         
         view.Received(1).ClearAllEntries();
+    }
+
+    [Test]
+    public void SetChannelJoinSourceWhenJoinCommandIsWritten()
+    {
+        view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "/join my-channel"));
+        
+        Assert.AreEqual(ChannelJoinedSource.Command, dataStore.channels.channelJoinedSource.Get());
     }
 
     private RegexProfanityFilter GivenProfanityFilter()

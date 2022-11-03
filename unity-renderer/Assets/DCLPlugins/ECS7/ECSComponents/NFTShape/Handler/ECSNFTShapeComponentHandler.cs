@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.ECSComponents
 {
-    public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNFTShape>
+    public class ECSNFTShapeComponentHandler : IECSComponentHandler<PBNftShape>
     {
         internal INFTShapeFrameFactory factory;
 
@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
         internal INFTAssetRetriever assetRetriever;
         internal INFTShapeFrame shapeFrame;
 
-        private PBNFTShape prevModel;
+        private PBNftShape prevModel;
 
         private string nftLoadedScr = null;
         private bool infoRetrieverDisposed = false;
@@ -52,7 +52,7 @@ namespace DCL.ECSComponents
             DisposeShapeFrame(scene, entity, shapeFrame, renderersComponent);
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNFTShape model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBNftShape model)
         {
             bool shouldReloadFrame = shapeFrame != null && prevModel.GetStyle() != model.GetStyle();
 
