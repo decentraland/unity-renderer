@@ -19,13 +19,44 @@ namespace DCL
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        Transform entityTransform;
-        Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-        Vector3 lastPosition;
+
+        private Transform entityTransform;
+        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+        private Vector3 lastPosition;
 
         public override string componentName => "billboard";
 
-        private void Awake() { model = new Model(); }
+
+        private void Awake() 
+        {
+            model = new Model(); 
+        }
+
+        // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
+        private void LateUpdate()
+        {
+            //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
+            //             We must find a more performant way to handle this, until that time, this is the approach.
+
+            if (entityTransform == null)
+                return;
+            if (transform.position == lastPosition)
+                return;
+
+            lastPosition = transform.position;
+
+            ChangeOrientation();
+        }
+
+        private void OnDestroy()
+        {
+            cameraPosition.OnChange -= CameraPositionChanged;
+        }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID_COMPONENT.BILLBOARD;
+        }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -44,27 +75,12 @@ namespace DCL
             }
         }
 
-        new public Model GetModel() { return (Model)model; }
-
-        public void OnDestroy() { cameraPosition.OnChange -= CameraPositionChanged; }
-
-        // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
-        public void LateUpdate()
-        {
-            //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
-            //             We must find a more performant way to handle this, until that time, this is the approach.
-
-            if (entityTransform == null)
-                return;
-            if (transform.position == lastPosition)
-                return;
-
-            lastPosition = transform.position;
-
-            ChangeOrientation();
+        new public Model GetModel() 
+        { 
+            return (Model)model; 
         }
 
-        Vector3 GetLookAtVector()
+        private Vector3 GetLookAtVector()
         {
             bool hasTextShape = scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
@@ -86,17 +102,16 @@ namespace DCL
             return lookAtDir.normalized;
         }
 
-        void ChangeOrientation()
+        private void ChangeOrientation()
         {
             if (entityTransform == null)
                 return;
+
             Vector3 lookAtVector = GetLookAtVector();
             if (lookAtVector != Vector3.zero)
                 entityTransform.forward = lookAtVector;
         }
 
         private void CameraPositionChanged(Vector3 current, Vector3 previous) { ChangeOrientation(); }
-
-        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.BILLBOARD; }
     }
 }

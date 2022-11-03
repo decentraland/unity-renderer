@@ -1,4 +1,4 @@
-﻿using DCL.Chat;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
@@ -38,6 +38,7 @@ namespace DCL
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
+            result.Register<IBillboardsController>(() => new BillboardsController());
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
