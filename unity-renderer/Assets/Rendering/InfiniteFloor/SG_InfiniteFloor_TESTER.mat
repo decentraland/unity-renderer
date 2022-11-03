@@ -118,7 +118,7 @@ Material:
     - _FloorColor: {r: 0.5188676, g: 0.5188676, b: 0.5188676, a: 0}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
     - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.109335415, a: 1}
-    - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
+    - _GrassGridFadePosition: {r: 129, g: 129, b: 0, a: 0}
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
     - _RoadsColorBalancer: {r: 0.6792453, g: 0.4877409, b: 0, a: 0}
