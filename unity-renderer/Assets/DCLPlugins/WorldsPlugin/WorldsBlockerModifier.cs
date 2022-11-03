@@ -11,9 +11,9 @@ namespace DCLPlugins.WorldsPlugin
      
         public void Dispose() { }
 
-        private bool ShouldGreenBlockersBeActive(string cityLoaderContenrServers)
+        private bool ShouldGreenBlockersBeActive(string cityLoaderContentServers)
         {
-            return !string.IsNullOrEmpty(cityLoaderContenrServers);
+            return !string.IsNullOrEmpty(cityLoaderContentServers);
         }
         
     }

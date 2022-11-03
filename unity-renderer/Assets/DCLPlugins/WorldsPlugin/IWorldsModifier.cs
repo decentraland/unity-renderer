@@ -6,6 +6,5 @@ namespace DCLPlugins.WorldsPlugin
     public interface IWorldsModifier : IDisposable
     {
         void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
-
     }
 }
