@@ -1,3 +1,4 @@
+using DCL.Chat;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;

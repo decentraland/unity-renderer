@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 public class TaskbarHUDController : IHUD
 {
     private readonly IChatController chatController;
+    private readonly IFriendsController friendsController;
 
     [Serializable]
     public struct Configuration
@@ -52,10 +53,12 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
+    internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
-    public TaskbarHUDController(IChatController chatController)
+    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
     {
         this.chatController = chatController;
+        this.friendsController = friendsController;
     }
 
     protected virtual TaskbarHUDView CreateView()
@@ -203,6 +206,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(true);
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
@@ -332,9 +336,9 @@ public class TaskbarHUDController : IHUD
         if (controller.View.Transform.parent == view.leftWindowContainer) return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
-        experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
         topNotificationViewerTransform?.SetAsFirstSibling();
+        experiencesViewerTransform?.SetAsLastSibling();
 
         worldChatWindowHud = controller;
 
@@ -359,6 +363,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Friends);
         chatBackWindow = friendsHud;
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void CloseFriendsWindow()
@@ -369,8 +374,6 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChat(string userId)
     {
-        openedChat.Set(userId);
-        privateChatWindow.Setup(userId);
         worldChatWindowHud.SetVisibility(false);
         publicChatWindow.SetVisibility(false);
         channelChatWindow.SetVisibility(false);
@@ -379,6 +382,8 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.Set(false);
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
+        openedChat.Set(userId);
+        privateChatWindow.Setup(userId);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
         chatToggleTargetWindow = worldChatWindowHud;
@@ -396,13 +401,14 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
         voiceChatHud?.SetVisibility(false);
+        isPromoteChannelsToastVisible.Set(false);
 
         IHUD visibleWindow;
 
         if (lastActiveWindow == publicChatWindow)
         {
             publicChatWindow.SetVisibility(true, true);
-            visibleWindow = lastActiveWindow;
+            visibleWindow = publicChatWindow;
         }
         else if (lastActiveWindow != null)
         {
@@ -411,8 +417,8 @@ public class TaskbarHUDController : IHUD
         }
         else
         {
-            worldChatWindowHud.SetVisibility(true);
-            visibleWindow = worldChatWindowHud;
+            publicChatWindow.SetVisibility(true, true);
+            visibleWindow = publicChatWindow;
         }
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
@@ -506,6 +512,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         voiceChatHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void CloseVoiceChatWindow()
@@ -526,9 +533,9 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
-        experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
         topNotificationViewerTransform?.SetAsFirstSibling();
+        experiencesViewerTransform?.SetAsLastSibling();
 
         privateChatWindow = controller;
 
@@ -546,9 +553,9 @@ public class TaskbarHUDController : IHUD
         if (controller.View.Transform.parent == view.leftWindowContainer) return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
-        experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
         topNotificationViewerTransform?.SetAsFirstSibling();
+        experiencesViewerTransform?.SetAsLastSibling();
 
         publicChatWindow = controller;
 
@@ -594,9 +601,9 @@ public class TaskbarHUDController : IHUD
             return;
 
         controller.View.Transform.SetParent(view.leftWindowContainer, false);
-        experiencesViewerTransform?.SetAsLastSibling();
         notificationViewerTransform?.SetAsLastSibling();
         topNotificationViewerTransform?.SetAsFirstSibling();
+        experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
         view.ShowFriendsButton();
@@ -659,6 +666,7 @@ public class TaskbarHUDController : IHUD
         notificationViewerTransform = currentPanelTransform;
         notificationViewerTransform.SetParent(view.leftWindowContainer, false);
         notificationViewerTransform.SetAsLastSibling();
+        experiencesViewerTransform.SetAsLastSibling();
         notificationViewerTransform.GetComponent<MainChatNotificationsComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
@@ -690,7 +698,10 @@ public class TaskbarHUDController : IHUD
         else if(chatId == conversationListId)
             OpenChatList();
         else
-            OpenPrivateChat(chatId);
+        {
+            if(friendsController.GetUserStatus(chatId).friendshipStatus == FriendshipStatus.FRIEND)
+                OpenPrivateChat(chatId);
+        }
     }
 
     private void IsExperiencesViewerOpenChanged(bool current, bool previous)

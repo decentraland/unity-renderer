@@ -451,7 +451,7 @@ public class WorldChatWindowControllerShould
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 1, true, false, ""));
         
-        socialAnalytics.Received(1).SendEmptyChannelCreated("channelId", ChannelJoinedSource.Search);
+        socialAnalytics.Received(1).SendEmptyChannelCreated("channelName", ChannelJoinedSource.Search);
     }
     
     [Test]
@@ -463,19 +463,21 @@ public class WorldChatWindowControllerShould
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
         
-        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelId", ChannelJoinedSource.Link);
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link);
     }
 
     [Test]
     public void RemoveChannelWhenLeaveIsConfirmed()
     {
         controller.Initialize(view);
+        chatController.GetAllocatedChannel("channelId")
+            .Returns(new Channel("channelId", "channelName", 0, 0, true, false, ""));
         
         dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
 
         chatController.OnChannelLeft += Raise.Event<Action<string>>("channelId");
         
-        socialAnalytics.Received(1).SendLeaveChannel("channelId", ChannelLeaveSource.Command);
+        socialAnalytics.Received(1).SendLeaveChannel("channelName", ChannelLeaveSource.Command);
         view.Received(1).RemovePublicChat("channelId");
     }
 

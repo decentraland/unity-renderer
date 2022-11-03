@@ -80,8 +80,8 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
 
-            Assert.IsTrue(selector.itemToggles.ContainsKey(wearableId));
-            var itemToggle = selector.itemToggles[wearableId];
+            Assert.IsTrue(selector.currentItemToggles.ContainsKey(wearableId));
+            var itemToggle = selector.currentItemToggles[wearableId];
             Assert.NotNull(itemToggle.wearableItem);
 
             Assert.AreEqual(wearableId, itemToggle.wearableItem.id);
@@ -109,7 +109,7 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
             
-            Assert.IsTrue(selector.itemToggles.ContainsKey(wearableId));
+            Assert.IsTrue(selector.currentItemToggles.ContainsKey(wearableId));
             Assert.IsTrue(selector.totalWearables.ContainsKey(wearableId));
         }
 
@@ -120,7 +120,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase("urn:decentraland:off-chain:base-avatars:moptop")]
         public void NotAdd_BaseWearables_ToCollectibles(string wearableId)
         {
-            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
+            Assert.IsFalse(controller.myView.collectiblesItemSelector.currentItemToggles.ContainsKey(wearableId));
         }
 
         [Test]
@@ -154,7 +154,7 @@ namespace AvatarEditorHUD_Tests
             WearableItem dummyItem = CreateDummyNFT(rarity);
 
             var selector = controller.myView.selectorsByCategory[dummyItem.data.category];
-            var itemToggleObject = selector.itemToggles[dummyItem.id].gameObject;
+            var itemToggleObject = selector.currentItemToggles[dummyItem.id].gameObject;
 
             var originalName = "";//selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
 
@@ -168,7 +168,7 @@ namespace AvatarEditorHUD_Tests
         {
             WearableItem dummyItem = CreateDummyNFT(WearableLiterals.ItemRarity.EPIC);
 
-            var itemToggle = controller.myView.selectorsByCategory[dummyItem.data.category].itemToggles[dummyItem.id];
+            var itemToggle = controller.myView.selectorsByCategory[dummyItem.data.category].currentItemToggles[dummyItem.id];
             var nftInfo = (itemToggle as NFTItemToggle)?.nftItemInfo;
 
             Assert.NotNull(nftInfo);
@@ -194,7 +194,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject
+            Assert.IsFalse(controller.myView.collectiblesItemSelector.currentItemToggles[wearableId].amountContainer.gameObject
                 .activeSelf);
         }
 
@@ -219,7 +219,7 @@ namespace AvatarEditorHUD_Tests
             });
 
             var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY]
-                .itemToggles[wearableId];
+                .currentItemToggles[wearableId];
 
             Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
@@ -245,7 +245,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId];
+            var itemToggle = controller.myView.collectiblesItemSelector.currentItemToggles[wearableId];
 
             Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
@@ -257,7 +257,7 @@ namespace AvatarEditorHUD_Tests
             var smartNft = CreateSmartNFT();
 
             var selector = controller.myView.selectorsByCategory[smartNft.data.category];
-            var itemToggleObject = (NFTItemToggle) selector.itemToggles[smartNft.id];
+            var itemToggleObject = (NFTItemToggle) selector.currentItemToggles[smartNft.id];
 
             Assert.IsTrue( itemToggleObject.smartItemBadge.activeSelf);
         }
@@ -268,7 +268,7 @@ namespace AvatarEditorHUD_Tests
             var smartNft = CreateDummyNFT("rare");
 
             var selector = controller.myView.selectorsByCategory[smartNft.data.category];
-            var itemToggleObject = (NFTItemToggle) selector.itemToggles[smartNft.id];
+            var itemToggleObject = (NFTItemToggle) selector.currentItemToggles[smartNft.id];
 
             Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
         }

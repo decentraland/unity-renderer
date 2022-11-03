@@ -248,7 +248,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
-        public void SendEmptyChannelCreated(string channelChannelId, ChannelJoinedSource source)
+        public void SendEmptyChannelCreated(string channelName, ChannelJoinedSource source)
         {
             var data = new Dictionary<string, string>
             {
@@ -258,12 +258,13 @@ namespace SocialFeaturesAnalytics
                     ChannelJoinedSource.Link => "link",
                     ChannelJoinedSource.Search => "create_search",
                     _ => ""
-                }
+                },
+                ["channel"] = channelName
             };
             analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
         }
 
-        public void SendPopulatedChannelJoined(string channelChannelId, ChannelJoinedSource source)
+        public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source)
         {
             var data = new Dictionary<string, string>
             {
@@ -274,7 +275,8 @@ namespace SocialFeaturesAnalytics
                     ChannelJoinedSource.Search => "search",
                     ChannelJoinedSource.ConversationList => "conversation_list",
                     _ => ""
-                }
+                },
+                ["channel"] = channelName
             };
             analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
         }

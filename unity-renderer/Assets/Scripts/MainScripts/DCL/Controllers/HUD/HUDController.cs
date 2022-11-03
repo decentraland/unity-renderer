@@ -245,6 +245,7 @@ public class HUDController : IHUDController
                 {
                     CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT);
                     PublicChatWindowHud.Initialize();
+                    PublicChatWindowHud.Setup(ChatUtils.NEARBY_CHANNEL_ID);
                     PublicChatWindowHud.SetVisibility(false);
                     PublicChatWindowHud.OnBack -= HandlePublicChatChannelBacked;
                     PublicChatWindowHud.OnBack += HandlePublicChatChannelBacked;
