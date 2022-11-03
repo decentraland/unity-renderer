@@ -18,23 +18,6 @@ var WebVideoPlayer = {
 
         vid.autoplay = false;
         
-        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-           console.log("VIDEO PLAYER: supported");
-           
-           const onNewFrame = function (now, metadata) {
-                // newFrame = true
-                // Re-register the callback to be notified about the next frame.
-                console.log("VIDEO PLAYER: new Frame");
-                vid.requestVideoFrameCallback(onNewFrame);
-            };
-            vid.requestVideoFrameCallback(onNewFrame);
-        } else if ('seekToNextFrame' in HTMLVideoElement.prototype) {
-            console.log("VIDEO PLAYER: firefox implementation");
-        } else {
-            console.log("VIDEO PLAYER: ignoreNewFrameOptimization");
-            // ignoreNewFrameOptimization = true // we ignore the optimization of the newFrame=true/false, we always copy the texture
-        }
-
         var textureObject = GLctx.createTexture();
         const texId = GL.getNewId(textureObject);
         textureObject.name = texId
@@ -44,10 +27,25 @@ var WebVideoPlayer = {
             video: vid,
             state: videoState.NONE,
             error: "",
-            textureId: texId
+            textureId: texId,
+            newFrame: false,
+            useUpdateOptimization: true
         };
-
+        
         videos[Pointer_stringify(videoId)] = videoData;
+
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {    
+            const onNewFrame = function (now, metadata) {
+                videoData.newFrame = true;
+                vid.requestVideoFrameCallback(onNewFrame);
+            };
+                    
+            vid.requestVideoFrameCallback(onNewFrame);
+        } else if ('seekToNextFrame' in HTMLVideoElement.prototype) {
+            // TODO: firefox implementation 
+        } else {
+            videoData.useUpdateOptimization = false; // we ignore optimization if not supported
+        }
 
         if (useHls) {
             var hlsConfig = {
@@ -152,7 +150,12 @@ var WebVideoPlayer = {
         const videoData = videos[Pointer_stringify(videoId)];
         
         if (videoData.state !== 4) return; //PLAYING
-
+        
+        if (videoData.useUpdateOptimization && !videoData.newFrame) 
+            return; // No new frame to update
+        else
+            videoData.newFrame = false;
+        
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
