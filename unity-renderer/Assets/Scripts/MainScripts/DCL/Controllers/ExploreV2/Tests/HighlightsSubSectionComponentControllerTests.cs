@@ -124,10 +124,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEvents(Arg.Any<List<PlaceCardComponentModel>>(), Arg.Any<List<EventCardComponentModel>>());
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(false);
-        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(false);
         highlightsSubSectionComponentView.Received().SetLiveEvents(Arg.Any<List<EventCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetLiveAsLoading(false);
     }
 
     [Test]
@@ -142,7 +139,6 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEvents(Arg.Any<List<PlaceCardComponentModel>>(), Arg.Any<List<EventCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(false);
     }
 
     [Test]
@@ -157,7 +153,6 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(false);
     }
 
     [Test]
@@ -172,7 +167,6 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().SetLiveEvents(Arg.Any<List<EventCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetLiveAsLoading(false);
     }
 
     [Test]

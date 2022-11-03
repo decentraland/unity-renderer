@@ -1,3 +1,4 @@
+using DCL.Chat;
 using TMPro;
 using UnityEngine;
 

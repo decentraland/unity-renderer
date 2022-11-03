@@ -10,7 +10,7 @@ namespace DCL.Rendering
     public class CullingControllerSettings
     {
         [NonSerialized]
-        public float maxTimeBudget = 4 / 1000f;
+        public float maxTimeBudget = 0.5f / 1000f;
 
         public bool enableObjectCulling = true;
         public bool enableShadowCulling = true;

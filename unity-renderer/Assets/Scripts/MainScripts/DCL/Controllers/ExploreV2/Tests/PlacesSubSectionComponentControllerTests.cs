@@ -103,22 +103,6 @@ public class PlacesSubSectionComponentControllerTests
     }
 
     [Test]
-    public void RaiseOnRequestedPlacesUpdatedCorrectly()
-    {
-        // Arrange
-        int numberOfPlaces = 2;
-        placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
-
-        // Act
-        placesSubSectionComponentController.OnRequestedPlacesUpdated();
-
-        // Assert
-        placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(placesSubSectionComponentController.currentPlacesShowed < numberOfPlaces);
-        placesSubSectionComponentView.Received().SetPlacesAsLoading(false);
-    }
-
-    [Test]
     public void LoadPlacesCorrectly()
     {
         // Arrange
@@ -126,12 +110,11 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        placesSubSectionComponentController.LoadPlaces();
+        placesSubSectionComponentController.LoadPlaces(placesSubSectionComponentController.placesFromAPI);
 
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
         placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(placesSubSectionComponentController.currentPlacesShowed < numberOfPlaces);
-        placesSubSectionComponentView.Received().SetPlacesAsLoading(false);
     }
 
     [Test]

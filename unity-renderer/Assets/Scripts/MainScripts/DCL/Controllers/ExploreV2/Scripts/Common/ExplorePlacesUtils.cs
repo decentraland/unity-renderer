@@ -79,14 +79,20 @@ public static class ExplorePlacesUtils
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 
         foreach (PlaceCardComponentModel placeInfo in places)
-        {
-            PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();
-            ConfigurePlaceCard(placeGO, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
-            OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            instantiatedPlaces.Add(placeGO);
-        }
+            instantiatedPlaces.Add(
+                InstantiateConfiguredPlaceCard(placeInfo, pool, OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked)
+                );
 
         return instantiatedPlaces;
+    }
+    
+    public static BaseComponentView InstantiateConfiguredPlaceCard(PlaceCardComponentModel placeInfo, Pool pool, 
+        Action<FriendsHandler> OnFriendHandlerAdded, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked)
+    {
+        PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();
+        ConfigurePlaceCard(placeGO, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
+        return placeGO;
     }
 
     /// <summary>
