@@ -41,8 +41,6 @@ var WebVideoPlayer = {
             };
                     
             vid.requestVideoFrameCallback(onNewFrame);
-        } else if ('seekToNextFrame' in HTMLVideoElement.prototype) {
-            // TODO: firefox implementation 
         } else {
             videoData.useUpdateOptimization = false; // we ignore optimization if not supported
         }
