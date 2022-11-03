@@ -40,6 +40,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 
     public List<Renderer> targets = new List<Renderer>();
     List<Material> _materials = new List<Material>();
+    private Coroutine updateAvatarRevealerRoutine = null;
 
     private void Start()
     {
@@ -49,6 +50,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         {
             _materials.Add(r.material);
         }
+        StartCoroutine(FadeInGhostMaterial());
     }
 
     public SkinnedMeshRenderer GetMainRenderer()
@@ -80,39 +82,12 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         _materials.Add(newTarget.material);
     }
 
-    private void Update()
-    {
-        if (lod.lodIndex >= 2)
-            SetFullRendered();
-
-        UpdateMaterials();
-    }
-
-    void UpdateMaterials()
-    {
-        if (avatarLoaded)
-            return;
-
-        if(_ghostMaterial.GetColor("_Color").a < 0.9f)
-        {
-            Color gColor = _ghostMaterial.GetColor("_Color");
-            Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
-            _ghostMaterial.SetColor("_Color", tempColor);
-        }
-
-        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.localPosition);
-
-        foreach (Material m in _materials)
-        {
-            m.SetVector("_RevealPosition", -revealer.transform.localPosition);
-        }
-    }
-
     public async UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken cancellationToken)
     {
+        updateAvatarRevealerRoutine = StartCoroutine(UpdateRevealerPosition());
         try
         {
-            if (!withTransition)
+            if (!withTransition || lod.lodIndex >= 2)
             {
                 SetFullRendered();
                 return;
@@ -121,10 +96,34 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
             isRevealing = true;
             animation.Play();
             await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
+            StopCoroutine(updateAvatarRevealerRoutine);
         }
         catch(OperationCanceledException)
         {
             SetFullRendered();
+        }
+    }
+
+    private IEnumerator UpdateRevealerPosition()
+    {
+        _ghostMaterial.SetVector("_RevealPosition", revealer.transform.localPosition);
+        foreach (Material m in _materials)
+        {
+            m.SetVector("_RevealPosition", -revealer.transform.localPosition);
+        }
+        yield return new WaitForSeconds(0.01f);
+        updateAvatarRevealerRoutine = StartCoroutine(UpdateRevealerPosition());
+    }
+
+    private IEnumerator FadeInGhostMaterial()
+    {
+        Color gColor = _ghostMaterial.GetColor("_Color");
+        Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
+        _ghostMaterial.SetColor("_Color", tempColor);
+        yield return new WaitForSeconds(0.01f);
+        if(_ghostMaterial.GetColor("_Color").a < 0.9f)
+        {
+            StartCoroutine(FadeInGhostMaterial());
         }
     }
 
@@ -143,7 +142,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         {
             m.SetVector("_RevealPosition", new Vector3(0, REVEALED_POSITION, 0));
         }
-        _ghostMaterial.SetVector("_RevealPosition", new Vector3(0, 2.5f, 0));
+        _ghostMaterial?.SetVector("_RevealPosition", new Vector3(0, 2.5f, 0));
         DisableParticleEffects();
         avatarLoaded = true;
     }
