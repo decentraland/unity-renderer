@@ -17,7 +17,7 @@ public interface IChatHUDComponentView
     void OnMessageCancelHover();
     void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false);
     void Dispose();
-    void RemoveFirstEntry();
+    void RemoveOldestEntry();
     void ClearAllEntries();
     void ResetInputField(bool loseFocus = false);
     void FocusInputField();

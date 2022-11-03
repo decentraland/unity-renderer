@@ -121,4 +121,8 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     public void HideConnectWallet()
     {
     }
+
+    public void SetChannelsPromoteLabelVisible(bool isVisible)
+    {
+    }
 }

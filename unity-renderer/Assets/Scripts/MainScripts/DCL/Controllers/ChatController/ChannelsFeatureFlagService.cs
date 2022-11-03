@@ -9,6 +9,7 @@ namespace DCL.Chat.Channels
         private const string FEATURE_FLAG_FOR_CHANNELS_FEATURE = "matrix_channels_enabled";
         private const string FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "users_allowed_to_create_channels";
         private const string VARIANT_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "allowedUsers";
+        private const string FEATURE_FLAG_FOR_PROMOTE_CHANNELS_TOAST = "promote_channels_toast";
 
         private BaseVariable<FeatureFlag> featureFlags => dataStore.featureFlags.flags;
 
@@ -61,7 +62,8 @@ namespace DCL.Chat.Channels
             switch (allowedUsersData.mode)
             {
                 case AllowChannelsCreationMode.ALLOWLIST:
-                    return allowedUsersData.allowList.Any(userId => userId.ToLower() == ownUserProfile.userId.ToLower());
+                    return allowedUsersData.allowList != null
+                           && allowedUsersData.allowList.Any(userId => userId?.ToLower() == ownUserProfile.userId.ToLower());
                 case AllowChannelsCreationMode.NAMES:
                     return ownUserProfile.hasClaimedName;
                 case AllowChannelsCreationMode.WALLET:
@@ -70,5 +72,7 @@ namespace DCL.Chat.Channels
 
             return true;
         }
+
+        public bool IsPromoteChannelsToastEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_PROMOTE_CHANNELS_TOAST);
     }
 }

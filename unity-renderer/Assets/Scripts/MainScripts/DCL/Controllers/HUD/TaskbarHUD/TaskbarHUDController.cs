@@ -53,6 +53,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
+    internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
     public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
     {
@@ -205,6 +206,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         voiceChatHud?.SetVisibility(false);
         isExperiencesViewerOpen.Set(true);
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
@@ -361,6 +363,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Friends);
         chatBackWindow = friendsHud;
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void CloseFriendsWindow()
@@ -398,6 +401,7 @@ public class TaskbarHUDController : IHUD
         isEmotesVisible.Set(false);
         isExperiencesViewerOpen.Set(false);
         voiceChatHud?.SetVisibility(false);
+        isPromoteChannelsToastVisible.Set(false);
 
         IHUD visibleWindow;
 
@@ -508,6 +512,7 @@ public class TaskbarHUDController : IHUD
         friendsHud?.SetVisibility(false);
         voiceChatHud?.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        isPromoteChannelsToastVisible.Set(false);
     }
 
     private void CloseVoiceChatWindow()
