@@ -164,6 +164,7 @@ public class AudioEvent : ScriptableObject
 
     public void SetIndex(int index) { clipIndex = index; }
 
+    // FD:: Look at this method
     public void SetPitch(float pitch) { this.pitch = pitch; }
 
     /// <summary>Use StartCoroutine() on this one.</summary>
