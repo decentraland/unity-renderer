@@ -147,6 +147,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 721c6c734f61b43d0847c2d37a7b6271, type: 3}
   - {fileID: 21300000, guid: 193e9383359b56b4da3f682336ed6cec, type: 3}
   - {fileID: 21300000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}
+  - {fileID: 21300000, guid: c553839314f3e4d218eed6729f828916, type: 3}
   - {fileID: 21300000, guid: 3f0f9693166cb48a9b43e5e4bbd00332, type: 3}
   - {fileID: 21300000, guid: 832a50a328da0294f809c85f37abca0e, type: 3}
   - {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
@@ -162,6 +163,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 06ec3644c3f104203b897e53615acd2c, type: 3}
   - {fileID: 21300000, guid: 2cc1bc54dd98f77459c059ab58670f74, type: 3}
   - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
+  - {fileID: 21300000, guid: 19ab9974b241b40c6904521d492b8328, type: 3}
+  - {fileID: 21300000, guid: d47fff849b289a945b7f71738eb53815, type: 3}
   - {fileID: 21300000, guid: 51517794ebfef5b49b08d321c661cee2, type: 3}
   - {fileID: 21300000, guid: d077f9943309847eb8bb9c36ecff7a44, type: 3}
   - {fileID: 21300000, guid: 3bdf32a4d196e1d429119d1477906987, type: 3}
@@ -251,6 +254,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6dc5f06896a6f4ae58484cab7811e13d, type: 3}
   - {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   - {fileID: 21300000, guid: 88d20368893eb44b4ae7754f29a476c1, type: 3}
+  - {fileID: 21300000, guid: 2d7d3368512701f4080fd09e4057e1f8, type: 3}
   - {fileID: 21300000, guid: 84771a68677a08b43a7247d73aa5a6d8, type: 3}
   - {fileID: 21300000, guid: fc55de685e0bf440298f2ef454cb99bc, type: 3}
   - {fileID: 21300000, guid: ff8a6278dd9d9334da10fa959cdb26dc, type: 3}
@@ -268,13 +272,16 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5dc96a095ce3483459044bf3e74ccb59, type: 3}
   - {fileID: 21300000, guid: 314ecf09e6e7447d9aa0421d996754cc, type: 3}
   - {fileID: 21300000, guid: f28ec019b47e944689f27d8e149db2d5, type: 3}
+  - {fileID: 21300000, guid: e09bda197f4a342e9b7aa7b157de94ac, type: 3}
   - {fileID: 21300000, guid: 1c63e329c16184c1bb493ada5f85c91b, type: 3}
   - {fileID: 21300000, guid: f9934449af9e15443befe12f639d5979, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
+  - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
   - {fileID: 21300000, guid: 46524689a799e4be9941af9ef6f45a89, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
+  - {fileID: 21300000, guid: 3beb4cb91f8cace439eb66e3a487008c, type: 3}
   - {fileID: 21300000, guid: 35746db90808fac4aa31ef672b070378, type: 3}
   - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
   - {fileID: 21300000, guid: cb309bd943c8e4c98bde37e97061b6aa, type: 3}
@@ -332,6 +339,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
   - {fileID: 21300000, guid: 42eb1ceb0cb414d60b49ce912a143517, type: 3}
   - {fileID: 21300000, guid: 64b96cebc797f4e75ad10e05ff68466f, type: 3}
+  - {fileID: 21300000, guid: 51bc4deb7ea0e8e408dc994774054af8, type: 3}
   - {fileID: 21300000, guid: b1fdbdeb128d64657bb427b7c93fbab4, type: 3}
   - {fileID: 21300000, guid: f40bf6fb414054290a754636595da223, type: 3}
   - {fileID: 21300000, guid: a3a66afb0cf6d49da8b0b2b18f7b20d0, type: 3}
@@ -392,6 +400,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7645aeaef9d16443fb2c511d64aef9ab, type: 3}
   - {fileID: 21300000, guid: 48839cbe5b4274e8699c1d592a48d375, type: 3}
   - {fileID: 21300000, guid: cdfa22ce5f6194faa94218aa69dc20f1, type: 3}
+  - {fileID: 21300000, guid: a76b94def1e7d4365aefc6bf53f6f81f, type: 3}
   - {fileID: 21300000, guid: f992e8febb67b5d47a24e9f16d5cc190, type: 3}
   - {fileID: 21300000, guid: aa5bccfe420b24d5c89f0e8b12b4f537, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
@@ -500,6 +509,7 @@ SpriteAtlas:
   - SelectedEllipticalMenu
   - DclLogoMountain
   - SelectedParcel
+  - IconBellActive
   - OkIcon
   - tiktok_dance_256
   - ContainerRadius20
@@ -515,6 +525,8 @@ SpriteAtlas:
   - SpeakerOff
   - HideIcon
   - Container12Shadow4
+  - ChatNotiIcon
+  - DMIEmpty
   - DclLogoCircle
   - LockIcon
   - DclLogoLine3
@@ -563,7 +575,7 @@ SpriteAtlas:
   - QuestOff
   - InputGray
   - Frame10
-  - BlockIcon
+  - BlockPlayerIcon
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
@@ -604,6 +616,7 @@ SpriteAtlas:
   - HighlightsIcon
   - Container12
   - UIicon
+  - PromoteChannelsToastBackground
   - tecktonik_256
   - AcceptButtonHover
   - raise_hand_256
@@ -621,13 +634,16 @@ SpriteAtlas:
   - disco_dance_256
   - RejectButtonHover
   - BackpackOn
+  - IconBellUnactive
   - Frame12
   - ContainerRadius24Shadow
   - Ellipse128
+  - SearchChannelIcon
   - FriendsOff
   - FloorLight
   - MessageIcon
   - FriendsIcon
+  - PromoteChannelsToastContainer
   - ContainerRadius100
   - Star
   - ExploreOn
@@ -685,6 +701,7 @@ SpriteAtlas:
   - BackpackIconNew
   - Ellipse32
   - ChatIcon
+  - ConnectWalletLogo
   - RectRadiusStroke16
   - Outline2Top12
   - ContainerRadius8
@@ -728,7 +745,7 @@ SpriteAtlas:
   - Ellipse128Stroke
   - UnpublishIconOutline
   - Button12
-  - DeleteFriend
+  - UnfriendIcon
   - QuitIconOutline
   - ContainerRectBottom
   - CardBlockIcon
@@ -745,6 +762,7 @@ SpriteAtlas:
   - SettingsOn
   - BuilderOff
   - Outline1Radius24
+  - Bell
   - shrug_256
   - Outline3Radius14
   - PatternPC

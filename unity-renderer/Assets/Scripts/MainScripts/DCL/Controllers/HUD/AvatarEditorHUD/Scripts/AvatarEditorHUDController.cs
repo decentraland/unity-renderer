@@ -665,7 +665,7 @@ public class AvatarEditorHUDController : IHUD
     {
         if (!wearable.data.tags.Contains(WearableLiterals.Tags.BASE_WEARABLE) && userProfile.GetItemAmount(id) == 0)
             return;
-
+        
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
             wearablesByCategory.Add(wearable.data.category, new List<WearableItem>());
 
@@ -882,6 +882,7 @@ public class AvatarEditorHUDController : IHUD
             var equippedEmote = emotesCustomizationDataStore.unsavedEquippedEmotes[i];
             if (equippedEmote == null)
                 continue;
+            
             emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
         }
         

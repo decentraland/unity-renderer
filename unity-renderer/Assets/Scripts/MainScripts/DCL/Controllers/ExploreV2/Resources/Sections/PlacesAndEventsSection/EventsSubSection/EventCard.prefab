@@ -393,7 +393,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -402,6 +402,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -564,7 +565,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -573,6 +574,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -698,7 +700,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -707,6 +709,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -928,7 +931,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -937,6 +940,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1154,7 +1158,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1163,6 +1167,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1288,7 +1293,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -1297,6 +1302,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1328,6 +1334,7 @@ GameObject:
   - component: {fileID: 8858468569024202471}
   - component: {fileID: 122841282163272025}
   - component: {fileID: 5557446657378038455}
+  - component: {fileID: 1603059040638773739}
   m_Layer: 5
   m_Name: EventCard
   m_TagString: Untagged
@@ -1397,7 +1404,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  visibleParam: visible
+  canvasGroup: {fileID: 0}
 --- !u!225 &122841282163272025
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1422,6 +1429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc9031eccc4b6bf4bad1b55deb404612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   eventImage: {fileID: 3125035313188510503}
   liveTag: {fileID: 1916816639158292161}
   eventDateText: {fileID: 6730978861433019914}
@@ -1447,10 +1455,10 @@ MonoBehaviour:
   imageContainer: {fileID: 7868746511804096888}
   eventInfoContainer: {fileID: 6076383061504269825}
   loadingSpinner: {fileID: 4892156300981809585}
-  cardAnimator: {fileID: 8514878343383041345}
   contentVerticalLayout: {fileID: 0}
   infoVerticalLayout: {fileID: 0}
   timeAndPlayersHorizontalLayout: {fileID: 4036570520989522709}
+  cardAnimator: {fileID: 1603059040638773739}
   defaultPicture: {fileID: 21300000, guid: 6e529494754e8224da77f0acd64e6dea, type: 3}
   isEventCardModal: 0
   model:
@@ -1487,6 +1495,20 @@ MonoBehaviour:
       highlighted: 0
       trending: 0
       attending: 0
+--- !u!114 &1603059040638773739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296146640907786813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a7f92c21c64ff24d8eda58293c1058f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardShadow: {fileID: 4957960443453894688}
+  infoTransform: {fileID: 5603844491624251434}
 --- !u!1 &5642670158634271867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,7 +1618,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -1605,6 +1627,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1780,7 +1803,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -1789,6 +1812,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -2128,7 +2152,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6998779210545929974}
-  - component: {fileID: 8514878343383041345}
   - component: {fileID: 8105969629416444027}
   m_Layer: 5
   m_Name: Content
@@ -2158,25 +2181,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &8514878343383041345
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8695666998979187027}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4a0ca24f45385764fb0012b9da3ecd26, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!222 &8105969629416444027
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -70,24 +70,24 @@ public static class ExploreEventsUtils
     /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
     /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
     /// <returns>A list of instances of events.</returns>
-    public static List<BaseComponentView> InstantiateAndConfigureEventCards(
-        List<EventCardComponentModel> events,
-        Pool pool,
-        Action<EventCardComponentModel> OnEventInfoClicked,
-        Action<EventFromAPIModel> OnEventJumpInClicked,
-        Action<string> OnEventSubscribeEventClicked,
-        Action<string> OnEventUnsubscribeEventClicked)
+    public static List<BaseComponentView> InstantiateAndConfigureEventCards(List<EventCardComponentModel> events, Pool pool,
+        Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked)
     {
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 
         foreach (EventCardComponentModel eventInfo in events)
-        {
-            EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
-            ConfigureEventCard(eventGO, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
-            instantiatedPlaces.Add(eventGO);
-        }
+            instantiatedPlaces.Add(
+                InstantiateConfiguredEventCard(eventInfo, pool, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked)
+                );
 
         return instantiatedPlaces;
+    }
+    
+    public static EventCardComponentView InstantiateConfiguredEventCard(EventCardComponentModel eventInfo, Pool pool, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked)
+    {
+        EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
+        ConfigureEventCard(eventGO, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
+        return eventGO;
     }
 
     /// <summary>

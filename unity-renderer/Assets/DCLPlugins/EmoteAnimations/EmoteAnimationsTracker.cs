@@ -107,13 +107,19 @@ namespace DCL.Emotes
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
                 await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, ct);
+                
                 EmoteClipData emoteClipData;
                 if(emote is EmoteItem newEmoteItem)
-                    emoteClipData = new EmoteClipData(animationLoader.animation, newEmoteItem.data.loop);
+                    emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, newEmoteItem.data.loop);
                 else
-                    emoteClipData = new EmoteClipData(animationLoader.animation, emote.emoteDataV0);
+                    emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, emote.emoteDataV0);
 
                 dataStore.animations.Add((bodyShapeId, emoteId), emoteClipData);
+
+                if (animationLoader.loadedAnimationClip == null)
+                {
+                    Debug.LogError("Emote animation failed to load for emote " + emote.id);
+                }
             }
             catch (Exception e)
             {

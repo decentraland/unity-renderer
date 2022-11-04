@@ -86,8 +86,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
     internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
 
-    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
-
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
 
@@ -108,10 +106,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject placeInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
-    [SerializeField] internal Animator cardAnimator;
     [SerializeField] internal GameObject cardSelectionFrame;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
+    [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -195,8 +193,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(true);
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+        cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
@@ -206,8 +203,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+        cardAnimator?.Idle();
     }
 
     public override void Show(bool instant = false)
@@ -409,7 +405,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             friendHeadPrefab);
 
         if (friendsGrid != null)
-            friendsGrid.AddItem(newFriend);
+            friendsGrid.AddItemWithResize(newFriend);
 
         currentFriendHeads.Add(profile.userId, newFriend);
     }

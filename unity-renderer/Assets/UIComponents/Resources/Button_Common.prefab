@@ -204,7 +204,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -213,6 +213,7 @@ MonoBehaviour:
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -406,7 +407,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  visibleParam: visible
+  canvasGroup: {fileID: 8412491424384214035}
 --- !u!114 &8360437818873036568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,6 +462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   button: {fileID: 5109399184885072362}
   text: {fileID: 4469143239268576428}
   icon: {fileID: 7518669975530283665}
