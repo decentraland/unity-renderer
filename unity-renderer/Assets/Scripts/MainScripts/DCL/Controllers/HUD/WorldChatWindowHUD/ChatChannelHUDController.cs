@@ -192,7 +192,7 @@ namespace DCL.Chat.HUD
             }
 
             chatController.Send(message);
-            socialAnalytics.SendMessageSentToChannel(channel.Name, message.body.Length, "chat");
+            socialAnalytics.SendMessageSentToChannel(channel.Name, message.body.Length, "channel");
         }
 
         private void HandleMessageReceived(ChatMessage message)
@@ -202,7 +202,10 @@ namespace DCL.Chat.HUD
             UpdateOldestMessage(message);
 
             message.isChannelMessage = true;
-            chatHudController.AddChatMessage(message, limitMaxEntries: false);
+            // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
+            // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
+            // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
+            chatHudController.AddChatMessage(message, limitMaxEntries: true);
 
             if (View.IsActive)
             {

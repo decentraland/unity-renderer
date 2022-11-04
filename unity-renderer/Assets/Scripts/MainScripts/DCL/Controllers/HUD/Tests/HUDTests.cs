@@ -1,5 +1,6 @@
 using System.Collections;
 using DCL;
+using DCL.Chat;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;

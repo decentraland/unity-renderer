@@ -9,7 +9,6 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -64,7 +63,7 @@ namespace Tests
         {
             uiDocument.rootVisualElement.Add(new VisualElement());
 
-            ECSScenesUiSystem.ClearUI(uiDocument);
+            ECSScenesUiSystem.ClearCurrentSceneUI(uiDocument);
             Assert.AreEqual(0, uiDocument.rootVisualElement.childCount);
         }
 
@@ -100,7 +99,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -124,7 +123,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
@@ -135,7 +134,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
@@ -286,6 +285,85 @@ namespace Tests
             // prev scene ui should be removed
             Assert.IsFalse(uiDocument.rootVisualElement.Contains(rootScene1Container.rootElement));
             Assert.AreEqual(0, uiDocument.rootVisualElement.childCount);
+        }
+
+        [Test]
+        public void ApplyGlobalSceneUi()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene("temptation");
+            scene.isPersistent = true;
+
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneId().Returns("some-other-non-global-scene");
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene>(),
+                worldState);
+
+            // create root ui for scene
+            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
+
+            // do system update
+            system.Update();
+
+            // ui document should have scene ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootSceneContainer.rootElement));
+        }
+
+        [Test]
+        public void ApplyBothGlobalAndNotGlobalSceneUi()
+        {
+            ECS7TestScene globalScene = sceneTestHelper.CreateScene("temptation");
+            globalScene.isPersistent = true;
+
+            ECS7TestScene nonGlobalScene = sceneTestHelper.CreateScene("non-global-scene");
+
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneId().Returns("non-global-scene");
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene> { nonGlobalScene },
+                worldState);
+
+            // create root ui for global scene
+            InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer();
+            uiContainerComponent.PutFor(globalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootGlobalSceneContainer);
+
+            // do system update
+            system.Update();
+
+            // ui document should have global scene ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootGlobalSceneContainer.rootElement));
+
+            // create root ui for non global scene
+            InternalUiContainer rootNonGlobalSceneContainer = new InternalUiContainer();
+            uiContainerComponent.PutFor(nonGlobalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootNonGlobalSceneContainer);
+
+            // do system update
+            system.Update();
+
+            // ui document should have both scene ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootNonGlobalSceneContainer.rootElement)
+                          && uiDocument.rootVisualElement.Contains(rootGlobalSceneContainer.rootElement));
+
+            // remove non global scene
+            uiContainerComponent.RemoveFor(nonGlobalScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            // ui document should have only global scene ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootGlobalSceneContainer.rootElement));
+
+            // remove global scene
+            uiContainerComponent.RemoveFor(globalScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            // ui document should not have any ui set
+            Assert.IsTrue(uiDocument.rootVisualElement.childCount == 0);
         }
     }
 }
