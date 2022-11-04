@@ -8,12 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Master_ToonShader_Outline_TESTER_RT
-  m_Shader: {fileID: 4800000, guid: 634f377c2a45c2c44b954108057e6beb, type: 3}
+  m_Shader: {fileID: 4800000, guid: b5c65ce5df12a0d46bebad70bbe028b8, type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _EMISSION _GPU_SKINNING _NORMALMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -92,24 +92,26 @@ Material:
     - Vector1_c33eb2e02a004cc59ddf4de008209eff: 1
     - _AlphaRF: 1
     - _BaseRF: 1
+    - _CameraFarPlaneFade: 50
     - _CellShading: 255
     - _DitherFade: 1
     - _EmissionL: 2.31
     - _EmissionRF: 0
-    - _Outline: 4.35
-    - _OutlineFade: 0
+    - _Outline: 3.27
+    - _OutlineFade: -1
     - _OutlineFade_1: 1
     - _OutlineOpacity: 1
     - _ToonFade: 1
     - _ToonMultiplier: 0.91
     - _isAlphaClipOn: 1
     - _isOutlineDisabled: 1
+    - _isOutlineEnabled: 1
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
     - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
     - _GlossIntensity: {r: 0.3396226, g: 0.3396226, b: 0.3396226, a: 1}
     - _MultiplyColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
-    - _OutlineColor: {r: 1, g: 0.16509432, b: 0.23973672, a: 0}
+    - _OutlineColor: {r: 0, g: 0.5849056, b: 0.11439208, a: 0}
     - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
     - _RevealPosition: {r: -0, g: -9.694534, b: -0, a: 0}
   m_BuildTextureStacks: []
