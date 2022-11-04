@@ -20,7 +20,6 @@ namespace DCL.Chat.Channels
         private readonly IChatController chatController;
 
         public event Action<bool> OnAllowedToCreateChannelsChanged;
-        public event Action<AutomaticJoinChannelList> OnAutoJoinChannelsChanged;
 
         public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge, IChatController chatController)
         {
@@ -37,7 +36,6 @@ namespace DCL.Chat.Channels
         public void Initialize()
         {
             userProfileBridge.GetOwn().OnUpdate += OnUserProfileUpdate;
-            this.chatController.OnInitialized += () => OnAutoJoinChannelsChanged?.Invoke(GetAutoJoinChannelsList());
         }
 
         public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
