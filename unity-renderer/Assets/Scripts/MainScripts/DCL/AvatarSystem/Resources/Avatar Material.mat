@@ -92,6 +92,7 @@ Material:
     - Vector1_a6322ea535ad4b8ea9f2b0a1ae114a49: 1
     - Vector1_c33eb2e02a004cc59ddf4de008209eff: 0
     - Vector1_dc63173bc8314416be42ac299256c2a5: 0
+    - _CameraFarPlaneFade: 50
     - _CellShading: 251
     - _DitherFade: 1
     - _Outline: 1
@@ -102,6 +103,7 @@ Material:
     - _ToonMultiplier: 0
     - _detailsAmount: 0.2
     - _isOutlineDisabled: 1
+    - _isOutlineEnabled: 0
     m_Colors:
     - Color_5DF75355: {r: 1, g: 0.6778519, b: 0, a: 0}
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}

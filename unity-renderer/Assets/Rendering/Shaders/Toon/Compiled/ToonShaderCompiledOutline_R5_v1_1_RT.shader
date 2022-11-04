@@ -22,9 +22,10 @@ Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT"
         _DitherFade("_DitherFade", Float) = 1
         _RevealPosition("RevealPosition", Vector) = (0, 0, 0, 0)
         _RevealNormal("RevealNormal", Vector) = (0, -1, 0, 0)
+        [Space(10)]
         _Outline("Outline (Pixel)", Range(0.1, 4)) = 1
         [HDR]_OutlineColor("Outline Color", Color) = (4, 1.539547, 0, 0)
-        _OutlineFade("Outline Fade", Range(-1, 1)) = 0.1
+        _OutlineFade("Outline Fade", Range(-1.5, 1)) = 0.1
         _OutlineOpacity("OutlineOpacity", Range(0, 1)) = 0
         _CameraFarPlaneFade("CameraFarPlaneFade", Float) = 50
         [ToggleUI]_isOutlineEnabled("isOutlineEnabled", Float) = 0
