@@ -165,7 +165,20 @@ public class AudioEvent : ScriptableObject
     public void SetIndex(int index) { clipIndex = index; }
 
     // FD:: Look at this method
-    public void SetPitch(float pitch) { this.pitch = pitch; }
+    public void SetPitch(float pitch) 
+    { 
+        DebugFdTest ("SetPitch value: " + pitch);
+        this.pitch = pitch; 
+    }
+
+    // FD:: remove this method
+    private void DebugFdTest (string stringToDebug)
+    {
+        var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
+        UnityEngine.Debug.unityLogger.logEnabled = true;
+        Debug.Log ("FD:: " + stringToDebug);
+        UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
+    }
 
     /// <summary>Use StartCoroutine() on this one.</summary>
     public IEnumerator FadeIn(float fadeSeconds)
