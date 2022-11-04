@@ -20,38 +20,32 @@ namespace DCL
         }
 
 
-        private Transform entityTransform;
+        private const string COMPONENT_NAME = "billboard";
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-        private Vector3 lastPosition;
 
-        public override string componentName => "billboard";
+        internal Transform Tr { get; private set; }
+        internal Transform EntityTransform { get; private set; }
+        internal Vector3 LastPosition { get; set; }
+
+
 
 
         private void Awake() 
         {
-            model = new Model(); 
-        }
+            model = new Model();
+            Tr = transform;
 
-        // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
-        private void LateUpdate()
-        {
-            //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
-            //             We must find a more performant way to handle this, until that time, this is the approach.
-
-            if (entityTransform == null)
-                return;
-            if (transform.position == lastPosition)
-                return;
-
-            lastPosition = transform.position;
-
-            ChangeOrientation();
+            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
         }
 
         private void OnDestroy()
         {
             cameraPosition.OnChange -= CameraPositionChanged;
+
+            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardRemoved(gameObject);
         }
+
+        public override string componentName => COMPONENT_NAME;
 
         public override int GetClassId()
         {
@@ -68,10 +62,10 @@ namespace DCL
             ChangeOrientation();
 
 
-            if (entityTransform == null)
+            if (EntityTransform == null)
             {
                 yield return new WaitUntil(() => entity.gameObject != null);
-                entityTransform = entity.gameObject.transform;
+                EntityTransform = entity.gameObject.transform;
             }
         }
 
@@ -80,10 +74,10 @@ namespace DCL
             return (Model)model; 
         }
 
-        private Vector3 GetLookAtVector()
+        internal Vector3 GetLookAtVector()
         {
             bool hasTextShape = scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TEXT_SHAPE);
-            Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
+            Vector3 lookAtDir = hasTextShape ? (EntityTransform.position - cameraPosition) : (cameraPosition - EntityTransform.position);
 
             Model model = (Model) this.model;
             // Note (Zak): This check is here to avoid normalizing twice if not needed
@@ -94,9 +88,9 @@ namespace DCL
                 // Note (Zak): Model x,y,z are axis that we want to enable/disable
                 // while lookAtDir x,y,z are the components of the look-at vector
                 if (!model.x || model.z)
-                    lookAtDir.y = entityTransform.forward.y;
+                    lookAtDir.y = EntityTransform.forward.y;
                 if (!model.y)
-                    lookAtDir.x = entityTransform.forward.x;
+                    lookAtDir.x = EntityTransform.forward.x;
             }
 
             return lookAtDir.normalized;
@@ -104,12 +98,12 @@ namespace DCL
 
         private void ChangeOrientation()
         {
-            if (entityTransform == null)
+            if (EntityTransform == null)
                 return;
 
             Vector3 lookAtVector = GetLookAtVector();
             if (lookAtVector != Vector3.zero)
-                entityTransform.forward = lookAtVector;
+                EntityTransform.forward = lookAtVector;
         }
 
         private void CameraPositionChanged(Vector3 current, Vector3 previous) { ChangeOrientation(); }
