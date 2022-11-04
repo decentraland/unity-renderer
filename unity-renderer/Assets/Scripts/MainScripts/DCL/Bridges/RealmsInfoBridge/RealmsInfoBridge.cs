@@ -27,7 +27,6 @@ namespace DCL
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
         }
         
-        // called by kernel
         [PublicAPI]
         public void SetRealmAbout(string payload)
         {
