@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using Decentraland.Bff;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCLPlugins.RealmsPlugin
@@ -16,6 +17,8 @@ namespace DCLPlugins.RealmsPlugin
 
         public RealmsPlugin()
         {
+            Debug.Log("CREATED REALMS PLUGINS");
+            
             realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier() };
             
             realmAboutConfiguration.OnChange += RealmChanged;
@@ -24,12 +27,16 @@ namespace DCLPlugins.RealmsPlugin
 
         private void RealmListSet(IEnumerable<RealmModel> _)
         {
+            Debug.Log("CALLING REALM LIST SET");
+            
             if (currentConfiguration != null)
                 SetRealmModifiers();
         }
 
         private void RealmChanged(AboutResponse current, AboutResponse _)
         {
+            Debug.Log("CALLING REALM CHANGE");
+
             currentConfiguration = current;
             if (realmsList.Count().Equals(0))
                 return;

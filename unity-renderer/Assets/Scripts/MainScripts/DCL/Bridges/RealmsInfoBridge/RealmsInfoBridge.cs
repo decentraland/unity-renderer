@@ -28,6 +28,7 @@ namespace DCL
         
         public void SetRealmAbout(string payload)
         {
+            Debug.Log("CALLING SET REALM ABOUT " + payload);
             handler.SetAbout(payload);
         }
     }
