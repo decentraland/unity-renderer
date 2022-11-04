@@ -10,8 +10,6 @@ namespace DCLPlugins.RealmsPlugin
         public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
         { 
             Environment.i.world.blockersController.SetEnabled(isCatalyst || ShouldGreenBlockersBeActive(realmConfiguration.Configurations.CityLoaderContentServer));
-            Debug.Log("AAAAAA " + isCatalyst);
-            Debug.Log("BBBBBB " + ShouldGreenBlockersBeActive(realmConfiguration.Configurations.CityLoaderContentServer));
         }
      
         public void Dispose() { }
