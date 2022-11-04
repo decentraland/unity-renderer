@@ -87,7 +87,7 @@ public class ChatHUDController : IDisposable
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
-            view.RemoveFirstEntry();
+            view.RemoveOldestEntry();
         
         if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
 
