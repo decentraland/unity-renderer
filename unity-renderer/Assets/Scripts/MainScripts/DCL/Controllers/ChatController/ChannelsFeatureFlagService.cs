@@ -12,20 +12,19 @@ namespace DCL.Chat.Channels
         private const string VARIANT_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS = "allowedUsers";
         private const string FEATURE_FLAG_FOR_AUTOMATIC_JOIN_CHANNELS = "automatic_joined_channels";
         private const string VARIANT_FOR_AUTOMATIC_JOIN_CHANNELS = "automaticChannels";
+        private const string FEATURE_FLAG_FOR_PROMOTE_CHANNELS_TOAST = "promote_channels_toast";
 
         private BaseVariable<FeatureFlag> featureFlags => dataStore.featureFlags.flags;
 
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
-        private readonly IChatController chatController;
 
         public event Action<bool> OnAllowedToCreateChannelsChanged;
 
-        public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge, IChatController chatController)
+        public ChannelsFeatureFlagService(DataStore dataStore, IUserProfileBridge userProfileBridge)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
-            this.chatController = chatController;
         }
         
         public void Dispose()
@@ -79,7 +78,8 @@ namespace DCL.Chat.Channels
             switch (allowedUsersData.mode)
             {
                 case AllowChannelsCreationMode.ALLOWLIST:
-                    return allowedUsersData.allowList.Any(userId => userId.ToLower() == ownUserProfile.userId.ToLower());
+                    return allowedUsersData.allowList != null
+                           && allowedUsersData.allowList.Any(userId => userId?.ToLower() == ownUserProfile.userId.ToLower());
                 case AllowChannelsCreationMode.NAMES:
                     return ownUserProfile.hasClaimedName;
                 case AllowChannelsCreationMode.WALLET:
@@ -88,5 +88,7 @@ namespace DCL.Chat.Channels
 
             return true;
         }
+
+        public bool IsPromoteChannelsToastEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_PROMOTE_CHANNELS_TOAST);
     }
 }

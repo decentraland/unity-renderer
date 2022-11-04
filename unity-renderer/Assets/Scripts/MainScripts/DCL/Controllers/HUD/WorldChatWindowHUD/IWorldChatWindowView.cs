@@ -42,4 +42,5 @@ public interface IWorldChatWindowView
     void SetSearchAndCreateContainerActive(bool isActive);
     void ShowConnectWallet();
     void HideConnectWallet();
+    void SetChannelsPromoteLabelVisible(bool isVisible);
 }

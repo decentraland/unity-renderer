@@ -1,78 +1,73 @@
-using JetBrains.Annotations;
+using DG.Tweening;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public class ShowHideAnimator : MonoBehaviour
 {
+    private const float BASE_DURATION = 0.2f;
+
+    public event System.Action<ShowHideAnimator> OnWillFinishHide;
+    public event System.Action<ShowHideAnimator> OnWillFinishStart;
+
     public bool hideOnEnable = true;
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
-    public string visibleParam = "visible";
 
-    private Animator animatorValue;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     private int? visibleParamHashValue = null;
 
-    public bool isVisible => animator.GetBool(visibleParamHash);
+    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
 
-    private Animator animator => animatorValue ??= GetComponent<Animator>();
-
-    private int visibleParamHash
+    private void Awake()
     {
-        get
-        {
-            if (!visibleParamHashValue.HasValue)
-                visibleParamHashValue = Animator.StringToHash(visibleParam);
+        if (TryGetComponent(out Animator animator)) //Remove old behaviour
+            Destroy(animator);
 
-            return visibleParamHashValue.Value;
-        }
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void OnEnable()
     {
-        if ( hideOnEnable )
+        if (hideOnEnable)
         {
             Hide(true);
         }
     }
 
-    public event System.Action<ShowHideAnimator> OnWillFinishHide;
-    public event System.Action<ShowHideAnimator> OnWillFinishStart;
-
     public void Show(bool instant = false)
     {
-        animator.speed = animSpeedFactor;
+        canvasGroup.blocksRaycasts = true;
 
-        if ( animator.isActiveAndEnabled )
-            animator.SetBool(visibleParamHash, true);
-
-        if (instant)
-            animator.Update(10);
+        //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
+        var duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
+        canvasGroup.DOKill();
+        canvasGroup.DOFade(1, duration)
+                   .SetEase(Ease.InOutQuad)
+                   .OnComplete(() => OnWillFinishStart?.Invoke(this))
+                   .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
+                   .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDisable);
     }
 
     public void Hide(bool instant = false)
     {
-        animator.speed = animSpeedFactor;
+        canvasGroup.blocksRaycasts = false;
 
-        if ( animator.isActiveAndEnabled )
-            animator.SetBool(visibleParamHash, false);
+        //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
+        var duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
+        canvasGroup.DOKill();
+        canvasGroup.DOFade(0, duration)
+                   .SetEase(Ease.InOutQuad)
+                   .OnComplete(() =>
+                   {
+                       OnWillFinishHide?.Invoke(this);
 
-        if (instant)
-            animator.Update(10);
+                       if (disableAfterFadeOut && gameObject != null)
+                       {
+                           gameObject.SetActive(false);
+                       }
+                   })
+                   .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
+                   .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDisable);
     }
-
-    [UsedImplicitly]
-    public void AnimEvent_HideFinished()
-    {
-        OnWillFinishHide?.Invoke(this);
-
-        if (disableAfterFadeOut && gameObject != null)
-        {
-            gameObject.SetActive(false);
-        }
-    }
-
-    [UsedImplicitly]
-    public void AnimEvent_ShowFinished() =>
-        OnWillFinishStart?.Invoke(this);
 }

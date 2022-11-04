@@ -43,7 +43,7 @@ namespace DCL
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController());
             result.Register<IChannelsFeatureFlagService>(() =>
-                new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge(), ChatController.i));
+                new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
             
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
