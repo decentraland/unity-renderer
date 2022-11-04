@@ -42,7 +42,7 @@ namespace DCL.Chat.Channels
 
         public bool IsChannelsFeatureEnabled() => featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_CHANNELS_FEATURE);
 
-        private AutomaticJoinChannelList GetAutoJoinChannelsList()
+        public AutomaticJoinChannelList GetAutoJoinChannelsList()
         {
             if (!featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_AUTOMATIC_JOIN_CHANNELS))
                 return null;

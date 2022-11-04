@@ -55,7 +55,6 @@ namespace DCL.Chat.HUD
             this.view = view;
 
             channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
-            channelsFeatureFlagService.OnAutoJoinChannelsChanged += OnAutoJoinChannelsChanged;
         }
 
         public void Dispose()
@@ -66,7 +65,6 @@ namespace DCL.Chat.HUD
             loadingCancellationToken.Dispose();
 
             channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
-            channelsFeatureFlagService.OnAutoJoinChannelsChanged -= OnAutoJoinChannelsChanged;
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -234,18 +232,5 @@ namespace DCL.Chat.HUD
         }
 
         private void OnAllowedToCreateChannelsChanged(bool isAllowed) => view.SetCreateChannelButtonsActive(isAllowed);
-
-        private void OnAutoJoinChannelsChanged(AutomaticJoinChannelList joinChannelList) 
-        {
-            for(int i=0;i<joinChannelList.automaticJoinChannelList.Length ;i++)
-            {
-                UnityEngine.Debug.Log(joinChannelList.automaticJoinChannelList[i].channelName);
-                dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
-                chatController.JoinOrCreateChannel(joinChannelList.automaticJoinChannelList[i].channelName);
-
-                if(!joinChannelList.automaticJoinChannelList[i].enableNotifications)
-                    chatController.MuteChannel(joinChannelList.automaticJoinChannelList[i].channelName);
-            }
-        }
     }
 }

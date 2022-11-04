@@ -10,5 +10,6 @@ namespace DCL.Chat
 
         bool IsChannelsFeatureEnabled();
         bool IsAllowedToCreateChannels();
+        AutomaticJoinChannelList GetAutoJoinChannelsList();
     }
 }

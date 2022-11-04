@@ -7,6 +7,7 @@ using DCL.Interface;
 using JetBrains.Annotations;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using DCL;
 
 public class ChatController : MonoBehaviour, IChatController
 {
@@ -19,6 +20,7 @@ public class ChatController : MonoBehaviour, IChatController
     private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
     private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
     private readonly List<ChatMessage> messages = new List<ChatMessage>();
+    private BaseVariable<HashSet<string>> autoJoinChannelList => DataStore.i.HUDs.autoJoinChannelList;
     private bool chatAlreadyInitialized;
     private int totalUnseenMessages; 
 
@@ -186,8 +188,14 @@ public class ChatController : MonoBehaviour, IChatController
         else
             channels[channelId] = channel;
         
-        OnChannelJoined?.Invoke(channel);
-        OnChannelUpdated?.Invoke(channel);
+        if(!autoJoinChannelList.Get().Contains(channelId))
+        {
+            OnChannelJoined?.Invoke(channel);
+            OnChannelUpdated?.Invoke(channel);
+        }
+
+        if(autoJoinChannelList.Get().Contains(channelId))
+            autoJoinChannelList.Get().Remove(channelId);
 
         // TODO (responsibility issues): extract to another class
         AudioScriptableObjects.joinChannel.Play(true);
@@ -201,6 +209,9 @@ public class ChatController : MonoBehaviour, IChatController
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
         OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+
+        if(autoJoinChannelList.Get().Contains(msg.channelId))
+            autoJoinChannelList.Get().Remove(msg.channelId);
     }
 
     // called by kernel
@@ -209,6 +220,9 @@ public class ChatController : MonoBehaviour, IChatController
     {
         var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
         OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+
+        if(autoJoinChannelList.Get().Contains(msg.channelId))
+            autoJoinChannelList.Get().Remove(msg.channelId);
     }
 
     // called by kernel
@@ -246,7 +260,13 @@ public class ChatController : MonoBehaviour, IChatController
     
     public void JoinOrCreateChannel(string channelId) => WebInterface.JoinOrCreateChannel(channelId);
 
-    public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
+    public void LeaveChannel(string channelId) 
+    {
+        WebInterface.LeaveChannel(channelId);
+
+        if(autoJoinChannelList.Get().Contains(channelId))
+            autoJoinChannelList.Get().Remove(channelId);
+    }
 
     public void GetChannelMessages(string channelId, int limit, string fromMessageId) => WebInterface.GetChannelMessages(channelId, limit, fromMessageId);
 
