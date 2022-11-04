@@ -127,12 +127,6 @@ namespace DCL.ECSComponents
             if (!Mathf.Approximately(model.MarginTop, 0))
                 element.style.marginTop = new Length(model.MarginTop, GetUnit(model.MarginTopUnit));
 
-            // Borders
-            element.style.borderBottomWidth = model.BorderBottom;
-            element.style.borderLeftWidth = model.BorderLeft;
-            element.style.borderRightWidth = model.BorderRight;
-            element.style.borderTopWidth = model.BorderTop;
-
             // Position
             element.style.position = GetPosition(model.PositionType);
         }

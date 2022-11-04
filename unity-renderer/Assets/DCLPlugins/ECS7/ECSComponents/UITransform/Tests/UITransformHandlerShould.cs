@@ -100,10 +100,6 @@ namespace Tests
                 MarginRightUnit = YGUnit.YguPoint,
                 MarginTop = 5,
                 MarginTopUnit = YGUnit.YguPercent,
-                BorderBottom = 1,
-                BorderTop = 2,
-                BorderRight = 3,
-                BorderLeft = 4,
                 PositionType = YGPositionType.YgptAbsolute
             };
 
