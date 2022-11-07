@@ -47,14 +47,14 @@ namespace DCL.ECSComponents
 
             containerModel.components.Add(componentId);
 
-            if (containerModel.parentId != model.Parent)
+            if (containerModel.parentId != model.GetParent())
             {
-                containerModel.parentId = model.Parent;
+                containerModel.parentId = model.GetParent();
                 containerModel.parentElement?.Remove(containerModel.rootElement);
                 containerModel.parentElement = null;
             }
-            containerModel.shouldSort = containerModel.rigthOf != model.RightOf;
-            containerModel.rigthOf = model.RightOf;
+            containerModel.shouldSort = containerModel.rigthOf != model.GetRightOf();
+            containerModel.rigthOf = model.GetRightOf();
 
             VisualElement element = containerModel.rootElement;
 
@@ -64,71 +64,71 @@ namespace DCL.ECSComponents
 
         private static void SetUpVisualElement(VisualElement element, PBUiTransform model)
         {
-            element.style.display = GetDisplay(model.Display);
-            element.style.overflow = GetOverflow(model.Overflow);
+            element.style.display = GetDisplay(model.GetDisplay());
+            element.style.overflow = GetOverflow(model.GetOverflow());
 
             // Flex
-            element.style.flexDirection = GetFlexDirection(model.FlexDirection);
-            if (!float.IsNaN(model.FlexBasis))
-                element.style.flexBasis = new Length(model.FlexBasis, GetUnit(model.FlexBasisUnit));
+            element.style.flexDirection = GetFlexDirection(model.GetFlexDirection());
+            if (!float.IsNaN(model.GetFlexBasis()))
+                element.style.flexBasis = new Length(model.GetFlexBasis(), GetUnit(model.GetFlexBasisUnit()));
             else
                 element.style.flexBasis = new StyleLength(StyleKeyword.Auto);
 
-            element.style.flexGrow = model.FlexGrow;
-            element.style.flexShrink = model.FlexShrink;
-            element.style.flexWrap = GetWrap(model.FlexWrap);
+            element.style.flexGrow = model.GetFlexGrow();
+            element.style.flexShrink = model.GetFlexShrink();
+            element.style.flexWrap = GetWrap(model.GetFlexWrap());
 
             // Align 
-            if (model.AlignContent != YGAlign.YgaFlexStart)
-                element.style.alignContent = GetAlign(model.AlignContent);
-            if (model.AlignItems != YGAlign.YgaAuto)
-                element.style.alignItems = GetAlign(model.AlignItems);
-            if (model.AlignSelf != YGAlign.YgaAuto)
-                element.style.alignSelf = GetAlign(model.AlignSelf);
-            element.style.justifyContent = GetJustify(model.JustifyContent);
+            if (model.GetAlignContent() != YGAlign.YgaFlexStart)
+                element.style.alignContent = GetAlign(model.GetAlignContent());
+            if (model.GetAlignItems() != YGAlign.YgaAuto)
+                element.style.alignItems = GetAlign(model.GetAlignItems());
+            if (model.GetAlignSelf() != YGAlign.YgaAuto)
+                element.style.alignSelf = GetAlign(model.GetAlignSelf());
+            element.style.justifyContent = GetJustify(model.GetJustifyContent());
 
             // Layout size
-            if (!float.IsNaN(model.Height))
-                element.style.height = new Length(model.Height, GetUnit(model.HeightUnit));
-            if (!float.IsNaN(model.Width))
-                element.style.width = new Length(model.Width, GetUnit(model.WidthUnit));
+            if (!float.IsNaN(model.GetHeight()))
+                element.style.height = new Length(model.GetHeight(), GetUnit(model.GetHeightUnit()));
+            if (!float.IsNaN(model.GetWidth()))
+                element.style.width = new Length(model.GetWidth(), GetUnit(model.GetWidthUnit()));
 
-            if (!float.IsNaN(model.MaxWidth))
-                element.style.maxWidth = new Length(model.MaxWidth, GetUnit(model.MaxWidthUnit));
+            if (!float.IsNaN(model.GetMaxWidth()))
+                element.style.maxWidth = new Length(model.GetMaxWidth(), GetUnit(model.GetMaxWidthUnit()));
             else
                 element.style.maxWidth = new StyleLength(StyleKeyword.Auto);
-            if (!float.IsNaN(model.MaxHeight))
-                element.style.maxHeight = new Length(model.MaxHeight, GetUnit(model.MaxHeightUnit));
+            if (!float.IsNaN(model.GetMaxHeight()))
+                element.style.maxHeight = new Length(model.GetMaxHeight(), GetUnit(model.GetMaxHeightUnit()));
             else
                 element.style.maxHeight = new StyleLength(StyleKeyword.Auto);
 
-            if (!float.IsNaN(model.MinHeight))
-                element.style.minHeight = new Length(model.MinHeight, GetUnit(model.MinHeightUnit));
-            if (!float.IsNaN(model.MinWidth))
-                element.style.minWidth = new Length(model.MinWidth, GetUnit(model.MinWidthUnit));
+            if (!float.IsNaN(model.GetMinHeight()))
+                element.style.minHeight = new Length(model.GetMinHeight(), GetUnit(model.GetMinHeightUnit()));
+            if (!float.IsNaN(model.GetMinWidth()))
+                element.style.minWidth = new Length(model.GetMinWidth(), GetUnit(model.GetMinWidthUnit()));
 
             // Paddings
-            if (!Mathf.Approximately(model.PaddingBottom, 0))
-                element.style.paddingBottom = new Length(model.PaddingBottom, GetUnit(model.PaddingBottomUnit));
-            if (!Mathf.Approximately(model.PaddingLeft, 0))
-                element.style.paddingLeft = new Length(model.PaddingLeft, GetUnit(model.PaddingLeftUnit));
-            if (!Mathf.Approximately(model.PaddingRight, 0))
-                element.style.paddingRight = new Length(model.PaddingRight, GetUnit(model.PaddingRightUnit));
-            if (!Mathf.Approximately(model.PaddingTop, 0))
-                element.style.paddingTop = new Length(model.PaddingTop, GetUnit(model.PaddingTopUnit));
+            if (!Mathf.Approximately(model.GetPaddingBottom(), 0))
+                element.style.paddingBottom = new Length(model.GetPaddingBottom(), GetUnit(model.GetPaddingBottomUnit()));
+            if (!Mathf.Approximately(model.GetPaddingLeft(), 0))
+                element.style.paddingLeft = new Length(model.GetPaddingLeft(), GetUnit(model.GetPaddingLeftUnit()));
+            if (!Mathf.Approximately(model.GetPaddingRight(), 0))
+                element.style.paddingRight = new Length(model.GetPaddingRight(), GetUnit(model.GetPaddingRightUnit()));
+            if (!Mathf.Approximately(model.GetPaddingTop(), 0))
+                element.style.paddingTop = new Length(model.GetPaddingTop(), GetUnit(model.GetPaddingTopUnit()));
 
             // Margins
-            if (!Mathf.Approximately(model.MarginLeft, 0))
-                element.style.marginLeft = new Length(model.MarginLeft, GetUnit(model.MarginLeftUnit));
-            if (!Mathf.Approximately(model.MarginRight, 0))
-                element.style.marginRight = new Length(model.MarginRight, GetUnit(model.MarginRightUnit));
-            if (!Mathf.Approximately(model.MarginBottom, 0))
-                element.style.marginBottom = new Length(model.MarginBottom, GetUnit(model.MarginBottomUnit));
-            if (!Mathf.Approximately(model.MarginTop, 0))
-                element.style.marginTop = new Length(model.MarginTop, GetUnit(model.MarginTopUnit));
+            if (!Mathf.Approximately(model.GetMarginLeft(), 0))
+                element.style.marginLeft = new Length(model.GetMarginLeft(), GetUnit(model.GetMarginLeftUnit()));
+            if (!Mathf.Approximately(model.GetMarginRight(), 0))
+                element.style.marginRight = new Length(model.GetMarginRight(), GetUnit(model.GetMarginRightUnit()));
+            if (!Mathf.Approximately(model.GetMarginBottom(), 0))
+                element.style.marginBottom = new Length(model.GetMarginBottom(), GetUnit(model.GetMarginBottomUnit()));
+            if (!Mathf.Approximately(model.GetMarginTop(), 0))
+                element.style.marginTop = new Length(model.GetMarginTop(), GetUnit(model.GetMarginTopUnit()));
 
             // Position
-            element.style.position = GetPosition(model.PositionType);
+            element.style.position = GetPosition(model.GetPositionType());
         }
 
         private static LengthUnit GetUnit(YGUnit unit)

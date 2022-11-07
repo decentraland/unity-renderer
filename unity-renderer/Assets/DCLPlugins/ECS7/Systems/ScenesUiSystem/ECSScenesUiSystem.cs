@@ -258,6 +258,7 @@ namespace ECSSystems.ScenesUiSystem
 
                 while (sceneSort.TryGetValue(nextElementId, out RightOfData rightOfData))
                 {
+                    sceneSort.Remove(nextElementId);
                     parentElement.Remove(rightOfData.element);
                     parentElement.Insert(index, rightOfData.element);
                     nextElementId = rightOfData.id;
