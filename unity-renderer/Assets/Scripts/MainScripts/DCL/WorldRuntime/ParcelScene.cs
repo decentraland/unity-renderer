@@ -639,6 +639,18 @@ namespace DCL.Controllers
                     break;
             }
         }
+        
+        [ContextMenu("Get Scene Info")]
+        public void GetSceneDebugInfo()
+        {
+            Debug.Log("-----------------");
+            Debug.Log("SCENE DEBUG INFO:");
+            Debug.Log($"Scene Id: {sceneData.id}");
+            Debug.Log($"Scene Number: {sceneData.sceneNumber}");
+            Debug.Log($"Scene Coords: {sceneData.basePosition.ToString()}");
+            Debug.Log($"Scene State: {sceneLifecycleHandler.state.ToString()}");            
+            Debug.Log("-----------------");
+        }
 
         /// <summary>
         /// Calculates the current loading progress of the scene and raise the event OnLoadingStateUpdated with the percentage.
