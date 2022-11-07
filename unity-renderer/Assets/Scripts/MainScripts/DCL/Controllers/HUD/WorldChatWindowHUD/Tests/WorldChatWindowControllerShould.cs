@@ -484,6 +484,9 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestJoinedChannelsWhenChatInitializes()
     {
+        channelsFeatureFlagService.GetAutoJoinChannelsList()
+            .Returns(new AutomaticJoinChannelList() { automaticJoinChannelList = new AutomaticJoinChannel[0] } );
+
         controller.Initialize(view);
 
         chatController.OnInitialized += Raise.Event<Action>();
