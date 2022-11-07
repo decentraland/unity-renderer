@@ -107,9 +107,6 @@ public class WorldChatWindowController : IHUD
             false);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
 
-        foreach (var value in chatController.GetAllocatedEntries())
-            HandleMessageAdded(value);
-
         if (!friendsController.IsInitialized)
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
                 view.ShowPrivateChatsLoading();
