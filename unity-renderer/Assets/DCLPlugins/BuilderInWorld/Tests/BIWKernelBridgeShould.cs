@@ -52,6 +52,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestKernelPublishScene()
     {
         //Arrange
@@ -67,6 +68,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestCreateEntityKernelUpdate()
     {
         //Arrange
@@ -80,6 +82,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestRemoveEntityKernelUpdate()
     {
         //Arrange
@@ -93,6 +96,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestTransformKernelUpdate()
     {
         //Arrange
@@ -106,6 +110,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestLockComponentKernelUpdate()
     {
         //Arrange
@@ -120,6 +125,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestNameComponentKernelUpdate()
     {
         //Arrange
@@ -134,6 +140,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestSmartItemComponentKernelUpdate()
     {
         //Arrange
@@ -147,6 +154,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestStartStatefullScene()
     {
         //Arrange
@@ -161,6 +169,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestEndStatefullScene()
     {
         //Act

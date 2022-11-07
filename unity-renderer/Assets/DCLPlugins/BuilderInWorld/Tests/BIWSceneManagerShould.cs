@@ -56,6 +56,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     [TestCase(IBuilderScene.SceneType.LAND)]
     [TestCase(IBuilderScene.SceneType.PROJECT)]
     public void StartExitModeScreenShot(IBuilderScene.SceneType sceneType)
@@ -73,6 +74,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
     {
         // Arrange
@@ -91,6 +93,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetFlagProperlyWhenBuilderInWorldIsExited()
     {
         // Arrange
@@ -110,6 +113,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void FindSceneToEdit()
     {
         // Arrange
@@ -125,6 +129,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ActivateLandAccessBackground()
     {
         // Arrange
@@ -139,6 +144,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void RequestCatalog()
     {
         // Arrange
@@ -156,6 +162,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeEditModeByShortcut()
     {
         // Act
@@ -166,6 +173,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void NewSceneAdded()
     {
         // Arrange
@@ -182,6 +190,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UserHasPermission()
     {
         // Arrange
@@ -195,6 +204,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ReturnTrueWhenParcelSceneDeployedFromSDKIsCalled()
     {
         // Arrange
@@ -229,6 +239,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CatalogReceived()
     {
         // Arrange
@@ -246,6 +257,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckSceneToEditByShortcut()
     {
         // Arrange
@@ -274,6 +286,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ExitAfterTeleport()
     {
         // Arrange

@@ -23,6 +23,7 @@ public class BIWRotateGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void BeginDrag()
     {
         //Arrange
@@ -35,6 +36,7 @@ public class BIWRotateGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TransformEntity()
     {
         //Act
@@ -45,6 +47,7 @@ public class BIWRotateGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetPreviousAxisValues()
     {
         //Act
@@ -55,6 +58,7 @@ public class BIWRotateGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GetHitPointToAxisValue()
     {
         //Arrange
