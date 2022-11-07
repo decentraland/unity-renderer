@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class BillboardsController : IBillboardsController
 {
-    private const int BILLBOARDS_MAX_INDEX = 1;
-
     private readonly List<Billboard> billboards = new List<Billboard>();
     private Coroutine updateCoroutine;
 
@@ -70,30 +68,18 @@ public class BillboardsController : IBillboardsController
         while (true)
         {
             List<Billboard> currentBillboards = new List<Billboard>(billboards);
-            int indexStepLength = currentBillboards.Count / BILLBOARDS_MAX_INDEX;
             int billboardCount = 0;
-            int indexCount = 0;
             yield return waitForFrameEnd;
 
-            UpdateCameraMoved();
-            bool updatePending = camUpdated;
-            camUpdated = false;
+            camUpdated = lastCamPosition != CameraPosition;
+            lastCamPosition = CameraPosition;
             foreach (Billboard billboard in currentBillboards)
             {
                 billboardCount++;
-                if (indexCount < BILLBOARDS_MAX_INDEX && billboardCount >= indexStepLength)
-                {
-                    yield return null;
-                    yield return waitForFrameEnd;
-                    billboardCount = 0;
-                    indexCount++;
-
-                    UpdateCameraMoved();
-                }
 
                 if (billboard == null || billboard.Tr == null || billboard.EntityTransform == null)
                     continue;
-                if (!updatePending && billboard.Tr.position == billboard.LastPosition)
+                if (!camUpdated && billboard.Tr.position == billboard.LastPosition)
                     continue;
 
                 billboard.LastPosition = billboard.Tr.position;
@@ -101,20 +87,6 @@ public class BillboardsController : IBillboardsController
             }
 
             yield return null;
-        }
-
-
-        bool UpdateCameraMoved()
-        {
-            bool hasMoved = false;
-            if (lastCamPosition != CameraPosition)
-            {
-                hasMoved = true;
-                camUpdated = true;
-            }
-
-            lastCamPosition = CameraPosition;
-            return hasMoved;
         }
     }
 }
