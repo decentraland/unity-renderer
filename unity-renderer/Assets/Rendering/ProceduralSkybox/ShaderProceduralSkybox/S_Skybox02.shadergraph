@@ -726,7 +726,11 @@
             "m_Id": "2ea65bae5eb443f5ab9a5a75b178fb06"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "0fc2c40e09c44bfb9544903cf7fea02b"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -3912,6 +3916,26 @@
         "m_Guid": ""
     },
     "m_DefaultType": 0
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "0fc2c40e09c44bfb9544903cf7fea02b",
+    "m_Title": "Re write this part",
+    "m_Content": "We need to re write this part \nin order to:\n\nGet System Time out of the equation.\n\nRe position the polar coordinates\n\nApply a real gradient to match Infinite Floor\n\n",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -2267.0,
+        "y": -837.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {
