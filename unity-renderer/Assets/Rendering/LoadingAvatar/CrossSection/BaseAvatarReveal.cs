@@ -25,8 +25,6 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 
     private ILOD lod;
 
-    public float revealSpeed;
-
     public float fadeInSpeed;
     Material _ghostMaterial;
 
@@ -50,7 +48,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         {
             _materials.Add(r.material);
         }
-        StartCoroutine(FadeInGhostMaterial());
+        FadeInGhostMaterial();
     }
 
     public SkinnedMeshRenderer GetMainRenderer()
@@ -96,10 +94,14 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
             isRevealing = true;
             animation.Play();
             await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
-            StopCoroutine(updateAvatarRevealerRoutine);
         }
         catch(OperationCanceledException)
         {
+            SetFullRendered();
+        }
+        finally
+        {
+            StopCoroutine(updateAvatarRevealerRoutine);
             SetFullRendered();
         }
     }
@@ -107,23 +109,27 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     private IEnumerator UpdateRevealerPosition()
     {
         _ghostMaterial.SetVector("_RevealPosition", revealer.transform.localPosition);
-        foreach (Material m in _materials)
+        while(true)
         {
-            m.SetVector("_RevealPosition", -revealer.transform.localPosition);
+            foreach (Material m in _materials)
+            {
+                m.SetVector("_RevealPosition", -revealer.transform.localPosition);
+            }
+            yield return new WaitForSeconds(0.01f);
         }
-        yield return new WaitForSeconds(0.01f);
-        updateAvatarRevealerRoutine = StartCoroutine(UpdateRevealerPosition());
     }
 
-    private IEnumerator FadeInGhostMaterial()
+    private async UniTask FadeInGhostMaterial()
     {
-        Color gColor = _ghostMaterial.GetColor("_Color");
-        Color tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
-        _ghostMaterial.SetColor("_Color", tempColor);
-        yield return new WaitForSeconds(0.01f);
-        if(_ghostMaterial.GetColor("_Color").a < 0.9f)
+        Color gColor;
+        Color tempColor;
+        while(_ghostMaterial.GetColor("_Color").a < 0.9f)
         {
-            StartCoroutine(FadeInGhostMaterial());
+            gColor = _ghostMaterial.GetColor("_Color");
+            tempColor = new Color(gColor.r, gColor.g, gColor.b, gColor.a + Time.deltaTime * fadeInSpeed);
+            _ghostMaterial.SetColor("_Color", tempColor);
+            
+            await UniTask.Delay(50);
         }
     }
 
@@ -138,6 +144,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
         meshRenderer.enabled = false;
         animation.Stop();
         const float REVEALED_POSITION = -10;
+        revealer.transform.position = new Vector3(0, REVEALED_POSITION, 0);
         foreach (Material m in _materials)
         {
             m.SetVector("_RevealPosition", new Vector3(0, REVEALED_POSITION, 0));
