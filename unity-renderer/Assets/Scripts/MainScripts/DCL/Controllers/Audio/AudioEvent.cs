@@ -176,7 +176,7 @@ public class AudioEvent : ScriptableObject
     {
         var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
         UnityEngine.Debug.unityLogger.logEnabled = true;
-        Debug.Log ("FD:: " + stringToDebug);
+        Debug.Log ("FD:: AudioEvent-" + stringToDebug);
         UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
     }
 
