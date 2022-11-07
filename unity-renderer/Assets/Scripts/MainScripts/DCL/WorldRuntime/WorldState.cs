@@ -231,7 +231,7 @@ namespace DCL
             {
                 globalScenes.Remove(loadedScene);
 
-                if (loadedPortableExperienceScenes.ContainsKey(loadedScene.sceneData.id))
+                if (!string.IsNullOrEmpty(loadedScene.sceneData.id) && loadedPortableExperienceScenes.ContainsKey(loadedScene.sceneData.id))
                     loadedPortableExperienceScenes.Remove(loadedScene.sceneData.id);
             }
         }
