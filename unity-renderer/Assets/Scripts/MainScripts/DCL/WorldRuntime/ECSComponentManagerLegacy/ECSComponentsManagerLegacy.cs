@@ -26,6 +26,8 @@ namespace DCL
         private readonly ISceneBoundsChecker sceneBoundsChecker;
         private readonly IPhysicsSyncController physicsSyncController;
         private readonly ICullingController cullingController;
+        private readonly DataStore_FeatureFlag dataStoreFeatureFlag;
+        private readonly bool isSBCNerfEnabled;
 
         public event Action<string, ISharedComponent> OnAddSharedComponent;
 
@@ -35,14 +37,16 @@ namespace DCL
                 Environment.i.platform.parcelScenesCleaner,
                 Environment.i.world.sceneBoundsChecker,
                 Environment.i.platform.physicsSyncController,
-                Environment.i.platform.cullingController) { }
+                Environment.i.platform.cullingController,
+                DataStore.i.featureFlags.flags.Get()) { }
 
         public ECSComponentsManagerLegacy(IParcelScene scene,
             IRuntimeComponentFactory componentFactory,
             IParcelScenesCleaner parcelScenesCleaner,
             ISceneBoundsChecker sceneBoundsChecker,
             IPhysicsSyncController physicsSyncController,
-            ICullingController cullingController)
+            ICullingController cullingController, 
+            FeatureFlag featureFlags)
         {
             this.scene = scene;
             this.componentFactory = componentFactory;
@@ -50,6 +54,8 @@ namespace DCL
             this.sceneBoundsChecker = sceneBoundsChecker;
             this.physicsSyncController = physicsSyncController;
             this.cullingController = cullingController;
+
+            isSBCNerfEnabled = featureFlags.IsFeatureEnabled("NERF_SBC");
         }
 
         public void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component)
@@ -426,6 +432,7 @@ namespace DCL
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
 
+                    // this flag avoids bypassing the throttling
                     wasCreated = true;
                 }
             }
@@ -435,7 +442,7 @@ namespace DCL
             }
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM && wasCreated);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM && wasCreated && isSBCNerfEnabled);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();
