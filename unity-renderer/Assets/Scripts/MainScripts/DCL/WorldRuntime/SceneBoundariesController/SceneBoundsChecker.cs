@@ -53,11 +53,11 @@ namespace DCL.Controllers
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         private IEnumerator CheckEntities()
         {
-            // Kinerius: Since the nerf can skip the process a lot faster than before, we need faster rechecks
-            var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
-            
             while (true)
             {
+                // Kinerius: Since the nerf can skip the process a lot faster than before, we need faster rechecks
+                var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
+                
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
                 if ((entitiesToCheck.Count > 0) && (finalTimeBetweenChecks <= 0f || elapsedTime >= finalTimeBetweenChecks))
                 {

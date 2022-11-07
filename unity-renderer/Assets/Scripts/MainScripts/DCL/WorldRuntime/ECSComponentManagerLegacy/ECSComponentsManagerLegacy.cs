@@ -431,8 +431,7 @@ namespace DCL
                         targetComponent.UpdateFromJSON(json);
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
-
-                    // this flag avoids bypassing the throttling
+                    
                     wasCreated = true;
                 }
             }
@@ -440,9 +439,12 @@ namespace DCL
             {
                 targetComponent = EntityComponentUpdate(entity, classId, data as string);
             }
+            
+            var isTransform = classId == CLASS_ID_COMPONENT.TRANSFORM;
+            var avoidThrottling = isSBCNerfEnabled ? isTransform && wasCreated : isTransform;
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM && wasCreated && isSBCNerfEnabled);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: avoidThrottling);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();
