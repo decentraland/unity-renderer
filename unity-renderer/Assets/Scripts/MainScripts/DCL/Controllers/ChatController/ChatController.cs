@@ -155,12 +155,13 @@ namespace DCL.Chat
             else
                 channels[channelId] = channel;
             
+            //TODO: rework as explained in PR #3351 
             if(!autoJoinChannelList.Get().Contains(channelId))
             {
                 OnChannelJoined?.Invoke(channel);
-                OnChannelUpdated?.Invoke(channel);
             }
-
+            
+            OnChannelUpdated?.Invoke(channel);
             autoJoinChannelList.Get().Remove(channelId);
 
             // TODO (responsibility issues): extract to another class
