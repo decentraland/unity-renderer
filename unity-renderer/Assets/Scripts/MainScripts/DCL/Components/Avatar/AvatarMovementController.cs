@@ -52,6 +52,9 @@ namespace DCL
             set
             {
                 currentWorldPosition = value;
+                Vector3 newPosition = PositionUtils.WorldToUnityPosition(currentWorldPosition);
+                if (!float.IsNaN(newPosition.x) && !float.IsNaN(newPosition.y) && !float.IsNaN(newPosition.z) &&
+                        !float.IsInfinity(newPosition.x) && !float.IsInfinity(newPosition.y) && !float.IsInfinity(newPosition.z))
                 AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
             }
         }
