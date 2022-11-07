@@ -33,8 +33,9 @@ var WebVideoPlayer = {
         };
         
         videos[Pointer_stringify(videoId)] = videoData;
-
-        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {    
+        
+        // this function is not supported by Firefox
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {     
             const onNewFrame = function (now, metadata) {
                 videoData.newFrame = true;
                 vid.requestVideoFrameCallback(onNewFrame);
