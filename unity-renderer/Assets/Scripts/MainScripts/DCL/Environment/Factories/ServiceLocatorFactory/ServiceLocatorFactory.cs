@@ -38,7 +38,7 @@ namespace DCL
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
-            result.Register<IBillboardsController>(() => new BillboardsController());
+            result.Register<IBillboardsController>(BillboardsController.Create);
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

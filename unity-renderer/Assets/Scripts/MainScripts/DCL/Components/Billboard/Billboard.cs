@@ -21,29 +21,13 @@ namespace DCL
 
 
         private const string COMPONENT_NAME = "billboard";
-        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
 
         internal Transform Tr { get; private set; }
         internal Transform EntityTransform { get; private set; }
         internal Vector3 LastPosition { get; set; }
 
 
-
-
-        private void Awake() 
-        {
-            model = new Model();
-            Tr = transform;
-
-            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
-        }
-
-        private void OnDestroy()
-        {
-            cameraPosition.OnChange -= CameraPositionChanged;
-
-            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardRemoved(gameObject);
-        }
+        public new Model GetModel() => (Model)model;
 
         public override string componentName => COMPONENT_NAME;
 
@@ -54,14 +38,6 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            cameraPosition.OnChange -= CameraPositionChanged;
-            cameraPosition.OnChange += CameraPositionChanged;
-
-            Model model = (Model)newModel;
-
-            ChangeOrientation();
-
-
             if (EntityTransform == null)
             {
                 yield return new WaitUntil(() => entity.gameObject != null);
@@ -69,12 +45,8 @@ namespace DCL
             }
         }
 
-        new public Model GetModel() 
-        { 
-            return (Model)model; 
-        }
 
-        internal Vector3 GetLookAtVector()
+        internal Vector3 GetLookAtVector(Vector3 cameraPosition)
         {
             bool hasTextShape = scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (EntityTransform.position - cameraPosition) : (cameraPosition - EntityTransform.position);
@@ -96,16 +68,18 @@ namespace DCL
             return lookAtDir.normalized;
         }
 
-        private void ChangeOrientation()
-        {
-            if (EntityTransform == null)
-                return;
 
-            Vector3 lookAtVector = GetLookAtVector();
-            if (lookAtVector != Vector3.zero)
-                EntityTransform.forward = lookAtVector;
+        private void Awake()
+        {
+            model = new Model();
+            Tr = transform;
+
+            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
         }
 
-        private void CameraPositionChanged(Vector3 current, Vector3 previous) { ChangeOrientation(); }
+        private void OnDestroy()
+        {
+            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardRemoved(gameObject);
+        }
     }
 }
