@@ -137,60 +137,58 @@ namespace DCL.Chat
             OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
         }
 
-    // called by kernel
-    [PublicAPI]
-    public void JoinChannelConfirmation(string payload)
-    {
-        var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
-
-        if (msg.channelInfoPayload.Length == 0)
-            return;
-
-        var channelInfo = msg.channelInfoPayload[0];
-        var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
-        var channelId = channel.ChannelId;
-        
-        if (channels.ContainsKey(channelId))
-            channels[channelId].CopyFrom(channel);
-        else
-            channels[channelId] = channel;
-        
-        if(!autoJoinChannelList.Get().Contains(channelId))
+        // called by kernel
+        [PublicAPI]
+        public void JoinChannelConfirmation(string payload)
         {
-            OnChannelJoined?.Invoke(channel);
-            OnChannelUpdated?.Invoke(channel);
-        }
+            var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
 
-        if(autoJoinChannelList.Get().Contains(channelId))
+            if (msg.channelInfoPayload.Length == 0)
+                return;
+
+            var channelInfo = msg.channelInfoPayload[0];
+            var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+            var channelId = channel.ChannelId;
+            
+            if (channels.ContainsKey(channelId))
+                channels[channelId].CopyFrom(channel);
+            else
+                channels[channelId] = channel;
+            
+            if(!autoJoinChannelList.Get().Contains(channelId))
+            {
+                OnChannelJoined?.Invoke(channel);
+                OnChannelUpdated?.Invoke(channel);
+            }
+
             autoJoinChannelList.Get().Remove(channelId);
 
-        // TODO (responsibility issues): extract to another class
-        AudioScriptableObjects.joinChannel.Play(true);
-        
-        SendChannelWelcomeMessage(channel);
-    }
+            // TODO (responsibility issues): extract to another class
+            AudioScriptableObjects.joinChannel.Play(true);
+            
+            SendChannelWelcomeMessage(channel);
+        }
 
-    // called by kernel
-    [PublicAPI]
-    public void JoinChannelError(string payload)
-    {
-        var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-        OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+        // called by kernel
+        [PublicAPI]
+        public void JoinChannelError(string payload)
+        {
+            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
+            OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
 
-        if(autoJoinChannelList.Get().Contains(msg.channelId))
             autoJoinChannelList.Get().Remove(msg.channelId);
-    }
+        }
 
-    // called by kernel
-    [PublicAPI]
-    public void LeaveChannelError(string payload)
-    {
-        var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-        OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+        // called by kernel
+        [PublicAPI]
+        public void LeaveChannelError(string payload)
+        {
+            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
+            OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
 
-        if(autoJoinChannelList.Get().Contains(msg.channelId))
             autoJoinChannelList.Get().Remove(msg.channelId);
-    }
+        }
+
         [PublicAPI]
         public void UpdateChannelInfo(string payload)
         {
@@ -240,8 +238,7 @@ namespace DCL.Chat
         {
             WebInterface.LeaveChannel(channelId);
 
-            if(autoJoinChannelList.Get().Contains(channelId))
-                autoJoinChannelList.Get().Remove(channelId);
+            autoJoinChannelList.Get().Remove(channelId);
         }
     
         // called by kernel

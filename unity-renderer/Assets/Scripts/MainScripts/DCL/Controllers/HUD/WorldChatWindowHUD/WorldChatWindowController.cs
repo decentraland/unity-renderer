@@ -279,12 +279,12 @@ public class WorldChatWindowController : IHUD
     private void ConnectToAutoJoinChannels()
     {
         AutomaticJoinChannelList joinChannelList = channelsFeatureFlagService.GetAutoJoinChannelsList();
-        for(int i=0; i<joinChannelList.automaticJoinChannelList.Length ;i++)
+        for(int i = 0; i < joinChannelList.automaticJoinChannelList.Length; i++)
         {
-            autoJoinChannelList.Get().Add(joinChannelList.automaticJoinChannelList[i].channelName);
-            chatController.JoinOrCreateChannel(joinChannelList.automaticJoinChannelList[i].channelName);
+            autoJoinChannelList.Get().Add(joinChannelList.automaticJoinChannelList[i].channelId);
+            chatController.JoinOrCreateChannel(joinChannelList.automaticJoinChannelList[i].channelId);
             if(!joinChannelList.automaticJoinChannelList[i].enableNotifications)
-                chatController.MuteChannel(joinChannelList.automaticJoinChannelList[i].channelName);
+                chatController.MuteChannel(joinChannelList.automaticJoinChannelList[i].channelId);
         }
     }
 

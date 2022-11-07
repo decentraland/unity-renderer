@@ -12,7 +12,7 @@ namespace DCL.Chat.Channels
     [Serializable]
     public class AutomaticJoinChannel
     {
-        public string channelName;
+        public string channelId;
         public bool enableNotifications;
     }
 }
