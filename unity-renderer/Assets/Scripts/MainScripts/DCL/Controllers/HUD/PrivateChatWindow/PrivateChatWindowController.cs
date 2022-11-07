@@ -15,8 +15,6 @@ public class PrivateChatWindowController : IHUD
 
     public IPrivateChatComponentView View { get; private set; }
     
-    private enum ChatWindowVisualState { NONE_VISIBLE, INPUT_MODE }
-
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IChatController chatController;
@@ -28,15 +26,13 @@ public class PrivateChatWindowController : IHUD
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
     private float lastRequestTime;
-    private ChatWindowVisualState currentState;
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
     private bool shouldRequestMessages;
     private ulong oldestTimestamp = ulong.MaxValue;
     private string oldestMessageId;
     private string conversationUserId;
-
-    internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
     public event Action OnBack;
     public event Action OnClosed;
@@ -85,8 +81,6 @@ public class PrivateChatWindowController : IHUD
         chatController.OnAddMessage += HandleMessageReceived;
 
         toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
-
-        currentState = ChatWindowVisualState.INPUT_MODE;
     }
 
     public void Setup(string newConversationUserId)
@@ -282,15 +276,6 @@ public class PrivateChatWindowController : IHUD
             deactivateFadeOutCancellationToken.Cancel();
             deactivateFadeOutCancellationToken = new CancellationTokenSource();
         }
-    }
-
-    private async UniTaskVoid WaitThenFadeOutMessages(CancellationToken cancellationToken)
-    {
-        await UniTask.SwitchToMainThread(cancellationToken);
-        if (cancellationToken.IsCancellationRequested)
-            return;
-        chatHudController.FadeOutMessages();
-        currentState = ChatWindowVisualState.NONE_VISIBLE;
     }
 
     private void SetVisiblePanelList(bool visible)
