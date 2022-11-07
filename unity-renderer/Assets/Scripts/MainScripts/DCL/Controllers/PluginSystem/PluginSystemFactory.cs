@@ -62,6 +62,8 @@ namespace DCL
             
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
+            pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());
+
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
             return pluginSystem;

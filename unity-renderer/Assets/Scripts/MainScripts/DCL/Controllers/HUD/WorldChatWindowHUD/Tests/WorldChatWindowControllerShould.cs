@@ -37,7 +37,6 @@ public class WorldChatWindowControllerShould
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         chatController = Substitute.For<IChatController>();
         mouseCatcher = Substitute.For<IMouseCatcher>();
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
@@ -67,31 +66,11 @@ public class WorldChatWindowControllerShould
     }
 
     [Test]
-    public void FillPrivateChatsWhenInitialize()
-    {
-        GivenFriend(FRIEND_ID, PresenceStatus.ONLINE);
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessage.Type.PUBLIC, "user2", "hey"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
-            new ChatMessage(ChatMessage.Type.SYSTEM, "system", "welcome")
-        });
-
-        controller.Initialize(view);
-
-        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => !p.isBlocked
-                                                                      && p.isOnline
-                                                                      && !p.isBlocked
-                                                                      && p.recentMessage.body == "wow"));
-    }
-
-    [Test]
     public void ShowPrivateChatWhenMessageIsAdded()
     {
         const string messageBody = "wow";
 
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
         controller.Initialize(view);
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
@@ -107,10 +86,6 @@ public class WorldChatWindowControllerShould
     public void UpdatePresenceStatus()
     {
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
-        });
 
         controller.Initialize(view);
         friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
@@ -131,10 +106,6 @@ public class WorldChatWindowControllerShould
     public void RemovePrivateChatWhenUserIsUpdatedAsNonFriend(FriendshipStatus status)
     {
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"),
-        });
 
         controller.Initialize(view);
         friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
@@ -484,6 +455,9 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestJoinedChannelsWhenChatInitializes()
     {
+        channelsFeatureFlagService.GetAutoJoinChannelsList()
+            .Returns(new AutomaticJoinChannelList() { automaticJoinChannelList = new AutomaticJoinChannel[0] } );
+
         controller.Initialize(view);
 
         chatController.OnInitialized += Raise.Event<Action>();

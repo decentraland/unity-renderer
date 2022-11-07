@@ -31,6 +31,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
+    private BaseVariable<HashSet<string>> autoJoinChannelList => dataStore.HUDs.autoJoinChannelList;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private int hiddenDMs;
     private string currentSearch = "";
@@ -105,9 +106,6 @@ public class WorldChatWindowController : IHUD
             channel.MemberCount,
             false);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
-
-        foreach (var value in chatController.GetAllocatedEntries())
-            HandleMessageAdded(value);
 
         if (!friendsController.IsInitialized)
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
@@ -272,6 +270,19 @@ public class WorldChatWindowController : IHUD
         if (areJoinedChannelsRequestedByFirstTime) return;
         // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
         RequestJoinedChannels();
+        ConnectToAutoJoinChannels();
+    }
+
+    private void ConnectToAutoJoinChannels()
+    {
+        AutomaticJoinChannelList joinChannelList = channelsFeatureFlagService.GetAutoJoinChannelsList();
+        for(int i = 0; i < joinChannelList.automaticJoinChannelList.Length; i++)
+        {
+            autoJoinChannelList.Get().Add(joinChannelList.automaticJoinChannelList[i].channelId);
+            chatController.JoinOrCreateChannel(joinChannelList.automaticJoinChannelList[i].channelId);
+            if(!joinChannelList.automaticJoinChannelList[i].enableNotifications)
+                chatController.MuteChannel(joinChannelList.automaticJoinChannelList[i].channelId);
+        }
     }
 
     private void HandleFriendsControllerInitialization()
