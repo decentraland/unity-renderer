@@ -112,7 +112,7 @@ MonoBehaviour:
     serializedVersion: 2
     key0: {r: 0.07058824, g: 0, b: 0.25882354, a: 1}
     key1: {r: 0.3529412, g: 0.35686275, b: 0.25882354, a: 1}
-    key2: {r: 0.07630007, g: 0.09433961, b: 0.05295478, a: 0}
+    key2: {r: 0.41568628, g: 0.48235294, b: 0.32941177, a: 0}
     key3: {r: 0.3882353, g: 0.32941177, b: 0.21176471, a: 0}
     key4: {r: 0.07058824, g: 0, b: 0.25882354, a: 0}
     key5: {r: 0.07058824, g: 0, b: 0.25882354, a: 0}
@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0.00724642}
+  horizonPlaneSmoothRange: {x: 0, y: 0}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
@@ -300,20 +300,20 @@ MonoBehaviour:
   fogMode: 1
   fogColor:
     serializedVersion: 2
-    key0: {r: 0.13432328, g: 0, b: 0.2830189, a: 1}
-    key1: {r: 0.40236738, g: 0.4648435, b: 0.6226415, a: 1}
-    key2: {r: 0.6415094, g: 0.6079937, b: 0.5355998, a: 0}
-    key3: {r: 0.18867922, g: 0.17694746, b: 0.05962975, a: 0}
-    key4: {r: 0.254717, g: 0.21137305, b: 0.12135102, a: 0}
-    key5: {r: 0.5471698, g: 0.51771283, b: 0.45683515, a: 0}
+    key0: {r: 0.19848019, g: 0.115521535, b: 0.41509432, a: 1}
+    key1: {r: 0.6182757, g: 0.65882355, b: 0.5372549, a: 1}
+    key2: {r: 0.44313726, g: 0.57254905, b: 0.39215687, a: 0}
+    key3: {r: 0.5411765, g: 0.54509807, b: 0.45490196, a: 0}
+    key4: {r: 0.1904592, g: 0.115699545, b: 0.3773585, a: 0}
+    key5: {r: 0.20000002, g: 0.1137255, b: 0.4156863, a: 0}
     key6: {r: 0.13333334, g: 0, b: 0.28235295, a: 0}
     key7: {r: 0.13333334, g: 0, b: 0.28235295, a: 0}
     ctime0: 0
-    ctime1: 8192
-    ctime2: 16769
-    ctime3: 32768
-    ctime4: 41634
-    ctime5: 49151
+    ctime1: 16384
+    ctime2: 32768
+    ctime3: 49151
+    ctime4: 65535
+    ctime5: 65535
     ctime6: 65535
     ctime7: 65535
     atime0: 0
@@ -325,7 +325,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 7
+    m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   fogDensity: 0.04
   fogStartDistance: 0
@@ -490,7 +490,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 1
     enabled: 1
     nameInEditor: Stars
