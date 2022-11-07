@@ -5,6 +5,7 @@ using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
+using Environment = System.Environment;
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
@@ -108,7 +109,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        DataStore.i.rpc.context.rpcClient.emotes?.TriggerExpression(new TriggerExpressionRequest()
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
             Timestamp = timestamp

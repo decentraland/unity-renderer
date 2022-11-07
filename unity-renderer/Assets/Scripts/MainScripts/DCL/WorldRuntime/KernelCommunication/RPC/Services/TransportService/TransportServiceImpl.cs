@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using DCL;
 using Google.Protobuf;
-using RPC.Context;
 using rpc_csharp;
 using rpc_csharp.protocol;
 using rpc_csharp.transport;
+using UnityEngine;
+using Environment = DCL.Environment;
 
 namespace RPC.Services
 {
@@ -41,14 +44,14 @@ namespace RPC.Services
             queue = new ProtocolHelpers.AsyncQueue<Payload>((_, __) => {});
         }
 
-        public async UniTask BuildClient(RPCContext context)
+        private async UniTask BuildClient(RPCContext context)
         {
             client = new RpcClient(this);
             port = await client.CreatePort("renderer-protocol");
-            RpcClientBuilder.LoadModules(port, context.rpcClient);
+            DCL.RPC.LoadModules(port, Environment.i.serviceLocator.Get<IRPC>());
         }
 
-        public async UniTask HandleMessages(IUniTaskAsyncEnumerable<Payload> streamRequest, CancellationToken token)
+        private async UniTask HandleMessages(IUniTaskAsyncEnumerable<Payload> streamRequest, CancellationToken token)
         {
             await foreach (Payload request in streamRequest)
             {
@@ -62,13 +65,13 @@ namespace RPC.Services
         public IUniTaskAsyncEnumerable<Payload> OpenTransportStream(IUniTaskAsyncEnumerable<Payload> streamRequest, RPCContext context)
         {
             // Client builder...
-            BuildClient(context);
+            BuildClient(context).Forget();
             
             OnConnectEvent?.Invoke();
             return UniTaskAsyncEnumerable.Create<Payload>(async (writer, token) =>
             {
                 // Async call...
-                HandleMessages(streamRequest, token);
+                HandleMessages(streamRequest, token).Forget();
 
                 while (true)
                 {
