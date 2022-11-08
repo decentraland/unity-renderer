@@ -1,4 +1,8 @@
-﻿public interface IChatEntryFactory
+﻿namespace DCL.Chat.HUD
 {
-    DefaultChatEntry Create(ChatEntryModel model);
+    public interface IChatEntryFactory
+    {
+        ChatEntry Create(ChatEntryModel model);
+        void Destroy(ChatEntry entry);
+    }
 }

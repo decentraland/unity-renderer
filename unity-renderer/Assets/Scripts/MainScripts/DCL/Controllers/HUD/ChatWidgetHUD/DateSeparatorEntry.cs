@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using DCL.Chat.HUD;
 using TMPro;
 using UnityEngine;
 
@@ -13,6 +14,13 @@ public class DateSeparatorEntry : ChatEntry
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
 
+    public override string DateString =>
+        GetDateFormat(GetDateTimeFromUnixTimestampMilliseconds(Model.timestamp));
+    public override event Action<ChatEntry> OnUserNameClicked;
+    public override event Action<ChatEntry> OnTriggerHover;
+    public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
+    public override event Action OnCancelHover;
+    public override event Action OnCancelGotoHover;
     public override ChatEntryModel Model => chatEntryModel;
 
     public override void Populate(ChatEntryModel model)
@@ -23,28 +31,16 @@ public class DateSeparatorEntry : ChatEntry
 
     public override void SetFadeout(bool enabled)
     {
-        if (!enabled)
-        {
-            group.alpha = 1;
-            fadeEnabled = false;
-            return;
-        }
-
-        fadeEnabled = true;
+        if (enabled) return;
+        group.alpha = 1;
     }
-    
-    public override void FadeOut()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            group.alpha = 0;
-            return;
-        }
-        
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
 
-        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
+    public override void DockContextMenu(RectTransform panel)
+    {
+    }
+
+    public override void DockHoverPanel(RectTransform panel)
+    {
     }
 
     private string GetDateFormat(DateTime date)

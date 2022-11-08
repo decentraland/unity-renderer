@@ -1,13 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Chat.Channels;
+using DCL.Chat.HUD;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class PublicChatChannelControllerShould
 {
@@ -31,7 +29,6 @@ public class PublicChatChannelControllerShould
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby",
             0, 1, true, false, ""));
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PublicChatWindowController(
             chatController,

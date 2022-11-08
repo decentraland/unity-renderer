@@ -20,6 +20,5 @@ MonoBehaviour:
   flagsThatDeactivateMe: []
   isBeta: 0
   spinBoxLabels:
-  - Match 720p
-  - Match 1080p
-  - Unlimited
+  - Normal
+  - Match display

@@ -1754,7 +1754,6 @@ GameObject:
   - component: {fileID: 732256080388820253}
   - component: {fileID: 376254513247646150}
   - component: {fileID: 3224361231076479731}
-  - component: {fileID: 2235397840631723761}
   - component: {fileID: 5285629321982451367}
   - component: {fileID: 517735167440310374}
   - component: {fileID: 5458039649578623698}
@@ -1847,25 +1846,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!95 &2235397840631723761
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7886239998420550621}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &5285629321982451367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1881,7 +1861,7 @@ MonoBehaviour:
   hideOnEnable: 1
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  visibleParam: visible
+  canvasGroup: {fileID: 0}
 --- !u!225 &517735167440310374
 CanvasGroup:
   m_ObjectHideFlags: 0

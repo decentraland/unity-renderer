@@ -343,8 +343,8 @@ namespace DCL
             }
             catch (Exception e)
             {
-                throw new Exception(
-                    $"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)} {e}");
+                Debug.LogException(e);
+                Debug.LogError($"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)}");
             }
 
             if (delayedComponent != null)
@@ -529,7 +529,7 @@ namespace DCL
 
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
-            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.x != currentGridSceneCoordinate.y;
+            positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.y != currentGridSceneCoordinate.y;
 
             if (positionDirty)
             {
@@ -563,7 +563,7 @@ namespace DCL
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
             else
-            {
+            {   
                 // 1. Set current scene id
                 CommonScriptableObjects.sceneID.Set(currentSceneId);
 
