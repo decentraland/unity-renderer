@@ -21,8 +21,6 @@ public interface IChatController
 
     int TotalUnseenMessages { get; }
 
-    List<ChatMessage> GetAllocatedEntries();
-    List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId);
     void Send(ChatMessage message);
     void MarkMessagesAsSeen(string userId);
     void GetPrivateMessages(string userId, int limit, string fromMessageId);
