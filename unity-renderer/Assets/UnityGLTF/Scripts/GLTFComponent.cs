@@ -179,15 +179,15 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
-
-            OnFailedLoadingAsset?.Invoke(exception);
-
+            
             if (exception != null)
             {
                 if (exception is IndexOutOfRangeException)
                 {
                     Destroy(gameObject);
                 }
+
+                OnFailedLoadingAsset?.Invoke(exception);
 
                 Debug.Log($"GLTF Failure {exception} ... url = {this.GLTFUri}\n{exception.StackTrace}");
             }

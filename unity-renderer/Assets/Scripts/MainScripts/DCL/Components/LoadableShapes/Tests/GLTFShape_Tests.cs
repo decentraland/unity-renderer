@@ -388,14 +388,12 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         TestUtils.SetEntityParent(scene, entity2, entity);
         TestUtils.SetEntityParent(scene, entity3, entity);
 
-        yield return null;
-        yield return null;
-        yield return null;
+        yield return gltfShape;
+        yield return gltfShape2;
+        yield return gltfShape3;
 
         Object.Destroy(entity.gameObject);
 
         yield return null;
-        
-        LogAssert.Expect(LogType.Error, new Regex(@"^.*?[Exception]"));
     }
 }
