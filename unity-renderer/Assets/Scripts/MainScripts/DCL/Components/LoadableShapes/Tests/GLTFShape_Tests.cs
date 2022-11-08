@@ -5,6 +5,7 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.Text.RegularExpressions;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -394,5 +395,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         Object.Destroy(entity.gameObject);
 
         yield return null;
+        
+        LogAssert.Expect(LogType.Error, new Regex(@"^.*?[Exception]"));
     }
 }

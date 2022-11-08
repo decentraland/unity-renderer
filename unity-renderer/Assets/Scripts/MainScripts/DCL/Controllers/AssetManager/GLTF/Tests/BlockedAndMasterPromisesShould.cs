@@ -54,6 +54,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
             yield return prom;
             yield return prom2;
             yield return prom3;
+            
+            LogAssert.Expect(LogType.Error, new Regex(@"^.*?[Exception]"));
 
             Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
