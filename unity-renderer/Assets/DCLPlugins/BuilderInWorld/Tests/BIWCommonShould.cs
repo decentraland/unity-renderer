@@ -64,6 +64,7 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GroundRaycast()
     {
         //Arrange

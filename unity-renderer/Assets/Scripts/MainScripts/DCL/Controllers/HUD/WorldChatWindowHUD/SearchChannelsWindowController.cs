@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Channel = DCL.Chat.Channels.Channel;
 using System.Collections.Generic;
 using SocialFeaturesAnalytics;
+using DCL.Chat.Channels;
 
 namespace DCL.Chat.HUD
 {

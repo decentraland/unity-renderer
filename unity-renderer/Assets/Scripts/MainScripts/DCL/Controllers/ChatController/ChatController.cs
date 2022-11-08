@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace DCL.Chat
 {
+
     public partial class ChatController : MonoBehaviour, IChatController
     {
         private const string NEARBY_CHANNEL_DESCRIPTION =
@@ -22,6 +23,7 @@ namespace DCL.Chat
         private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
         private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
         private readonly List<ChatMessage> messages = new List<ChatMessage>();
+        private BaseVariable<HashSet<string>> autoJoinChannelList => DataStore.i.HUDs.autoJoinChannelList;
         private bool chatAlreadyInitialized;
         private int totalUnseenMessages;
 
@@ -135,6 +137,59 @@ namespace DCL.Chat
             OnUpdateChannelMembers?.Invoke(msg.channelId, msg.members);
         }
 
+        // called by kernel
+        [PublicAPI]
+        public void JoinChannelConfirmation(string payload)
+        {
+            var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
+
+            if (msg.channelInfoPayload.Length == 0)
+                return;
+
+            var channelInfo = msg.channelInfoPayload[0];
+            var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages, channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+            var channelId = channel.ChannelId;
+            
+            if (channels.ContainsKey(channelId))
+                channels[channelId].CopyFrom(channel);
+            else
+                channels[channelId] = channel;
+            
+            //TODO: rework as explained in PR #3351 
+            if(!autoJoinChannelList.Get().Contains(channelId))
+            {
+                OnChannelJoined?.Invoke(channel);
+            }
+            
+            OnChannelUpdated?.Invoke(channel);
+            autoJoinChannelList.Get().Remove(channelId);
+
+            // TODO (responsibility issues): extract to another class
+            AudioScriptableObjects.joinChannel.Play(true);
+            
+            SendChannelWelcomeMessage(channel);
+        }
+
+        // called by kernel
+        [PublicAPI]
+        public void JoinChannelError(string payload)
+        {
+            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
+            OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+
+            autoJoinChannelList.Get().Remove(msg.channelId);
+        }
+
+        // called by kernel
+        [PublicAPI]
+        public void LeaveChannelError(string payload)
+        {
+            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
+            OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+
+            autoJoinChannelList.Get().Remove(msg.channelId);
+        }
+
         [PublicAPI]
         public void UpdateChannelInfo(string payload)
         {
@@ -174,56 +229,19 @@ namespace DCL.Chat
 
         // called by kernel
         [PublicAPI]
-        public void JoinChannelConfirmation(string payload)
-        {
-            var msg = JsonUtility.FromJson<ChannelInfoPayloads>(payload);
-
-            if (msg.channelInfoPayload.Length == 0)
-                return;
-
-            var channelInfo = msg.channelInfoPayload[0];
-            var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages,
-                channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
-            var channelId = channel.ChannelId;
-
-            if (channels.ContainsKey(channelId))
-                channels[channelId].CopyFrom(channel);
-            else
-                channels[channelId] = channel;
-
-            OnChannelJoined?.Invoke(channel);
-            OnChannelUpdated?.Invoke(channel);
-
-            // TODO (responsibility issues): extract to another class
-            AudioScriptableObjects.joinChannel.Play(true);
-
-            SendChannelWelcomeMessage(channel);
-        }
-
-        // called by kernel
-        [PublicAPI]
-        public void JoinChannelError(string payload)
-        {
-            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-            OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
-        }
-
-        // called by kernel
-        [PublicAPI]
-        public void LeaveChannelError(string payload)
-        {
-            var msg = JsonUtility.FromJson<JoinChannelErrorPayload>(payload);
-            OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
-        }
-
-        // called by kernel
-        [PublicAPI]
         public void MuteChannelError(string payload)
         {
             var msg = JsonUtility.FromJson<MuteChannelErrorPayload>(payload);
             OnMuteChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
         }
 
+        public void LeaveChannel(string channelId) 
+        {
+            WebInterface.LeaveChannel(channelId);
+
+            autoJoinChannelList.Get().Remove(channelId);
+        }
+    
         // called by kernel
         [PublicAPI]
         public void UpdateChannelSearchResults(string payload)
@@ -252,7 +270,6 @@ namespace DCL.Chat
 
         public void JoinOrCreateChannel(string channelId) => WebInterface.JoinOrCreateChannel(channelId);
 
-        public void LeaveChannel(string channelId) => WebInterface.LeaveChannel(channelId);
 
         public void GetChannelMessages(string channelId, int limit, string fromMessageId) =>
             WebInterface.GetChannelMessages(channelId, limit, fromMessageId);
