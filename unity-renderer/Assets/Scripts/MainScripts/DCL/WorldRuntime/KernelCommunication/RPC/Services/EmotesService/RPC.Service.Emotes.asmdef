@@ -1,5 +1,5 @@
 ﻿{
-    "name": "RPC.Services.EmotesService",
+    "name": "RPC.Services.Emotes",
     "rootNamespace": "",
     "references": [
         "GUID:74aca8d0fa88642fabc061875471dba2",

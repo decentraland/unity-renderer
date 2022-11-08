@@ -4,11 +4,11 @@ using rpc_csharp;
 
 namespace RPC.Services
 {
-    public class EmotesServiceImpl : IEmotesRendererService<RPCContext>
+    public class EmotesRendererServiceImpl : IEmotesRendererService<RPCContext>
     {
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
-            EmotesRendererServiceCodeGen.RegisterService(port, new EmotesServiceImpl());
+            EmotesRendererServiceCodeGen.RegisterService(port, new EmotesRendererServiceImpl());
         }
 
         public UniTask<EmotesResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)

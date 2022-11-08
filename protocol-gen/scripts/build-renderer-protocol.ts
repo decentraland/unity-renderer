@@ -35,7 +35,7 @@ async function main() {
 
 function fixEngineInterface() {
   const engineInterfaceProtoPath = normalizePath(
-    path.resolve(protocolPath, 'decentraland/renderer/engine_interface.proto'),
+    path.resolve(tempProtocolPath, 'decentraland/renderer/engine_interface.proto'),
   )
   const content = readFileSync(engineInterfaceProtoPath).toString()
 

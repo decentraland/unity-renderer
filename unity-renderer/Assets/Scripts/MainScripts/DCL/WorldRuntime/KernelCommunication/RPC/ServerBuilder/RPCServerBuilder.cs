@@ -33,7 +33,7 @@ namespace RPC
             return BuildServer(context, transport)
                    .RegisterService(CRDTServiceImpl.RegisterService)
                    .RegisterService(TransportServiceImpl.RegisterService)
-                   .RegisterService(EmotesServiceImpl.RegisterService)
+                   .RegisterService(EmotesRendererServiceImpl.RegisterService)
                    .Build();
         }
 
