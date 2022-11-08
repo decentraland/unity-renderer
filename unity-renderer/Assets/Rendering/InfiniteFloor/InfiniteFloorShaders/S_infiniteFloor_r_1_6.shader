@@ -418,7 +418,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -1029,9 +1029,9 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        //#include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
-        #include "./Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
-            struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
+        #include "../InfiniteFloorMerger.hlsl"
+
+        struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
         };
 
@@ -1897,8 +1897,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        //#include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-            #include "./Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -2509,7 +2508,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
@@ -5132,7 +5131,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -5743,7 +5742,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
@@ -6551,7 +6550,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -7162,7 +7161,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
@@ -8029,7 +8028,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -8640,7 +8639,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
@@ -11259,7 +11258,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -11870,7 +11869,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
@@ -12679,7 +12678,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 7b6d5a90df0cb86d20ecea9cb96d928e
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
+        #include "../MapV5.hlsl"
 
         void Unity_Preview_float(float In, out float Out)
         {
@@ -13290,7 +13289,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6"
         }
 
         // 98116c2c658709e5fcb200b1ae28460e
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
 
         struct Bindings_SGInfiniteFloorBoarderLines_5d8bfe2af29c39d4d86b32eced8ccc33
         {
