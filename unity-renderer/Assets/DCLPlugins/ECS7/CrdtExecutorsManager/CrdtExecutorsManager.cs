@@ -54,7 +54,7 @@ public class CrdtExecutorsManager : IDisposable
         }
     }
 
-    private void CrdtMessageReceived(string sceneId, CRDTMessage crdtMessage)
+    private ICRDTExecutor GetCachedExecutor(string sceneId)
     {
         if (cachedSceneId != sceneId)
         {
@@ -79,9 +79,16 @@ public class CrdtExecutorsManager : IDisposable
                 }
             }
         }
-        if (cachedCrdtExecutor != null)
+        return cachedCrdtExecutor;
+    }
+
+    private void CrdtMessageReceived(string sceneId, CRDTMessage crdtMessage)
+    {
+        ICRDTExecutor executor = GetCachedExecutor(sceneId);
+
+        if (executor != null)
         {
-            cachedCrdtExecutor.Execute(crdtMessage);
+            executor.Execute(crdtMessage);
         }
         else
         {
