@@ -117,14 +117,14 @@ namespace UnityGLTF
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
-
+        
         // this setting forces coroutines to be ran in a single call
         public bool forceSyncCoroutines = false;
 
         private bool useMaterialTransitionValue = true;
 
         public bool importSkeleton = true;
-
+        
         public bool ignoreMaterials = false;
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
@@ -346,7 +346,7 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
-
+                
                 PerformanceAnalytics.GLTFTracker.TrackLoaded();
             }
             catch (Exception e)
@@ -712,7 +712,7 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-
+            
             //NOTE(Brian): This tex compression breaks importing in editor mode
             if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
@@ -1634,12 +1634,12 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             cancellationToken.ThrowIfCancellationRequested();
-
+            
             if (ignoreMaterials)
             {
                 if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
                     primitiveObj.SetActive(true);
-
+                
                 return;
             }
 
@@ -1810,13 +1810,7 @@ namespace UnityGLTF
                 }
                 else
                 {
-                    await TaskUtils.RunThrottledCoroutine(coroutine, e =>
-                                   {
-                                       if (_isRunning)
-                                       {
-                                           Debug.LogException(e);
-                                       }
-                                   }, throttlingCounter.EvaluateTimeBudget)
+                    await TaskUtils.RunThrottledCoroutine(coroutine, exception => throw exception, throttlingCounter.EvaluateTimeBudget)
                                    .AttachExternalCancellation(cancellationToken);
                 }
             }
@@ -1960,7 +1954,7 @@ namespace UnityGLTF
 
             yield return skipFrameIfDepletedTimeBudget;
 
-            var mesh = new Mesh
+            Mesh mesh = new Mesh
             {
 #if UNITY_2017_3_OR_NEWER
                 indexFormat = vertexCount > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16,

@@ -5,7 +5,6 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
-using System.Text.RegularExpressions;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -388,9 +387,9 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         TestUtils.SetEntityParent(scene, entity2, entity);
         TestUtils.SetEntityParent(scene, entity3, entity);
 
-        yield return gltfShape;
-        yield return gltfShape2;
-        yield return gltfShape3;
+        yield return null;
+        yield return null;
+        yield return null;
 
         Object.Destroy(entity.gameObject);
 

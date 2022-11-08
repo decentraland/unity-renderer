@@ -173,8 +173,13 @@ namespace DCL.Components
             }
             else
             {
+                string errorMessage = $"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings";
+
+#if UNITY_EDITOR
+                Debug.LogWarning(errorMessage");
+#endif
                 failed = true;
-                OnLoadFailed(null, new Exception($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings"));
+                OnLoadFailed(null, new Exception(errorMessage));
             }
         }
 
@@ -202,8 +207,6 @@ namespace DCL.Components
 
         protected void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
         {
-            Debug.LogException(exception);
-            
             if (loadWrapper != null)
                 CleanFailedWrapper(loadWrapper);
 
