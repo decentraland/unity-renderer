@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using static DCL.Interface.WebInterface;
 
@@ -26,9 +27,9 @@ namespace DCL
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
         }
         
+        [PublicAPI]
         public void SetRealmAbout(string payload)
         {
-            Debug.Log("CALLING SET REALM ABOUT " + payload);
             handler.SetAbout(payload);
         }
     }
