@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using System;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -47,6 +47,7 @@ namespace DCL.Chat.HUD
         {
             model = chatEntryModel;
 
+            chatEntryModel.bodyText = ReplaceNonSupportedCharacteres(body.font, chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
             var userString = GetUserString(chatEntryModel);
 
@@ -314,6 +315,24 @@ namespace DCL.Chat.HUD
             //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
             //             with spaces.
             return text.Replace("\t", "    ");
+        }
+
+        private string ReplaceNonSupportedCharacteres(TMP_FontAsset font, string bodyText, char replacementChar)
+        {
+            bool isBodyFormatSupported = font.HasCharacters(bodyText, out uint[] missing, searchFallbacks: true, tryAddCharacter: true);
+
+            if (!isBodyFormatSupported)
+            {
+                if (missing != null && missing.Length > 0)
+                {
+                    for (int i = 0; i < missing.Length; i++)
+                    {
+                        bodyText = bodyText.Replace(((char)missing[i]), replacementChar);
+                    }
+                }
+            }
+
+            return bodyText;
         }
     }
 }
