@@ -87,7 +87,7 @@ public class ChatHUDController : IDisposable
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
-            view.RemoveFirstEntry();
+            view.RemoveOldestEntry();
         
         if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
 
@@ -119,8 +119,6 @@ public class ChatHUDController : IDisposable
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
     
     public void UnfocusInputField() => view.UnfocusInputField();
-
-    public void FadeOutMessages() => view.FadeOutMessages();
 
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
