@@ -25,110 +25,82 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfdHJhbnNmb3JtLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMitRsKDVBCVWlUcmFu",
-            "c2Zvcm0SEwoGcGFyZW50GEUgASgFSACIAQESFQoIcmlnaHRfb2YYRiABKAVI",
-            "AYgBARJHCg1wb3NpdGlvbl90eXBlGAEgASgOMisuZGVjZW50cmFsYW5kLnNk",
-            "ay5jb21wb25lbnRzLllHUG9zaXRpb25UeXBlSAKIAQESQAoNYWxpZ25fY29u",
-            "dGVudBgCIAEoDjIkLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR0Fs",
-            "aWduSAOIAQESPgoLYWxpZ25faXRlbXMYAyABKA4yJC5kZWNlbnRyYWxhbmQu",
-            "c2RrLmNvbXBvbmVudHMuWUdBbGlnbkgEiAEBEj0KCmFsaWduX3NlbGYYBCAB",
-            "KA4yJC5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdBbGlnbkgFiAEB",
-            "EkkKDmZsZXhfZGlyZWN0aW9uGAUgASgOMiwuZGVjZW50cmFsYW5kLnNkay5j",
-            "b21wb25lbnRzLllHRmxleERpcmVjdGlvbkgGiAEBEjsKCWZsZXhfd3JhcBgG",
-            "IAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1dyYXBIB4gB",
-            "ARJECg9qdXN0aWZ5X2NvbnRlbnQYByABKA4yJi5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmNvbXBvbmVudHMuWUdKdXN0aWZ5SAiIAQESPgoIb3ZlcmZsb3cYCCABKA4y",
-            "Jy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdPdmVyZmxvd0gJiAEB",
-            "EjwKB2Rpc3BsYXkYCSABKA4yJi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
-            "dHMuWUdEaXNwbGF5SAqIAQESQAoJZGlyZWN0aW9uGAogASgOMiguZGVjZW50",
-            "cmFsYW5kLnNkay5jb21wb25lbnRzLllHRGlyZWN0aW9uSAuIAQESEQoEZmxl",
-            "eBgLIAEoAkgMiAEBEkEKD2ZsZXhfYmFzaXNfdW5pdBgNIAEoDjIjLmRlY2Vu",
-            "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRIDYgBARIXCgpmbGV4X2Jh",
-            "c2lzGA4gASgCSA6IAQESFgoJZmxleF9ncm93GA8gASgCSA+IAQESGAoLZmxl",
-            "eF9zaHJpbmsYECABKAJIEIgBARI8Cgp3aWR0aF91bml0GBEgASgOMiMuZGVj",
-            "ZW50cmFsYW5kLnNkay5jb21wb25lbnRzLllHVW5pdEgRiAEBEhIKBXdpZHRo",
-            "GBIgASgCSBKIAQESPQoLaGVpZ2h0X3VuaXQYEyABKA4yIy5kZWNlbnRyYWxh",
-            "bmQuc2RrLmNvbXBvbmVudHMuWUdVbml0SBOIAQESEwoGaGVpZ2h0GBQgASgC",
-            "SBSIAQESQAoObWluX3dpZHRoX3VuaXQYFSABKA4yIy5kZWNlbnRyYWxhbmQu",
-            "c2RrLmNvbXBvbmVudHMuWUdVbml0SBWIAQESFgoJbWluX3dpZHRoGBYgASgC",
-            "SBaIAQESQQoPbWluX2hlaWdodF91bml0GBcgASgOMiMuZGVjZW50cmFsYW5k",
-            "LnNkay5jb21wb25lbnRzLllHVW5pdEgXiAEBEhcKCm1pbl9oZWlnaHQYGCAB",
-            "KAJIGIgBARJACg5tYXhfd2lkdGhfdW5pdBgfIAEoDjIjLmRlY2VudHJhbGFu",
-            "ZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRIGYgBARIWCgltYXhfd2lkdGgYICAB",
-            "KAJIGogBARJBCg9tYXhfaGVpZ2h0X3VuaXQYISABKA4yIy5kZWNlbnRyYWxh",
-            "bmQuc2RrLmNvbXBvbmVudHMuWUdVbml0SBuIAQESFwoKbWF4X2hlaWdodBgi",
-            "IAEoAkgciAEBEkQKEnBvc2l0aW9uX2xlZnRfdW5pdBgpIAEoDjIjLmRlY2Vu",
-            "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRIHYgBARIaCg1wb3NpdGlv",
-            "bl9sZWZ0GCogASgCSB6IAQESQwoRcG9zaXRpb25fdG9wX3VuaXQYKyABKA4y",
-            "Iy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdVbml0SB+IAQESGQoM",
-            "cG9zaXRpb25fdG9wGCwgASgCSCCIAQESRQoTcG9zaXRpb25fcmlnaHRfdW5p",
-            "dBgtIAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRI",
-            "IYgBARIbCg5wb3NpdGlvbl9yaWdodBguIAEoAkgiiAEBEkYKFHBvc2l0aW9u",
-            "X2JvdHRvbV91bml0GC8gASgOMiMuZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
-            "bnRzLllHVW5pdEgjiAEBEhwKD3Bvc2l0aW9uX2JvdHRvbRgwIAEoAkgkiAEB",
-            "EkIKEG1hcmdpbl9sZWZ0X3VuaXQYMyABKA4yIy5kZWNlbnRyYWxhbmQuc2Rr",
-            "LmNvbXBvbmVudHMuWUdVbml0SCWIAQESGAoLbWFyZ2luX2xlZnQYNCABKAJI",
-            "JogBARJBCg9tYXJnaW5fdG9wX3VuaXQYNSABKA4yIy5kZWNlbnRyYWxhbmQu",
-            "c2RrLmNvbXBvbmVudHMuWUdVbml0SCeIAQESFwoKbWFyZ2luX3RvcBg2IAEo",
-            "AkgoiAEBEkMKEW1hcmdpbl9yaWdodF91bml0GDcgASgOMiMuZGVjZW50cmFs",
-            "YW5kLnNkay5jb21wb25lbnRzLllHVW5pdEgpiAEBEhkKDG1hcmdpbl9yaWdo",
-            "dBg4IAEoAkgqiAEBEkQKEm1hcmdpbl9ib3R0b21fdW5pdBg5IAEoDjIjLmRl",
-            "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRIK4gBARIaCg1tYXJn",
-            "aW5fYm90dG9tGDogASgCSCyIAQESQwoRcGFkZGluZ19sZWZ0X3VuaXQYPSAB",
-            "KA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdVbml0SC2IAQES",
-            "GQoMcGFkZGluZ19sZWZ0GD4gASgCSC6IAQESQgoQcGFkZGluZ190b3BfdW5p",
-            "dBg/IAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXRI",
-            "L4gBARIYCgtwYWRkaW5nX3RvcBhAIAEoAkgwiAEBEkQKEnBhZGRpbmdfcmln",
-            "aHRfdW5pdBhBIAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Z",
-            "R1VuaXRIMYgBARIaCg1wYWRkaW5nX3JpZ2h0GEIgASgCSDKIAQESRQoTcGFk",
-            "ZGluZ19ib3R0b21fdW5pdBhDIAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29t",
-            "cG9uZW50cy5ZR1VuaXRIM4gBARIbCg5wYWRkaW5nX2JvdHRvbRhEIAEoAkg0",
-            "iAEBQgkKB19wYXJlbnRCCwoJX3JpZ2h0X29mQhAKDl9wb3NpdGlvbl90eXBl",
-            "QhAKDl9hbGlnbl9jb250ZW50Qg4KDF9hbGlnbl9pdGVtc0INCgtfYWxpZ25f",
-            "c2VsZkIRCg9fZmxleF9kaXJlY3Rpb25CDAoKX2ZsZXhfd3JhcEISChBfanVz",
-            "dGlmeV9jb250ZW50QgsKCV9vdmVyZmxvd0IKCghfZGlzcGxheUIMCgpfZGly",
-            "ZWN0aW9uQgcKBV9mbGV4QhIKEF9mbGV4X2Jhc2lzX3VuaXRCDQoLX2ZsZXhf",
-            "YmFzaXNCDAoKX2ZsZXhfZ3Jvd0IOCgxfZmxleF9zaHJpbmtCDQoLX3dpZHRo",
-            "X3VuaXRCCAoGX3dpZHRoQg4KDF9oZWlnaHRfdW5pdEIJCgdfaGVpZ2h0QhEK",
-            "D19taW5fd2lkdGhfdW5pdEIMCgpfbWluX3dpZHRoQhIKEF9taW5faGVpZ2h0",
-            "X3VuaXRCDQoLX21pbl9oZWlnaHRCEQoPX21heF93aWR0aF91bml0QgwKCl9t",
-            "YXhfd2lkdGhCEgoQX21heF9oZWlnaHRfdW5pdEINCgtfbWF4X2hlaWdodEIV",
-            "ChNfcG9zaXRpb25fbGVmdF91bml0QhAKDl9wb3NpdGlvbl9sZWZ0QhQKEl9w",
-            "b3NpdGlvbl90b3BfdW5pdEIPCg1fcG9zaXRpb25fdG9wQhYKFF9wb3NpdGlv",
-            "bl9yaWdodF91bml0QhEKD19wb3NpdGlvbl9yaWdodEIXChVfcG9zaXRpb25f",
-            "Ym90dG9tX3VuaXRCEgoQX3Bvc2l0aW9uX2JvdHRvbUITChFfbWFyZ2luX2xl",
-            "ZnRfdW5pdEIOCgxfbWFyZ2luX2xlZnRCEgoQX21hcmdpbl90b3BfdW5pdEIN",
-            "CgtfbWFyZ2luX3RvcEIUChJfbWFyZ2luX3JpZ2h0X3VuaXRCDwoNX21hcmdp",
-            "bl9yaWdodEIVChNfbWFyZ2luX2JvdHRvbV91bml0QhAKDl9tYXJnaW5fYm90",
-            "dG9tQhQKEl9wYWRkaW5nX2xlZnRfdW5pdEIPCg1fcGFkZGluZ19sZWZ0QhMK",
-            "EV9wYWRkaW5nX3RvcF91bml0Qg4KDF9wYWRkaW5nX3RvcEIVChNfcGFkZGlu",
-            "Z19yaWdodF91bml0QhAKDl9wYWRkaW5nX3JpZ2h0QhYKFF9wYWRkaW5nX2Jv",
-            "dHRvbV91bml0QhEKD19wYWRkaW5nX2JvdHRvbUoECCgQKSpHCg5ZR1Bvc2l0",
-            "aW9uVHlwZRIPCgtZR1BUX1NUQVRJQxAAEhEKDVlHUFRfUkVMQVRJVkUQARIR",
-            "Cg1ZR1BUX0FCU09MVVRFEAIqnQEKB1lHQWxpZ24SDAoIWUdBX0FVVE8QABIS",
-            "Cg5ZR0FfRkxFWF9TVEFSVBABEg4KCllHQV9DRU5URVIQAhIQCgxZR0FfRkxF",
-            "WF9FTkQQAxIPCgtZR0FfU1RSRVRDSBAEEhAKDFlHQV9CQVNFTElORRAFEhUK",
-            "EVlHQV9TUEFDRV9CRVRXRUVOEAYSFAoQWUdBX1NQQUNFX0FST1VORBAHKkkK",
-            "BllHVW5pdBIRCg1ZR1VfVU5ERUZJTkVEEAASDQoJWUdVX1BPSU5UEAESDwoL",
-            "WUdVX1BFUkNFTlQQAhIMCghZR1VfQVVUTxADKjgKC1lHRGlyZWN0aW9uEg8K",
-            "C1lHRF9JTkhFUklUEAASCwoHWUdEX0xUUhABEgsKB1lHRF9SVEwQAipfCg9Z",
-            "R0ZsZXhEaXJlY3Rpb24SDwoLWUdGRF9DT0xVTU4QABIXChNZR0ZEX0NPTFVN",
-            "Tl9SRVZFUlNFEAESDAoIWUdGRF9ST1cQAhIUChBZR0ZEX1JPV19SRVZFUlNF",
-            "EAMqPQoGWUdXcmFwEg8KC1lHV19OT19XUkFQEAASDAoIWUdXX1dSQVAQARIU",
-            "ChBZR1dfV1JBUF9SRVZFUlNFEAIqhAEKCVlHSnVzdGlmeRISCg5ZR0pfRkxF",
-            "WF9TVEFSVBAAEg4KCllHSl9DRU5URVIQARIQCgxZR0pfRkxFWF9FTkQQAhIV",
-            "ChFZR0pfU1BBQ0VfQkVUV0VFThADEhQKEFlHSl9TUEFDRV9BUk9VTkQQBBIU",
-            "ChBZR0pfU1BBQ0VfRVZFTkxZEAUqPQoKWUdPdmVyZmxvdxIPCgtZR09fVklT",
-            "SUJMRRAAEg4KCllHT19ISURERU4QARIOCgpZR09fU0NST0xMEAIqJwoJWUdE",
-            "aXNwbGF5EgwKCFlHRF9GTEVYEAASDAoIWUdEX05PTkUQASqRAQoGWUdFZGdl",
-            "EgwKCFlHRV9MRUZUEAASCwoHWUdFX1RPUBABEg0KCVlHRV9SSUdIVBACEg4K",
-            "CllHRV9CT1RUT00QAxINCglZR0VfU1RBUlQQBBILCgdZR0VfRU5EEAUSEgoO",
-            "WUdFX0hPUklaT05UQUwQBhIQCgxZR0VfVkVSVElDQUwQBxILCgdZR0VfQUxM",
-            "EAhCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMikhIKDVBCVWlUcmFu",
+            "c2Zvcm0SDgoGcGFyZW50GAEgASgFEhAKCHJpZ2h0X29mGAIgASgFEkAKDWFs",
+            "aWduX2NvbnRlbnQYAyABKA4yJC5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
+            "dHMuWUdBbGlnbkgAiAEBEj4KC2FsaWduX2l0ZW1zGAQgASgOMiQuZGVjZW50",
+            "cmFsYW5kLnNkay5jb21wb25lbnRzLllHQWxpZ25IAYgBARI7CglmbGV4X3dy",
+            "YXAYBSABKA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdXcmFw",
+            "SAKIAQESGAoLZmxleF9zaHJpbmsYBiABKAJIA4gBARJCCg1wb3NpdGlvbl90",
+            "eXBlGAcgASgOMisuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLllHUG9z",
+            "aXRpb25UeXBlEjgKCmFsaWduX3NlbGYYCCABKA4yJC5kZWNlbnRyYWxhbmQu",
+            "c2RrLmNvbXBvbmVudHMuWUdBbGlnbhJECg5mbGV4X2RpcmVjdGlvbhgJIAEo",
+            "DjIsLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR0ZsZXhEaXJlY3Rp",
+            "b24SPwoPanVzdGlmeV9jb250ZW50GAogASgOMiYuZGVjZW50cmFsYW5kLnNk",
+            "ay5jb21wb25lbnRzLllHSnVzdGlmeRI5CghvdmVyZmxvdxgLIAEoDjInLmRl",
+            "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR092ZXJmbG93EjcKB2Rpc3Bs",
+            "YXkYDCABKA4yJi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdEaXNw",
+            "bGF5EjwKD2ZsZXhfYmFzaXNfdW5pdBgNIAEoDjIjLmRlY2VudHJhbGFuZC5z",
+            "ZGsuY29tcG9uZW50cy5ZR1VuaXQSEgoKZmxleF9iYXNpcxgOIAEoAhIRCglm",
+            "bGV4X2dyb3cYDyABKAISNwoKd2lkdGhfdW5pdBgQIAEoDjIjLmRlY2VudHJh",
+            "bGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSDQoFd2lkdGgYESABKAISOAoL",
+            "aGVpZ2h0X3VuaXQYEiABKA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
+            "dHMuWUdVbml0Eg4KBmhlaWdodBgTIAEoAhI7Cg5taW5fd2lkdGhfdW5pdBgU",
+            "IAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSEQoJ",
+            "bWluX3dpZHRoGBUgASgCEjwKD21pbl9oZWlnaHRfdW5pdBgWIAEoDjIjLmRl",
+            "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSEgoKbWluX2hlaWdo",
+            "dBgXIAEoAhI7Cg5tYXhfd2lkdGhfdW5pdBgYIAEoDjIjLmRlY2VudHJhbGFu",
+            "ZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSEQoJbWF4X3dpZHRoGBkgASgCEjwK",
+            "D21heF9oZWlnaHRfdW5pdBgaIAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29t",
+            "cG9uZW50cy5ZR1VuaXQSEgoKbWF4X2hlaWdodBgbIAEoAhI/ChJwb3NpdGlv",
+            "bl9sZWZ0X3VuaXQYHCABKA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
+            "dHMuWUdVbml0EhUKDXBvc2l0aW9uX2xlZnQYHSABKAISPgoRcG9zaXRpb25f",
+            "dG9wX3VuaXQYHiABKA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMu",
+            "WUdVbml0EhQKDHBvc2l0aW9uX3RvcBgfIAEoAhJAChNwb3NpdGlvbl9yaWdo",
+            "dF91bml0GCAgASgOMiMuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLllH",
+            "VW5pdBIWCg5wb3NpdGlvbl9yaWdodBghIAEoAhJBChRwb3NpdGlvbl9ib3R0",
+            "b21fdW5pdBgiIAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Z",
+            "R1VuaXQSFwoPcG9zaXRpb25fYm90dG9tGCMgASgCEj0KEG1hcmdpbl9sZWZ0",
+            "X3VuaXQYJCABKA4yIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuWUdV",
+            "bml0EhMKC21hcmdpbl9sZWZ0GCUgASgCEjwKD21hcmdpbl90b3BfdW5pdBgm",
+            "IAEoDjIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSEgoK",
+            "bWFyZ2luX3RvcBgnIAEoAhI+ChFtYXJnaW5fcmlnaHRfdW5pdBgoIAEoDjIj",
+            "LmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSFAoMbWFyZ2lu",
+            "X3JpZ2h0GCkgASgCEj8KEm1hcmdpbl9ib3R0b21fdW5pdBgqIAEoDjIjLmRl",
+            "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSFQoNbWFyZ2luX2Jv",
+            "dHRvbRgrIAEoAhI+ChFwYWRkaW5nX2xlZnRfdW5pdBgsIAEoDjIjLmRlY2Vu",
+            "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5ZR1VuaXQSFAoMcGFkZGluZ19sZWZ0",
+            "GC0gASgCEj0KEHBhZGRpbmdfdG9wX3VuaXQYLiABKA4yIy5kZWNlbnRyYWxh",
+            "bmQuc2RrLmNvbXBvbmVudHMuWUdVbml0EhMKC3BhZGRpbmdfdG9wGC8gASgC",
+            "Ej8KEnBhZGRpbmdfcmlnaHRfdW5pdBgwIAEoDjIjLmRlY2VudHJhbGFuZC5z",
+            "ZGsuY29tcG9uZW50cy5ZR1VuaXQSFQoNcGFkZGluZ19yaWdodBgxIAEoAhJA",
+            "ChNwYWRkaW5nX2JvdHRvbV91bml0GDIgASgOMiMuZGVjZW50cmFsYW5kLnNk",
+            "ay5jb21wb25lbnRzLllHVW5pdBIWCg5wYWRkaW5nX2JvdHRvbRgzIAEoAkIQ",
+            "Cg5fYWxpZ25fY29udGVudEIOCgxfYWxpZ25faXRlbXNCDAoKX2ZsZXhfd3Jh",
+            "cEIOCgxfZmxleF9zaHJpbmsqNgoOWUdQb3NpdGlvblR5cGUSEQoNWUdQVF9S",
+            "RUxBVElWRRAAEhEKDVlHUFRfQUJTT0xVVEUQASqdAQoHWUdBbGlnbhIMCghZ",
+            "R0FfQVVUTxAAEhIKDllHQV9GTEVYX1NUQVJUEAESDgoKWUdBX0NFTlRFUhAC",
+            "EhAKDFlHQV9GTEVYX0VORBADEg8KC1lHQV9TVFJFVENIEAQSEAoMWUdBX0JB",
+            "U0VMSU5FEAUSFQoRWUdBX1NQQUNFX0JFVFdFRU4QBhIUChBZR0FfU1BBQ0Vf",
+            "QVJPVU5EEAcqSQoGWUdVbml0EhEKDVlHVV9VTkRFRklORUQQABINCglZR1Vf",
+            "UE9JTlQQARIPCgtZR1VfUEVSQ0VOVBACEgwKCFlHVV9BVVRPEAMqXwoPWUdG",
+            "bGV4RGlyZWN0aW9uEgwKCFlHRkRfUk9XEAASDwoLWUdGRF9DT0xVTU4QARIX",
+            "ChNZR0ZEX0NPTFVNTl9SRVZFUlNFEAISFAoQWUdGRF9ST1dfUkVWRVJTRRAD",
+            "Kj0KBllHV3JhcBIPCgtZR1dfTk9fV1JBUBAAEgwKCFlHV19XUkFQEAESFAoQ",
+            "WUdXX1dSQVBfUkVWRVJTRRACKoQBCglZR0p1c3RpZnkSEgoOWUdKX0ZMRVhf",
+            "U1RBUlQQABIOCgpZR0pfQ0VOVEVSEAESEAoMWUdKX0ZMRVhfRU5EEAISFQoR",
+            "WUdKX1NQQUNFX0JFVFdFRU4QAxIUChBZR0pfU1BBQ0VfQVJPVU5EEAQSFAoQ",
+            "WUdKX1NQQUNFX0VWRU5MWRAFKj0KCllHT3ZlcmZsb3cSDwoLWUdPX1ZJU0lC",
+            "TEUQABIOCgpZR09fSElEREVOEAESDgoKWUdPX1NDUk9MTBACKicKCVlHRGlz",
+            "cGxheRIMCghZR0RfRkxFWBAAEgwKCFlHRF9OT05FEAEqkQEKBllHRWRnZRIM",
+            "CghZR0VfTEVGVBAAEgsKB1lHRV9UT1AQARINCglZR0VfUklHSFQQAhIOCgpZ",
+            "R0VfQk9UVE9NEAMSDQoJWUdFX1NUQVJUEAQSCwoHWUdFX0VORBAFEhIKDllH",
+            "RV9IT1JJWk9OVEFMEAYSEAoMWUdFX1ZFUlRJQ0FMEAcSCwoHWUdFX0FMTBAI",
+            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGDirection), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "RightOf", "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom" }, new[]{ "Parent", "RightOf", "PositionType", "AlignContent", "AlignItems", "AlignSelf", "FlexDirection", "FlexWrap", "JustifyContent", "Overflow", "Display", "Direction", "Flex", "FlexBasisUnit", "FlexBasis", "FlexGrow", "FlexShrink", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "RightOf", "AlignContent", "AlignItems", "FlexWrap", "FlexShrink", "PositionType", "AlignSelf", "FlexDirection", "JustifyContent", "Overflow", "Display", "FlexBasisUnit", "FlexBasis", "FlexGrow", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom" }, new[]{ "AlignContent", "AlignItems", "FlexWrap", "FlexShrink" }, null, null, null)
           }));
     }
     #endregion
@@ -136,9 +108,8 @@ namespace DCL.ECSComponents {
   }
   #region Enums
   public enum YGPositionType {
-    [pbr::OriginalName("YGPT_STATIC")] YgptStatic = 0,
-    [pbr::OriginalName("YGPT_RELATIVE")] YgptRelative = 1,
-    [pbr::OriginalName("YGPT_ABSOLUTE")] YgptAbsolute = 2,
+    [pbr::OriginalName("YGPT_RELATIVE")] YgptRelative = 0,
+    [pbr::OriginalName("YGPT_ABSOLUTE")] YgptAbsolute = 1,
   }
 
   public enum YGAlign {
@@ -159,16 +130,10 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("YGU_AUTO")] YguAuto = 3,
   }
 
-  public enum YGDirection {
-    [pbr::OriginalName("YGD_INHERIT")] YgdInherit = 0,
-    [pbr::OriginalName("YGD_LTR")] YgdLtr = 1,
-    [pbr::OriginalName("YGD_RTL")] YgdRtl = 2,
-  }
-
   public enum YGFlexDirection {
-    [pbr::OriginalName("YGFD_COLUMN")] YgfdColumn = 0,
-    [pbr::OriginalName("YGFD_COLUMN_REVERSE")] YgfdColumnReverse = 1,
-    [pbr::OriginalName("YGFD_ROW")] YgfdRow = 2,
+    [pbr::OriginalName("YGFD_ROW")] YgfdRow = 0,
+    [pbr::OriginalName("YGFD_COLUMN")] YgfdColumn = 1,
+    [pbr::OriginalName("YGFD_COLUMN_REVERSE")] YgfdColumnReverse = 2,
     [pbr::OriginalName("YGFD_ROW_REVERSE")] YgfdRowReverse = 3,
   }
 
@@ -221,7 +186,6 @@ namespace DCL.ECSComponents {
     private static readonly pb::MessageParser<PBUiTransform> _parser = new pb::MessageParser<PBUiTransform>(() => new PBUiTransform());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
-    private int _hasBits1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBUiTransform> Parser { get { return _parser; } }
@@ -250,24 +214,21 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiTransform(PBUiTransform other) : this() {
       _hasBits0 = other._hasBits0;
-      _hasBits1 = other._hasBits1;
       parent_ = other.parent_;
       rightOf_ = other.rightOf_;
-      positionType_ = other.positionType_;
       alignContent_ = other.alignContent_;
       alignItems_ = other.alignItems_;
+      flexWrap_ = other.flexWrap_;
+      flexShrink_ = other.flexShrink_;
+      positionType_ = other.positionType_;
       alignSelf_ = other.alignSelf_;
       flexDirection_ = other.flexDirection_;
-      flexWrap_ = other.flexWrap_;
       justifyContent_ = other.justifyContent_;
       overflow_ = other.overflow_;
       display_ = other.display_;
-      direction_ = other.direction_;
-      flex_ = other.flex_;
       flexBasisUnit_ = other.flexBasisUnit_;
       flexBasis_ = other.flexBasis_;
       flexGrow_ = other.flexGrow_;
-      flexShrink_ = other.flexShrink_;
       widthUnit_ = other.widthUnit_;
       width_ = other.width_;
       heightUnit_ = other.heightUnit_;
@@ -314,89 +275,41 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "parent" field.</summary>
-    public const int ParentFieldNumber = 69;
+    public const int ParentFieldNumber = 1;
     private int parent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Parent {
-      get { if ((_hasBits1 & 524288) != 0) { return parent_; } else { return 0; } }
+      get { return parent_; }
       set {
-        _hasBits1 |= 524288;
         parent_ = value;
       }
     }
-    /// <summary>Gets whether the "parent" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasParent {
-      get { return (_hasBits1 & 524288) != 0; }
-    }
-    /// <summary>Clears the value of the "parent" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearParent() {
-      _hasBits1 &= ~524288;
-    }
 
     /// <summary>Field number for the "right_of" field.</summary>
-    public const int RightOfFieldNumber = 70;
+    public const int RightOfFieldNumber = 2;
     private int rightOf_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int RightOf {
-      get { if ((_hasBits1 & 1048576) != 0) { return rightOf_; } else { return 0; } }
+      get { return rightOf_; }
       set {
-        _hasBits1 |= 1048576;
         rightOf_ = value;
       }
     }
-    /// <summary>Gets whether the "right_of" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasRightOf {
-      get { return (_hasBits1 & 1048576) != 0; }
-    }
-    /// <summary>Clears the value of the "right_of" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearRightOf() {
-      _hasBits1 &= ~1048576;
-    }
-
-    /// <summary>Field number for the "position_type" field.</summary>
-    public const int PositionTypeFieldNumber = 1;
-    private global::DCL.ECSComponents.YGPositionType positionType_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.YGPositionType PositionType {
-      get { if ((_hasBits0 & 1) != 0) { return positionType_; } else { return global::DCL.ECSComponents.YGPositionType.YgptStatic; } }
-      set {
-        _hasBits0 |= 1;
-        positionType_ = value;
-      }
-    }
-    /// <summary>Gets whether the "position_type" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionType {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "position_type" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionType() {
-      _hasBits0 &= ~1;
-    }
 
     /// <summary>Field number for the "align_content" field.</summary>
-    public const int AlignContentFieldNumber = 2;
+    public const int AlignContentFieldNumber = 3;
     private global::DCL.ECSComponents.YGAlign alignContent_;
+    /// <summary>
+    /// default: YGAlign.YGA_FLEX_START
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGAlign AlignContent {
-      get { if ((_hasBits0 & 2) != 0) { return alignContent_; } else { return global::DCL.ECSComponents.YGAlign.YgaAuto; } }
+      get { if ((_hasBits0 & 1) != 0) { return alignContent_; } else { return global::DCL.ECSComponents.YGAlign.YgaAuto; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 1;
         alignContent_ = value;
       }
     }
@@ -404,24 +317,27 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasAlignContent {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "align_content" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearAlignContent() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "align_items" field.</summary>
-    public const int AlignItemsFieldNumber = 3;
+    public const int AlignItemsFieldNumber = 4;
     private global::DCL.ECSComponents.YGAlign alignItems_;
+    /// <summary>
+    /// default: YGAlign.YGA_STRETCH
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGAlign AlignItems {
-      get { if ((_hasBits0 & 4) != 0) { return alignItems_; } else { return global::DCL.ECSComponents.YGAlign.YgaAuto; } }
+      get { if ((_hasBits0 & 2) != 0) { return alignItems_; } else { return global::DCL.ECSComponents.YGAlign.YgaAuto; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         alignItems_ = value;
       }
     }
@@ -429,74 +345,27 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasAlignItems {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "align_items" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearAlignItems() {
-      _hasBits0 &= ~4;
-    }
-
-    /// <summary>Field number for the "align_self" field.</summary>
-    public const int AlignSelfFieldNumber = 4;
-    private global::DCL.ECSComponents.YGAlign alignSelf_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.YGAlign AlignSelf {
-      get { if ((_hasBits0 & 8) != 0) { return alignSelf_; } else { return global::DCL.ECSComponents.YGAlign.YgaAuto; } }
-      set {
-        _hasBits0 |= 8;
-        alignSelf_ = value;
-      }
-    }
-    /// <summary>Gets whether the "align_self" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasAlignSelf {
-      get { return (_hasBits0 & 8) != 0; }
-    }
-    /// <summary>Clears the value of the "align_self" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearAlignSelf() {
-      _hasBits0 &= ~8;
-    }
-
-    /// <summary>Field number for the "flex_direction" field.</summary>
-    public const int FlexDirectionFieldNumber = 5;
-    private global::DCL.ECSComponents.YGFlexDirection flexDirection_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.YGFlexDirection FlexDirection {
-      get { if ((_hasBits0 & 16) != 0) { return flexDirection_; } else { return global::DCL.ECSComponents.YGFlexDirection.YgfdColumn; } }
-      set {
-        _hasBits0 |= 16;
-        flexDirection_ = value;
-      }
-    }
-    /// <summary>Gets whether the "flex_direction" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlexDirection {
-      get { return (_hasBits0 & 16) != 0; }
-    }
-    /// <summary>Clears the value of the "flex_direction" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlexDirection() {
-      _hasBits0 &= ~16;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "flex_wrap" field.</summary>
-    public const int FlexWrapFieldNumber = 6;
+    public const int FlexWrapFieldNumber = 5;
     private global::DCL.ECSComponents.YGWrap flexWrap_;
+    /// <summary>
+    /// default: YGWrap.YGW_WRAP
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGWrap FlexWrap {
-      get { if ((_hasBits0 & 32) != 0) { return flexWrap_; } else { return global::DCL.ECSComponents.YGWrap.YgwNoWrap; } }
+      get { if ((_hasBits0 & 4) != 0) { return flexWrap_; } else { return global::DCL.ECSComponents.YGWrap.YgwNoWrap; } }
       set {
-        _hasBits0 |= 32;
+        _hasBits0 |= 4;
         flexWrap_ = value;
       }
     }
@@ -504,163 +373,146 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFlexWrap {
-      get { return (_hasBits0 & 32) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "flex_wrap" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFlexWrap() {
-      _hasBits0 &= ~32;
+      _hasBits0 &= ~4;
+    }
+
+    /// <summary>Field number for the "flex_shrink" field.</summary>
+    public const int FlexShrinkFieldNumber = 6;
+    private float flexShrink_;
+    /// <summary>
+    /// default: 1
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float FlexShrink {
+      get { if ((_hasBits0 & 8) != 0) { return flexShrink_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 8;
+        flexShrink_ = value;
+      }
+    }
+    /// <summary>Gets whether the "flex_shrink" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFlexShrink {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "flex_shrink" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFlexShrink() {
+      _hasBits0 &= ~8;
+    }
+
+    /// <summary>Field number for the "position_type" field.</summary>
+    public const int PositionTypeFieldNumber = 7;
+    private global::DCL.ECSComponents.YGPositionType positionType_ = global::DCL.ECSComponents.YGPositionType.YgptRelative;
+    /// <summary>
+    /// YGPositionType.YGPT_RELATIVE
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.YGPositionType PositionType {
+      get { return positionType_; }
+      set {
+        positionType_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "align_self" field.</summary>
+    public const int AlignSelfFieldNumber = 8;
+    private global::DCL.ECSComponents.YGAlign alignSelf_ = global::DCL.ECSComponents.YGAlign.YgaAuto;
+    /// <summary>
+    /// YGAlign.YGA_AUTO
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.YGAlign AlignSelf {
+      get { return alignSelf_; }
+      set {
+        alignSelf_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "flex_direction" field.</summary>
+    public const int FlexDirectionFieldNumber = 9;
+    private global::DCL.ECSComponents.YGFlexDirection flexDirection_ = global::DCL.ECSComponents.YGFlexDirection.YgfdRow;
+    /// <summary>
+    /// YGFlexDirection.YGFD_ROW
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.YGFlexDirection FlexDirection {
+      get { return flexDirection_; }
+      set {
+        flexDirection_ = value;
+      }
     }
 
     /// <summary>Field number for the "justify_content" field.</summary>
-    public const int JustifyContentFieldNumber = 7;
-    private global::DCL.ECSComponents.YGJustify justifyContent_;
+    public const int JustifyContentFieldNumber = 10;
+    private global::DCL.ECSComponents.YGJustify justifyContent_ = global::DCL.ECSComponents.YGJustify.YgjFlexStart;
+    /// <summary>
+    /// YGJustify.YGJ_FLEX_START
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGJustify JustifyContent {
-      get { if ((_hasBits0 & 64) != 0) { return justifyContent_; } else { return global::DCL.ECSComponents.YGJustify.YgjFlexStart; } }
+      get { return justifyContent_; }
       set {
-        _hasBits0 |= 64;
         justifyContent_ = value;
       }
     }
-    /// <summary>Gets whether the "justify_content" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasJustifyContent {
-      get { return (_hasBits0 & 64) != 0; }
-    }
-    /// <summary>Clears the value of the "justify_content" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearJustifyContent() {
-      _hasBits0 &= ~64;
-    }
 
     /// <summary>Field number for the "overflow" field.</summary>
-    public const int OverflowFieldNumber = 8;
-    private global::DCL.ECSComponents.YGOverflow overflow_;
+    public const int OverflowFieldNumber = 11;
+    private global::DCL.ECSComponents.YGOverflow overflow_ = global::DCL.ECSComponents.YGOverflow.YgoVisible;
+    /// <summary>
+    /// YGOverflow.YGO_VISIBLE
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGOverflow Overflow {
-      get { if ((_hasBits0 & 128) != 0) { return overflow_; } else { return global::DCL.ECSComponents.YGOverflow.YgoVisible; } }
+      get { return overflow_; }
       set {
-        _hasBits0 |= 128;
         overflow_ = value;
       }
     }
-    /// <summary>Gets whether the "overflow" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasOverflow {
-      get { return (_hasBits0 & 128) != 0; }
-    }
-    /// <summary>Clears the value of the "overflow" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearOverflow() {
-      _hasBits0 &= ~128;
-    }
 
     /// <summary>Field number for the "display" field.</summary>
-    public const int DisplayFieldNumber = 9;
-    private global::DCL.ECSComponents.YGDisplay display_;
+    public const int DisplayFieldNumber = 12;
+    private global::DCL.ECSComponents.YGDisplay display_ = global::DCL.ECSComponents.YGDisplay.YgdFlex;
+    /// <summary>
+    /// YGDisplay.YGD_FLEX
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGDisplay Display {
-      get { if ((_hasBits0 & 256) != 0) { return display_; } else { return global::DCL.ECSComponents.YGDisplay.YgdFlex; } }
+      get { return display_; }
       set {
-        _hasBits0 |= 256;
         display_ = value;
       }
-    }
-    /// <summary>Gets whether the "display" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasDisplay {
-      get { return (_hasBits0 & 256) != 0; }
-    }
-    /// <summary>Clears the value of the "display" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDisplay() {
-      _hasBits0 &= ~256;
-    }
-
-    /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 10;
-    private global::DCL.ECSComponents.YGDirection direction_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.YGDirection Direction {
-      get { if ((_hasBits0 & 512) != 0) { return direction_; } else { return global::DCL.ECSComponents.YGDirection.YgdInherit; } }
-      set {
-        _hasBits0 |= 512;
-        direction_ = value;
-      }
-    }
-    /// <summary>Gets whether the "direction" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasDirection {
-      get { return (_hasBits0 & 512) != 0; }
-    }
-    /// <summary>Clears the value of the "direction" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDirection() {
-      _hasBits0 &= ~512;
-    }
-
-    /// <summary>Field number for the "flex" field.</summary>
-    public const int FlexFieldNumber = 11;
-    private float flex_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Flex {
-      get { if ((_hasBits0 & 1024) != 0) { return flex_; } else { return 0F; } }
-      set {
-        _hasBits0 |= 1024;
-        flex_ = value;
-      }
-    }
-    /// <summary>Gets whether the "flex" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlex {
-      get { return (_hasBits0 & 1024) != 0; }
-    }
-    /// <summary>Clears the value of the "flex" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlex() {
-      _hasBits0 &= ~1024;
     }
 
     /// <summary>Field number for the "flex_basis_unit" field.</summary>
     public const int FlexBasisUnitFieldNumber = 13;
-    private global::DCL.ECSComponents.YGUnit flexBasisUnit_;
+    private global::DCL.ECSComponents.YGUnit flexBasisUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit FlexBasisUnit {
-      get { if ((_hasBits0 & 2048) != 0) { return flexBasisUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return flexBasisUnit_; }
       set {
-        _hasBits0 |= 2048;
         flexBasisUnit_ = value;
       }
-    }
-    /// <summary>Gets whether the "flex_basis_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlexBasisUnit {
-      get { return (_hasBits0 & 2048) != 0; }
-    }
-    /// <summary>Clears the value of the "flex_basis_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlexBasisUnit() {
-      _hasBits0 &= ~2048;
     }
 
     /// <summary>Field number for the "flex_basis" field.</summary>
@@ -669,23 +521,10 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FlexBasis {
-      get { if ((_hasBits0 & 4096) != 0) { return flexBasis_; } else { return 0F; } }
+      get { return flexBasis_; }
       set {
-        _hasBits0 |= 4096;
         flexBasis_ = value;
       }
-    }
-    /// <summary>Gets whether the "flex_basis" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlexBasis {
-      get { return (_hasBits0 & 4096) != 0; }
-    }
-    /// <summary>Clears the value of the "flex_basis" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlexBasis() {
-      _hasBits0 &= ~4096;
     }
 
     /// <summary>Field number for the "flex_grow" field.</summary>
@@ -694,951 +533,496 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float FlexGrow {
-      get { if ((_hasBits0 & 8192) != 0) { return flexGrow_; } else { return 0F; } }
+      get { return flexGrow_; }
       set {
-        _hasBits0 |= 8192;
         flexGrow_ = value;
       }
     }
-    /// <summary>Gets whether the "flex_grow" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlexGrow {
-      get { return (_hasBits0 & 8192) != 0; }
-    }
-    /// <summary>Clears the value of the "flex_grow" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlexGrow() {
-      _hasBits0 &= ~8192;
-    }
-
-    /// <summary>Field number for the "flex_shrink" field.</summary>
-    public const int FlexShrinkFieldNumber = 16;
-    private float flexShrink_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float FlexShrink {
-      get { if ((_hasBits0 & 16384) != 0) { return flexShrink_; } else { return 0F; } }
-      set {
-        _hasBits0 |= 16384;
-        flexShrink_ = value;
-      }
-    }
-    /// <summary>Gets whether the "flex_shrink" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFlexShrink {
-      get { return (_hasBits0 & 16384) != 0; }
-    }
-    /// <summary>Clears the value of the "flex_shrink" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFlexShrink() {
-      _hasBits0 &= ~16384;
-    }
 
     /// <summary>Field number for the "width_unit" field.</summary>
-    public const int WidthUnitFieldNumber = 17;
-    private global::DCL.ECSComponents.YGUnit widthUnit_;
+    public const int WidthUnitFieldNumber = 16;
+    private global::DCL.ECSComponents.YGUnit widthUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit WidthUnit {
-      get { if ((_hasBits0 & 32768) != 0) { return widthUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return widthUnit_; }
       set {
-        _hasBits0 |= 32768;
         widthUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "width_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasWidthUnit {
-      get { return (_hasBits0 & 32768) != 0; }
-    }
-    /// <summary>Clears the value of the "width_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearWidthUnit() {
-      _hasBits0 &= ~32768;
-    }
 
     /// <summary>Field number for the "width" field.</summary>
-    public const int WidthFieldNumber = 18;
+    public const int WidthFieldNumber = 17;
     private float width_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Width {
-      get { if ((_hasBits0 & 65536) != 0) { return width_; } else { return 0F; } }
+      get { return width_; }
       set {
-        _hasBits0 |= 65536;
         width_ = value;
       }
     }
-    /// <summary>Gets whether the "width" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasWidth {
-      get { return (_hasBits0 & 65536) != 0; }
-    }
-    /// <summary>Clears the value of the "width" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearWidth() {
-      _hasBits0 &= ~65536;
-    }
 
     /// <summary>Field number for the "height_unit" field.</summary>
-    public const int HeightUnitFieldNumber = 19;
-    private global::DCL.ECSComponents.YGUnit heightUnit_;
+    public const int HeightUnitFieldNumber = 18;
+    private global::DCL.ECSComponents.YGUnit heightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit HeightUnit {
-      get { if ((_hasBits0 & 131072) != 0) { return heightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return heightUnit_; }
       set {
-        _hasBits0 |= 131072;
         heightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "height_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasHeightUnit {
-      get { return (_hasBits0 & 131072) != 0; }
-    }
-    /// <summary>Clears the value of the "height_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearHeightUnit() {
-      _hasBits0 &= ~131072;
-    }
 
     /// <summary>Field number for the "height" field.</summary>
-    public const int HeightFieldNumber = 20;
+    public const int HeightFieldNumber = 19;
     private float height_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Height {
-      get { if ((_hasBits0 & 262144) != 0) { return height_; } else { return 0F; } }
+      get { return height_; }
       set {
-        _hasBits0 |= 262144;
         height_ = value;
       }
     }
-    /// <summary>Gets whether the "height" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasHeight {
-      get { return (_hasBits0 & 262144) != 0; }
-    }
-    /// <summary>Clears the value of the "height" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearHeight() {
-      _hasBits0 &= ~262144;
-    }
 
     /// <summary>Field number for the "min_width_unit" field.</summary>
-    public const int MinWidthUnitFieldNumber = 21;
-    private global::DCL.ECSComponents.YGUnit minWidthUnit_;
+    public const int MinWidthUnitFieldNumber = 20;
+    private global::DCL.ECSComponents.YGUnit minWidthUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MinWidthUnit {
-      get { if ((_hasBits0 & 524288) != 0) { return minWidthUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return minWidthUnit_; }
       set {
-        _hasBits0 |= 524288;
         minWidthUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "min_width_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMinWidthUnit {
-      get { return (_hasBits0 & 524288) != 0; }
-    }
-    /// <summary>Clears the value of the "min_width_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMinWidthUnit() {
-      _hasBits0 &= ~524288;
-    }
 
     /// <summary>Field number for the "min_width" field.</summary>
-    public const int MinWidthFieldNumber = 22;
+    public const int MinWidthFieldNumber = 21;
     private float minWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MinWidth {
-      get { if ((_hasBits0 & 1048576) != 0) { return minWidth_; } else { return 0F; } }
+      get { return minWidth_; }
       set {
-        _hasBits0 |= 1048576;
         minWidth_ = value;
       }
     }
-    /// <summary>Gets whether the "min_width" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMinWidth {
-      get { return (_hasBits0 & 1048576) != 0; }
-    }
-    /// <summary>Clears the value of the "min_width" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMinWidth() {
-      _hasBits0 &= ~1048576;
-    }
 
     /// <summary>Field number for the "min_height_unit" field.</summary>
-    public const int MinHeightUnitFieldNumber = 23;
-    private global::DCL.ECSComponents.YGUnit minHeightUnit_;
+    public const int MinHeightUnitFieldNumber = 22;
+    private global::DCL.ECSComponents.YGUnit minHeightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MinHeightUnit {
-      get { if ((_hasBits0 & 2097152) != 0) { return minHeightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return minHeightUnit_; }
       set {
-        _hasBits0 |= 2097152;
         minHeightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "min_height_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMinHeightUnit {
-      get { return (_hasBits0 & 2097152) != 0; }
-    }
-    /// <summary>Clears the value of the "min_height_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMinHeightUnit() {
-      _hasBits0 &= ~2097152;
-    }
 
     /// <summary>Field number for the "min_height" field.</summary>
-    public const int MinHeightFieldNumber = 24;
+    public const int MinHeightFieldNumber = 23;
     private float minHeight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MinHeight {
-      get { if ((_hasBits0 & 4194304) != 0) { return minHeight_; } else { return 0F; } }
+      get { return minHeight_; }
       set {
-        _hasBits0 |= 4194304;
         minHeight_ = value;
       }
     }
-    /// <summary>Gets whether the "min_height" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMinHeight {
-      get { return (_hasBits0 & 4194304) != 0; }
-    }
-    /// <summary>Clears the value of the "min_height" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMinHeight() {
-      _hasBits0 &= ~4194304;
-    }
 
     /// <summary>Field number for the "max_width_unit" field.</summary>
-    public const int MaxWidthUnitFieldNumber = 31;
-    private global::DCL.ECSComponents.YGUnit maxWidthUnit_;
+    public const int MaxWidthUnitFieldNumber = 24;
+    private global::DCL.ECSComponents.YGUnit maxWidthUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MaxWidthUnit {
-      get { if ((_hasBits0 & 8388608) != 0) { return maxWidthUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return maxWidthUnit_; }
       set {
-        _hasBits0 |= 8388608;
         maxWidthUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "max_width_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMaxWidthUnit {
-      get { return (_hasBits0 & 8388608) != 0; }
-    }
-    /// <summary>Clears the value of the "max_width_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMaxWidthUnit() {
-      _hasBits0 &= ~8388608;
-    }
 
     /// <summary>Field number for the "max_width" field.</summary>
-    public const int MaxWidthFieldNumber = 32;
+    public const int MaxWidthFieldNumber = 25;
     private float maxWidth_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxWidth {
-      get { if ((_hasBits0 & 16777216) != 0) { return maxWidth_; } else { return 0F; } }
+      get { return maxWidth_; }
       set {
-        _hasBits0 |= 16777216;
         maxWidth_ = value;
       }
     }
-    /// <summary>Gets whether the "max_width" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMaxWidth {
-      get { return (_hasBits0 & 16777216) != 0; }
-    }
-    /// <summary>Clears the value of the "max_width" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMaxWidth() {
-      _hasBits0 &= ~16777216;
-    }
 
     /// <summary>Field number for the "max_height_unit" field.</summary>
-    public const int MaxHeightUnitFieldNumber = 33;
-    private global::DCL.ECSComponents.YGUnit maxHeightUnit_;
+    public const int MaxHeightUnitFieldNumber = 26;
+    private global::DCL.ECSComponents.YGUnit maxHeightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MaxHeightUnit {
-      get { if ((_hasBits0 & 33554432) != 0) { return maxHeightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return maxHeightUnit_; }
       set {
-        _hasBits0 |= 33554432;
         maxHeightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "max_height_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMaxHeightUnit {
-      get { return (_hasBits0 & 33554432) != 0; }
-    }
-    /// <summary>Clears the value of the "max_height_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMaxHeightUnit() {
-      _hasBits0 &= ~33554432;
-    }
 
     /// <summary>Field number for the "max_height" field.</summary>
-    public const int MaxHeightFieldNumber = 34;
+    public const int MaxHeightFieldNumber = 27;
     private float maxHeight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxHeight {
-      get { if ((_hasBits0 & 67108864) != 0) { return maxHeight_; } else { return 0F; } }
+      get { return maxHeight_; }
       set {
-        _hasBits0 |= 67108864;
         maxHeight_ = value;
       }
     }
-    /// <summary>Gets whether the "max_height" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMaxHeight {
-      get { return (_hasBits0 & 67108864) != 0; }
-    }
-    /// <summary>Clears the value of the "max_height" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMaxHeight() {
-      _hasBits0 &= ~67108864;
-    }
 
     /// <summary>Field number for the "position_left_unit" field.</summary>
-    public const int PositionLeftUnitFieldNumber = 41;
-    private global::DCL.ECSComponents.YGUnit positionLeftUnit_;
+    public const int PositionLeftUnitFieldNumber = 28;
+    private global::DCL.ECSComponents.YGUnit positionLeftUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionLeftUnit {
-      get { if ((_hasBits0 & 134217728) != 0) { return positionLeftUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return positionLeftUnit_; }
       set {
-        _hasBits0 |= 134217728;
         positionLeftUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "position_left_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionLeftUnit {
-      get { return (_hasBits0 & 134217728) != 0; }
-    }
-    /// <summary>Clears the value of the "position_left_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionLeftUnit() {
-      _hasBits0 &= ~134217728;
-    }
 
     /// <summary>Field number for the "position_left" field.</summary>
-    public const int PositionLeftFieldNumber = 42;
+    public const int PositionLeftFieldNumber = 29;
     private float positionLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionLeft {
-      get { if ((_hasBits0 & 268435456) != 0) { return positionLeft_; } else { return 0F; } }
+      get { return positionLeft_; }
       set {
-        _hasBits0 |= 268435456;
         positionLeft_ = value;
       }
     }
-    /// <summary>Gets whether the "position_left" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionLeft {
-      get { return (_hasBits0 & 268435456) != 0; }
-    }
-    /// <summary>Clears the value of the "position_left" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionLeft() {
-      _hasBits0 &= ~268435456;
-    }
 
     /// <summary>Field number for the "position_top_unit" field.</summary>
-    public const int PositionTopUnitFieldNumber = 43;
-    private global::DCL.ECSComponents.YGUnit positionTopUnit_;
+    public const int PositionTopUnitFieldNumber = 30;
+    private global::DCL.ECSComponents.YGUnit positionTopUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionTopUnit {
-      get { if ((_hasBits0 & 536870912) != 0) { return positionTopUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return positionTopUnit_; }
       set {
-        _hasBits0 |= 536870912;
         positionTopUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "position_top_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionTopUnit {
-      get { return (_hasBits0 & 536870912) != 0; }
-    }
-    /// <summary>Clears the value of the "position_top_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionTopUnit() {
-      _hasBits0 &= ~536870912;
-    }
 
     /// <summary>Field number for the "position_top" field.</summary>
-    public const int PositionTopFieldNumber = 44;
+    public const int PositionTopFieldNumber = 31;
     private float positionTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionTop {
-      get { if ((_hasBits0 & 1073741824) != 0) { return positionTop_; } else { return 0F; } }
+      get { return positionTop_; }
       set {
-        _hasBits0 |= 1073741824;
         positionTop_ = value;
       }
     }
-    /// <summary>Gets whether the "position_top" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionTop {
-      get { return (_hasBits0 & 1073741824) != 0; }
-    }
-    /// <summary>Clears the value of the "position_top" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionTop() {
-      _hasBits0 &= ~1073741824;
-    }
 
     /// <summary>Field number for the "position_right_unit" field.</summary>
-    public const int PositionRightUnitFieldNumber = 45;
-    private global::DCL.ECSComponents.YGUnit positionRightUnit_;
+    public const int PositionRightUnitFieldNumber = 32;
+    private global::DCL.ECSComponents.YGUnit positionRightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionRightUnit {
-      get { if ((_hasBits0 & -2147483648) != 0) { return positionRightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return positionRightUnit_; }
       set {
-        _hasBits0 |= -2147483648;
         positionRightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "position_right_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionRightUnit {
-      get { return (_hasBits0 & -2147483648) != 0; }
-    }
-    /// <summary>Clears the value of the "position_right_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionRightUnit() {
-      _hasBits0 &= ~-2147483648;
-    }
 
     /// <summary>Field number for the "position_right" field.</summary>
-    public const int PositionRightFieldNumber = 46;
+    public const int PositionRightFieldNumber = 33;
     private float positionRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionRight {
-      get { if ((_hasBits1 & 1) != 0) { return positionRight_; } else { return 0F; } }
+      get { return positionRight_; }
       set {
-        _hasBits1 |= 1;
         positionRight_ = value;
       }
     }
-    /// <summary>Gets whether the "position_right" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionRight {
-      get { return (_hasBits1 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "position_right" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionRight() {
-      _hasBits1 &= ~1;
-    }
 
     /// <summary>Field number for the "position_bottom_unit" field.</summary>
-    public const int PositionBottomUnitFieldNumber = 47;
-    private global::DCL.ECSComponents.YGUnit positionBottomUnit_;
+    public const int PositionBottomUnitFieldNumber = 34;
+    private global::DCL.ECSComponents.YGUnit positionBottomUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PositionBottomUnit {
-      get { if ((_hasBits1 & 2) != 0) { return positionBottomUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return positionBottomUnit_; }
       set {
-        _hasBits1 |= 2;
         positionBottomUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "position_bottom_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionBottomUnit {
-      get { return (_hasBits1 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "position_bottom_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionBottomUnit() {
-      _hasBits1 &= ~2;
-    }
 
     /// <summary>Field number for the "position_bottom" field.</summary>
-    public const int PositionBottomFieldNumber = 48;
+    public const int PositionBottomFieldNumber = 35;
     private float positionBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PositionBottom {
-      get { if ((_hasBits1 & 4) != 0) { return positionBottom_; } else { return 0F; } }
+      get { return positionBottom_; }
       set {
-        _hasBits1 |= 4;
         positionBottom_ = value;
       }
     }
-    /// <summary>Gets whether the "position_bottom" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPositionBottom {
-      get { return (_hasBits1 & 4) != 0; }
-    }
-    /// <summary>Clears the value of the "position_bottom" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPositionBottom() {
-      _hasBits1 &= ~4;
-    }
 
     /// <summary>Field number for the "margin_left_unit" field.</summary>
-    public const int MarginLeftUnitFieldNumber = 51;
-    private global::DCL.ECSComponents.YGUnit marginLeftUnit_;
+    public const int MarginLeftUnitFieldNumber = 36;
+    private global::DCL.ECSComponents.YGUnit marginLeftUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
     /// <summary>
-    /// margin
+    /// YGUnit.YGU_UNDEFINED
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginLeftUnit {
-      get { if ((_hasBits1 & 8) != 0) { return marginLeftUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return marginLeftUnit_; }
       set {
-        _hasBits1 |= 8;
         marginLeftUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_left_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginLeftUnit {
-      get { return (_hasBits1 & 8) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_left_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginLeftUnit() {
-      _hasBits1 &= ~8;
-    }
 
     /// <summary>Field number for the "margin_left" field.</summary>
-    public const int MarginLeftFieldNumber = 52;
+    public const int MarginLeftFieldNumber = 37;
     private float marginLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginLeft {
-      get { if ((_hasBits1 & 16) != 0) { return marginLeft_; } else { return 0F; } }
+      get { return marginLeft_; }
       set {
-        _hasBits1 |= 16;
         marginLeft_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_left" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginLeft {
-      get { return (_hasBits1 & 16) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_left" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginLeft() {
-      _hasBits1 &= ~16;
-    }
 
     /// <summary>Field number for the "margin_top_unit" field.</summary>
-    public const int MarginTopUnitFieldNumber = 53;
-    private global::DCL.ECSComponents.YGUnit marginTopUnit_;
+    public const int MarginTopUnitFieldNumber = 38;
+    private global::DCL.ECSComponents.YGUnit marginTopUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginTopUnit {
-      get { if ((_hasBits1 & 32) != 0) { return marginTopUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return marginTopUnit_; }
       set {
-        _hasBits1 |= 32;
         marginTopUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_top_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginTopUnit {
-      get { return (_hasBits1 & 32) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_top_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginTopUnit() {
-      _hasBits1 &= ~32;
-    }
 
     /// <summary>Field number for the "margin_top" field.</summary>
-    public const int MarginTopFieldNumber = 54;
+    public const int MarginTopFieldNumber = 39;
     private float marginTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginTop {
-      get { if ((_hasBits1 & 64) != 0) { return marginTop_; } else { return 0F; } }
+      get { return marginTop_; }
       set {
-        _hasBits1 |= 64;
         marginTop_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_top" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginTop {
-      get { return (_hasBits1 & 64) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_top" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginTop() {
-      _hasBits1 &= ~64;
-    }
 
     /// <summary>Field number for the "margin_right_unit" field.</summary>
-    public const int MarginRightUnitFieldNumber = 55;
-    private global::DCL.ECSComponents.YGUnit marginRightUnit_;
+    public const int MarginRightUnitFieldNumber = 40;
+    private global::DCL.ECSComponents.YGUnit marginRightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginRightUnit {
-      get { if ((_hasBits1 & 128) != 0) { return marginRightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return marginRightUnit_; }
       set {
-        _hasBits1 |= 128;
         marginRightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_right_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginRightUnit {
-      get { return (_hasBits1 & 128) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_right_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginRightUnit() {
-      _hasBits1 &= ~128;
-    }
 
     /// <summary>Field number for the "margin_right" field.</summary>
-    public const int MarginRightFieldNumber = 56;
+    public const int MarginRightFieldNumber = 41;
     private float marginRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginRight {
-      get { if ((_hasBits1 & 256) != 0) { return marginRight_; } else { return 0F; } }
+      get { return marginRight_; }
       set {
-        _hasBits1 |= 256;
         marginRight_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_right" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginRight {
-      get { return (_hasBits1 & 256) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_right" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginRight() {
-      _hasBits1 &= ~256;
-    }
 
     /// <summary>Field number for the "margin_bottom_unit" field.</summary>
-    public const int MarginBottomUnitFieldNumber = 57;
-    private global::DCL.ECSComponents.YGUnit marginBottomUnit_;
+    public const int MarginBottomUnitFieldNumber = 42;
+    private global::DCL.ECSComponents.YGUnit marginBottomUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit MarginBottomUnit {
-      get { if ((_hasBits1 & 512) != 0) { return marginBottomUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return marginBottomUnit_; }
       set {
-        _hasBits1 |= 512;
         marginBottomUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_bottom_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginBottomUnit {
-      get { return (_hasBits1 & 512) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_bottom_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginBottomUnit() {
-      _hasBits1 &= ~512;
-    }
 
     /// <summary>Field number for the "margin_bottom" field.</summary>
-    public const int MarginBottomFieldNumber = 58;
+    public const int MarginBottomFieldNumber = 43;
     private float marginBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MarginBottom {
-      get { if ((_hasBits1 & 1024) != 0) { return marginBottom_; } else { return 0F; } }
+      get { return marginBottom_; }
       set {
-        _hasBits1 |= 1024;
         marginBottom_ = value;
       }
     }
-    /// <summary>Gets whether the "margin_bottom" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasMarginBottom {
-      get { return (_hasBits1 & 1024) != 0; }
-    }
-    /// <summary>Clears the value of the "margin_bottom" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearMarginBottom() {
-      _hasBits1 &= ~1024;
-    }
 
     /// <summary>Field number for the "padding_left_unit" field.</summary>
-    public const int PaddingLeftUnitFieldNumber = 61;
-    private global::DCL.ECSComponents.YGUnit paddingLeftUnit_;
+    public const int PaddingLeftUnitFieldNumber = 44;
+    private global::DCL.ECSComponents.YGUnit paddingLeftUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingLeftUnit {
-      get { if ((_hasBits1 & 2048) != 0) { return paddingLeftUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return paddingLeftUnit_; }
       set {
-        _hasBits1 |= 2048;
         paddingLeftUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_left_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingLeftUnit {
-      get { return (_hasBits1 & 2048) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_left_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingLeftUnit() {
-      _hasBits1 &= ~2048;
-    }
 
     /// <summary>Field number for the "padding_left" field.</summary>
-    public const int PaddingLeftFieldNumber = 62;
+    public const int PaddingLeftFieldNumber = 45;
     private float paddingLeft_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingLeft {
-      get { if ((_hasBits1 & 4096) != 0) { return paddingLeft_; } else { return 0F; } }
+      get { return paddingLeft_; }
       set {
-        _hasBits1 |= 4096;
         paddingLeft_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_left" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingLeft {
-      get { return (_hasBits1 & 4096) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_left" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingLeft() {
-      _hasBits1 &= ~4096;
-    }
 
     /// <summary>Field number for the "padding_top_unit" field.</summary>
-    public const int PaddingTopUnitFieldNumber = 63;
-    private global::DCL.ECSComponents.YGUnit paddingTopUnit_;
+    public const int PaddingTopUnitFieldNumber = 46;
+    private global::DCL.ECSComponents.YGUnit paddingTopUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingTopUnit {
-      get { if ((_hasBits1 & 8192) != 0) { return paddingTopUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return paddingTopUnit_; }
       set {
-        _hasBits1 |= 8192;
         paddingTopUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_top_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingTopUnit {
-      get { return (_hasBits1 & 8192) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_top_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingTopUnit() {
-      _hasBits1 &= ~8192;
-    }
 
     /// <summary>Field number for the "padding_top" field.</summary>
-    public const int PaddingTopFieldNumber = 64;
+    public const int PaddingTopFieldNumber = 47;
     private float paddingTop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingTop {
-      get { if ((_hasBits1 & 16384) != 0) { return paddingTop_; } else { return 0F; } }
+      get { return paddingTop_; }
       set {
-        _hasBits1 |= 16384;
         paddingTop_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_top" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingTop {
-      get { return (_hasBits1 & 16384) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_top" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingTop() {
-      _hasBits1 &= ~16384;
-    }
 
     /// <summary>Field number for the "padding_right_unit" field.</summary>
-    public const int PaddingRightUnitFieldNumber = 65;
-    private global::DCL.ECSComponents.YGUnit paddingRightUnit_;
+    public const int PaddingRightUnitFieldNumber = 48;
+    private global::DCL.ECSComponents.YGUnit paddingRightUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingRightUnit {
-      get { if ((_hasBits1 & 32768) != 0) { return paddingRightUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return paddingRightUnit_; }
       set {
-        _hasBits1 |= 32768;
         paddingRightUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_right_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingRightUnit {
-      get { return (_hasBits1 & 32768) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_right_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingRightUnit() {
-      _hasBits1 &= ~32768;
-    }
 
     /// <summary>Field number for the "padding_right" field.</summary>
-    public const int PaddingRightFieldNumber = 66;
+    public const int PaddingRightFieldNumber = 49;
     private float paddingRight_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingRight {
-      get { if ((_hasBits1 & 65536) != 0) { return paddingRight_; } else { return 0F; } }
+      get { return paddingRight_; }
       set {
-        _hasBits1 |= 65536;
         paddingRight_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_right" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingRight {
-      get { return (_hasBits1 & 65536) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_right" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingRight() {
-      _hasBits1 &= ~65536;
-    }
 
     /// <summary>Field number for the "padding_bottom_unit" field.</summary>
-    public const int PaddingBottomUnitFieldNumber = 67;
-    private global::DCL.ECSComponents.YGUnit paddingBottomUnit_;
+    public const int PaddingBottomUnitFieldNumber = 50;
+    private global::DCL.ECSComponents.YGUnit paddingBottomUnit_ = global::DCL.ECSComponents.YGUnit.YguUndefined;
+    /// <summary>
+    /// YGUnit.YGU_UNDEFINED
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.YGUnit PaddingBottomUnit {
-      get { if ((_hasBits1 & 131072) != 0) { return paddingBottomUnit_; } else { return global::DCL.ECSComponents.YGUnit.YguUndefined; } }
+      get { return paddingBottomUnit_; }
       set {
-        _hasBits1 |= 131072;
         paddingBottomUnit_ = value;
       }
     }
-    /// <summary>Gets whether the "padding_bottom_unit" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingBottomUnit {
-      get { return (_hasBits1 & 131072) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_bottom_unit" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingBottomUnit() {
-      _hasBits1 &= ~131072;
-    }
 
     /// <summary>Field number for the "padding_bottom" field.</summary>
-    public const int PaddingBottomFieldNumber = 68;
+    public const int PaddingBottomFieldNumber = 51;
     private float paddingBottom_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float PaddingBottom {
-      get { if ((_hasBits1 & 262144) != 0) { return paddingBottom_; } else { return 0F; } }
+      get { return paddingBottom_; }
       set {
-        _hasBits1 |= 262144;
         paddingBottom_ = value;
       }
-    }
-    /// <summary>Gets whether the "padding_bottom" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPaddingBottom {
-      get { return (_hasBits1 & 262144) != 0; }
-    }
-    /// <summary>Clears the value of the "padding_bottom" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPaddingBottom() {
-      _hasBits1 &= ~262144;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1658,21 +1042,19 @@ namespace DCL.ECSComponents {
       }
       if (Parent != other.Parent) return false;
       if (RightOf != other.RightOf) return false;
-      if (PositionType != other.PositionType) return false;
       if (AlignContent != other.AlignContent) return false;
       if (AlignItems != other.AlignItems) return false;
+      if (FlexWrap != other.FlexWrap) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FlexShrink, other.FlexShrink)) return false;
+      if (PositionType != other.PositionType) return false;
       if (AlignSelf != other.AlignSelf) return false;
       if (FlexDirection != other.FlexDirection) return false;
-      if (FlexWrap != other.FlexWrap) return false;
       if (JustifyContent != other.JustifyContent) return false;
       if (Overflow != other.Overflow) return false;
       if (Display != other.Display) return false;
-      if (Direction != other.Direction) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Flex, other.Flex)) return false;
       if (FlexBasisUnit != other.FlexBasisUnit) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FlexBasis, other.FlexBasis)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FlexGrow, other.FlexGrow)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FlexShrink, other.FlexShrink)) return false;
       if (WidthUnit != other.WidthUnit) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Width, other.Width)) return false;
       if (HeightUnit != other.HeightUnit) return false;
@@ -1716,59 +1098,57 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasParent) hash ^= Parent.GetHashCode();
-      if (HasRightOf) hash ^= RightOf.GetHashCode();
-      if (HasPositionType) hash ^= PositionType.GetHashCode();
+      if (Parent != 0) hash ^= Parent.GetHashCode();
+      if (RightOf != 0) hash ^= RightOf.GetHashCode();
       if (HasAlignContent) hash ^= AlignContent.GetHashCode();
       if (HasAlignItems) hash ^= AlignItems.GetHashCode();
-      if (HasAlignSelf) hash ^= AlignSelf.GetHashCode();
-      if (HasFlexDirection) hash ^= FlexDirection.GetHashCode();
       if (HasFlexWrap) hash ^= FlexWrap.GetHashCode();
-      if (HasJustifyContent) hash ^= JustifyContent.GetHashCode();
-      if (HasOverflow) hash ^= Overflow.GetHashCode();
-      if (HasDisplay) hash ^= Display.GetHashCode();
-      if (HasDirection) hash ^= Direction.GetHashCode();
-      if (HasFlex) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Flex);
-      if (HasFlexBasisUnit) hash ^= FlexBasisUnit.GetHashCode();
-      if (HasFlexBasis) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FlexBasis);
-      if (HasFlexGrow) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FlexGrow);
       if (HasFlexShrink) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FlexShrink);
-      if (HasWidthUnit) hash ^= WidthUnit.GetHashCode();
-      if (HasWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Width);
-      if (HasHeightUnit) hash ^= HeightUnit.GetHashCode();
-      if (HasHeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Height);
-      if (HasMinWidthUnit) hash ^= MinWidthUnit.GetHashCode();
-      if (HasMinWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MinWidth);
-      if (HasMinHeightUnit) hash ^= MinHeightUnit.GetHashCode();
-      if (HasMinHeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MinHeight);
-      if (HasMaxWidthUnit) hash ^= MaxWidthUnit.GetHashCode();
-      if (HasMaxWidth) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxWidth);
-      if (HasMaxHeightUnit) hash ^= MaxHeightUnit.GetHashCode();
-      if (HasMaxHeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxHeight);
-      if (HasPositionLeftUnit) hash ^= PositionLeftUnit.GetHashCode();
-      if (HasPositionLeft) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionLeft);
-      if (HasPositionTopUnit) hash ^= PositionTopUnit.GetHashCode();
-      if (HasPositionTop) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionTop);
-      if (HasPositionRightUnit) hash ^= PositionRightUnit.GetHashCode();
-      if (HasPositionRight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionRight);
-      if (HasPositionBottomUnit) hash ^= PositionBottomUnit.GetHashCode();
-      if (HasPositionBottom) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionBottom);
-      if (HasMarginLeftUnit) hash ^= MarginLeftUnit.GetHashCode();
-      if (HasMarginLeft) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginLeft);
-      if (HasMarginTopUnit) hash ^= MarginTopUnit.GetHashCode();
-      if (HasMarginTop) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginTop);
-      if (HasMarginRightUnit) hash ^= MarginRightUnit.GetHashCode();
-      if (HasMarginRight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginRight);
-      if (HasMarginBottomUnit) hash ^= MarginBottomUnit.GetHashCode();
-      if (HasMarginBottom) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginBottom);
-      if (HasPaddingLeftUnit) hash ^= PaddingLeftUnit.GetHashCode();
-      if (HasPaddingLeft) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingLeft);
-      if (HasPaddingTopUnit) hash ^= PaddingTopUnit.GetHashCode();
-      if (HasPaddingTop) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingTop);
-      if (HasPaddingRightUnit) hash ^= PaddingRightUnit.GetHashCode();
-      if (HasPaddingRight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingRight);
-      if (HasPaddingBottomUnit) hash ^= PaddingBottomUnit.GetHashCode();
-      if (HasPaddingBottom) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingBottom);
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptRelative) hash ^= PositionType.GetHashCode();
+      if (AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) hash ^= AlignSelf.GetHashCode();
+      if (FlexDirection != global::DCL.ECSComponents.YGFlexDirection.YgfdRow) hash ^= FlexDirection.GetHashCode();
+      if (JustifyContent != global::DCL.ECSComponents.YGJustify.YgjFlexStart) hash ^= JustifyContent.GetHashCode();
+      if (Overflow != global::DCL.ECSComponents.YGOverflow.YgoVisible) hash ^= Overflow.GetHashCode();
+      if (Display != global::DCL.ECSComponents.YGDisplay.YgdFlex) hash ^= Display.GetHashCode();
+      if (FlexBasisUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= FlexBasisUnit.GetHashCode();
+      if (FlexBasis != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FlexBasis);
+      if (FlexGrow != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FlexGrow);
+      if (WidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= WidthUnit.GetHashCode();
+      if (Width != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Width);
+      if (HeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= HeightUnit.GetHashCode();
+      if (Height != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Height);
+      if (MinWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MinWidthUnit.GetHashCode();
+      if (MinWidth != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MinWidth);
+      if (MinHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MinHeightUnit.GetHashCode();
+      if (MinHeight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MinHeight);
+      if (MaxWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MaxWidthUnit.GetHashCode();
+      if (MaxWidth != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxWidth);
+      if (MaxHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MaxHeightUnit.GetHashCode();
+      if (MaxHeight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxHeight);
+      if (PositionLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PositionLeftUnit.GetHashCode();
+      if (PositionLeft != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionLeft);
+      if (PositionTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PositionTopUnit.GetHashCode();
+      if (PositionTop != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionTop);
+      if (PositionRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PositionRightUnit.GetHashCode();
+      if (PositionRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionRight);
+      if (PositionBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PositionBottomUnit.GetHashCode();
+      if (PositionBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PositionBottom);
+      if (MarginLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MarginLeftUnit.GetHashCode();
+      if (MarginLeft != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginLeft);
+      if (MarginTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MarginTopUnit.GetHashCode();
+      if (MarginTop != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginTop);
+      if (MarginRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MarginRightUnit.GetHashCode();
+      if (MarginRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginRight);
+      if (MarginBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= MarginBottomUnit.GetHashCode();
+      if (MarginBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MarginBottom);
+      if (PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PaddingLeftUnit.GetHashCode();
+      if (PaddingLeft != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingLeft);
+      if (PaddingTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PaddingTopUnit.GetHashCode();
+      if (PaddingTop != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingTop);
+      if (PaddingRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PaddingRightUnit.GetHashCode();
+      if (PaddingRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingRight);
+      if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PaddingBottomUnit.GetHashCode();
+      if (PaddingBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingBottom);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1787,217 +1167,209 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (HasPositionType) {
+      if (Parent != 0) {
         output.WriteRawTag(8);
-        output.WriteEnum((int) PositionType);
+        output.WriteInt32(Parent);
+      }
+      if (RightOf != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(RightOf);
       }
       if (HasAlignContent) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteEnum((int) AlignContent);
       }
       if (HasAlignItems) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteEnum((int) AlignItems);
       }
-      if (HasAlignSelf) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) AlignSelf);
-      }
-      if (HasFlexDirection) {
-        output.WriteRawTag(40);
-        output.WriteEnum((int) FlexDirection);
-      }
       if (HasFlexWrap) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(40);
         output.WriteEnum((int) FlexWrap);
       }
-      if (HasJustifyContent) {
+      if (HasFlexShrink) {
+        output.WriteRawTag(53);
+        output.WriteFloat(FlexShrink);
+      }
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptRelative) {
         output.WriteRawTag(56);
+        output.WriteEnum((int) PositionType);
+      }
+      if (AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) {
+        output.WriteRawTag(64);
+        output.WriteEnum((int) AlignSelf);
+      }
+      if (FlexDirection != global::DCL.ECSComponents.YGFlexDirection.YgfdRow) {
+        output.WriteRawTag(72);
+        output.WriteEnum((int) FlexDirection);
+      }
+      if (JustifyContent != global::DCL.ECSComponents.YGJustify.YgjFlexStart) {
+        output.WriteRawTag(80);
         output.WriteEnum((int) JustifyContent);
       }
-      if (HasOverflow) {
-        output.WriteRawTag(64);
+      if (Overflow != global::DCL.ECSComponents.YGOverflow.YgoVisible) {
+        output.WriteRawTag(88);
         output.WriteEnum((int) Overflow);
       }
-      if (HasDisplay) {
-        output.WriteRawTag(72);
+      if (Display != global::DCL.ECSComponents.YGDisplay.YgdFlex) {
+        output.WriteRawTag(96);
         output.WriteEnum((int) Display);
       }
-      if (HasDirection) {
-        output.WriteRawTag(80);
-        output.WriteEnum((int) Direction);
-      }
-      if (HasFlex) {
-        output.WriteRawTag(93);
-        output.WriteFloat(Flex);
-      }
-      if (HasFlexBasisUnit) {
+      if (FlexBasisUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         output.WriteRawTag(104);
         output.WriteEnum((int) FlexBasisUnit);
       }
-      if (HasFlexBasis) {
+      if (FlexBasis != 0F) {
         output.WriteRawTag(117);
         output.WriteFloat(FlexBasis);
       }
-      if (HasFlexGrow) {
+      if (FlexGrow != 0F) {
         output.WriteRawTag(125);
         output.WriteFloat(FlexGrow);
       }
-      if (HasFlexShrink) {
-        output.WriteRawTag(133, 1);
-        output.WriteFloat(FlexShrink);
-      }
-      if (HasWidthUnit) {
-        output.WriteRawTag(136, 1);
+      if (WidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 1);
         output.WriteEnum((int) WidthUnit);
       }
-      if (HasWidth) {
-        output.WriteRawTag(149, 1);
+      if (Width != 0F) {
+        output.WriteRawTag(141, 1);
         output.WriteFloat(Width);
       }
-      if (HasHeightUnit) {
-        output.WriteRawTag(152, 1);
+      if (HeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 1);
         output.WriteEnum((int) HeightUnit);
       }
-      if (HasHeight) {
-        output.WriteRawTag(165, 1);
+      if (Height != 0F) {
+        output.WriteRawTag(157, 1);
         output.WriteFloat(Height);
       }
-      if (HasMinWidthUnit) {
-        output.WriteRawTag(168, 1);
+      if (MinWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(160, 1);
         output.WriteEnum((int) MinWidthUnit);
       }
-      if (HasMinWidth) {
-        output.WriteRawTag(181, 1);
+      if (MinWidth != 0F) {
+        output.WriteRawTag(173, 1);
         output.WriteFloat(MinWidth);
       }
-      if (HasMinHeightUnit) {
-        output.WriteRawTag(184, 1);
+      if (MinHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(176, 1);
         output.WriteEnum((int) MinHeightUnit);
       }
-      if (HasMinHeight) {
-        output.WriteRawTag(197, 1);
+      if (MinHeight != 0F) {
+        output.WriteRawTag(189, 1);
         output.WriteFloat(MinHeight);
       }
-      if (HasMaxWidthUnit) {
-        output.WriteRawTag(248, 1);
+      if (MaxWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(192, 1);
         output.WriteEnum((int) MaxWidthUnit);
       }
-      if (HasMaxWidth) {
-        output.WriteRawTag(133, 2);
+      if (MaxWidth != 0F) {
+        output.WriteRawTag(205, 1);
         output.WriteFloat(MaxWidth);
       }
-      if (HasMaxHeightUnit) {
-        output.WriteRawTag(136, 2);
+      if (MaxHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(208, 1);
         output.WriteEnum((int) MaxHeightUnit);
       }
-      if (HasMaxHeight) {
-        output.WriteRawTag(149, 2);
+      if (MaxHeight != 0F) {
+        output.WriteRawTag(221, 1);
         output.WriteFloat(MaxHeight);
       }
-      if (HasPositionLeftUnit) {
-        output.WriteRawTag(200, 2);
+      if (PositionLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(224, 1);
         output.WriteEnum((int) PositionLeftUnit);
       }
-      if (HasPositionLeft) {
-        output.WriteRawTag(213, 2);
+      if (PositionLeft != 0F) {
+        output.WriteRawTag(237, 1);
         output.WriteFloat(PositionLeft);
       }
-      if (HasPositionTopUnit) {
-        output.WriteRawTag(216, 2);
+      if (PositionTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(240, 1);
         output.WriteEnum((int) PositionTopUnit);
       }
-      if (HasPositionTop) {
-        output.WriteRawTag(229, 2);
+      if (PositionTop != 0F) {
+        output.WriteRawTag(253, 1);
         output.WriteFloat(PositionTop);
       }
-      if (HasPositionRightUnit) {
-        output.WriteRawTag(232, 2);
+      if (PositionRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 2);
         output.WriteEnum((int) PositionRightUnit);
       }
-      if (HasPositionRight) {
-        output.WriteRawTag(245, 2);
+      if (PositionRight != 0F) {
+        output.WriteRawTag(141, 2);
         output.WriteFloat(PositionRight);
       }
-      if (HasPositionBottomUnit) {
-        output.WriteRawTag(248, 2);
+      if (PositionBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 2);
         output.WriteEnum((int) PositionBottomUnit);
       }
-      if (HasPositionBottom) {
-        output.WriteRawTag(133, 3);
+      if (PositionBottom != 0F) {
+        output.WriteRawTag(157, 2);
         output.WriteFloat(PositionBottom);
       }
-      if (HasMarginLeftUnit) {
-        output.WriteRawTag(152, 3);
+      if (MarginLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(160, 2);
         output.WriteEnum((int) MarginLeftUnit);
       }
-      if (HasMarginLeft) {
-        output.WriteRawTag(165, 3);
+      if (MarginLeft != 0F) {
+        output.WriteRawTag(173, 2);
         output.WriteFloat(MarginLeft);
       }
-      if (HasMarginTopUnit) {
-        output.WriteRawTag(168, 3);
+      if (MarginTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(176, 2);
         output.WriteEnum((int) MarginTopUnit);
       }
-      if (HasMarginTop) {
-        output.WriteRawTag(181, 3);
+      if (MarginTop != 0F) {
+        output.WriteRawTag(189, 2);
         output.WriteFloat(MarginTop);
       }
-      if (HasMarginRightUnit) {
-        output.WriteRawTag(184, 3);
+      if (MarginRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(192, 2);
         output.WriteEnum((int) MarginRightUnit);
       }
-      if (HasMarginRight) {
-        output.WriteRawTag(197, 3);
+      if (MarginRight != 0F) {
+        output.WriteRawTag(205, 2);
         output.WriteFloat(MarginRight);
       }
-      if (HasMarginBottomUnit) {
-        output.WriteRawTag(200, 3);
+      if (MarginBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(208, 2);
         output.WriteEnum((int) MarginBottomUnit);
       }
-      if (HasMarginBottom) {
-        output.WriteRawTag(213, 3);
+      if (MarginBottom != 0F) {
+        output.WriteRawTag(221, 2);
         output.WriteFloat(MarginBottom);
       }
-      if (HasPaddingLeftUnit) {
-        output.WriteRawTag(232, 3);
+      if (PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(224, 2);
         output.WriteEnum((int) PaddingLeftUnit);
       }
-      if (HasPaddingLeft) {
-        output.WriteRawTag(245, 3);
+      if (PaddingLeft != 0F) {
+        output.WriteRawTag(237, 2);
         output.WriteFloat(PaddingLeft);
       }
-      if (HasPaddingTopUnit) {
-        output.WriteRawTag(248, 3);
+      if (PaddingTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(240, 2);
         output.WriteEnum((int) PaddingTopUnit);
       }
-      if (HasPaddingTop) {
-        output.WriteRawTag(133, 4);
+      if (PaddingTop != 0F) {
+        output.WriteRawTag(253, 2);
         output.WriteFloat(PaddingTop);
       }
-      if (HasPaddingRightUnit) {
-        output.WriteRawTag(136, 4);
+      if (PaddingRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 3);
         output.WriteEnum((int) PaddingRightUnit);
       }
-      if (HasPaddingRight) {
-        output.WriteRawTag(149, 4);
+      if (PaddingRight != 0F) {
+        output.WriteRawTag(141, 3);
         output.WriteFloat(PaddingRight);
       }
-      if (HasPaddingBottomUnit) {
-        output.WriteRawTag(152, 4);
+      if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 3);
         output.WriteEnum((int) PaddingBottomUnit);
       }
-      if (HasPaddingBottom) {
-        output.WriteRawTag(165, 4);
+      if (PaddingBottom != 0F) {
+        output.WriteRawTag(157, 3);
         output.WriteFloat(PaddingBottom);
-      }
-      if (HasParent) {
-        output.WriteRawTag(168, 4);
-        output.WriteInt32(Parent);
-      }
-      if (HasRightOf) {
-        output.WriteRawTag(176, 4);
-        output.WriteInt32(RightOf);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -2009,217 +1381,209 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasPositionType) {
+      if (Parent != 0) {
         output.WriteRawTag(8);
-        output.WriteEnum((int) PositionType);
+        output.WriteInt32(Parent);
+      }
+      if (RightOf != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(RightOf);
       }
       if (HasAlignContent) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteEnum((int) AlignContent);
       }
       if (HasAlignItems) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteEnum((int) AlignItems);
       }
-      if (HasAlignSelf) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) AlignSelf);
-      }
-      if (HasFlexDirection) {
-        output.WriteRawTag(40);
-        output.WriteEnum((int) FlexDirection);
-      }
       if (HasFlexWrap) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(40);
         output.WriteEnum((int) FlexWrap);
       }
-      if (HasJustifyContent) {
+      if (HasFlexShrink) {
+        output.WriteRawTag(53);
+        output.WriteFloat(FlexShrink);
+      }
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptRelative) {
         output.WriteRawTag(56);
+        output.WriteEnum((int) PositionType);
+      }
+      if (AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) {
+        output.WriteRawTag(64);
+        output.WriteEnum((int) AlignSelf);
+      }
+      if (FlexDirection != global::DCL.ECSComponents.YGFlexDirection.YgfdRow) {
+        output.WriteRawTag(72);
+        output.WriteEnum((int) FlexDirection);
+      }
+      if (JustifyContent != global::DCL.ECSComponents.YGJustify.YgjFlexStart) {
+        output.WriteRawTag(80);
         output.WriteEnum((int) JustifyContent);
       }
-      if (HasOverflow) {
-        output.WriteRawTag(64);
+      if (Overflow != global::DCL.ECSComponents.YGOverflow.YgoVisible) {
+        output.WriteRawTag(88);
         output.WriteEnum((int) Overflow);
       }
-      if (HasDisplay) {
-        output.WriteRawTag(72);
+      if (Display != global::DCL.ECSComponents.YGDisplay.YgdFlex) {
+        output.WriteRawTag(96);
         output.WriteEnum((int) Display);
       }
-      if (HasDirection) {
-        output.WriteRawTag(80);
-        output.WriteEnum((int) Direction);
-      }
-      if (HasFlex) {
-        output.WriteRawTag(93);
-        output.WriteFloat(Flex);
-      }
-      if (HasFlexBasisUnit) {
+      if (FlexBasisUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         output.WriteRawTag(104);
         output.WriteEnum((int) FlexBasisUnit);
       }
-      if (HasFlexBasis) {
+      if (FlexBasis != 0F) {
         output.WriteRawTag(117);
         output.WriteFloat(FlexBasis);
       }
-      if (HasFlexGrow) {
+      if (FlexGrow != 0F) {
         output.WriteRawTag(125);
         output.WriteFloat(FlexGrow);
       }
-      if (HasFlexShrink) {
-        output.WriteRawTag(133, 1);
-        output.WriteFloat(FlexShrink);
-      }
-      if (HasWidthUnit) {
-        output.WriteRawTag(136, 1);
+      if (WidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 1);
         output.WriteEnum((int) WidthUnit);
       }
-      if (HasWidth) {
-        output.WriteRawTag(149, 1);
+      if (Width != 0F) {
+        output.WriteRawTag(141, 1);
         output.WriteFloat(Width);
       }
-      if (HasHeightUnit) {
-        output.WriteRawTag(152, 1);
+      if (HeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 1);
         output.WriteEnum((int) HeightUnit);
       }
-      if (HasHeight) {
-        output.WriteRawTag(165, 1);
+      if (Height != 0F) {
+        output.WriteRawTag(157, 1);
         output.WriteFloat(Height);
       }
-      if (HasMinWidthUnit) {
-        output.WriteRawTag(168, 1);
+      if (MinWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(160, 1);
         output.WriteEnum((int) MinWidthUnit);
       }
-      if (HasMinWidth) {
-        output.WriteRawTag(181, 1);
+      if (MinWidth != 0F) {
+        output.WriteRawTag(173, 1);
         output.WriteFloat(MinWidth);
       }
-      if (HasMinHeightUnit) {
-        output.WriteRawTag(184, 1);
+      if (MinHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(176, 1);
         output.WriteEnum((int) MinHeightUnit);
       }
-      if (HasMinHeight) {
-        output.WriteRawTag(197, 1);
+      if (MinHeight != 0F) {
+        output.WriteRawTag(189, 1);
         output.WriteFloat(MinHeight);
       }
-      if (HasMaxWidthUnit) {
-        output.WriteRawTag(248, 1);
+      if (MaxWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(192, 1);
         output.WriteEnum((int) MaxWidthUnit);
       }
-      if (HasMaxWidth) {
-        output.WriteRawTag(133, 2);
+      if (MaxWidth != 0F) {
+        output.WriteRawTag(205, 1);
         output.WriteFloat(MaxWidth);
       }
-      if (HasMaxHeightUnit) {
-        output.WriteRawTag(136, 2);
+      if (MaxHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(208, 1);
         output.WriteEnum((int) MaxHeightUnit);
       }
-      if (HasMaxHeight) {
-        output.WriteRawTag(149, 2);
+      if (MaxHeight != 0F) {
+        output.WriteRawTag(221, 1);
         output.WriteFloat(MaxHeight);
       }
-      if (HasPositionLeftUnit) {
-        output.WriteRawTag(200, 2);
+      if (PositionLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(224, 1);
         output.WriteEnum((int) PositionLeftUnit);
       }
-      if (HasPositionLeft) {
-        output.WriteRawTag(213, 2);
+      if (PositionLeft != 0F) {
+        output.WriteRawTag(237, 1);
         output.WriteFloat(PositionLeft);
       }
-      if (HasPositionTopUnit) {
-        output.WriteRawTag(216, 2);
+      if (PositionTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(240, 1);
         output.WriteEnum((int) PositionTopUnit);
       }
-      if (HasPositionTop) {
-        output.WriteRawTag(229, 2);
+      if (PositionTop != 0F) {
+        output.WriteRawTag(253, 1);
         output.WriteFloat(PositionTop);
       }
-      if (HasPositionRightUnit) {
-        output.WriteRawTag(232, 2);
+      if (PositionRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 2);
         output.WriteEnum((int) PositionRightUnit);
       }
-      if (HasPositionRight) {
-        output.WriteRawTag(245, 2);
+      if (PositionRight != 0F) {
+        output.WriteRawTag(141, 2);
         output.WriteFloat(PositionRight);
       }
-      if (HasPositionBottomUnit) {
-        output.WriteRawTag(248, 2);
+      if (PositionBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 2);
         output.WriteEnum((int) PositionBottomUnit);
       }
-      if (HasPositionBottom) {
-        output.WriteRawTag(133, 3);
+      if (PositionBottom != 0F) {
+        output.WriteRawTag(157, 2);
         output.WriteFloat(PositionBottom);
       }
-      if (HasMarginLeftUnit) {
-        output.WriteRawTag(152, 3);
+      if (MarginLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(160, 2);
         output.WriteEnum((int) MarginLeftUnit);
       }
-      if (HasMarginLeft) {
-        output.WriteRawTag(165, 3);
+      if (MarginLeft != 0F) {
+        output.WriteRawTag(173, 2);
         output.WriteFloat(MarginLeft);
       }
-      if (HasMarginTopUnit) {
-        output.WriteRawTag(168, 3);
+      if (MarginTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(176, 2);
         output.WriteEnum((int) MarginTopUnit);
       }
-      if (HasMarginTop) {
-        output.WriteRawTag(181, 3);
+      if (MarginTop != 0F) {
+        output.WriteRawTag(189, 2);
         output.WriteFloat(MarginTop);
       }
-      if (HasMarginRightUnit) {
-        output.WriteRawTag(184, 3);
+      if (MarginRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(192, 2);
         output.WriteEnum((int) MarginRightUnit);
       }
-      if (HasMarginRight) {
-        output.WriteRawTag(197, 3);
+      if (MarginRight != 0F) {
+        output.WriteRawTag(205, 2);
         output.WriteFloat(MarginRight);
       }
-      if (HasMarginBottomUnit) {
-        output.WriteRawTag(200, 3);
+      if (MarginBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(208, 2);
         output.WriteEnum((int) MarginBottomUnit);
       }
-      if (HasMarginBottom) {
-        output.WriteRawTag(213, 3);
+      if (MarginBottom != 0F) {
+        output.WriteRawTag(221, 2);
         output.WriteFloat(MarginBottom);
       }
-      if (HasPaddingLeftUnit) {
-        output.WriteRawTag(232, 3);
+      if (PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(224, 2);
         output.WriteEnum((int) PaddingLeftUnit);
       }
-      if (HasPaddingLeft) {
-        output.WriteRawTag(245, 3);
+      if (PaddingLeft != 0F) {
+        output.WriteRawTag(237, 2);
         output.WriteFloat(PaddingLeft);
       }
-      if (HasPaddingTopUnit) {
-        output.WriteRawTag(248, 3);
+      if (PaddingTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(240, 2);
         output.WriteEnum((int) PaddingTopUnit);
       }
-      if (HasPaddingTop) {
-        output.WriteRawTag(133, 4);
+      if (PaddingTop != 0F) {
+        output.WriteRawTag(253, 2);
         output.WriteFloat(PaddingTop);
       }
-      if (HasPaddingRightUnit) {
-        output.WriteRawTag(136, 4);
+      if (PaddingRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(128, 3);
         output.WriteEnum((int) PaddingRightUnit);
       }
-      if (HasPaddingRight) {
-        output.WriteRawTag(149, 4);
+      if (PaddingRight != 0F) {
+        output.WriteRawTag(141, 3);
         output.WriteFloat(PaddingRight);
       }
-      if (HasPaddingBottomUnit) {
-        output.WriteRawTag(152, 4);
+      if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        output.WriteRawTag(144, 3);
         output.WriteEnum((int) PaddingBottomUnit);
       }
-      if (HasPaddingBottom) {
-        output.WriteRawTag(165, 4);
+      if (PaddingBottom != 0F) {
+        output.WriteRawTag(157, 3);
         output.WriteFloat(PaddingBottom);
-      }
-      if (HasParent) {
-        output.WriteRawTag(168, 4);
-        output.WriteInt32(Parent);
-      }
-      if (HasRightOf) {
-        output.WriteRawTag(176, 4);
-        output.WriteInt32(RightOf);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -2231,14 +1595,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (HasParent) {
-        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Parent);
+      if (Parent != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Parent);
       }
-      if (HasRightOf) {
-        size += 2 + pb::CodedOutputStream.ComputeInt32Size(RightOf);
-      }
-      if (HasPositionType) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) PositionType);
+      if (RightOf != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RightOf);
       }
       if (HasAlignContent) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AlignContent);
@@ -2246,148 +1607,145 @@ namespace DCL.ECSComponents {
       if (HasAlignItems) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AlignItems);
       }
-      if (HasAlignSelf) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AlignSelf);
-      }
-      if (HasFlexDirection) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FlexDirection);
-      }
       if (HasFlexWrap) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FlexWrap);
       }
-      if (HasJustifyContent) {
+      if (HasFlexShrink) {
+        size += 1 + 4;
+      }
+      if (PositionType != global::DCL.ECSComponents.YGPositionType.YgptRelative) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) PositionType);
+      }
+      if (AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) AlignSelf);
+      }
+      if (FlexDirection != global::DCL.ECSComponents.YGFlexDirection.YgfdRow) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FlexDirection);
+      }
+      if (JustifyContent != global::DCL.ECSComponents.YGJustify.YgjFlexStart) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) JustifyContent);
       }
-      if (HasOverflow) {
+      if (Overflow != global::DCL.ECSComponents.YGOverflow.YgoVisible) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Overflow);
       }
-      if (HasDisplay) {
+      if (Display != global::DCL.ECSComponents.YGDisplay.YgdFlex) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Display);
       }
-      if (HasDirection) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Direction);
-      }
-      if (HasFlex) {
-        size += 1 + 4;
-      }
-      if (HasFlexBasisUnit) {
+      if (FlexBasisUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) FlexBasisUnit);
       }
-      if (HasFlexBasis) {
+      if (FlexBasis != 0F) {
         size += 1 + 4;
       }
-      if (HasFlexGrow) {
+      if (FlexGrow != 0F) {
         size += 1 + 4;
       }
-      if (HasFlexShrink) {
-        size += 2 + 4;
-      }
-      if (HasWidthUnit) {
+      if (WidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) WidthUnit);
       }
-      if (HasWidth) {
+      if (Width != 0F) {
         size += 2 + 4;
       }
-      if (HasHeightUnit) {
+      if (HeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) HeightUnit);
       }
-      if (HasHeight) {
+      if (Height != 0F) {
         size += 2 + 4;
       }
-      if (HasMinWidthUnit) {
+      if (MinWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MinWidthUnit);
       }
-      if (HasMinWidth) {
+      if (MinWidth != 0F) {
         size += 2 + 4;
       }
-      if (HasMinHeightUnit) {
+      if (MinHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MinHeightUnit);
       }
-      if (HasMinHeight) {
+      if (MinHeight != 0F) {
         size += 2 + 4;
       }
-      if (HasMaxWidthUnit) {
+      if (MaxWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MaxWidthUnit);
       }
-      if (HasMaxWidth) {
+      if (MaxWidth != 0F) {
         size += 2 + 4;
       }
-      if (HasMaxHeightUnit) {
+      if (MaxHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MaxHeightUnit);
       }
-      if (HasMaxHeight) {
+      if (MaxHeight != 0F) {
         size += 2 + 4;
       }
-      if (HasPositionLeftUnit) {
+      if (PositionLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PositionLeftUnit);
       }
-      if (HasPositionLeft) {
+      if (PositionLeft != 0F) {
         size += 2 + 4;
       }
-      if (HasPositionTopUnit) {
+      if (PositionTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PositionTopUnit);
       }
-      if (HasPositionTop) {
+      if (PositionTop != 0F) {
         size += 2 + 4;
       }
-      if (HasPositionRightUnit) {
+      if (PositionRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PositionRightUnit);
       }
-      if (HasPositionRight) {
+      if (PositionRight != 0F) {
         size += 2 + 4;
       }
-      if (HasPositionBottomUnit) {
+      if (PositionBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PositionBottomUnit);
       }
-      if (HasPositionBottom) {
+      if (PositionBottom != 0F) {
         size += 2 + 4;
       }
-      if (HasMarginLeftUnit) {
+      if (MarginLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MarginLeftUnit);
       }
-      if (HasMarginLeft) {
+      if (MarginLeft != 0F) {
         size += 2 + 4;
       }
-      if (HasMarginTopUnit) {
+      if (MarginTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MarginTopUnit);
       }
-      if (HasMarginTop) {
+      if (MarginTop != 0F) {
         size += 2 + 4;
       }
-      if (HasMarginRightUnit) {
+      if (MarginRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MarginRightUnit);
       }
-      if (HasMarginRight) {
+      if (MarginRight != 0F) {
         size += 2 + 4;
       }
-      if (HasMarginBottomUnit) {
+      if (MarginBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) MarginBottomUnit);
       }
-      if (HasMarginBottom) {
+      if (MarginBottom != 0F) {
         size += 2 + 4;
       }
-      if (HasPaddingLeftUnit) {
+      if (PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PaddingLeftUnit);
       }
-      if (HasPaddingLeft) {
+      if (PaddingLeft != 0F) {
         size += 2 + 4;
       }
-      if (HasPaddingTopUnit) {
+      if (PaddingTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PaddingTopUnit);
       }
-      if (HasPaddingTop) {
+      if (PaddingTop != 0F) {
         size += 2 + 4;
       }
-      if (HasPaddingRightUnit) {
+      if (PaddingRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PaddingRightUnit);
       }
-      if (HasPaddingRight) {
+      if (PaddingRight != 0F) {
         size += 2 + 4;
       }
-      if (HasPaddingBottomUnit) {
+      if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PaddingBottomUnit);
       }
-      if (HasPaddingBottom) {
+      if (PaddingBottom != 0F) {
         size += 2 + 4;
       }
       if (_unknownFields != null) {
@@ -2402,14 +1760,11 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.HasParent) {
+      if (other.Parent != 0) {
         Parent = other.Parent;
       }
-      if (other.HasRightOf) {
+      if (other.RightOf != 0) {
         RightOf = other.RightOf;
-      }
-      if (other.HasPositionType) {
-        PositionType = other.PositionType;
       }
       if (other.HasAlignContent) {
         AlignContent = other.AlignContent;
@@ -2417,148 +1772,145 @@ namespace DCL.ECSComponents {
       if (other.HasAlignItems) {
         AlignItems = other.AlignItems;
       }
-      if (other.HasAlignSelf) {
-        AlignSelf = other.AlignSelf;
-      }
-      if (other.HasFlexDirection) {
-        FlexDirection = other.FlexDirection;
-      }
       if (other.HasFlexWrap) {
         FlexWrap = other.FlexWrap;
-      }
-      if (other.HasJustifyContent) {
-        JustifyContent = other.JustifyContent;
-      }
-      if (other.HasOverflow) {
-        Overflow = other.Overflow;
-      }
-      if (other.HasDisplay) {
-        Display = other.Display;
-      }
-      if (other.HasDirection) {
-        Direction = other.Direction;
-      }
-      if (other.HasFlex) {
-        Flex = other.Flex;
-      }
-      if (other.HasFlexBasisUnit) {
-        FlexBasisUnit = other.FlexBasisUnit;
-      }
-      if (other.HasFlexBasis) {
-        FlexBasis = other.FlexBasis;
-      }
-      if (other.HasFlexGrow) {
-        FlexGrow = other.FlexGrow;
       }
       if (other.HasFlexShrink) {
         FlexShrink = other.FlexShrink;
       }
-      if (other.HasWidthUnit) {
+      if (other.PositionType != global::DCL.ECSComponents.YGPositionType.YgptRelative) {
+        PositionType = other.PositionType;
+      }
+      if (other.AlignSelf != global::DCL.ECSComponents.YGAlign.YgaAuto) {
+        AlignSelf = other.AlignSelf;
+      }
+      if (other.FlexDirection != global::DCL.ECSComponents.YGFlexDirection.YgfdRow) {
+        FlexDirection = other.FlexDirection;
+      }
+      if (other.JustifyContent != global::DCL.ECSComponents.YGJustify.YgjFlexStart) {
+        JustifyContent = other.JustifyContent;
+      }
+      if (other.Overflow != global::DCL.ECSComponents.YGOverflow.YgoVisible) {
+        Overflow = other.Overflow;
+      }
+      if (other.Display != global::DCL.ECSComponents.YGDisplay.YgdFlex) {
+        Display = other.Display;
+      }
+      if (other.FlexBasisUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
+        FlexBasisUnit = other.FlexBasisUnit;
+      }
+      if (other.FlexBasis != 0F) {
+        FlexBasis = other.FlexBasis;
+      }
+      if (other.FlexGrow != 0F) {
+        FlexGrow = other.FlexGrow;
+      }
+      if (other.WidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         WidthUnit = other.WidthUnit;
       }
-      if (other.HasWidth) {
+      if (other.Width != 0F) {
         Width = other.Width;
       }
-      if (other.HasHeightUnit) {
+      if (other.HeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         HeightUnit = other.HeightUnit;
       }
-      if (other.HasHeight) {
+      if (other.Height != 0F) {
         Height = other.Height;
       }
-      if (other.HasMinWidthUnit) {
+      if (other.MinWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MinWidthUnit = other.MinWidthUnit;
       }
-      if (other.HasMinWidth) {
+      if (other.MinWidth != 0F) {
         MinWidth = other.MinWidth;
       }
-      if (other.HasMinHeightUnit) {
+      if (other.MinHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MinHeightUnit = other.MinHeightUnit;
       }
-      if (other.HasMinHeight) {
+      if (other.MinHeight != 0F) {
         MinHeight = other.MinHeight;
       }
-      if (other.HasMaxWidthUnit) {
+      if (other.MaxWidthUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MaxWidthUnit = other.MaxWidthUnit;
       }
-      if (other.HasMaxWidth) {
+      if (other.MaxWidth != 0F) {
         MaxWidth = other.MaxWidth;
       }
-      if (other.HasMaxHeightUnit) {
+      if (other.MaxHeightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MaxHeightUnit = other.MaxHeightUnit;
       }
-      if (other.HasMaxHeight) {
+      if (other.MaxHeight != 0F) {
         MaxHeight = other.MaxHeight;
       }
-      if (other.HasPositionLeftUnit) {
+      if (other.PositionLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PositionLeftUnit = other.PositionLeftUnit;
       }
-      if (other.HasPositionLeft) {
+      if (other.PositionLeft != 0F) {
         PositionLeft = other.PositionLeft;
       }
-      if (other.HasPositionTopUnit) {
+      if (other.PositionTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PositionTopUnit = other.PositionTopUnit;
       }
-      if (other.HasPositionTop) {
+      if (other.PositionTop != 0F) {
         PositionTop = other.PositionTop;
       }
-      if (other.HasPositionRightUnit) {
+      if (other.PositionRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PositionRightUnit = other.PositionRightUnit;
       }
-      if (other.HasPositionRight) {
+      if (other.PositionRight != 0F) {
         PositionRight = other.PositionRight;
       }
-      if (other.HasPositionBottomUnit) {
+      if (other.PositionBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PositionBottomUnit = other.PositionBottomUnit;
       }
-      if (other.HasPositionBottom) {
+      if (other.PositionBottom != 0F) {
         PositionBottom = other.PositionBottom;
       }
-      if (other.HasMarginLeftUnit) {
+      if (other.MarginLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MarginLeftUnit = other.MarginLeftUnit;
       }
-      if (other.HasMarginLeft) {
+      if (other.MarginLeft != 0F) {
         MarginLeft = other.MarginLeft;
       }
-      if (other.HasMarginTopUnit) {
+      if (other.MarginTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MarginTopUnit = other.MarginTopUnit;
       }
-      if (other.HasMarginTop) {
+      if (other.MarginTop != 0F) {
         MarginTop = other.MarginTop;
       }
-      if (other.HasMarginRightUnit) {
+      if (other.MarginRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MarginRightUnit = other.MarginRightUnit;
       }
-      if (other.HasMarginRight) {
+      if (other.MarginRight != 0F) {
         MarginRight = other.MarginRight;
       }
-      if (other.HasMarginBottomUnit) {
+      if (other.MarginBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         MarginBottomUnit = other.MarginBottomUnit;
       }
-      if (other.HasMarginBottom) {
+      if (other.MarginBottom != 0F) {
         MarginBottom = other.MarginBottom;
       }
-      if (other.HasPaddingLeftUnit) {
+      if (other.PaddingLeftUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PaddingLeftUnit = other.PaddingLeftUnit;
       }
-      if (other.HasPaddingLeft) {
+      if (other.PaddingLeft != 0F) {
         PaddingLeft = other.PaddingLeft;
       }
-      if (other.HasPaddingTopUnit) {
+      if (other.PaddingTopUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PaddingTopUnit = other.PaddingTopUnit;
       }
-      if (other.HasPaddingTop) {
+      if (other.PaddingTop != 0F) {
         PaddingTop = other.PaddingTop;
       }
-      if (other.HasPaddingRightUnit) {
+      if (other.PaddingRightUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PaddingRightUnit = other.PaddingRightUnit;
       }
-      if (other.HasPaddingRight) {
+      if (other.PaddingRight != 0F) {
         PaddingRight = other.PaddingRight;
       }
-      if (other.HasPaddingBottomUnit) {
+      if (other.PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) {
         PaddingBottomUnit = other.PaddingBottomUnit;
       }
-      if (other.HasPaddingBottom) {
+      if (other.PaddingBottom != 0F) {
         PaddingBottom = other.PaddingBottom;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -2577,47 +1929,51 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            PositionType = (global::DCL.ECSComponents.YGPositionType) input.ReadEnum();
+            Parent = input.ReadInt32();
             break;
           }
           case 16: {
-            AlignContent = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            RightOf = input.ReadInt32();
             break;
           }
           case 24: {
-            AlignItems = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            AlignContent = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 32: {
-            AlignSelf = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            AlignItems = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 40: {
-            FlexDirection = (global::DCL.ECSComponents.YGFlexDirection) input.ReadEnum();
-            break;
-          }
-          case 48: {
             FlexWrap = (global::DCL.ECSComponents.YGWrap) input.ReadEnum();
             break;
           }
+          case 53: {
+            FlexShrink = input.ReadFloat();
+            break;
+          }
           case 56: {
-            JustifyContent = (global::DCL.ECSComponents.YGJustify) input.ReadEnum();
+            PositionType = (global::DCL.ECSComponents.YGPositionType) input.ReadEnum();
             break;
           }
           case 64: {
-            Overflow = (global::DCL.ECSComponents.YGOverflow) input.ReadEnum();
+            AlignSelf = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 72: {
-            Display = (global::DCL.ECSComponents.YGDisplay) input.ReadEnum();
+            FlexDirection = (global::DCL.ECSComponents.YGFlexDirection) input.ReadEnum();
             break;
           }
           case 80: {
-            Direction = (global::DCL.ECSComponents.YGDirection) input.ReadEnum();
+            JustifyContent = (global::DCL.ECSComponents.YGJustify) input.ReadEnum();
             break;
           }
-          case 93: {
-            Flex = input.ReadFloat();
+          case 88: {
+            Overflow = (global::DCL.ECSComponents.YGOverflow) input.ReadEnum();
+            break;
+          }
+          case 96: {
+            Display = (global::DCL.ECSComponents.YGDisplay) input.ReadEnum();
             break;
           }
           case 104: {
@@ -2632,160 +1988,148 @@ namespace DCL.ECSComponents {
             FlexGrow = input.ReadFloat();
             break;
           }
-          case 133: {
-            FlexShrink = input.ReadFloat();
-            break;
-          }
-          case 136: {
+          case 128: {
             WidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 149: {
+          case 141: {
             Width = input.ReadFloat();
             break;
           }
-          case 152: {
+          case 144: {
             HeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 165: {
+          case 157: {
             Height = input.ReadFloat();
             break;
           }
-          case 168: {
+          case 160: {
             MinWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 181: {
+          case 173: {
             MinWidth = input.ReadFloat();
             break;
           }
-          case 184: {
+          case 176: {
             MinHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 197: {
+          case 189: {
             MinHeight = input.ReadFloat();
             break;
           }
-          case 248: {
+          case 192: {
             MaxWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 261: {
+          case 205: {
             MaxWidth = input.ReadFloat();
             break;
           }
-          case 264: {
+          case 208: {
             MaxHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 277: {
+          case 221: {
             MaxHeight = input.ReadFloat();
             break;
           }
-          case 328: {
+          case 224: {
             PositionLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 341: {
+          case 237: {
             PositionLeft = input.ReadFloat();
             break;
           }
-          case 344: {
+          case 240: {
             PositionTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 357: {
+          case 253: {
             PositionTop = input.ReadFloat();
             break;
           }
-          case 360: {
+          case 256: {
             PositionRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 373: {
+          case 269: {
             PositionRight = input.ReadFloat();
             break;
           }
-          case 376: {
+          case 272: {
             PositionBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 389: {
+          case 285: {
             PositionBottom = input.ReadFloat();
             break;
           }
-          case 408: {
+          case 288: {
             MarginLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 421: {
+          case 301: {
             MarginLeft = input.ReadFloat();
             break;
           }
-          case 424: {
+          case 304: {
             MarginTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 437: {
+          case 317: {
             MarginTop = input.ReadFloat();
             break;
           }
-          case 440: {
+          case 320: {
             MarginRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 453: {
+          case 333: {
             MarginRight = input.ReadFloat();
             break;
           }
-          case 456: {
+          case 336: {
             MarginBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 469: {
+          case 349: {
             MarginBottom = input.ReadFloat();
             break;
           }
-          case 488: {
+          case 352: {
             PaddingLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 501: {
+          case 365: {
             PaddingLeft = input.ReadFloat();
             break;
           }
-          case 504: {
+          case 368: {
             PaddingTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 517: {
+          case 381: {
             PaddingTop = input.ReadFloat();
             break;
           }
-          case 520: {
+          case 384: {
             PaddingRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 533: {
+          case 397: {
             PaddingRight = input.ReadFloat();
             break;
           }
-          case 536: {
+          case 400: {
             PaddingBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 549: {
+          case 413: {
             PaddingBottom = input.ReadFloat();
-            break;
-          }
-          case 552: {
-            Parent = input.ReadInt32();
-            break;
-          }
-          case 560: {
-            RightOf = input.ReadInt32();
             break;
           }
         }
@@ -2804,47 +2148,51 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            PositionType = (global::DCL.ECSComponents.YGPositionType) input.ReadEnum();
+            Parent = input.ReadInt32();
             break;
           }
           case 16: {
-            AlignContent = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            RightOf = input.ReadInt32();
             break;
           }
           case 24: {
-            AlignItems = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            AlignContent = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 32: {
-            AlignSelf = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
+            AlignItems = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 40: {
-            FlexDirection = (global::DCL.ECSComponents.YGFlexDirection) input.ReadEnum();
-            break;
-          }
-          case 48: {
             FlexWrap = (global::DCL.ECSComponents.YGWrap) input.ReadEnum();
             break;
           }
+          case 53: {
+            FlexShrink = input.ReadFloat();
+            break;
+          }
           case 56: {
-            JustifyContent = (global::DCL.ECSComponents.YGJustify) input.ReadEnum();
+            PositionType = (global::DCL.ECSComponents.YGPositionType) input.ReadEnum();
             break;
           }
           case 64: {
-            Overflow = (global::DCL.ECSComponents.YGOverflow) input.ReadEnum();
+            AlignSelf = (global::DCL.ECSComponents.YGAlign) input.ReadEnum();
             break;
           }
           case 72: {
-            Display = (global::DCL.ECSComponents.YGDisplay) input.ReadEnum();
+            FlexDirection = (global::DCL.ECSComponents.YGFlexDirection) input.ReadEnum();
             break;
           }
           case 80: {
-            Direction = (global::DCL.ECSComponents.YGDirection) input.ReadEnum();
+            JustifyContent = (global::DCL.ECSComponents.YGJustify) input.ReadEnum();
             break;
           }
-          case 93: {
-            Flex = input.ReadFloat();
+          case 88: {
+            Overflow = (global::DCL.ECSComponents.YGOverflow) input.ReadEnum();
+            break;
+          }
+          case 96: {
+            Display = (global::DCL.ECSComponents.YGDisplay) input.ReadEnum();
             break;
           }
           case 104: {
@@ -2859,160 +2207,148 @@ namespace DCL.ECSComponents {
             FlexGrow = input.ReadFloat();
             break;
           }
-          case 133: {
-            FlexShrink = input.ReadFloat();
-            break;
-          }
-          case 136: {
+          case 128: {
             WidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 149: {
+          case 141: {
             Width = input.ReadFloat();
             break;
           }
-          case 152: {
+          case 144: {
             HeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 165: {
+          case 157: {
             Height = input.ReadFloat();
             break;
           }
-          case 168: {
+          case 160: {
             MinWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 181: {
+          case 173: {
             MinWidth = input.ReadFloat();
             break;
           }
-          case 184: {
+          case 176: {
             MinHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 197: {
+          case 189: {
             MinHeight = input.ReadFloat();
             break;
           }
-          case 248: {
+          case 192: {
             MaxWidthUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 261: {
+          case 205: {
             MaxWidth = input.ReadFloat();
             break;
           }
-          case 264: {
+          case 208: {
             MaxHeightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 277: {
+          case 221: {
             MaxHeight = input.ReadFloat();
             break;
           }
-          case 328: {
+          case 224: {
             PositionLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 341: {
+          case 237: {
             PositionLeft = input.ReadFloat();
             break;
           }
-          case 344: {
+          case 240: {
             PositionTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 357: {
+          case 253: {
             PositionTop = input.ReadFloat();
             break;
           }
-          case 360: {
+          case 256: {
             PositionRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 373: {
+          case 269: {
             PositionRight = input.ReadFloat();
             break;
           }
-          case 376: {
+          case 272: {
             PositionBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 389: {
+          case 285: {
             PositionBottom = input.ReadFloat();
             break;
           }
-          case 408: {
+          case 288: {
             MarginLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 421: {
+          case 301: {
             MarginLeft = input.ReadFloat();
             break;
           }
-          case 424: {
+          case 304: {
             MarginTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 437: {
+          case 317: {
             MarginTop = input.ReadFloat();
             break;
           }
-          case 440: {
+          case 320: {
             MarginRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 453: {
+          case 333: {
             MarginRight = input.ReadFloat();
             break;
           }
-          case 456: {
+          case 336: {
             MarginBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 469: {
+          case 349: {
             MarginBottom = input.ReadFloat();
             break;
           }
-          case 488: {
+          case 352: {
             PaddingLeftUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 501: {
+          case 365: {
             PaddingLeft = input.ReadFloat();
             break;
           }
-          case 504: {
+          case 368: {
             PaddingTopUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 517: {
+          case 381: {
             PaddingTop = input.ReadFloat();
             break;
           }
-          case 520: {
+          case 384: {
             PaddingRightUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 533: {
+          case 397: {
             PaddingRight = input.ReadFloat();
             break;
           }
-          case 536: {
+          case 400: {
             PaddingBottomUnit = (global::DCL.ECSComponents.YGUnit) input.ReadEnum();
             break;
           }
-          case 549: {
+          case 413: {
             PaddingBottom = input.ReadFloat();
-            break;
-          }
-          case 552: {
-            Parent = input.ReadInt32();
-            break;
-          }
-          case 560: {
-            RightOf = input.ReadInt32();
             break;
           }
         }
