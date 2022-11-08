@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 1}
+  horizonPlaneSmoothRange: {x: 0, y: 0.15942031}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
@@ -734,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Moon
