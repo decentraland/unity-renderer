@@ -352,8 +352,8 @@ namespace DCL
             }
             catch (Exception e)
             {
-                throw new Exception(
-                    $"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)} {e}");
+                Debug.LogException(e);
+                Debug.LogError($"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)}");
             }
 
             if (delayedComponent != null)

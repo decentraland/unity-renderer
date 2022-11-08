@@ -41,8 +41,6 @@ public class PrivateChatWindowControllerShould
         GivenFriend(BLOCKED_FRIEND_ID, "blockedFriendName", PresenceStatus.OFFLINE);
 
         chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PrivateChatWindowController(
@@ -234,8 +232,6 @@ public class PrivateChatWindowControllerShould
     public void RequestOldConversationsCorrectly()
     {
         WhenControllerInitializes(FRIEND_ID);
-        controller.ConversationUserId = FRIEND_ID;
-        GivenPrivateMessages(FRIEND_ID, 3);
 
         controller.RequestOldConversations();
 
@@ -243,7 +239,7 @@ public class PrivateChatWindowControllerShould
         chatController.Received(1).GetPrivateMessages(
             FRIEND_ID,
             PrivateChatWindowController.USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
-            Arg.Any<string>());
+            null);
     }
 
     private void WhenControllerInitializes(string friendId)
@@ -283,16 +279,5 @@ public class PrivateChatWindowControllerShould
             presence = presence,
             friendshipStatus = FriendshipStatus.FRIEND,
         });
-    }
-    
-    private void GivenPrivateMessages(string friendId, int count)
-    {
-        var messages = new List<ChatMessage>();
-        for (var i = 0; i < count; i++)
-            messages.Add(new ChatMessage(Guid.NewGuid().ToString(), ChatMessage.Type.PRIVATE, friendId, $"message{i}")
-                {recipient = friendId});
-        
-        chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
-        chatController.GetPrivateAllocatedEntriesByUser(friendId).ReturnsForAnyArgs(messages);
     }
 }
