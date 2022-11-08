@@ -40,16 +40,14 @@ namespace DCL.Chat.HUD
         public override event Action OnCancelHover;
         public override event Action OnCancelGotoHover;
 
-        public override void Populate(ChatEntryModel chatEntryModel)
-        {
-            chatEntryModel.bodyText = ReplaceNonSupportedCharacteres(body.font, chatEntryModel.bodyText, '?');
+        public override void Populate(ChatEntryModel chatEntryModel) =>
             PopulateTask(chatEntryModel, populationTaskCancellationTokenSource.Token).Forget();
-        }
 
         private async UniTask PopulateTask(ChatEntryModel chatEntryModel, CancellationToken cancellationToken)
         {
             model = chatEntryModel;
 
+            chatEntryModel.bodyText = ReplaceNonSupportedCharacteres(body.font, chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
             var userString = GetUserString(chatEntryModel);
 
