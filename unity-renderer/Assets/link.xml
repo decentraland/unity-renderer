@@ -1,0 +1,3 @@
+<linker>
+    <assembly fullname="Google.Protobuf" preserve="all"/>
+</linker>
