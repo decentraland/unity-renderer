@@ -167,16 +167,17 @@ public class AudioEvent : ScriptableObject
     // FD:: Look at this method
     public void SetPitch(float pitch) 
     { 
-        DebugFdTest ("SetPitch value: " + pitch);
+        DebugFdTest (pitch);
         this.pitch = pitch; 
     }
 
     // FD:: remove this method
-    private void DebugFdTest (string stringToDebug)
+    private void DebugFdTest (float floatToDebug)
     {
         var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
         UnityEngine.Debug.unityLogger.logEnabled = true;
-        Debug.Log ("FD:: AudioEvent-" + stringToDebug);
+        Debug.Assert (!float.IsNaN(floatToDebug) && !float.IsInfinity(floatToDebug), "FD:: AudioEvent-SetPitch value: IS NAN OR INFINITE!");
+        Debug.Log ("FD:: AudioEvent-SetPitch value: " + floatToDebug);
         UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
     }
 
