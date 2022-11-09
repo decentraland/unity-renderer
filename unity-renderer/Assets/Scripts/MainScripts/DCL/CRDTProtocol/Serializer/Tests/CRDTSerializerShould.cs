@@ -1,6 +1,5 @@
 using System.IO;
 using DCL.CRDT;
-using KernelCommunication;
 using NUnit.Framework;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
@@ -29,7 +28,8 @@ namespace Tests
             var bytes = memoryStream.ToArray();
 
             CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
-            CRDTMessage result = CRDTDeserializer.Deserialize(new ByteArrayReader(bytes), crdtMessageType);
+            int memoryPosition = 0;
+            CRDTMessage result = CRDTDeserializer.DeserializeSingle(bytes, crdtMessageType, ref memoryPosition);
             object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
             Assert.AreEqual(message.key1, result.key1);
