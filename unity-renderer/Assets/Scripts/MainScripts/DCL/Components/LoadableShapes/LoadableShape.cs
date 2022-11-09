@@ -176,7 +176,7 @@ namespace DCL.Components
                 string errorMessage = $"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings";
 
 #if UNITY_EDITOR
-                Debug.LogWarning(errorMessage");
+                Debug.LogWarning(errorMessage);
 #endif
                 failed = true;
                 OnLoadFailed(null, new Exception(errorMessage));
