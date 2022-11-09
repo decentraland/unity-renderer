@@ -68,7 +68,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     {
         var chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
@@ -116,7 +115,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
-        chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),
@@ -173,8 +171,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.friendsButton.toggleButton.onClick.Invoke();
         view.chatButton.toggleButton.onClick.Invoke();
 
-        Assert.IsTrue(controller.publicChatWindow.View.IsActive);
-        Assert.IsFalse(controller.worldChatWindowHud.View.IsActive);
+        Assert.IsTrue(controller.worldChatWindowHud.View.IsActive);
+        Assert.IsFalse(controller.publicChatWindow.View.IsActive);
         Assert.IsFalse(controller.friendsHud.View.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
     }

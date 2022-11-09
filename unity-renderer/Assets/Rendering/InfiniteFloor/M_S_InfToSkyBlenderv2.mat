@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_S_InfToSkyBlenderv2
+  m_Shader: {fileID: 4800000, guid: 693d7a117c66e214fbd2b8c694d3a1d0, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_27d87839ae5d43bbb9fd90d603de34c5: 0
+    - Vector1_41989c0b96844a94bd216bd7218fc859: 0.939
+    - _Blender: 0.522
+    - _Fade: 0.684
+    - _MiddlePoint: 42
+    - _colorArea: 0.183
+    - _fade: 0.175
+    - _horizonStartPoint: 0.657
+    - _opacity: 0
+    m_Colors:
+    - _ColorFloor: {r: 0.15036489, g: 0.2924528, b: 0.18413468, a: 1}
+    - _ColorInfFloor: {r: 0.069785744, g: 1, b: 0, a: 1}
+    - _ColorSky: {r: 0.078431375, g: 0.11764707, b: 0.14901961, a: 1}
+    - _colorFloor: {r: 0.0505566, g: 0.19811317, b: 0.0439213, a: 1}
+    - _colorSky: {r: 0.30588233, g: 0.24313724, b: 0.26666665, a: 1}
+  m_BuildTextureStacks: []
