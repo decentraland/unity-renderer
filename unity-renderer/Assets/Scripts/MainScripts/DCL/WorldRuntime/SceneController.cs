@@ -335,15 +335,6 @@ namespace DCL
                             break;
                         }
 
-                    case MessagingTypes.CRDT_MESSAGE:
-                        {
-                            if (msgPayload is CRDTMessage crdtMessage)
-                            {
-                                scene.crdtExecutor?.Execute(crdtMessage);
-                            }
-                            break;
-                        }
-
                     default:
                         Debug.LogError($"Unknown method {method}");
 
@@ -352,8 +343,8 @@ namespace DCL
             }
             catch (Exception e)
             {
-                throw new Exception(
-                    $"Scene message error. scene: {scene.sceneData.sceneNumber} method: {method} payload: {JsonUtility.ToJson(msgPayload)} {e}");
+                Debug.LogException(e);
+                Debug.LogError($"Scene message error. scene: {scene.sceneData.sceneNumber} method: {method} payload: {JsonUtility.ToJson(msgPayload)}");
             }
 
             if (delayedComponent != null)
@@ -419,16 +410,13 @@ namespace DCL
             while (true)
             {
                 maxTimeForDecode = CommonScriptableObjects.rendererState.Get() ? MAX_TIME_FOR_DECODE : float.MaxValue;
-
-                if (chunksToDecode.Count > 0)
+                
+                if (chunksToDecode.TryDequeue(out string chunk))
                 {
-                    if (chunksToDecode.TryDequeue(out string chunk))
-                    {
-                        EnqueueChunk(chunk);
+                    EnqueueChunk(chunk);
 
-                        if (Time.realtimeSinceStartup - start < maxTimeForDecode)
-                            continue;
-                    }
+                    if (Time.realtimeSinceStartup - start < maxTimeForDecode)
+                        continue;
                 }
 
                 yield return null;

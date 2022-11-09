@@ -1,4 +1,4 @@
-using DCL.Controllers;
+using System.Collections.Generic;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -14,18 +14,20 @@ namespace DCL.ECS7
         private readonly ECSComponentsFactory componentsFactory;
         private readonly ECSComponentsManager componentsManager;
         private readonly InternalECSComponents internalEcsComponents;
-
-        private readonly ISceneController sceneController;
+        private readonly CrdtExecutorsManager crdtExecutorsManager;
 
         public ECS7Plugin()
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
 
-            sceneController = Environment.i.world.sceneController;
+            ISceneController sceneController = Environment.i.world.sceneController;
+            Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
+                Environment.i.world.state, DataStore.i.rpcContext.context.crdtContext);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
@@ -38,8 +40,6 @@ namespace DCL.ECS7
                 (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
-
-            sceneController.OnNewSceneAdded += OnSceneAdded;
         }
 
         public void Dispose()
@@ -49,13 +49,7 @@ namespace DCL.ECS7
             componentWriter.Dispose();
             systemsController.Dispose();
             internalEcsComponents.Dispose();
-
-            sceneController.OnNewSceneAdded -= OnSceneAdded;
-        }
-
-        private void OnSceneAdded(IParcelScene scene)
-        {
-            scene.crdtExecutor = new CRDTExecutor(scene, componentsManager);
+            crdtExecutorsManager.Dispose();
         }
     }
 }

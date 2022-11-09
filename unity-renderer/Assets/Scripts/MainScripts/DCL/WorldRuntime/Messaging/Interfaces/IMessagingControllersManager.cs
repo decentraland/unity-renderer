@@ -20,5 +20,6 @@ namespace DCL
         void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage);
         void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage);
         void SetSceneReady(int sceneNumber);
+        bool HasScenePendingMessages(int sceneNumber);
     }
 }
