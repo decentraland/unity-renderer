@@ -1,7 +1,7 @@
 using DCL;
 using UnityEngine;
 
-public class FloorController : MonoBehaviour
+public class InfiniteFloorController : MonoBehaviour
 {
     private static readonly int MAP_PROPERTY = Shader.PropertyToID("_Map");
     private static readonly int ESTATE_ID_PROPERTY = Shader.PropertyToID("_EstateIDMap");
