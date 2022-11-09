@@ -200,7 +200,7 @@ public class WorldChatWindowController : IHUD
 
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                if (!areJoinedChannelsRequestedByFirstTime)
+                if (!areJoinedChannelsRequestedByFirstTime && chatController.IsInitialized)
                     RequestJoinedChannels();
                 else
                     SetAutomaticChannelsInfoUpdatingActive(true);

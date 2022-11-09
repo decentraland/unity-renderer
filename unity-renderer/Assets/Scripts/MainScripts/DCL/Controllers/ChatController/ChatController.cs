@@ -47,6 +47,8 @@ namespace DCL.Chat
                                               ? unseenMessagesByChannel[NEARBY_CHANNEL_ID]
                                               : 0);
 
+        public bool IsInitialized => chatAlreadyInitialized;
+
         public void Awake()
         {
             i = this;
