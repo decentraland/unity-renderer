@@ -297,7 +297,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -402,7 +402,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // to force the video player to update its volume
             CommonScriptableObjects.playerCoords.Set(new Vector2Int(666, 666));
@@ -420,7 +420,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;

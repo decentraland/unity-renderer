@@ -173,7 +173,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -233,7 +233,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // Check the volume
             Assert.AreEqual(unityAudioSource.volume, 0f);
@@ -246,7 +246,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -286,7 +286,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneNumber.Set(1);
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // Check the volume
             Assert.AreNotEqual(unityAudioSource.volume, 0);
