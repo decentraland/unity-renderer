@@ -42,7 +42,6 @@ public class WorldChatWindowController : IHUD
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
-    private bool areJoinedChannelsRequestedByFirstTime;
     private bool areUnseenMessajesRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
@@ -200,10 +199,11 @@ public class WorldChatWindowController : IHUD
 
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                if (!areJoinedChannelsRequestedByFirstTime && chatController.IsInitialized)
+                if (chatController.IsInitialized)
+                {
                     RequestJoinedChannels();
-                else
                     SetAutomaticChannelsInfoUpdatingActive(true);
+                }
 
                 if (!areUnseenMessajesRequestedByFirstTime)
                     RequestUnreadChannelsMessages();
@@ -253,8 +253,6 @@ public class WorldChatWindowController : IHUD
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
 
-        areJoinedChannelsRequestedByFirstTime = true;
-
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken = new CancellationTokenSource();
         WaitThenHideChannelsLoading(hideChannelsLoadingCancellationToken.Token).Forget();
@@ -269,7 +267,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChatInitialization()
     {
-        if (areJoinedChannelsRequestedByFirstTime) return;
         // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
         RequestJoinedChannels();
         ConnectToAutoJoinChannels();
