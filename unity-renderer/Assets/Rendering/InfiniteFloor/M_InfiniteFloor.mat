@@ -86,7 +86,7 @@ Material:
     - _FogBalancer: 0
     - _FogBrightnessFactor: 0.5
     - _FogColorBend: 1
-    - _FogFade: 600
+    - _FogFade: 750
     - _FogIntensity: 0.316
     - _FogTemperature: 0
     - _GrassGridFade: 45000
