@@ -135,8 +135,7 @@ namespace DCL
 
             foreach (var scene in scenesToRemove)
             {
-                // TODO: '!Environment.i.world.state.ContainsScene(scene.sceneData.sceneNumber)' check may not be needed
-                if (scene != null && scene.gameObject && !Environment.i.world.state.ContainsScene(scene.sceneData.sceneNumber))
+                if (scene != null && scene.gameObject)
                     Object.Destroy(scene.gameObject);
 
                 if (!immediate && DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)

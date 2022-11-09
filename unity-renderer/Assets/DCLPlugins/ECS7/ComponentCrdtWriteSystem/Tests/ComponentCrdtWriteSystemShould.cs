@@ -19,7 +19,6 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            // TODO: how to specify the SCENE_NUMBER as the scene number in scene's substitute sceneData.sceneNumber ???
             IParcelScene scene = Substitute.For<IParcelScene>();
             WorldState worldState = new WorldState();
 
@@ -28,6 +27,7 @@ namespace Tests
 
             scene.crdtExecutor.Returns(crdtExecutor);
             scene.GetParcels().Returns(new HashSet<Vector2Int>());
+            scene.sceneData.sceneNumber = SCENE_NUMBER;
             worldState.AddScene(scene);
 
             crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
