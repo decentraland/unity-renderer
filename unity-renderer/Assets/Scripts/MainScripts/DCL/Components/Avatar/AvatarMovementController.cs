@@ -52,7 +52,13 @@ namespace DCL
             set
             {
                 currentWorldPosition = value;
-                AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
+                Vector3 newPosition = PositionUtils.WorldToUnityPosition(currentWorldPosition);
+                if (float.IsNaN(newPosition.x) || float.IsInfinity(newPosition.x) || 
+                    float.IsNaN(newPosition.z) || float.IsInfinity(newPosition.z) ||
+                    float.IsNaN(newPosition.y) || float.IsInfinity(newPosition.y))
+                    return;
+
+                AvatarTransform.position = newPosition;
             }
         }
 

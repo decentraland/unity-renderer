@@ -15,8 +15,9 @@ var WebVideoPlayer = {
 
         const videoUrl = Pointer_stringify(url);
         const vid = document.createElement("video");
-        vid.autoplay = false;
 
+        vid.autoplay = false;
+        
         var textureObject = GLctx.createTexture();
         const texId = GL.getNewId(textureObject);
         textureObject.name = texId
@@ -26,10 +27,24 @@ var WebVideoPlayer = {
             video: vid,
             state: videoState.NONE,
             error: "",
-            textureId: texId
+            textureId: texId,
+            newFrame: false,
+            useUpdateOptimization: true
         };
-
+        
         videos[Pointer_stringify(videoId)] = videoData;
+        
+        // this function is not supported by Firefox
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {     
+            const onNewFrame = function (now, metadata) {
+                videoData.newFrame = true;
+                vid.requestVideoFrameCallback(onNewFrame);
+            };
+                    
+            vid.requestVideoFrameCallback(onNewFrame);
+        } else {
+            videoData.useUpdateOptimization = false; // we ignore optimization if not supported
+        }
 
         if (useHls) {
             var hlsConfig = {
@@ -131,24 +146,26 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerTextureUpdate: function (videoId) {
-        const id = Pointer_stringify(videoId);
-
-        if (videos[id].state !== 4) return; //PLAYING
-
-        const textureId = videos[id].textureId;
-
-        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
-
+        const videoData = videos[Pointer_stringify(videoId)];
+        
+        if (videoData.state !== 4) return; //PLAYING
+        
+        if (videoData.useUpdateOptimization && !videoData.newFrame) 
+            return; // No new frame to update
+        else
+            videoData.newFrame = false;
+        
+        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
             GLctx.SRGB8_ALPHA8,
-            videos[id].video.videoWidth,
-            videos[id].video.videoHeight,
+            videoData.video.videoWidth,
+            videoData.video.videoHeight,
             0,
             GLctx.RGBA,
             GLctx.UNSIGNED_BYTE,
-            videos[id].video
+            videoData.video
         );
     },
 

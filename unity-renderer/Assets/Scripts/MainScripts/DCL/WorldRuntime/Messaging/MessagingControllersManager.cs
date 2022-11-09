@@ -267,6 +267,16 @@ namespace DCL
             }
         }
 
+        public bool HasScenePendingMessages(string sceneId)
+        {
+            if (!messagingControllers.TryGetValue(sceneId, out MessagingController newGlobalSceneController))
+                return false;
+
+            return newGlobalSceneController.initBus.hasPendingMessages
+                   || newGlobalSceneController.systemBus.hasPendingMessages
+                   || newGlobalSceneController.uiBus.hasPendingMessages;
+        }
+
         IEnumerator ProcessMessages()
         {
             while (true)
