@@ -1330,7 +1330,7 @@ namespace DCL.Helpers
 
             if (data.sceneNumber <= 0)
             {
-                data.sceneNumber = 666;
+                data.sceneNumber = 1;
             }
 
             if (Environment.i.world.state.ContainsScene(data.sceneNumber))

@@ -34,7 +34,7 @@ namespace DCLPlugins.UIRefresherPlugin
             var currentSceneNumber = sceneNumber.Get();
 
             if (currentSceneNumber <= 0)
-                currentSceneNumber = 666;
+                currentSceneNumber = 9999999;
 
             var dirtyShapesByScene = dirtyShapes.Get();
             var startTime = Time.realtimeSinceStartup;

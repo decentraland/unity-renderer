@@ -55,11 +55,10 @@ public class SceneTests : IntegrationTestSuite_Legacy
         TestUtils.SetCharacterPosition(Vector3.zero);
 
         string sceneGameObjectNamePrefix = "Global Scene - ";
-        string sceneId = "Test Global Scene";
         int sceneNumber = 56;
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { id = sceneId, sceneNumber = sceneNumber }));
-
-        GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber }));
+        
+        GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneNumber);
 
         GlobalScene globalScene = Environment.i.world.state.GetScene(sceneNumber) as GlobalScene;
 
@@ -81,7 +80,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         yield return null;
 
-        sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
+        sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneNumber);
 
         Assert.IsTrue(sceneGo != null, "scene game object not found! GlobalScenes must not be unloaded by distance!");
         Assert.IsTrue(Environment.i.world.state.GetScene(sceneNumber) != null,
@@ -91,10 +90,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator UnloadGlobalScene()
     {
-        string sceneId = "Test Global Scene";
         int sceneNumber = 56;
 
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId, sceneNumber = sceneNumber}));
+        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber }));
 
         Assert.IsTrue(Environment.i.world.state.ContainsScene(sceneNumber), "Scene not in loaded dictionary!");
 
@@ -260,14 +258,14 @@ public class SceneTests : IntegrationTestSuite_Legacy
     {
         Assert.AreEqual(1, Environment.i.world.state.GetLoadedScenes().Count());
 
-        var jsonMessageToLoad = "{\"id\":\"xxx\",\"sceneNumber\":666,\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
+        var jsonMessageToLoad = "{\"id\":\"xxx\",\"sceneNumber\":777,\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
         sceneController.LoadParcelScenes(jsonMessageToLoad);
 
         yield return new WaitForAllMessagesProcessed();
 
         Assert.AreEqual(2, Environment.i.world.state.GetLoadedScenes().Count());
 
-        var theScene = Environment.i.world.state.GetScene(666);
+        var theScene = Environment.i.world.state.GetScene(777);
         yield return null;
 
         Assert.AreEqual(3, theScene.sceneData.parcels.Length);
@@ -287,14 +285,14 @@ public class SceneTests : IntegrationTestSuite_Legacy
     {
         Assert.AreEqual(1, Environment.i.world.state.GetLoadedScenes().Count());
 
-        var jsonMessageToLoad = "{\"id\":\"xxx\",\"sceneNumber\":666,\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
+        var jsonMessageToLoad = "{\"id\":\"xxx\",\"sceneNumber\":777,\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
         sceneController.LoadParcelScenes(jsonMessageToLoad);
 
         yield return new WaitForAllMessagesProcessed();
 
         Assert.AreEqual(2, Environment.i.world.state.GetLoadedScenes().Count());
 
-        var theScene = Environment.i.world.state.GetScene(666) as ParcelScene;
+        var theScene = Environment.i.world.state.GetScene(777) as ParcelScene;
         yield return null;
 
         Assert.AreEqual(3, theScene.sceneData.parcels.Length);
