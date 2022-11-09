@@ -55,6 +55,13 @@ namespace DCLPlugins.RealmsPlugin
                 serviceLocator.Get<IWorldBlockersController>().Received().SetEnabled(isGreenBlockerEnabled[i]);
             }
         }
+        
+        [TestCaseSource(nameof(GreenBlockerCases))]
+        public void MinimapModifiedOnRealmChange(string realmName, bool shouldMinimapBeVisible)
+        {
+            Assert.AreEqual(DataStore.i.HUDs.minimapVisible.Get(), shouldMinimapBeVisible);
+            Assert.AreEqual(DataStore.i.HUDs.jumpHomeButtonVisible.Get(), !shouldMinimapBeVisible);
+        }
 
         private void SetRealm(string realmName)
         {
