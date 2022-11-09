@@ -882,6 +882,7 @@ namespace DCL.Interface
                 if (OnMessage != null)
                 {
                     ProcessQueuedMessages();
+                    // comment
                 }
             }
             get => OnMessage;
