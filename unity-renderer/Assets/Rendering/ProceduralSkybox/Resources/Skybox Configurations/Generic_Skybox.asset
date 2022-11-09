@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0.6105435}
+  horizonPlaneSmoothRange: {x: 0.3405797, y: 0.9076449}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
