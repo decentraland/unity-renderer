@@ -195,8 +195,8 @@ namespace DCL
             {
                 globalSceneNumbers.Add(sceneNumber);
                 globalScenes.Add(newScene);
-                
-                if(newScene.isPortableExperience)
+
+                if (newScene.isPortableExperience)
                     loadedPortableExperienceScenes.Add(newScene.sceneData.id, newScene);
             }
             
@@ -233,18 +233,6 @@ namespace DCL
 
                 if (!string.IsNullOrEmpty(loadedScene.sceneData.id) && loadedPortableExperienceScenes.ContainsKey(loadedScene.sceneData.id))
                     loadedPortableExperienceScenes.Remove(loadedScene.sceneData.id);
-            }
-        }
-        
-        // TODO: call this somewhere ???
-        public void RemovePortableExperienceScene(string sceneId)
-        {
-            IParcelScene scene;
-            if (loadedPortableExperienceScenes.TryGetValue(sceneId, out scene))
-            {
-                globalScenes.Remove(scene);
-                loadedScenes.Remove(scene.sceneData.sceneNumber);
-                globalSceneNumbers.Remove(scene.sceneData.sceneNumber);
             }
         }
 

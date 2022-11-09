@@ -795,10 +795,7 @@ namespace DCL
                 return;
             }
 
-            // int newGlobalSceneNumber = -1 - globalScene.sceneNumber;
             int newGlobalSceneNumber = globalScene.sceneNumber;
-            // Debug.Log($"CreateGlobalScene - sceneNumber:{newGlobalSceneNumber}");
-
             IWorldState worldState = Environment.i.world.state;
 
             if (worldState.ContainsScene(newGlobalSceneNumber))
