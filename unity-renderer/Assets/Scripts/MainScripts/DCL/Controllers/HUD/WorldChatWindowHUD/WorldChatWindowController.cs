@@ -249,8 +249,6 @@ public class WorldChatWindowController : IHUD
     {
         if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
         
-        Debug.Log("WorldChatWindowController.RequestJoinedChannels.Pre");
-
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
@@ -258,8 +256,6 @@ public class WorldChatWindowController : IHUD
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken = new CancellationTokenSource();
         WaitThenHideChannelsLoading(hideChannelsLoadingCancellationToken.Token).Forget();
-        
-        Debug.Log("WorldChatWindowController.RequestJoinedChannels.Post");
     }
 
     private async UniTask WaitThenHideChannelsLoading(CancellationToken cancellationToken)
@@ -500,8 +496,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChannelUpdated(Channel channel)
     {
-        Debug.Log("WorldChatWindowController.HandleChannelUpdated.Pre");
-        
         if (!channel.Joined)
         {
             view.RemovePublicChat(channel.ChannelId);
@@ -524,8 +518,6 @@ public class WorldChatWindowController : IHUD
         // we clear the unseen messages to avoid showing many of them while the user was offline
         // TODO: we should consider avoid clearing when the channel is private in the future
         ClearOfflineUnseenMessages(channelId);
-        
-        Debug.Log("WorldChatWindowController.HandleChannelUpdated.Post");
     }
 
     private void ClearOfflineUnseenMessages(string channelId)
