@@ -9,9 +9,10 @@ public class PublicChatModel : BaseComponentModel
     public bool joined;
     public int memberCount;
     public bool muted;
+    public bool showOnlyOnlineMembers;
 
     public PublicChatModel(string channelId, string name, string description, bool joined,
-        int memberCount, bool muted)
+        int memberCount, bool muted, bool showOnlyOnlineMembers)
     {
         this.channelId = channelId;
         this.name = name;
@@ -19,6 +20,7 @@ public class PublicChatModel : BaseComponentModel
         this.joined = joined;
         this.memberCount = memberCount;
         this.muted = muted;
+        this.showOnlyOnlineMembers = showOnlyOnlineMembers;
     }
 
     public void CopyFrom(PublicChatModel model)
