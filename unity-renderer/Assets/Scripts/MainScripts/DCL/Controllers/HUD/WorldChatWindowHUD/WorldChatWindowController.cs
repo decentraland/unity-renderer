@@ -47,6 +47,7 @@ public class WorldChatWindowController : IHUD
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
+    private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
     public IWorldChatWindowView View => view;
 
@@ -104,7 +105,8 @@ public class WorldChatWindowController : IHUD
             channel.Description,
             channel.Joined,
             channel.MemberCount,
-            false);
+            false,
+            showOnlyOnlineMembersOnPublicChannels);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
 
         if (!friendsController.IsInitialized)
@@ -198,7 +200,7 @@ public class WorldChatWindowController : IHUD
 
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                if (!areJoinedChannelsRequestedByFirstTime)
+                if (!areJoinedChannelsRequestedByFirstTime && chatController.IsInitialized)
                     RequestJoinedChannels();
                 else
                     SetAutomaticChannelsInfoUpdatingActive(true);
@@ -506,7 +508,7 @@ public class WorldChatWindowController : IHUD
 
         var channelId = channel.ChannelId;
         var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.Joined,
-            channel.MemberCount, channel.Muted);
+            channel.MemberCount, channel.Muted, showOnlyOnlineMembersOnPublicChannels);
 
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);
