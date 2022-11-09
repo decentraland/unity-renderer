@@ -164,22 +164,7 @@ public class AudioEvent : ScriptableObject
 
     public void SetIndex(int index) { clipIndex = index; }
 
-    // FD:: Look at this method
-    public void SetPitch(float pitch) 
-    { 
-        DebugFdTest (pitch);
-        this.pitch = pitch; 
-    }
-
-    // FD:: remove this method
-    private void DebugFdTest (float floatToDebug)
-    {
-        var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
-        UnityEngine.Debug.unityLogger.logEnabled = true;
-        Debug.Assert (!float.IsNaN(floatToDebug) && !float.IsInfinity(floatToDebug), "FD:: AudioEvent-SetPitch value: IS NAN OR INFINITE!");
-        Debug.Log ("FD:: AudioEvent-SetPitch value: " + floatToDebug);
-        UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
-    }
+    public void SetPitch(float pitch) => this.pitch = pitch; 
 
     /// <summary>Use StartCoroutine() on this one.</summary>
     public IEnumerator FadeIn(float fadeSeconds)
