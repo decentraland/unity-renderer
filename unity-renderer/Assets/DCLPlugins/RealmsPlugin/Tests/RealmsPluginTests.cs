@@ -54,7 +54,7 @@ namespace DCLPlugins.RealmsPlugin
             for (int i = 0; i < realmNames.Length; i++)
             {
                 SetRealm(realmNames[i]);
-                serviceLocator.Get<IWorldBlockersController>().Received(1).SetEnabled(isGreenBlockerEnabled[i]);
+                serviceLocator.Get<IWorldBlockersController>().Received().SetEnabled(isGreenBlockerEnabled[i]);
             }
         }
         
@@ -75,7 +75,10 @@ namespace DCLPlugins.RealmsPlugin
                 Configurations = new AboutResponse.Types.AboutConfiguration()
                 {
                     RealmName = realmName,
-                    Minimap = new AboutResponse.Types.MinimapConfiguration()
+                    Minimap = new AboutResponse.Types.MinimapConfiguration
+                    {
+                        Enabled = realmName.Equals(catalystRealmName)
+                    }
                 }
             });
         }
