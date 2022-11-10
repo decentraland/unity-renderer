@@ -17,7 +17,7 @@ namespace DCLPlugins.RealmsPlugin
 
         public RealmsPlugin()
         {
-            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier(), new MinimapModifier() };
+            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier(), new RealmsMinimapModifier() };
             
             realmAboutConfiguration.OnChange += RealmChanged;
             realmsList.OnSet += RealmListSet;

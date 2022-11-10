@@ -16,6 +16,7 @@ namespace DCLPlugins.RealmsPlugin
         private const string worldRealmName = "WorldRealmName";
         private IRealmsModifier genericModifier;
         private RealmsBlockerModifier realmsBlockerModiferSubstitute;
+        private RealmsMinimapModifier realmsMinimapModiferSubstitute;
         private ServiceLocator serviceLocator;
 
         [SetUp]
@@ -26,8 +27,9 @@ namespace DCLPlugins.RealmsPlugin
 
             realmsPlugin = new RealmsPlugin();
             realmsBlockerModiferSubstitute = Substitute.For<RealmsBlockerModifier>();
+            realmsMinimapModiferSubstitute = Substitute.For<RealmsMinimapModifier>();
             genericModifier = Substitute.For<IRealmsModifier>();
-            List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier };
+            List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier, realmsMinimapModiferSubstitute };
             realmsPlugin.realmsModifiers = substituteModifiers;
 
             SetCatalystRealmsInfo();
@@ -52,13 +54,14 @@ namespace DCLPlugins.RealmsPlugin
             for (int i = 0; i < realmNames.Length; i++)
             {
                 SetRealm(realmNames[i]);
-                serviceLocator.Get<IWorldBlockersController>().Received().SetEnabled(isGreenBlockerEnabled[i]);
+                serviceLocator.Get<IWorldBlockersController>().Received(1).SetEnabled(isGreenBlockerEnabled[i]);
             }
         }
         
-        [TestCaseSource(nameof(GreenBlockerCases))]
+        [TestCaseSource(nameof(GenericCases))]
         public void MinimapModifiedOnRealmChange(string realmName, bool shouldMinimapBeVisible)
         {
+            SetRealm(realmName);
             Assert.AreEqual(DataStore.i.HUDs.minimapVisible.Get(), shouldMinimapBeVisible);
             Assert.AreEqual(DataStore.i.HUDs.jumpHomeButtonVisible.Get(), !shouldMinimapBeVisible);
         }
@@ -71,7 +74,8 @@ namespace DCLPlugins.RealmsPlugin
                 Comms = new AboutResponse.Types.CommsInfo(),
                 Configurations = new AboutResponse.Types.AboutConfiguration()
                 {
-                    RealmName = realmName
+                    RealmName = realmName,
+                    Minimap = new AboutResponse.Types.MinimapConfiguration()
                 }
             });
         }
