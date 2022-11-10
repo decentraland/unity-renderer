@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -7,9 +8,11 @@ using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
+using NSubstitute;
 using NUnit.Framework;
 using RPC;
 using rpc_csharp;
@@ -42,7 +45,6 @@ namespace Tests
                     }
                 };
 
-                ECS7Plugin plugin = null;
                 RPCContext context = DataStore.i.rpcContext.context;
 
                 var (clientTransport, serverTransport) = MemoryTransport.Create();
@@ -58,8 +60,9 @@ namespace Tests
                 try
                 {
                     LoadEnvironment();
+                    ECSComponentsManager componentsManager = LoadEcs7Dependencies();
+
                     context.crdtContext.MessagingControllersManager = Environment.i.messaging.manager;
-                    plugin = new ECS7Plugin();
 
                     TestClient testClient = await TestClient.Create(clientTransport, CRDTServiceCodeGen.ServiceName);
                     await LoadScene(SCENE_ID).ToCoroutine();
@@ -84,7 +87,7 @@ namespace Tests
                     IDCLEntity entity = scene.GetEntityById(ENTITY_ID);
                     Assert.NotNull(entity);
 
-                    var component = plugin.componentsManager.GetComponent(COMPONENT_ID);
+                    var component = componentsManager.GetComponent(COMPONENT_ID);
                     Assert.IsTrue(component.HasComponent(scene, entity));
 
                     // Do hot reload
@@ -111,23 +114,35 @@ namespace Tests
                     entity = scene.GetEntityById(ENTITY_ID);
                     Assert.NotNull(entity);
 
-                    component = plugin.componentsManager.GetComponent(COMPONENT_ID);
+                    component = componentsManager.GetComponent(COMPONENT_ID);
                     Assert.IsTrue(component.HasComponent(scene, entity));
 
                 }
                 catch (Exception e)
                 {
-                    // Debug.LogError(e);
-                    // Assert.Fail(e.Message);
                     throw e;
                 }
                 finally
                 {
-                    plugin?.Dispose();
                     rpcServer.Dispose();
                     DataStore.Clear();
                 }
             });
+        }
+
+        private static ECSComponentsManager LoadEcs7Dependencies()
+        {
+            ISceneController sceneController = Environment.i.world.sceneController;
+            Dictionary<string, ICRDTExecutor> crdtExecutors = new Dictionary<string, ICRDTExecutor>(1);
+
+            ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+            ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
+                Environment.i.world.state, DataStore.i.rpcContext.context.crdtContext);
+            var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
+                Substitute.For<IECSComponentWriter>(),
+                Substitute.For<IInternalECSComponents>());
+            return componentsManager;
         }
 
         private static void LoadEnvironment()
