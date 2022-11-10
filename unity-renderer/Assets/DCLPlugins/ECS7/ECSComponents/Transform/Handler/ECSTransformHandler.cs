@@ -112,7 +112,7 @@ namespace DCL.ECSComponents
         {
             // If player is not at the scene that triggered this event
             // we'll ignore it
-            if (scene.sceneData.id != worldState.GetCurrentSceneId())
+            if (scene.sceneData.id != worldState.GetCurrentSceneId() && !scene.isPersistent)
             {
                 return false;
             }
@@ -126,7 +126,7 @@ namespace DCL.ECSComponents
             }
 
             playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
-                                       + localPosition);
+                                       + localPosition, true);
             return true;
         }
     }
