@@ -57,7 +57,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_5f6cb8244c63434ea64c6f88b0a7e7dd: 0.19
     - _AdvanceFogBalancer: 0
+    - _BlenderDisk: 0
     - _FloorColorBend: 1.5
     - _FogBalancer: 0
     - _FogBrightnessFactor: 0
@@ -88,6 +90,7 @@ Material:
     - _ThicknessOffset: 1500
     - _Zoom: 8192
     - _isAdvancedFogOn: 1
+    - _isBlenderDiskOn: 1
     m_Colors:
     - _ColorDistricts: {r: 0.16078365, g: 0.80784315, b: 0.8862745, a: 1}
     - _ColorEmpty: {r: 0.3803914, g: 0.6431373, b: 0.384313, a: 1}
