@@ -177,7 +177,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
@@ -237,7 +237,7 @@ Material:
     - _RenderDistance_4: 0
     - _dayTime: 0
     - _distance_0: 20
-    - _fadeTime_0: 0.22799988
+    - _fadeTime_0: 1
     - _fadeTime_1: 1
     - _fadeTime_2: 1
     - _fadeTime_3: 1
@@ -262,7 +262,7 @@ Material:
     - _isRadial_0: 0
     - _isRadial_1: 0
     - _isRadial_2: 0
-    - _layerType_0: 1
+    - _layerType_0: 0
     - _layerType_1: 2
     - _layerType_2: 4
     - _layerType_3: 4
@@ -322,11 +322,11 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 383.49805, g: 383.49805, b: 383.49805, a: 0.044656295}
-    - _color_1: {r: 116.50753, g: 25.667442, b: 0.5448648, a: 0.2009595}
-    - _color_2: {r: 0.8504798, g: 0.8179754, b: 0.95969456, a: 0.95113236}
-    - _color_3: {r: 0.94924235, g: 0.78724223, b: 0.73421884, a: 0.9812651}
-    - _color_4: {r: 0.3158388, g: 0.26555204, b: 0.25958598, a: 1}
+    - _color_0: {r: 1, g: 1, b: 1, a: 0}
+    - _color_1: {r: 12.714846, g: 10.048572, b: 7.9183354, a: 1}
+    - _color_2: {r: 0.9817739, g: 0.9817739, b: 0.9817739, a: 1}
+    - _color_3: {r: 0.9982166, g: 0.94461334, b: 0.92717564, a: 0.7842321}
+    - _color_4: {r: 0.5282791, g: 0.46552712, b: 0.45240664, a: 1}
     - _distortIntAndSize_0: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -337,13 +337,13 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.13317572, g: 0.17470324, b: 0.2739987, a: 1}
-    - _horizonColor: {r: 0.69952, g: 0.473287, b: 0.42717397, a: 1}
+    - _groundColor: {r: 0.14498441, g: 0.21561182, b: 0.29336432, a: 1}
+    - _horizonColor: {r: 0.9606308, g: 0.8079085, b: 0.60508245, a: 1}
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _horizonPlaneColor: {r: 0.32787848, g: 0.2668195, b: 0.22070646, a: 1}
+    - _horizonPlaneColor: {r: 0.41307914, g: 0.46782753, b: 0.31823838, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 13.379194, g: 314.99997, b: 270, a: 0}
-    - _lightTint: {r: 0.83780056, g: 0.6523957, b: 0.5207938, a: 1}
+    - _lightDirection: {r: 79.477684, g: 314.99994, b: 270, a: 0}
+    - _lightTint: {r: 0.8327868, g: 0.8214328, b: 0.68847966, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -354,14 +354,14 @@ Material:
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
-    - _rowAndCollumns_0: {r: 2.43, g: -8, b: 0, a: 0}
+    - _rowAndCollumns_0: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_1: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
-    - _skyColor: {r: 0.4367888, g: 0.34277382, b: 0.52163506, a: 1}
+    - _skyColor: {r: 0.40973765, g: 0.69555557, b: 0.9774528, a: 1}
     - _smoothRange: {r: 0.25362316, g: 0.84967387, b: 0, a: 0}
-    - _speedAndRotation_0: {r: 0.01, g: 0, b: 0, a: 0}
+    - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0.4, b: 0, a: 0}
     - _speedAndRotation_3: {r: 0, g: 1, b: 0, a: 0}
@@ -372,15 +372,15 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 27.3, g: 4, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 4.885333, g: 4.885333, b: 45, a: 164.53842}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_1: {r: 4.009333, g: 4.009333, b: 45, a: 89.96454}
     - _tilingAndOffset_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_4: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 18, g: 5, b: 0, a: 0}
+    - _timeFrame_0: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_1: {r: 5, g: 20, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_3: {r: 0, g: 24, b: 0, a: 0}
