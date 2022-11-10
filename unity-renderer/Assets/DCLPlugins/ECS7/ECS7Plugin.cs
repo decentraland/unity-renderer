@@ -7,12 +7,13 @@ namespace DCL.ECS7
 {
     public class ECS7Plugin : IPlugin
     {
+        internal readonly ECSComponentsManager componentsManager;
+
         private readonly ComponentCrdtWriteSystem crdtWriteSystem;
         private readonly IECSComponentWriter componentWriter;
         private readonly ECS7ComponentsComposer componentsComposer;
         private readonly ECSSystemsController systemsController;
         private readonly ECSComponentsFactory componentsFactory;
-        private readonly ECSComponentsManager componentsManager;
         private readonly InternalECSComponents internalEcsComponents;
         private readonly CrdtExecutorsManager crdtExecutorsManager;
 
