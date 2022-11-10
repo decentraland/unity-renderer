@@ -193,75 +193,83 @@ namespace DCL
 
                 bool shouldLogMessage = VERBOSE;
 
-                switch (m.type)
+                try
                 {
-                    case QueuedSceneMessage.Type.NONE:
-                        break;
-                    case QueuedSceneMessage.Type.SCENE_MESSAGE:
+                    switch (m.type)
+                    {
+                        case QueuedSceneMessage.Type.NONE:
+                            break;
+                        case QueuedSceneMessage.Type.SCENE_MESSAGE:
 
-                        if (!(m is QueuedSceneMessage_Scene sceneMessage))
-                            continue;
+                            if (!(m is QueuedSceneMessage_Scene sceneMessage))
+                                continue;
 
-                        if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
-                        {
-#if UNITY_EDITOR
-                            if (DataStore.i.debugConfig.msgStepByStep)
+                            if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                             {
-                                if (VERBOSE)
+    #if UNITY_EDITOR
+                                if (DataStore.i.debugConfig.msgStepByStep)
                                 {
-                                    LogMessage(m, this, false);
-                                    shouldLogMessage = false;
+                                    if (VERBOSE)
+                                    {
+                                        LogMessage(m, this, false);
+                                        shouldLogMessage = false;
+                                    }
+
+                                    return true;
                                 }
-
-                                return true;
+    #endif
                             }
-#endif
-                        }
-                        else
-                        {
-                            shouldLogMessage = false;
-                        }
+                            else
+                            {
+                                shouldLogMessage = false;
+                            }
 
-                        OnMessageProcessed();
-                        ProfilingEvents.OnMessageWillDequeue?.Invoke(sceneMessage.method);
+                            OnMessageProcessed();
+                            ProfilingEvents.OnMessageWillDequeue?.Invoke(sceneMessage.method);
 
-                        if (msgYieldInstruction != null)
-                        {
-                            processedMessagesCount++;
+                            if (msgYieldInstruction != null)
+                            {
+                                processedMessagesCount++;
 
-                            msgYieldInstruction = null;
-                        }
+                                msgYieldInstruction = null;
+                            }
 
-                        break;
-                    case QueuedSceneMessage.Type.LOAD_PARCEL:
-                        handler.LoadParcelScenesExecute(m.message);
-                        ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
+                            break;
+                        case QueuedSceneMessage.Type.LOAD_PARCEL:
+                            handler.LoadParcelScenesExecute(m.message);
+                            ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
 
-                        break;
-                    case QueuedSceneMessage.Type.UNLOAD_PARCEL:
-                        handler.UnloadParcelSceneExecute(m.message);
-                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
+                            break;
+                        case QueuedSceneMessage.Type.UNLOAD_PARCEL:
+                            handler.UnloadParcelSceneExecute(m.message);
+                            ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
 
-                        break;
-                    case QueuedSceneMessage.Type.UPDATE_PARCEL:
-                        handler.UpdateParcelScenesExecute(m.message);
-                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
+                            break;
+                        case QueuedSceneMessage.Type.UPDATE_PARCEL:
+                            handler.UpdateParcelScenesExecute(m.message);
+                            ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
 
-                        break;
-                    case QueuedSceneMessage.Type.UNLOAD_SCENES:
-                        handler.UnloadAllScenes();
-                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
+                            break;
+                        case QueuedSceneMessage.Type.UNLOAD_SCENES:
+                            handler.UnloadAllScenes();
+                            ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
 
-                        break;
+                            break;
+                    }
+
+                    OnMessageProcessed();
+    #if UNITY_EDITOR
+                    if (shouldLogMessage)
+                    {
+                        LogMessage(m, this);
+                    }
+    #endif
                 }
-
-                OnMessageProcessed();
-#if UNITY_EDITOR
-                if (shouldLogMessage)
+                catch (Exception e)
                 {
-                    LogMessage(m, this);
+                    Debug.LogError($"Exception while processing message, continuing. Type: {m.type}, SceneId: {m.sceneId}.");
+                    Debug.LogException(e);
                 }
-#endif
             }
 
             return false;
