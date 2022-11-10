@@ -58,6 +58,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         [NoScaleOffset]Texture2D_316d75c1a25e442aad8d48608036b295("TransparencySeparator", 2D) = "white" {}
         [ToggleUI]_isBlenderDiskOn("isBlenderDiskOn", Float) = 0
         _BlenderDisk("BlenderDisk", Float) = 0
+        _BlenderDivider("BlenderDivider", Float) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -365,6 +366,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -960,16 +962,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -1072,6 +1064,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -1275,6 +1277,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -1394,18 +1401,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -1466,6 +1470,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -1487,9 +1492,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -1852,6 +1859,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -2447,16 +2455,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -2559,6 +2557,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -2762,6 +2770,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -2881,18 +2894,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -2953,6 +2963,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -2974,9 +2985,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -3293,6 +3306,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -3508,6 +3522,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -3570,6 +3589,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -3591,9 +3611,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.Alpha = (_Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3).x;
@@ -3901,6 +3923,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -4116,6 +4139,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -4178,6 +4206,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -4199,9 +4228,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.Alpha = (_Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3).x;
@@ -4509,6 +4540,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -4724,6 +4756,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -4787,6 +4824,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -4808,9 +4846,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -5118,6 +5158,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -5713,16 +5754,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -5825,6 +5856,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -6028,6 +6069,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -6143,18 +6189,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -6213,6 +6256,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
             Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_Preview_2c1a86f014aa42cf9a8016939950090a_Out_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -6234,9 +6278,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -6545,6 +6591,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -7140,16 +7187,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -7252,6 +7289,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -7455,6 +7502,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -7569,18 +7621,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -7639,6 +7688,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
             Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_Preview_2c1a86f014aa42cf9a8016939950090a_Out_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -7660,9 +7710,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -8031,6 +8083,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -8626,16 +8679,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -8738,6 +8781,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -8941,6 +8994,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -9060,18 +9118,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -9132,6 +9187,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float _Property_b872305fbdab44078bf3b70b9f9de114_Out_0 = _Metallic;
             float _Property_de71bcc7d06c4da3bea536b766bc403a_Out_0 = _Smoothness;
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -9153,9 +9209,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -9470,6 +9528,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -9685,6 +9744,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -9747,6 +9811,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -9768,9 +9833,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.Alpha = (_Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3).x;
@@ -10077,6 +10144,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -10292,6 +10360,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -10354,6 +10427,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -10375,9 +10449,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.Alpha = (_Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3).x;
@@ -10684,6 +10760,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -10899,6 +10976,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -10962,6 +11044,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0;
             float4 _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1;
             SG_SGInfiniteFloorAdvanceFogAndOuterConnector_9db1b00ad7dd11f448374e04f36fd98a(_Property_5088bc4b649b48c4b236a863abd6a51d_Out_0, _Property_41430792fdf9452580ac0dd58cfbc446_Out_0, _Property_2645cbe28dce47d2a497cce537219196_Out_0, _Property_edf3583ecd024ebeb3ea104c50ca1ea9_Out_0, _Property_9e534121bb0e4191b292a373c20ddd83_Out_0, _Property_5212eebe1156419c8c316902036a453a_Out_0, _Property_c32d5f4c67d64ea2a8e5ff74696cbb3a_Out_0, _Property_fef30d67af324c6499e935b7df997ae1_Out_0, _Property_8b63edebd1fa44f98316755f02f3b5e1_Out_0, _Property_44f3e8ffbc15476db3fbf6e408cf1bf5_Out_0, _Property_d39b5fec16bf4cf79e3952a9a4e623c5_Out_0, _Combine_27e7eb427f2a480aa0c00a59362fe57f_RG_6, (float4(_Property_f23d6a7bba4e4123b184976400be1708_Out_0, 0.0, 1.0)), _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutColor_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1);
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -10983,9 +11066,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -11293,6 +11378,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -11888,16 +11974,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -12000,6 +12076,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -12203,6 +12289,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -12318,18 +12409,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -12388,6 +12476,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
             Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_Preview_2c1a86f014aa42cf9a8016939950090a_Out_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -12409,9 +12498,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
@@ -12721,6 +12812,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         float4 Texture2D_316d75c1a25e442aad8d48608036b295_TexelSize;
         float _isBlenderDiskOn;
         float _BlenderDisk;
+        float _BlenderDivider;
         CBUFFER_END
 
         // Object and Global properties
@@ -13316,16 +13408,6 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             GrassGrid_1 = _Multiply_dfe1ba2ac92c4a07b960bab95193d207_Out_2;
         }
 
-        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
-        {
-            SHADERGRAPH_FOG(Position, Color, Density);
-        }
-
-        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
-
 
         float2 Unity_GradientNoise_Dir_float(float2 p)
         {
@@ -13428,6 +13510,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             RGBA = float4(R, G, B, A);
             RGB = float3(R, G, B);
             RG = float2(R, G);
+        }
+
+        void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
+        {
+            Out = A * B;
+        }
+
+        void Unity_Fog_float(out float4 Color, out float Density, float3 Position)
+        {
+            SHADERGRAPH_FOG(Position, Color, Density);
         }
 
         void SphereMask_float4(float4 Coords, float4 Center, float Radius, float Hardness, out float4 Out)
@@ -13631,6 +13723,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A + B;
         }
 
+        void Unity_Divide_float4(float4 A, float4 B, out float4 Out)
+        {
+            Out = A / B;
+        }
+
             // Graph Vertex
             struct VertexDescription
         {
@@ -13745,18 +13842,15 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float4 _Property_04d7af1c04904489b3c3443e9c433a5f_Out_0 = _GrassGridColor;
             float4 _Property_c12955e24c0d48b6b390a444b01fef84_Out_0 = _GrassGridColorVariation;
             float4 _Property_9d59173f2b1a48428823e35074ce62c5_Out_0 = _ColorEmpty;
-            float4 _Fog_caf07e8785584760b79500664df1fc44_Color_0;
-            float _Fog_caf07e8785584760b79500664df1fc44_Density_1;
-            Unity_Fog_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, _Fog_caf07e8785584760b79500664df1fc44_Density_1, IN.ObjectSpacePosition);
             float _Property_02affe4104f642e5a0d8858e96999122_Out_0 = _FogBrightnessFactor;
-            float4 _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
-            Unity_Multiply_float(_Fog_caf07e8785584760b79500664df1fc44_Color_0, (_Property_02affe4104f642e5a0d8858e96999122_Out_0.xxxx), _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
+            float _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2;
+            Unity_Multiply_float(0, _Property_02affe4104f642e5a0d8858e96999122_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2);
             Bindings_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db;
             _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db.uv0 = IN.uv0;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2;
             float4 _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3;
-            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, _Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
+            SG_SGInfiniteFloorGrassGridColorVariations_f0a728ad4d2a40745ab790862c33d7b4(_Property_04d7af1c04904489b3c3443e9c433a5f_Out_0, _Property_c12955e24c0d48b6b390a444b01fef84_Out_0, _Property_9d59173f2b1a48428823e35074ce62c5_Out_0, (_Multiply_c7304e2fada9452a8bdb43ee23d6b604_Out_2.xxxx), _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3);
             float4 _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0;
             Merger_float(_Preview_ed4777af4c934139b556dcc3e1a2ff58_Out_1, _Preview_b5cdb3abb83d4046b24bcf69a52b8563_Out_1, _Preview_77c0d6357d114bbd99223a0a85052ab3_Out_1, _Preview_e2046b4018d0402192a0ee126af29f22_Out_1, _Preview_59b1a38148bb4a6d84abb5982a1c1ef4_Out_1, _Preview_3a92743f5b594583af0259b49cc96fff_Out_1, _Preview_a216dd6700e94a378b2e2bd39380e596_Out_1, _Preview_0fdbd3026f2f427ba91e87bfd00b897a_Out_1, _SGInfiniteFloorFog_e91dc499f9dd4d5ea7fbaf64da5d89af_Out_1, _Property_00719080222e437aa9abf5da2dd48a70_Out_0, _Property_118255dd5c8c455ab153d511ba1fc031_Out_0, _Property_ea3a4525b26042e282e0d5dcec3efb89_Out_0, _Property_b4c2fd41f9674a7d9da551d4157f191a_Out_0, _Property_772bc9abe9c94089af81a6648cd34b1b_Out_0, _Property_6a1f7cc7467741628211b53b8709021d_Out_0, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector41_2, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector4_1, _SGInfiniteFloorGrassGridColorVariations_ec10671fea914ba786ff4518db38d0db_OutVector42_3, _MergerCustomFunction_10a3a34cea6d41debf50150c101b0cf2_Out_0);
             float4 _Preview_38b4d905dca24ae5a7eb729baf19ef01_Out_1;
@@ -13815,6 +13909,7 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             float3 _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
             Unity_Branch_float3(_Property_5aa26866b6b24f9b9753c88c3c5b8636_Out_0, _Lerp_6e22453c050b493097f6598cd25f28d9_Out_3, (_Preview_2c1a86f014aa42cf9a8016939950090a_Out_1.xyz), _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3);
             float _Property_c46a88ae849a46a4b903e6ae9cece041_Out_0 = _isBlenderDiskOn;
+            float _Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0 = _BlenderDivider;
             float _Property_38574c1d74f840b493f8d1e38827bd5f_Out_0 = _isAdvancedFogOn;
             float4 _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3;
             Unity_Branch_float4(_Property_38574c1d74f840b493f8d1e38827bd5f_Out_0, _SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, float4(1, 1, 1, 1), _Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3);
@@ -13836,9 +13931,11 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Unity_Blend_Overlay_float4(_OneMinus_781922eae2184314a7b5b3154ec006a8_Out_1, (_Ellipse_542fa4620d154c208fe93e42cc7977a9_Out_4.xxxx), _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, 0.2);
             float4 _Add_529899f1af4341858c21ccc712b0df97_Out_2;
             Unity_Add_float4(_Branch_8fcc1533ff434c699c9bf2a6a20272c6_Out_3, _Blend_b2cedb1e8a4d4faeb5190315cc90962a_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2);
+            float4 _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2;
+            Unity_Divide_float4((_Property_9e565b99b14145e095d4ea2c95e1cf81_Out_0.xxxx), _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2);
             float _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0 = _BlenderDisk;
             float4 _Blend_c09df3935c5b41fc93a6879514606afd_Out_2;
-            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
+            Unity_Blend_Overlay_float4(_SGInfiniteFloorAdvanceFogAndOuterConnector_87bdb52ad8794b6b8bd94ebbd8d4f20e_OutOpacity_1, _Divide_78ec8a0540c14fb392c0df6cbe4a9bb3_Out_2, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Property_eca3f08f04434ab2941da7c1c6fbb5d7_Out_0);
             float4 _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3;
             Unity_Branch_float4(_Property_c46a88ae849a46a4b903e6ae9cece041_Out_0, _Blend_c09df3935c5b41fc93a6879514606afd_Out_2, _Add_529899f1af4341858c21ccc712b0df97_Out_2, _Branch_7d3ffb76bb9844b081672be37bde3c7a_Out_3);
             surface.BaseColor = _Branch_7fb4cf41c0854ce590679d2dfe0fc8cd_Out_3;
