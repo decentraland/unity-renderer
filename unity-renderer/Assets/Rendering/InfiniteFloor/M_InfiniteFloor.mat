@@ -84,7 +84,7 @@ Material:
     - _ColorMask: 15
     - _FloorColorBend: 1.5
     - _FogBalancer: 0
-    - _FogBrightnessFactor: 0.4
+    - _FogBrightnessFactor: 0.5
     - _FogColorBend: 1
     - _FogFade: 750
     - _FogIntensity: 0.316
