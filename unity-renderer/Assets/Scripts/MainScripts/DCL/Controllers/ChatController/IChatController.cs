@@ -20,6 +20,7 @@ public interface IChatController
     event Action<string, Channel[]> OnChannelSearchResult;
 
     int TotalUnseenMessages { get; }
+    bool IsInitialized { get; }
 
     void Send(ChatMessage message);
     void MarkMessagesAsSeen(string userId);

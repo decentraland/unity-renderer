@@ -42,11 +42,11 @@ public class WorldChatWindowController : IHUD
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
-    private bool areJoinedChannelsRequestedByFirstTime;
     private bool areUnseenMessajesRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
+    private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
     public IWorldChatWindowView View => view;
 
@@ -104,7 +104,8 @@ public class WorldChatWindowController : IHUD
             channel.Description,
             channel.Joined,
             channel.MemberCount,
-            false);
+            false,
+            showOnlyOnlineMembersOnPublicChannels);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
 
         if (!friendsController.IsInitialized)
@@ -198,10 +199,11 @@ public class WorldChatWindowController : IHUD
 
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                if (!areJoinedChannelsRequestedByFirstTime)
+                if (chatController.IsInitialized)
+                {
                     RequestJoinedChannels();
-                else
                     SetAutomaticChannelsInfoUpdatingActive(true);
+                }
 
                 if (!areUnseenMessajesRequestedByFirstTime)
                     RequestUnreadChannelsMessages();
@@ -246,12 +248,10 @@ public class WorldChatWindowController : IHUD
     private void RequestJoinedChannels()
     {
         if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
-
+        
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
-
-        areJoinedChannelsRequestedByFirstTime = true;
 
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken = new CancellationTokenSource();
@@ -267,7 +267,6 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChatInitialization()
     {
-        if (areJoinedChannelsRequestedByFirstTime) return;
         // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
         RequestJoinedChannels();
         ConnectToAutoJoinChannels();
@@ -506,7 +505,7 @@ public class WorldChatWindowController : IHUD
 
         var channelId = channel.ChannelId;
         var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.Joined,
-            channel.MemberCount, channel.Muted);
+            channel.MemberCount, channel.Muted, showOnlyOnlineMembersOnPublicChannels);
 
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);

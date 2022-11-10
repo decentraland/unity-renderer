@@ -28,6 +28,15 @@ namespace DCL.Chat.HUD
 
             Assert.AreEqual($"{members} members joined", view.memberCountLabel.text);
         }
+        
+        [TestCase(567)]
+        [TestCase(3)]
+        public void SetMemberCountWhenShowingOnlyOnline(int members)
+        {
+            view.Configure(new PublicChatEntryModel("channelId", "bleh", true, members, true, false));
+
+            Assert.AreEqual($"{members} members online", view.memberCountLabel.text);
+        }
 
         [TestCase("bleh")]
         [TestCase("woo")]
