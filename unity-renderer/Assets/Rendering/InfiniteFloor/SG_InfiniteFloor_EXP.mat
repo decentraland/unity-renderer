@@ -92,7 +92,7 @@ Material:
     - _ThicknessOffset: 1500
     - _Zoom: 8192
     - _isAdvancedFogOn: 1
-    - _isBlenderDiskOn: 1
+    - _isBlenderDiskOn: 0
     m_Colors:
     - _ColorDistricts: {r: 0.16078347, g: 0.80784315, b: 0.8862745, a: 1}
     - _ColorEmpty: {r: 0.3803912, g: 0.6431373, b: 0.3843128, a: 1}
