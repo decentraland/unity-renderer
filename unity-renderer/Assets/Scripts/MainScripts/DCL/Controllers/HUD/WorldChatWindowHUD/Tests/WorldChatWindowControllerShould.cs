@@ -433,7 +433,19 @@ public class WorldChatWindowControllerShould
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
 
-        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link);
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "manual");
+    }
+    
+    [Test]
+    public void TrackAutoChannelJoined()
+    {
+        controller.Initialize(view);
+
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        chatController.OnAutoChannelJoined +=
+            Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
+
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "auto");
     }
 
     [Test]

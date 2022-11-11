@@ -263,7 +263,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
         }
 
-        public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source)
+        public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source, string method)
         {
             var data = new Dictionary<string, string>
             {
@@ -275,7 +275,8 @@ namespace SocialFeaturesAnalytics
                     ChannelJoinedSource.ConversationList => "conversation_list",
                     _ => ""
                 },
-                ["channel"] = channelName
+                ["channel"] = channelName,
+                ["method"] = method
             };
             analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
         }
