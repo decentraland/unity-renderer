@@ -88,6 +88,7 @@ Material:
     - Vector1_ff8ceaa2a0e34abbb87c079ecf2b7b6b: 0
     - _AdvanceFogBalancer: 0.5
     - _BlenderDisk: 15.89
+    - _BlenderDiskOpacity: 5
     - _BlenderDivider: 1.74
     - _ColorMask: 15
     - _FloorColorBend: 1.5
