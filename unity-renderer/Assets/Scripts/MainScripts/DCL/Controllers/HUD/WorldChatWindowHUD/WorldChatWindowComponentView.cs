@@ -398,6 +398,7 @@ namespace DCL.Chat.HUD
         
             scroll.enabled = !visible;
             isLoadingPrivateChannels = visible;
+            UpdateLayout();
         }
 
         private void UpdateHeaders()
