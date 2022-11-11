@@ -11,8 +11,9 @@ namespace DCL.ECSComponents
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
         private PBMaterial lastModel = null;
-        internal readonly Queue<AssetPromise_Material> materialPromises = new Queue<AssetPromise_Material>(2);
+        internal AssetPromise_Material promiseMaterial;
 
+        private readonly HashSet<AssetPromise_Material> activePromises = new HashSet<AssetPromise_Material>();
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
 
         public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent)
@@ -25,9 +26,8 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
-            while (materialPromises.Count > 0)
+            foreach (var promise in activePromises)
             {
-                AssetPromise_Material promise = materialPromises.Dequeue();
                 AssetPromiseKeeper_Material.i.Forget(promise);
             }
         }
@@ -81,8 +81,10 @@ namespace DCL.ECSComponents
                 promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture);
             }
 
-            AssetPromise_Material materialPromise = new AssetPromise_Material(promiseModel);
-            materialPromise.OnSuccessEvent += materialAsset =>
+            AssetPromise_Material prevPromise = promiseMaterial;
+
+            promiseMaterial = new AssetPromise_Material(promiseModel);
+            promiseMaterial.OnSuccessEvent += materialAsset =>
             {
                 materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                 {
@@ -91,24 +93,17 @@ namespace DCL.ECSComponents
                 UniTask.RunOnThreadPool(async () =>
                 {
                     await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
-                    ForgetPreviousPromise();
+                    AssetPromiseKeeper_Material.i.Forget(prevPromise);
+                    activePromises.Remove(prevPromise);
                 });
             };
-            materialPromise.OnFailEvent += (material, exception) =>
+            promiseMaterial.OnFailEvent += (material, exception) =>
             {
-                ForgetPreviousPromise();
+                AssetPromiseKeeper_Material.i.Forget(prevPromise);
+                activePromises.Remove(prevPromise);
             };
-            materialPromises.Enqueue(materialPromise);
-            AssetPromiseKeeper_Material.i.Keep(materialPromise);
-        }
-
-        private void ForgetPreviousPromise()
-        {
-            if (materialPromises.Count > 1)
-            {
-                AssetPromise_Material promise = materialPromises.Dequeue();
-                AssetPromiseKeeper_Material.i.Forget(promise);
-            }
+            activePromises.Add(promiseMaterial);
+            AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
         }
 
         private static AssetPromise_Material_Model CreatePBRMaterialPromiseModel(PBMaterial model,
