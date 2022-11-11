@@ -136,19 +136,19 @@ Material:
     - _Color04: {r: 0.26303354, g: 0.426, b: 0.28876507, a: 1}
     - _Color04_1: {r: 0.21895385, g: 0.109692074, b: 0.27358484, a: 0}
     - _Color05: {r: 0, g: 0.103773594, b: 0.030372756, a: 1}
-    - _ColorDistricts: {r: 0.16078344, g: 0.80784315, b: 0.8862745, a: 1}
-    - _ColorEmpty: {r: 0.38039118, g: 0.6431373, b: 0.38431278, a: 1}
+    - _ColorDistricts: {r: 0.16078338, g: 0.80784315, b: 0.8862745, a: 1}
+    - _ColorEmpty: {r: 0.38039112, g: 0.6431373, b: 0.38431272, a: 1}
     - _ColorFog: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrassOuter: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
     - _ColorInnerHighlight: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.3700595, a: 1}
-    - _ColorParcels: {r: 0.38183898, g: 0.64499986, b: 0.38315192, a: 1}
+    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37005943, a: 1}
+    - _ColorParcels: {r: 0.38183892, g: 0.64499986, b: 0.38315186, a: 1}
     - _ColorPlazas: {r: 1, g: 0.5960784, b: 0, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
     - _FloorColor: {r: 0.5188676, g: 0.5188676, b: 0.5188676, a: 0}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
-    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933513, a: 1}
+    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933507, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _GridColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighlightColor: {r: 0, g: 0.6943347, b: 1, a: 1}
