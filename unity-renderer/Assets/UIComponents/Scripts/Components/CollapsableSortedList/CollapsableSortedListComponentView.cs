@@ -39,7 +39,7 @@ namespace UIComponents.CollapsableSortedList
             base.Update();
             
             if (isLayoutDirty)
-                Utils.ForceRebuildLayoutImmediate((RectTransform) container);
+                Utils.ForceUpdateLayout((RectTransform) container);
             isLayoutDirty = false;
         }
 
