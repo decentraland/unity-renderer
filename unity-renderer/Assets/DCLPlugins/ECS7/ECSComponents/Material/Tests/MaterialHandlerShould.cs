@@ -7,6 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Texture = DCL.ECSComponents.Texture;
 using TextureWrapMode = DCL.ECSComponents.TextureWrapMode;
 
 namespace Tests
@@ -46,9 +47,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -56,9 +57,10 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
 
-            Assert.NotNull(handler.promiseMaterial.asset.material);
+            Assert.NotNull(promiseMaterial.asset.material);
         }
 
         [UnityTest]
@@ -66,9 +68,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -76,15 +78,17 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
 
-            Material firstMaterial = handler.promiseMaterial.asset.material;
+            Material firstMaterial = promiseMaterial.asset.material;
 
             PBMaterial model2 = new PBMaterial(model);
             handler.OnComponentModelUpdated(scene, entity, model2);
-            yield return handler.promiseMaterial;
+            promiseMaterial = handler.materialPromises.Count > 0 ? handler.materialPromises.Dequeue() : promiseMaterial;
+            yield return promiseMaterial;
 
-            Assert.AreEqual(firstMaterial, handler.promiseMaterial.asset.material);
+            Assert.AreEqual(firstMaterial, promiseMaterial.asset.material);
         }
 
         [UnityTest]
@@ -92,9 +96,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -103,27 +107,29 @@ namespace Tests
             yield return null;
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
 
-            Material firstMaterial = handler.promiseMaterial.asset.material;
+            Material firstMaterial = promiseMaterial.asset.material;
 
             PBMaterial model2 = new PBMaterial(model);
             model2.Texture.Texture.WrapMode = TextureWrapMode.TwmMirror;
             handler.OnComponentModelUpdated(scene, entity, model2);
-            yield return handler.promiseMaterial;
-            
-            Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
+            promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
+
+            Assert.AreNotEqual(firstMaterial, promiseMaterial.asset.material);
         }
-        
+
         [UnityTest]
         public IEnumerator ChangeMaterialWhenNoTextureSource()
         {
             Debug.Log(TestAssetsUtils.GetPath() + "/Images/avatar.png");
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -132,24 +138,26 @@ namespace Tests
             yield return null;
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
 
-            Material firstMaterial = handler.promiseMaterial.asset.material;
+            Material firstMaterial = promiseMaterial.asset.material;
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
                 }
             };
             handler.OnComponentModelUpdated(scene, entity, model2);
-            yield return handler.promiseMaterial;
-            
-            Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
+            promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
+
+            Assert.AreNotEqual(firstMaterial, promiseMaterial.asset.material);
         }
 
         [UnityTest]
@@ -157,9 +165,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -167,7 +175,9 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Peek();
+            yield return promiseMaterial;
+
             Assert.AreEqual(1, AssetPromiseKeeper_Material.i.library.masterAssets.Count);
 
             handler.OnComponentRemoved(scene, entity);
@@ -179,9 +189,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -189,8 +199,10 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
-            Material currentMaterial = handler.promiseMaterial.asset.material;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
+
+            Material currentMaterial = promiseMaterial.asset.material;
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
@@ -200,17 +212,19 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
                 }
             };
             handler.OnComponentModelUpdated(scene, entity, model2);
-            yield return handler.promiseMaterial;
-            currentMaterial = handler.promiseMaterial.asset.material;
+            promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
+
+            currentMaterial = promiseMaterial.asset.material;
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
@@ -222,9 +236,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -232,8 +246,10 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, model);
-            yield return handler.promiseMaterial;
-            Material currentMaterial = handler.promiseMaterial.asset.material;
+            AssetPromise_Material promiseMaterial = handler.materialPromises.Dequeue();
+            yield return promiseMaterial;
+
+            Material currentMaterial = promiseMaterial.asset.material;
 
             internalMaterialComponent.Received(1)
                                      .PutFor(scene, entity,
@@ -243,7 +259,8 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model);
             handler.OnComponentModelUpdated(scene, entity, model2);
-            yield return handler.promiseMaterial;
+            promiseMaterial = handler.materialPromises.Count > 0 ? handler.materialPromises.Dequeue() : promiseMaterial;
+            yield return promiseMaterial;
 
             internalMaterialComponent.DidNotReceive()
                                      .PutFor(scene, entity, Arg.Any<InternalMaterial>());
