@@ -72,6 +72,9 @@
     "m_StickyNoteDatas": [
         {
             "m_Id": "6b569be241bc469db9b880cf8e2a4981"
+        },
+        {
+            "m_Id": "ded9d59d709a4d35bc9c09ec42c1e693"
         }
     ],
     "m_Edges": [
@@ -1564,6 +1567,26 @@
     },
     "m_Property": {
         "m_Id": "7284deecf5d9431d92fc35a123337ff4"
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "ded9d59d709a4d35bc9c09ec42c1e693",
+    "m_Title": "FOG INTENSITY ",
+    "m_Content": "Write something here",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -1119.0,
+        "y": 180.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
     }
 }
 
