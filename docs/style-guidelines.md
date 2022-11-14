@@ -248,7 +248,7 @@ private void TrimAll()
 * **Methods**
   * Use `[PublicAPI]` attribute if `public method` is exposed to be called from **outside** of the solution 
   * Use `[UsedImplicitly]` attribute for implicitly called methods, such as calls from Unity animation events, via Unity `GameObject.SendMessage()`, `GameObject.BroadcastMessage()` and similar. 
-  * Use `[Button]` attribute from `EasyButtons` (requires reference in `.asmdef` file) instead of `[ContectMenu]` attribute. Consider using `Mode` parameter of this attribute for `Editor`/`PlayMode`-only methods.
+  * Use `[Button]` attribute from `EasyButtons` (requires reference in `.asmdef` file) instead of `[ContextMenu]` attribute. Consider using `Mode` parameter of this attribute for `Editor`/`PlayMode`-only methods.
 * **Variables (in Inspector)**
   * Use `[SerializedField]` for exposing variable in the inspector instead of converting it to public variable 
   * Use CAPITAL letters for `[Header]` attribute 
@@ -294,7 +294,7 @@ public class Main: MonoBehaviour
 * **Test method name**
   * try to reflect core of the **arrange**/**act**/**assert** part of the test in the test name (especially **assert**)
   * consider using word `Should` to describe **assert** part and word `When` to describe **act** and **arrange** part of the test
-* The method body should be split by `// arrange` - `// act` - `// assert` comments to respective blocks. 
+* The method body should be split by `// Arrange` - `// Act` - `// Assert` comments to respective blocks. 
   * `Arrange` comment could be omitted if there is no arrangement or it coincide with the acting.
  ```csharp 
 public class NavmapTests
@@ -302,14 +302,14 @@ public class NavmapTests
     [Test]
     public void CorectSceneDataShouldBeDisplayedWhenPlayerCoordinatesChanged()
     {
-        // arrange
+        // Arrange
         var navmapView = Object.FindObjectOfType<NavmapView>();
         MinimapMetadata.GetMetadata();
         
-        // act
+        // Act
         CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
         
-        // assert
+        // Assert
         Assert.AreEqual("SCENE_NAME", navmapView.currentSceneNameText.text);
         Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);
     }
