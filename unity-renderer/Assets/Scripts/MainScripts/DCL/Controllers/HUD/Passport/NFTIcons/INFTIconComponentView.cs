@@ -25,4 +25,16 @@ public interface INFTIconComponentView
     /// </summary>
     /// <param name="nftName">name of the NFT.</param>
     void SetName(string nftName);
+
+    /// <summary>
+    /// Set the NFT type.
+    /// </summary>
+    /// <param name="type">type of the NFT. (LAND, Name, wearable type, emote)</param>
+    void SetType(string type);
+
+    /// <summary>
+    /// Set the NFT rarity.
+    /// </summary>
+    /// <param name="rarity">rarity of the NFT.</param>
+    void SetRarity(string rarity);
 }

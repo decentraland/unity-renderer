@@ -174,11 +174,13 @@ MonoBehaviour:
   marketplaceSection: {fileID: 3845643459768923765}
   nftImage: {fileID: 1507536389407904521}
   typeImage: {fileID: 7422578994069641759}
+  backgroundImage: {fileID: 4192340701056741648}
   nftTypesIcons: {fileID: 11400000, guid: c4c1fb78d1c9a4db5ba93b000ce13026, type: 2}
   model:
     type: 
     marketplaceURI: 
     name: testNFT
+    rarity: 
     imageURI: 
 --- !u!1 &5047832531834337438
 GameObject:

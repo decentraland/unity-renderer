@@ -14,7 +14,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
     [SerializeField] internal GameObject marketplaceSection;
     [SerializeField] internal ImageComponentView nftImage;
     [SerializeField] internal ImageComponentView typeImage;
-    [SerializeField] internal NFTTypesIcons nftTypesIcons;
+    [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
     
     [SerializeField] internal NFTIconComponentModel model;
 
@@ -37,6 +38,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
         SetName(model.name);
         SetMarketplaceURI(model.marketplaceURI);
         SetImageURI(model.imageURI);
+        SetType(model.type);
+        SetRarity(model.rarity);
     }
 
     public void SetName(string name)
@@ -67,6 +70,13 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
         model.type = type;
     
         typeImage.SetImage(nftTypesIcons.GetTypeImage(type));
+    }
+
+    public void SetRarity(string rarity)
+    {
+        model.rarity = rarity;
+
+        backgroundImage.color = nftTypesIcons.GetColor(rarity);
     }
 
     public override void OnFocus()
