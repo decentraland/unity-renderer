@@ -51,7 +51,7 @@ namespace DCL.Chat.HUD
         
         [Header("Guest")]
         [SerializeField] internal GameObject connectWalletContainer;
-        [SerializeField] internal GameObject walletConnectedContainer;
+        [SerializeField] internal List<GameObject> walletConnectedContainerGOs;
         [SerializeField] internal Button connectWalletButton;
         [SerializeField] internal Button whatIsWalletButton;
 
@@ -71,7 +71,6 @@ namespace DCL.Chat.HUD
         private float loadMoreEntriesRestrictionTime;
         private Coroutine requireMoreEntriesRoutine;
         private bool isConnectWalletMode;
-        private VerticalLayoutGroup directChatVerticalLayoutGroup;
 
         public event Action OnClose;
         public event Action<string> OnOpenPrivateChat;
@@ -110,7 +109,6 @@ namespace DCL.Chat.HUD
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
             directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
-            directChatVerticalLayoutGroup = directChatList.GetComponent<VerticalLayoutGroup>();
             searchResultsList.OnOpenPrivateChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
             searchResultsList.OnOpenPublicChat += entry => OnOpenPublicChat?.Invoke(entry.Model.channelId);
             publicChannelList.SortingMethod = SortByAlphabeticalOrder;
@@ -208,7 +206,6 @@ namespace DCL.Chat.HUD
         {
             loadMoreEntriesContainer.SetActive(false);
             emptyDirectChatsContainer.SetActive(directChatList.Count() == 0);
-            directChatVerticalLayoutGroup.enabled = !emptyDirectChatsContainer.activeSelf;
             UpdateLayout();
         }
 
@@ -218,7 +215,6 @@ namespace DCL.Chat.HUD
                 $"{count} chats hidden. Use the search bar to find them or click below to show more.");
             loadMoreEntriesContainer.SetActive(true);
             emptyDirectChatsContainer.SetActive(false);
-            directChatVerticalLayoutGroup.enabled = true;
             UpdateLayout();
         }
 
@@ -293,7 +289,8 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = true;
             connectWalletContainer.SetActive(true);
-            walletConnectedContainer.SetActive(false);
+            foreach (var item in walletConnectedContainerGOs)
+                item.SetActive(false);
             searchBarContainer.SetActive(false);
             directChatsCollapseButton.SetInteractability(false);
             publicChatsChatsCollapseButton.SetInteractability(false);
@@ -303,7 +300,8 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = false;
             connectWalletContainer.SetActive(false);
-            walletConnectedContainer.SetActive(true);
+            foreach (var item in walletConnectedContainerGOs)
+                item.SetActive(true);
             searchBarContainer.SetActive(true);
             directChatsCollapseButton.SetInteractability(true);
             publicChatsChatsCollapseButton.SetInteractability(true);
@@ -319,7 +317,6 @@ namespace DCL.Chat.HUD
             SetChannelsLoadingVisibility(model.isLoadingChannels);
 
             directChatList.Clear();
-            directChatVerticalLayoutGroup.enabled = model.privateChats.Length > 0;
             foreach (var entry in model.privateChats)
                 directChatList.Set(entry.userId, entry);
 
@@ -343,10 +340,7 @@ namespace DCL.Chat.HUD
             if (isSearchMode)
                 searchResultsList.Set(entry);
             else
-            {
                 directChatList.Set(userId, entry);
-                directChatVerticalLayoutGroup.enabled = true;
-            }
 
             UpdateHeaders();
             UpdateLayout();
@@ -407,7 +401,6 @@ namespace DCL.Chat.HUD
         
             scroll.enabled = !visible;
             isLoadingPrivateChannels = visible;
-            UpdateLayout();
         }
 
         private void UpdateHeaders()

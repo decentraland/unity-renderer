@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace UIComponents.CollapsableSortedList
             base.Update();
             
             if (isLayoutDirty)
-                Utils.ForceUpdateLayout((RectTransform) container);
+                Utils.ForceRebuildLayoutImmediate((RectTransform) container);
             isLayoutDirty = false;
         }
 
