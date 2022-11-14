@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MaterialHelpers;
 using UnityEngine;
 using UnityGLTF.Cache;
 
@@ -29,25 +28,18 @@ namespace DCL.Helpers
 
         public static string ComputeHash(Material mat) { return mat.ComputeCRC().ToString(); }
 
-        static void EnsureMainShader()
+        static Shader EnsureMainShader()
         {
             if (mainShader == null)
+            {
                 mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
+            }
+
+            return mainShader;
         }
 
         public static Material ProcessSingleMaterial(Material mat, Mode cachingFlags = Mode.CACHE_EVERYTHING)
         {
-            EnsureMainShader();
-
-            bool alreadyCopied = false;
-            if (mat.shader.name.ToLower().Contains("gltf/"))
-            {
-                var newMaterial = new Material(mainShader);
-                GLTFastMaterialConverter.Convert(mat, newMaterial);
-                mat = newMaterial;
-                alreadyCopied = true;
-            }
-
             if ((cachingFlags & Mode.CACHE_SHADERS) != 0)
             {
                 string shaderHash = mat.shader.name;
@@ -60,21 +52,15 @@ namespace DCL.Helpers
                     }
                     else
                     {
-                        shaderByHash.Add(shaderHash, mainShader);
+                        shaderByHash.Add(shaderHash, EnsureMainShader());
                     }
                 }
 
                 mat.shader = shaderByHash[shaderHash];
             }
 
-            Material materialCopy = mat;
-
-            if (!alreadyCopied)
-            {
-                //NOTE(Brian): Have to copy material because will be unloaded later.
-                materialCopy = new Material(mat);
-            }
-            
+            //NOTE(Brian): Have to copy material because will be unloaded later.
+            var materialCopy = new Material(mat);
             SRPBatchingHelper.OptimizeMaterial(materialCopy);
 
             if ((cachingFlags & Mode.CACHE_MATERIALS) != 0)
@@ -94,7 +80,6 @@ namespace DCL.Helpers
 
                 refCountedMat = PersistentAssetCache.MaterialCacheByCRC[hash];
                 refCountedMat.IncreaseRefCount();
-
                 return refCountedMat.material;
             }
 
@@ -146,7 +131,6 @@ namespace DCL.Helpers
                         if (timeBudget < 0)
                         {
                             yield return null;
-
                             timeBudget += timeBudgetMax;
                         }
                     }

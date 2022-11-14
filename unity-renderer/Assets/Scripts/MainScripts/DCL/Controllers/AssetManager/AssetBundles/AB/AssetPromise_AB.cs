@@ -183,7 +183,7 @@ namespace DCL
             {
                 yield return promise;
             }
-
+            
             assetBundlesLoader.MarkAssetBundleForLoad(asset, containerTransform, OnSuccess, OnFail);
         }
         private void LoadLocalAssetBundle(string localUrl)
