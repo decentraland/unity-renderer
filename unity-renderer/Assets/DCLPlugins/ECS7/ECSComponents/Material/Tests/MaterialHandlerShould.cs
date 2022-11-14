@@ -287,5 +287,24 @@ namespace Tests
             yield return null;
             Assert.AreEqual(1, AssetPromiseKeeper_Material.i.library.masterAssets.Count);
         }
+
+        [UnityTest]
+        public IEnumerator ForgetWontRaiseExceptionWhenCalledAfterComponentIsRemoved()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBMaterial()
+            {
+                AlbedoColor = new Color3() { R = 0, G = 0, B = 0 }
+            });
+            handler.OnComponentModelUpdated(scene, entity, new PBMaterial()
+            {
+                AlbedoColor = new Color3() { R = 1, G = 1, B = 1 }
+            });
+            yield return handler.promiseMaterial;
+            handler.OnComponentRemoved(scene, entity);
+            handler = null;
+
+            // Wait for materials to be forgotten
+            yield return new WaitUntil(() => AssetPromiseKeeper_Material.i.library.masterAssets.Count == 0);
+        }
     }
 }
