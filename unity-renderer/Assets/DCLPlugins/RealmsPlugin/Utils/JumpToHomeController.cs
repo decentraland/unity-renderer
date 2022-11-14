@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -8,55 +6,57 @@ using UnityEngine;
 using UnityEngine.UI;
 using Variables.RealmsInfo;
 
-public class JumpToHomeController : MonoBehaviour
+namespace DCLPlugins.RealmsPlugin
 {
-
-    [SerializeField] private Button jumpButton;
-    [SerializeField]private ShowHideAnimator showHideAnimator;
-    [SerializeField] private RectTransform positionWithMiniMap;
-    [SerializeField] private RectTransform positionWithoutMiniMap;
-
-    private BaseCollection<RealmModel> realms => DataStore.i.realm.realmsInfo;
-    private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
-    private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
-    private RectTransform rectTransform;
-
-    private void Start()
+    /// <summary>
+    /// Controller for the Jump to Home logic.
+    /// Its used to chose the most populated realm to jump home to
+    /// </summary>
+    public class JumpToHomeController : MonoBehaviour
     {
-        rectTransform = jumpButton.GetComponent<RectTransform>();
-        jumpButton.onClick.AddListener(GoHome);
-        jumpHomeButtonVisible.OnChange += SetVisibility;
-        SetVisibility(jumpHomeButtonVisible.Get(), false);
-    }
-    
-    private void SetVisibility(bool current, bool _)
-    {
-        if (current)
+
+        [SerializeField] private Button jumpButton;
+        [SerializeField] private ShowHideAnimator showHideAnimator;
+        [SerializeField] private RectTransform positionWithMiniMap;
+        [SerializeField] private RectTransform positionWithoutMiniMap;
+
+        private BaseCollection<RealmModel> realms => DataStore.i.realm.realmsInfo;
+        private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
+        private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
+        private RectTransform rectTransform;
+
+        private void Start()
         {
-            jumpButton.interactable = true;
-            rectTransform.anchoredPosition = minimapVisible.Get() ? positionWithMiniMap.anchoredPosition : positionWithoutMiniMap.anchoredPosition;
-            showHideAnimator.Show();
+            rectTransform = jumpButton.GetComponent<RectTransform>();
+            jumpButton.onClick.AddListener(GoHome);
+            jumpHomeButtonVisible.OnChange += SetVisibility;
         }
-        else
+
+        private void SetVisibility(bool current, bool _)
         {
-            showHideAnimator.Hide();
+            if (current)
+            {
+                jumpButton.interactable = true;
+                rectTransform.anchoredPosition = minimapVisible.Get() ? positionWithMiniMap.anchoredPosition : positionWithoutMiniMap.anchoredPosition;
+                showHideAnimator.Show();
+            }
+            else
+            {
+                showHideAnimator.Hide();
+            }
         }
-    }
-    private void GoHome()
-    {
-        jumpButton.interactable = false;
-        WebInterface.JumpIn(0, 0, GetMostPopulatedRealm(), "");
-    }
+        private void GoHome()
+        {
+            jumpButton.interactable = false;
+            WebInterface.JumpInHome(GetMostPopulatedRealm());
+        }
 
-    private string GetMostPopulatedRealm()
-    {
-        List<RealmModel> currentRealms = realms.Get().ToList();
-        return currentRealms.OrderByDescending(e => e.usersCount).FirstOrDefault()?.serverName;
-    }
+        private string GetMostPopulatedRealm()
+        {
+            List<RealmModel> currentRealms = realms.Get().ToList();
+            return currentRealms.OrderByDescending(e => e.usersCount).FirstOrDefault()?.serverName;
+        }
 
-    private void OnDestroy()
-    {
-        jumpButton.onClick.RemoveListener(GoHome);
+        private void OnDestroy() { jumpButton.onClick.RemoveListener(GoHome); }
     }
-
 }

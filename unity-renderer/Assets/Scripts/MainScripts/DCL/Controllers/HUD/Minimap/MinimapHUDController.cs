@@ -170,8 +170,6 @@ public class MinimapHUDController : IHUD
         }
     }
     
-    private void SetVisibility(bool current, bool _)
-    {
+    private void SetVisibility(bool current, bool _) => 
         SetVisibility(current);
-    }
 }
