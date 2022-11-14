@@ -27,7 +27,6 @@ public class PrivateChatWindowController : IHUD
     private bool skipChatInputTrigger;
     private float lastRequestTime;
     private CancellationTokenSource deactivateFadeOutCancellationToken = new CancellationTokenSource();
-    private CancellationTokenSource markMessagesAsSeenCancellationToken = new CancellationTokenSource();
     private bool shouldRequestMessages;
     private ulong oldestTimestamp = ulong.MaxValue;
     private string oldestMessageId;
@@ -198,33 +197,33 @@ public class PrivateChatWindowController : IHUD
 
     private void MinimizeView() => SetVisibility(false);
 
-    private void HandleMessageReceived(ChatMessage message)
+    private void HandleMessageReceived(ChatMessage[] messages)
     {
-        if (!IsMessageFomCurrentConversation(message))
-            return;
-
-        chatHudController.AddChatMessage(message, limitMaxEntries: false);
-
-        if (message.timestamp < oldestTimestamp)
+        var messageLogUpdated = false;
+        
+        foreach (var message in messages)
         {
-            oldestTimestamp = message.timestamp;
-            oldestMessageId = message.messageId;
-        }
+            if (!IsMessageFomCurrentConversation(message)) continue;
 
-        if (View.IsActive)
-        {
-            markMessagesAsSeenCancellationToken.Cancel();
-            markMessagesAsSeenCancellationToken = new CancellationTokenSource();
-            // since there could be many messages coming in a row, avoid making the call instantly for each message
-            // instead make just one call after the iteration finishes
-            MarkMessagesAsSeenDelayed(markMessagesAsSeenCancellationToken.Token).Forget();
-        }
+            chatHudController.AddChatMessage(message, limitMaxEntries: false);
 
-        View?.SetLoadingMessagesActive(false);
-        View?.SetOldMessagesLoadingActive(false);
+            if (message.timestamp < oldestTimestamp)
+            {
+                oldestTimestamp = message.timestamp;
+                oldestMessageId = message.messageId;
+            }
+
+            View?.SetLoadingMessagesActive(false);
+            View?.SetOldMessagesLoadingActive(false);
+
+            messageLogUpdated = true;
+        }
 
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
+        
+        if (View.IsActive && messageLogUpdated)
+            MarkUserChatMessagesAsRead();
     }
 
     private void Hide()
@@ -254,13 +253,6 @@ public class PrivateChatWindowController : IHUD
 
     private void MarkUserChatMessagesAsRead() =>
         chatController.MarkMessagesAsSeen(conversationUserId);
-    
-    private async UniTask MarkMessagesAsSeenDelayed(CancellationToken cancellationToken)
-    {
-        await UniTask.NextFrame(cancellationToken);
-        if (cancellationToken.IsCancellationRequested) return;
-        MarkUserChatMessagesAsRead();
-    }
 
     private void HandleInputFieldSelected()
     {
