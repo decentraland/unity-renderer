@@ -7,6 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Texture = DCL.ECSComponents.Texture;
 using TextureWrapMode = DCL.ECSComponents.TextureWrapMode;
 
 namespace Tests
@@ -46,9 +47,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -66,9 +67,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -92,9 +93,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -111,19 +112,19 @@ namespace Tests
             model2.Texture.Texture.WrapMode = TextureWrapMode.TwmMirror;
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
-            
+
             Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
         }
-        
+
         [UnityTest]
         public IEnumerator ChangeMaterialWhenNoTextureSource()
         {
             Debug.Log(TestAssetsUtils.GetPath() + "/Images/avatar.png");
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -138,9 +139,9 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
@@ -148,7 +149,7 @@ namespace Tests
             };
             handler.OnComponentModelUpdated(scene, entity, model2);
             yield return handler.promiseMaterial;
-            
+
             Assert.AreNotEqual(firstMaterial, handler.promiseMaterial.asset.material);
         }
 
@@ -157,9 +158,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -179,9 +180,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -200,9 +201,9 @@ namespace Tests
 
             PBMaterial model2 = new PBMaterial(model)
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         WrapMode = TextureWrapMode.TwmMirror
                     }
@@ -222,9 +223,9 @@ namespace Tests
         {
             PBMaterial model = new PBMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }
@@ -256,6 +257,35 @@ namespace Tests
             internalMaterialComponent.Received(1)
                                      .RemoveFor(scene, entity,
                                          Arg.Is<InternalMaterial>(x => x.material == null));
+        }
+
+        [UnityTest]
+        public IEnumerator ForgetPreviousPromisesCorrectly()
+        {
+            PBMaterial CreateModel(Color color)
+            {
+                return new PBMaterial()
+                {
+                    AlbedoColor = new Color3() { R = color.r, G = color.g, B = color.b }
+                };
+            }
+
+            handler.OnComponentModelUpdated(scene, entity, CreateModel(Color.black));
+            handler.OnComponentModelUpdated(scene, entity, CreateModel(Color.white));
+            handler.OnComponentModelUpdated(scene, entity, CreateModel(Color.green));
+
+            // Test possible race condition of material being forgotten before loading or failing
+            AssetPromiseKeeper_Material.i.Forget(handler.promiseMaterial);
+
+            handler.OnComponentModelUpdated(scene, entity, CreateModel(Color.grey));
+            handler.OnComponentModelUpdated(scene, entity, CreateModel(Color.blue));
+
+            yield return handler.promiseMaterial;
+
+            // Wait a couple of frames for previous material to be forgotten
+            yield return null;
+            yield return null;
+            Assert.AreEqual(1, AssetPromiseKeeper_Material.i.library.masterAssets.Count);
         }
     }
 }
