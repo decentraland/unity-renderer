@@ -23,9 +23,10 @@ public class JumpToHomeController : MonoBehaviour
 
     private void Start()
     {
+        rectTransform = jumpButton.GetComponent<RectTransform>();
         jumpButton.onClick.AddListener(GoHome);
         jumpHomeButtonVisible.OnChange += SetVisibility;
-        rectTransform = jumpButton.GetComponent<RectTransform>();
+        SetVisibility(jumpHomeButtonVisible.Get(), false);
     }
     
     private void SetVisibility(bool current, bool _)
