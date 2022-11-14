@@ -429,7 +429,7 @@ resharper_blank_lines_around_single_line_invocable = 1
 
 # Blank lines in code
 resharper_keep_blank_lines_in_code = 1
-resharper_remove_blank_lines_near_braces_in_code true = true
+resharper_remove_blank_lines_near_braces_in_code = true
 resharper_blank_lines_around_local_method = 1
 resharper_blank_lines_around_single_line_local_method = 0
 resharper_blank_lines_before_control_transfer_statements = 1
@@ -536,3 +536,85 @@ resharper_object_creation_when_type_not_evident = explicitly_typed
 # Default value
 resharper_default_value_when_type_evident = default_expression
 resharper_default_value_when_type_not_evident = default_expression
+
+### C#: Tabs, Indents, Alignment ###
+# https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_CSharpIndentStylePageSchema.html
+
+# General
+resharper_continuous_indent_multiplier = 1
+
+resharper_indent_nested_usings_stmt = false
+resharper_indent_nested_fixed_stmt = false
+resharper_indent_nested_lock_stmt = false
+
+resharper_indent_nested_for_stmt = true
+resharper_indent_nested_foreach_stmt = true
+resharper_indent_nested_while_stmt = true 
+
+# Parenthesis
+resharper_use_continuous_indent_inside_parens = true
+
+resharper_indent_method_decl_pars = inside
+resharper_indent_invocation_pars = inside
+resharper_indent_statement_pars = inside
+resharper_indent_typeparam_angles = inside
+resharper_indent_typearg_angles = inside
+resharper_indent_pars = inside
+
+# Preprocessor directives
+resharper_indent_preprocessor_if = no_indent
+resharper_indent_preprocessor_region = no_indent
+resharper_indent_preprocessor_other = no_indent
+
+# Other indents
+resharper_indent_switch_labels = true
+resharper_outdent_statement_labels = true
+resharper_indent_type_constraints = true
+resharper_stick_comment = false
+resharper_use_indent_from_previous_element = true
+resharper_indent_braces_inside_statement_conditions = true
+
+# Align multiline constructs
+resharper_alignment_tab_fill_style = use_spaces
+resharper_allow_far_alignment = false
+resharper_align_multiline_extends_list = false
+resharper_align_linq_query = false
+resharper_align_multiline_binary_expressions_chain = true
+resharper_outdent_binary_ops = false
+resharper_align_multiline_calls_chain = true
+resharper_outdent_dots = true
+resharper_align_multiline_array_and_object_initializer = false
+resharper_align_multiline_switch_expression = true
+resharper_align_multiline_property_pattern = false
+resharper_align_multiline_binary_patterns = false
+resharper_outdent_binary_pattern_ops = false
+resharper_indent_anonymous_method_block = false
+resharper_align_first_arg_by_paren = false
+resharper_align_multiline_argument = false
+resharper_align_tuple_components = false
+resharper_align_multiline_expression = false
+resharper_align_multiline_statement_conditions = true
+resharper_align_multiline_for_stmt = false
+resharper_align_multiple_declaration = true
+resharper_align_multline_type_parameter_list = false
+resharper_align_multline_type_parameter_constrains = false
+resharper_outdent_commas = true
+
+# Align similar code in columns
+resharper_int_align_fix_in_adjacent = true
+
+#resharper_int_align = false
+resharper_int_align_fields = false
+resharper_int_align_properties = false
+resharper_int_align_methods = false
+resharper_int_align_parameters = false
+resharper_int_align_variables = false
+resharper_int_align_assignments = false
+resharper_int_align_property_patterns = false
+resharper_int_align_nested_ternary = false
+resharper_int_align_invocations = false 
+resharper_int_align_binary_expressions = false 
+resharper_int_align_switch_sections = false 
+resharper_int_align_switch_expressions = false 
+
+resharper_int_align_comments = true
