@@ -82,6 +82,10 @@ public static class ECSTransformUtils
 
     public static bool IsInsideSceneBoundaries(IParcelScene scene, Vector2Int position)
     {
+        if (scene.isPersistent)
+        {
+            return true;
+        }
         return scene.sceneData.parcels.Contains(position);
     }
 }

@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using System;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -47,6 +47,7 @@ namespace DCL.Chat.HUD
         {
             model = chatEntryModel;
 
+            chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
             var userString = GetUserString(chatEntryModel);
 

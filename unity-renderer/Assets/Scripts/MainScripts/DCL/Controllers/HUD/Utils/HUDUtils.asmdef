@@ -1,12 +1,12 @@
 {
-    "name": "RPC.Services.CRDTService.CRDTStream",
+    "name": "HUDUtils",
     "rootNamespace": "",
     "references": [
-        "GUID:374252a1740a422eb7762fc12ff3bf8a"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
