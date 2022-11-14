@@ -13,6 +13,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
     [SerializeField] internal TMP_Text nftNameMarketPlace;
     [SerializeField] internal GameObject marketplaceSection;
     [SerializeField] internal ImageComponentView nftImage;
+    [SerializeField] internal ImageComponentView typeImage;
+    [SerializeField] internal NFTTypesIcons nftTypesIcons;
     
     [SerializeField] internal NFTIconComponentModel model;
 
@@ -58,6 +60,13 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
         model.imageURI = imageURI;
 
         nftImage.SetImage(imageURI);
+    }
+    
+    public void SetType(string type)
+    {
+        model.type = type;
+    
+        typeImage.SetImage(nftTypesIcons.GetTypeImage(type));
     }
 
     public override void OnFocus()
