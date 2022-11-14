@@ -71,6 +71,7 @@ namespace DCL.Chat.HUD
         private float loadMoreEntriesRestrictionTime;
         private Coroutine requireMoreEntriesRoutine;
         private bool isConnectWalletMode;
+        private VerticalLayoutGroup directChatVerticalLayoutGroup;
 
         public event Action OnClose;
         public event Action<string> OnOpenPrivateChat;
@@ -109,6 +110,7 @@ namespace DCL.Chat.HUD
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             directChatList.SortingMethod = (a, b) => b.Model.lastMessageTimestamp.CompareTo(a.Model.lastMessageTimestamp);
             directChatList.OnOpenChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
+            directChatVerticalLayoutGroup = directChatList.GetComponent<VerticalLayoutGroup>();
             searchResultsList.OnOpenPrivateChat += entry => OnOpenPrivateChat?.Invoke(entry.Model.userId);
             searchResultsList.OnOpenPublicChat += entry => OnOpenPublicChat?.Invoke(entry.Model.channelId);
             publicChannelList.SortingMethod = SortByAlphabeticalOrder;
@@ -206,6 +208,7 @@ namespace DCL.Chat.HUD
         {
             loadMoreEntriesContainer.SetActive(false);
             emptyDirectChatsContainer.SetActive(directChatList.Count() == 0);
+            directChatVerticalLayoutGroup.enabled = !emptyDirectChatsContainer.activeSelf;
             UpdateLayout();
         }
 
@@ -215,6 +218,7 @@ namespace DCL.Chat.HUD
                 $"{count} chats hidden. Use the search bar to find them or click below to show more.");
             loadMoreEntriesContainer.SetActive(true);
             emptyDirectChatsContainer.SetActive(false);
+            directChatVerticalLayoutGroup.enabled = true;
             UpdateLayout();
         }
 
