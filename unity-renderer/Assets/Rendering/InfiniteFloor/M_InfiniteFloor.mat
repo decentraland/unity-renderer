@@ -155,7 +155,7 @@ Material:
     - _MousePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OverlayColor: {r: 0, g: 0, b: 0, a: 1}
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
-    - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _PlayerPosition: {r: 128, g: 200, b: 0, a: 0}
     - _RoadsColorBalancer: {r: 0.6792453, g: 0.48774087, b: 0, a: 0}
     - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
     - _UnownedVariationRange: {r: 0.6, g: 1.25, b: 0, a: 0}

@@ -1097,32 +1097,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -1132,19 +1146,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -2692,32 +2703,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -2727,19 +2752,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -3537,32 +3559,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -3582,19 +3618,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -4232,32 +4265,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -4277,19 +4324,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -4927,32 +4971,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -4972,19 +5030,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -6327,32 +6382,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -6362,19 +6431,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -7862,32 +7928,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -7897,19 +7977,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -9456,32 +9533,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -9491,19 +9582,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -10299,32 +10387,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -10344,19 +10446,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -10993,32 +11092,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -11038,19 +11151,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -11687,32 +11797,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -11732,19 +11856,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -13087,32 +13208,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -13122,19 +13257,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
@@ -14623,32 +14755,46 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
-        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
-            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
-                    {
-                        
-                        Out = true;
-                    }
-                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
-                    {
-                       
-                        Out = true;
-                    }
-                    else
-                    {
-                        
-                        Out = false;
-                    }
+        void CheckPP_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            // checking zero zero position
+            if(playerPosition.x == 0 && playerPosition.y == 0)
+            {
+            Out = false;
+            }
+
+            // checking weird cases for x
+            if(playerPosition.x > 10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            if(playerPosition.x < -10)
+            {
+            playerPosition.x = playerPosition.x / 10;
+            }
+
+            // checking weird cases for y
+            if(playerPosition.y > 10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            if(playerPosition.y < -10)
+            {
+            playerPosition.y = playerPosition.y / 10;
+            }
+
+            // checking x to 128
+            if(playerPosition.x > boxCornerA.x || playerPosition.y > boxCornerA.y)
+            {
+            Out = true;
+            }
+
+            // checking x to -128
+            if(playerPosition.x <  boxCornerC.x || playerPosition.y < boxCornerC.y)
+            {
+            Out = true;
+            }
         }
 
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
@@ -14658,19 +14804,16 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
             float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
-            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
-            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
-            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
-            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPP_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
             float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
-            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.012, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
             float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
             float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
             Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
             float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
-            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            Unity_Branch_float(_CheckPPCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
             OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
