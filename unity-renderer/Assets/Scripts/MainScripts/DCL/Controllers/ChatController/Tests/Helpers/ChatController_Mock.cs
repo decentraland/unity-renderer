@@ -22,19 +22,7 @@ public class ChatController_Mock : IChatController
     public event Action<string, Channel[]> OnChannelSearchResult;
 
     public int TotalUnseenMessages { get; }
-
-    public List<ChatMessage> GetAllocatedEntries() { return entries; }
-
-    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
-    {
-        return new List<ChatMessage>();
-    }
-
-    public void RaiseAddMessage(ChatMessage chatMessage)
-    {
-        entries.Add(chatMessage);
-        OnAddMessage?.Invoke(chatMessage);
-    }
+    public bool IsInitialized { get; }
 
     public void Send(ChatMessage message)
     {
@@ -89,8 +77,6 @@ public class ChatController_Mock : IChatController
 
     public Channel GetAllocatedChannel(string channelId) => null;
 
-    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) => new List<ChatMessage>();
-    
     public void GetUnseenMessagesByUser()
     {
     }

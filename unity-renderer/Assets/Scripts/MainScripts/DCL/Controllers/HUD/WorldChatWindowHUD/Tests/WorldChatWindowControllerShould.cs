@@ -35,8 +35,9 @@ public class WorldChatWindowControllerShould
         ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownUserProfile);
-        chatController = Substitute.For<IChatController>();
         mouseCatcher = Substitute.For<IMouseCatcher>();
+        chatController = Substitute.For<IChatController>();
+        chatController.IsInitialized.Returns(true);
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
