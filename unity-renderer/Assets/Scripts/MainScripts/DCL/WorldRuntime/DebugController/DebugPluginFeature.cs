@@ -1,5 +1,6 @@
 using DCL.Bots;
 using DCL.Helpers;
+using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -31,7 +32,7 @@ namespace DCL
             kernelConfigPromise.Catch(Debug.Log);
             kernelConfigPromise.Then(OnKernelConfigChanged);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
-            DataStore.i.realm.playerRealm.OnChange += OnPlayerRealmChanged;
+            DataStore.i.realm.realmName.OnChange += OnPlayerRealmChanged;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
@@ -53,9 +54,9 @@ namespace DCL
             }
         }
 
-        private void OnPlayerRealmChanged(CurrentRealmModel current, CurrentRealmModel previous)
+        private void OnPlayerRealmChanged(string current, string previous)
         {
-            debugController.SetRealm(GetRealmName());
+            debugController.SetRealm(current);
         }
 
         private bool IsInfoPanelVisible(string network)
@@ -74,7 +75,7 @@ namespace DCL
         public void Dispose()
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
-            DataStore.i.realm.playerRealm.OnChange -= OnPlayerRealmChanged;
+            DataStore.i.realm.realmName.OnChange -= OnPlayerRealmChanged;
             kernelConfigPromise?.Dispose();
         }
     }

@@ -15,7 +15,7 @@ namespace Tests
         private ECS7TestScene scene;
         private ECSTransformHandler handler;
         private IWorldState worldState;
-        private BaseVariable<Vector3> playerTeleportPosition;
+        private IBaseVariable<Vector3> playerTeleportPosition;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
 
         [SetUp]
@@ -26,7 +26,7 @@ namespace Tests
             entity = scene.CreateEntity(42);
 
             worldState = Substitute.For<IWorldState>();
-            playerTeleportPosition = Substitute.For<BaseVariable<Vector3>>();
+            playerTeleportPosition = Substitute.For<IBaseVariable<Vector3>>();
             handler = new ECSTransformHandler(worldState, playerTeleportPosition);
         }
 
@@ -127,7 +127,20 @@ namespace Tests
 
             Vector3 position = new Vector3(8, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)));
+            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)), true);
+        }
+
+        [Test]
+        public void MoveCharacterWhenGlobalSceneTriggerIt()
+        {
+            scene.isPersistent = true;
+            worldState.GetCurrentSceneId().Returns("not-temptation");
+            var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
+
+            Vector3 position = new Vector3(8, 0, 0);
+            handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
+            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)), 
+                true);
         }
 
         [Test]
@@ -139,7 +152,7 @@ namespace Tests
 
             Vector3 position = new Vector3(1000, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>(), true);
         }
 
         [Test]
@@ -150,7 +163,7 @@ namespace Tests
 
             Vector3 position = new Vector3(1000, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>());
+            playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>(), true);
         }
 
         [Test]

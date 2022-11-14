@@ -21,7 +21,6 @@ namespace DCL.Chat
         private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
         private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
         private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
-        private readonly List<ChatMessage> messages = new List<ChatMessage>();
         private HashSet<string> autoJoinChannelList => DataStore.i.HUDs.autoJoinChannelList.Get();
         private bool chatAlreadyInitialized;
         private int totalUnseenMessages;
@@ -34,7 +33,7 @@ namespace DCL.Chat
         public event Action<string, ChannelErrorCode> OnChannelLeaveError;
         public event Action<string, ChannelErrorCode> OnMuteChannelError;
         public event Action OnInitialized;
-        public event Action<ChatMessage> OnAddMessage;
+        public event Action<ChatMessage[]> OnAddMessage;
         public event Action<int> OnTotalUnseenMessagesUpdated;
         public event Action<string, int> OnUserUnseenMessagesUpdated;
         public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
@@ -75,18 +74,15 @@ namespace DCL.Chat
         // called by kernel
         [PublicAPI]
         public void AddMessageToChatWindow(string jsonMessage) =>
-            AddMessage(JsonUtility.FromJson<ChatMessage>(jsonMessage));
+            AddMessages(new[] {JsonUtility.FromJson<ChatMessage>(jsonMessage)});
 
         // called by kernel
         [PublicAPI]
         public void AddChatMessages(string jsonMessage)
         {
             var messages = JsonUtility.FromJson<ChatMessageListPayload>(jsonMessage);
-
             if (messages == null) return;
-
-            foreach (var message in messages.messages)
-                AddMessage(message);
+            AddMessages(messages.messages);
         }
 
         // called by kernel
@@ -357,8 +353,6 @@ namespace DCL.Chat
             WebInterface.MarkChannelMessagesAsSeen(channelId);
         }
 
-        public List<ChatMessage> GetAllocatedEntries() => new List<ChatMessage>(messages);
-
         public void GetUnseenMessagesByUser() => WebInterface.GetUnseenMessagesByUser();
 
         public void GetUnseenMessagesByChannel() => WebInterface.GetUnseenMessagesByChannel();
@@ -372,13 +366,6 @@ namespace DCL.Chat
                 : 0;
 
         public void CreateChannel(string channelId) => WebInterface.CreateChannel(channelId);
-
-        public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
-        {
-            return messages
-                .Where(x => (x.sender == userId || x.recipient == userId) && x.messageType == ChatMessage.Type.PRIVATE)
-                .ToList();
-        }
 
         public void GetChannelInfo(string[] channelIds) => WebInterface.GetChannelInfo(channelIds);
 
@@ -404,25 +391,34 @@ Invite others to join by quoting the channel name in other chats or include it a
                     messageId = Guid.NewGuid().ToString()
                 };
 
-            AddMessage(message);
+            AddMessages(new[] {message});
         }
 
-        private void AddMessage(ChatMessage message)
+        private void AddMessages(ChatMessage[] messages)
         {
-            if (message == null) return;
+            if (messages == null) return;
 
-            messages.Add(message);
+            var nearbyUpdated = false;
+            var nearbyUnseenMessages = unseenMessagesByChannel.ContainsKey(NEARBY_CHANNEL_ID)
+                ? unseenMessagesByChannel[NEARBY_CHANNEL_ID]
+                : 0;
 
-            if (message.messageType == ChatMessage.Type.PUBLIC && string.IsNullOrEmpty(message.recipient))
+            foreach (var message in messages)
             {
-                if (!unseenMessagesByChannel.ContainsKey(NEARBY_CHANNEL_ID))
-                    unseenMessagesByChannel[NEARBY_CHANNEL_ID] = 0;
+                if (message.messageType != ChatMessage.Type.PUBLIC) continue;
+                if (!string.IsNullOrEmpty(message.recipient)) continue;
 
-                UpdateTotalUnseenMessagesByChannel(NEARBY_CHANNEL_ID, unseenMessagesByChannel[NEARBY_CHANNEL_ID] + 1);
+                nearbyUnseenMessages++;
+                nearbyUpdated = true;
+            }
+
+            if (nearbyUpdated)
+            {
+                UpdateTotalUnseenMessagesByChannel(NEARBY_CHANNEL_ID, nearbyUnseenMessages);
                 OnTotalUnseenMessagesUpdated?.Invoke(TotalUnseenMessages);
             }
 
-            OnAddMessage?.Invoke(message);
+            OnAddMessage?.Invoke(messages);
         }
 
         private void UpdateTotalUnseenMessagesByChannel(string channelId, int count)

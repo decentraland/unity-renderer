@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
+using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -12,7 +13,8 @@ public class GeneralDebugMetricModule : IDebugMetricModule
     private string currentRealmValue = string.Empty;
     private int lastPlayerCount;
     private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-    private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
+    private BaseVariable<string> currentRealmName => DataStore.i.realm.realmName;
+
     private Promise<KernelConfigModel> kernelConfigPromise;
 
 
@@ -39,7 +41,7 @@ public class GeneralDebugMetricModule : IDebugMetricModule
     {
         otherPlayers.OnAdded -= OnOtherPlayersModified;
         otherPlayers.OnRemoved -= OnOtherPlayersModified;
-        currentRealm.OnChange -= UpdateRealm;
+        currentRealmName.OnChange -= UpdateRealm;
         kernelConfigPromise.Dispose();
         KernelConfig.i.OnChange -= OnKernelConfigChanged;
     }
@@ -69,14 +71,14 @@ public class GeneralDebugMetricModule : IDebugMetricModule
     
     private void SetupRealm()
     {
-        currentRealm.OnChange += UpdateRealm;
-        UpdateRealm(currentRealm.Get(), null);
+        currentRealmName.OnChange += UpdateRealm;
+        UpdateRealm(currentRealmName.Get(), null);
     }
     
-    private void UpdateRealm(CurrentRealmModel current, CurrentRealmModel previous)
+    private void UpdateRealm(string current, string previous)
     {
         if (current == null) return;
-        currentRealmValue = current.serverName ?? string.Empty;
+        currentRealmValue = current ?? string.Empty;
     }
 
     public void Dispose() { }

@@ -8,7 +8,7 @@ public class ChatController_Mock : IChatController
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
 
     public event Action OnInitialized;
-    public event Action<ChatMessage> OnAddMessage;
+    public event Action<ChatMessage[]> OnAddMessage;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
     public event Action<Channel> OnAutoChannelJoined;
@@ -29,7 +29,7 @@ public class ChatController_Mock : IChatController
     {
         if (message == null) return;
         entries.Add(message);
-        OnAddMessage?.Invoke(message);
+        OnAddMessage?.Invoke(new[] {message});
     }
 
     public void MarkMessagesAsSeen(string userId)
@@ -39,7 +39,7 @@ public class ChatController_Mock : IChatController
     public void GetPrivateMessages(string userId, int limit, string fromMessageId)
     {
     }
-    
+
     public void MarkChannelMessagesAsSeen(string channelId)
     {
     }
@@ -89,7 +89,7 @@ public class ChatController_Mock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => 0;
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
-    
+
     public void CreateChannel(string channelId)
     {
     }

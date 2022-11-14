@@ -195,26 +195,33 @@ namespace DCL.Chat.HUD
             chatController.Send(message);
         }
 
-        private void HandleMessageReceived(ChatMessage message)
+        private void HandleMessageReceived(ChatMessage[] messages)
         {
-            if (!IsMessageFomCurrentChannel(message)) return;
+            var messageLogUpdated = false;
+            
+            foreach (var message in messages)
+            {
+                if (!IsMessageFomCurrentChannel(message)) continue;
 
-            UpdateOldestMessage(message);
+                UpdateOldestMessage(message);
 
-            message.isChannelMessage = true;
-            // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
-            // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
-            // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
-            chatHudController.AddChatMessage(message, limitMaxEntries: true);
+                message.isChannelMessage = true;
+                // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
+                // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
+                // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
+                chatHudController.AddChatMessage(message, limitMaxEntries: true);
 
-            if (View.IsActive)
+                View?.SetLoadingMessagesActive(false);
+                View?.SetOldMessagesLoadingActive(false);
+
+                messageLogUpdated = true;
+            }
+            
+            if (View.IsActive && messageLogUpdated)
             {
                 // The messages from 'channelId' are marked as read if the channel window is currently open
                 MarkChannelMessagesAsRead();
             }
-
-            View?.SetLoadingMessagesActive(false);
-            View?.SetOldMessagesLoadingActive(false);
         }
 
         private void UpdateOldestMessage(ChatMessage message)

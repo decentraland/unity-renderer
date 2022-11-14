@@ -87,7 +87,7 @@ namespace DCL.Chat.HUD
 
         public override void Hide(bool instant = false) => gameObject.SetActive(false);
 
-        public void ClearSearchInput() => searchBar.ClearSearch();
+        public void ClearSearchInput(bool notify = true) => searchBar.ClearSearch(notify);
 
         public void HideLoading()
         {
