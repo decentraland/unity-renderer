@@ -96,23 +96,23 @@ namespace DCL.ECSComponents
                 UniTask.RunOnThreadPool(async () =>
                 {
                     await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
-                    ForgetPreviousPromises(activePromises);
+                    ForgetPreviousPromises(activePromises, materialAsset);
                 });
             };
             promiseMaterial.OnFailEvent += (material, exception) =>
             {
-                ForgetPreviousPromises(activePromises);
+                ForgetPreviousPromises(activePromises, material);
             };
             activePromises.Enqueue(promiseMaterial);
             AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
         }
 
-        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises)
+        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
         {
             if (promises.Count <= 1)
                 return;
 
-            while (promises.Count > 1)
+            while (promises.Count > 1 && promises.Peek().asset != currentAppliedMaterial)
             {
                 AssetPromiseKeeper_Material.i.Forget(promises.Dequeue());
             }
