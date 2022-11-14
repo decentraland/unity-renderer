@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
         private PBMaterial lastModel = null;
         internal AssetPromise_Material promiseMaterial;
 
-        private readonly HashSet<AssetPromise_Material> activePromises = new HashSet<AssetPromise_Material>();
+        private readonly Queue<AssetPromise_Material> activePromises = new Queue<AssetPromise_Material>();
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
 
         public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent)
@@ -26,9 +26,10 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
-            foreach (var promise in activePromises)
+
+            while (activePromises.Count > 0)
             {
-                AssetPromiseKeeper_Material.i.Forget(promise);
+                AssetPromiseKeeper_Material.i.Forget(activePromises.Dequeue());
             }
         }
 
@@ -81,8 +82,6 @@ namespace DCL.ECSComponents
                 promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture);
             }
 
-            AssetPromise_Material prevPromise = promiseMaterial;
-
             promiseMaterial = new AssetPromise_Material(promiseModel);
             promiseMaterial.OnSuccessEvent += materialAsset =>
             {
@@ -90,20 +89,33 @@ namespace DCL.ECSComponents
                 {
                     material = materialAsset.material
                 });
+
+                // Run task to forget previous material after update to avoid forgetting a
+                // material that has not be changed from the renderers yet, since material change
+                // is done by a system during update
                 UniTask.RunOnThreadPool(async () =>
                 {
                     await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
-                    AssetPromiseKeeper_Material.i.Forget(prevPromise);
-                    activePromises.Remove(prevPromise);
+                    ForgetPreviousPromises(activePromises);
                 });
             };
             promiseMaterial.OnFailEvent += (material, exception) =>
             {
-                AssetPromiseKeeper_Material.i.Forget(prevPromise);
-                activePromises.Remove(prevPromise);
+                ForgetPreviousPromises(activePromises);
             };
-            activePromises.Add(promiseMaterial);
+            activePromises.Enqueue(promiseMaterial);
             AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
+        }
+
+        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises)
+        {
+            if (promises.Count <= 1)
+                return;
+
+            while (promises.Count > 1)
+            {
+                AssetPromiseKeeper_Material.i.Forget(promises.Dequeue());
+            }
         }
 
         private static AssetPromise_Material_Model CreatePBRMaterialPromiseModel(PBMaterial model,
