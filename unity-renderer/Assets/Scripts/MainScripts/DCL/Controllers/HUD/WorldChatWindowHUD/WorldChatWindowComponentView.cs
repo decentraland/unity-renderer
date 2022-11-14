@@ -319,8 +319,10 @@ namespace DCL.Chat.HUD
             SetChannelsLoadingVisibility(model.isLoadingChannels);
 
             directChatList.Clear();
+            directChatVerticalLayoutGroup.enabled = model.privateChats.Length > 0;
             foreach (var entry in model.privateChats)
                 directChatList.Set(entry.userId, entry);
+
             SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
         }
 
@@ -338,10 +340,13 @@ namespace DCL.Chat.HUD
                 model.isOnline,
                 model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
-        if (isSearchMode)
-            searchResultsList.Set(entry);
-        else
-            directChatList.Set(userId, entry);
+            if (isSearchMode)
+                searchResultsList.Set(entry);
+            else
+            {
+                directChatList.Set(userId, entry);
+                directChatVerticalLayoutGroup.enabled = true;
+            }
 
             UpdateHeaders();
             UpdateLayout();
