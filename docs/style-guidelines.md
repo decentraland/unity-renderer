@@ -22,6 +22,7 @@ Use
 * `camelCase` - non-public Property, non-public Field, methods Parameter, local Variable;
 * `CAPITALS_SNAKE_CASE` - Constants, static read-only fields;
 * `I` prefix in front of Interface name;
+* Asynchronous methods end with `Async`
 * Events name is in past tens and without `On` prefix
 * `_`, `__`, `___` for unused parameters of the method (for example, for events subscribers, interface implementation and inheritance overriden methods)
 
@@ -44,11 +45,13 @@ namespace MyProject                                     // Namespace -> PascalCa
 
         public event Interaction<bool> Interacted;      // event -> PascalCase, without On prefix
         
-        public override void Play(float speed, int _)   // Method -> PascalCase. Method parameters -> camelCase. Not-used parameter -> underscore
+        public void Play(float speed, int _)            // Method -> PascalCase. Method parameters -> camelCase. Not-used parameter -> underscore
         {
             var velocity = speed;                       // local variable -> camelCase
             Interacted += OnInteracted;                 // for event subscribers 'On' prefix can be used
-        }              
+        }
+        
+        public async void PlayAsync(float speed) {..}   // Asynchronous methods end with `Async`             
     }
 }
 ```
@@ -160,6 +163,7 @@ Most of this formatting conventions will be known by your IDE thanks to the .Edi
 * use `var` only when it is evident. In all other cases specify the variable type explicitly.
 * don't omit comparison to `null`: 🟢 `if (character == null)`/`if (character != null)` 🔴 `if (character)`/`if (!character)`
 * use `nameof` where it is possible 
+* use string interpolation instead of concatenation 🟢 `$"url = {url} / userid = {userId}"` 🔴 `"url" + url + " / userid=" + userId`;
 * Use `Action`/`Func` delegate in most cases
   * when the amount of `event`/`delegate` parameters is higher than 3 then define a custom `EventArg` (either `System.EventArgs` or a custom `struct`) or define a custom `delegate`.
 * one line - one statement. Split chain methods (like LINQ) in several lines starting  with `.` on each line
