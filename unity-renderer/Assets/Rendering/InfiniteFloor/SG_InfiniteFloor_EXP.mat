@@ -94,18 +94,18 @@ Material:
     - _isAdvancedFogOn: 1
     - _isBlenderDiskOn: 1
     m_Colors:
-    - _ColorDistricts: {r: 0.16078341, g: 0.80784315, b: 0.8862745, a: 1}
-    - _ColorEmpty: {r: 0.38039115, g: 0.6431373, b: 0.38431275, a: 1}
+    - _ColorDistricts: {r: 0.16078335, g: 0.80784315, b: 0.8862745, a: 1}
+    - _ColorEmpty: {r: 0.3803911, g: 0.6431373, b: 0.3843127, a: 1}
     - _ColorFog: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrassOuter: {r: 1, g: 1, b: 1, a: 0}
     - _ColorGrid: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.37005946, a: 1}
-    - _ColorParcels: {r: 0.38183895, g: 0.64499986, b: 0.3831519, a: 1}
+    - _ColorOwnedParcels: {r: 0.68241787, g: 0.7924528, b: 0.3700594, a: 1}
+    - _ColorParcels: {r: 0.3818389, g: 0.64499986, b: 0.38315183, a: 1}
     - _ColorPlazas: {r: 1, g: 0.5960784, b: 0, a: 1}
     - _ColorStreets: {r: 0.7519999, g: 0.72191995, b: 0.7144, a: 1}
     - _FloorColor: {r: 0.5188676, g: 0.5188676, b: 0.5188676, a: 0}
     - _GrassGridColor: {r: 0.9386792, g: 0.9809621, b: 1, a: 1}
-    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.1093351, a: 1}
+    - _GrassGridColorVariation: {r: 0.5943396, g: 0.5351845, b: 0.10933504, a: 1}
     - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
     - _OwnedVariationRange: {r: 0.75, g: 2, b: 0, a: 0}
     - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}

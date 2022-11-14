@@ -1097,99 +1097,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -2736,99 +2692,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -3625,14 +3537,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -3645,126 +3575,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -4401,14 +4232,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -4421,126 +4270,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -5177,14 +4927,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -5197,126 +4965,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -6658,99 +6327,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -8237,99 +7862,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -9875,99 +9456,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -10762,14 +10299,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -10782,126 +10337,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -11537,14 +10993,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -11557,126 +11031,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -12312,14 +11687,32 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = A * B;
         }
 
-        void Unity_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A >= B ? 1 : 0;
-        }
-
-        void Unity_And_float(float A, float B, out float Out)
-        {
-            Out = A && B;
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
         }
 
         void Unity_Add_float(float A, float B, out float Out)
@@ -12332,126 +11725,27 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             Out = Predicate ? True : False;
         }
 
-        void Unity_Comparison_LessOrEqual_float(float A, float B, out float Out)
-        {
-            Out = A <= B ? 1 : 0;
-        }
-
-        void MultiBranchBool_float(float Case1, float Input1, float Case2, float Input2, float Case3, float Input3, float Case4, float Input4, out float Out){
-            if(Case1 == true)
-            {
-                Out = Input1;
-            }
-
-            if(Case2 == true)
-            {
-                Out = Input2;
-            }
-
-            if(Case3 == true)
-            {
-                Out = Input3;
-            }
-
-            if(Case4 == true)
-            {
-                Out = Input4;
-            }
-        }
-
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -13793,99 +13087,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
@@ -15373,99 +14623,55 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_6_EXP"
             OutVector41_3 = _Property_47f1ad8c5e8c419886a3906ce7f7f307_Out_0;
         }
 
+        void CheckPlayerPosition_float(float2 playerPosition, float2 boxCornerA, float2 boxCornerB, float2 boxCornerC, float2 boxCornerD, float2 boxCenter, out float Out){
+            if (playerPosition.x > boxCornerA.x && playerPosition.y > boxCornerA.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x > boxCornerB.x && playerPosition.y < boxCornerB.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerC.x && playerPosition.y < boxCornerC.y)
+                    {
+                        
+                        Out = true;
+                    }
+                    else if (playerPosition.x < boxCornerD.x && playerPosition.y > boxCornerD.y)
+                    {
+                       
+                        Out = true;
+                    }
+                    else
+                    {
+                        
+                        Out = false;
+                    }
+        }
+
         struct Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa
         {
         };
 
         void SG_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa(float2 Vector2_16dcd55e6482498f9c75c6df20fb36c9, float Vector1_511891f2a9484fa389df0853b561a75c, Bindings_SGInfiniteFloorPlayerPositionForBlender_0b727035d0078b34aa89ad20221419aa IN, out float OutVector_0)
         {
-            float2 _Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0 = 1;
-            float2 _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2;
-            Unity_Multiply_float(_Property_cb7c9ef559ad4dbfbbad01fe9159acad_Out_0, (_Float_18cf96e4c3a34df787e3a69bfa52c8fd_Out_0.xx), _Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2);
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[0];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[1];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_B_3 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[2];
-            float _Split_6fd9df5513ce4c54943a2ddcc54c896f_A_4 = (float4(_Multiply_0077c9fc49d34a4ea7513d3a3f48f561_Out_2, 0.0, 1.0))[3];
-            float _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_R_1, 128, _Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2);
-            float _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6fd9df5513ce4c54943a2ddcc54c896f_G_2, 128, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2);
-            float _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2;
-            Unity_And_float(_Comparison_482b4f743d7c47db83a5032998bef2ea_Out_2, _Comparison_bbb643fb18f647cd9dcc09f15065c94b_Out_2, _And_a7b8c05ef2a8453980643d51f5f4af42_Out_2);
-            float _Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0.015, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2);
-            float _Add_24860d96b5254f4e816c6c82af3e7056_Out_2;
-            Unity_Add_float(_Property_8a6d2706c7654ff6bc48c372852d2e71_Out_0, 0, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2);
-            float _Branch_1d64c61194f04e9bac3429580e746d08_Out_3;
-            Unity_Branch_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Add_fe43f1a2b83240d9b8ed83ad4c2742f1_Out_2, _Add_24860d96b5254f4e816c6c82af3e7056_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3);
-            float2 _Property_4fdcb83053d6487399da43376b95fe89_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_401c1dc56bf5484c8cff567505926be7_Out_0 = 1;
-            float2 _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2;
-            Unity_Multiply_float(_Property_4fdcb83053d6487399da43376b95fe89_Out_0, (_Float_401c1dc56bf5484c8cff567505926be7_Out_0.xx), _Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2);
-            float _Split_bb617153b968489e8da07542708d1617_R_1 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[0];
-            float _Split_bb617153b968489e8da07542708d1617_G_2 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[1];
-            float _Split_bb617153b968489e8da07542708d1617_B_3 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[2];
-            float _Split_bb617153b968489e8da07542708d1617_A_4 = (float4(_Multiply_75b61d6cfbcb48cf89f98a3c7a8120da_Out_2, 0.0, 1.0))[3];
-            float _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_bb617153b968489e8da07542708d1617_R_1, 128, _Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2);
-            float _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_bb617153b968489e8da07542708d1617_G_2, -128, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2);
-            float _And_7457db315b5f4ba5876414bcfc01d02e_Out_2;
-            Unity_And_float(_Comparison_351ca68c4b084ac4a82682ec35e613ce_Out_2, _Comparison_f162f9e59aa14dc8a259fa06e4a59197_Out_2, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2);
-            float _Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0.015, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2);
-            float _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2;
-            Unity_Add_float(_Property_d2d1fa87dfea4206a540407b03b43b4f_Out_0, 0, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2);
-            float _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3;
-            Unity_Branch_float(_And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Add_3f443d0ed1524fe6ad63cc072c72aead_Out_2, _Add_e94035fdfe46465eb6c6b37a7c0ca0cf_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3);
-            float2 _Property_a9da0436af0b41919da8c33f58e150cb_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0 = 1;
-            float2 _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2;
-            Unity_Multiply_float(_Property_a9da0436af0b41919da8c33f58e150cb_Out_0, (_Float_7aaa9c5d82014d798b49c58e7db7dc58_Out_0.xx), _Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2);
-            float _Split_0307251e64c74016b82510d2fcb58f93_R_1 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[0];
-            float _Split_0307251e64c74016b82510d2fcb58f93_G_2 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[1];
-            float _Split_0307251e64c74016b82510d2fcb58f93_B_3 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[2];
-            float _Split_0307251e64c74016b82510d2fcb58f93_A_4 = (float4(_Multiply_41038561c99a4ebfbb2f8b5ce56ba655_Out_2, 0.0, 1.0))[3];
-            float _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_R_1, -128, _Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2);
-            float _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_0307251e64c74016b82510d2fcb58f93_G_2, -128, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2);
-            float _And_11631c6f8ffe4e18af634be14834331c_Out_2;
-            Unity_And_float(_Comparison_9ea705d7b8b1441f9e7363d8ef5e986d_Out_2, _Comparison_297e92ba92fd4731a04b4ddca7a008e9_Out_2, _And_11631c6f8ffe4e18af634be14834331c_Out_2);
-            float _Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_dde2f895c92a4352a57d87fdfb063466_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0.015, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2);
-            float _Add_6204ba451d8d47d2892c5dd900179340_Out_2;
-            Unity_Add_float(_Property_1740560c0fac410f92e3274d1d7fd9d9_Out_0, 0, _Add_6204ba451d8d47d2892c5dd900179340_Out_2);
-            float _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3;
-            Unity_Branch_float(_And_11631c6f8ffe4e18af634be14834331c_Out_2, _Add_dde2f895c92a4352a57d87fdfb063466_Out_2, _Add_6204ba451d8d47d2892c5dd900179340_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3);
-            float2 _Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
-            float _Float_c08d2e14cb694a0b8580c92488e8770e_Out_0 = 1;
-            float2 _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2;
-            Unity_Multiply_float(_Property_61370d8b95d746a7a0950bc6ef8b8467_Out_0, (_Float_c08d2e14cb694a0b8580c92488e8770e_Out_0.xx), _Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2);
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[0];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[1];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_B_3 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[2];
-            float _Split_6af9f4e93f144a5aa8bff9061c4ac36c_A_4 = (float4(_Multiply_a7dec7cc950e4f679c525ae264dd112f_Out_2, 0.0, 1.0))[3];
-            float _Comparison_27404958114e47e0b73eac1c917b7314_Out_2;
-            Unity_Comparison_LessOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_R_1, -128, _Comparison_27404958114e47e0b73eac1c917b7314_Out_2);
-            float _Comparison_97994e057654486888cf80c78320b8a3_Out_2;
-            Unity_Comparison_GreaterOrEqual_float(_Split_6af9f4e93f144a5aa8bff9061c4ac36c_G_2, 128, _Comparison_97994e057654486888cf80c78320b8a3_Out_2);
-            float _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2;
-            Unity_And_float(_Comparison_27404958114e47e0b73eac1c917b7314_Out_2, _Comparison_97994e057654486888cf80c78320b8a3_Out_2, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2);
-            float _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
-            float _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2;
-            Unity_Add_float(_Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, 0.015, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2);
-            float _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2;
-            Unity_Add_float(0, _Property_f3d1d7249c5648d2ba5f88d7903cfca8_Out_0, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2);
-            float _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3;
-            Unity_Branch_float(_And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Add_948cb65b53864bd18ac1d2cebd0f69f5_Out_2, _Add_9f9f1795e2ba480080c1b092c0b744d1_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3);
-            float _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
-            MultiBranchBool_float(_And_a7b8c05ef2a8453980643d51f5f4af42_Out_2, _Branch_1d64c61194f04e9bac3429580e746d08_Out_3, _And_7457db315b5f4ba5876414bcfc01d02e_Out_2, _Branch_a52c0d7dce0c4e3abee583e8351d00af_Out_3, _And_11631c6f8ffe4e18af634be14834331c_Out_2, _Branch_2d0fecd976b643c9874b6e75205eeb21_Out_3, _And_5030d3a8354f4357b8cbee737f1c4e82_Out_2, _Branch_17a22fa4b9e24322a62ea9c79740f01b_Out_3, _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4);
-            OutVector_0 = _MultiBranchBoolCustomFunction_2d9980c4f61a4299a936fe93af786ad4_Out_4;
+            float2 _Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0 = Vector2_16dcd55e6482498f9c75c6df20fb36c9;
+            float _Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0 = 1;
+            float2 _Multiply_580aff5e367f49848da79566307a914e_Out_2;
+            Unity_Multiply_float(_Property_e470f7a6d4de460d897bd0ce75dd2952_Out_0, (_Float_af307ac7e4ba4d05968c29f7def74d1e_Out_0.xx), _Multiply_580aff5e367f49848da79566307a914e_Out_2);
+            float _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0;
+            CheckPlayerPosition_float(_Multiply_580aff5e367f49848da79566307a914e_Out_2, float2 (128, 128), float2 (128, -128), float2 (-128, -128), float2 (-128, 128), float2 (0, 0), _CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0);
+            float _Property_1073ca4312e34a789db473f458175788_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2;
+            Unity_Add_float(_Property_1073ca4312e34a789db473f458175788_Out_0, 0.015, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2);
+            float _Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0 = Vector1_511891f2a9484fa389df0853b561a75c;
+            float _Add_b1c0597ff3054e16b39123f227e2730d_Out_2;
+            Unity_Add_float(_Property_f6076d10d9c24e618d534e1d1b155a1f_Out_0, 0, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2);
+            float _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
+            Unity_Branch_float(_CheckPlayerPositionCustomFunction_263c5172c9214bdc913008303785dead_Out_0, _Add_4af2ebca2dc6489fbd01f1623fa76f15_Out_2, _Add_b1c0597ff3054e16b39123f227e2730d_Out_2, _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3);
+            OutVector_0 = _Branch_1ec0cfb65c2a4a2abb0e09814086da44_Out_3;
         }
 
         void Unity_Divide_float2(float2 A, float2 B, out float2 Out)
