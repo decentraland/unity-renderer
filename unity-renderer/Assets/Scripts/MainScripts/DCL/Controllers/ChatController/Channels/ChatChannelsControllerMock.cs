@@ -102,6 +102,7 @@ namespace DCL.Chat.Channels
         }
 
         public int TotalUnseenMessages => controller.TotalUnseenMessages;
+        public bool IsInitialized => controller.IsInitialized;
 
         public ChatChannelsControllerMock(
             ChatController controller,

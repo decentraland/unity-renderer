@@ -33,6 +33,7 @@ namespace DCL.Chat.HUD
         private string channelId;
         private Channel channel;
         private ChatMessage oldestMessage;
+        private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
         public event Action OnPressBack;
         public event Action OnClosed;
@@ -192,7 +193,6 @@ namespace DCL.Chat.HUD
             }
 
             chatController.Send(message);
-            socialAnalytics.SendMessageSentToChannel(channel.Name, message.body.Length, "channel");
         }
 
         private void HandleMessageReceived(ChatMessage message)
@@ -348,7 +348,8 @@ namespace DCL.Chat.HUD
         private PublicChatModel ToPublicChatModel(Channel channel)
         {
             return new PublicChatModel(channelId, channel.Name, channel.Description,
-                channel.Joined, channel.MemberCount, channel.Muted);
+                channel.Joined, channel.MemberCount, channel.Muted,
+                showOnlyOnlineMembersOnPublicChannels);
         }
         
         private void ClearChatControllerListeners()
