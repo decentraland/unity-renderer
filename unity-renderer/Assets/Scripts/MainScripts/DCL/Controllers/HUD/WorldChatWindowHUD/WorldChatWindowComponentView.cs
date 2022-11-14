@@ -319,7 +319,6 @@ namespace DCL.Chat.HUD
             directChatList.Clear();
             foreach (var entry in model.privateChats)
                 directChatList.Set(entry.userId, entry);
-
             SetPrivateChatLoadingVisibility(model.isLoadingDirectChats);
         }
 
