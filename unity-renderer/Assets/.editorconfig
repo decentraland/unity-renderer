@@ -1,34 +1,27 @@
 # Top-most EditorConfig file. Remove the line below if you want to inherit .editorconfig settings from higher directories.
 root = true
 
-# Don't use tabs for indentation.
 [*]
-indent_style = space
+indent_style = space # Don't use tabs for indentation.
 
-# C# files
 [*.cs]
 charset = utf-8
-
-# Indentation and spacing
 indent_size = 4
 tab_width = 4
-
 end_of_line = crlf
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-dotnet_style_allow_multiple_blank_lines_experimental = false
+#max_line_length = 180
 
 dotnet_analyzer_diagnostic.category-Style.severity = warning
+dotnet_style_allow_multiple_blank_lines_experimental = false
 
 ###############################
 #     Naming Conventions     #
 ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/naming-rules
 
-# Global severity of naming violations 
-dotnet_diagnostic.IDE1006.severity = warning
-
+dotnet_diagnostic.IDE1006.severity = warning # Global severity of naming violations 
 
 #### PascalCase ####
 # By default, name items with PascalCase
@@ -618,3 +611,53 @@ resharper_int_align_switch_sections = false
 resharper_int_align_switch_expressions = false 
 
 resharper_int_align_comments = true
+
+### C#: Line Breaks ###
+# https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_LineBreaksPageSchema.html
+
+# General
+resharper_keep_user_linebreaks = true 
+resharper_keep_existing_linebreaks = true
+#resharper_keep_existing_arrangement = false
+
+resharper_wrap_before_comma = false
+resharper_wrap_before_eq = false
+resharper_special_else_if_treatment = true
+
+# Arrangement of attributes
+resharper_max_attribute_length_for_same_line = 40
+resharper_keep_existing_attribute_arrangement = false
+
+resharper_place_type_attribute_on_same_line = never
+resharper_place_method_attribute_on_same_line = never
+resharper_place_accessorholder_attribute_on_same_line = if_owner_is_single_line
+resharper_place_accessor_attribute_on_same_line = always
+resharper_place_field_attribute_on_same_line = if_owner_is_single_line
+resharper_place_record_field_attribute_on_same_line = if_owner_is_single_line
+
+# Arrangement of method signatures
+resharper_wrap_parameters_style = wrap_if_long
+resharper_max_formal_parameters_on_line = 3
+
+resharper_keep_existing_declaration_parens_arrangement = true
+resharper_wrap_before_declaration_lpar = false
+resharper_wrap_after_declaration_lpar = false
+resharper_wrap_before_declaration_rpar = false
+resharper_place_constructor_initializer_on_same_line = true
+
+# Arrangement of expression bodied members
+resharper_keep_existing_expr_member_arrangement = false
+resharper_place_expr_method_on_single_line = never
+resharper_place_expr_property_on_single_line = always
+resharper_place_expr_accessor_on_single_line = always
+resharper_wrap_before_arrow_with_expressions = false
+
+# Arrangement of type parameters, constraints and base types
+resharper_place_type_constraints_on_same_line = true
+resharper_wrap_before_first_type_parameter_constraint = false
+resharper_wrap_multiple_type_parameter_constraints_style = wrap_if_long
+resharper_wrap_before_type_parameter_langle = false
+resharper_wrap_before_extends_colon = false
+resharper_wrap_extends_list_style = wrap_if_long
+
+# Arrangement of declaration blocks
