@@ -101,18 +101,6 @@ namespace DCL.Chat.HUD
         }
 
         [Test]
-        public void TrackMessageSentEvent()
-        {
-            chatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {
-                body = "hey",
-                messageType = ChatMessage.Type.PUBLIC
-            });
-            
-            socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_NAME, 3, "channel");
-        }
-
-        [Test]
         public void MuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(true);

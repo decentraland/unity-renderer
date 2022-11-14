@@ -193,7 +193,6 @@ namespace DCL.Chat.HUD
             }
 
             chatController.Send(message);
-            socialAnalytics.SendMessageSentToChannel(channel.Name, message.body.Length, "channel");
         }
 
         private void HandleMessageReceived(ChatMessage message)
