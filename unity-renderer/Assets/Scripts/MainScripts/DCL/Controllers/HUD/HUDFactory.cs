@@ -38,17 +38,26 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
-                hudElement = new PlayerInfoCardHUDController(
-                    FriendsController.i,
-                    Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                    new UserProfileWebInterfaceBridge(),
-                    new WearablesCatalogControllerBridge(),
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
-                    ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i,
-                    CommonScriptableObjects.playerInfoCardVisibleState);
+                if(DataStore.i.HUDs.enableNewPassport.Get())
+                {
+                    hudElement = new PlayerPassportHUDController(
+                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                        new UserProfileWebInterfaceBridge());
+                }
+                else
+                {
+                    hudElement = new PlayerInfoCardHUDController(
+                        FriendsController.i,
+                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                        new UserProfileWebInterfaceBridge(),
+                        new WearablesCatalogControllerBridge(),
+                        new SocialAnalytics(
+                            Environment.i.platform.serviceProviders.analytics,
+                            new UserProfileWebInterfaceBridge()),
+                        ProfanityFilterSharedInstances.regexFilter,
+                        DataStore.i,
+                        CommonScriptableObjects.playerInfoCardVisibleState);
+                }
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
