@@ -11,6 +11,7 @@ public class ChatController_Mock : IChatController
     public event Action<ChatMessage[]> OnAddMessage;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
+    public event Action<Channel> OnAutoChannelJoined;
     public event Action<string, ChannelErrorCode> OnJoinChannelError;
     public event Action<string> OnChannelLeft;
     public event Action<string, ChannelErrorCode> OnChannelLeaveError;
