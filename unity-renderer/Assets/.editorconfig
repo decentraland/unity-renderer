@@ -5,7 +5,7 @@
 root = true # Top-most EditorConfig file. Remove the line below if you want to inherit .editorconfig settings from higher directories.
 
 # All files
-[*] 
+[*]
 indent_style = space # Don't use tabs for indentation.
 
 # C# files
@@ -17,20 +17,18 @@ end_of_line = crlf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
-
+#max_line_length = 180
 
 ###############################
 #       .NET/C# Options       #
 ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
 dotnet_analyzer_diagnostic.category-Style.severity = warning
-
-#max_line_length = 180
 dotnet_style_allow_multiple_blank_lines_experimental = false
 
 ############################### Naming Rules ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/naming-rules
-dotnet_diagnostic.IDE1006.severity = warning # Global severity of naming violations 
+dotnet_diagnostic.IDE1006.severity = warning # Global severity of naming violations
 
 #### PascalCase ####
 # By default, name items with PascalCase
@@ -158,8 +156,6 @@ csharp_preserve_single_line_blocks = true
 ############################### Language rules ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules
 
-csharp_using_directive_placement = outside_namespace
-
 # this. preferences
 dotnet_diagnostic.IDE0003.severity = warning
 dotnet_diagnostic.IDE0009.severity = warning
@@ -175,7 +171,7 @@ dotnet_diagnostic.IDE0049.severity = warning
 dotnet_style_predefined_type_for_locals_parameters_members = true
 dotnet_style_predefined_type_for_member_access = true
 
-# Modifier preferences 
+# Modifier preferences
 dotnet_diagnostic.IDE0036.severity = none
 #csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
@@ -347,7 +343,7 @@ dotnet_diagnostic.IDE0063.severity = suggestion
 csharp_prefer_simple_using_statement = true
 
 # 'using' directive placement
-dotnet_diagnostic.IDE0065.severity = warning 
+dotnet_diagnostic.IDE0065.severity = warning
 csharp_using_directive_placement = outside_namespace
 
 # Require file header
@@ -376,7 +372,7 @@ dotnet_diagnostic.IDE0060.severity = warning
 dotnet_code_quality_unused_parameters = all
 
 #dotnet_diagnostic.IDE0079.severity = ?
-#dotnet_remove_unnecessary_suppression_exclusions = ? 
+#dotnet_remove_unnecessary_suppression_exclusions = ?
 
 dotnet_diagnostic.IDE0080.severity = warning # Remove unnecessary suppression operator
 dotnet_diagnostic.IDE0081.severity = warning # Remove ByVal
@@ -390,7 +386,7 @@ dotnet_diagnostic.IDE0077.severity =  warning # Avoid legacy format target in gl
 
 
 ###############################
-#   Re-sharper/Rider Options  # 
+#   Re-sharper/Rider Options  #
 ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html
 
@@ -486,7 +482,7 @@ resharper_can_use_global_alias = true
 # Modifiers
 resharper_default_private_modifier = explicit
 resharper_default_internal_modifier = explicit
-#resharper_modifiers_order = 
+#resharper_modifiers_order =
 
 # Arguments
 resharper_arguments_skip_single = false
@@ -547,7 +543,7 @@ resharper_indent_nested_lock_stmt = false
 
 resharper_indent_nested_for_stmt = true
 resharper_indent_nested_foreach_stmt = true
-resharper_indent_nested_while_stmt = true 
+resharper_indent_nested_while_stmt = true
 
 # Parenthesis
 resharper_use_continuous_indent_inside_parens = true
@@ -606,7 +602,7 @@ resharper_int_align_fix_in_adjacent = true
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_LineBreaksPageSchema.html
 
 # General
-resharper_keep_user_linebreaks = true 
+resharper_keep_user_linebreaks = true
 resharper_keep_existing_linebreaks = true
 #resharper_keep_existing_arrangement = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#keep_existing_arrangement
 
@@ -686,7 +682,7 @@ resharper_place_simple_case_statement_on_same_line = always
 # Arrangement of embedded blocks
 resharper_keep_existing_embedded_block_arrangement = false
 resharper_place_simple_embedded_block_on_same_line = true
-resharper_place_simple_anonymousmethod_on_single_line = true 
+resharper_place_simple_anonymousmethod_on_single_line = true
 
 # Arrangement of switch expressions
 resharper_keep_existing_switch_expression_arrangement = false
@@ -735,7 +731,7 @@ resharper_nested_ternary_style = compact
 # Arrangement of LINQ expressions
 resharper_wrap_linq_expressions = wrap_if_long
 resharper_wrap_before_linq_expression = false
-resharper_place_linq_into_on_new_line = false 
+resharper_place_linq_into_on_new_line = false
 
 # Arrangement of interpolated strings
 resharper_wrap_verbatim_interpolated_strings = no_wrap
@@ -813,7 +809,7 @@ resharper_space_after_attributes = true
 # Other
 resharper_space_around_dot = false
 #resharper_space_around_member_access_operator = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_around_member_access_operator
-resharper_space_around_lambda_arrow = true 
+resharper_space_around_lambda_arrow = true
 resharper_space_before_pointer_asterik_declaration = false
 resharper_space_before_nullable_mark = false
 resharper_space_around_alias_eq = true
