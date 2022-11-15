@@ -124,10 +124,10 @@ csharp_indent_braces = false
 csharp_indent_case_contents_when_block = false
 
 # Spacing options
-csharp_space_after_cast = true
+csharp_space_after_cast = false
 csharp_space_after_keywords_in_control_flow_statements = true
 csharp_space_between_parentheses = control_flow_statements
-csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_before_colon_in_inheritance_clause = false
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_around_binary_operators = before_and_after
 csharp_space_between_method_declaration_parameter_list_parentheses = false
@@ -749,3 +749,133 @@ resharper_place_linq_into_on_new_line = false
 # Arrangement of interpolated strings
 resharper_wrap_verbatim_interpolated_strings = no_wrap
 
+### C#: Other ###
+# https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_OthersPageSchema.html
+resharper_old_engine = false
+
+### C#: Spaces ###
+# https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_SpacesPageSchema.html
+
+# Preserve existing formatting
+resharper_extra_spaces = remove_all
+
+# Before parentheses in statements
+resharper_space_after_keywords_in_control_flow_statements = true # it covers:
+#resharper_space_before_if_parentheses = true  
+#resharper_space_before_while_parentheses = true
+#resharper_space_before_catch_parentheses
+#resharper_space_before_switch_parentheses
+#resharper_space_before_for_parentheses
+#resharper_space_before_foreach_parentheses
+#resharper_space_before_using_parentheses
+#resharper_space_before_lock_parentheses
+#resharper_space_before_fixed_parentheses
+
+# Before other parentheses
+resharper_space_between_method_call_name_and_opening_parenthesis = false # it covers:
+#resharper_space_before_method_call_parentheses = false
+#resharper_space_before_empty_method_call_parentheses
+
+resharper_space_between_method_declaration_name_and_open_parenthesis = false # it covers:
+#[resharper_]space_before_method_parentheses
+#[resharper_]space_before_empty_method_parentheses
+
+resharper_space_before_typeof_parentheses = false
+resharper_space_before_default_parentheses = false
+resharper_space_before_checked_parentheses = false
+resharper_space_before_sizeof_parentheses = false
+resharper_space_before_nameof_parentheses = false
+resharper_space_before_new_parentheses = true
+
+resharper_space_between_keyword_and_expression = true
+resharper_space_between_keyword_and_type = true
+
+# Within parentheses in statements
+resharper_space_between_parentheses_of_control_flow_statements = false # it covers:
+#resharper_space_within_if_parentheses = false
+#[resharper_]space_within_while_parentheses
+#[resharper_]space_within_catch_parentheses
+#[resharper_]space_within_switch_parentheses
+#[resharper_]space_within_for_parentheses
+#[resharper_]space_within_foreach_parentheses
+#[resharper_]space_within_using_parentheses
+#[resharper_]space_within_lock_parentheses
+#[resharper_]space_within_fixed_parentheses
+
+# Within other parentheses
+resharper_space_within_parentheses = false
+resharper_space_between_typecast_parentheses = false
+resharper_space_within_typeof_parentheses = false
+resharper_space_within_default_parentheses = false
+resharper_space_within_checked_parentheses = false
+resharper_space_within_sizeof_parentheses = false
+resharper_space_within_nameof_parentheses = false
+resharper_space_within_new_parentheses = false
+
+# Around angle brackets
+resharper_space_before_type_parameter_angle = true
+resharper_space_before_type_argument_angle = true
+resharper_space_within_type_parameter_angles = false
+resharper_space_within_type_argument_angles = false
+
+# Around braces
+resharper_space_before_singleline_accessorholder = true
+resharper_space_in_singleline_accessorholder = true
+resharper_space_between_accessors_in_singleline_property = true
+resharper_space_within_empty_braces = true
+resharper_space_in_singleline_method = true
+resharper_space_in_singleline_anonymous_method = true
+resharper_space_within_single_line_array_initializer_braces = true
+
+# Around binary operators
+resharper_space_around_binary_operator = true # covers:
+#[resharper_]space_around_assignment_op
+#[resharper_]space_around_logical_op
+#[resharper_]space_around_equality_op
+#[resharper_]space_around_relational_op
+#[resharper_]space_around_bitwise_op
+#[resharper_]space_around_additive_op
+#[resharper_]space_around_multiplicative_op
+#[resharper_]space_around_shift_op
+#[resharper_]space_around_nullcoalescing_op
+
+resharper_space_around_member_access_operator = true 
+resharper_space_around_arrow_op = true
+resharper_space_after_unary_operator = false # covers:
+#resharper_space_after_logical_not_op = false
+#[resharper_]space_after_unary_minus_op, 
+#[resharper_]space_after_unary_plus_op
+#[resharper_]space_after_ampersand_op
+#[resharper_]space_after_asterik_op
+
+resharper_space_near_postfix_and_prefix_op = false
+
+resharper_space_around_ternary_operator = true # covers:
+#[resharper_]space_before_ternary_quest
+#[resharper_]space_after_ternary_quest
+#[resharper_]space_before_ternary_colon
+#[resharper_]space_after_ternary_colon
+
+# Around comma and semicolon
+resharper_space_before_semicolon = false
+resharper_space_before_type_parameter_constraint_colon = false
+resharper_space_before_colon_in_case = false
+resharper_space_after_colon_in_case = true
+resharper_space_before_attribute_colon = false
+resharper_space_before_colon = false
+resharper_space_after_attribute_colon = true
+resharper_space_after_colon = true
+
+# Attributes
+resharper_space_between_attribute_sections = true
+resharper_space_after_attributes = true
+
+# Other
+resharper_space_around_dot = false
+resharper_csharp_space_around_member_access_operator = false
+resharper_space_around_lambda_arrow = true 
+resharper_space_before_pointer_asterik_declaration = false
+resharper_space_before_nullable_mark = false
+resharper_space_around_alias_eq = true
+resharper_space_before_trailing_comment = true
+resharper_space_after_operator_keyword = true
