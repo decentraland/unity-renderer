@@ -1,3 +1,6 @@
+###############################
+# Standard config properties #
+###############################
 # Top-most EditorConfig file. Remove the line below if you want to inherit .editorconfig settings from higher directories.
 root = true
 
@@ -8,8 +11,8 @@ indent_style = space # Don't use tabs for indentation.
 charset = utf-8
 indent_size = 4
 tab_width = 4
-end_of_line = crlf
 insert_final_newline = true
+end_of_line = crlf
 trim_trailing_whitespace = true
 #max_line_length = 180
 
@@ -93,8 +96,7 @@ dotnet_naming_rule.non_public_members_should_be_camel_case.severity = warning
 
 #### Order of using directives ####
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/dotnet-formatting-options
-
-dotnet_diagnostic.IDE0065.severity = warning
+dotnet_diagnostic.IDE0055.severity = warning
 
 csharp_using_directive_placement = outside_namespace
 
@@ -125,27 +127,27 @@ csharp_indent_case_contents_when_block = false
 
 # Spacing options
 csharp_space_after_cast = false
-csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_after_keywords_in_control_flow_statements = true # covers https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_after_keywords_in_control_flow_statements
 csharp_space_between_parentheses = control_flow_statements
 csharp_space_before_colon_in_inheritance_clause = false
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_around_binary_operators = before_and_after
 csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
-csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_between_method_declaration_name_and_open_parenthesis
 csharp_space_between_method_call_parameter_list_parentheses = false
 csharp_space_between_method_call_empty_parameter_list_parentheses = false
-csharp_space_between_method_call_name_and_opening_parenthesis = false
-csharp_space_after_comma = true
-csharp_space_before_comma = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_between_method_call_name_and_opening_parenthesis
+csharp_space_after_comma = true # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_after_comma
+csharp_space_before_comma = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_before_comma
 csharp_space_after_dot = false
 csharp_space_before_dot = false
 csharp_space_after_semicolon_in_for_statement = true
 csharp_space_before_semicolon_in_for_statement = false
 csharp_space_around_declaration_statements = false
-csharp_space_before_open_square_brackets = false
+csharp_space_before_open_square_brackets = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_before_open_square_brackets
 csharp_space_between_empty_square_brackets = false
-csharp_space_between_square_brackets = false
+csharp_space_between_square_brackets = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_between_square_brackets
 
 # Wrap options
 csharp_preserve_single_line_statements = true
@@ -162,7 +164,7 @@ dotnet_diagnostic.IDE0009.severity = warning
 
 dotnet_style_qualification_for_field = false
 dotnet_style_qualification_for_property = false
-#dotnet_style_qualification_for_method = false
+dotnet_style_qualification_for_method = false
 #dotnet_style_qualification_for_event = false
 
 # Use language keywords instead of framework type names for type references
@@ -439,7 +441,7 @@ resharper_blank_lines_after_case = 0
 ### Braces Layout ###
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_BracesPageSchema.html
 
-resharper_brace_style = next_line
+resharper_brace_style = next_line # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#b81411b5
 resharper_indent_inside_namespace = true
 resharper_use_continuous_indent_inside_initializer_braces = false
 resharper_allow_comment_after_lbrace = true
@@ -594,23 +596,8 @@ resharper_align_multline_type_parameter_constrains = false
 resharper_outdent_commas = true
 
 # Align similar code in columns
+resharper_int_align = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#int_align
 resharper_int_align_fix_in_adjacent = true
-
-#resharper_int_align = false
-resharper_int_align_fields = false
-resharper_int_align_properties = false
-resharper_int_align_methods = false
-resharper_int_align_parameters = false
-resharper_int_align_variables = false
-resharper_int_align_assignments = false
-resharper_int_align_property_patterns = false
-resharper_int_align_nested_ternary = false
-resharper_int_align_invocations = false 
-resharper_int_align_binary_expressions = false 
-resharper_int_align_switch_sections = false 
-resharper_int_align_switch_expressions = false 
-
-resharper_int_align_comments = true
 
 ### C#: Line Breaks ###
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_LineBreaksPageSchema.html
@@ -618,7 +605,7 @@ resharper_int_align_comments = true
 # General
 resharper_keep_user_linebreaks = true 
 resharper_keep_existing_linebreaks = true
-#resharper_keep_existing_arrangement = false
+#resharper_keep_existing_arrangement = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#keep_existing_arrangement
 
 resharper_wrap_before_comma = false
 resharper_wrap_before_eq = false
@@ -628,6 +615,7 @@ resharper_special_else_if_treatment = true
 resharper_max_attribute_length_for_same_line = 40
 resharper_keep_existing_attribute_arrangement = false
 
+# [resharper_]csharp_place_attribute_on_same_line # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#place_attribute_on_same_line
 resharper_place_type_attribute_on_same_line = never
 resharper_place_method_attribute_on_same_line = never
 resharper_place_accessorholder_attribute_on_same_line = if_owner_is_single_line
@@ -662,8 +650,8 @@ resharper_wrap_extends_list_style = wrap_if_long
 
 # Arrangement of declaration blocks
 
-#resharper_place_simple_blocks_on_single_line = false
-#resharper_place_simple_declaration_blocks_on_single_line = false
+#resharper_place_simple_blocks_on_single_line = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#place_simple_blocks_on_single_line
+#resharper_place_simple_declaration_blocks_on_single_line = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#place_simple_declaration_blocks_on_single_line
 
 resharper_keep_existing_declaration_block_arrangement = false
 resharper_place_abstract_accessorholder_on_single_line = true
@@ -760,26 +748,6 @@ resharper_old_engine = false
 resharper_extra_spaces = remove_all
 
 # Before parentheses in statements
-resharper_space_after_keywords_in_control_flow_statements = true # it covers:
-#resharper_space_before_if_parentheses = true  
-#resharper_space_before_while_parentheses = true
-#resharper_space_before_catch_parentheses
-#resharper_space_before_switch_parentheses
-#resharper_space_before_for_parentheses
-#resharper_space_before_foreach_parentheses
-#resharper_space_before_using_parentheses
-#resharper_space_before_lock_parentheses
-#resharper_space_before_fixed_parentheses
-
-# Before other parentheses
-resharper_space_between_method_call_name_and_opening_parenthesis = false # it covers:
-#resharper_space_before_method_call_parentheses = false
-#resharper_space_before_empty_method_call_parentheses
-
-resharper_space_between_method_declaration_name_and_open_parenthesis = false # it covers:
-#[resharper_]space_before_method_parentheses
-#[resharper_]space_before_empty_method_parentheses
-
 resharper_space_before_typeof_parentheses = false
 resharper_space_before_default_parentheses = false
 resharper_space_before_checked_parentheses = false
@@ -791,16 +759,7 @@ resharper_space_between_keyword_and_expression = true
 resharper_space_between_keyword_and_type = true
 
 # Within parentheses in statements
-resharper_space_between_parentheses_of_control_flow_statements = false # it covers:
-#resharper_space_within_if_parentheses = false
-#[resharper_]space_within_while_parentheses
-#[resharper_]space_within_catch_parentheses
-#[resharper_]space_within_switch_parentheses
-#[resharper_]space_within_for_parentheses
-#[resharper_]space_within_foreach_parentheses
-#[resharper_]space_within_using_parentheses
-#[resharper_]space_within_lock_parentheses
-#[resharper_]space_within_fixed_parentheses
+resharper_space_between_parentheses_of_control_flow_statements = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_between_parentheses_of_control_flow_statements
 
 # Within other parentheses
 resharper_space_within_parentheses = false
@@ -828,33 +787,11 @@ resharper_space_in_singleline_anonymous_method = true
 resharper_space_within_single_line_array_initializer_braces = true
 
 # Around binary operators
-resharper_space_around_binary_operator = true # covers:
-#[resharper_]space_around_assignment_op
-#[resharper_]space_around_logical_op
-#[resharper_]space_around_equality_op
-#[resharper_]space_around_relational_op
-#[resharper_]space_around_bitwise_op
-#[resharper_]space_around_additive_op
-#[resharper_]space_around_multiplicative_op
-#[resharper_]space_around_shift_op
-#[resharper_]space_around_nullcoalescing_op
-
-resharper_space_around_member_access_operator = true 
+resharper_space_around_binary_operator = true # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_around_binary_operator
 resharper_space_around_arrow_op = true
-resharper_space_after_unary_operator = false # covers:
-#resharper_space_after_logical_not_op = false
-#[resharper_]space_after_unary_minus_op, 
-#[resharper_]space_after_unary_plus_op
-#[resharper_]space_after_ampersand_op
-#[resharper_]space_after_asterik_op
-
+resharper_space_after_unary_operator = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_after_unary_operator
 resharper_space_near_postfix_and_prefix_op = false
-
-resharper_space_around_ternary_operator = true # covers:
-#[resharper_]space_before_ternary_quest
-#[resharper_]space_after_ternary_quest
-#[resharper_]space_before_ternary_colon
-#[resharper_]space_after_ternary_colon
+resharper_space_around_ternary_operator = true # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_around_ternary_operator
 
 # Around comma and semicolon
 resharper_space_before_semicolon = false
@@ -872,10 +809,12 @@ resharper_space_after_attributes = true
 
 # Other
 resharper_space_around_dot = false
-resharper_csharp_space_around_member_access_operator = false
+#resharper_space_around_member_access_operator = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#space_around_member_access_operator
 resharper_space_around_lambda_arrow = true 
 resharper_space_before_pointer_asterik_declaration = false
 resharper_space_before_nullable_mark = false
 resharper_space_around_alias_eq = true
 resharper_space_before_trailing_comment = true
 resharper_space_after_operator_keyword = true
+
+#resharper_configure_await_analysis_mode = disabled/library/ui
