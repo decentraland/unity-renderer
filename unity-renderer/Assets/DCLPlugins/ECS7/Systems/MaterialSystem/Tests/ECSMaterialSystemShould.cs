@@ -255,7 +255,10 @@ namespace Tests
             {
                 return new PBMaterial()
                 {
-                    AlbedoColor = new Color3() { R = color.r, G = color.g, B = color.b }
+                    Pbr = new PBMaterial.Types.PbrMaterial()
+                    {
+                        AlbedoColor = new Color3() { R = color.r, G = color.g, B = color.b }
+                    }
                 };
             }
 
