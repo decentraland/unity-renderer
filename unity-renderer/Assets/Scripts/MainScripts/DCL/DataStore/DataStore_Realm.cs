@@ -1,3 +1,4 @@
+using Decentraland.Bff;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -6,5 +7,7 @@ namespace DCL
     {
         public readonly CurrentRealmVariable playerRealm = new CurrentRealmVariable();
         public readonly BaseCollection<RealmModel> realmsInfo = new BaseCollection<RealmModel>();
+        public readonly BaseVariable<AboutResponse> playerRealmAbout = new BaseVariable<AboutResponse>();
+        public readonly BaseVariable<string> realmName = new BaseVariable<string>();
     }
 }

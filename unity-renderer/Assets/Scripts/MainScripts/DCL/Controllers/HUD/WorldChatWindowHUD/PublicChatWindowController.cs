@@ -158,7 +158,7 @@ namespace DCL.Chat.HUD
             visibleTaskbarPanels.Set(newSet, true);
         }
 
-        internal void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
+        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void HandleViewClosed()
         {
@@ -170,15 +170,21 @@ namespace DCL.Chat.HUD
             OnBack?.Invoke(); 
         }
 
-        private void HandleMessageReceived(ChatMessage message)
+        private void HandleMessageReceived(ChatMessage[] messages)
         {
-            if (message.messageType != ChatMessage.Type.PUBLIC
-                && message.messageType != ChatMessage.Type.SYSTEM) return;
-            if (!string.IsNullOrEmpty(message.recipient)) return;
+            var messageLogUpdated = false;
+            
+            foreach (var message in messages)
+            {
+                if (message.messageType != ChatMessage.Type.PUBLIC
+                    && message.messageType != ChatMessage.Type.SYSTEM) continue;
+                if (!string.IsNullOrEmpty(message.recipient)) continue;
 
-            chatHudController.AddChatMessage(message, View.IsActive);
-
-            if (View.IsActive)
+                chatHudController.AddChatMessage(message, View.IsActive);
+                messageLogUpdated = true;
+            }
+            
+            if (View.IsActive && messageLogUpdated)
                 MarkChannelMessagesAsRead();
         }
 

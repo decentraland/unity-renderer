@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
@@ -114,6 +113,27 @@ namespace DCL.Chat.HUD
             view.OnMuteChanged += Raise.Event<Action<bool>>(false);
             
             chatController.Received(1).UnmuteChannel(CHANNEL_ID);
+        }
+
+        [Test]
+        public void MarkMessagesAsSeenOnlyOnceWhenReceivedManyMessages()
+        {
+            controller.SetVisibility(true);
+            view.IsActive.Returns(true);
+            chatController.ClearReceivedCalls();
+
+            var msg1 = new ChatMessage("msg1", ChatMessage.Type.PUBLIC, "user", "hey", 100)
+            {
+                recipient = CHANNEL_ID
+            };
+            var msg2 = new ChatMessage("msg1", ChatMessage.Type.PUBLIC, "user", "hey", 100)
+            {
+                recipient = CHANNEL_ID
+            };
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
+            
+            chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
         }
     }
 }

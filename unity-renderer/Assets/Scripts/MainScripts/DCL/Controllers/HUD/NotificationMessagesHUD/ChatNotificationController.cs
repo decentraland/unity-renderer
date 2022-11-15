@@ -86,29 +86,32 @@ namespace DCL.Chat.Notifications
             SetVisibility(newList.Count == 0);
         }
 
-        private void HandleMessageAdded(ChatMessage message)
+        private void HandleMessageAdded(ChatMessage[] messages)
         {
-            if (message.messageType != ChatMessage.Type.PRIVATE &&
-                message.messageType != ChatMessage.Type.PUBLIC) return;
-            ownUserProfile ??= userProfileBridge.GetOwn();
-            if (message.sender == ownUserProfile.userId) return;
+            foreach (var message in messages)
+            {
+                if (message.messageType != ChatMessage.Type.PRIVATE &&
+                    message.messageType != ChatMessage.Type.PUBLIC) return;
+                ownUserProfile ??= userProfileBridge.GetOwn();
+                if (message.sender == ownUserProfile.userId) return;
 
-            var span = Utils.UnixToDateTimeWithTime((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
-                       Utils.UnixToDateTimeWithTime(message.timestamp);
+                var span = Utils.UnixToDateTimeWithTime((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
+                           Utils.UnixToDateTimeWithTime(message.timestamp);
 
-            if (span >= maxNotificationInterval) return;
+                if (span >= maxNotificationInterval) return;
             
-            var channel = chatController.GetAllocatedChannel(
-                string.IsNullOrEmpty(message.recipient) && message.messageType == ChatMessage.Type.PUBLIC
-                    ? "nearby"
-                    : message.recipient);
-            if (channel?.Muted ?? false) return;
+                var channel = chatController.GetAllocatedChannel(
+                    string.IsNullOrEmpty(message.recipient) && message.messageType == ChatMessage.Type.PUBLIC
+                        ? "nearby"
+                        : message.recipient);
+                if (channel?.Muted ?? false) return;
             
-            // TODO: entries may have an inconsistent state. We should update the entry with new data
-            if (notificationEntries.Contains(message.messageId)) return;
-            notificationEntries.Add(message.messageId);
+                // TODO: entries may have an inconsistent state. We should update the entry with new data
+                if (notificationEntries.Contains(message.messageId)) return;
+                notificationEntries.Add(message.messageId);
 
-            AddNotification(message, channel).Forget();
+                AddNotification(message, channel).Forget();
+            }
         }
 
         private async UniTaskVoid AddNotification(ChatMessage message, Channel channel = null)
