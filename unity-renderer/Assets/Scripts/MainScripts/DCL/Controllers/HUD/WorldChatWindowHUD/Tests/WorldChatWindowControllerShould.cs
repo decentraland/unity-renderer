@@ -75,8 +75,8 @@ public class WorldChatWindowControllerShould
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
 
         controller.Initialize(view);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, messageBody));
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
+            new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, messageBody)});
 
         view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => !p.isBlocked
                                                                       && !p.isOnline
@@ -202,8 +202,8 @@ public class WorldChatWindowControllerShould
         view.ContainsPrivateChannel(FRIEND_ID).Returns(true);
 
         controller.Initialize(view);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(
-            new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow"));
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
+            new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow")});
 
         view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.user.userId == FRIEND_ID));
         view.DidNotReceiveWithAnyArgs().ShowMoreChatsToLoadHint(default);
@@ -433,7 +433,19 @@ public class WorldChatWindowControllerShould
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
 
-        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link);
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "manual");
+    }
+    
+    [Test]
+    public void TrackAutoChannelJoined()
+    {
+        controller.Initialize(view);
+
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        chatController.OnAutoChannelJoined +=
+            Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
+
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "auto");
     }
 
     [Test]
@@ -569,9 +581,9 @@ public class WorldChatWindowControllerShould
             });
         controller.Initialize(view);
         chatController.ClearReceivedCalls();
-        
+
         chatController.OnInitialized += Raise.Event<Action>();
-        
+
         chatController.Received(1).JoinOrCreateChannel("automatic-channel");
         chatController.Received(1).MuteChannel("automatic-channel");
     }

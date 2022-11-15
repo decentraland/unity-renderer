@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-public class PublicChatChannelComponentViewShould
+public class PublicChatWindowComponentViewShould
 {
     private PublicChatWindowComponentView view;
     
