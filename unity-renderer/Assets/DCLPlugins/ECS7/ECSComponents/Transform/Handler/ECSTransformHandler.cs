@@ -9,9 +9,9 @@ namespace DCL.ECSComponents
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
         private readonly IWorldState worldState;
-        private readonly BaseVariable<Vector3> playerTeleportVariable;
+        private readonly IBaseVariable<Vector3> playerTeleportVariable;
 
-        public ECSTransformHandler(IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
+        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.worldState = worldState;
@@ -108,11 +108,11 @@ namespace DCL.ECSComponents
         }
 
         private static bool TryMoveCharacter(IParcelScene scene, Vector3 localPosition,
-            IWorldState worldState, BaseVariable<Vector3> playerTeleportVariable)
+            IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
         {
             // If player is not at the scene that triggered this event
             // we'll ignore it
-            if (scene.sceneData.id != worldState.GetCurrentSceneId())
+            if (scene.sceneData.id != worldState.GetCurrentSceneId() && !scene.isPersistent)
             {
                 return false;
             }
@@ -126,7 +126,7 @@ namespace DCL.ECSComponents
             }
 
             playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
-                                       + localPosition);
+                                       + localPosition, true);
             return true;
         }
     }
