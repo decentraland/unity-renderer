@@ -8,9 +8,11 @@ namespace DCL.Controllers
 {
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
+        private const float NERFED_TIME_BUDGET = 0.5f / 1000f;
+        private const float RECHECK_BUDGET = 0.5f;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
         public bool enabled => entitiesCheckRoutine != null;
-        public float timeBetweenChecks { get; set; } = 0.5f;
+        public float timeBetweenChecks { get; set; } = RECHECK_BUDGET;
         public int entitiesToCheckCount => entitiesToCheck.Count;
 
         private const bool VERBOSE = false;
@@ -21,6 +23,8 @@ namespace DCL.Controllers
         private ISceneBoundsFeedbackStyle feedbackStyle;
         private Coroutine entitiesCheckRoutine = null;
         private float lastCheckTime;
+        private MessagingControllersManager messagingManager;
+        private bool isNerfed;
 
         public void Initialize()
         {
@@ -30,6 +34,8 @@ namespace DCL.Controllers
         public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
         {
             this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
+            messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+            isNerfed = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("NERF_SBC");
         }
 
         public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)
@@ -46,18 +52,20 @@ namespace DCL.Controllers
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         private IEnumerator CheckEntities()
-        {   
+        {
             while (true)
             {
+                // Kinerius: Since the nerf can skip the process a lot faster than before, we need faster rechecks
+                var finalTimeBetweenChecks = isNerfed ? NERFED_TIME_BUDGET : timeBetweenChecks;
+                
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
-                if ((entitiesToCheck.Count > 0) && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
+                if ((entitiesToCheck.Count > 0) && (finalTimeBetweenChecks <= 0f || elapsedTime >= finalTimeBetweenChecks))
                 {
-                    //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
-                    var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+                    var timeBudget = NERFED_TIME_BUDGET;
 
                     void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
-                        if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                        if (IsTimeBudgetDepleted(timeBudget))
                         {
                             if(VERBOSE)
                                 logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
@@ -67,7 +75,7 @@ namespace DCL.Controllers
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
-                            if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
+                            if (IsTimeBudgetDepleted(timeBudget))
                             {
                                 if(VERBOSE)
                                     logger.Verbose("Time budget reached, escaping entities processing until next iteration... ");
@@ -80,9 +88,15 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
+                            float usedTimeBudget = finishTime - startTime;
 
-                            if ( messagingManager != null )
-                                messagingManager.timeBudgetCounter -= (finishTime - startTime);
+                            if (!isNerfed)
+                            {
+                                if ( messagingManager != null )
+                                    messagingManager.timeBudgetCounter -= usedTimeBudget;
+                            }
+                            
+                            timeBudget -= usedTimeBudget;
                         }
                     }
 
@@ -108,6 +122,7 @@ namespace DCL.Controllers
                 yield return null;
             }
         }
+        private bool IsTimeBudgetDepleted(float timeBudget) { return isNerfed ? timeBudget <= 0f : messagingManager != null && messagingManager.timeBudgetCounter <= 0f; }
 
         public void Restart()
         {

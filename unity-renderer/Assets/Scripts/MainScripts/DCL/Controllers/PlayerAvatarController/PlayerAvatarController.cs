@@ -235,7 +235,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         catch (Exception e)
         {
             Debug.LogException(e);
-            WebInterface.ReportAvatarFatalError();
+            WebInterface.ReportAvatarFatalError(e.ToString());
             return;
         }
 

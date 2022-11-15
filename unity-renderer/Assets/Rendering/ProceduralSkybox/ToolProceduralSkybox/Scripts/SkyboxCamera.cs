@@ -26,6 +26,7 @@ namespace DCL.Skybox
             cameraData.renderShadows = false;
             skyboxCamera.useOcclusionCulling = false;
             skyboxCamera.cullingMask = (1 << LayerMask.NameToLayer("Skybox"));
+            skyboxCamera.farClipPlane = 5000;
 
             // Attach follow script
             camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehaviour>();
