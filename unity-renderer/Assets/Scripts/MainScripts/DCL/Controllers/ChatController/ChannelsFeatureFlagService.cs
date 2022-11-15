@@ -64,6 +64,10 @@ namespace DCL.Chat.Channels
         {
             if (!featureFlags.Get().IsFeatureEnabled(FEATURE_FLAG_FOR_USERS_ALLOWED_TO_CREATE_CHANNELS))
                 return false;
+            
+            UserProfile ownUserProfile = userProfileBridge.GetOwn();
+            if (ownUserProfile == null) return false;
+            if (string.IsNullOrEmpty(ownUserProfile.userId)) return false;
 
             FeatureFlagVariantPayload usersAllowedToCreateChannelsPayload = featureFlags
                 .Get()
@@ -73,7 +77,6 @@ namespace DCL.Chat.Channels
                 return false;
 
             UsersAllowedToCreateChannelsVariantPayload allowedUsersData = JsonUtility.FromJson<UsersAllowedToCreateChannelsVariantPayload>(usersAllowedToCreateChannelsPayload.value);
-            UserProfile ownUserProfile = userProfileBridge.GetOwn();
 
             switch (allowedUsersData.mode)
             {
