@@ -52,6 +52,10 @@ public class CrdtExecutorsManager : IDisposable
             crdtExecutor.Dispose();
             crdtExecutors.Remove(sceneNumber);
         }
+        if (cachedSceneId == sceneId)
+        {
+            cachedSceneId = null;
+        }
     }
 
     private ICRDTExecutor GetCachedExecutor(int sceneNumber)

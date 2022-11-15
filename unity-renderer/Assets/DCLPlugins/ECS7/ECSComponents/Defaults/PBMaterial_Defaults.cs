@@ -4,62 +4,104 @@ namespace DCL.ECSComponents
     {
         public static float GetAlphaTest(this PBMaterial self)
         {
-            return self.HasAlphaTest ? self.AlphaTest : 0.5f;
+            if (self.Pbr != null && self.Pbr.HasAlphaTest)
+                return self.Pbr.HasAlphaTest ? self.Pbr.AlphaTest : 0.5f;
+            
+            if (self.Unlit != null && self.Unlit.HasAlphaTest)
+                return self.Unlit.HasAlphaTest ? self.Unlit.AlphaTest : 0.5f;
+            
+            return 0.5f;
         }
 
         public static bool GetCastShadows(this PBMaterial self)
         {
-            return !self.HasCastShadows || self.CastShadows;
+            if (self.Pbr != null)
+                return !self.Pbr.HasCastShadows || self.Pbr.CastShadows;
+            
+            if (self.Unlit != null)
+                return !self.Unlit.HasCastShadows || self.Unlit.CastShadows;
+            
+            return true;
         }
 
         public static Color3 GetAlbedoColor(this PBMaterial self)
         {
-            return self.AlbedoColor ?? new Color3(Color3_Defaults.colorWhite);
+            if (self.Pbr != null)
+                return self.Pbr.AlbedoColor ?? new Color3(Color3_Defaults.colorWhite);
+            
+            return new Color3(Color3_Defaults.colorWhite);
         }
 
         public static Color3 GetEmissiveColor(this PBMaterial self)
         {
-            return self.EmissiveColor ?? new Color3(Color3_Defaults.colorBlack);
+            if (self.Pbr != null)
+                return self.Pbr.EmissiveColor ?? new Color3(Color3_Defaults.colorBlack);
+            
+            return new Color3(Color3_Defaults.colorBlack);
         }
 
         public static Color3 GetReflectiveColor(this PBMaterial self)
         {
-            return self.ReflectivityColor ?? new Color3(Color3_Defaults.colorWhite);
+            if (self.Pbr != null)
+                return self.Pbr.ReflectivityColor ?? new Color3(Color3_Defaults.colorWhite);
+            
+            return new Color3(Color3_Defaults.colorWhite);
         }
 
         public static MaterialTransparencyMode GetTransparencyMode(this PBMaterial self)
         {
-            return self.HasTransparencyMode ? self.TransparencyMode : MaterialTransparencyMode.MtmAuto;
+            if (self.Pbr != null)
+                return self.Pbr.HasTransparencyMode ? self.Pbr.TransparencyMode : MaterialTransparencyMode.MtmAuto;
+            
+            return MaterialTransparencyMode.MtmAuto;
         }
 
         public static float GetMetallic(this PBMaterial self)
         {
-            return self.HasMetallic ? self.Metallic : 0.5f;
+            if (self.Pbr != null)
+                return self.Pbr.HasMetallic ? self.Pbr.Metallic : 0.5f;
+            
+            return 0.5f;
         }
 
         public static float GetRoughness(this PBMaterial self)
         {
-            return self.HasRoughness ? self.Roughness : 0.5f;
+            if (self.Pbr != null)
+                return self.Pbr.HasRoughness ? self.Pbr.Roughness : 0.5f;
+           
+            return 0.5f;
         }
 
         public static float GetGlossiness(this PBMaterial self)
         {
-            return self.HasGlossiness ? self.Glossiness : 1f;
+            if (self.Pbr != null)
+                return self.Pbr.HasGlossiness ? self.Pbr.Glossiness : 1f;
+            
+            return 1f;
         }
 
         public static float GetSpecularIntensity(this PBMaterial self)
         {
-            return self.HasSpecularIntensity ? self.SpecularIntensity : 1f;
+            if (self.Pbr != null)
+                return self.Pbr.HasSpecularIntensity ? self.Pbr.SpecularIntensity : 1f;
+            
+            return 1f;
         }
 
         public static float GetEmissiveIntensity(this PBMaterial self)
         {
-            return self.HasEmissiveIntensity ? self.EmissiveIntensity : 2f;
+            if (self.Pbr != null)
+                return self.Pbr.HasEmissiveIntensity ? self.Pbr.EmissiveIntensity : 2f;
+            
+            return 2f;
         }
 
         public static float GetDirectIntensity(this PBMaterial self)
         {
-            return self.HasDirectIntensity ? self.DirectIntensity : 1f;
+            if (self.Pbr != null)
+                return self.Pbr.HasDirectIntensity ? self.Pbr.DirectIntensity : 1f;
+            
+            return 1f;
         }
     }
 }
