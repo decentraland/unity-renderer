@@ -51,7 +51,6 @@ namespace DCL.Chat.HUD
         
         [Header("Guest")]
         [SerializeField] internal GameObject connectWalletContainer;
-        [SerializeField] internal List<GameObject> walletConnectedContainerGOs;
         [SerializeField] internal Button connectWalletButton;
         [SerializeField] internal Button whatIsWalletButton;
 
@@ -289,8 +288,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = true;
             connectWalletContainer.SetActive(true);
-            foreach (var item in walletConnectedContainerGOs)
-                item.SetActive(false);
             searchBarContainer.SetActive(false);
             directChatsCollapseButton.SetInteractability(false);
             publicChatsChatsCollapseButton.SetInteractability(false);
@@ -300,8 +297,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = false;
             connectWalletContainer.SetActive(false);
-            foreach (var item in walletConnectedContainerGOs)
-                item.SetActive(true);
             searchBarContainer.SetActive(true);
             directChatsCollapseButton.SetInteractability(true);
             publicChatsChatsCollapseButton.SetInteractability(true);

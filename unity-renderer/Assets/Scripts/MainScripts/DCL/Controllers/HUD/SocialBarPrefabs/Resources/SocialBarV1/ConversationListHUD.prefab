@@ -3052,12 +3052,6 @@ MonoBehaviour:
   loadMoreEntriesLabel: {fileID: 335676906559043414}
   loadMoreEntriesLoading: {fileID: 5050351621148873383}
   connectWalletContainer: {fileID: 7022858233222482672}
-  walletConnectedContainerGOs:
-  - {fileID: 372326430009911481}
-  - {fileID: 4109082457051070364}
-  - {fileID: 8605239286290058209}
-  - {fileID: 4614702628244820822}
-  - {fileID: 8953413587729228697}
   connectWalletButton: {fileID: 2980154124419925524}
   whatIsWalletButton: {fileID: 1031338944340585471}
 --- !u!114 &5139691202451856895
