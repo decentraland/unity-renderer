@@ -34,14 +34,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_255b438dff5e475da252ca15498d846d: 1
+    - Vector1_2a3fb2f1f093458a922035ad5d68f004: 2.63
     - Vector1_42d718e6203d4c6bb33f61bb447249ba: 1
     - Vector1_d0d90240ab69433a9d9c08a5c9e80a31: 50
     - Vector1_eacf5e5d73a24957b64ff9be4232b8e9: 3
+    - _OutlineIntersection: 1
     - _OutlineOpacity: 1
     - _isOutlineEnabled: 1
-    - _isOutlineEnabled_1: 1
+    - _isOutlineEnabled_1: 0
     m_Colors:
     - Color_d326f9101fd94f2b8ca8431c31e97ef6: {r: 0.24368094, g: 0.6981132, b: 0,
         a: 0}
-    - _OutlineColor: {r: 2.5190158, g: 1.2640693, b: 0, a: 0}
+    - _OutlineColor: {r: 2.5190158, g: 0, b: 2.225469, a: 0}
   m_BuildTextureStacks: []
