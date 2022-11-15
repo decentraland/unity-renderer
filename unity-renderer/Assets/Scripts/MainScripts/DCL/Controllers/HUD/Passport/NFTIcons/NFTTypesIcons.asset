@@ -15,3 +15,6 @@ MonoBehaviour:
   nftIcons:
   - key: eyes
     value: {fileID: 21300000, guid: b90a97a10e3a7452988bced1ec1aaf84, type: 3}
+  nftColors:
+  - key: rare
+    value: {r: 1, g: 0.32040966, b: 0, a: 0}

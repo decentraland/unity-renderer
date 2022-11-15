@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class NFTIconComponentView : BaseComponentView, INFTIconComponentView
+public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IComponentModelConfig<NFTIconComponentModel>
 {
 
     [SerializeField] internal ButtonComponentView marketplaceButton;
