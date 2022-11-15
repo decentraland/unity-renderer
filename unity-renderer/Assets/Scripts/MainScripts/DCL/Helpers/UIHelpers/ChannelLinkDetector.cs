@@ -14,20 +14,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     internal bool hasNoParseLabel;
     internal List<string> channelsFoundInText = new List<string>();
     private IChannelsFeatureFlagService channelsFeatureFlagService;
-    private bool isAllowedToCreateChannelsDirty = true;
-    private bool lazyAllowedToCreateChannels;
-
-    private bool isAllowedToCreateChannels
-    {
-        get
-        {
-            if (!isAllowedToCreateChannelsDirty) return lazyAllowedToCreateChannels;
-            lazyAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled()
-                                          && channelsFeatureFlagService.IsAllowedToCreateChannels();
-            isAllowedToCreateChannelsDirty = false;
-            return lazyAllowedToCreateChannels;
-        }
-    } 
+    private bool isAllowedToCreateChannels = true;
 
     private void Awake()
     {
@@ -40,6 +27,8 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
             && Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>() != null)
         {
             channelsFeatureFlagService = Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>();
+            isAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled()
+                                        && channelsFeatureFlagService.IsAllowedToCreateChannels();
             channelsFeatureFlagService.OnAllowedToCreateChannelsChanged += OnAllowedToCreateChannelsChanged;
         }
     }
@@ -56,7 +45,7 @@ public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     }
 
     private void OnAllowedToCreateChannelsChanged(bool isAllowed) =>
-        isAllowedToCreateChannelsDirty = true;
+        isAllowedToCreateChannels = isAllowed && channelsFeatureFlagService.IsChannelsFeatureEnabled();
 
     private void OnTextComponentPreRenderText(TMP_TextInfo textInfo)
     {
