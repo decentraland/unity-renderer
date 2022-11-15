@@ -32,31 +32,33 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
+            TextureUnion texture = model.Pbr != null ? model.Pbr.Texture : model.Unlit != null ? model.Unlit.Texture : null;
+
             AssetPromise_Material_Model promiseModel;
-            AssetPromise_Material_Model.Texture? albedoTexture = model.Texture != null ? CreateMaterialPromiseTextureModel (
-                model.Texture.GetTextureUrl(scene),
-                model.Texture.GetWrapMode(),
-                model.Texture.GetFilterMode()
+            AssetPromise_Material_Model.Texture? albedoTexture = texture != null ? CreateMaterialPromiseTextureModel (
+                texture.GetTextureUrl(scene),
+                texture.GetWrapMode(),
+                texture.GetFilterMode()
             ) : null;
             
-            if (IsPbrMaterial(model))
+            if (model.Pbr != null)
             {
-                AssetPromise_Material_Model.Texture? alphaTexture = model.AlphaTexture != null ? CreateMaterialPromiseTextureModel (
-                    model.AlphaTexture.GetTextureUrl(scene),
-                    model.AlphaTexture.GetWrapMode(),
-                    model.AlphaTexture.GetFilterMode()
+                AssetPromise_Material_Model.Texture? alphaTexture = model.Pbr.AlphaTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.AlphaTexture.GetTextureUrl(scene),
+                    model.Pbr.AlphaTexture.GetWrapMode(),
+                    model.Pbr.AlphaTexture.GetFilterMode()
                 ) : null;
                 
-                AssetPromise_Material_Model.Texture? emissiveTexture = model.EmissiveTexture != null ? CreateMaterialPromiseTextureModel (
-                    model.EmissiveTexture.GetTextureUrl(scene),
-                    model.EmissiveTexture.GetWrapMode(),
-                    model.EmissiveTexture.GetFilterMode()
+                AssetPromise_Material_Model.Texture? emissiveTexture = model.Pbr.EmissiveTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.EmissiveTexture.GetTextureUrl(scene),
+                    model.Pbr.EmissiveTexture.GetWrapMode(),
+                    model.Pbr.EmissiveTexture.GetFilterMode()
                 ) : null;
                 
-                AssetPromise_Material_Model.Texture? bumpTexture = model.BumpTexture != null ? CreateMaterialPromiseTextureModel (
-                    model.BumpTexture.GetTextureUrl(scene),
-                    model.BumpTexture.GetWrapMode(),
-                    model.BumpTexture.GetFilterMode()
+                AssetPromise_Material_Model.Texture? bumpTexture = model.Pbr.BumpTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.BumpTexture.GetTextureUrl(scene),
+                    model.Pbr.BumpTexture.GetWrapMode(),
+                    model.Pbr.BumpTexture.GetFilterMode()
                 ) : null;
                 
                 promiseModel = CreatePBRMaterialPromiseModel(model, albedoTexture, alphaTexture, emissiveTexture, bumpTexture);
@@ -103,15 +105,6 @@ namespace DCL.ECSComponents
                 return null;
 
             return new AssetPromise_Material_Model.Texture(textureUrl, wrapMode, filterMode);
-        }
-
-        private static bool IsPbrMaterial(PBMaterial model)
-        {
-            return (model.AlphaTexture != null || model.BumpTexture != null || model.EmissiveTexture != null
-                    || model.HasGlossiness || model.HasMetallic || model.HasRoughness || model.HasDirectIntensity
-                    || model.HasEmissiveIntensity || model.HasSpecularIntensity
-                    || model.AlbedoColor != null || model.EmissiveColor != null || model.ReflectivityColor != null
-                    || model.HasTransparencyMode);
         }
     }
 }
