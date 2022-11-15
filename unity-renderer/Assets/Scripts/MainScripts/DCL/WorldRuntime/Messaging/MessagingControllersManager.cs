@@ -17,9 +17,7 @@ namespace DCL
         private const float GLTF_BUDGET_MAX = 0.033f;
         private const float GLTF_BUDGET_MIN = 0.008f;
 
-        // public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
-        public const int GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER = -100; // TODO: Does this bring trouble with < 0 checks?
-        public const string GLOBAL_MESSAGING_CONTROLLER_DEBUG_TAG = "global_messaging_controller";  
+        private const int GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER = 999999;
 
         public ConcurrentDictionary<int, MessagingController> messagingControllers { get; set; } =
             new ConcurrentDictionary<int, MessagingController>();
@@ -60,11 +58,8 @@ namespace DCL
             if (messageHandler == null)
                 messageHandler = Environment.i.world.sceneController;
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER] =
-                new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER);
-
-            // if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
-            messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER, out globalController);
+            globalController = new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER);
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER] = globalController;
 
             Environment.i.world.sceneController.OnSortScenes += MarkBusesDirty;
 
