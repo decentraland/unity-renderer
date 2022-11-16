@@ -31,7 +31,7 @@ public class PublicChatWindowComponentView : BaseComponentView, IPublicChatWindo
 
     public static PublicChatWindowComponentView Create()
     {
-        return Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/GeneralChatChannelHUD"));
+        return Instantiate(Resources.Load<PublicChatWindowComponentView>("SocialBarV1/NearbyChatChannelHUD"));
     }
 
     public override void Awake()

@@ -8,7 +8,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     const string FOOTSTEP_NAME = "footstep", HEART_NAME = "heart";
     const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
     const float MIN_EVENT_WAIT_TIME = 0.1f;
-    const float AVATAR_OFFSET = 0.755f; //USE IT WHEN DEALING WITH LOCAL SPACE
+    const float HOHOHO_OFFSET = 1.5f;
 
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
@@ -129,7 +129,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_SNOWFLAKE))
             return;
 
-        PlaySticker("snowflakes", transform.position + Vector3.up * AVATAR_OFFSET, Vector3.zero, true);
+        PlaySticker("snowflakes", transform.position, Vector3.zero, true);
     }
 
     public void AnimEvent_Hohoho()
@@ -140,7 +140,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HOHOHO))
             return;
 
-        PlaySticker(ANIM_NAME_HOHOHO, transform.position, Vector3.zero, true);
+        PlaySticker(ANIM_NAME_HOHOHO, transform.position + Vector3.up * HOHOHO_OFFSET, Vector3.zero, true);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)

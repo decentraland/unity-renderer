@@ -15,7 +15,7 @@ namespace DCL.Chat.HUD
         void Set(ChannelMemberEntryModel user);
         void Show(bool instant = false);
         void Hide(bool instant = false);
-        void ClearSearchInput();
+        void ClearSearchInput(bool notify = true);
         void HideLoading();
         void ShowLoadingMore();
         void HideLoadingMore();
