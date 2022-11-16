@@ -29,7 +29,6 @@ namespace SocialFeaturesAnalytics
         private const string POPULATED_CHANNEL_JOINED = "player_joins_channel";
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
-        private const string MESSAGE_SENT_TO_CHANNEL = "send_chat_message";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
         
         public static SocialAnalytics i { get; private set; }
@@ -264,7 +263,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
         }
 
-        public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source)
+        public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source, string method)
         {
             var data = new Dictionary<string, string>
             {
@@ -276,7 +275,8 @@ namespace SocialFeaturesAnalytics
                     ChannelJoinedSource.ConversationList => "conversation_list",
                     _ => ""
                 },
-                ["channel"] = channelName
+                ["channel"] = channelName,
+                ["method"] = method
             };
             analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
         }
@@ -305,17 +305,6 @@ namespace SocialFeaturesAnalytics
                 ["search"] = text
             };
             analytics.SendAnalytic(CHANNEL_SEARCH, data);
-        }
-
-        public void SendMessageSentToChannel(string channelName, int bodyLength, string source)
-        {
-            var data = new Dictionary<string, string>
-            {
-                ["source"] = source,
-                ["channel"] = channelName,
-                ["length"] = bodyLength.ToString()
-            };
-            analytics.SendAnalytic(MESSAGE_SENT_TO_CHANNEL, data);
         }
 
         public void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source)

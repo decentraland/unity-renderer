@@ -21,7 +21,7 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
             var userProfile = UserProfile.GetOwnUserProfile();
             var nametag = UnityWebRequest.EscapeURL(userProfile.userName);
             var kernelConfig = KernelConfig.i.Get();
-            var realm = DataStore.i.realm.playerRealm.Get()?.serverName;
+            var realm = DataStore.i.realm.realmName.Get();
             var unityVersion = kernelConfig.rendererVersion;
             var kernelVersion = kernelConfig.kernelVersion;
 

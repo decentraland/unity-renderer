@@ -6,9 +6,10 @@ using DCL.Chat.Channels;
 public interface IChatController
 {
     event Action OnInitialized;
-    event Action<ChatMessage> OnAddMessage;
+    event Action<ChatMessage[]> OnAddMessage;
     event Action<Channel> OnChannelUpdated;
     event Action<Channel> OnChannelJoined;
+    event Action<Channel> OnAutoChannelJoined;
     event Action<string, ChannelErrorCode> OnJoinChannelError;
     event Action<string> OnChannelLeft;
     event Action<string, ChannelErrorCode> OnChannelLeaveError;
