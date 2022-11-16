@@ -20,7 +20,7 @@ You can find a settings export file in the root of the project called "rider_cod
 Use
 * `PascalCase` - Namespace, Class, Struct, Interface, Enumeration and its Enumerators, Method, Delegate declaration, Event, public Property, and public Field;
 * `camelCase` - non-public Property, non-public Field, methods Parameter, local Variable;
-* `CAPITALS_SNAKE_CASE` - Constants, static read-only fields;
+* `ALL_UPPER_SNAKE_CASE` - Constants, static read-only fields;
 * `I` prefix in front of Interface name;
 * Asynchronous methods end with `Async`
 * Events name is in past tens and without `On` prefix
@@ -35,10 +35,10 @@ namespace MyProject                                     // Namespace -> PascalCa
     
     public class MyClass : IInitializable               // Class/Struct -> PascalCase.
     {
-        public const string ASSET_PATH = "AvatarUI";    // Constant -> CAPITALS_SNAKE_CASE
+        public const string ASSET_PATH = "AvatarUI";    // Constant -> ALL_UPPER_SNAKE_CASE
  
         public int PublicField;                         // public Field -> PascalCase
-        private bool isVisible;                         // Field -> camelCase
+        private bool isVisible;                         // non-public Field -> camelCase
 
         public bool IsInitialized { get; set; }         // public Property -> PascalCase
         private bool isVisitble { get; }                // non-public Property -> camelCase
@@ -139,7 +139,7 @@ public void Test1()                   // called by other class
 
 private void Awake() { }               // called by Unity
 ```
-  * Not-helper methods should follow the order (where its helper methods follows previous rule and allowed to be placed in between of this order):
+  * Not-helper methods should follow the order (but its helper methods follows previous rule and allowed to be placed in between of this order):
     * entry-point/creation/setup methods, like `constuctor` and `initialize`
     * exit-point methods, like `destructor` and `dispose`
     * `public`
@@ -168,12 +168,12 @@ Most of this formatting conventions will be known by your IDE thanks to the .Edi
   * when the amount of `event`/`delegate` parameters is higher than 3 then define a custom `EventArg` (either `System.EventArgs` or a custom `struct`) or define a custom `delegate`.
 * one line - one statement. Split chain methods (like LINQ) in several lines starting  with `.` on each line
 ```csharp
-List<string> filteredWords = new FilterLogic(listWords)
-              .FilterOutShortWords()
-              .FilterOnlyWordsContainingLetterC()
-              .FilterArbitraryComplexItems()
-              .FilterSomeMoreArbitraryComplexItems()
-              .GetWords();
+List<string> filteredWords = new FilterLogic(listWords).
+              FilterOutShortWords().
+              FilterOnlyWordsContainingLetterC().
+              FilterArbitraryComplexItems().
+              FilterSomeMoreArbitraryComplexItems().
+              GetWords();
 ```
 
 ### Namespaces
@@ -194,8 +194,8 @@ List<string> filteredWords = new FilterLogic(listWords)
       * tabs saved as spaces, `1 tab` = `4 spaces` (characters)
     * only one space between code elements is allowed
     * space after a comma between function arguments - 🟢 `CollectItem(myObject, 0, 1);` 🔴 `CollectItem(myObject,0,1);`
-    * space before flow control conditions - 🟢 `while (x < y)` 🔴 `while(x < y)`
-    * space before and after comparison operators - 🟢 `if (x == y)` 🔴 `if (x==y)`
+    * no space before flow control conditions - 🟢 `while(x < y)` 🔴 `while (x < y)`
+    * space before and after comparison operators - 🟢 `if(x == y)` 🔴 `if(x==y)`
   * **Vertical spaces**
     * one blank line is used for vertical separation and grouping
     * one blank line is always used to separate groups (field, properties, method definitions)
@@ -250,7 +250,7 @@ private void TrimAll()
   * Use `[UsedImplicitly]` attribute for implicitly called methods, such as calls from Unity animation events, via Unity `GameObject.SendMessage()`, `GameObject.BroadcastMessage()` and similar. 
   * Use `[Button]` attribute from `EasyButtons` (requires reference in `.asmdef` file) instead of `[ContextMenu]` attribute. Consider using `Mode` parameter of this attribute for `Editor`/`PlayMode`-only methods.
 * **Variables (in Inspector)**
-  * Use `[SerializedField]` for exposing variable in the inspector instead of converting it to public variable 
+  * Use `[SerializedField]` for exposing variable in the inspector instead of converting it to `public` variable 
   * Use CAPITAL letters for `[Header]` attribute 
   * Use `[Space]` attribute for better grouping of exposed variables 
   * Use `[Tooltip]` instead of comments for exposed in inspector variables
