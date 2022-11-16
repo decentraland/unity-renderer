@@ -189,9 +189,9 @@ List<string> filteredWords = new FilterLogic(listWords).
     * 🔴 folders that are deep in the folders hierarchy should be without namespace.
 
 ### Whitespaces
+Most of this rules are saved in the `.editorconfig` and will be applied automatically on formating.
   * **Horizontal spaces**
-    * indentation = `1 tab`
-      * tabs saved as spaces, `1 tab` = `4 spaces` (characters)
+    * indentation = `4 spaces` (no `tab`)
     * only one space between code elements is allowed
     * space after a comma between function arguments - 🟢 `CollectItem(myObject, 0, 1);` 🔴 `CollectItem(myObject,0,1);`
     * no space before flow control conditions - 🟢 `while(x < y)` 🔴 `while (x < y)`
