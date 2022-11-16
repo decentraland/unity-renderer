@@ -164,6 +164,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2cc1bc54dd98f77459c059ab58670f74, type: 3}
   - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
   - {fileID: 21300000, guid: 19ab9974b241b40c6904521d492b8328, type: 3}
+  - {fileID: 21300000, guid: d47fff849b289a945b7f71738eb53815, type: 3}
   - {fileID: 21300000, guid: 51517794ebfef5b49b08d321c661cee2, type: 3}
   - {fileID: 21300000, guid: d077f9943309847eb8bb9c36ecff7a44, type: 3}
   - {fileID: 21300000, guid: 3bdf32a4d196e1d429119d1477906987, type: 3}
@@ -253,6 +254,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6dc5f06896a6f4ae58484cab7811e13d, type: 3}
   - {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   - {fileID: 21300000, guid: 88d20368893eb44b4ae7754f29a476c1, type: 3}
+  - {fileID: 21300000, guid: 2d7d3368512701f4080fd09e4057e1f8, type: 3}
   - {fileID: 21300000, guid: 84771a68677a08b43a7247d73aa5a6d8, type: 3}
   - {fileID: 21300000, guid: fc55de685e0bf440298f2ef454cb99bc, type: 3}
   - {fileID: 21300000, guid: ff8a6278dd9d9334da10fa959cdb26dc, type: 3}
@@ -279,6 +281,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 46524689a799e4be9941af9ef6f45a89, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
+  - {fileID: 21300000, guid: 3beb4cb91f8cace439eb66e3a487008c, type: 3}
   - {fileID: 21300000, guid: 35746db90808fac4aa31ef672b070378, type: 3}
   - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
   - {fileID: 21300000, guid: cb309bd943c8e4c98bde37e97061b6aa, type: 3}
@@ -354,11 +357,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 6017049c5a0dc43f6a4a68f1b4e28664, type: 3}
+  - {fileID: 21300000, guid: 9fb5589c5caac46e5882f2be6709b03d, type: 3}
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: 21fb0bbc6fe494c8789ea7221ac96c59, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
   - {fileID: 21300000, guid: a6f0d6dcdab344ad88af35e7ed9071b5, type: 3}
   - {fileID: 21300000, guid: cfa089dc4012b4f59964c220fbf31fba, type: 3}
+  - {fileID: 21300000, guid: 3576a9dcb9ec94ac1b908b89c3571e75, type: 3}
   - {fileID: 21300000, guid: 6d5f6edc2bfb441e1969ee1e10c3c572, type: 3}
   - {fileID: 21300000, guid: 2f88b1fc7390f42f881f72ccfcde00db, type: 3}
   - {fileID: 21300000, guid: 654b9c0dd7f12442687bd4d4b034ece7, type: 3}
@@ -523,6 +528,7 @@ SpriteAtlas:
   - HideIcon
   - Container12Shadow4
   - ChatNotiIcon
+  - DMIEmpty
   - DclLogoCircle
   - LockIcon
   - DclLogoLine3
@@ -612,6 +618,7 @@ SpriteAtlas:
   - HighlightsIcon
   - Container12
   - UIicon
+  - PromoteChannelsToastBackground
   - tecktonik_256
   - AcceptButtonHover
   - raise_hand_256
@@ -638,6 +645,7 @@ SpriteAtlas:
   - FloorLight
   - MessageIcon
   - FriendsIcon
+  - PromoteChannelsToastContainer
   - ContainerRadius100
   - Star
   - ExploreOn
@@ -713,11 +721,13 @@ SpriteAtlas:
   - CrowdIcon
   - OutlineGradient
   - EndVoiceChat
+  - RhombusShapedGradient
   - HelpIcon
   - SettingsOff
   - VoiceChatPlayer
   - HideNameIcon
   - ChatOff
+  - LinearGradientNFTs
   - ArrowGradient
   - ContainerOutline100
   - MarketplaceOn

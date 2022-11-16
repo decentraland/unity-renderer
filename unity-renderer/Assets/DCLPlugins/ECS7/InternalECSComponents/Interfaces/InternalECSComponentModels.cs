@@ -59,5 +59,7 @@ namespace DCL.ECS7.InternalComponents
         public readonly HashSet<int> components = new HashSet<int>();
         public VisualElement parentElement;
         public long parentId;
+        public long rigthOf;
+        public bool shouldSort;
     }
 }

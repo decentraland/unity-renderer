@@ -57,7 +57,7 @@ public class ChannelMembersHUDControllerShould
         // Assert
         if (isVisible)
         {
-            channelMembersComponentView.Received(1).ClearSearchInput();
+            channelMembersComponentView.Received(1).ClearSearchInput(false);
             channelMembersComponentView.Received(1).Show();
             channelMembersComponentView.Received(1).ClearAllEntries();
             channelMembersComponentView.Received(1).ShowLoading();
@@ -79,7 +79,7 @@ public class ChannelMembersHUDControllerShould
         channelMembersHUDController.SetVisibility(true);
 
         // Assert
-        channelMembersComponentView.Received(1).ClearSearchInput();
+        channelMembersComponentView.Received(1).ClearSearchInput(false);
         channelMembersComponentView.Received(1).Show();
         channelMembersComponentView.Received(1).ClearAllEntries();
         channelMembersComponentView.Received(1).ShowLoading();

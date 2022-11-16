@@ -8,9 +8,10 @@ public class ChatController_Mock : IChatController
     private readonly List<ChatMessage> entries = new List<ChatMessage>();
 
     public event Action OnInitialized;
-    public event Action<ChatMessage> OnAddMessage;
+    public event Action<ChatMessage[]> OnAddMessage;
     public event Action<Channel> OnChannelUpdated;
     public event Action<Channel> OnChannelJoined;
+    public event Action<Channel> OnAutoChannelJoined;
     public event Action<string, ChannelErrorCode> OnJoinChannelError;
     public event Action<string> OnChannelLeft;
     public event Action<string, ChannelErrorCode> OnChannelLeaveError;
@@ -22,25 +23,13 @@ public class ChatController_Mock : IChatController
     public event Action<string, Channel[]> OnChannelSearchResult;
 
     public int TotalUnseenMessages { get; }
-
-    public List<ChatMessage> GetAllocatedEntries() { return entries; }
-
-    public List<ChatMessage> GetPrivateAllocatedEntriesByUser(string userId)
-    {
-        return new List<ChatMessage>();
-    }
-
-    public void RaiseAddMessage(ChatMessage chatMessage)
-    {
-        entries.Add(chatMessage);
-        OnAddMessage?.Invoke(chatMessage);
-    }
+    public bool IsInitialized { get; }
 
     public void Send(ChatMessage message)
     {
         if (message == null) return;
         entries.Add(message);
-        OnAddMessage?.Invoke(message);
+        OnAddMessage?.Invoke(new[] {message});
     }
 
     public void MarkMessagesAsSeen(string userId)
@@ -50,7 +39,7 @@ public class ChatController_Mock : IChatController
     public void GetPrivateMessages(string userId, int limit, string fromMessageId)
     {
     }
-    
+
     public void MarkChannelMessagesAsSeen(string channelId)
     {
     }
@@ -89,8 +78,6 @@ public class ChatController_Mock : IChatController
 
     public Channel GetAllocatedChannel(string channelId) => null;
 
-    public List<ChatMessage> GetAllocatedEntriesByChannel(string channelId) => new List<ChatMessage>();
-    
     public void GetUnseenMessagesByUser()
     {
     }
@@ -102,7 +89,7 @@ public class ChatController_Mock : IChatController
     public int GetAllocatedUnseenMessages(string userId) => 0;
 
     public int GetAllocatedUnseenChannelMessages(string channelId) => 0;
-    
+
     public void CreateChannel(string channelId)
     {
     }

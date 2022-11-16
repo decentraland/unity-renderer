@@ -2,7 +2,6 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
@@ -53,6 +52,8 @@ namespace DCL.ECSComponents
                 containerModel.parentElement?.Remove(containerModel.rootElement);
                 containerModel.parentElement = null;
             }
+            containerModel.shouldSort = containerModel.rigthOf != model.RightOf;
+            containerModel.rigthOf = model.RightOf;
 
             VisualElement element = containerModel.rootElement;
 
@@ -67,72 +68,97 @@ namespace DCL.ECSComponents
 
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
-            if (!float.IsNaN(model.FlexBasis))
-                element.style.flexBasis = new Length(model.FlexBasis, GetUnit(model.FlexBasisUnit));
-            else
-                element.style.flexBasis = new StyleLength(StyleKeyword.Auto);
+            if (model.FlexBasisUnit != YGUnit.YguUndefined)
+            {
+                element.style.flexBasis = model.FlexBasisUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.FlexBasis, GetUnit(model.FlexBasisUnit));
+            }
 
             element.style.flexGrow = model.FlexGrow;
-            element.style.flexShrink = model.FlexShrink;
-            element.style.flexWrap = GetWrap(model.FlexWrap);
+            element.style.flexShrink = model.GetFlexShrink();
+            element.style.flexWrap = GetWrap(model.GetFlexWrap());
 
-            // Align 
-            if (model.AlignContent != YGAlign.YgaFlexStart)
-                element.style.alignContent = GetAlign(model.AlignContent);
-            if (model.AlignItems != YGAlign.YgaAuto)
-                element.style.alignItems = GetAlign(model.AlignItems);
-            if (model.AlignSelf != YGAlign.YgaAuto)
-                element.style.alignSelf = GetAlign(model.AlignSelf);
+            // Align
+            element.style.alignContent = GetAlign(model.GetAlignContent());
+            element.style.alignItems = GetAlign(model.GetAlignItems());
+            element.style.alignSelf = GetAlign(model.AlignSelf);
             element.style.justifyContent = GetJustify(model.JustifyContent);
 
             // Layout size
-            if (!float.IsNaN(model.Height))
+            if (model.HeightUnit != YGUnit.YguUndefined)
+            {
                 element.style.height = new Length(model.Height, GetUnit(model.HeightUnit));
-            if (!float.IsNaN(model.Width))
+            }
+            if (model.WidthUnit != YGUnit.YguUndefined)
+            {
                 element.style.width = new Length(model.Width, GetUnit(model.WidthUnit));
-
-            if (!float.IsNaN(model.MaxWidth))
-                element.style.maxWidth = new Length(model.MaxWidth, GetUnit(model.MaxWidthUnit));
-            else
-                element.style.maxWidth = new StyleLength(StyleKeyword.Auto);
-            if (!float.IsNaN(model.MaxHeight))
-                element.style.maxHeight = new Length(model.MaxHeight, GetUnit(model.MaxHeightUnit));
-            else
-                element.style.maxHeight = new StyleLength(StyleKeyword.Auto);
-
-            if (!float.IsNaN(model.MinHeight))
+            }
+            if (model.MaxWidthUnit != YGUnit.YguUndefined)
+            {
+                element.style.maxWidth = model.MaxWidthUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.MaxWidth, GetUnit(model.MaxWidthUnit));
+            }
+            if (model.MaxHeightUnit != YGUnit.YguUndefined)
+            {
+                element.style.maxHeight = model.MaxHeightUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.MaxHeight, GetUnit(model.MaxHeightUnit));
+            }
+            if (model.MinHeightUnit != YGUnit.YguUndefined)
+            {
                 element.style.minHeight = new Length(model.MinHeight, GetUnit(model.MinHeightUnit));
-            if (!float.IsNaN(model.MinWidth))
+            }
+            if (model.MinWidthUnit != YGUnit.YguUndefined)
+            {
                 element.style.minWidth = new Length(model.MinWidth, GetUnit(model.MinWidthUnit));
+            }
 
             // Paddings
-            if (!Mathf.Approximately(model.PaddingBottom, 0))
+            if (model.PaddingBottomUnit != YGUnit.YguUndefined)
+            {
                 element.style.paddingBottom = new Length(model.PaddingBottom, GetUnit(model.PaddingBottomUnit));
-            if (!Mathf.Approximately(model.PaddingLeft, 0))
+            }
+            if (model.PaddingLeftUnit != YGUnit.YguUndefined)
+            {
                 element.style.paddingLeft = new Length(model.PaddingLeft, GetUnit(model.PaddingLeftUnit));
-            if (!Mathf.Approximately(model.PaddingRight, 0))
+            }
+            if (model.PaddingRightUnit != YGUnit.YguUndefined)
+            {
                 element.style.paddingRight = new Length(model.PaddingRight, GetUnit(model.PaddingRightUnit));
-            if (!Mathf.Approximately(model.PaddingTop, 0))
+            }
+            if (model.PaddingTopUnit != YGUnit.YguUndefined)
+            {
                 element.style.paddingTop = new Length(model.PaddingTop, GetUnit(model.PaddingTopUnit));
+            }
 
             // Margins
-            if (!Mathf.Approximately(model.MarginLeft, 0))
+            if (model.MarginLeftUnit != YGUnit.YguUndefined)
+            {
                 element.style.marginLeft = new Length(model.MarginLeft, GetUnit(model.MarginLeftUnit));
-            if (!Mathf.Approximately(model.MarginRight, 0))
+            }
+            if (model.MarginRightUnit != YGUnit.YguUndefined)
+            {
                 element.style.marginRight = new Length(model.MarginRight, GetUnit(model.MarginRightUnit));
-            if (!Mathf.Approximately(model.MarginBottom, 0))
+            }
+            if (model.MarginBottomUnit != YGUnit.YguUndefined)
+            {
                 element.style.marginBottom = new Length(model.MarginBottom, GetUnit(model.MarginBottomUnit));
-            if (!Mathf.Approximately(model.MarginTop, 0))
+            }
+            if (model.MarginTopUnit != YGUnit.YguUndefined)
+            {
                 element.style.marginTop = new Length(model.MarginTop, GetUnit(model.MarginTopUnit));
-
-            // Borders
-            element.style.borderBottomWidth = model.BorderBottom;
-            element.style.borderLeftWidth = model.BorderLeft;
-            element.style.borderRightWidth = model.BorderRight;
-            element.style.borderTopWidth = model.BorderTop;
+            }
 
             // Position
             element.style.position = GetPosition(model.PositionType);
+
+            if (model.PositionTopUnit != YGUnit.YguUndefined)
+                element.style.top = new Length(model.PositionTop, GetUnit(model.PositionTopUnit));
+
+            if (model.PositionBottomUnit != YGUnit.YguUndefined)
+                element.style.bottom = new Length(model.PositionBottom, GetUnit(model.PositionBottomUnit));
+
+            if (model.PositionRightUnit != YGUnit.YguUndefined)
+                element.style.right = new Length(model.PositionRight, GetUnit(model.PositionRightUnit));
+
+            if (model.PositionLeftUnit != YGUnit.YguUndefined)
+                element.style.left = new Length(model.PositionLeft, GetUnit(model.PositionLeftUnit));
         }
 
         private static LengthUnit GetUnit(YGUnit unit)
