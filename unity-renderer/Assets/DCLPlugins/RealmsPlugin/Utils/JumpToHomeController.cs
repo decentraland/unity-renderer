@@ -48,7 +48,12 @@ namespace DCLPlugins.RealmsPlugin
         private void GoHome()
         {
             jumpButton.interactable = false;
-            WebInterface.JumpInHome(GetMostPopulatedRealm());
+            WebInterface.SendChatMessage(new ChatMessage
+            {
+                messageType = ChatMessage.Type.NONE,
+                recipient = string.Empty,
+                body = $"/goto home"
+            });
         }
 
         private string GetMostPopulatedRealm()
