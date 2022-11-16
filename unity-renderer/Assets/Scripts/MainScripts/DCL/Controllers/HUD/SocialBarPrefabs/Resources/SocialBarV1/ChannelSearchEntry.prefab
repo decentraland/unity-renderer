@@ -631,19 +631,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
-  openChatButton: {fileID: 5926612440724047820}
+  openChatButton: {fileID: 8947407940783313022}
   nameLabel: {fileID: 7628201440103558983}
   model:
     channelId: 
     name: 
     isJoined: 0
     memberCount: 0
+    showOnlyOnlineMembers: 0
     muted: 0
   unreadNotifications: {fileID: 0}
   namePrefix: '#'
   memberCountLabel: {fileID: 7225015788764800492}
   optionsButton: {fileID: 0}
   leaveButton: {fileID: 100716840669198008}
+  joinButton: {fileID: 5926612440724047820}
   leaveButtonContainer: {fileID: 886247146761078123}
   openChatContainer: {fileID: 8385950391394479113}
   joinedContainer: {fileID: 7528068125504281875}
