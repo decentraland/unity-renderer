@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.CRDT
 {
@@ -26,6 +27,14 @@ namespace DCL.CRDT
 
         public void Dispose()
         {
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::Dispose Called while disposed");
+#endif
+
+            if (disposed)
+                return;
+
             disposed = true;
             loadedScenes.Remove(ownerScene);
             using (var entities = ownerScene.entities.Values.GetEnumerator())
@@ -41,6 +50,10 @@ namespace DCL.CRDT
 
         public void Execute(CRDTMessage crdtMessage)
         {
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
+#endif
             if (!sceneAdded)
             {
                 sceneAdded = true;
@@ -55,13 +68,18 @@ namespace DCL.CRDT
             {
                 return;
             }
-            
+
 
             ExecuteWithoutStoringState(crdtMessage.key1, crdtMessage.key2, crdtMessage.data);
         }
 
         public void ExecuteWithoutStoringState(long entityId, int componentId, object data)
         {
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::ExecuteWithoutStoringState Called while disposed");
+#endif
+
             if (disposed)
                 return;
 

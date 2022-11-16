@@ -45,6 +45,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
     public IEnumerator Basic()
     {
         //Arrange
+        CommonScriptableObjects.playerCoords.Set(new Vector2(0, 0));
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(7.5f, 1.8f, 11), new Vector3(7.5f, 1.75f, 8));
 
         AnimationClip animationClip = Resources.Load<AnimationClip>("Male/dab");

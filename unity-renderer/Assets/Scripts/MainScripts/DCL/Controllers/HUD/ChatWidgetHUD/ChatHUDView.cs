@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Chat.HUD;
 using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
@@ -9,9 +10,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Threading;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
 
 public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
@@ -27,6 +25,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
+    [SerializeField] private PoolChatEntryFactory poolChatEntryFactory;
     [SerializeField] private Model model;
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
@@ -115,7 +114,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
-        ChatEntryFactory ??= defaultChatEntryFactory;
+        ChatEntryFactory ??= (IChatEntryFactory) poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
 
@@ -185,12 +184,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.MoveTextEnd(false);
     }
 
-    public void FadeOutMessages()
-    {
-        foreach (var entry in entries.Values)
-            entry.FadeOut();
-    }
-
     private void SetFadeoutMode(bool enabled)
     {
         model.enableFadeoutMode = enabled;
@@ -218,7 +211,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             chatEntry.SetFadeout(this.model.enableFadeoutMode);
             chatEntry.Populate(model);
 
-            if (chatEntry.showUserName && model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+            if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
                 chatEntry.OnUserNameClicked += OnOpenContextMenu;
 
             chatEntry.OnTriggerHover += OnMessageTriggerHover;
@@ -248,8 +241,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         var firstEntry = GetFirstEntry();
         if (!firstEntry) return;
         entries.Remove(firstEntry.Model.messageId);
-        // TODO: entries are not being destroyed if many are added in the same frame. Instead use pooling or DestroyImmediate in the worst scenario
-        Destroy(firstEntry.gameObject);
+        ChatEntryFactory.Destroy(firstEntry);
         UpdateLayout();
     }
 
@@ -271,7 +263,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public virtual void ClearAllEntries()
     {
         foreach (var entry in entries.Values)
-            Destroy(entry.gameObject);
+            ChatEntryFactory.Destroy(entry);
         entries.Clear();
         UpdateLayout();
     }
@@ -309,7 +301,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
 
-    private void OnOpenContextMenu(DefaultChatEntry chatEntry)
+    private void OnOpenContextMenu(ChatEntry chatEntry)
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
         contextMenu.transform.parent = transform.parent;
@@ -317,17 +309,17 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
-    protected virtual void OnMessageTriggerHover(DefaultChatEntry chatEntry)
+    private void OnMessageTriggerHover(ChatEntry chatEntry)
     {
         if (contextMenu == null || contextMenu.isVisible)
             return;
 
-        messageHoverText.text = chatEntry.messageLocalDateTime;
+        messageHoverText.text = chatEntry.DateString;
         chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
         messageHoverPanel.SetActive(true);
     }
 
-    private void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    private void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates} INFO";
         chatEntry.DockHoverPanel((RectTransform) messageHoverGotoPanel.transform);

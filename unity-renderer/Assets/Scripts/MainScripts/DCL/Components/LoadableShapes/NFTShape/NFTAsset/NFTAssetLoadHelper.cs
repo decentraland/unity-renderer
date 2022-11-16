@@ -21,6 +21,7 @@ namespace DCL
         private const string CONTENT_TYPE = "Content-Type";
         private const string CONTENT_LENGTH = "Content-Length";
         private const string CONTENT_TYPE_GIF = "image/gif";
+        private const string CONTENT_TYPE_WEBP = "image/webp";
         private const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
         
         protected AssetPromise_Texture imagePromise = null;
@@ -66,7 +67,23 @@ namespace DCL
             string contentType = responseHeaders[CONTENT_TYPE];
             long.TryParse(responseHeaders[CONTENT_LENGTH], out long contentLength);
             bool isGif = contentType == CONTENT_TYPE_GIF;
+            bool isWebp = contentType == CONTENT_TYPE_WEBP;
 
+            if (isWebp)
+            {
+                // We are going to fallback into gifs until we have proper support
+                yield return FetchGif(url + "&fm=gif",
+                    OnSuccess: (promise) =>
+                    {
+                        UnloadPromises();
+                        this.gifPromise = promise;
+                        OnSuccess?.Invoke(new NFTAsset_Gif(promise.asset));
+                    },
+                    OnFail: (exception) => { OnFail?.Invoke(exception); }
+                );
+                
+                yield break;
+            }
             if (isGif)
             {
                 yield return FetchGif(url,
