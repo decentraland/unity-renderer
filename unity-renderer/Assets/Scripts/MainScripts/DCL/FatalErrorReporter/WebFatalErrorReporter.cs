@@ -7,7 +7,7 @@ namespace DCL.FatalErrorReporter
     {
         public void Report(Exception exception)
         {
-            WebInterface.ReportAvatarFatalError();
+            WebInterface.ReportAvatarFatalError(exception.ToString());
         }
     }
 }
