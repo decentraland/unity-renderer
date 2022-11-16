@@ -77,7 +77,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
-                    new WebInterfaceBrowserBridge());
+                    new WebInterfaceBrowserBridge(),
+                    CommonScriptableObjects.rendererState);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
