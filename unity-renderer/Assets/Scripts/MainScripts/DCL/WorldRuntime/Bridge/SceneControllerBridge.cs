@@ -11,7 +11,13 @@ public class SceneControllerBridge : MonoBehaviour
     // sceneNumber comes as a string because WebSocketCommunication can only receive strings as kernel message parameters
     public void UnloadSceneV2(string sceneNumber)
     {
-        Environment.i.world.sceneController.UnloadScene(Int32.Parse(sceneNumber));
+        if (!Int32.TryParse(sceneNumber, out int targetSceneNumber))
+        {
+            Debug.LogError($"UnloadSceneV2() Int32 failed to parse the received scene number...{sceneNumber}.");
+            return;
+        }
+        
+        Environment.i.world.sceneController.UnloadScene(targetSceneNumber);
     }
 
     public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
