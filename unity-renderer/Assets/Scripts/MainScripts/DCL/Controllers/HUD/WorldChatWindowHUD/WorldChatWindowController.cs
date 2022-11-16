@@ -133,6 +133,7 @@ public class WorldChatWindowController : IHUD
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
+            chatController.OnOpenJoinChannel += HandleOpenJoinChannel;
             dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
 
             view.ShowChannelsLoading();
@@ -167,6 +168,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
+        chatController.OnOpenJoinChannel -= HandleOpenJoinChannel;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
@@ -580,6 +582,14 @@ public class WorldChatWindowController : IHUD
             return;
 
         OpenPublicChat(channelId);
+    }
+
+    private void HandleOpenJoinChannel(string channelName)
+    {
+        chatController.OnOpenJoinChannel -= HandleOpenJoinChannel;
+        
+        if (channelsFeatureFlagService.IsAllowedToCreateChannels())
+            dataStore.channels.currentJoinChannelModal.Set(channelName, true);
     }
 
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();

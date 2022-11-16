@@ -62,6 +62,7 @@ public class JoinChannelComponentController : IDisposable
             socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
 
         joinChannelView.Hide();
+        channelsDataStore.currentJoinChannelModal.Set(null);
     }
 
     private void OnConfirmJoin(string channelName)
