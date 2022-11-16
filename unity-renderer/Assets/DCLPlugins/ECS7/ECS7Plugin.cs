@@ -38,8 +38,7 @@ namespace DCL.ECS7
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
                 (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK),
-                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD),
-                (ECSComponent<ECSTransform>)componentsManager.GetOrCreateComponent(ComponentID.TRANSFORM));
+                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
         }

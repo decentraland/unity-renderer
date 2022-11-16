@@ -47,7 +47,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.uiContainerComponent,
             DataStore.i.ecs7.scenes, Environment.i.world.state);
 
-        billboardSystem = new ECSBillboardSystem(context, DataStore.i.camera);
+        billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
         
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

@@ -8,20 +8,17 @@ public readonly struct SystemsContext
     public readonly IComponentGroups componentGroups;
     public readonly ECSComponent<PBPointerHoverFeedback> pointerEvents;
     public readonly ECSComponent<PBBillboard> billboards;
-    public readonly ECSComponent<ECSTransform> transforms;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
         ECSComponent<PBPointerHoverFeedback> pointerEvents,
-        ECSComponent<PBBillboard> billboards,
-        ECSComponent<ECSTransform> transforms)
+        ECSComponent<PBBillboard> billboards)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
         this.pointerEvents = pointerEvents;
         this.billboards = billboards;
-        this.transforms = transforms;
     }
 }

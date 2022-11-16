@@ -1,7 +1,7 @@
 using System;
 using DCL;
-using DCL.Controllers;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 
 namespace ECSSystems.BillboardSystem
@@ -11,17 +11,17 @@ namespace ECSSystems.BillboardSystem
         
         private class State
         {
-            public SystemsContext context;
+            public ECSComponent<PBBillboard> billboards;
             public DataStore_Camera camera;
         }
 
         private readonly State state;
 
-        public ECSBillboardSystem(SystemsContext context, DataStore_Camera camera)
+        public ECSBillboardSystem(ECSComponent<PBBillboard> billboards,  DataStore_Camera camera)
         {
             state = new State()
             {
-                context = context,
+                billboards = billboards,
                 camera = camera
             };
 
@@ -34,30 +34,20 @@ namespace ECSSystems.BillboardSystem
         public void Update()
         {
             UnityEngine.Vector3 cameraPosition = state.camera.transform.Get().position;
-            UnityEngine.Vector3 lookAtVector;
-            var billboards = state.context.billboards.Get();
+            var billboards = state.billboards.Get();
 
             for (var i = 0; i < billboards.Count; i++)
             {
                 PBBillboard billboard = billboards[i].value.model;
                 IDCLEntity entity = billboards[i].value.entity;
-                IParcelScene scene = billboards[i].value.scene;
-                UnityEngine.Vector3 transformPosition = state.context.transforms.Get(scene, entity).model.position;
-                
-                if (billboard.OppositeDirection)
-                {
-                    lookAtVector = new UnityEngine.Vector3(cameraPosition.x - transformPosition.x, cameraPosition.y - transformPosition.y, cameraPosition.z - transformPosition.z);
-                }
-                else
-                {
-                    lookAtVector = new UnityEngine.Vector3(transformPosition.x - cameraPosition.x, transformPosition.y - cameraPosition.y, transformPosition.z - cameraPosition.z);
-                }
-                
+                UnityEngine.Vector3 lookAtVector = billboard.OppositeDirection ? 
+                    cameraPosition - entity.gameObject.transform.position : 
+                    entity.gameObject.transform.position - cameraPosition; 
+
                 if (billboard.BillboardMode == BillboardMode.BmYAxe)
                 {
                     lookAtVector.Normalize();
                     lookAtVector.y = entity.gameObject.transform.forward.y;
-                    
                 }
                 
                 if (lookAtVector != UnityEngine.Vector3.zero)

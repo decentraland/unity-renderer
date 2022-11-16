@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7;
+using DCL.ECSRuntime;
 using DCL.Models;
+using ECSSystems.BillboardSystem;
 using Google.Protobuf;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -17,25 +21,52 @@ namespace DCL.ECSComponents.Test
     public class BillboardShould
     {
         private IDCLEntity entity;
-        private IParcelScene scene;
-        // private BillboardComponentHandler componentHandler;
         private GameObject gameObject;
+        
+        private Transform cameraTransform;
+        private IList<IParcelScene> scenes;
+        private BillboardRegister billboardRegister;
+        private ECSBillboardSystem systemUpdate;
+        private DataStore_Camera dataStoreCamera;
+        private ECSComponent<PBBillboard> billboards;
 
         [SetUp]
         protected void SetUp()
         {
+            scenes = DataStore.i.ecs7.scenes;
+            scenes.Add(Substitute.For<IParcelScene>());
+            scenes[0]
+                .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
+                {
+                    id = "temptation", basePosition = new Vector2Int(1, 0)
+                });
+
+            cameraTransform = (new GameObject("GO")).transform;
+            cameraTransform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
+            
+            CommonScriptableObjects.rendererState.Set(true);
+            CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
+            
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
-            scene = Substitute.For<IParcelScene>();
-            // componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
 
             entity.entityId.Returns(1); 
             entity.gameObject.Returns(gameObject);
-            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
-            scene.sceneData.Configure().Returns(sceneData);
+
+            ECSComponentsFactory componentFactory = new ECSComponentsFactory();
+            ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
+            var internalComponents = new InternalECSComponents(componentsManager, componentFactory);
+            var componentsComposer = new ECS7ComponentsComposer(componentFactory,
+                Substitute.For<IECSComponentWriter>(), internalComponents);
             
-            // componentHandler.OnComponentCreated(scene, entity);
+            billboards = (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD);
+            
+            dataStoreCamera = new DataStore_Camera();
+            dataStoreCamera.transform.Set(cameraTransform);
+            
+            systemUpdate = new ECSBillboardSystem(
+                billboards,
+                dataStoreCamera);
         }
 
         [TearDown]
@@ -48,15 +79,13 @@ namespace DCL.ECSComponents.Test
         [Test]
         public void UpdateComponentCorrectly()
         {
-            // Arrange
-            var model = CreateModel();
-            // componentHandler.OnComponentCreated(scene,entity);
+            billboards.Create(scenes[0], entity);
+            billboards.SetModel(scenes[0], entity, CreateModel());
+            
             var currentRotation = gameObject.transform.rotation;
-            CommonScriptableObjects.cameraPosition.Set(new UnityEngine.Vector3(10, 10, 10));
-                
-            // Act
-            // componentHandler.OnComponentModelUpdated(scene, entity, model);
-
+            cameraTransform.position = new UnityEngine.Vector3(30, 2, 15);
+            systemUpdate.Update();
+            
             // Assert
             Assert.AreNotEqual(currentRotation,  gameObject.transform.rotation);
         }
