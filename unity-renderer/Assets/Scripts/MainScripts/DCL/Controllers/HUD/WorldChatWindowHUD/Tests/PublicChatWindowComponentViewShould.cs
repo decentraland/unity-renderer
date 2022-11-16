@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-public class PublicChatChannelComponentViewShould
+public class PublicChatWindowComponentViewShould
 {
     private PublicChatWindowComponentView view;
     
@@ -35,7 +35,7 @@ public class PublicChatChannelComponentViewShould
     [Test]
     public void Configure()
     {
-        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false));
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false, true));
         
         Assert.AreEqual("~nearby", view.nameLabel.text);
         Assert.IsFalse(view.muteToggle.isOn);
@@ -44,7 +44,7 @@ public class PublicChatChannelComponentViewShould
     [Test]
     public void ConfigureAsMuted()
     {
-        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true));
+        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true, true));
         
         Assert.AreEqual("~nearby", view.nameLabel.text);
         Assert.IsTrue(view.muteToggle.isOn);

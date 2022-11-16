@@ -7,11 +7,12 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
-public class PublicChatChannelControllerShould
+public class PublicChatWindowControllerShould
 {
     private const string OWN_USER_ID = "my-user-id";
     private const string TEST_USER_ID = "otherUserId";
     private const string TEST_USER_NAME = "otherUserName";
+    private const string CHANNEL_ID = "nearby";
 
     private PublicChatWindowController controller;
     private IPublicChatWindowView view;
@@ -27,7 +28,7 @@ public class PublicChatChannelControllerShould
         GivenUser(TEST_USER_ID, TEST_USER_NAME);
 
         chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby",
+        chatController.GetAllocatedChannel(CHANNEL_ID).Returns(new Channel(CHANNEL_ID, CHANNEL_ID,
             0, 1, true, false, ""));
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PublicChatWindowController(
@@ -60,7 +61,7 @@ public class PublicChatChannelControllerShould
             sender = TEST_USER_ID
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
 
         internalChatView.Received(1).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == msg.messageType
@@ -79,7 +80,7 @@ public class PublicChatChannelControllerShould
             timestamp = 100
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
 
         internalChatView.DidNotReceiveWithAnyArgs().AddEntry(default);
     }
@@ -146,40 +147,75 @@ public class PublicChatChannelControllerShould
     [Test]
     public void MarkChannelMessagesAsReadCorrectly()
     {
-        controller.MarkChannelMessagesAsRead();
+        controller.Setup(CHANNEL_ID);
+        view.IsActive.Returns(true);
+        
+        var msg = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            body = "test message",
+            sender = TEST_USER_ID,
+            timestamp = 100
+        };
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
+        
+        chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
+    }
 
-        chatController.Received(1).MarkChannelMessagesAsSeen(Arg.Any<string>());
+    [Test]
+    public void MarkAsSeenOnlyOnceWhenReceiveManyMessages()
+    {
+        controller.Setup(CHANNEL_ID);
+        view.IsActive.Returns(true);
+        
+        var msg1 = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            body = "test message",
+            sender = TEST_USER_ID,
+            timestamp = 100
+        };
+        var msg2 = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            body = "test message",
+            sender = TEST_USER_ID,
+            timestamp = 101
+        };
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
+        
+        chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
     }
 
     [Test]
     public void MuteChannel()
     {
-        controller.Setup("nearby");
+        controller.Setup(CHANNEL_ID);
         view.OnMuteChanged += Raise.Event<Action<bool>>(true);
 
-        chatController.Received(1).MuteChannel("nearby");
+        chatController.Received(1).MuteChannel(CHANNEL_ID);
     }
 
     [Test]
     public void UnmuteChannel()
     {
-        controller.Setup("nearby");
+        controller.Setup(CHANNEL_ID);
         view.OnMuteChanged += Raise.Event<Action<bool>>(false);
 
-        chatController.Received(1).UnmuteChannel("nearby");
+        chatController.Received(1).UnmuteChannel(CHANNEL_ID);
     }
 
     [Test]
     public void RefreshChannelInformationWhenChannelUpdates()
     {
-        controller.Setup("nearby");
+        controller.Setup(CHANNEL_ID);
         view.ClearReceivedCalls();
 
-        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(new Channel("nearby", "nearby",
+        chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(new Channel(CHANNEL_ID, CHANNEL_ID,
             0, 1, true, true, ""));
 
-        view.Received(1).Configure(Arg.Is<PublicChatModel>(p => p.channelId == "nearby"
-                                                                && p.name == "nearby"
+        view.Received(1).Configure(Arg.Is<PublicChatModel>(p => p.channelId == CHANNEL_ID
+                                                                && p.name == CHANNEL_ID
                                                                 && p.joined == true
                                                                 && p.muted == true));
     }

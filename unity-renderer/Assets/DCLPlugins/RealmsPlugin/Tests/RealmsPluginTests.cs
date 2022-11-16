@@ -17,6 +17,7 @@ namespace DCLPlugins.RealmsPlugin
         private IRealmsModifier genericModifier;
         private RealmsBlockerModifier realmsBlockerModiferSubstitute;
         private RealmsMinimapModifier realmsMinimapModiferSubstitute;
+
         private ServiceLocator serviceLocator;
 
         [SetUp]
@@ -27,6 +28,7 @@ namespace DCLPlugins.RealmsPlugin
 
             realmsPlugin = new RealmsPlugin();
             realmsBlockerModiferSubstitute = Substitute.For<RealmsBlockerModifier>();
+
             realmsMinimapModiferSubstitute = Substitute.For<RealmsMinimapModifier>();
             genericModifier = Substitute.For<IRealmsModifier>();
             List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier, realmsMinimapModiferSubstitute };
