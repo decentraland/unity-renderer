@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public BillboardRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, BillboardSerializer.Deserialize, () => new BillboardComponentHandler(Environment.i.platform.updateEventHandler));
+            factory.AddOrReplaceComponent(componentId, BillboardSerializer.Deserialize, null);
             componentWriter.AddOrReplaceComponentSerializer<PBBillboard>(componentId, BillboardSerializer.Serialize);
 
             this.factory = factory;

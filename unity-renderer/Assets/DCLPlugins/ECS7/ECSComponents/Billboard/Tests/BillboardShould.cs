@@ -18,7 +18,7 @@ namespace DCL.ECSComponents.Test
     {
         private IDCLEntity entity;
         private IParcelScene scene;
-        private BillboardComponentHandler componentHandler;
+        // private BillboardComponentHandler componentHandler;
         private GameObject gameObject;
 
         [SetUp]
@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
+            // componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
 
             entity.entityId.Returns(1); 
             entity.gameObject.Returns(gameObject);
@@ -35,13 +35,13 @@ namespace DCL.ECSComponents.Test
             sceneData.id = "1";
             scene.sceneData.Configure().Returns(sceneData);
             
-            componentHandler.OnComponentCreated(scene, entity);
+            // componentHandler.OnComponentCreated(scene, entity);
         }
 
         [TearDown]
         protected void TearDown()
         {
-            componentHandler.OnComponentRemoved(scene, entity);
+            // componentHandler.OnComponentRemoved(scene, entity);
             GameObject.Destroy(gameObject);
         }
 
@@ -50,12 +50,12 @@ namespace DCL.ECSComponents.Test
         {
             // Arrange
             var model = CreateModel();
-            componentHandler.OnComponentCreated(scene,entity);
+            // componentHandler.OnComponentCreated(scene,entity);
             var currentRotation = gameObject.transform.rotation;
             CommonScriptableObjects.cameraPosition.Set(new UnityEngine.Vector3(10, 10, 10));
                 
             // Act
-            componentHandler.OnComponentModelUpdated(scene, entity, model);
+            // componentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
             Assert.AreNotEqual(currentRotation,  gameObject.transform.rotation);
