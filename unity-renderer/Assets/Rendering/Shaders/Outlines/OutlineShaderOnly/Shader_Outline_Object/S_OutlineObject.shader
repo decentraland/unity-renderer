@@ -1,21 +1,26 @@
-Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
+Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
 {
     Properties
     {
-        Vector1_eacf5e5d73a24957b64ff9be4232b8e9("Outline (Pixel)", Float) = 0
+        _OutlineWidth("OutlineWidth (Pixel)", Range(0, 3)) = 0.5
         _OutlineIntersection("Outline Intersection", Range(-1.5, 1)) = 0.5
         [ToggleUI]_internalSections("internalSections", Float) = 0
         [HDR]_OutlineColor("Outline Color", Color) = (4, 1.539547, 0, 0)
         _OutlineOpacity("OutlineOpacity", Range(0, 1)) = 0
-        Vector1_d0d90240ab69433a9d9c08a5c9e80a31("CameraFarPlaneFade", Float) = 0
-        Color_d326f9101fd94f2b8ca8431c31e97ef6("FillColor", Color) = (0, 0, 0, 0)
-        Vector1_255b438dff5e475da252ca15498d846d("FillOpacity", Range(0.3, 1)) = 1
+        _CameraFarFade("CameraFarFade", Float) = 50
+        _FillColor("FillColor", Color) = (0, 0, 0, 0)
+        _FillOpacity("FillOpacity", Range(0.01, 1)) = 1
         [ToggleUI]_isOutlineEnabled("isOutlineEnabled", Float) = 0
         [ToggleUI]_isOutlineEnabled_1("isFillEnabled", Float) = 0
         _ObjectOcclusion("ObjectOcclusion", Float) = 0
+        [ToggleUI]_isOccludedVisualEnabled("isOccludedVisualEnabled", Float) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
+        
+        [Enum(Off,0,On,1)]_ZWrite ("ZWrite", Float) = 1.0
+[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
+[Enum(UnityEngine.Rendering.CullMode)] _Culling ("Culling", Float) = 0
     }
     SubShader
     {
@@ -24,7 +29,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             "RenderPipeline"="UniversalPipeline"
             "RenderType"="Transparent"
             "UniversalMaterialType" = "Lit"
-            "Queue"="Overlay"
+            "Queue"="Transparent"
         }
         Pass
         {
@@ -35,10 +40,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
-        Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite Off
+            //Cull Off
+        
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+        
+            //ZTest LEqual
+        
+            //ZWrite Off
+            
+        ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]    
+            
 
             // Debug
             // <None>
@@ -86,6 +99,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_FORWARD
@@ -148,6 +162,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
+            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -250,17 +265,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -419,13 +435,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            float _Property_52d18ef8de914706a44f1955136707a1_Out_0 = _isOccludedVisualEnabled;
             float _Property_171fc7588f4f4e698cde0c6e747792d6_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -438,11 +455,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -493,9 +510,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -527,6 +544,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
+            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
+            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
+            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
+            float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -535,14 +557,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = (_Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3.xyz);
+            surface.Emission = (_Branch_6ccef989b594453a8b4ab45df4a34168_Out_3.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -582,6 +604,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
+            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -605,10 +628,13 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite Off
+        //ZTest LEqual
+        //ZWrite Off
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -653,6 +679,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_GBUFFER
@@ -715,6 +742,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
+            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -817,17 +845,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -986,13 +1015,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            float _Property_52d18ef8de914706a44f1955136707a1_Out_0 = _isOccludedVisualEnabled;
             float _Property_171fc7588f4f4e698cde0c6e747792d6_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -1005,11 +1035,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -1060,9 +1090,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -1094,6 +1124,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
+            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
+            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
+            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
+            float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -1102,14 +1137,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = (_Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3.xyz);
+            surface.Emission = (_Branch_6ccef989b594453a8b4ab45df4a34168_Out_3.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -1149,6 +1184,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
+            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -1173,11 +1209,15 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite On
+        //ZTest LEqual
+        //ZWrite On
         ColorMask 0
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -1327,17 +1367,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -1492,11 +1533,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -1547,9 +1588,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -1583,9 +1624,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
@@ -1646,11 +1687,15 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite On
+        //ZTest LEqual
+        //ZWrite On
         ColorMask 0
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -1800,17 +1845,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -1965,11 +2011,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -2020,9 +2066,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -2056,9 +2102,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
@@ -2119,7 +2165,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite On
@@ -2285,17 +2331,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -2451,11 +2498,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -2506,9 +2553,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -2542,9 +2589,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -2640,6 +2687,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             #define ATTRIBUTES_NEED_TEXCOORD1
             #define ATTRIBUTES_NEED_TEXCOORD2
             #define VARYINGS_NEED_POSITION_WS
+            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_META
@@ -2691,6 +2739,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         {
             float3 WorldSpacePosition;
             float4 ScreenPosition;
+            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -2760,17 +2809,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -2925,13 +2975,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            float _Property_52d18ef8de914706a44f1955136707a1_Out_0 = _isOccludedVisualEnabled;
             float _Property_171fc7588f4f4e698cde0c6e747792d6_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -2944,11 +2995,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -2999,9 +3050,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -3033,6 +3084,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
+            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
+            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
+            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
+            float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -3041,13 +3097,13 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
-            surface.Emission = (_Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3.xyz);
+            surface.Emission = (_Branch_6ccef989b594453a8b4ab45df4a34168_Out_3.xyz);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
@@ -3083,6 +3139,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
+            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -3106,10 +3163,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite Off
+        //ZTest LEqual
+        //ZWrite Off
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -3257,17 +3318,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -3421,13 +3483,13 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -3440,11 +3502,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -3495,9 +3557,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -3531,9 +3593,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
@@ -3605,10 +3667,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite Off
+        //ZTest LEqual
+        //ZWrite Off
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -3655,6 +3721,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
+            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_FORWARD
@@ -3717,6 +3784,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
+            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -3819,17 +3887,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -3988,13 +4057,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            float _Property_52d18ef8de914706a44f1955136707a1_Out_0 = _isOccludedVisualEnabled;
             float _Property_171fc7588f4f4e698cde0c6e747792d6_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -4007,11 +4077,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -4062,9 +4132,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -4096,6 +4166,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
+            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
+            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
+            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
+            float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -4104,14 +4179,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = (_Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3.xyz);
+            surface.Emission = (_Branch_6ccef989b594453a8b4ab45df4a34168_Out_3.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -4151,6 +4226,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
+            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -4174,11 +4250,15 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite On
+        //ZTest LEqual
+        //ZWrite On
         ColorMask 0
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -4327,17 +4407,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -4492,11 +4573,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -4547,9 +4628,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -4583,9 +4664,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
@@ -4646,11 +4727,15 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite On
+        //ZTest LEqual
+        //ZWrite On
         ColorMask 0
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -4799,17 +4884,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -4964,11 +5050,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -5019,9 +5105,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -5055,9 +5141,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
@@ -5118,10 +5204,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite On
+        //ZTest LEqual
+        //ZWrite On
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -5283,17 +5373,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -5449,11 +5540,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -5504,9 +5595,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -5540,9 +5631,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -5638,6 +5729,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             #define ATTRIBUTES_NEED_TEXCOORD1
             #define ATTRIBUTES_NEED_TEXCOORD2
             #define VARYINGS_NEED_POSITION_WS
+            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_META
@@ -5689,6 +5781,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         {
             float3 WorldSpacePosition;
             float4 ScreenPosition;
+            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -5758,17 +5851,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -5923,13 +6017,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            float _Property_52d18ef8de914706a44f1955136707a1_Out_0 = _isOccludedVisualEnabled;
             float _Property_171fc7588f4f4e698cde0c6e747792d6_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -5942,11 +6037,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -5997,9 +6092,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -6031,6 +6126,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
+            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
+            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
+            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
+            float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -6039,13 +6139,13 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
-            surface.Emission = (_Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3.xyz);
+            surface.Emission = (_Branch_6ccef989b594453a8b4ab45df4a34168_Out_3.xyz);
             surface.Alpha = _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
@@ -6081,6 +6181,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
+            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -6104,10 +6205,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             }
 
             // Render State
-            Cull Off
+            //Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        ZTest LEqual
-        ZWrite Off
+        //ZTest LEqual
+        //ZWrite Off
+            
+            ZWrite [_ZWrite]
+        ZTest [_ZTest]
+        Cull [_Culling]
 
             // Debug
             // <None>
@@ -6256,17 +6361,18 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
-        float Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+        float _OutlineWidth;
         float _OutlineIntersection;
         float _internalSections;
         float4 _OutlineColor;
         float _OutlineOpacity;
-        float Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
-        float4 Color_d326f9101fd94f2b8ca8431c31e97ef6;
-        float Vector1_255b438dff5e475da252ca15498d846d;
+        float _CameraFarFade;
+        float4 _FillColor;
+        float _FillOpacity;
         float _isOutlineEnabled;
         float _isOutlineEnabled_1;
         float _ObjectOcclusion;
+        float _isOccludedVisualEnabled;
         CBUFFER_END
 
         // Object and Global properties
@@ -6420,13 +6526,13 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            float _Property_550c83ba40b043bb858c8536cf7d60a3_Out_0 = _isOutlineEnabled_1;
-            float4 _Property_2e648cf98e494065861b36d2d8779a21_Out_0 = Color_d326f9101fd94f2b8ca8431c31e97ef6;
+            float _Property_ffcf8e1239484089aadd6ab0163b394c_Out_0 = _isOutlineEnabled_1;
+            float4 _Property_053adf330da74170a55f9980094e9d04_Out_0 = _FillColor;
             float4 _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3;
-            Unity_Branch_float4(_Property_550c83ba40b043bb858c8536cf7d60a3_Out_0, _Property_2e648cf98e494065861b36d2d8779a21_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
-            float _Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            Unity_Branch_float4(_Property_ffcf8e1239484089aadd6ab0163b394c_Out_0, _Property_053adf330da74170a55f9980094e9d04_Out_0, float4(0, 0, 0, 0), _Branch_0db834dae9444ee09bc2260c444c1c97_Out_3);
+            float _Property_eaa7a13d15a0459c9c13ea0801916729_Out_0 = _FillOpacity;
             float4 _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2;
-            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_c63a641c71fc421aa7c2e3bb3f5d3a25_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
+            Unity_Multiply_float(_Branch_0db834dae9444ee09bc2260c444c1c97_Out_3, (_Property_eaa7a13d15a0459c9c13ea0801916729_Out_0.xxxx), _Multiply_c11991fca47f4ffca467dcec31b28860_Out_2);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _Property_83642bf497ea4c568b380bd3876986b9_Out_0 = IsGammaSpace() ? LinearToSRGB(_OutlineColor) : _OutlineColor;
             float4 _ScreenPosition_2cf07fdb84c444f387e20b148b23f7d1_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
@@ -6439,11 +6545,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Lerp_float4(float4(0, 0, 0, 0), _Add_18902f7b2b47417aa06b4b5bed78590a_Out_2, (Slider_8b40d4a2a0644469b79f4b3170e2027b.xxxx), _Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3);
             float _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1;
             Unity_SceneDepth_Linear01_float(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _SceneDepth_7c52a8a1028e4b489ff3512e6ec8e67b_Out_1);
-            float _Property_22b18c745a76403987ad4334d7a6c884_Out_0 = Vector1_eacf5e5d73a24957b64ff9be4232b8e9;
+            float _Property_34bf8236595243bba29df1f76d6799cd_Out_0 = _OutlineWidth;
             float _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.x, _Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2);
             float _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2;
-            Unity_Divide_float(_Property_22b18c745a76403987ad4334d7a6c884_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
+            Unity_Divide_float(_Property_34bf8236595243bba29df1f76d6799cd_Out_0, _ScreenParams.y, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2);
             float4 _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0 = float4(_Divide_6260bd01d6ab43a0812b9f1575e55e60_Out_2, _Divide_0f6cefc62ec44f02b62a805bcc51171b_Out_2, 0, 0);
             float4 _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2;
             Unity_Add_float4(_Lerp_125659c7e70c4331a882ad2c8cab8aa5_Out_3, _Vector4_c0dca0e0b61f434e9acb7d2ddeddaf6c_Out_0, _Add_6892f7e42c014f77b6dbf26c86a70584_Out_2);
@@ -6494,9 +6600,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             Unity_Add_float(_Add_ab85d9f45a2f435880bd6d9d4bb54362_Out_2, _Absolute_c2581a81b89a407aacebd7dd93e7a00f_Out_1, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2);
             float _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2;
             Unity_Add_float(_Add_f15bc499f78a4aac8dc2eb1eebefa2d9_Out_2, _Add_800b0db2c1c84983930e7a438b6cac95_Out_2, _Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2);
-            float _Property_598ca99daef74fb6ac0ed190a1469550_Out_0 = Vector1_d0d90240ab69433a9d9c08a5c9e80a31;
+            float _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0 = _CameraFarFade;
             float _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2;
-            Unity_Divide_float(_ProjectionParams.z, _Property_598ca99daef74fb6ac0ed190a1469550_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
+            Unity_Divide_float(_ProjectionParams.z, _Property_64ccd45026b4421d8abaf3715fe9d96d_Out_0, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2);
             float _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2;
             Unity_Multiply_float(_Add_dc4b260adfac4db8a2f50c49f0a2bae4_Out_2, _Divide_113c8b743e0244eeb555e646fd4f5388_Out_2, _Multiply_03e4fe9939f849fb9368990bcbc9a1e7_Out_2);
             float _Property_828c1ee8ccd4424f9aac564c86d59de9_Out_0 = _internalSections;
@@ -6530,9 +6636,9 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject
             float _Property_7589d370c41e4be483d935b3660b6951_Out_0 = _isOutlineEnabled_1;
             float _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0 = 0;
             float _Float_e46f9d93edec49fa82450821c4313327_Out_0 = 1;
-            float _Property_39773efc545a45998dc93fa4ca781db2_Out_0 = Vector1_255b438dff5e475da252ca15498d846d;
+            float Slider_c4fbb3c99a604b6f992f7fa5188918cb = 1;
             float _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2;
-            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, _Property_39773efc545a45998dc93fa4ca781db2_Out_0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
+            Unity_Multiply_float(_Float_e46f9d93edec49fa82450821c4313327_Out_0, Slider_c4fbb3c99a604b6f992f7fa5188918cb, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2);
             float _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4;
             MultiBranch_float(_Property_06388718d66b4594b7b751ba7bd2093a_Out_0, (_OneMinus_c873738cfc33466d8921c7b436c62409_Out_1).x, _Property_7589d370c41e4be483d935b3660b6951_Out_0, _Float_c55f62d44f3a48fa966eece3536ca5d9_Out_0, 0, _Multiply_303c391ab2634ae9ab75cd51b7d12839_Out_2, _MultiBranchCustomFunction_7606472de7b044c780095f17c340449a_Out_4);
             surface.BaseColor = (_Multiply_c11991fca47f4ffca467dcec31b28860_Out_2.xyz);
