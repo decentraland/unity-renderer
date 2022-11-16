@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4862908741490445528}
   - component: {fileID: 2228690976404301376}
   - component: {fileID: 5673025932302310262}
-  - component: {fileID: 3964549090173202151}
+  - component: {fileID: -7253961211272083505}
   m_Layer: 0
   m_Name: AvatarExpressionSnowflakes
   m_TagString: Untagged
@@ -4863,7 +4863,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &3964549090173202151
+--- !u!114 &-7253961211272083505
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4872,7 +4872,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8946916107192316977}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dafcf2c65303d24a994d54b7b771578, type: 3}
+  m_Script: {fileID: 11500000, guid: d2c6e6d9dd525194088a39360cd09247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   particles: {fileID: 5673025932302310262}
