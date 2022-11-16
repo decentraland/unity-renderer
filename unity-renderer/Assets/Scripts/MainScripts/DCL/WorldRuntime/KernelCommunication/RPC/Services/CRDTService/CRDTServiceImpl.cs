@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
@@ -15,12 +13,11 @@ namespace RPC.Services
 {
     public class CRDTServiceImpl : ICRDTService<RPCContext>
     {
-        private static readonly UniTask<CRDTResponse> defaultResponse = UniTask.FromResult(new CRDTResponse());
+        private static readonly CRDTResponse defaultResponse = new CRDTResponse();
         private static readonly UniTask<CRDTManyMessages> emptyResponse = UniTask.FromResult(new CRDTManyMessages() { SceneId = "", Payload = ByteString.Empty });
 
         private static readonly CRDTManyMessages reusableCrdtMessage = new CRDTManyMessages();
 
-        private static readonly CRDTStream crdtStream = new CRDTStream();
         private static readonly MemoryStream memoryStream = new MemoryStream();
         private static readonly BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
@@ -29,31 +26,23 @@ namespace RPC.Services
             CRDTServiceCodeGen.RegisterService(port, new CRDTServiceImpl());
         }
 
-        public UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
+        public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
-            messages.Payload.WriteTo(crdtStream);
+            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneId),
+                cancellationToken: ct);
 
-            var sceneMessagesPool = context.crdtContext.messageQueueHandler.sceneMessagesPool;
+            await UniTask.SwitchToMainThread(ct);
 
             try
             {
-                using (var iterator = KernelBinaryMessageDeserializer.Deserialize(crdtStream))
+                using (var iterator = CRDTDeserializer.DeserializeBatch(messages.Payload.Memory))
                 {
                     while (iterator.MoveNext())
                     {
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
-                        {
-                            queuedMessage = new QueuedSceneMessage_Scene();
-                        }
-                        queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
-                        queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                        queuedMessage.sceneId = messages.SceneId;
-                        queuedMessage.payload = crdtMessage;
-
-                        context.crdtContext.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                        context.crdtContext.CrdtMessageReceived?.Invoke(messages.SceneId, crdtMessage);
                     }
                 }
             }
@@ -64,6 +53,7 @@ namespace RPC.Services
 
             return defaultResponse;
         }
+
         public UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
             string sceneId = request.SceneId;

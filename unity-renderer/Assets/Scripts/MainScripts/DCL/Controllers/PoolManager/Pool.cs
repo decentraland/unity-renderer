@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
 using UnityEngine.Assertions;
@@ -51,10 +52,14 @@ namespace DCL
 
         public int usedObjectsCount => usedObjects.Count;
 
+
         public Pool(string name, int maxPrewarmCount)
         {
             if (PoolManager.USE_POOL_CONTAINERS)
+            {
                 container = new GameObject("Pool - " + name);
+                container.transform.position = EnvironmentSettings.MORDOR;
+            }
 
             this.maxPrewarmCount = maxPrewarmCount;
         }
