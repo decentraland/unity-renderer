@@ -20,7 +20,9 @@
   "dependencies": {
     "@dcl/protocol": "^1.0.0-3482040729.commit-4f0f6b5",
     "@protobuf-ts/protoc": "^2.8.1",
+    "@types/fs-extra": "^9.0.8",
     "@types/glob": "^8.0.0",
+    "@types/node-fetch": "^2.5.8",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "node-fetch": "^2.6.1",
