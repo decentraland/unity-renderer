@@ -56,10 +56,14 @@ namespace DCL.Chat.Notifications
             chatController.GetAllocatedChannel("mutedChannel").Returns(new Channel("mutedChannel", "mutedChannel",
                 0, 3, true, true, ""));
 
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"});
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", "hey") {recipient = "mutedChannel"}
+            });
 
-            topNotificationsView.DidNotReceiveWithAnyArgs().AddNewChatNotification((PublicChannelMessageNotificationModel) default);
+            topNotificationsView.DidNotReceiveWithAnyArgs()
+                .AddNewChatNotification((PublicChannelMessageNotificationModel) default);
             mainNotificationsView.DidNotReceiveWithAnyArgs()
                 .AddNewChatNotification((PublicChannelMessageNotificationModel) default);
         }
@@ -78,9 +82,13 @@ namespace DCL.Chat.Notifications
             chatController.GetAllocatedChannel("mutedChannel")
                 .Returns(new Channel("mutedChannel", "random-channel", 0, 0, true, false, ""));
 
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                    ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-                {recipient = "mutedChannel"});
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                        ChatMessage.Type.PUBLIC, "sender", "hey",
+                        (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                    {recipient = "mutedChannel"}
+            });
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                 m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "mutedChannel" &&
@@ -102,9 +110,13 @@ namespace DCL.Chat.Notifications
             });
             userProfileBridge.Get("sender").Returns(senderUserProfile);
 
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                    ChatMessage.Type.PRIVATE, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-                {recipient = "me"});
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                        ChatMessage.Type.PRIVATE, "sender", "hey",
+                        (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                    {recipient = "me"}
+            });
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
                 m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
@@ -126,8 +138,11 @@ namespace DCL.Chat.Notifications
             chatController.GetAllocatedChannel("nearby")
                 .Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
 
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            });
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                 m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "nearby" &&
@@ -143,9 +158,13 @@ namespace DCL.Chat.Notifications
             chatController.GetAllocatedChannel("mutedChannel")
                 .Returns(new Channel("mutedChannel", "random-channel", 0, 0, true, false, ""));
 
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                    ChatMessage.Type.PUBLIC, "sender", "hey", (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-                {recipient = "mutedChannel"});
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                        ChatMessage.Type.PUBLIC, "sender", "hey",
+                        (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                    {recipient = "mutedChannel"}
+            });
 
             topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                 m.MessageId == "mid" && m.Username == "sender"));
@@ -160,15 +179,20 @@ namespace DCL.Chat.Notifications
             dataStore.settings.profanityChatFilteringEnabled.Set(true);
             profanityFilter.Filter(body).Returns(UniTask.FromResult(expectedBody));
             GivenProfile("sender", "senderName");
-            
+
             chatController.GetAllocatedChannel("channel")
                 .Returns(new Channel("channel", "random-channel", 0, 0, true, false, ""));
-            
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PUBLIC, "sender", body, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
-            
-            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(p => p.Body == expectedBody));
-            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(p => p.Body == expectedBody));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                    ChatMessage.Type.PUBLIC, "sender", body, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            });
+
+            mainNotificationsView.Received(1)
+                .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(p => p.Body == expectedBody));
+            topNotificationsView.Received(1)
+                .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(p => p.Body == expectedBody));
         }
 
         [Test]
@@ -178,15 +202,20 @@ namespace DCL.Chat.Notifications
             dataStore.settings.profanityChatFilteringEnabled.Set(true);
             profanityFilter.Filter(body).Returns(UniTask.FromResult(body));
             GivenProfile("sender", "senderName");
-            
+
             chatController.GetAllocatedChannel("channel")
                 .Returns(new Channel("channel", "random-channel", 0, 0, true, false, ""));
-            
-            chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage("mid",
-                ChatMessage.Type.PRIVATE, "sender", body, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
-            
-            mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(p => p.Body == body));
-            topNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(p => p.Body == body));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                    ChatMessage.Type.PRIVATE, "sender", body, (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            });
+
+            mainNotificationsView.Received(1)
+                .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(p => p.Body == body));
+            topNotificationsView.Received(1)
+                .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(p => p.Body == body));
         }
 
         private void GivenProfile(string userId, string userName)

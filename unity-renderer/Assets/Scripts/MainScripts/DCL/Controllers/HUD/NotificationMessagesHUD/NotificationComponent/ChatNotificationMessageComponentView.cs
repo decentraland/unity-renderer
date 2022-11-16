@@ -105,7 +105,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
     public void SetMessage(string message) 
     {
-        model.message = message;
+        model.message = notificationMessage.ReplaceUnsupportedCharacters(message, '?');
         if (message.Length <= maxContentCharacters)
             notificationMessage.text = message;
         else

@@ -9,7 +9,7 @@ namespace KernelCommunication
         {
             //sizeof(messageHeader) + sizeof(componentHeader) + dataLength
             int dataLength = (message.data as byte[])?.Length ?? 0;
-            int messageLength = BinaryMessageConstants.CRDT_MESSAGE_BASE_HEADER_LENGTH + dataLength;
+            int messageLength = CrdtConstants.CRDT_MESSAGE_BASE_HEADER_LENGTH + dataLength;
             int type = GetCRDTMessageType(message);
 
             binaryWriter.WriteInt32(messageLength);

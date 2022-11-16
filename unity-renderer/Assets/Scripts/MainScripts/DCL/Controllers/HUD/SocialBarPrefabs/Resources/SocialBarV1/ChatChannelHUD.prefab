@@ -512,6 +512,7 @@ GameObject:
   - component: {fileID: 8915919892920037144}
   - component: {fileID: 6375770146390590234}
   - component: {fileID: 6887205959440453393}
+  - component: {fileID: 5002262175692890065}
   m_Layer: 5
   m_Name: Count
   m_TagString: Untagged
@@ -535,8 +536,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 18.805527, y: 17}
+  m_AnchoredPosition: {x: 23.4155, y: 0}
+  m_SizeDelta: {x: 0, y: 17}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6375770146390590234
 CanvasRenderer:
@@ -637,6 +638,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5002262175692890065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077700845047541058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &2149209810608521755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,6 +1755,7 @@ GameObject:
   - component: {fileID: 295219417874974949}
   - component: {fileID: 6831646981090909685}
   - component: {fileID: 8492770532788522108}
+  - component: {fileID: 7276965281514696333}
   m_Layer: 5
   m_Name: MembersButton
   m_TagString: Untagged
@@ -1766,7 +1782,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -117, y: 1}
-  m_SizeDelta: {x: 59, y: 29}
+  m_SizeDelta: {x: 0, y: 29}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &267137905317394720
 CanvasRenderer:
@@ -1880,7 +1896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 3
-    m_Right: 0
+    m_Right: 6
     m_Top: 6
     m_Bottom: 0
   m_ChildAlignment: 0
@@ -1892,6 +1908,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7276965281514696333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7140782380480248791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &8062485369042168400
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,6 +2386,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4540070755932127706}
     m_Modifications:
+    - target: {fileID: 2216557797817228083, guid: bac007ac4ef98284c8cf05867a35ee0f,
+        type: 3}
+      propertyPath: poolChatEntryFactory
+      value: 
+      objectReference: {fileID: 11400000, guid: dd4477a0e136c42ff82d41edb3540b66,
+        type: 2}
     - target: {fileID: 2216557797817228083, guid: bac007ac4ef98284c8cf05867a35ee0f,
         type: 3}
       propertyPath: defaultChatEntryFactory

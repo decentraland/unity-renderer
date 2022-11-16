@@ -4200,6 +4200,8 @@ MonoBehaviour:
   confirmationDialog: {fileID: 1379511485321851930}
   defaultChatEntryFactory: {fileID: 11400000, guid: de537b45ff89f45489136467b5b292aa,
     type: 2}
+  poolChatEntryFactory: {fileID: 11400000, guid: d0497e2593c8e4f3fa89fe66bb8f5ac0,
+    type: 2}
   model:
     isInputFieldFocused: 0
     inputFieldText: 
@@ -4211,6 +4213,7 @@ MonoBehaviour:
     type: 2}
   separatorEntryPrefab: {fileID: 717124712886577979, guid: 66a008a71d1e6d043a1066b0e45db3ca,
     type: 3}
+  chatEntryFactory: {fileID: 11400000, guid: bf02cc4e774224d3f9074978807f7141, type: 2}
 --- !u!225 &4634647665024068242
 CanvasGroup:
   m_ObjectHideFlags: 0

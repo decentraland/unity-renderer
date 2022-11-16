@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using static DCL.Interface.WebInterface;
 
@@ -24,6 +25,12 @@ namespace DCL
         {
             var realmConnectionFailedPayload = Utils.SafeFromJson<JumpInPayload>(json);
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
+        }
+        
+        [PublicAPI]
+        public void SetRealmAbout(string payload)
+        {
+            handler.SetAbout(payload);
         }
     }
 }
