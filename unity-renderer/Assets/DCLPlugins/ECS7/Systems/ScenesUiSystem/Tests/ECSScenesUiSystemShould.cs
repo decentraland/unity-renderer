@@ -99,7 +99,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, entityId, model);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -123,7 +123,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
@@ -134,7 +134,7 @@ namespace Tests
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
             // apply parenting
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent);
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, null);
 
             // parenting should be applied
             var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
@@ -364,6 +364,109 @@ namespace Tests
 
             // ui document should not have any ui set
             Assert.IsTrue(uiDocument.rootVisualElement.childCount == 0);
+        }
+
+        [Test]
+        public void ApplyRightOfSorting()
+        {
+            const string sceneId = "temptation";
+            ECS7TestScene scene = sceneTestHelper.CreateScene(sceneId);
+
+            ECS7TestEntity entity0 = scene.CreateEntity(110);
+            ECS7TestEntity entity1 = scene.CreateEntity(111);
+            ECS7TestEntity entity2 = scene.CreateEntity(112);
+            ECS7TestEntity entity3 = scene.CreateEntity(113);
+
+            InternalUiContainer modelEntity0 = new InternalUiContainer();
+            InternalUiContainer modelEntity1 = new InternalUiContainer();
+            InternalUiContainer modelEntity2 = new InternalUiContainer();
+            InternalUiContainer modelEntity3 = new InternalUiContainer();
+
+            InternalUiContainer sceneModel = new InternalUiContainer();
+            sceneModel.rootElement.Add(modelEntity0.rootElement);
+            sceneModel.rootElement.Add(modelEntity1.rootElement);
+            sceneModel.rootElement.Add(modelEntity2.rootElement);
+            sceneModel.rootElement.Add(modelEntity3.rootElement);
+
+            modelEntity0.parentElement = sceneModel.rootElement;
+            modelEntity1.parentElement = sceneModel.rootElement;
+            modelEntity2.parentElement = sceneModel.rootElement;
+            modelEntity3.parentElement = sceneModel.rootElement;
+
+            modelEntity0.rigthOf = entity2.entityId;
+            modelEntity1.rigthOf = entity0.entityId;
+            modelEntity2.rigthOf = entity3.entityId;
+            modelEntity3.rigthOf = 0;
+
+            modelEntity0.shouldSort = true;
+            modelEntity1.shouldSort = true;
+            modelEntity2.shouldSort = true;
+            modelEntity3.shouldSort = true;
+
+            modelEntity0.components.Add(0);
+            modelEntity1.components.Add(0);
+            modelEntity2.components.Add(0);
+            modelEntity3.components.Add(0);
+
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneModel);
+            uiContainerComponent.PutFor(scene, entity0.entityId, modelEntity0);
+            uiContainerComponent.PutFor(scene, entity1.entityId, modelEntity1);
+            uiContainerComponent.PutFor(scene, entity2.entityId, modelEntity2);
+            uiContainerComponent.PutFor(scene, entity3.entityId, modelEntity3);
+
+            // Try sort
+            ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
+
+            // Check order
+            Assert.AreEqual(sceneModel.rootElement[0], modelEntity3.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[1], modelEntity2.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[2], modelEntity0.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[3], modelEntity1.rootElement);
+
+            // Check flag reset
+            Assert.IsFalse(uiContainerComponent.GetFor(scene, entity0.entityId).model.shouldSort);
+
+            // Change order
+            modelEntity0.rigthOf = 0;
+            modelEntity3.rigthOf = entity1.entityId;
+            modelEntity0.shouldSort = true;
+            modelEntity3.shouldSort = true;
+            uiContainerComponent.PutFor(scene, entity0.entityId, modelEntity0);
+            uiContainerComponent.PutFor(scene, entity3.entityId, modelEntity3);
+
+            // Try sort
+            ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
+
+            // Check order
+            Assert.AreEqual(sceneModel.rootElement[0], modelEntity0.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[1], modelEntity1.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[2], modelEntity3.rootElement);
+            Assert.AreEqual(sceneModel.rootElement[3], modelEntity2.rootElement);
+        }
+
+        [Test]
+        public void GetSceneToSortUI()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene("temptation");
+
+            const int entityId = 111;
+
+            var entityModel = new InternalUiContainer() { shouldSort = false };
+            entityModel.components.Add(1);
+            uiContainerComponent.PutFor(scene, entityId, entityModel);
+
+            HashSet<IParcelScene> scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, "temptation");
+
+            // Since not `shouldSort` is flagged collection should be empty
+            Assert.IsEmpty(scenesToSortUi);
+
+            // Flag entity to be sorted
+            entityModel.shouldSort = true;
+            uiContainerComponent.PutFor(scene, entityId, entityModel);
+
+            scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, "temptation");
+
+            Assert.IsNotEmpty(scenesToSortUi);
         }
     }
 }
