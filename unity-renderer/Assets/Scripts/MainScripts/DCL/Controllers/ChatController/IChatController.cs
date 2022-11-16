@@ -19,7 +19,7 @@ public interface IChatController
     event Action<string, int> OnChannelUnseenMessagesUpdated;
     event Action<string, ChannelMember[]> OnUpdateChannelMembers;
     event Action<string, Channel[]> OnChannelSearchResult;
-    event Action<string> OnOpenJoinChannel;
+    event Action<string> OnAskForJoinChannel;
 
     int TotalUnseenMessages { get; }
     bool IsInitialized { get; }

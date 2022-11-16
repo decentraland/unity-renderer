@@ -133,7 +133,7 @@ public class WorldChatWindowController : IHUD
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
-            chatController.OnOpenJoinChannel += HandleOpenJoinChannel;
+            chatController.OnAskForJoinChannel += HandleAskForJoinChannel;
             dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
 
             view.ShowChannelsLoading();
@@ -168,7 +168,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
-        chatController.OnOpenJoinChannel -= HandleOpenJoinChannel;
+        chatController.OnAskForJoinChannel -= HandleAskForJoinChannel;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
@@ -584,9 +584,9 @@ public class WorldChatWindowController : IHUD
         OpenPublicChat(channelId);
     }
 
-    private void HandleOpenJoinChannel(string channelName)
+    private void HandleAskForJoinChannel(string channelName)
     {
-        chatController.OnOpenJoinChannel -= HandleOpenJoinChannel;
+        chatController.OnAskForJoinChannel -= HandleAskForJoinChannel;
         
         if (channelsFeatureFlagService.IsAllowedToCreateChannels())
             dataStore.channels.currentJoinChannelModal.Set(channelName, true);

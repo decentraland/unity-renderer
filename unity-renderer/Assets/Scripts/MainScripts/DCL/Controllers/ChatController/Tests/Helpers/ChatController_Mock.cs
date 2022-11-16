@@ -21,7 +21,7 @@ public class ChatController_Mock : IChatController
     public event Action<string, int> OnChannelUnseenMessagesUpdated;
     public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
     public event Action<string, Channel[]> OnChannelSearchResult;
-    public event Action<string> OnOpenJoinChannel;
+    public event Action<string> OnAskForJoinChannel;
 
     public int TotalUnseenMessages { get; }
     public bool IsInitialized { get; }

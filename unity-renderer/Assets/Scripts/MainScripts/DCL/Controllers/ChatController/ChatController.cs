@@ -39,7 +39,7 @@ namespace DCL.Chat
         public event Action<string, ChannelMember[]> OnUpdateChannelMembers;
         public event Action<string, Channel[]> OnChannelSearchResult;
         public event Action<string, int> OnChannelUnseenMessagesUpdated;
-        public event Action<string> OnOpenJoinChannel;
+        public event Action<string> OnAskForJoinChannel;
 
         // since kernel does not calculate the #nearby channel unseen messages, it is handled on renderer side
         public int TotalUnseenMessages => totalUnseenMessages
@@ -72,7 +72,7 @@ namespace DCL.Chat
             chatAlreadyInitialized = true;
 
             if (!string.IsNullOrEmpty(msg.channelToJoin))
-                OnOpenJoinChannel?.Invoke($"#{msg.channelToJoin.ToLower()}");
+                OnAskForJoinChannel?.Invoke($"#{msg.channelToJoin.ToLower()}");
         }
 
         // called by kernel
