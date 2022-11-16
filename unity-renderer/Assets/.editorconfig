@@ -1,15 +1,13 @@
 ###############################
-# Core EditorConfig Options   #
-###############################
+# Core EditorConfig Settings
 # https://editorconfig.org/
-root = true # Top-most EditorConfig file. Remove the line below if you want to inherit .editorconfig settings from higher directories.
+###############################
 
-# All files
-[*]
-indent_style = space # Don't use tabs for indentation.
+root = true # Top-most EditorConfig file. Remove the line below if you want to inherit .editorconfig settings from higher directories.
 
 # C# files
 [*.cs]
+indent_style = space # Don't use tabs for indentation.
 indent_size = 4
 tab_width = 4
 end_of_line = crlf
@@ -19,12 +17,16 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 #max_line_length = 180
 
+
+
 ###############################
-#       .NET/C# Options       #
-###############################
+# .NET/C# Settings       
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
+###############################
+
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 dotnet_style_allow_multiple_blank_lines_experimental = false
+
 
 ############################### Naming Rules ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/naming-rules
@@ -379,16 +381,19 @@ dotnet_diagnostic.IDE0081.severity = warning # Remove ByVal
 dotnet_diagnostic.IDE0100.severity = warning # Remove unnecessary equality operator when comparing a non-constant Boolean expression
 dotnet_diagnostic.IDE0110.severity = warning # Remove unnecessary discard
 
+
 ###############################  Miscellaneous rules  ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/miscellaneous-rules
 dotnet_diagnostic.IDE0076.severity = warning # Remove invalid global 'SuppressMessageAttribute'
 dotnet_diagnostic.IDE0077.severity =  warning # Avoid legacy format target in global 'SuppressMessageAttribute'
 
 
+
 ###############################
-#   Re-sharper/Rider Options  #
-###############################
+#   Re-sharper/Rider Settings  
 # https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html
+###############################
+
 
 ############################### C#: Blank Lines ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_BlankLinesPageScheme.html
@@ -438,6 +443,7 @@ resharper_blank_lines_around_multiline_case_section = 0
 resharper_blank_lines_before_case = 0
 resharper_blank_lines_after_case = 0
 
+
 ############################### C#: Braces Layout ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_BracesPageSchema.html
 
@@ -446,6 +452,7 @@ resharper_indent_inside_namespace = true
 resharper_use_continuous_indent_inside_initializer_braces = false
 resharper_allow_comment_after_lbrace = true
 resharper_empty_block_style = together_same_line
+
 
 ############################### C#: Syntax Style ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_CSharpCodeStylePageImplSchema.html
@@ -531,6 +538,7 @@ resharper_object_creation_when_type_not_evident = explicitly_typed
 resharper_default_value_when_type_evident = default_expression
 resharper_default_value_when_type_not_evident = default_expression
 
+
 ############################### C#: Tabs, Indents, Alignment ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_CSharpIndentStylePageSchema.html
 
@@ -597,6 +605,7 @@ resharper_outdent_commas = true
 # Align similar code in columns
 resharper_int_align = false # covers: https://www.jetbrains.com/help/rider/EditorConfig_Generalized.html#int_align
 resharper_int_align_fix_in_adjacent = true
+
 
 ############################### C#: Line Breaks ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_LineBreaksPageSchema.html
@@ -736,9 +745,11 @@ resharper_place_linq_into_on_new_line = false
 # Arrangement of interpolated strings
 resharper_wrap_verbatim_interpolated_strings = no_wrap
 
+
 ############################### C#: Other ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_OthersPageSchema.html
 resharper_old_engine = false
+
 
 ############################### C#: Spaces ###############################
 # https://www.jetbrains.com/help/rider/EditorConfig_CSHARP_SpacesPageSchema.html
