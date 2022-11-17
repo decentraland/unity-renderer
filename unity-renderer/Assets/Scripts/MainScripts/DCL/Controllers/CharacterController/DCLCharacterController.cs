@@ -1,8 +1,10 @@
+using System;
 using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
 using Cinemachine;
+using Environment = DCL.Environment;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -99,7 +101,8 @@ public class DCLCharacterController : MonoBehaviour
     [System.NonSerialized]
     public float movingPlatformSpeed;
     private CollisionFlags lastCharacterControllerCollision;
-
+    private bool applicationHasFocus;
+    
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
@@ -145,6 +148,19 @@ public class DCLCharacterController : MonoBehaviour
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
 
         dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
+        
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
+        applicationHasFocus = Environment.i.serviceLocator.Get<IApplicationFocusService>().IsApplicationFocused();
+    }
+    private void OnApplicationFocus()
+    {
+        applicationHasFocus = true;
+    }
+    
+    private void OnApplicationFocusLost()
+    {
+        applicationHasFocus = false;
     }
 
     private void SubscribeToInput()
@@ -173,6 +189,8 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
+        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost -= OnApplicationFocusLost;
         i = null;
     }
 
@@ -542,6 +560,9 @@ public class DCLCharacterController : MonoBehaviour
 
     void ReportMovement()
     {
+        if (!applicationHasFocus)
+            return;
+            
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
@@ -569,9 +590,7 @@ public class DCLCharacterController : MonoBehaviour
 
     public void ResumeGravity() { gravity = originalGravity; }
 
-    void OnRenderingStateChanged(bool isEnable, bool prevState) {
-        //SetEnabled(isEnable);
-    }
+    void OnRenderingStateChanged(bool isEnable, bool prevState) { SetEnabled(isEnable); }
 
     bool IsLastCollisionGround()
     {

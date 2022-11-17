@@ -19,31 +19,24 @@ public class ApplicationFocusService : IApplicationFocusService
     {
         if (currentFocusState == focus)
             return;
-        
+
         if (focus)
-        {
             OnFocusGained();
-        }
         else
-        {
             OnFocusLost();
-        }
+
         currentFocusState = focus;
     }
 
-    internal void OnFocusGained()
-    {
+    internal void OnFocusGained() =>
         OnApplicationFocus?.Invoke();
-    }
-    
-    internal void OnFocusLost()
-    {
+
+    internal void OnFocusLost() =>
         OnApplicationFocusLost?.Invoke();
-    }
-    
-    public void Dispose()
-    {
+
+    public void Dispose() =>
         Application.focusChanged -= FocusChange;
-    }
+
+    public bool IsApplicationFocused() => currentFocusState;
 
 }
