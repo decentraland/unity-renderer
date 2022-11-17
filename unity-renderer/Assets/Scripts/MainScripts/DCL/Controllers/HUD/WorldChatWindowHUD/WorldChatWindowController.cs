@@ -206,6 +206,11 @@ public class WorldChatWindowController : IHUD
                     RequestJoinedChannels();
                     SetAutomaticChannelsInfoUpdatingActive(true);
                 }
+                else if (ownUserProfile.isGuest)
+                {
+                    // TODO: channels are not allowed for guests. When we support it in the future, remove this call
+                    view.HideChannelsLoading();
+                }
 
                 if (!areUnseenMessajesRequestedByFirstTime)
                     RequestUnreadChannelsMessages();
