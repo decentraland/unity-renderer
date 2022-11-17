@@ -21,7 +21,7 @@ max_line_length = 120
 [*.cs]
 insert_final_newline = true
 trim_trailing_whitespace = true
-max_line_length = 2000 # no limit
+max_line_length = 180
 
 
 
@@ -444,7 +444,7 @@ resharper_object_creation_when_type_evident = target_typed
 resharper_object_creation_when_type_not_evident = explicitly_typed
 
 # Default value
-resharper_default_value_when_type_evident = default_expression
+resharper_default_value_when_type_evident = default_literal
 resharper_default_value_when_type_not_evident = default_expression
 
 
@@ -626,7 +626,7 @@ resharper_wrap_after_invocation_lpar = false
 resharper_wrap_before_invocation_rpar = false
 
 # Arrangement of member access expressions
-resharper_wrap_after_dot_in_method_calls = true
+resharper_wrap_after_dot_in_method_calls = false
 resharper_wrap_chained_method_calls = chop_if_long
 
 # Arrangement of binary expressions
