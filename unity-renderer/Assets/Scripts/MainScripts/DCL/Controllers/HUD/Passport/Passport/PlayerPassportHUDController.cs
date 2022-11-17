@@ -39,9 +39,9 @@ public class PlayerPassportHUDController : IHUD
         this.socialAnalytics = socialAnalytics;
 
         view = PlayerPassportHUDView.CreateView();
-        view.Initialize(() => currentPlayerId.Set(null), AddPlayerAsFriend);
+        view.Initialize(() => currentPlayerId.Set(null));
         
-        playerInfoController = new PassportPlayerInfoComponentController(view.playerInfoView, dataStore, profanityFilter);
+        playerInfoController = new PassportPlayerInfoComponentController(currentPlayerId, view.playerInfoView, dataStore, profanityFilter, friendsController, userProfileBridge);
         playerPreviewController = new PassportPlayerPreviewComponentController(view.playerPreviewView);
         passportNavigationController = new PassportNavigationComponentController(view.passportNavigationView);
 
@@ -88,35 +88,11 @@ public class PlayerPassportHUDController : IHUD
 
     private async UniTask AsyncSetUserProfile(UserProfile userProfile)
     {
-        string filterName = await FilterName(userProfile);
-        string filterDescription = await FilterDescription(userProfile);
         await UniTask.SwitchToMainThread();
         playerInfoController.UpdateWithUserProfile(userProfile);
     }
 
     private void UpdateUserProfile(UserProfile userProfile) => TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
-
-    private void AddPlayerAsFriend()
-    {
-        UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-
-        // Add fake action to avoid waiting for kernel
-        userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
-        {
-            userId = currentPlayerId,
-            name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
-        });
-
-        friendsController.RequestFriendship(currentPlayerId);
-        //socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
-    }
-
-    private async UniTask<string> FilterName(UserProfile userProfile)
-    {
-        return IsProfanityFilteringEnabled()
-            ? await profanityFilter.Filter(userProfile.userName)
-            : userProfile.userName;
-    }
 
     private async UniTask<string> FilterDescription(UserProfile userProfile)
     {

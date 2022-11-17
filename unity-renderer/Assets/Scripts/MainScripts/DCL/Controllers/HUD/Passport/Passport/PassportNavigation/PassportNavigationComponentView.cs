@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class PassportNavigationComponentView : MonoBehaviour, IPassportNavigationComponentView
 {
-
     [SerializeField] private GameObject aboutPanel;
     [SerializeField] private GameObject wearablesPanel;
     [SerializeField] private Button aboutButton;

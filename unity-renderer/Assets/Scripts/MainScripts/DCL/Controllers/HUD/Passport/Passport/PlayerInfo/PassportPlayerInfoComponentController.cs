@@ -10,12 +10,27 @@ public class PassportPlayerInfoComponentController
     private IPassportPlayerInfoComponentView view;
     private readonly DataStore dataStore;
     private readonly IProfanityFilter profanityFilter;
+    private readonly IFriendsController friendsController;
+    private readonly IUserProfileBridge userProfileBridge;
 
-    public PassportPlayerInfoComponentController(IPassportPlayerInfoComponentView view, DataStore dataStore, IProfanityFilter profanityFilter)
+    private StringVariable currentPlayerId;
+
+    public PassportPlayerInfoComponentController(
+        StringVariable currentPlayerId,
+        IPassportPlayerInfoComponentView view, 
+        DataStore dataStore, 
+        IProfanityFilter profanityFilter,
+        IFriendsController friendsController,
+        IUserProfileBridge userProfileBridge)
     {
+        this.currentPlayerId = currentPlayerId;
         this.view = view;
         this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
+        this.friendsController = friendsController;
+        this.userProfileBridge = userProfileBridge;
+
+        view.OnAddFriend += AddPlayerAsFriend;
     }
 
     public async UniTask UpdateWithUserProfile(UserProfile userProfile)
@@ -23,6 +38,7 @@ public class PassportPlayerInfoComponentController
         view.SetWallet(userProfile.userId);
         string filteredName = await FilterName(userProfile);
         view.SetName(filteredName);
+        view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
     }
 
     private async UniTask<string> FilterName(UserProfile userProfile)
@@ -35,5 +51,20 @@ public class PassportPlayerInfoComponentController
     private bool IsProfanityFilteringEnabled()
     {
         return dataStore.settings.profanityChatFilteringEnabled.Get();
+    }
+
+    private void AddPlayerAsFriend()
+    {
+        UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
+
+        // Add fake action to avoid waiting for kernel
+        userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
+        {
+            userId = currentPlayerId,
+            name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
+        });
+
+        friendsController.RequestFriendship(currentPlayerId);
+        //socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PassportPlayerPreviewComponentController
 {
-
     public IPassportPlayerPreviewComponentView view;
 
     public PassportPlayerPreviewComponentController(IPassportPlayerPreviewComponentView view)
