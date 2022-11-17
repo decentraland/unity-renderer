@@ -76,8 +76,8 @@ namespace Tests
                 messageReceived = true;
             }
 
-            context.crdtContext.CrdtMessageReceived += OnCrdtMessageReceived;
-            context.crdtContext.MessagingControllersManager = messagingControllersManager;
+            context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
+            context.crdt.MessagingControllersManager = messagingControllersManager;
 
             // Simulate client sending `crdtMessage` CRDT
             try
@@ -94,7 +94,7 @@ namespace Tests
             }
             finally
             {
-                context.crdtContext.CrdtMessageReceived -= OnCrdtMessageReceived;
+                context.crdt.CrdtMessageReceived -= OnCrdtMessageReceived;
             }
 
             Assert.IsTrue(messageReceived);

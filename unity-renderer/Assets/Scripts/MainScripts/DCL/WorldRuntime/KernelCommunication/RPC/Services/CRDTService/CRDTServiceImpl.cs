@@ -28,10 +28,10 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
-            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneId),
+            await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(messages.SceneId),
                 cancellationToken: ct);
 
-            var sceneMessagesPool = context.crdt.messageQueueHandler.sceneMessagesPool;
+            await UniTask.SwitchToMainThread(ct);
 
             try
             {
@@ -42,16 +42,7 @@ namespace RPC.Services
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene queuedMessage))
-                        {
-                            queuedMessage = new QueuedSceneMessage_Scene();
-                        }
-                        queuedMessage.method = MessagingTypes.CRDT_MESSAGE;
-                        queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
-                        queuedMessage.sceneId = messages.SceneId;
-                        queuedMessage.payload = crdtMessage;
-
-                        context.crdt.messageQueueHandler.EnqueueSceneMessage(queuedMessage);
+                        context.crdt.CrdtMessageReceived?.Invoke(messages.SceneId, crdtMessage);
                     }
                 }
             }
