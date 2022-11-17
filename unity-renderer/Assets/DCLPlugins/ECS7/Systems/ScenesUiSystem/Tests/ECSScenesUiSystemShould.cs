@@ -155,7 +155,8 @@ namespace Tests
                 uiDocument,
                 uiContainerComponent,
                 new BaseList<IParcelScene> { scene },
-                worldState);
+                worldState,
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer();
@@ -181,7 +182,8 @@ namespace Tests
                 uiDocument,
                 uiContainerComponent,
                 loadedScenes,
-                worldState);
+                worldState,
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer();
@@ -223,7 +225,8 @@ namespace Tests
                 uiDocument,
                 uiContainerComponent,
                 loadedScenes,
-                worldState);
+                worldState,
+                new BaseVariable<bool>(true));
 
             // create root ui for scenes
             InternalUiContainer rootScene1Container = new InternalUiContainer();
@@ -301,7 +304,8 @@ namespace Tests
                 uiDocument,
                 uiContainerComponent,
                 new BaseList<IParcelScene>(),
-                worldState);
+                worldState,
+                new BaseVariable<bool>(true));
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer();
@@ -330,7 +334,8 @@ namespace Tests
                 uiDocument,
                 uiContainerComponent,
                 new BaseList<IParcelScene> { nonGlobalScene },
-                worldState);
+                worldState,
+                new BaseVariable<bool>(true));
 
             // create root ui for global scene
             InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer();
@@ -467,6 +472,30 @@ namespace Tests
             scenesToSortUi = ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, "temptation");
 
             Assert.IsNotEmpty(scenesToSortUi);
+        }
+
+        [Test]
+        public void ShowAndHideUiDuringLoadingScreen()
+        {
+            // start with loading screen not visible
+            BaseVariable<bool> loadingHudVisibleVariable = new BaseVariable<bool>(false);
+
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                Substitute.For<IInternalECSComponent<InternalUiContainer>>(),
+                new BaseList<IParcelScene>(),
+                Substitute.For<IWorldState>(),
+                loadingHudVisibleVariable);
+
+            Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
+
+            loadingHudVisibleVariable.Set(true);
+
+            Assert.AreEqual(DisplayStyle.None, uiDocument.rootVisualElement.style.display.value);
+
+            loadingHudVisibleVariable.Set(false);
+
+            Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
         }
     }
 }

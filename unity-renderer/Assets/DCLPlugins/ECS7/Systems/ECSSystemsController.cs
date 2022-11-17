@@ -43,7 +43,7 @@ public class ECSSystemsController : IDisposable
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
-            DataStore.i.ecs7.scenes, Environment.i.world.state);
+            DataStore.i.ecs7.scenes, Environment.i.world.state, DataStore.i.HUDs.loadingHUD.visible);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

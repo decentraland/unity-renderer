@@ -11,80 +11,81 @@ namespace ECSSystems.ScenesUiSystem
 {
     public class ECSScenesUiSystem : IDisposable
     {
-        private class State
-        {
-            public UIDocument uiDocument;
-            public IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
-            public IWorldState worldState;
-            public BaseList<IParcelScene> loadedScenes;
-            public string lastSceneId;
-            public bool isPendingSceneUI;
-            public IParcelScene currentScene;
-        }
+        private readonly UIDocument uiDocument;
+        private readonly IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
+        private readonly IWorldState worldState;
+        private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly BaseVariable<bool> loadingHudVisibleVariable;
 
-        private readonly State state;
+        private string lastSceneId;
+        private bool isPendingSceneUI;
+        private IParcelScene currentScene;
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
-            IWorldState worldState)
+            IWorldState worldState,
+            BaseVariable<bool> loadingHudVisibleVariable)
         {
-            state = new State()
-            {
-                uiDocument = uiDocument,
-                internalUiContainerComponent = internalUiContainerComponent,
-                worldState = worldState,
-                loadedScenes = loadedScenes,
-                lastSceneId = null,
-                isPendingSceneUI = true,
-                currentScene = null
-            };
+            this.uiDocument = uiDocument;
+            this.internalUiContainerComponent = internalUiContainerComponent;
+            this.worldState = worldState;
+            this.loadedScenes = loadedScenes;
+            this.loadingHudVisibleVariable = loadingHudVisibleVariable;
 
-            state.loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
+            lastSceneId = null;
+            isPendingSceneUI = true;
+            currentScene = null;
+
+            loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
+            loadingHudVisibleVariable.OnChange += LoadingHudVisibleOnOnChange;
+
+            LoadingHudVisibleOnOnChange(loadingHudVisibleVariable.Get(), false);
         }
 
         public void Dispose()
         {
-            state.loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
+            loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
+            loadingHudVisibleVariable.OnChange -= LoadingHudVisibleOnOnChange;
         }
 
         public void Update()
         {
-            string currentSceneId = state.worldState.GetCurrentSceneId();
-            bool sceneChanged = state.lastSceneId != currentSceneId;
-            state.lastSceneId = currentSceneId;
+            string currentSceneId = worldState.GetCurrentSceneId();
+            bool sceneChanged = lastSceneId != currentSceneId;
+            lastSceneId = currentSceneId;
 
-            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(state.uiDocument, state.internalUiContainerComponent, currentSceneId);
+            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(uiDocument, internalUiContainerComponent, currentSceneId);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
             {
-                SortSceneUiTree(state.internalUiContainerComponent, scenesUiToSort);
+                SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
             }
 
             // clear UI if scene changed
-            if (sceneChanged && !state.isPendingSceneUI)
+            if (sceneChanged && !isPendingSceneUI)
             {
-                ClearCurrentSceneUI(state.uiDocument);
-                state.isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
+                ClearCurrentSceneUI(uiDocument);
+                isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
             }
-            if (sceneChanged && state.currentScene != null && currentSceneId != state.currentScene.sceneData.id)
+            if (sceneChanged && currentScene != null && currentSceneId != currentScene.sceneData.id)
             {
-                state.currentScene = null;
+                currentScene = null;
             }
 
             // UI not set for current scene yet
-            if (state.isPendingSceneUI)
+            if (isPendingSceneUI)
             {
                 // we get current scene reference
-                state.currentScene ??= GetCurrentScene(currentSceneId, state.loadedScenes);
+                currentScene ??= GetCurrentScene(currentSceneId, loadedScenes);
 
                 // we apply current scene UI
-                if (state.currentScene != null)
+                if (currentScene != null)
                 {
-                    if (ApplySceneUI(state.internalUiContainerComponent, state.uiDocument, state.currentScene))
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene))
                     {
-                        state.isPendingSceneUI = false;
+                        isPendingSceneUI = false;
                     }
                 }
             }
@@ -92,10 +93,15 @@ namespace ECSSystems.ScenesUiSystem
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
         {
-            if (scene.sceneData.id == state.lastSceneId)
+            if (scene.sceneData.id == lastSceneId)
             {
-                state.lastSceneId = null;
+                lastSceneId = null;
             }
+        }
+
+        private void LoadingHudVisibleOnOnChange(bool current, bool previous)
+        {
+            SetDocumentActive(uiDocument, !current);
         }
 
         internal static HashSet<IParcelScene> ApplyParenting(UIDocument uiDocument,
@@ -265,6 +271,11 @@ namespace ECSSystems.ScenesUiSystem
                     index++;
                 }
             }
+        }
+
+        private static void SetDocumentActive(UIDocument uiDocument, bool active)
+        {
+            uiDocument.rootVisualElement.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private readonly struct RightOfData
