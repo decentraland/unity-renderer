@@ -51,7 +51,6 @@ namespace DCL.Chat.HUD
         
         [Header("Guest")]
         [SerializeField] internal GameObject connectWalletContainer;
-        [SerializeField] internal GameObject walletConnectedContainer;
         [SerializeField] internal Button connectWalletButton;
         [SerializeField] internal Button whatIsWalletButton;
 
@@ -289,7 +288,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = true;
             connectWalletContainer.SetActive(true);
-            walletConnectedContainer.SetActive(false);
             searchBarContainer.SetActive(false);
             directChatsCollapseButton.SetInteractability(false);
             publicChatsChatsCollapseButton.SetInteractability(false);
@@ -299,7 +297,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = false;
             connectWalletContainer.SetActive(false);
-            walletConnectedContainer.SetActive(true);
             searchBarContainer.SetActive(true);
             directChatsCollapseButton.SetInteractability(true);
             publicChatsChatsCollapseButton.SetInteractability(true);
@@ -334,10 +331,10 @@ namespace DCL.Chat.HUD
                 model.isOnline,
                 model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
-        if (isSearchMode)
-            searchResultsList.Set(entry);
-        else
-            directChatList.Set(userId, entry);
+            if (isSearchMode)
+                searchResultsList.Set(entry);
+            else
+                directChatList.Set(userId, entry);
 
             UpdateHeaders();
             UpdateLayout();
