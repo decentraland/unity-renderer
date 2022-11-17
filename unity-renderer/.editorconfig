@@ -578,9 +578,9 @@ resharper_place_simple_accessor_on_single_line = false
 resharper_place_simple_method_on_single_line = false
 
 # Arrangement of enumerations
-resharper_keep_existing_enum_arrangement = false
-resharper_max_enum_members_on_line = 3
-resharper_place_simple_enum_on_single_line = true
+resharper_keep_existing_enum_arrangement = true
+resharper_max_enum_members_on_line = 5
+resharper_place_simple_enum_on_single_line = false
 resharper_wrap_enum_declaration = wrap_if_long
 
 # Arrangement of statements
