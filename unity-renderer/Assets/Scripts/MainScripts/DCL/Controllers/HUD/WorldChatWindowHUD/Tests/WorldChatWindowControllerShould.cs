@@ -589,6 +589,18 @@ public class WorldChatWindowControllerShould
         chatController.Received(1).MuteChannel("automatic-channel");
     }
 
+    [Test]
+    public void HideLoadingOfChannelsWhenIsGuest()
+    {
+        chatController.IsInitialized.Returns(false);
+        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        controller.Initialize(view);
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).HideChannelsLoading();
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
