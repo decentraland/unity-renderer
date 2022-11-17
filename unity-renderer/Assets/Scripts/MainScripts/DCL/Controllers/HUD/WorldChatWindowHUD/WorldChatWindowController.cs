@@ -31,7 +31,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
-    private BaseVariable<HashSet<string>> autoJoinChannelList => dataStore.HUDs.autoJoinChannelList;
+    private HashSet<string> autoJoinChannelList => dataStore.HUDs.autoJoinChannelList.Get();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private int hiddenDMs;
     private string currentSearch = "";
@@ -129,10 +129,11 @@ public class WorldChatWindowController : IHUD
 
             chatController.OnChannelUpdated += HandleChannelUpdated;
             chatController.OnChannelJoined += HandleChannelJoined;
+            chatController.OnAutoChannelJoined += HandleAutoChannelJoined;
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
-            dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
+            dataStore.channels.channelToBeOpened.OnChange += HandleChannelOpened;
 
             view.ShowChannelsLoading();
             view.SetSearchAndCreateContainerActive(true);
@@ -162,6 +163,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
         chatController.OnChannelJoined -= HandleChannelJoined;
+        chatController.OnAutoChannelJoined -= HandleAutoChannelJoined;
         chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
@@ -169,7 +171,7 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
-        dataStore.channels.channelToBeOpenedFromLink.OnChange -= HandleChannelOpenedFromLink;
+        dataStore.channels.channelToBeOpened.OnChange -= HandleChannelOpened;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -203,6 +205,11 @@ public class WorldChatWindowController : IHUD
                 {
                     RequestJoinedChannels();
                     SetAutomaticChannelsInfoUpdatingActive(true);
+                }
+                else if (ownUserProfile.isGuest)
+                {
+                    // TODO: channels are not allowed for guests. When we support it in the future, remove this call
+                    view.HideChannelsLoading();
                 }
 
                 if (!areUnseenMessajesRequestedByFirstTime)
@@ -282,7 +289,7 @@ public class WorldChatWindowController : IHUD
         {
             var channelId = channel.channelId;
             if (string.IsNullOrEmpty(channelId)) continue;
-            autoJoinChannelList.Get().Add(channelId);
+            autoJoinChannelList.Add(channelId);
             chatController.JoinOrCreateChannel(channelId);
             if (!channel.enableNotifications)
                 chatController.MuteChannel(channelId);
@@ -530,14 +537,20 @@ public class WorldChatWindowController : IHUD
         channelsClearedUnseenNotifications.Add(channelId);
     }
 
+    private void HandleAutoChannelJoined(Channel channel) => ReportChannelJoinedToAnalytics(channel, "auto");
+
     private void HandleChannelJoined(Channel channel)
+    {
+        ReportChannelJoinedToAnalytics(channel, "manual");
+        OpenPublicChat(channel.ChannelId);
+    }
+
+    private void ReportChannelJoinedToAnalytics(Channel channel, string method)
     {
         if (channel.MemberCount <= 1)
             socialAnalytics.SendEmptyChannelCreated(channel.Name, dataStore.channels.channelJoinedSource.Get());
         else
-            socialAnalytics.SendPopulatedChannelJoined(channel.Name, dataStore.channels.channelJoinedSource.Get());
-
-        OpenPublicChat(channel.ChannelId);
+            socialAnalytics.SendPopulatedChannelJoined(channel.Name, dataStore.channels.channelJoinedSource.Get(), method);
     }
 
     private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
@@ -566,7 +579,7 @@ public class WorldChatWindowController : IHUD
         socialAnalytics.SendLeaveChannel(channel?.Name ?? channelId, dataStore.channels.channelLeaveSource.Get());
     }
 
-    private void HandleChannelOpenedFromLink(string channelId, string previousChannelId)
+    private void HandleChannelOpened(string channelId, string previousChannelId)
     {
         if (string.IsNullOrEmpty(channelId))
             return;

@@ -433,7 +433,19 @@ public class WorldChatWindowControllerShould
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
 
-        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link);
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "manual");
+    }
+    
+    [Test]
+    public void TrackAutoChannelJoined()
+    {
+        controller.Initialize(view);
+
+        dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+        chatController.OnAutoChannelJoined +=
+            Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
+
+        socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "auto");
     }
 
     [Test]
@@ -574,6 +586,18 @@ public class WorldChatWindowControllerShould
 
         chatController.Received(1).JoinOrCreateChannel("automatic-channel");
         chatController.Received(1).MuteChannel("automatic-channel");
+    }
+
+    [Test]
+    public void HideLoadingOfChannelsWhenIsGuest()
+    {
+        chatController.IsInitialized.Returns(false);
+        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        controller.Initialize(view);
+        
+        controller.SetVisibility(true);
+        
+        view.Received(1).HideChannelsLoading();
     }
 
     private void GivenFriend(string friendId, PresenceStatus presence)
