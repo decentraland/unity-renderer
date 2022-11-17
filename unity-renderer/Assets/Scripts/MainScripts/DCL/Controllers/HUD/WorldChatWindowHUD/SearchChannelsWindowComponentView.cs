@@ -39,6 +39,7 @@ namespace DCL.Chat.HUD
         public event Action<string> OnJoinChannel;
         public event Action<string> OnLeaveChannel;
         public event Action OnCreateChannel;
+        public event Action<string> OnOpenChannel;
 
         public RectTransform Transform => (RectTransform) transform;
         public int EntryCount => channelList.Count();
@@ -106,8 +107,10 @@ namespace DCL.Chat.HUD
                     showOnlyOnlineMembers: false, channel.Muted));
 
             var entry = channelList.Get(channel.ChannelId);
-            entry.OnOpenChat -= HandleJoinRequest;
-            entry.OnOpenChat += HandleJoinRequest;
+            entry.OnJoin -= HandleJoinRequest;
+            entry.OnJoin += HandleJoinRequest;
+            entry.OnOpenChat -= HandleOpenChat;
+            entry.OnOpenChat += HandleOpenChat;
             entry.OnLeave -= HandleLeaveRequest;
             entry.OnLeave += HandleLeaveRequest;
 
@@ -178,6 +181,8 @@ namespace DCL.Chat.HUD
         }
 
         private void HandleJoinRequest(PublicChatEntry entry) => OnJoinChannel?.Invoke(entry.Model.channelId);
+
+        private void HandleOpenChat(PublicChatEntry entry) => OnOpenChannel?.Invoke(entry.Model.channelId);
 
         private void HandleLeaveRequest(PublicChatEntry entry) => OnLeaveChannel?.Invoke(entry.Model.channelId);
 

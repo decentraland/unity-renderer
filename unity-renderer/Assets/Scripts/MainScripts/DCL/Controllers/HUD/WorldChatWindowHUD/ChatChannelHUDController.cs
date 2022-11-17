@@ -137,7 +137,7 @@ namespace DCL.Chat.HUD
                 View.Hide();
             }
 
-            dataStore.channels.channelToBeOpenedFromLink.Set(null, notifyEvent: false);
+            dataStore.channels.channelToBeOpened.Set(null, notifyEvent: false);
         }
 
         public void Dispose()

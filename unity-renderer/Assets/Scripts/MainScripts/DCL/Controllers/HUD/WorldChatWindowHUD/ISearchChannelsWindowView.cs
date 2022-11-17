@@ -13,6 +13,7 @@ namespace DCL.Chat.HUD
         event Action<string> OnJoinChannel;
         event Action<string> OnLeaveChannel;
         event Action OnCreateChannel;
+        event Action<string> OnOpenChannel;
         RectTransform Transform { get; }
         int EntryCount { get; }
         bool IsActive { get; }

@@ -120,7 +120,6 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    new UserProfileWebInterfaceBridge(),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
                 break;
             case HUDElementID.CHANNELS_CREATE:
