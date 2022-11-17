@@ -6,8 +6,7 @@ using UnityEngine;
 public class ApplicationFocusService : IApplicationFocusService
 {
 
-    public event Action OnApplicationFocus;
-    public event Action OnApplicationFocusLost;
+    public event Action<bool> OnApplicationFocus;
     private bool currentFocusState;
 
     public void Initialize()
@@ -17,6 +16,7 @@ public class ApplicationFocusService : IApplicationFocusService
     }
     private void FocusChange(bool focus)
     {
+        Debug.Log("AAAAA " + focus);
         if (currentFocusState == focus)
             return;
 
@@ -29,10 +29,10 @@ public class ApplicationFocusService : IApplicationFocusService
     }
 
     internal void OnFocusGained() =>
-        OnApplicationFocus?.Invoke();
+        OnApplicationFocus?.Invoke(true);
 
     internal void OnFocusLost() =>
-        OnApplicationFocusLost?.Invoke();
+        OnApplicationFocus?.Invoke(false);
 
     public void Dispose() =>
         Application.focusChanged -= FocusChange;

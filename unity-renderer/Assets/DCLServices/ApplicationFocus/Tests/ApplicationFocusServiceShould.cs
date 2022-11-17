@@ -29,20 +29,15 @@ public class ApplicationFocusServiceShould
     public void FocusLost()
     {
         applicationHasFocus = true;
-        applicationFocusService.OnApplicationFocusLost += ApplicationLostFocus;
+        applicationFocusService.OnApplicationFocus += ApplicationFocused;
         applicationFocusService.OnFocusLost();
         Assert.IsFalse(applicationHasFocus);
-        applicationFocusService.OnApplicationFocusLost -= ApplicationLostFocus;
+        applicationFocusService.OnApplicationFocus -= ApplicationFocused;
     }
     
-    private void ApplicationFocused()
+    private void ApplicationFocused(bool focusValue)
     {
-        applicationHasFocus = true;
-    }
-    
-    private void ApplicationLostFocus()
-    {
-        applicationHasFocus = false;
+        applicationHasFocus = focusValue;
     }
 
 }

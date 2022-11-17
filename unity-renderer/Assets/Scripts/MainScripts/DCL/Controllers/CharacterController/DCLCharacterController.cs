@@ -150,17 +150,12 @@ public class DCLCharacterController : MonoBehaviour
         dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
         
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
-        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
         applicationHasFocus = Environment.i.serviceLocator.Get<IApplicationFocusService>().IsApplicationFocused();
     }
-    private void OnApplicationFocus()
+    private void OnApplicationFocus(bool focusValue)
     {
-        applicationHasFocus = true;
-    }
-    
-    private void OnApplicationFocusLost()
-    {
-        applicationHasFocus = false;
+        Debug.Log("FOCUS " + focusValue);
+        applicationHasFocus = focusValue;
     }
 
     private void SubscribeToInput()
@@ -190,7 +185,6 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus -= OnApplicationFocus;
-        Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost -= OnApplicationFocusLost;
         i = null;
     }
 
@@ -561,8 +555,12 @@ public class DCLCharacterController : MonoBehaviour
     void ReportMovement()
     {
         if (!applicationHasFocus)
+        {
+            Debug.Log("NO ENVIE POSICION XQ NO TENIA FOCO");
             return;
+        }
             
+        Debug.Log("ESTOY ENVIANDO POSICION ");
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);

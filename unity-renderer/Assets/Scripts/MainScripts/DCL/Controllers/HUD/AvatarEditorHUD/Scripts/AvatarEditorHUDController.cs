@@ -1154,9 +1154,12 @@ public class AvatarEditorHUDController : IHUD
         return ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0;
     }
 
-    private void OnApplicationFocus()
+    private void OnApplicationFocus(bool focusValue)
     {
-        lastTimeOwnedWearablesChecked = -ownedWearableEmotesRequestRetryTime;
-        lastTimeOwnedEmotesChecked = -ownedWearableEmotesRequestRetryTime;
+        if (focusValue)
+        {
+            lastTimeOwnedWearablesChecked = -ownedWearableEmotesRequestRetryTime;
+            lastTimeOwnedEmotesChecked = -ownedWearableEmotesRequestRetryTime;
+        }
     }
 }

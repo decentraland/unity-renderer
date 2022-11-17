@@ -7,8 +7,7 @@ using UnityEngine;
 public interface IApplicationFocusService : IService
 {
 
-    event Action OnApplicationFocus; 
-    event Action OnApplicationFocusLost;
+    event Action<bool> OnApplicationFocus; 
     bool IsApplicationFocused();
 
 
