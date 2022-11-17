@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using DCL;
+using DCL.Helpers;
 
 namespace DCL.Social.Passports
 {
@@ -20,6 +22,8 @@ namespace DCL.Social.Passports
         public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
         public event Action OnClose;
 
+        private MouseCatcher mouseCatcher;
+
         public static PlayerPassportHUDView CreateView()
         {
             return Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
@@ -28,7 +32,11 @@ namespace DCL.Social.Passports
         public void Initialize()
         {
             hideCardButton?.onClick.RemoveAllListeners();
-            hideCardButton?.onClick.AddListener(() => OnClose?.Invoke());
+            hideCardButton?.onClick.AddListener(ClosePassport);
+            mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
+
+            if (mouseCatcher != null)
+                mouseCatcher.OnMouseDown += ClosePassport;
         }
 
         public void SetVisibility(bool visible)
@@ -38,11 +46,28 @@ namespace DCL.Social.Passports
 
         public void SetPassportPanelVisibility(bool visible)
         {
+            if (visible && mouseCatcher != null)
+            {
+                mouseCatcher.UnlockCursor();
+            }
             container.SetActive(visible);
+            CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
         }
 
         public override void RefreshControl()
         {
+        }
+
+        public override void Dispose()
+        {
+            if (mouseCatcher != null)
+                mouseCatcher.OnMouseDown -= ClosePassport;
+        }
+
+        private void ClosePassport()
+        {
+            mouseCatcher.LockCursor();
+            OnClose?.Invoke();
         }
     }
 }

@@ -18,6 +18,8 @@ namespace DCL.Social.Passports
 
         internal UserProfile currentUserProfile;
 
+        private readonly InputAction_Trigger closeWindowTrigger;
+        
         private PassportPlayerInfoComponentController playerInfoController;
         private PassportPlayerPreviewComponentController playerPreviewController;
         private PassportNavigationComponentController passportNavigationController;
@@ -42,6 +44,10 @@ namespace DCL.Social.Passports
             view.Initialize();
             view.OnClose += RemoveCurrentPlayer;
 
+            closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
+            closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
+            closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
+
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
             OnCurrentPlayerIdChanged(currentPlayerId, null);
         }
@@ -51,8 +57,15 @@ namespace DCL.Social.Passports
             view.SetVisibility(visible);
         }
 
+        private void OnCloseButtonPressed(DCLAction_Trigger action = DCLAction_Trigger.CloseWindow)
+        {
+            RemoveCurrentPlayer();
+        }
+
         public void Dispose()
         {
+            closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
+            currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             if (view != null)
                 view.Dispose();
         }
