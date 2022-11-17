@@ -341,7 +341,7 @@ resharper_keep_blank_lines_in_code = 1
 resharper_remove_blank_lines_near_braces_in_code = true
 resharper_blank_lines_around_local_method = 1
 resharper_blank_lines_around_single_line_local_method = 0
-resharper_blank_lines_before_control_transfer_statements = 1
+resharper_blank_lines_before_control_transfer_statements = 0
 resharper_blank_lines_after_control_transfer_statements = 0
 resharper_blank_lines_before_block_statements = 1
 resharper_blank_lines_after_block_statements = 1
@@ -627,7 +627,7 @@ resharper_wrap_before_invocation_rpar = false
 
 # Arrangement of member access expressions
 resharper_wrap_after_dot_in_method_calls = true
-resharper_wrap_chained_method_calls = chop_always
+resharper_wrap_chained_method_calls = chop_if_long
 
 # Arrangement of binary expressions
 resharper_wrap_before_binary_opsign = true
