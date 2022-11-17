@@ -54,7 +54,7 @@ Material:
     - _isFillEnabled: 0
     - _isOccludedVisualEnabled: 0
     - _isOutlineEnabled: 1
-    - _isOutlineEnabled_1: 1
+    - _isOutlineEnabled_1: 0
     m_Colors:
     - Color_d326f9101fd94f2b8ca8431c31e97ef6: {r: 0.24368094, g: 0.6981132, b: 0,
         a: 0}

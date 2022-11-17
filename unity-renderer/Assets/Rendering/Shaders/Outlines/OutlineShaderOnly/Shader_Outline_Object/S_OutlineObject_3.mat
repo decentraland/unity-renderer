@@ -101,9 +101,9 @@ Material:
     - _Metallic: 0
     - _ObjectOcclusion: 0
     - _OcclusionStrength: 1
-    - _OutlineIntersection: 0.54
+    - _OutlineIntersection: 0.23
     - _OutlineOpacity: 1
-    - _OutlineWidth: 2.38
+    - _OutlineWidth: 1.53
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -113,19 +113,19 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
-    - _ZTest: 7
-    - _ZWrite: 1
+    - _ZTest: 3
+    - _ZWrite: 0
     - _internalSections: 1
     - _isOccludedVisualEnabled: 0
     - _isOutlineEnabled: 1
-    - _isOutlineEnabled_1: 1
+    - _isOutlineEnabled_1: 0
     m_Colors:
     - Color_d326f9101fd94f2b8ca8431c31e97ef6: {r: 1, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 0, g: 0.0575552, b: 1, a: 1}
-    - _OutlineColor: {r: 1.5617898, g: 0.3025456, b: 1.514313, a: 0}
+    - _OutlineColor: {r: 1.5617898, g: 0.3025456, b: 1.514313, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &5382465494902941092
