@@ -148,10 +148,14 @@ public class DCLCharacterController : MonoBehaviour
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
 
         dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
-        
+    }
+
+    private void Start()
+    {
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
         applicationHasFocus = Environment.i.serviceLocator.Get<IApplicationFocusService>().IsApplicationFocused();
     }
+
     private void OnApplicationFocus(bool focusValue)
     {
         applicationHasFocus = focusValue;
@@ -555,6 +559,7 @@ public class DCLCharacterController : MonoBehaviour
     {
         if (!applicationHasFocus)
         {
+            Debug.Log("NO MANDO POSICION XQ NO TENGO FOCO");
             return;
         }
             
