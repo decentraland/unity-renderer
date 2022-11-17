@@ -277,6 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7559dac257d74f23ab6a0d354f6b58a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   name: {fileID: 9000933452931341415}
   walletCopyButton: {fileID: 7346261851112717960}
   wallet: {fileID: 3817117728883854603}
@@ -337,7 +338,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 388468320563139737}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -381,7 +382,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
+    m_NormalColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
     m_HighlightedColor: {r: 1, g: 0.58607304, b: 0.41037738, a: 1}
     m_PressedColor: {r: 1, g: 0.7648895, b: 0.6650944, a: 1}
     m_SelectedColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
@@ -1661,6 +1662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcf2bf054a5854f7d99bc31b6d203d8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   playerInfoView: {fileID: 6471045718647082303}
   playerPreviewView: {fileID: 6983739106841031219}
   passportNavigationView: {fileID: 1667156755321658656}
@@ -2912,6 +2914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b669f98b7d5b048abb3d0d40ded45da9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
 --- !u!1 &5596814656555342908
 GameObject:
   m_ObjectHideFlags: 0
@@ -3191,7 +3194,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
+    m_NormalColor: {r: 0.7647059, g: 0.7647059, b: 0.7647059, a: 1}
     m_HighlightedColor: {r: 1, g: 0.58607304, b: 0.41037738, a: 1}
     m_PressedColor: {r: 1, g: 0.7648895, b: 0.6650944, a: 1}
     m_SelectedColor: {r: 1, g: 0.45490196, b: 0.22352941, a: 1}
@@ -3715,10 +3718,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ce19a5ad94a46e1a487e5eb8e8aa02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   aboutPanel: {fileID: 5642977125158996719}
   wearablesPanel: {fileID: 312153529739369537}
-  aboutButton: {fileID: 5669927588547630343}
-  wearablesButton: {fileID: 3608447972671601645}
 --- !u!1 &7619459226565418364
 GameObject:
   m_ObjectHideFlags: 0

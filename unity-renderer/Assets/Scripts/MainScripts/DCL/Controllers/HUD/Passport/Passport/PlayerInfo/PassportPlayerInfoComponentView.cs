@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-public class PassportPlayerInfoComponentView : MonoBehaviour, IPassportPlayerInfoComponentView
+public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView
 {
     [SerializeField] internal TextMeshProUGUI name;
     [SerializeField] internal Button walletCopyButton;
@@ -55,5 +55,17 @@ public class PassportPlayerInfoComponentView : MonoBehaviour, IPassportPlayerInf
             return;
         
         GUIUtility.systemCopyBuffer = fullWalletAddress;
+    }
+
+    public override void RefreshControl() 
+    {
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        walletCopyButton.onClick.RemoveAllListeners();
+        addFriendButton.onClick.RemoveAllListeners();
     }
 }

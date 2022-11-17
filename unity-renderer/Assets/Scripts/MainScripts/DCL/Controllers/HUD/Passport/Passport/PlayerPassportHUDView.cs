@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class PlayerPassportHUDView : MonoBehaviour
+public class PlayerPassportHUDView : BaseComponentView
 {
     [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
     [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
@@ -36,5 +36,9 @@ public class PlayerPassportHUDView : MonoBehaviour
     public void SetPassportPanelVisibility(bool visible)
     {
         container.SetActive(visible);
+    }
+
+    public override void RefreshControl()
+    {
     }
 }

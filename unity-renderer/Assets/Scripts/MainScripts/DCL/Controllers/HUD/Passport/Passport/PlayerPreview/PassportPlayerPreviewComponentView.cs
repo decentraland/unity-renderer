@@ -1,5 +1,8 @@
 using UnityEngine;
 
-public class PassportPlayerPreviewComponentView : MonoBehaviour, IPassportPlayerPreviewComponentView
+public class PassportPlayerPreviewComponentView : BaseComponentView, IPassportPlayerPreviewComponentView
 {
+    public override void RefreshControl()
+    {
+    }
 }
