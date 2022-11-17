@@ -113,8 +113,8 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
-    - _ZTest: 7
-    - _ZWrite: 1
+    - _ZTest: 4
+    - _ZWrite: 0
     - _internalSections: 1
     - _isOccludedVisualEnabled: 1
     - _isOutlineEnabled: 1

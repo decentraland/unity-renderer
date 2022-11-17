@@ -43,21 +43,21 @@ Material:
     - Vector1_eacf5e5d73a24957b64ff9be4232b8e9: 3.17
     - _CameraFarFade: 50
     - _CameraFarPlaneFade: 0
-    - _FillOpacity: 1
+    - _FillOpacity: 0.946
     - _ObjectOcclusion: 0
     - _Ouline: 0
     - _Outline: 0
-    - _OutlineIntersection: 0.2
+    - _OutlineIntersection: -0.08
     - _OutlineOpacity: 1
-    - _OutlineWidth: 2.75
+    - _OutlineWidth: 2.67
     - _internalSections: 1
     - _isFillEnabled: 0
-    - _isOccludedVisualEnabled: 1
+    - _isOccludedVisualEnabled: 0
     - _isOutlineEnabled: 1
     - _isOutlineEnabled_1: 1
     m_Colors:
     - Color_d326f9101fd94f2b8ca8431c31e97ef6: {r: 0.24368094, g: 0.6981132, b: 0,
         a: 0}
-    - _FillColor: {r: 1, g: 0.60341847, b: 0, a: 1}
-    - _OutlineColor: {r: 2.04102, g: 2.085112, b: 0, a: 0}
+    - _FillColor: {r: 1, g: 0, b: 0.020870686, a: 0}
+    - _OutlineColor: {r: 1, g: 0.27286682, b: 0, a: 0}
   m_BuildTextureStacks: []

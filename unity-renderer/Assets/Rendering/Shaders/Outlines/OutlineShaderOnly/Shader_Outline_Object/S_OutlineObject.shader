@@ -17,11 +17,12 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
-        
+    
         [Enum(Off,0,On,1)]_ZWrite ("ZWrite", Float) = 1.0
-[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
-[Enum(UnityEngine.Rendering.CullMode)] _Culling ("Culling", Float) = 0
-    }
+        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
+        [Enum(UnityEngine.Rendering.CullMode)] _Culling ("Culling", Float) = 0
+                
+        }
     SubShader
     {
         Tags
@@ -41,17 +42,14 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
 
             // Render State
             //Cull Off
-        
             Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         
             //ZTest LEqual
-        
             //ZWrite Off
             
-        ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]    
-            
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+            Cull [_Culling]
 
             // Debug
             // <None>
@@ -99,7 +97,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
-            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_FORWARD
@@ -162,7 +159,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
-            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -544,11 +540,8 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
-            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
-            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
-            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
             float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
-            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -604,7 +597,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
-            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -628,13 +620,10 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite Off
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
+        ZTest LEqual
+        ZWrite Off
 
             // Debug
             // <None>
@@ -679,7 +668,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
-            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_GBUFFER
@@ -742,7 +730,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
-            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -1124,11 +1111,8 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
-            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
-            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
-            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
             float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
-            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -1184,7 +1168,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
-            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -1209,15 +1192,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite On
+        ZTest LEqual
+        ZWrite On
         ColorMask 0
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
 
             // Debug
             // <None>
@@ -1687,15 +1666,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite On
+        ZTest LEqual
+        ZWrite On
         ColorMask 0
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
 
             // Debug
             // <None>
@@ -2165,7 +2140,7 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite On
@@ -2687,7 +2662,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             #define ATTRIBUTES_NEED_TEXCOORD1
             #define ATTRIBUTES_NEED_TEXCOORD2
             #define VARYINGS_NEED_POSITION_WS
-            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_META
@@ -2739,7 +2713,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         {
             float3 WorldSpacePosition;
             float4 ScreenPosition;
-            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -3084,11 +3057,8 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
-            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
-            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
-            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
             float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
-            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -3139,7 +3109,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
-            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -3163,14 +3132,10 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite Off
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
+        ZTest LEqual
+        ZWrite Off
 
             // Debug
             // <None>
@@ -3667,14 +3632,10 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite Off
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
+        ZTest LEqual
+        ZWrite Off
 
             // Debug
             // <None>
@@ -3721,7 +3682,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             #define VARYINGS_NEED_TANGENT_WS
             #define VARYINGS_NEED_VIEWDIRECTION_WS
             #define VARYINGS_NEED_FOG_AND_VERTEX_LIGHT
-            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_FORWARD
@@ -3784,7 +3744,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             float3 TangentSpaceNormal;
             float3 WorldSpacePosition;
             float4 ScreenPosition;
-            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -4166,11 +4125,8 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
-            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
-            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
-            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
             float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
-            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -4226,7 +4182,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
-            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -4250,15 +4205,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite On
+        ZTest LEqual
+        ZWrite On
         ColorMask 0
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
 
             // Debug
             // <None>
@@ -4727,15 +4678,11 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite On
+        ZTest LEqual
+        ZWrite On
         ColorMask 0
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
 
             // Debug
             // <None>
@@ -5204,14 +5151,10 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite On
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
+        ZTest LEqual
+        ZWrite On
 
             // Debug
             // <None>
@@ -5729,7 +5672,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             #define ATTRIBUTES_NEED_TEXCOORD1
             #define ATTRIBUTES_NEED_TEXCOORD2
             #define VARYINGS_NEED_POSITION_WS
-            #define VARYINGS_NEED_CULLFACE
             #define FEATURES_GRAPH_VERTEX
             /* WARNING: $splice Could not find named fragment 'PassInstancing' */
             #define SHADERPASS SHADERPASS_META
@@ -5781,7 +5723,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         {
             float3 WorldSpacePosition;
             float4 ScreenPosition;
-            float FaceSign;
         };
         struct VertexDescriptionInputs
         {
@@ -6126,11 +6067,8 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             Unity_Multiply_float(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, (_Property_b343b793b67d4099b44487e9222ad82e_Out_0.xxxx), _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2);
             float4 _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3;
             Unity_Branch_float4(_Property_171fc7588f4f4e698cde0c6e747792d6_Out_0, _Multiply_e9e1556517134f34a8d4158e4d4c61cb_Out_2, float4(0, 0, 0, 0), _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3);
-            float _IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0 = max(0, IN.FaceSign);
-            float4 _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3;
-            Unity_Branch_float4(_IsFrontFace_747766a3e2504e69843631fcc94498bc_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, float4(0, 0, 0, 0), _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3);
             float4 _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3;
-            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_ac2e0f39543e48dc854c0cfc6ee61b87_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
+            Unity_Branch_float4(_Property_52d18ef8de914706a44f1955136707a1_Out_0, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_a4fd9f454c114161a224dce3adeb24ce_Out_3, _Branch_6ccef989b594453a8b4ab45df4a34168_Out_3);
             float _Property_06388718d66b4594b7b751ba7bd2093a_Out_0 = _isOutlineEnabled;
             float4 _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1;
             Unity_OneMinus_float4(_Lerp_1f9c78919c754001b429deb504b23d71_Out_3, _OneMinus_f11ecae5b4fa43fcbac35b3bc1420361_Out_1);
@@ -6181,7 +6119,6 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
         #else
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #endif
-            BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
         #undef BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN
 
             return output;
@@ -6205,14 +6142,10 @@ Shader "HLSL/CustomShaders/URP/SGConv/OutlineObject"
             }
 
             // Render State
-            //Cull Off
+            Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
-        //ZTest LEqual
-        //ZWrite Off
-            
-            ZWrite [_ZWrite]
-        ZTest [_ZTest]
-        Cull [_Culling]
+        ZTest LEqual
+        ZWrite Off
 
             // Debug
             // <None>
