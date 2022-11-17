@@ -590,8 +590,8 @@ resharper_wrap_for_stmt_header_style = wrap_if_long
 resharper_wrap_multiple_declaration_style = wrap_if_long
 
 # Arrangement of embedded statements
-resharper_keep_existing_embedded_arrangement = false
-resharper_place_simple_embedded_statement_on_same_line = if_owner_is_single_line
+resharper_keep_existing_embedded_arrangement = true
+resharper_place_simple_embedded_statement_on_same_line = never
 resharper_place_simple_case_statement_on_same_line = always
 
 # Arrangement of embedded blocks
@@ -752,10 +752,10 @@ resharper_space_after_operator_keyword = true
 # resharper_place_simple_method_on_single_line = true
 # resharper_remove_blank_lines_near_braces_in_code = false
 # resharper_remove_blank_lines_near_braces_in_declarations = false
+# resharper_csharp_blank_lines_around_invocable = 0
 
 ## Not found
 # resharper_case_block_braces = next_line_shifted_2
-# resharper_csharp_blank_lines_around_invocable = 0
 # resharper_csharp_extra_spaces = leave_all
 # resharper_csharp_use_indent_from_previous_element = false
 # resharper_show_autodetect_configure_formatting_tip = false
