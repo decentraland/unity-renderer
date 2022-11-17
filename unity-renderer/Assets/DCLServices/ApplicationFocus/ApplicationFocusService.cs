@@ -16,7 +16,6 @@ public class ApplicationFocusService : IApplicationFocusService
     }
     private void FocusChange(bool focus)
     {
-        Debug.Log("AAAAA " + focus);
         if (currentFocusState == focus)
             return;
 

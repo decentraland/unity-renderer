@@ -154,7 +154,6 @@ public class DCLCharacterController : MonoBehaviour
     }
     private void OnApplicationFocus(bool focusValue)
     {
-        Debug.Log("FOCUS " + focusValue);
         applicationHasFocus = focusValue;
     }
 
@@ -556,11 +555,9 @@ public class DCLCharacterController : MonoBehaviour
     {
         if (!applicationHasFocus)
         {
-            Debug.Log("NO ENVIE POSICION XQ NO TENIA FOCO");
             return;
         }
             
-        Debug.Log("ESTOY ENVIANDO POSICION ");
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
