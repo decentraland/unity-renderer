@@ -101,7 +101,7 @@ Material:
     - _Metallic: 0
     - _ObjectOcclusion: 0
     - _OcclusionStrength: 1
-    - _OutlineIntersection: 0.23
+    - _OutlineIntersection: -1.42
     - _OutlineOpacity: 1
     - _OutlineWidth: 1.53
     - _Parallax: 0.005

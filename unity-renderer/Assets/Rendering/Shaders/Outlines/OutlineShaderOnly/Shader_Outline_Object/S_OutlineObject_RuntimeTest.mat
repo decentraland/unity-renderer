@@ -94,16 +94,16 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FillOpacity: 0.946
+    - _FillOpacity: 0.336
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
     - _ObjectOcclusion: 0
     - _OcclusionStrength: 1
-    - _OutlineIntersection: 0.07
+    - _OutlineIntersection: -0.18
     - _OutlineOpacity: 1
-    - _OutlineWidth: 1.61
+    - _OutlineWidth: 3
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -115,7 +115,7 @@ Material:
     - _WorkflowMode: 1
     - _ZTest: 4
     - _ZWrite: 0
-    - _internalSections: 0
+    - _internalSections: 1
     - _isOccludedVisualEnabled: 1
     - _isOutlineEnabled: 1
     - _isOutlineEnabled_1: 0

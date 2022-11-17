@@ -390,6 +390,9 @@
         },
         {
             "m_Id": "910a16e88ec341a88af2a26e707bb8d2"
+        },
+        {
+            "m_Id": "99befce54cc348c29a2ba28efd48fa70"
         }
     ],
     "m_Edges": [
@@ -3029,10 +3032,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -3757.0,
-            "y": 1119.0,
-            "width": 208.0,
-            "height": 302.0001220703125
+            "x": -3796.999755859375,
+            "y": 571.0,
+            "width": 126.0,
+            "height": 117.99993896484375
         }
     },
     "m_Slots": [
@@ -3048,7 +3051,7 @@
     ],
     "synonyms": [],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
@@ -7185,10 +7188,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -3771.352294921875,
-            "y": 485.260009765625,
-            "width": 0.0,
-            "height": 0.0
+            "x": -3922.999755859375,
+            "y": 485.99993896484377,
+            "width": 56.0,
+            "height": 24.00006103515625
         }
     },
     "m_Slots": [
@@ -8281,6 +8284,26 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "99befce54cc348c29a2ba28efd48fa70",
+    "m_Title": "Check Again",
+    "m_Content": "Removed for transparency",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -447.0,
+        "y": 476.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {
