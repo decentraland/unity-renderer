@@ -11,7 +11,7 @@ namespace RPC.Services
             EmotesRendererServiceCodeGen.RegisterService(port, new EmotesRendererServiceImpl());
         }
 
-        public UniTask<EmotesResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)
+        public UniTask<TriggerSelfUserExpressionResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)
         {
             UserProfile.GetOwnUserProfile().SetAvatarExpression(request.Id, UserProfile.EmoteSource.Command);
             return default;
