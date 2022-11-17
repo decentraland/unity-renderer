@@ -11,39 +11,33 @@ public class PlayerPassportHUDController : IHUD
 {
     internal readonly PlayerPassportHUDView view;
     internal readonly StringVariable currentPlayerId;
+    internal readonly IUserProfileBridge userProfileBridge;
     internal UserProfile currentUserProfile;
 
-    private readonly IFriendsController friendsController;
-    private readonly IUserProfileBridge userProfileBridge;
-    private readonly IProfanityFilter profanityFilter;
     private readonly ISocialAnalytics socialAnalytics;
-    private readonly DataStore dataStore;
 
     private PassportPlayerInfoComponentController playerInfoController;
     private PassportPlayerPreviewComponentController playerPreviewController;
     private PassportNavigationComponentController passportNavigationController;
 
     public PlayerPassportHUDController(
+        PlayerPassportHUDView view,
+        PassportPlayerInfoComponentController playerInfoController,
+        PassportPlayerPreviewComponentController playerPreviewController,
+        PassportNavigationComponentController passportNavigationController,
         StringVariable currentPlayerId,
-        IFriendsController friendsController,
         IUserProfileBridge userProfileBridge,
-        IProfanityFilter profanityFilter,
-        DataStore dataStore,
         ISocialAnalytics socialAnalytics)
     {
+        this.view = view;
+        this.playerInfoController = playerInfoController;
+        this.playerPreviewController = playerPreviewController;
+        this.passportNavigationController = passportNavigationController;
         this.currentPlayerId = currentPlayerId;
-        this.friendsController = friendsController;
         this.userProfileBridge = userProfileBridge;
-        this.profanityFilter = profanityFilter;
-        this.dataStore = dataStore;
         this.socialAnalytics = socialAnalytics;
 
-        view = PlayerPassportHUDView.CreateView();
         view.Initialize(() => currentPlayerId.Set(null));
-        
-        playerInfoController = new PassportPlayerInfoComponentController(currentPlayerId, view.playerInfoView, dataStore, profanityFilter, friendsController, userProfileBridge);
-        playerPreviewController = new PassportPlayerPreviewComponentController(view.playerPreviewView);
-        passportNavigationController = new PassportNavigationComponentController(view.passportNavigationView);
 
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
@@ -93,16 +87,4 @@ public class PlayerPassportHUDController : IHUD
     }
 
     private void UpdateUserProfile(UserProfile userProfile) => TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
-
-    private async UniTask<string> FilterDescription(UserProfile userProfile)
-    {
-        return IsProfanityFilteringEnabled()
-            ? await profanityFilter.Filter(userProfile.description)
-            : userProfile.description;
-    }
-
-    private bool IsProfanityFilteringEnabled()
-    {
-        return dataStore.settings.profanityChatFilteringEnabled.Get();
-    }
 }

@@ -42,12 +42,20 @@ public class HUDFactory : IHUDFactory
                 {
                     //TODO: this is temporary, once the old passport flow is removed 
                     //this can be moved to the passport plugin
+                    PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
                     hudElement = new PlayerPassportHUDController(
+                        view,
+                        new PassportPlayerInfoComponentController(
+                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"), 
+                            view.PlayerInfoView, 
+                            DataStore.i, 
+                            ProfanityFilterSharedInstances.regexFilter, 
+                            FriendsController.i, 
+                            new UserProfileWebInterfaceBridge()),
+                        new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
+                        new PassportNavigationComponentController(view.PassportNavigationView),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                        FriendsController.i,
                         new UserProfileWebInterfaceBridge(),
-                        ProfanityFilterSharedInstances.regexFilter,
-                        DataStore.i,
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
                             new UserProfileWebInterfaceBridge()));

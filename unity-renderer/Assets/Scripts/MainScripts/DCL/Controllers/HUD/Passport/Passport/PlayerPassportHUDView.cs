@@ -6,9 +6,13 @@ using UnityEngine.Events;
 
 public class PlayerPassportHUDView : MonoBehaviour
 {
-    [SerializeField] public PassportPlayerInfoComponentView playerInfoView;
-    [SerializeField] public PassportPlayerPreviewComponentView playerPreviewView;
-    [SerializeField] public PassportNavigationComponentView passportNavigationView;
+    [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
+    [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
+    [SerializeField] private PassportNavigationComponentView passportNavigationView;
+
+    public PassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
+    public PassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
+    public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
 
     [SerializeField] internal Button hideCardButton;
     [SerializeField] internal GameObject container;
