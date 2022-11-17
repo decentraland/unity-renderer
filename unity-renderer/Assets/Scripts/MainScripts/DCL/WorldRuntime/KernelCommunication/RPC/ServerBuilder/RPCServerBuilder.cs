@@ -13,8 +13,8 @@ namespace RPC
     {
         public static void BuildDefaultServer()
         {
-            RPCContext context = DataStore.i.rpc.context;
-            context.crdt.messageQueueHandler = Environment.i.world.sceneController;
+            RPCContext context = DataStore.i.rpcContext.context;
+            context.crdtContext.MessagingControllersManager = Environment.i.messaging.manager;
             BuildDefaultServer(context);
         }
 

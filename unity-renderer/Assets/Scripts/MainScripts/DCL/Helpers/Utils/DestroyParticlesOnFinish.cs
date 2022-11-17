@@ -24,7 +24,9 @@ public class DestroyParticlesOnFinish : MonoBehaviour
         if (Time.frameCount % INDEX_AMOUNT != index)
             return;
 
-        if (particles != null && !particles.IsAlive())
-            Destroy(gameObject);
+        if (particles == null || particles.IsAlive())
+          return;
+
+        Destroy(gameObject);
     }
 }

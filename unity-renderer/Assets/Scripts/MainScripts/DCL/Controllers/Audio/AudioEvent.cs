@@ -164,7 +164,7 @@ public class AudioEvent : ScriptableObject
 
     public void SetIndex(int index) { clipIndex = index; }
 
-    public void SetPitch(float pitch) { this.pitch = pitch; }
+    public void SetPitch(float pitch) => this.pitch = pitch; 
 
     /// <summary>Use StartCoroutine() on this one.</summary>
     public IEnumerator FadeIn(float fadeSeconds)

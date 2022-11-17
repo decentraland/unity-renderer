@@ -70,7 +70,7 @@ namespace DCL.Chat.HUD
             {
                 LoadMembers();
                 SetAutomaticReloadingActive(true);
-                view.ClearSearchInput();
+                view.ClearSearchInput(notify: false);
             }
             else
             {
