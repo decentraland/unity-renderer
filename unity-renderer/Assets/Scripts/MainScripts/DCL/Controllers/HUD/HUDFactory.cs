@@ -40,9 +40,17 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PLAYER_INFO_CARD:
                 if(DataStore.i.HUDs.enableNewPassport.Get())
                 {
+                    //TODO: this is temporary, once the old passport flow is removed 
+                    //this can be moved to the passport plugin
                     hudElement = new PlayerPassportHUDController(
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                        new UserProfileWebInterfaceBridge());
+                        FriendsController.i,
+                        new UserProfileWebInterfaceBridge(),
+                        ProfanityFilterSharedInstances.regexFilter,
+                        DataStore.i,
+                        new SocialAnalytics(
+                            Environment.i.platform.serviceProviders.analytics,
+                            new UserProfileWebInterfaceBridge()));
                 }
                 else
                 {
