@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5441633852909049759}
   - component: {fileID: 3251238565808696851}
   - component: {fileID: 2291118472473288420}
-  - component: {fileID: 5382427830141562726}
+  - component: {fileID: 6978368567984121918}
   m_Layer: 0
   m_Name: AvatarExpressionClap
   m_TagString: Untagged
@@ -4863,7 +4863,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &5382427830141562726
+--- !u!114 &6978368567984121918
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4872,7 +4872,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2517955516116662209}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dafcf2c65303d24a994d54b7b771578, type: 3}
+  m_Script: {fileID: 11500000, guid: d2c6e6d9dd525194088a39360cd09247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   particles: {fileID: 2291118472473288420}
