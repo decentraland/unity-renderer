@@ -2,6 +2,7 @@ using System.Collections;
 using DCL;
 using DCL.Chat;
 using DCL.Helpers;
+using DCL.Social.Chat;
 using NUnit.Framework;
 using UnityEngine;
 using NSubstitute;
@@ -13,14 +14,12 @@ namespace Tests
     {
         private IHUDController hudController;
         private FriendsController friendsController;
-        private ChatController chatController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             
             friendsController = TestUtils.CreateComponentWithGameObject<FriendsController>("FriendsController");
-            chatController = TestUtils.CreateComponentWithGameObject<ChatController>("ChatController");
             hudController = new HUDController(new HUDFactory());
             hudController.Initialize();
             yield return null;
@@ -28,7 +27,6 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
-            Object.Destroy(chatController.gameObject);
             Object.Destroy(friendsController.gameObject);
             hudController.Dispose();
             yield return base.TearDown();

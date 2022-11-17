@@ -5,6 +5,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat;
 using RPC;
 using UnityEngine;
 
@@ -40,6 +41,8 @@ namespace DCL
                 InitializeSceneDependencies();
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            // TODO: migrate chat controller singleton into a service in the service locator
+            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -154,7 +157,7 @@ namespace DCL
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<FriendsController>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();

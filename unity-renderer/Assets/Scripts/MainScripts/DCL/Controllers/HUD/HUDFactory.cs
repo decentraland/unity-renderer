@@ -8,6 +8,7 @@ using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
