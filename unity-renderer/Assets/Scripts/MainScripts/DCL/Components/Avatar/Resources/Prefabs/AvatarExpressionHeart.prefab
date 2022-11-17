@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8836422256148970027}
   - component: {fileID: 2823796719404257459}
   - component: {fileID: 8603952826114518405}
-  - component: {fileID: -3870558266017170107}
+  - component: {fileID: -2711576493407760981}
   m_Layer: 0
   m_Name: AvatarExpressionHeart
   m_TagString: Untagged
@@ -4902,7 +4902,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &-3870558266017170107
+--- !u!114 &-2711576493407760981
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4911,7 +4911,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5040678410500195010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dafcf2c65303d24a994d54b7b771578, type: 3}
+  m_Script: {fileID: 11500000, guid: d2c6e6d9dd525194088a39360cd09247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   particles: {fileID: 8603952826114518405}

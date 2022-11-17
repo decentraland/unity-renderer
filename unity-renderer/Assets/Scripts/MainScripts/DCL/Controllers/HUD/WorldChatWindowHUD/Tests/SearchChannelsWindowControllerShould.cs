@@ -17,7 +17,6 @@ namespace DCL.Chat.HUD
         private IMouseCatcher mouseCatcher;
         private DataStore dataStore;
         private ISocialAnalytics socialAnalytics;
-        private IUserProfileBridge userProfileBridge;
         private IChannelsFeatureFlagService channelsFeatureFlagService;
 
         [SetUp]
@@ -28,9 +27,8 @@ namespace DCL.Chat.HUD
             view = Substitute.For<ISearchChannelsWindowView>();
             dataStore = new DataStore();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
-            userProfileBridge = Substitute.For<IUserProfileBridge>();
             channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
-            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore, socialAnalytics, userProfileBridge, channelsFeatureFlagService);
+            controller = new SearchChannelsWindowController(chatController, mouseCatcher, dataStore, socialAnalytics, channelsFeatureFlagService);
             controller.Initialize(view);
         }
 
@@ -207,6 +205,32 @@ namespace DCL.Chat.HUD
 
             Assert.IsTrue(called);
             Assert.AreEqual(ChannelJoinedSource.Search, dataStore.channels.channelJoinedSource.Get());
+        }
+
+        [Test]
+        public void NavigateToChannelWhenIsRequested()
+        {
+            const string channelId = "channelId";
+            var channel = new Channel(channelId, "name", 15, 11, true, false, "desc");
+            chatController.GetAllocatedChannel(channelId).Returns(channel);
+            controller.SetVisibility(true);
+            
+            view.OnOpenChannel += Raise.Event<Action<string>>(channelId);
+            
+            Assert.AreEqual("channelId", dataStore.channels.channelToBeOpened.Get());
+        }
+        
+        [Test]
+        public void DontNavigateToChannelWhenIsNotJoined()
+        {
+            const string channelId = "channelId";
+            var channel = new Channel(channelId, "name", 15, 11, false, false, "desc");
+            chatController.GetAllocatedChannel(channelId).Returns(channel);
+            controller.SetVisibility(true);
+            
+            view.OnOpenChannel += Raise.Event<Action<string>>(channelId);
+            
+            Assert.IsNull(dataStore.channels.channelToBeOpened.Get());
         }
     }
 }
